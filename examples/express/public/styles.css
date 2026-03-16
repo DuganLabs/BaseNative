@@ -273,37 +273,40 @@
   }
 
   /* -- Stat grid -- */
-  [data-stat-grid] {
+  ul[role="list"][data-stat-grid] {
     display: grid;
     grid-template-columns: repeat(var(--stat-grid-columns), 1fr);
     gap: var(--space-md);
     list-style: none;
+    flex-direction: unset;
   }
 
-  [data-stat-grid] > li {
+  ul[role="list"][data-stat-grid] > li {
     background: var(--surface-1);
     border: var(--border-width) solid var(--border);
+    border-inline-start: var(--border-width) solid var(--border);
     border-radius: var(--radius-md);
     padding: var(--space-lg);
     text-align: center;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     gap: var(--space-xs);
     transition: border-color var(--duration-med), box-shadow var(--duration-med);
   }
 
-  [data-stat-grid] > li:hover {
+  ul[role="list"][data-stat-grid] > li:hover {
     border-color: var(--border-accent);
     box-shadow: var(--shadow-card);
   }
 
-  [data-stat-grid] strong {
+  ul[role="list"][data-stat-grid] strong {
     font-family: var(--font-display);
     font-size: var(--stat-value-size);
     color: var(--accent);
   }
 
-  [data-stat-grid] span {
+  ul[role="list"][data-stat-grid] span {
     font-family: var(--font-mono);
     font-size: var(--font-size-sm);
     color: var(--text-2);
