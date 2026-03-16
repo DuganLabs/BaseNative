@@ -1,30 +1,10 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "targetDefaults": {
-    "bundle": {
-      "cache": true,
-      "inputs": ["src/runtime/**/*.js"],
-      "outputs": ["examples/express/public/basenative.js"],
-      "dependsOn": []
-    },
-    "serve": {
-      "cache": false,
-      "dependsOn": ["bundle"]
-    },
-    "test": {
-      "cache": true,
-      "inputs": ["src/**/*.js", "src/**/*.test.js"]
-    },
-    "lint": {
-      "cache": true,
-      "inputs": ["src/**/*.js", "examples/**/*.js"]
-    }
-  },
   "defaultBase": "main",
   "namedInputs": {
-    "runtime": ["src/runtime/**/*.js"],
-    "server": ["src/server/**/*.js"],
-    "views": ["examples/express/views/**/*.html"],
-    "styles": ["examples/express/public/**/*.css"]
+    "runtime": ["{workspaceRoot}/packages/runtime/src/**/*.js"],
+    "server": ["{workspaceRoot}/packages/server/src/**/*.js"],
+    "views": ["{workspaceRoot}/examples/express/views/**/*.html"],
+    "styles": ["{workspaceRoot}/examples/express/public/**/*.css"]
   }
 }

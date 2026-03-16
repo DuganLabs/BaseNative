@@ -1,0 +1,9 @@
+{
+  "name": "basenative-example-static",
+  "targets": {
+    "serve": {
+      "cache": false,
+      "command": "npx serve ."
+    }
+  }
+}

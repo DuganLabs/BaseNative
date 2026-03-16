@@ -1,0 +1,12 @@
+{
+  "name": "@basenative/server",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/render.js"
+  },
+  "dependencies": {
+    "node-html-parser": "^7.0.1"
+  },
+  "files": ["src"]
+}

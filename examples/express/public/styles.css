@@ -422,6 +422,15 @@
   button[data-variant="outline"] { background: transparent; border-color: var(--border-accent); color: var(--text-1); }
   button[data-variant="outline"]:hover { background: var(--surface-2); border-color: var(--accent); color: var(--accent); box-shadow: none; }
 
+  /* -- Icons in buttons -- */
+  button > img[src*="/icons/"] {
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: middle;
+    filter: brightness(0) invert(0.9);
+  }
+  button:hover > img[src*="/icons/"] { filter: brightness(0) invert(0.03); }
+
   /* -- Inputs -- */
   input[type="text"] {
     font-family: var(--font-mono);

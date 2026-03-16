@@ -1,0 +1,15 @@
+{
+  "name": "@basenative/runtime",
+  "targets": {
+    "test": {
+      "cache": true,
+      "command": "node --test src/**/*.test.js",
+      "inputs": ["{projectRoot}/src/**/*.js"]
+    },
+    "lint": {
+      "cache": true,
+      "command": "node --check src/**/*.js",
+      "inputs": ["{projectRoot}/src/**/*.js"]
+    }
+  }
+}

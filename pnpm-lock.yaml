@@ -7,23 +7,55 @@ settings:
 importers:
 
   .:
-    dependencies:
-      express:
-        specifier: ^5.1.0
-        version: 5.2.1
-      node-html-parser:
-        specifier: ^7.0.1
-        version: 7.1.0
     devDependencies:
       esbuild:
         specifier: ^0.25.0
         version: 0.25.12
+      happy-dom:
+        specifier: ^17.4.4
+        version: 17.6.3
       nx:
         specifier: ^20.3.2
         version: 20.8.4
       nx-mcp:
         specifier: ^0.23.0
         version: 0.23.0
+
+  examples/express:
+    dependencies:
+      '@basenative/fonts':
+        specifier: workspace:*
+        version: link:../../packages/fonts
+      '@basenative/icons':
+        specifier: workspace:*
+        version: link:../../packages/icons
+      '@basenative/runtime':
+        specifier: workspace:*
+        version: link:../../packages/runtime
+      '@basenative/server':
+        specifier: workspace:*
+        version: link:../../packages/server
+      express:
+        specifier: ^5.1.0
+        version: 5.2.1
+
+  examples/static:
+    dependencies:
+      '@basenative/runtime':
+        specifier: workspace:*
+        version: link:../../packages/runtime
+
+  packages/fonts: {}
+
+  packages/icons: {}
+
+  packages/runtime: {}
+
+  packages/server:
+    dependencies:
+      node-html-parser:
+        specifier: ^7.0.1
+        version: 7.1.0
 
 packages:
 
@@ -577,6 +609,10 @@ packages:
     resolution: {integrity: sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==}
     engines: {node: '>= 0.4'}
 
+  happy-dom@17.6.3:
+    resolution: {integrity: sha512-UVIHeVhxmxedbWPCfgS55Jg2rDfwf2BCKeylcPSqazLz5w3Kri7Q4xdBJubsr/+VUzFLh0VjIvh13RaDA2/Xug==}
+    engines: {node: '>=20.0.0'}
+
   has-flag@4.0.0:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
@@ -929,6 +965,14 @@ packages:
 
   wcwidth@1.0.1:
     resolution: {integrity: sha512-XHPEwS0q6TaxcvG85+8EYkbiCux2XtWG2mkc47Ng2A77BQu9+DqIOJldST4HgPkuea7dvKSj5VgX3P1d4rW8Tg==}
+
+  webidl-conversions@7.0.0:
+    resolution: {integrity: sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==}
+    engines: {node: '>=12'}
+
+  whatwg-mimetype@3.0.0:
+    resolution: {integrity: sha512-nt+N2dzIutVRxARx1nghPKGv1xHikU7HKdfafKkLNLindmPU/ch3U31NOCGGA/dmPcmb1VlofO0vnKAcsm0o/Q==}
+    engines: {node: '>=12'}
 
   wrap-ansi@7.0.0:
     resolution: {integrity: sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==}
@@ -1439,6 +1483,11 @@ snapshots:
 
   gopd@1.2.0: {}
 
+  happy-dom@17.6.3:
+    dependencies:
+      webidl-conversions: 7.0.0
+      whatwg-mimetype: 3.0.0
+
   has-flag@4.0.0: {}
 
   has-symbols@1.1.0: {}
@@ -1821,6 +1870,10 @@ snapshots:
   wcwidth@1.0.1:
     dependencies:
       defaults: 1.0.4
+
+  webidl-conversions@7.0.0: {}
+
+  whatwg-mimetype@3.0.0: {}
 
   wrap-ansi@7.0.0:
     dependencies:
