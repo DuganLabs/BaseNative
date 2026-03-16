@@ -35,9 +35,10 @@
     --danger-glow: #f0717833;
     --success: #c3e88d;
     --success-glow: #c3e88d33;
-    --font-display: 'DM Serif Display', Georgia, serif;
-    --font-body: 'Source Serif 4', 'Charter', Georgia, serif;
-    --font-mono: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', monospace;
+    --font-family: 'BaseNative', system-ui, sans-serif;
+    --font-sans: normal;
+    --font-serif: expanded;
+    --font-mono: ultra-condensed;
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
     --ease-out-back: cubic-bezier(0.34, 1.3, 0.64, 1);
@@ -154,7 +155,8 @@
 
 @layer layout {
   body {
-    font-family: var(--font-body);
+    font-family: var(--font-family);
+    font-stretch: var(--font-serif);
     background: var(--surface-0);
     color: var(--text-0);
     line-height: var(--line-height-body);
@@ -199,7 +201,8 @@
   }
 
   main > header h1 {
-    font-family: var(--font-display);
+    font-family: var(--font-family);
+    font-stretch: var(--font-serif);
     font-size: var(--font-size-hero);
     font-weight: var(--font-weight-normal);
     letter-spacing: var(--letter-spacing-tight);
@@ -235,7 +238,8 @@
   section { margin-block-end: var(--space-5xl); }
 
   section > h2 {
-    font-family: var(--font-mono);
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-semibold);
     letter-spacing: var(--letter-spacing-widest);
@@ -320,7 +324,8 @@
   }
 
   article[data-demo] > header h3 {
-    font-family: var(--font-mono);
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-medium);
     color: var(--text-1);
@@ -331,7 +336,7 @@
   [data-role="source"] { padding: var(--space-lg); background: var(--surface-0); border-block-start: var(--border-width) solid var(--border); overflow-x: auto; position: relative; }
   [data-role="source"]::before { content: ''; position: absolute; inset-block-start: 0; inset-inline-start: 0; inline-size: 100%; block-size: var(--border-width); background: linear-gradient(90deg, var(--accent-glow) 0%, transparent var(--gradient-glow-end)); }
 
-  pre, code { font-family: var(--font-mono); }
+  pre, code { font-family: var(--font-family); font-stretch: var(--font-mono); }
   pre { font-size: var(--font-size-sm); line-height: var(--line-height-code); color: var(--text-1); white-space: pre; tab-size: var(--tab-size); }
   code .kw { color: var(--syntax-keyword); font-weight: var(--font-weight-semibold); transition: text-shadow var(--duration-med); }
   code .tag { color: var(--syntax-tag); transition: text-shadow var(--duration-med); }
@@ -343,7 +348,8 @@
   [data-role="source"]:hover code .str { text-shadow: 0 0 10px color-mix(in srgb, var(--syntax-string) 30%, transparent); }
 
   button {
-    font-family: var(--font-mono);
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
     font-size: var(--font-size-md);
     padding: 0.4rem 0.9rem;
     background: var(--surface-3);
@@ -363,7 +369,8 @@
   button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 12px -4px var(--accent-glow-strong); }
 
   input[type="text"] {
-    font-family: var(--font-mono);
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
     font-size: var(--font-size-base);
     padding: 0.35rem var(--space-md);
     background: var(--surface-0);
@@ -379,7 +386,8 @@
 
   ul[role="list"] { list-style: none; display: flex; flex-direction: column; gap: 0.35rem; }
   ul[role="list"] li {
-    font-family: var(--font-mono);
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
     font-size: var(--font-size-base);
     padding: 0.4rem 0.7rem;
     background: var(--surface-2);
@@ -398,7 +406,7 @@
   ul[role="list"] li:nth-child(4) { animation-delay: var(--anim-stagger-4); }
   ul[role="list"] li:nth-child(5) { animation-delay: var(--anim-stagger-5); }
 
-  [data-status] { display: inline-block; font-family: var(--font-mono); font-size: var(--font-size-xs); padding: var(--space-sm) var(--space-md); border-radius: var(--radius-pill); font-weight: var(--font-weight-semibold); animation: badge-pop var(--anim-duration-badge) var(--ease-spring) both; transition: scale var(--duration-fast) var(--ease-spring); }
+  [data-status] { display: inline-block; font-family: var(--font-family); font-stretch: var(--font-mono); font-size: var(--font-size-xs); padding: var(--space-sm) var(--space-md); border-radius: var(--radius-pill); font-weight: var(--font-weight-semibold); animation: badge-pop var(--anim-duration-badge) var(--ease-spring) both; transition: scale var(--duration-fast) var(--ease-spring); }
   [data-status]:hover { scale: var(--scale-hover); }
   [data-status="active"] { background: var(--status-active-bg); color: var(--success); box-shadow: var(--shadow-status) var(--success-glow); }
   [data-status="idle"] { background: var(--status-idle-bg); color: var(--accent); box-shadow: var(--shadow-status) var(--accent-glow); }
@@ -406,7 +414,7 @@
   [data-status="done"] { background: var(--status-active-bg); color: var(--success); }
   [data-status="pending"] { background: var(--status-pending-bg); color: var(--text-2); }
 
-  [data-role="output"] p { font-family: var(--font-mono); font-size: var(--font-size-base); animation: list-item-in 0.25s var(--ease-out-back) both; }
+  [data-role="output"] p { font-family: var(--font-family); font-stretch: var(--font-mono); font-size: var(--font-size-base); animation: list-item-in 0.25s var(--ease-out-back) both; }
   [data-role="output"] p[data-visible="true"] { color: var(--success); }
   [data-role="output"] p[data-visible="false"] { color: var(--text-2); font-style: italic; }
 
@@ -414,7 +422,7 @@
   nav[data-controls="filter"] { gap: 0.35rem; margin-block-end: 0.75rem; margin-block-start: 0; }
   nav[data-controls="filter"] button { font-size: var(--font-size-2xs); padding: var(--space-sm) var(--space-md); }
 
-  output { display: block; font-family: var(--font-mono); font-size: var(--font-size-sm); color: var(--text-1); margin-block-end: 0.75rem; }
+  output { display: block; font-family: var(--font-family); font-stretch: var(--font-mono); font-size: var(--font-size-sm); color: var(--text-1); margin-block-end: 0.75rem; }
 
   nav[aria-label="Core principles"] {
     display: grid;
@@ -440,7 +448,7 @@
   nav[aria-label="Core principles"] > aside::before { content: ''; position: absolute; inset-block-start: 0; inset-inline-start: 0; inline-size: 100%; block-size: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-dim)); transform: scaleX(0); transform-origin: left; transition: transform var(--anim-duration-bar) var(--ease-out-expo); }
   nav[aria-label="Core principles"] > aside:hover::before { transform: scaleX(1); }
   nav[aria-label="Core principles"] > aside:hover { border-color: var(--border-accent); box-shadow: var(--shadow-hover); translate: 0 var(--translate-hover-up) !important; }
-  nav[aria-label="Core principles"] > aside > strong { display: block; font-family: var(--font-mono); font-size: var(--font-size-xs); color: var(--accent); letter-spacing: var(--letter-spacing-wider); margin-block-end: var(--space-md); }
+  nav[aria-label="Core principles"] > aside > strong { display: block; font-family: var(--font-family); font-stretch: var(--font-mono); font-size: var(--font-size-xs); color: var(--accent); letter-spacing: var(--letter-spacing-wider); margin-block-end: var(--space-md); }
   nav[aria-label="Core principles"] > aside > p { font-size: var(--font-size-lg); color: var(--text-1); line-height: var(--line-height-tight); }
   nav[aria-label="Core principles"] > aside > p code { color: var(--syntax-tag); font-size: var(--font-size-base); padding: 0.05em 0.3em; background: var(--surface-2); border-radius: var(--radius-sm); transition: color var(--duration-med), background var(--duration-med); }
   nav[aria-label="Core principles"] > aside:hover > p code { color: var(--accent); background: var(--surface-3); }
@@ -452,10 +460,10 @@
   figure:hover pre { color: var(--text-1); }
   figure pre em { font-style: normal; color: var(--accent); transition: text-shadow var(--duration-med); }
   figure:hover pre em { text-shadow: 0 0 12px var(--accent-glow); }
-  figcaption { font-family: var(--font-mono); font-size: var(--font-size-2xs); color: var(--text-2); margin-block-start: 0.75rem; text-align: end; transition: color var(--duration-med); }
+  figcaption { font-family: var(--font-family); font-stretch: var(--font-mono); font-size: var(--font-size-2xs); color: var(--text-2); margin-block-start: 0.75rem; text-align: end; transition: color var(--duration-med); }
   figure:hover figcaption { color: var(--text-1); }
 
-  small[data-badge] { display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--font-mono); font-size: var(--font-size-xs); color: var(--text-2); padding: 0.3rem 0.7rem; background: var(--surface-2); border: var(--border-width) solid var(--border); border-radius: var(--radius-pill); margin-block-start: var(--space-lg); opacity: 0; animation: hero-subtitle var(--anim-duration-hero) var(--anim-badge-delay) var(--ease-out-expo) both; transition: border-color var(--duration-med), color var(--duration-med); }
+  small[data-badge] { display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--font-family); font-stretch: var(--font-mono); font-size: var(--font-size-xs); color: var(--text-2); padding: 0.3rem 0.7rem; background: var(--surface-2); border: var(--border-width) solid var(--border); border-radius: var(--radius-pill); margin-block-start: var(--space-lg); opacity: 0; animation: hero-subtitle var(--anim-duration-hero) var(--anim-badge-delay) var(--ease-out-expo) both; transition: border-color var(--duration-med), color var(--duration-med); }
   small[data-badge]:hover { border-color: var(--accent-dim); color: var(--text-1); }
   small[data-badge] strong { color: var(--accent); font-weight: var(--font-weight-semibold); }
 }
@@ -475,25 +483,28 @@
 </style>
 <style>
 @font-face {
-  font-family: 'DM Serif Display';
-  src: url('../../packages/fonts/src/dm-serif-display-latin.woff2') format('woff2');
+  font-family: 'BaseNative';
+  src: url('../../packages/fonts/src/BaseNative-Sans.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  font-stretch: normal;
 }
 @font-face {
-  font-family: 'Source Serif 4';
-  src: url('../../packages/fonts/src/source-serif-4-latin-variable.woff2') format('woff2-variations');
-  font-weight: 200 900;
+  font-family: 'BaseNative';
+  src: url('../../packages/fonts/src/BaseNative-Serif.woff2') format('woff2');
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
+  font-stretch: expanded;
 }
 @font-face {
-  font-family: 'JetBrains Mono';
-  src: url('../../packages/fonts/src/jetbrains-mono-latin-variable.woff2') format('woff2-variations');
-  font-weight: 100 800;
+  font-family: 'BaseNative';
+  src: url('../../packages/fonts/src/BaseNative-Mono.woff2') format('woff2');
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
+  font-stretch: ultra-condensed;
 }
 </style>
 </head>
