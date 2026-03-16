@@ -2,14 +2,17 @@ import express from 'express';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { render } from '../../src/server/render.js';
+import { render } from '@basenative/server';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const pkgRoot = join(__dirname, '..', '..');
 const read = (file) => readFileSync(join(__dirname, file), 'utf-8');
 
 const app = express();
 app.use(express.json());
 app.use(express.static(join(__dirname, 'public')));
+app.use('/fonts', express.static(join(pkgRoot, 'packages', 'fonts')));
+app.use('/icons', express.static(join(pkgRoot, 'packages', 'icons', 'src')));
 
 // -- In-memory task store --
 let nextId = 5;
@@ -89,6 +92,17 @@ app.get('/playground', (req, res) => {
 
 app.get('/docs', (req, res) => {
   const html = renderPage('docs.html', {}, { title: 'API Docs', activePage: 'docs' });
+  res.send(html);
+});
+
+app.get('/test-signals', (req, res) => {
+  const items = [
+    { id: 1, name: 'Server-rendered item A', status: 'done' },
+    { id: 2, name: 'Server-rendered item B', status: 'active' },
+    { id: 3, name: 'Server-rendered item C', status: 'pending' },
+  ];
+  const ctx = { items, itemsJson: JSON.stringify(items) };
+  const html = renderPage('test-signals.html', ctx, { title: 'Signal Verification' });
   res.send(html);
 });
 

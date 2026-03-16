@@ -86,7 +86,7 @@ hydrateRoot.innerHTML = `
       <li>
         {{ task.title }}
         <mark data-status="{{ task.status }}">{{ task.status }}</mark>
-        <button data-variant="danger" @click="deleteTask(task.id)">remove</button>
+        <button data-variant="danger" @click="deleteTask(task.id)"><img src="/icons/remove.svg" alt="Remove" width="14" height="14"></button>
       </li>
     </template>
     <template @empty>
