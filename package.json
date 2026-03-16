@@ -9,7 +9,8 @@
     "serve": "node examples/express/server.js",
     "bundle": "esbuild src/runtime/index.js --bundle --format=esm --outfile=examples/express/public/basenative.js",
     "test": "node --test src/**/*.test.js",
-    "lint": "node --check src/**/*.js examples/express/server.js"
+    "lint": "node --check src/**/*.js examples/express/server.js",
+    "postinstall": "npx -y skills add nrwl/nx-ai-agents-config -y"
   },
   "dependencies": {
     "express": "^5.1.0",
