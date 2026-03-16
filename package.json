@@ -6,8 +6,10 @@
   "scripts": {
     "dev:static": "npx serve examples/static",
     "dev:express": "node examples/express/server.js",
+    "serve": "node examples/express/server.js",
     "bundle": "esbuild src/runtime/index.js --bundle --format=esm --outfile=examples/express/public/basenative.js",
-    "test": "node --test src/**/*.test.js"
+    "test": "node --test src/**/*.test.js",
+    "lint": "node --check src/**/*.js examples/express/server.js"
   },
   "dependencies": {
     "express": "^5.1.0",

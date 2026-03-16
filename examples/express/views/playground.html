@@ -1,0 +1,183 @@
+<section>
+  <h2>Signals <em>Playground</em></h2>
+  <p>Experiment with reactive signals, computed values, and live DOM updates — all running client-side with zero build tools.</p>
+</section>
+
+<section data-playground>
+  <article>
+    <header>
+      <h3>Counter</h3>
+    </header>
+    <p>A reactive counter driven by <code>signal()</code> — click to increment or decrement and watch the DOM update instantly.</p>
+    <output data-counter-output>0</output>
+    <nav data-controls>
+      <button data-action="decrement">−</button>
+      <button data-action="increment">+</button>
+      <button data-action="reset">Reset</button>
+    </nav>
+  </article>
+
+  <article>
+    <header>
+      <h3>Computed &amp; Effects</h3>
+    </header>
+    <p>Type your name below. A <code>computed()</code> signal derives a greeting, and an <code>effect()</code> logs each change.</p>
+    <nav data-controls>
+      <input type="text" placeholder="Your name..." data-name-input>
+    </nav>
+    <output data-greeting-output>Hello, stranger</output>
+    <aside data-effect-log>
+      <header><h3>Effect log</h3></header>
+      <ul role="list" data-log-list></ul>
+    </aside>
+  </article>
+
+  <article>
+    <header>
+      <h3>Temperature Converter</h3>
+    </header>
+    <p>Two-way binding via signals. Change one and the other updates reactively.</p>
+    <nav data-controls>
+      <label>
+        <input type="text" placeholder="°C" data-celsius-input>
+        <abbr>Celsius</abbr>
+      </label>
+      <label>
+        <input type="text" placeholder="°F" data-fahrenheit-input>
+        <abbr>Fahrenheit</abbr>
+      </label>
+    </nav>
+    <output data-temp-output>Enter a temperature</output>
+  </article>
+
+  <article>
+    <header>
+      <h3>Dynamic List</h3>
+    </header>
+    <p>Add and remove items to see <code>@for</code> re-render reactively. Uses <code>@empty</code> for the empty state.</p>
+    <nav data-controls>
+      <input type="text" placeholder="Add an item..." data-list-input>
+      <button data-action="add-item">Add</button>
+    </nav>
+    <ul role="list" data-dynamic-list></ul>
+  </article>
+</section>
+
+<script type="module">
+import { signal, computed, effect } from '/basenative.js';
+
+// -- Counter --
+const count = signal(0);
+const counterOutput = document.querySelector('[data-counter-output]');
+
+effect(() => {
+  const n = count();
+  counterOutput.textContent = n;
+  counterOutput.dataset.status = n > 0 ? 'active' : n < 0 ? 'error' : 'idle';
+});
+
+document.querySelector('[data-action="increment"]').addEventListener('click', () => count.set(c => c + 1));
+document.querySelector('[data-action="decrement"]').addEventListener('click', () => count.set(c => c - 1));
+document.querySelector('[data-action="reset"]').addEventListener('click', () => count.set(0));
+
+// -- Computed greeting --
+const name = signal('');
+const greeting = computed(() => {
+  const n = name();
+  return n ? `Hello, ${n}` : 'Hello, stranger';
+});
+
+const greetingOutput = document.querySelector('[data-greeting-output]');
+const logList = document.querySelector('[data-log-list]');
+const nameInput = document.querySelector('[data-name-input]');
+let logCount = 0;
+
+nameInput.addEventListener('input', () => name.set(nameInput.value));
+
+effect(() => {
+  greetingOutput.textContent = greeting();
+});
+
+effect(() => {
+  const g = greeting();
+  logCount++;
+  const li = document.createElement('li');
+  li.textContent = `#${logCount}: ${g}`;
+  logList.prepend(li);
+  if (logList.children.length > 8) logList.lastElementChild.remove();
+});
+
+// -- Temperature converter --
+const celsius = signal('');
+const fahrenheit = signal('');
+const tempOutput = document.querySelector('[data-temp-output]');
+const celsiusInput = document.querySelector('[data-celsius-input]');
+const fahrenheitInput = document.querySelector('[data-fahrenheit-input]');
+let tempSource = null;
+
+celsiusInput.addEventListener('input', () => {
+  tempSource = 'c';
+  celsius.set(celsiusInput.value);
+  const c = parseFloat(celsiusInput.value);
+  if (!isNaN(c)) fahrenheit.set(String(((c * 9) / 5 + 32).toFixed(1)));
+});
+
+fahrenheitInput.addEventListener('input', () => {
+  tempSource = 'f';
+  fahrenheit.set(fahrenheitInput.value);
+  const f = parseFloat(fahrenheitInput.value);
+  if (!isNaN(f)) celsius.set(String((((f - 32) * 5) / 9).toFixed(1)));
+});
+
+effect(() => {
+  const c = celsius(), f = fahrenheit();
+  if (tempSource === 'c') {
+    fahrenheitInput.value = f;
+    tempOutput.textContent = c ? `${c}°C = ${f}°F` : 'Enter a temperature';
+  } else if (tempSource === 'f') {
+    celsiusInput.value = c;
+    tempOutput.textContent = f ? `${f}°F = ${c}°C` : 'Enter a temperature';
+  }
+});
+
+// -- Dynamic list --
+const items = signal([]);
+const listEl = document.querySelector('[data-dynamic-list]');
+const listInput = document.querySelector('[data-list-input]');
+
+document.querySelector('[data-action="add-item"]').addEventListener('click', addItem);
+listInput.addEventListener('keydown', e => { if (e.key === 'Enter') addItem(); });
+
+function addItem() {
+  const text = listInput.value.trim();
+  if (!text) return;
+  items.set(prev => [...prev, { id: Date.now(), text }]);
+  listInput.value = '';
+  listInput.focus();
+}
+
+effect(() => {
+  const list = items();
+  listEl.innerHTML = '';
+  if (list.length === 0) {
+    const li = document.createElement('li');
+    li.textContent = 'No items yet — add one above';
+    li.dataset.status = 'idle';
+    listEl.append(li);
+    return;
+  }
+  for (const item of list) {
+    const li = document.createElement('li');
+    const span = document.createElement('span');
+    span.textContent = item.text;
+    const btn = document.createElement('button');
+    btn.textContent = 'remove';
+    btn.dataset.variant = 'danger';
+    btn.addEventListener('click', () => {
+      items.set(prev => prev.filter(i => i.id !== item.id));
+    });
+    li.append(span, btn);
+    listEl.append(li);
+  }
+});
+</script>

@@ -4,12 +4,27 @@
     "bundle": {
       "cache": true,
       "inputs": ["src/runtime/**/*.js"],
-      "outputs": ["examples/express/public/basenative.js"]
+      "outputs": ["examples/express/public/basenative.js"],
+      "dependsOn": []
+    },
+    "serve": {
+      "cache": false,
+      "dependsOn": ["bundle"]
     },
     "test": {
       "cache": true,
-      "inputs": ["src/**/*.js"]
+      "inputs": ["src/**/*.js", "src/**/*.test.js"]
+    },
+    "lint": {
+      "cache": true,
+      "inputs": ["src/**/*.js", "examples/**/*.js"]
     }
   },
-  "defaultBase": "main"
+  "defaultBase": "main",
+  "namedInputs": {
+    "runtime": ["src/runtime/**/*.js"],
+    "server": ["src/server/**/*.js"],
+    "views": ["examples/express/views/**/*.html"],
+    "styles": ["examples/express/public/**/*.css"]
+  }
 }

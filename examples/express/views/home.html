@@ -1,10 +1,28 @@
-<section>
+<section data-hero>
   <h2>Semantic HTML, <em>natively reactive</em></h2>
-  <p>BaseNative brings Angular-inspired control flow to native template elements. No build step. No virtual DOM. No dependencies.</p>
+  <p>BaseNative brings Angular-inspired control flow to native template elements. No build step. No virtual DOM. No dependencies. Just HTML.</p>
+  <nav data-controls>
+    <a href="/playground"><button>Try the playground</button></a>
+    <a href="/docs"><button data-variant="outline">Read the docs</button></a>
+  </nav>
 </section>
+
+<template @if="showStats">
+  <section data-stats>
+    <ul role="list" data-stat-grid>
+      <template @for="stat of stats; track stat.label">
+        <li>
+          <strong>{{ stat.value }}</strong>
+          <span>{{ stat.label }}</span>
+        </li>
+      </template>
+    </ul>
+  </section>
+</template>
 
 <section>
   <h2>Features</h2>
+  <p>Everything you need to build reactive server-rendered interfaces.</p>
   <ul role="list">
     <template @for="feature of features; track feature.id">
       <li>
@@ -15,19 +33,38 @@
   </ul>
 </section>
 
-<template @if="showStats">
-  <section>
-    <h2>By the numbers</h2>
-    <ul role="list">
-      <template @for="stat of stats; track stat.label">
-        <li>
-          <strong>{{ stat.value }}</strong>
-          {{ stat.label }}
-        </li>
-      </template>
-    </ul>
-  </section>
-</template>
+<section data-code-preview>
+  <h2>How it <em>works</em></h2>
+  <p>Write standard HTML with template directives. BaseNative handles the rest — server-side or client-side.</p>
+
+  <article>
+    <header><h3>Reactive counter in 6 lines</h3></header>
+    <pre><code><span class="tag">&lt;button</span> <span class="attr">@click</span>=<span class="str">"count.set(c =&gt; c + 1)"</span><span class="tag">&gt;</span>
+  Clicked {{ count() }} times
+<span class="tag">&lt;/button&gt;</span>
+
+<span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="str">"module"</span><span class="tag">&gt;</span>
+<span class="kw">import</span> { signal, hydrate } <span class="kw">from</span> <span class="str">'basenative'</span>;
+<span class="kw">const</span> count = <span class="fn">signal</span>(<span class="num">0</span>);
+<span class="fn">hydrate</span>(document.body, { count });
+<span class="tag">&lt;/script&gt;</span></code></pre>
+  </article>
+
+  <article>
+    <header><h3>Server-rendered list with Express</h3></header>
+    <pre><code><span class="cmt">// server.js</span>
+<span class="kw">import</span> { render } <span class="kw">from</span> <span class="str">'basenative/server'</span>;
+
+app.<span class="fn">get</span>(<span class="str">'/'</span>, (req, res) =&gt; {
+  <span class="kw">const</span> html = <span class="fn">render</span>(<span class="str">`
+    &lt;template @for="user of users"&gt;
+      &lt;li&gt;{{ user.name }}&lt;/li&gt;
+    &lt;/template&gt;
+  `</span>, { users });
+  res.<span class="fn">send</span>(html);
+});</code></pre>
+  </article>
+</section>
 
 <section>
   <h2>Recent updates</h2>

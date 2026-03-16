@@ -21,16 +21,23 @@ let tasks = [
 ];
 
 // -- Layout helper --
+const navPages = ['home', 'tasks', 'playground', 'docs'];
+
 function renderPage(viewFile, ctx, { title, scripts = '', activePage = '' }) {
   const layout = read('views/layout.html');
   const view = read(`views/${viewFile}`);
   const content = render(view, ctx);
-  return layout
+  let html = layout
     .replace('<!--TITLE-->', title)
     .replace('<!--CONTENT-->', content)
-    .replace('<!--SCRIPTS-->', scripts)
-    .replace('<!--HOME_ARIA-->', activePage === 'home' ? 'aria-current="page"' : '')
-    .replace('<!--TASKS_ARIA-->', activePage === 'tasks' ? 'aria-current="page"' : '');
+    .replace('<!--SCRIPTS-->', scripts);
+  for (const page of navPages) {
+    html = html.replace(
+      `<!--${page.toUpperCase()}_ARIA-->`,
+      activePage === page ? 'aria-current="page"' : ''
+    );
+  }
+  return html;
 }
 
 // -- Routes --
@@ -43,8 +50,10 @@ app.get('/', (req, res) => {
       { id: 2, name: '@for list rendering with track', status: 'done' },
       { id: 3, name: '@switch state matching', status: 'done' },
       { id: 4, name: 'Signal-based reactivity', status: 'done' },
-      { id: 5, name: 'Server-side rendering', status: 'active' },
-      { id: 6, name: 'Client hydration', status: 'active' },
+      { id: 5, name: 'Server-side rendering', status: 'done' },
+      { id: 6, name: 'Client hydration', status: 'done' },
+      { id: 7, name: 'Expression binding (:attr, @event)', status: 'done' },
+      { id: 8, name: 'SSR + hydration example', status: 'done' },
     ],
     stats: [
       { label: 'lines of runtime', value: '~120' },
@@ -56,6 +65,8 @@ app.get('/', (req, res) => {
       { id: 1, text: 'Initial proof of concept complete', date: '2025-01-15' },
       { id: 2, text: 'Server renderer implemented', date: '2025-02-01' },
       { id: 3, text: 'Express example with SSR + hydration', date: '2025-02-15' },
+      { id: 4, text: 'Signals playground added', date: '2025-03-01' },
+      { id: 5, text: 'API documentation page', date: '2025-03-15' },
     ],
   };
   const html = renderPage('home.html', ctx, { title: 'Home', activePage: 'home' });
@@ -67,8 +78,17 @@ app.get('/tasks', (req, res) => {
     tasks,
     tasksJson: JSON.stringify(tasks),
   };
-  const scripts = '';
-  const html = renderPage('tasks.html', ctx, { title: 'Tasks', scripts, activePage: 'tasks' });
+  const html = renderPage('tasks.html', ctx, { title: 'Tasks', activePage: 'tasks' });
+  res.send(html);
+});
+
+app.get('/playground', (req, res) => {
+  const html = renderPage('playground.html', {}, { title: 'Playground', activePage: 'playground' });
+  res.send(html);
+});
+
+app.get('/docs', (req, res) => {
+  const html = renderPage('docs.html', {}, { title: 'API Docs', activePage: 'docs' });
   res.send(html);
 });
 
