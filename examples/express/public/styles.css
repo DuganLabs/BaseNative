@@ -134,6 +134,10 @@
     --counter-output-size: var(--font-size-2xl);
     --log-max-height: 12rem;
     --log-entry-opacity: 0.7;
+
+    /* Container query breakpoints */
+    --cq-compact: 20rem;
+    --cq-medium: 30rem;
   }
 }
 
@@ -209,6 +213,8 @@
     margin-inline: auto;
     padding: var(--space-2xl) var(--space-lg) var(--space-page-block-end);
     inline-size: 100%;
+    container-type: inline-size;
+    container-name: page;
   }
 
   body > footer {
@@ -273,6 +279,11 @@
   }
 
   /* -- Stat grid -- */
+  [data-stats] {
+    container-type: inline-size;
+    container-name: stats;
+  }
+
   ul[role="list"][data-stat-grid] {
     display: grid;
     grid-template-columns: repeat(var(--stat-grid-columns), 1fr);
@@ -322,6 +333,8 @@
     padding: var(--space-lg);
     margin-block-end: var(--space-md);
     transition: border-color var(--duration-med), box-shadow var(--duration-med);
+    container-type: inline-size;
+    container-name: card;
   }
   article:hover { border-color: var(--border-accent); box-shadow: var(--shadow-card); }
 
@@ -532,18 +545,60 @@
 }
 
 @layer states {
-  @media (max-width: 40rem) {
-    :root {
-      --stat-grid-columns: 2;
+  /* -- Container queries for view encapsulation -- */
+
+  /* Stat grid: adapt columns to container width, not viewport */
+  @container stats (max-width: 36rem) {
+    ul[role="list"][data-stat-grid] {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @container stats (max-width: 20rem) {
+    ul[role="list"][data-stat-grid] {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Cards: compact layout when card is narrow */
+  @container card (max-width: 24rem) {
+    header {
+      flex-direction: column;
+      align-items: start;
     }
 
+    pre {
+      font-size: var(--font-size-xs);
+      padding: var(--space-md);
+    }
+  }
+
+  /* Page container: responsive layout */
+  @container page (max-width: 28rem) {
+    [data-hero] {
+      padding-block: var(--space-xl);
+    }
+
+    [data-hero] nav {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  /* List items: stack content when container is narrow */
+  @container card (max-width: 20rem) {
+    ul[role="list"] li {
+      flex-direction: column;
+      align-items: start;
+      gap: var(--space-xs);
+    }
+  }
+
+  /* Viewport fallback for elements outside containers (header/footer) */
+  @media (max-width: 40rem) {
     body > header > nav {
       flex-direction: column;
       gap: var(--space-sm);
-    }
-
-    [data-hero] {
-      padding-block: var(--space-xl);
     }
   }
 
