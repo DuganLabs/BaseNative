@@ -35,10 +35,11 @@
     --success-glow: #c3e88d33;
     --info: #82aaff;
 
-    /* Fonts */
-    --font-display: 'DM Serif Display', Georgia, serif;
-    --font-body: 'Source Serif 4', 'Charter', Georgia, serif;
-    --font-mono: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', monospace;
+    /* Fonts — single family, style-switch via font-stretch */
+    --font-family: 'BaseNative', system-ui, sans-serif;
+    --font-sans: normal;
+    --font-serif: expanded;
+    --font-mono: ultra-condensed;
 
     /* Easing */
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -143,7 +144,8 @@
 
 @layer layout {
   body {
-    font-family: var(--font-body);
+    font-family: var(--font-family);
+    font-stretch: var(--font-serif);
     background: var(--surface-0);
     color: var(--text-0);
     line-height: var(--line-height-body);
@@ -178,7 +180,8 @@
   }
 
   body > header h1 {
-    font-family: var(--font-display);
+    font-family: var(--font-family);
+    font-stretch: var(--font-serif);
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-normal);
     letter-spacing: var(--letter-spacing-tight);
@@ -196,7 +199,8 @@
   }
 
   body > header a {
-    font-family: var(--font-mono);
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
     font-size: var(--font-size-sm);
     color: var(--text-1);
     text-decoration: none;
@@ -224,7 +228,8 @@
   }
 
   body > footer p {
-    font-family: var(--font-mono);
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
     font-size: var(--font-size-xs);
     color: var(--text-2);
   }
@@ -235,7 +240,8 @@
   section { margin-block-end: var(--space-2xl); }
 
   section > h2 {
-    font-family: var(--font-display);
+    font-family: var(--font-family);
+    font-stretch: var(--font-serif);
     font-size: var(--font-size-hero);
     font-weight: var(--font-weight-normal);
     letter-spacing: var(--letter-spacing-tight);
@@ -312,13 +318,15 @@
   }
 
   ul[role="list"][data-stat-grid] strong {
-    font-family: var(--font-display);
+    font-family: var(--font-family);
+    font-stretch: var(--font-serif);
     font-size: var(--stat-value-size);
     color: var(--accent);
   }
 
   ul[role="list"][data-stat-grid] span {
-    font-family: var(--font-mono);
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
     font-size: var(--font-size-sm);
     color: var(--text-2);
     text-transform: uppercase;
@@ -346,7 +354,8 @@
   }
 
   article > header h3 {
-    font-family: var(--font-mono);
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-semibold);
     color: var(--accent);
@@ -375,7 +384,8 @@
   /* -- Lists -- */
   ul[role="list"] { list-style: none; display: flex; flex-direction: column; gap: var(--space-xs); }
   ul[role="list"] li {
-    font-family: var(--font-mono);
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
     font-size: var(--font-size-base);
     padding: var(--space-sm) var(--space-md);
     background: var(--surface-2);
@@ -391,7 +401,8 @@
   /* -- Status badges -- */
   [data-status] {
     display: inline-block;
-    font-family: var(--font-mono);
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
     font-size: var(--font-size-xs);
     padding: var(--space-xs) var(--space-sm);
     border-radius: var(--radius-pill);
@@ -405,7 +416,8 @@
 
   /* -- Buttons -- */
   button {
-    font-family: var(--font-mono);
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
     font-size: var(--font-size-sm);
     padding: var(--space-sm) var(--space-md);
     background: var(--surface-3);
@@ -433,7 +445,8 @@
 
   /* -- Inputs -- */
   input[type="text"] {
-    font-family: var(--font-mono);
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
     font-size: var(--font-size-base);
     padding: var(--space-sm) var(--space-md);
     background: var(--surface-0);
@@ -452,14 +465,15 @@
   /* -- Output -- */
   output {
     display: block;
-    font-family: var(--font-mono);
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
     font-size: var(--font-size-sm);
     color: var(--text-1);
     margin-block-end: var(--space-md);
   }
 
   /* -- Code blocks -- */
-  pre, code { font-family: var(--font-mono); }
+  pre, code { font-family: var(--font-family); font-stretch: var(--font-mono); }
   pre {
     font-size: var(--font-size-sm);
     line-height: var(--line-height-code);
@@ -490,7 +504,8 @@
   }
 
   label abbr {
-    font-family: var(--font-mono);
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
     font-size: var(--font-size-xs);
     color: var(--text-2);
     text-decoration: none;
@@ -499,7 +514,8 @@
 
   /* -- Playground specifics -- */
   [data-counter-output] {
-    font-family: var(--font-display);
+    font-family: var(--font-family);
+    font-stretch: var(--font-serif);
     font-size: var(--counter-output-size);
     display: block;
     text-align: center;
@@ -532,12 +548,14 @@
   }
 
   [data-greeting-output] {
-    font-family: var(--font-display);
+    font-family: var(--font-family);
+    font-stretch: var(--font-serif);
     font-size: var(--font-size-xl);
   }
 
   [data-temp-output] {
-    font-family: var(--font-display);
+    font-family: var(--font-family);
+    font-stretch: var(--font-serif);
     font-size: var(--font-size-lg);
     color: var(--accent);
   }
