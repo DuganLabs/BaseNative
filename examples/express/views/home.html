@@ -1,0 +1,45 @@
+<section>
+  <h2>Semantic HTML, <em>natively reactive</em></h2>
+  <p>BaseNative brings Angular-inspired control flow to native template elements. No build step. No virtual DOM. No dependencies.</p>
+</section>
+
+<section>
+  <h2>Features</h2>
+  <ul role="list">
+    <template @for="feature of features; track feature.id">
+      <li>
+        {{ feature.name }}
+        <mark data-status="{{ feature.status }}">{{ feature.status }}</mark>
+      </li>
+    </template>
+  </ul>
+</section>
+
+<template @if="showStats">
+  <section>
+    <h2>By the numbers</h2>
+    <ul role="list">
+      <template @for="stat of stats; track stat.label">
+        <li>
+          <strong>{{ stat.value }}</strong>
+          {{ stat.label }}
+        </li>
+      </template>
+    </ul>
+  </section>
+</template>
+
+<section>
+  <h2>Recent updates</h2>
+  <ul role="list">
+    <template @for="update of updates; track update.id">
+      <li>
+        {{ update.text }}
+        <time>{{ update.date }}</time>
+      </li>
+    </template>
+    <template @empty>
+      <li>No updates yet</li>
+    </template>
+  </ul>
+</section>

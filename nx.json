@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "targetDefaults": {
+    "bundle": {
+      "cache": true,
+      "inputs": ["src/runtime/**/*.js"],
+      "outputs": ["examples/express/public/basenative.js"]
+    },
+    "test": {
+      "cache": true,
+      "inputs": ["src/**/*.js"]
+    }
+  },
+  "defaultBase": "main"
+}

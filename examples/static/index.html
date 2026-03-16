@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BaseNative — Native Template Reactivity</title>
+<style>
+@layer reset, tokens, layout, components, states;
+
+@layer reset {
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { hanging-punctuation: first last; scroll-behavior: smooth; }
+}
+
+@layer tokens {
+  :root {
+    --surface-0: #0a0a0c;
+    --surface-1: #131318;
+    --surface-2: #1a1a22;
+    --surface-3: #24242f;
+    --border: #2a2a38;
+    --border-accent: #3d3d52;
+    --text-0: #e8e6f0;
+    --text-1: #b0adc0;
+    --text-2: #7a7890;
+    --accent: #e8a44a;
+    --accent-dim: #b07a30;
+    --accent-glow: #e8a44a33;
+    --accent-glow-strong: #e8a44a55;
+    --syntax-keyword: #c792ea;
+    --syntax-tag: #89ddff;
+    --syntax-string: #c3e88d;
+    --syntax-punct: #676e95;
+    --danger: #f07178;
+    --danger-glow: #f0717833;
+    --success: #c3e88d;
+    --success-glow: #c3e88d33;
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body: 'Source Serif 4', 'Charter', Georgia, serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', monospace;
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-out-back: cubic-bezier(0.34, 1.3, 0.64, 1);
+    --duration-fast: 0.15s;
+    --duration-med: 0.3s;
+    --duration-slow: 0.5s;
+    --line-height-body: 1.65;
+    --line-height-code: 1.7;
+    --line-height-tight: 1.55;
+    --line-height-snug: 1.5;
+    --size-inline-max: 72rem;
+    --size-text-max: 52ch;
+    --size-demo-min: 20rem;
+    --size-principle-min: 18rem;
+    --size-dot: 0.45rem;
+    --size-header-line: 6rem;
+    --size-section-line: 3rem;
+    --size-output-min-block: 6rem;
+    --space-xs: 0.1em;
+    --space-sm: 0.2rem;
+    --space-md: 0.5rem;
+    --space-lg: 1rem;
+    --space-xl: 1.25rem;
+    --space-2xl: 1.5rem;
+    --space-3xl: 2rem;
+    --space-4xl: 2.5rem;
+    --space-5xl: 3.5rem;
+    --space-6xl: 4rem;
+    --space-page-block-end: 6rem;
+    --radius-sm: 0.15rem;
+    --radius-md: 0.25rem;
+    --radius-lg: 0.5rem;
+    --radius-pill: 1rem;
+    --font-size-2xs: 0.7rem;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.78rem;
+    --font-size-md: 0.8rem;
+    --font-size-base: 0.85rem;
+    --font-size-lg: 0.9rem;
+    --font-size-xl: 0.95em;
+    --font-size-2xl: 1.1rem;
+    --font-size-hero: clamp(2.2rem, 5vw, 3.6rem);
+    --letter-spacing-tight: -0.02em;
+    --letter-spacing-wide: 0.04em;
+    --letter-spacing-wider: 0.06em;
+    --letter-spacing-widest: 0.12em;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --shadow-card: 0 4px 24px -4px #0004;
+    --shadow-hover: 0 8px 32px -8px #0003;
+    --shadow-btn: 0 0 16px -4px var(--accent-glow-strong);
+    --shadow-input: 0 0 0 3px var(--accent-glow);
+    --shadow-status: 0 0 8px -2px;
+    --shadow-dot: 0 0 6px var(--accent-glow-strong);
+    --noise-opacity: 0.025;
+    --noise-size: 200px;
+    --z-noise: 9999;
+    --status-active-bg: #c3e88d18;
+    --status-idle-bg: #e8a44a18;
+    --status-error-bg: #f0717818;
+    --status-pending-bg: #7a789018;
+    --border-width: 1px;
+    --border-inline-start-width: 2px;
+    --gradient-border-angle: 135deg;
+    --tab-size: 2;
+    --ripple-x: 50%;
+    --ripple-y: 50%;
+    --anim-stagger-1: 0s;
+    --anim-stagger-2: 0.04s;
+    --anim-stagger-3: 0.08s;
+    --anim-stagger-4: 0.12s;
+    --anim-stagger-5: 0.16s;
+    --anim-card-stagger-2: 0.08s;
+    --anim-card-stagger-3: 0.16s;
+    --anim-card-stagger-4: 0.24s;
+    --anim-principle-stagger-2: 0.07s;
+    --anim-principle-stagger-3: 0.14s;
+    --anim-principle-stagger-4: 0.21s;
+    --anim-hero-title-delay: 0.1s;
+    --anim-hero-subtitle-delay: 0.3s;
+    --anim-header-line-delay: 0.5s;
+    --anim-badge-delay: 0.6s;
+    --translate-card-in: 2rem;
+    --translate-principle-in: 1.5rem;
+    --translate-hero-in: 1rem;
+    --translate-subtitle-in: 0.8rem;
+    --translate-list-in: -0.8rem;
+    --translate-hover: 0.2rem;
+    --translate-hover-up: -2px;
+    --scale-active: 0.95;
+    --scale-badge-in: 0.8;
+    --scale-list-in: 0.97;
+    --scale-hover: 1.05;
+    --scale-dot-pulse: 1.3;
+    --blur-hero-in: 4px;
+    --opacity-dot-pulse: 0.6;
+    --opacity-glow-hover: 1;
+    --anim-duration-hero: 0.8s;
+    --anim-duration-line: 1s;
+    --anim-duration-dot: 2.5s;
+    --anim-duration-list: 0.35s;
+    --anim-duration-badge: 0.3s;
+    --anim-duration-reveal: 0.6s;
+    --anim-duration-principle: 0.5s;
+    --anim-duration-bar: 0.4s;
+    --active-duration: 0.06s;
+    --radial-gradient-end: 60%;
+    --gradient-glow-end: 50%;
+    --intersection-threshold: 0.1;
+    --intersection-margin: 0px 0px -40px 0px;
+  }
+}
+
+@layer layout {
+  body {
+    font-family: var(--font-body);
+    background: var(--surface-0);
+    color: var(--text-0);
+    line-height: var(--line-height-body);
+    min-block-size: 100dvh;
+    overflow-x: hidden;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: var(--noise-opacity);
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: var(--noise-size);
+    z-index: var(--z-noise);
+  }
+
+  main {
+    max-inline-size: var(--size-inline-max);
+    margin-inline: auto;
+    padding: var(--space-3xl) var(--space-2xl) var(--space-page-block-end);
+  }
+
+  main > header {
+    padding-block: var(--space-6xl) var(--space-4xl);
+    border-block-end: var(--border-width) solid var(--border);
+    margin-block-end: var(--space-5xl);
+    position: relative;
+  }
+
+  main > header::after {
+    content: '';
+    position: absolute;
+    inset-block-end: calc(-1 * var(--border-width));
+    inset-inline-start: 0;
+    inline-size: var(--size-header-line);
+    block-size: var(--border-width);
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow-strong);
+    animation: header-line-grow var(--anim-duration-line) var(--anim-header-line-delay) var(--ease-out-expo) both;
+  }
+
+  main > header h1 {
+    font-family: var(--font-display);
+    font-size: var(--font-size-hero);
+    font-weight: var(--font-weight-normal);
+    letter-spacing: var(--letter-spacing-tight);
+    margin-block-end: var(--space-md);
+    opacity: 0;
+    animation: hero-title var(--anim-duration-hero) var(--anim-hero-title-delay) var(--ease-out-expo) both;
+  }
+
+  main > header h1 em {
+    font-style: normal;
+    color: var(--accent);
+    text-shadow: 0 0 30px var(--accent-glow);
+  }
+
+  main > header p {
+    font-size: var(--font-size-2xl);
+    color: var(--text-1);
+    max-inline-size: var(--size-text-max);
+    opacity: 0;
+    animation: hero-subtitle var(--anim-duration-hero) var(--anim-hero-subtitle-delay) var(--ease-out-expo) both;
+  }
+
+  main > header p code {
+    color: var(--syntax-tag);
+    font-size: var(--font-size-xl);
+    padding: var(--space-xs) 0.35em;
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    transition: color var(--duration-med), background var(--duration-med);
+  }
+  main > header p code:hover { color: var(--accent); background: var(--surface-3); }
+
+  section { margin-block-end: var(--space-5xl); }
+
+  section > h2 {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-widest);
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-block-end: var(--space-xl);
+    padding-block-end: var(--space-md);
+    border-block-end: var(--border-width) solid var(--border);
+    position: relative;
+  }
+
+  section > h2::after {
+    content: '';
+    position: absolute;
+    inset-block-end: calc(-1 * var(--border-width));
+    inset-inline-start: 0;
+    inline-size: 0;
+    block-size: var(--border-width);
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+    transition: inline-size var(--anim-duration-reveal) var(--ease-out-expo);
+  }
+  section.revealed > h2::after { inline-size: var(--size-section-line); }
+}
+
+@layer components {
+  nav[aria-label="Interactive demonstrations"] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(var(--size-demo-min), 1fr));
+    gap: var(--space-2xl);
+  }
+
+  article[data-demo] {
+    background: var(--surface-1);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    position: relative;
+    opacity: 0;
+    translate: 0 var(--translate-card-in);
+    transition: opacity var(--anim-duration-reveal) var(--ease-out-expo), translate var(--anim-duration-reveal) var(--ease-out-expo), border-color var(--duration-med), box-shadow var(--duration-med);
+  }
+  .revealed article[data-demo] { opacity: 1; translate: 0 0; }
+  .revealed article[data-demo]:nth-child(2) { transition-delay: var(--anim-card-stagger-2); }
+  .revealed article[data-demo]:nth-child(3) { transition-delay: var(--anim-card-stagger-3); }
+  .revealed article[data-demo]:nth-child(4) { transition-delay: var(--anim-card-stagger-4); }
+
+  article[data-demo]::before {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--border-width));
+    border-radius: var(--radius-lg);
+    padding: var(--border-width);
+    background: linear-gradient(var(--gradient-border-angle), transparent 40%, var(--accent-glow) var(--gradient-glow-end), transparent var(--radial-gradient-end));
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity var(--duration-med);
+    pointer-events: none;
+  }
+  article[data-demo]:hover::before, article[data-demo]:focus-within::before { opacity: var(--opacity-glow-hover); }
+  article[data-demo]:hover, article[data-demo]:focus-within { border-color: var(--border-accent); box-shadow: var(--shadow-card), 0 0 0 var(--border-width) var(--border-accent); }
+
+  article[data-demo] > header {
+    padding: 0.75rem var(--space-lg);
+    border-block-end: var(--border-width) solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    background: var(--surface-2);
+  }
+
+  article[data-demo] > header::before {
+    content: '';
+    inline-size: var(--size-dot);
+    block-size: var(--size-dot);
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    box-shadow: var(--shadow-dot);
+    animation: pulse-dot var(--anim-duration-dot) ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  article[data-demo] > header h3 {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-1);
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  [data-role="output"] { padding: var(--space-xl); min-block-size: var(--size-output-min-block); }
+  [data-role="source"] { padding: var(--space-lg); background: var(--surface-0); border-block-start: var(--border-width) solid var(--border); overflow-x: auto; position: relative; }
+  [data-role="source"]::before { content: ''; position: absolute; inset-block-start: 0; inset-inline-start: 0; inline-size: 100%; block-size: var(--border-width); background: linear-gradient(90deg, var(--accent-glow) 0%, transparent var(--gradient-glow-end)); }
+
+  pre, code { font-family: var(--font-mono); }
+  pre { font-size: var(--font-size-sm); line-height: var(--line-height-code); color: var(--text-1); white-space: pre; tab-size: var(--tab-size); }
+  code .kw { color: var(--syntax-keyword); font-weight: var(--font-weight-semibold); transition: text-shadow var(--duration-med); }
+  code .tag { color: var(--syntax-tag); transition: text-shadow var(--duration-med); }
+  code .str { color: var(--syntax-string); transition: text-shadow var(--duration-med); }
+  code .p { color: var(--syntax-punct); }
+  code .cm { color: var(--text-2); font-style: italic; }
+  [data-role="source"]:hover code .kw { text-shadow: 0 0 10px color-mix(in srgb, var(--syntax-keyword) 40%, transparent); }
+  [data-role="source"]:hover code .tag { text-shadow: 0 0 10px color-mix(in srgb, var(--syntax-tag) 30%, transparent); }
+  [data-role="source"]:hover code .str { text-shadow: 0 0 10px color-mix(in srgb, var(--syntax-string) 30%, transparent); }
+
+  button {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-md);
+    padding: 0.4rem 0.9rem;
+    background: var(--surface-3);
+    color: var(--text-0);
+    border: var(--border-width) solid var(--border-accent);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: background var(--duration-fast), border-color var(--duration-fast), color var(--duration-fast), box-shadow var(--duration-med), scale var(--duration-fast) var(--ease-spring);
+  }
+  button::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at var(--ripple-x) var(--ripple-y), var(--accent-glow-strong) 0%, transparent var(--radial-gradient-end)); opacity: 0; transition: opacity var(--duration-med); }
+  button:hover { background: var(--accent-dim); border-color: var(--accent); color: var(--surface-0); box-shadow: var(--shadow-btn); }
+  button:hover::after { opacity: var(--opacity-glow-hover); }
+  button:active { scale: var(--scale-active); transition-duration: var(--active-duration); }
+  button:focus-visible { outline: var(--border-inline-start-width) solid var(--accent); outline-offset: var(--border-inline-start-width); }
+  button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 12px -4px var(--accent-glow-strong); }
+
+  input[type="text"] {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-base);
+    padding: 0.35rem var(--space-md);
+    background: var(--surface-0);
+    color: var(--text-0);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-md);
+    outline: none;
+    transition: border-color var(--duration-med), box-shadow var(--duration-med);
+  }
+  input[type="text"]:focus { border-color: var(--accent); box-shadow: var(--shadow-input), var(--shadow-btn); }
+  input[type="text"]::placeholder { color: var(--text-2); transition: color var(--duration-med); }
+  input[type="text"]:focus::placeholder { color: var(--accent-dim); }
+
+  ul[role="list"] { list-style: none; display: flex; flex-direction: column; gap: 0.35rem; }
+  ul[role="list"] li {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-base);
+    padding: 0.4rem 0.7rem;
+    background: var(--surface-2);
+    border-radius: var(--radius-md);
+    border-inline-start: var(--border-inline-start-width) solid var(--accent-dim);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: list-item-in var(--anim-duration-list) var(--ease-out-back) both;
+    transition: background var(--duration-fast), border-color var(--duration-fast), translate var(--duration-fast) var(--ease-out-expo);
+  }
+  ul[role="list"] li:hover { background: var(--surface-3); border-inline-start-color: var(--accent); translate: var(--translate-hover) 0; }
+  ul[role="list"] li:nth-child(1) { animation-delay: var(--anim-stagger-1); }
+  ul[role="list"] li:nth-child(2) { animation-delay: var(--anim-stagger-2); }
+  ul[role="list"] li:nth-child(3) { animation-delay: var(--anim-stagger-3); }
+  ul[role="list"] li:nth-child(4) { animation-delay: var(--anim-stagger-4); }
+  ul[role="list"] li:nth-child(5) { animation-delay: var(--anim-stagger-5); }
+
+  [data-status] { display: inline-block; font-family: var(--font-mono); font-size: var(--font-size-xs); padding: var(--space-sm) var(--space-md); border-radius: var(--radius-pill); font-weight: var(--font-weight-semibold); animation: badge-pop var(--anim-duration-badge) var(--ease-spring) both; transition: scale var(--duration-fast) var(--ease-spring); }
+  [data-status]:hover { scale: var(--scale-hover); }
+  [data-status="active"] { background: var(--status-active-bg); color: var(--success); box-shadow: var(--shadow-status) var(--success-glow); }
+  [data-status="idle"] { background: var(--status-idle-bg); color: var(--accent); box-shadow: var(--shadow-status) var(--accent-glow); }
+  [data-status="error"] { background: var(--status-error-bg); color: var(--danger); box-shadow: var(--shadow-status) var(--danger-glow); }
+  [data-status="done"] { background: var(--status-active-bg); color: var(--success); }
+  [data-status="pending"] { background: var(--status-pending-bg); color: var(--text-2); }
+
+  [data-role="output"] p { font-family: var(--font-mono); font-size: var(--font-size-base); animation: list-item-in 0.25s var(--ease-out-back) both; }
+  [data-role="output"] p[data-visible="true"] { color: var(--success); }
+  [data-role="output"] p[data-visible="false"] { color: var(--text-2); font-style: italic; }
+
+  nav[data-controls] { display: flex; gap: var(--space-md); flex-wrap: wrap; margin-block-start: 0.75rem; }
+  nav[data-controls="filter"] { gap: 0.35rem; margin-block-end: 0.75rem; margin-block-start: 0; }
+  nav[data-controls="filter"] button { font-size: var(--font-size-2xs); padding: var(--space-sm) var(--space-md); }
+
+  output { display: block; font-family: var(--font-mono); font-size: var(--font-size-sm); color: var(--text-1); margin-block-end: 0.75rem; }
+
+  nav[aria-label="Core principles"] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(var(--size-principle-min), 1fr));
+    gap: var(--space-lg);
+  }
+  nav[aria-label="Core principles"] > aside {
+    padding: var(--space-xl);
+    background: var(--surface-1);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-lg);
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    translate: 0 var(--translate-principle-in);
+    transition: opacity var(--anim-duration-principle) var(--ease-out-expo), translate var(--anim-duration-principle) var(--ease-out-expo), border-color var(--duration-med), box-shadow var(--duration-med);
+  }
+  .revealed nav[aria-label="Core principles"] > aside { opacity: 1; translate: 0 0; }
+  .revealed nav[aria-label="Core principles"] > aside:nth-child(1) { transition-delay: var(--anim-stagger-1); }
+  .revealed nav[aria-label="Core principles"] > aside:nth-child(2) { transition-delay: var(--anim-principle-stagger-2); }
+  .revealed nav[aria-label="Core principles"] > aside:nth-child(3) { transition-delay: var(--anim-principle-stagger-3); }
+  .revealed nav[aria-label="Core principles"] > aside:nth-child(4) { transition-delay: var(--anim-principle-stagger-4); }
+  nav[aria-label="Core principles"] > aside::before { content: ''; position: absolute; inset-block-start: 0; inset-inline-start: 0; inline-size: 100%; block-size: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-dim)); transform: scaleX(0); transform-origin: left; transition: transform var(--anim-duration-bar) var(--ease-out-expo); }
+  nav[aria-label="Core principles"] > aside:hover::before { transform: scaleX(1); }
+  nav[aria-label="Core principles"] > aside:hover { border-color: var(--border-accent); box-shadow: var(--shadow-hover); translate: 0 var(--translate-hover-up) !important; }
+  nav[aria-label="Core principles"] > aside > strong { display: block; font-family: var(--font-mono); font-size: var(--font-size-xs); color: var(--accent); letter-spacing: var(--letter-spacing-wider); margin-block-end: var(--space-md); }
+  nav[aria-label="Core principles"] > aside > p { font-size: var(--font-size-lg); color: var(--text-1); line-height: var(--line-height-tight); }
+  nav[aria-label="Core principles"] > aside > p code { color: var(--syntax-tag); font-size: var(--font-size-base); padding: 0.05em 0.3em; background: var(--surface-2); border-radius: var(--radius-sm); transition: color var(--duration-med), background var(--duration-med); }
+  nav[aria-label="Core principles"] > aside:hover > p code { color: var(--accent); background: var(--surface-3); }
+
+  figure { padding: var(--space-2xl); background: var(--surface-1); border: var(--border-width) solid var(--border); border-radius: var(--radius-lg); overflow-x: auto; opacity: 0; translate: 0 var(--translate-principle-in); transition: opacity var(--anim-duration-reveal) var(--ease-out-expo), translate var(--anim-duration-reveal) var(--ease-out-expo), border-color var(--duration-med), box-shadow var(--duration-med); }
+  .revealed figure { opacity: 1; translate: 0 0; }
+  figure:hover { border-color: var(--border-accent); box-shadow: var(--shadow-card); }
+  figure pre { font-size: 0.72rem; color: var(--text-2); line-height: var(--line-height-snug); transition: color var(--duration-slow); }
+  figure:hover pre { color: var(--text-1); }
+  figure pre em { font-style: normal; color: var(--accent); transition: text-shadow var(--duration-med); }
+  figure:hover pre em { text-shadow: 0 0 12px var(--accent-glow); }
+  figcaption { font-family: var(--font-mono); font-size: var(--font-size-2xs); color: var(--text-2); margin-block-start: 0.75rem; text-align: end; transition: color var(--duration-med); }
+  figure:hover figcaption { color: var(--text-1); }
+
+  small[data-badge] { display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--font-mono); font-size: var(--font-size-xs); color: var(--text-2); padding: 0.3rem 0.7rem; background: var(--surface-2); border: var(--border-width) solid var(--border); border-radius: var(--radius-pill); margin-block-start: var(--space-lg); opacity: 0; animation: hero-subtitle var(--anim-duration-hero) var(--anim-badge-delay) var(--ease-out-expo) both; transition: border-color var(--duration-med), color var(--duration-med); }
+  small[data-badge]:hover { border-color: var(--accent-dim); color: var(--text-1); }
+  small[data-badge] strong { color: var(--accent); font-weight: var(--font-weight-semibold); }
+}
+
+@layer states {
+  @keyframes hero-title { from { opacity: 0; translate: 0 var(--translate-hero-in); filter: blur(var(--blur-hero-in)); } to { opacity: 1; translate: 0 0; filter: blur(0); } }
+  @keyframes hero-subtitle { from { opacity: 0; translate: 0 var(--translate-subtitle-in); } to { opacity: 1; translate: 0 0; } }
+  @keyframes header-line-grow { from { inline-size: 0; opacity: 0; } to { inline-size: var(--size-header-line); opacity: 1; } }
+  @keyframes pulse-dot { 0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--accent-glow); scale: 1; } 50% { opacity: var(--opacity-dot-pulse); box-shadow: 0 0 10px var(--accent-glow-strong); scale: var(--scale-dot-pulse); } }
+  @keyframes list-item-in { from { opacity: 0; translate: var(--translate-list-in) 0; scale: var(--scale-list-in); } to { opacity: 1; translate: 0 0; scale: 1; } }
+  @keyframes badge-pop { from { opacity: 0; scale: var(--scale-badge-in); } to { opacity: 1; scale: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+    nav[aria-label="Core principles"] > aside, figure, article[data-demo] { opacity: 1 !important; translate: 0 !important; }
+  }
+}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<main>
+
+  <header>
+    <h1>Base<em>Native</em></h1>
+    <p>Angular-inspired control flow over native <code>&lt;template&gt;</code> elements. Semantic HTML as truth. Modern CSS as design. A sprinkle of JS as glue.</p>
+    <small data-badge><strong>~120</strong> lines of runtime · zero dependencies · no build step</small>
+  </header>
+
+  <section aria-labelledby="philosophy-heading">
+    <h2 id="philosophy-heading">Philosophy</h2>
+    <nav aria-label="Core principles">
+      <aside>
+        <strong>HTML is the component</strong>
+        <p>Semantic elements are your API surface. No wrapper elements. No synthetic component tags. <code>&lt;article&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;nav&gt;</code> — they already mean something.</p>
+      </aside>
+      <aside>
+        <strong>CSS is the design system</strong>
+        <p>Cascade layers, container queries, <code>:has()</code>, logical properties. The platform solved layout and state-driven styling. Let it.</p>
+      </aside>
+      <aside>
+        <strong>Templates are the primitive</strong>
+        <p>The <code>&lt;template&gt;</code> element is the browser's own inert fragment. Clone it, bind it, flow-control it — no virtual DOM needed.</p>
+      </aside>
+      <aside>
+        <strong>Control flow is the DX</strong>
+        <p><code>@if</code>, <code>@for</code>, <code>@switch</code> — Angular proved this syntax reads like markup, not code. We bring it to native templates.</p>
+      </aside>
+    </nav>
+  </section>
+
+  <section aria-labelledby="arch-heading">
+    <h2 id="arch-heading">Architecture</h2>
+    <figure>
+      <pre><code>  ┌─────────────────────────────────────────────────────────────────┐
+  │                    <em>Semantic HTML Document</em>                       │
+  │                                                                 │
+  │   &lt;template @if="state.visible"&gt;                               │
+  │     &lt;article&gt;                                                   │
+  │       &lt;h3&gt;{{ state.title }}&lt;/h3&gt;                               │
+  │       &lt;template @for="item of state.items; track item.id"&gt;    │
+  │         &lt;li&gt;{{ item.name }}&lt;/li&gt;                               │
+  │       &lt;/template&gt;                                               │
+  │     &lt;/article&gt;                                                  │
+  │   &lt;/template&gt;                                                   │
+  │                                                                 │
+  ├──────────────────────┬──────────────────────────────────────────┤
+  │   <em>Reactive Signals</em>    │         <em>Template Compiler</em>              │
+  │                      │                                          │
+  │   signal(value)      │   parse @if / @for / @switch            │
+  │   computed(fn)       │   bind {{ expressions }}                 │
+  │   effect(fn)         │   attach event handlers                  │
+  │                      │   diff @for with track key               │
+  │                      │                                          │
+  ├──────────────────────┴──────────────────────────────────────────┤
+  │                      <em>Native DOM</em>                                │
+  │          cloneNode · insertBefore · removeChild                 │
+  │          No virtual DOM · No synthetic events                   │
+  └─────────────────────────────────────────────────────────────────┘</code></pre>
+      <figcaption>Zero abstraction layers between your markup and the browser</figcaption>
+    </figure>
+  </section>
+
+  <section aria-labelledby="demos-heading">
+    <h2 id="demos-heading">Live Demos</h2>
+    <nav aria-label="Interactive demonstrations">
+
+      <article data-demo="if">
+        <header><h3>@if — Conditional Rendering</h3></header>
+        <section data-role="output">
+          <template @if="visible()">
+            <p data-visible="true">{{ message() }}</p>
+          </template>
+          <template @else>
+            <p data-visible="false">(nothing to see)</p>
+          </template>
+          <nav data-controls>
+            <button @click="visible.set(!visible())">Toggle Visibility</button>
+            <input type="text" :value="message()" @input="message.set($event.target.value)" style="flex: 1; min-inline-size: 10rem;">
+          </nav>
+        </section>
+        <section data-role="source">
+          <pre><code><span class="tag">&lt;template</span> <span class="kw">@if</span>=<span class="str">"visible()"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;p&gt;</span><span class="p">{{</span> message() <span class="p">}}</span><span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+<span class="tag">&lt;template</span> <span class="kw">@else</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;p&gt;</span><span class="cm">(nothing to see)</span><span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/template&gt;</span></code></pre>
+        </section>
+      </article>
+
+      <article data-demo="for">
+        <header><h3>@for — List Rendering</h3></header>
+        <section data-role="output">
+          <ul role="list">
+            <template @for="item of items(); track item.id">
+              <li>{{ '#' + ($index + 1) + '  ' + item.name }}</li>
+            </template>
+            <template @empty>
+              <li data-visible="false">No items yet — add one below</li>
+            </template>
+          </ul>
+          <nav data-controls>
+            <input type="text" placeholder="New item..." style="flex: 1;" @keydown="if($event.key==='Enter')addItem($event.target)">
+            <button @click="addItem($el.parentElement.querySelector('input'))">Add</button>
+            <button @click="items.set([])">Clear</button>
+          </nav>
+        </section>
+        <section data-role="source">
+          <pre><code><span class="tag">&lt;template</span> <span class="kw">@for</span>=<span class="str">"item of items(); track item.id"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;li&gt;</span><span class="p">{{</span> item.name <span class="p">}}</span><span class="tag">&lt;/li&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+<span class="tag">&lt;template</span> <span class="kw">@empty</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;li&gt;</span><span class="cm">No items yet</span><span class="tag">&lt;/li&gt;</span>
+<span class="tag">&lt;/template&gt;</span></code></pre>
+        </section>
+      </article>
+
+      <article data-demo="switch">
+        <header><h3>@switch — State Matching</h3></header>
+        <section data-role="output">
+          <template @switch="status()">
+            <template @case="'active'">
+              <p><mark data-status="active">active</mark> System operational. All signals nominal.</p>
+            </template>
+            <template @case="'idle'">
+              <p><mark data-status="idle">idle</mark> Waiting for input...</p>
+            </template>
+            <template @case="'error'">
+              <p><mark data-status="error">error</mark> Connection lost. Retry?</p>
+            </template>
+          </template>
+          <nav data-controls>
+            <template @for="s of statuses">
+              <button @click="status.set(s)" :aria-pressed="String(status() === s)">{{ s }}</button>
+            </template>
+          </nav>
+        </section>
+        <section data-role="source">
+          <pre><code><span class="tag">&lt;template</span> <span class="kw">@switch</span>=<span class="str">"status()"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;template</span> <span class="kw">@case</span>=<span class="str">"'active'"</span><span class="tag">&gt;</span> ... <span class="tag">&lt;/template&gt;</span>
+  <span class="tag">&lt;template</span> <span class="kw">@case</span>=<span class="str">"'idle'"</span><span class="tag">&gt;</span>   ... <span class="tag">&lt;/template&gt;</span>
+  <span class="tag">&lt;template</span> <span class="kw">@case</span>=<span class="str">"'error'"</span><span class="tag">&gt;</span>  ... <span class="tag">&lt;/template&gt;</span>
+<span class="tag">&lt;/template&gt;</span></code></pre>
+        </section>
+      </article>
+
+      <article data-demo="nested">
+        <header><h3>Nested — Real-world Composition</h3></header>
+        <section data-role="output">
+          <output>{{ stats().total }} tasks — {{ stats().done }} done · {{ stats().active }} active · {{ stats().pending }} pending</output>
+          <nav data-controls="filter">
+            <template @for="f of filters">
+              <button @click="filter.set(f)" :aria-pressed="String(filter() === f)">{{ f }}</button>
+            </template>
+          </nav>
+          <ul role="list">
+            <template @for="task of filtered(); track task.id">
+              <li>
+                {{ task.text }}
+                <mark data-status="{{ task.status }}">{{ task.status }}</mark>
+              </li>
+            </template>
+            <template @empty>
+              <li data-visible="false">No matching tasks</li>
+            </template>
+          </ul>
+        </section>
+        <section data-role="source">
+          <pre><code><span class="kw">@if</span> + <span class="kw">@for</span> + <span class="kw">@switch</span>
+<span class="cm">// composable at any depth</span>
+<span class="cm">// all over native &lt;template&gt;</span></code></pre>
+        </section>
+      </article>
+
+    </nav>
+  </section>
+
+</main>
+
+<script type="module">
+import { signal, computed, effect, hydrate } from '../../src/runtime/index.js';
+
+const visible = signal(true);
+const message = signal('The template is alive.');
+
+let _nextId = 4;
+const items = signal([
+  { id: 1, name: 'Semantic HTML' },
+  { id: 2, name: 'Cascade Layers' },
+  { id: 3, name: 'Template Cloning' },
+]);
+function addItem(input) {
+  const name = input.value.trim();
+  if (!name) return;
+  items.set(prev => [...prev, { id: _nextId++, name }]);
+  input.value = '';
+  input.focus();
+}
+
+const status = signal('active');
+const statuses = ['active', 'idle', 'error'];
+
+const tasks = signal([
+  { id: 1, text: 'Design token system', status: 'done' },
+  { id: 2, text: 'Signal reactivity', status: 'done' },
+  { id: 3, text: '@for with track', status: 'active' },
+  { id: 4, text: '@defer loading', status: 'pending' },
+]);
+const filter = signal('all');
+const filters = ['all', 'done', 'active', 'pending'];
+const filtered = computed(() => {
+  const f = filter(), t = tasks();
+  return f === 'all' ? t : t.filter(x => x.status === f);
+});
+const stats = computed(() => {
+  const t = tasks();
+  return { total: t.length, done: t.filter(x => x.status === 'done').length, active: t.filter(x => x.status === 'active').length, pending: t.filter(x => x.status === 'pending').length };
+});
+
+hydrate(document.querySelector('main'), {
+  visible, message, items, addItem, status, statuses,
+  tasks, filter, filters, filtered, stats, String,
+});
+
+document.querySelectorAll('section').forEach(s =>
+  new IntersectionObserver(([e]) => { if (e.isIntersecting) e.target.classList.add('revealed'); },
+    { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }).observe(s)
+);
+document.addEventListener('mousemove', e => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  const r = btn.getBoundingClientRect();
+  btn.style.setProperty('--ripple-x', ((e.clientX - r.left) / r.width * 100) + '%');
+  btn.style.setProperty('--ripple-y', ((e.clientY - r.top) / r.height * 100) + '%');
+});
+</script>
+</body>
+</html>
