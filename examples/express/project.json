@@ -3,7 +3,7 @@
   "targets": {
     "bundle": {
       "cache": true,
-      "command": "npx esbuild ../../packages/runtime/src/index.js --bundle --format=esm --outfile=public/basenative.js",
+      "command": "cd examples/express && npx esbuild ../../packages/runtime/src/index.js --bundle --format=esm --outfile=public/basenative.js",
       "inputs": ["{workspaceRoot}/packages/runtime/src/**/*.js"],
       "outputs": ["{projectRoot}/public/basenative.js"]
     },
