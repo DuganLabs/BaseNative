@@ -1217,13 +1217,19 @@
     color: var(--text-0);
   }
 
-  [data-datepicker-header] button {
+  [data-datepicker-prev],
+  [data-datepicker-next] {
     padding: var(--space-xs) var(--space-sm);
     font-size: var(--font-size-sm);
     background: transparent;
-    border: var(--border-width) solid var(--border);
+    border: var(--border-width) solid transparent;
+    border-radius: var(--radius-sm);
+    color: var(--text-2);
+    cursor: pointer;
+    transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
   }
-  [data-datepicker-header] button:hover {
+  [data-datepicker-prev]:hover,
+  [data-datepicker-next]:hover {
     background: var(--surface-3);
     color: var(--accent);
     border-color: var(--accent-dim);
@@ -1462,8 +1468,52 @@
     fieldset > label + label { margin-block-start: var(--space-sm); }
   }
 
-  /* Viewport fallback for elements outside containers (header/footer) */
+  /* Datepicker: compact layout on narrow cards */
+  @container card (max-width: 20rem) {
+    [data-datepicker-input] {
+      padding-inline-start: var(--space-sm);
+    }
+
+    [data-datepicker-input] input {
+      font-size: var(--font-size-sm);
+    }
+
+    [data-datepicker-input] > span {
+      font-size: var(--font-size-sm);
+    }
+
+    [data-datepicker-input] > button {
+      padding-inline: var(--space-sm);
+    }
+  }
+
+  /* Datepicker popover: smaller cells on narrow viewports */
   @media (max-width: 40rem) {
+    [data-datepicker] {
+      min-inline-size: auto;
+      padding: var(--space-sm);
+    }
+
+    [data-datepicker-grid] td button {
+      inline-size: 2rem;
+      block-size: 2rem;
+      font-size: var(--font-size-xs);
+    }
+
+    [data-datepicker-grid] th {
+      font-size: 0.625rem;
+      padding: var(--space-xs);
+    }
+
+    [data-datepicker-months] {
+      gap: var(--space-xs);
+    }
+
+    [data-datepicker-months] button {
+      padding: var(--space-xs);
+      font-size: var(--font-size-xs);
+    }
+
     body > header > nav {
       flex-direction: column;
       gap: var(--space-sm);
