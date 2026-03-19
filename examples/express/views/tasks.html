@@ -29,6 +29,7 @@
 </script>
 <script type="module">
 import { signal, computed, hydrate } from '/basenative.js';
+import { effect } from '/basenative.js';
 
 const initialData = JSON.parse(
   document.querySelector('[data-initial-tasks]').textContent
@@ -37,6 +38,7 @@ const initialData = JSON.parse(
 const taskSignal = signal(initialData);
 const currentFilter = signal('all');
 const filterOptions = ['all', 'done', 'active', 'pending'];
+let nextLocalId = initialData.reduce((maxId, task) => Math.max(maxId, task.id), 0) + 1;
 
 const filteredTasks = computed(() => {
   const f = currentFilter(), t = taskSignal();
@@ -44,53 +46,67 @@ const filteredTasks = computed(() => {
 });
 const doneCount = computed(() => taskSignal().filter(x => x.status === 'done').length);
 const activeCount = computed(() => taskSignal().filter(x => x.status === 'active').length);
+const summaryText = computed(() => `${taskSignal().length} tasks — ${doneCount()} done · ${activeCount()} active`);
+
+async function requestJson(url, options) {
+  try {
+    const res = await fetch(url, options);
+    if (!res.ok) return null;
+    return res;
+  } catch {
+    return null;
+  }
+}
 
 async function addTask(input) {
   const title = input.value.trim();
   if (!title) return;
-  const res = await fetch('/api/tasks', {
+  const res = await requestJson('/api/tasks', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ title }),
   });
-  if (res.ok) {
+  if (res) {
     const task = await res.json();
     taskSignal.set(prev => [...prev, task]);
-    input.value = '';
-    input.focus();
+  } else {
+    const task = { id: nextLocalId++, title, status: 'active' };
+    taskSignal.set(prev => [...prev, task]);
   }
+  input.value = '';
+  input.focus();
 }
 
 async function deleteTask(id) {
-  const res = await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
-  if (res.ok) {
-    taskSignal.set(prev => prev.filter(t => t.id !== id));
-  }
+  await requestJson(`/api/tasks/${id}`, { method: 'DELETE' });
+  taskSignal.set(prev => prev.filter(t => t.id !== id));
 }
 
 const hydrateRoot = document.querySelector('[data-hydrate]');
 hydrateRoot.innerHTML = `
   <h3>Interactive Controls</h3>
   <nav data-controls>
-    <input type="text" placeholder="New task...">
-    <button>Add Task</button>
+    <input type="text" placeholder="New task..." aria-label="New task title">
+    <button type="button">Add Task</button>
   </nav>
   <output></output>
   <nav data-controls>
     <template @for="f of filterOptions">
-      <button :aria-pressed="String(currentFilter() === f)" @click="currentFilter.set(f)">{{ f }}</button>
+      <button type="button" :aria-pressed="String(currentFilter() === f)" @click="currentFilter.set(f)">{{ f }}</button>
     </template>
   </nav>
   <ul role="list">
     <template @for="task of filteredTasks(); track task.id">
-      <li>
-        {{ task.title }}
-        <mark data-status="{{ task.status }}">{{ task.status }}</mark>
-        <button data-variant="danger" @click="deleteTask(task.id)"><img src="/icons/remove.svg" alt="Remove" width="14" height="14"></button>
+      <li data-task-item>
+        <span data-task-title>{{ task.title }}</span>
+        <span data-task-actions>
+          <mark data-status="{{ task.status }}">{{ task.status }}</mark>
+          <button type="button" data-variant="danger" aria-label="Delete task" @click="deleteTask(task.id)">x</button>
+        </span>
       </li>
     </template>
     <template @empty>
-      <li>No matching tasks</li>
+      <li data-task-empty>No matching tasks</li>
     </template>
   </ul>
 `;
@@ -108,8 +124,7 @@ hydrate(hydrateRoot, {
   addTask, deleteTask, String,
 });
 
-import { effect } from '/basenative.js';
 effect(() => {
-  outputEl.textContent = `${taskSignal().length} tasks — ${doneCount()} done · ${activeCount()} active`;
+  outputEl.textContent = summaryText();
 });
 </script>
