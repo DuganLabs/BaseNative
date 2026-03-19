@@ -3,6 +3,12 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { render } from '@basenative/server';
+import {
+  getComponentsPageContext,
+  getHomePageContext,
+  getTasksPageContext,
+  navPages,
+} from './site-data.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pkgRoot = join(__dirname, '..', '..');
@@ -24,8 +30,6 @@ let tasks = [
 ];
 
 // -- Layout helper --
-const navPages = ['home', 'tasks', 'playground', 'docs', 'components'];
-
 function renderPage(viewFile, ctx, { title, scripts = '', activePage = '' }) {
   const layout = read('views/layout.html');
   const view = read(`views/${viewFile}`);
@@ -46,41 +50,13 @@ function renderPage(viewFile, ctx, { title, scripts = '', activePage = '' }) {
 // -- Routes --
 
 app.get('/', (req, res) => {
-  const ctx = {
-    showStats: true,
-    features: [
-      { id: 1, name: '@if / @else conditional rendering', status: 'done' },
-      { id: 2, name: '@for list rendering with track', status: 'done' },
-      { id: 3, name: '@switch state matching', status: 'done' },
-      { id: 4, name: 'Signal-based reactivity', status: 'done' },
-      { id: 5, name: 'Server-side rendering', status: 'done' },
-      { id: 6, name: 'Client hydration', status: 'done' },
-      { id: 7, name: 'Expression binding (:attr, @event)', status: 'done' },
-      { id: 8, name: 'SSR + hydration example', status: 'done' },
-    ],
-    stats: [
-      { label: 'runtime direction', value: 'CSP-safe + keyed' },
-      { label: 'workspace tooling', value: 'Nx + esbuild' },
-      { label: 'ssr mode', value: 'render + markers' },
-      { label: 'virtual DOM nodes', value: '0' },
-    ],
-    updates: [
-      { id: 1, text: 'Initial proof of concept complete', date: '2025-01-15' },
-      { id: 2, text: 'Server renderer implemented', date: '2025-02-01' },
-      { id: 3, text: 'Express example with SSR + hydration', date: '2025-02-15' },
-      { id: 4, text: 'Signals playground added', date: '2025-03-01' },
-      { id: 5, text: 'API documentation page', date: '2025-03-15' },
-    ],
-  };
+  const ctx = getHomePageContext();
   const html = renderPage('home.html', ctx, { title: 'Home', activePage: 'home' });
   res.send(html);
 });
 
 app.get('/tasks', (req, res) => {
-  const ctx = {
-    tasks,
-    tasksJson: JSON.stringify(tasks),
-  };
+  const ctx = getTasksPageContext(tasks);
   const html = renderPage('tasks.html', ctx, { title: 'Tasks', activePage: 'tasks' });
   res.send(html);
 });
@@ -96,24 +72,7 @@ app.get('/docs', (req, res) => {
 });
 
 app.get('/components', (req, res) => {
-  const ctx = {
-    tableData: [
-      { feature: '@if / @else', type: 'Directive', status: 'stable', since: '0.1.0' },
-      { feature: '@for / @empty', type: 'Directive', status: 'stable', since: '0.1.0' },
-      { feature: '@switch / @case', type: 'Directive', status: 'stable', since: '0.1.0' },
-      { feature: 'signal()', type: 'Reactive', status: 'stable', since: '0.1.0' },
-      { feature: 'computed()', type: 'Reactive', status: 'stable', since: '0.1.0' },
-      { feature: 'effect()', type: 'Reactive', status: 'stable', since: '0.1.0' },
-      { feature: 'Popover API', type: 'Platform', status: 'new', since: '0.2.0' },
-      { feature: 'Anchor Positioning', type: 'Platform', status: 'new', since: '0.2.0' },
-    ],
-    selectOptions: [
-      { value: 'signal', label: 'signal()' },
-      { value: 'computed', label: 'computed()' },
-      { value: 'effect', label: 'effect()' },
-      { value: 'hydrate', label: 'hydrate()' },
-    ],
-  };
+  const ctx = getComponentsPageContext();
   const html = renderPage('components.html', ctx, { title: 'Components', activePage: 'components' });
   res.send(html);
 });

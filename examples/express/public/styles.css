@@ -1295,12 +1295,41 @@
   [data-hydrate] > h3 { margin-block-end: var(--space-md); }
   [data-hydrate] > nav[data-controls] { margin-block-end: var(--space-md); }
   [data-hydrate] > output { margin-block: var(--space-sm) var(--space-md); }
+  [data-hydrate] > nav[data-controls]:first-of-type {
+    align-items: center;
+  }
+  [data-hydrate] > nav[data-controls]:first-of-type input[type="text"] {
+    min-inline-size: min(100%, 15rem);
+    flex: 1 1 15rem;
+  }
 
   [data-hydrate] ul[role="list"] { gap: var(--space-sm); }
   [data-hydrate] ul[role="list"] li {
     padding: var(--space-md) var(--space-lg);
     border-radius: var(--radius-md);
     gap: var(--space-md);
+  }
+  [data-task-item] {
+    align-items: center;
+  }
+  [data-task-title] {
+    min-inline-size: 0;
+    flex: 1 1 auto;
+  }
+  [data-task-actions] {
+    margin-inline-start: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-md);
+    flex: 0 0 auto;
+  }
+  [data-task-item] button[data-variant="danger"] {
+    min-inline-size: 3rem;
+    padding-inline: var(--space-sm);
+    box-shadow: none;
+  }
+  [data-task-empty] {
+    justify-content: flex-start;
   }
 
   /* -- Datepicker input group -- */
