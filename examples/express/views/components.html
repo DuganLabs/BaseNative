@@ -1,584 +1,211 @@
-<section>
-  <h2>Component <em>Library</em></h2>
-  <p>Every element styled with CSS custom properties, cascade layers, and modern platform APIs. No div, no span, no build step.</p>
+<section data-hero>
+  <h2>Enterprise <em>Readiness</em></h2>
+  <p>BaseNative is now being positioned as a semantic SSR application foundation for evergreen browsers. This page tracks what is already hardened, what is next for pilot adoption, and what is intentionally deferred until the evidence is there.</p>
 </section>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- FORM CONTROLS                              -->
-<!-- ═══════════════════════════════════════════ -->
-
-<section>
-  <h2>Form <em>Controls</em></h2>
-
-  <article>
-    <header><h3>Text &amp; Textarea</h3></header>
-    <fieldset>
-      <legend>Contact</legend>
-      <label>
-        <abbr>Name</abbr>
-        <input type="text" placeholder="Jane Doe">
-      </label>
-      <label>
-        <abbr>Email</abbr>
-        <input type="text" placeholder="jane@example.com">
-      </label>
-      <label>
-        <abbr>Message</abbr>
-        <textarea placeholder="Write something..."></textarea>
-      </label>
-    </fieldset>
-  </article>
-
-  <article>
-    <header><h3>Checkbox &amp; Radio</h3></header>
-    <fieldset>
-      <legend>Preferences</legend>
-      <label>
-        <input type="checkbox" checked> Enable dark mode
-      </label>
-      <label>
-        <input type="checkbox"> Send notifications
-      </label>
-      <label>
-        <input type="checkbox" checked> Auto-save drafts
-      </label>
-    </fieldset>
-    <fieldset>
-      <legend>Framework</legend>
-      <label>
-        <input type="radio" name="framework" value="basenative" checked> BaseNative
-      </label>
-      <label>
-        <input type="radio" name="framework" value="other"> Something else
-      </label>
-      <label>
-        <input type="radio" name="framework" value="none"> Vanilla only
-      </label>
-    </fieldset>
-  </article>
-
-  <article>
-    <header><h3>Range</h3></header>
-    <p>Drag a slider to update its value in real time via signals.</p>
-    <fieldset>
-      <legend>Settings</legend>
-      <label>
-        <abbr>Volume — <output data-volume-value>65</output>%</abbr>
-        <input type="range" min="0" max="100" value="65" data-volume-input>
-      </label>
-      <label>
-        <abbr>Brightness — <output data-brightness-value>40</output>%</abbr>
-        <input type="range" min="0" max="100" value="40" data-brightness-input>
-      </label>
-    </fieldset>
-  </article>
-
-  <article>
-    <header><h3>Date Picker</h3></header>
-    <p>A custom popover-based date picker built with signals, <code>popover</code>, and CSS Anchor Positioning. Tab through month, day, and year fields or click the calendar to pick visually.</p>
-    <fieldset>
-      <legend>Schedule</legend>
-      <label>
-        <abbr>Start date</abbr>
-        <nav data-datepicker-input style="anchor-name: --datepicker">
-          <input type="text" data-date-month placeholder="MM" maxlength="2" inputmode="numeric" aria-label="Month">
-          <span>/</span>
-          <input type="text" data-date-day placeholder="DD" maxlength="2" inputmode="numeric" aria-label="Day">
-          <span>/</span>
-          <input type="text" data-date-year placeholder="YYYY" maxlength="4" inputmode="numeric" aria-label="Year">
-          <button type="button" data-datepicker-trigger aria-label="Open calendar"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
-        </nav>
-      </label>
-      <section popover id="datepicker-popover" style="position-anchor: --datepicker; position-area: bottom span-right; margin-block-start: var(--anchor-offset);" data-datepicker>
-        <header data-datepicker-header>
-          <button data-datepicker-prev aria-label="Previous">&larr;</button>
-          <button type="button" data-datepicker-title-btn></button>
-          <button data-datepicker-next aria-label="Next">&rarr;</button>
-        </header>
-        <table data-datepicker-grid>
-          <thead>
-            <tr>
-              <th>Su</th><th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th><th>Sa</th>
-            </tr>
-          </thead>
-          <tbody data-datepicker-body></tbody>
-        </table>
-        <nav data-datepicker-months style="display:none"></nav>
-      </section>
-    </fieldset>
-  </article>
-
-  <article>
-    <header><h3>Select Menu</h3></header>
-    <p>Using <code>appearance: base-select</code> for fully styleable dropdowns. Falls back gracefully in older browsers.</p>
-    <fieldset>
-      <legend>API</legend>
-      <label>
-        <abbr>Function</abbr>
-        <select>
-          <option value="">Choose...</option>
-          <template @for="opt of selectOptions; track opt.value">
-            <option :value="opt.value">{{ opt.label }}</option>
-          </template>
-        </select>
-      </label>
-      <label>
-        <abbr>Category</abbr>
-        <select>
-          <option value="">All categories</option>
-          <optgroup label="Reactivity">
-            <option value="signals">Signals</option>
-            <option value="computed">Computed</option>
-            <option value="effects">Effects</option>
-          </optgroup>
-          <optgroup label="Rendering">
-            <option value="ssr">Server-side</option>
-            <option value="hydration">Hydration</option>
-          </optgroup>
-        </select>
-      </label>
-    </fieldset>
-  </article>
+<section data-stats>
+  <ul role="list" data-stat-grid>
+    <template @for="stat of readinessStats; track stat.label">
+      <li>
+        <strong>{{ stat.value }}</strong>
+        <span>{{ stat.label }}</span>
+      </li>
+    </template>
+  </ul>
 </section>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- FEEDBACK                                   -->
-<!-- ═══════════════════════════════════════════ -->
-
 <section>
-  <h2><em>Feedback</em></h2>
+  <h2>Release <em>Gates</em></h2>
+  <p>The roadmap is split into trust, pilot, and breadth milestones so enterprise workflows expand only after the core runtime proves it can hold up under SSR, hydration, and browser-policy constraints.</p>
 
   <article>
-    <header><h3>Progress &amp; Meter</h3></header>
-    <fieldset>
-      <legend>Build status</legend>
-      <label>
-        <abbr>Bundle progress</abbr>
-        <progress max="100" value="72"></progress>
-      </label>
-      <label>
-        <abbr>Test coverage</abbr>
-        <progress max="100" value="95"></progress>
-      </label>
-      <label>
-        <abbr>Memory usage (healthy)</abbr>
-        <meter min="0" max="100" low="25" high="75" optimum="50" value="42"></meter>
-      </label>
-      <label>
-        <abbr>CPU load (warning)</abbr>
-        <meter min="0" max="100" low="25" high="75" optimum="25" value="78"></meter>
-      </label>
-      <label>
-        <abbr>Disk space (critical)</abbr>
-        <meter min="0" max="100" low="25" high="75" optimum="25" value="92"></meter>
-      </label>
-    </fieldset>
-  </article>
-
-  <article>
-    <header><h3>Status Badges</h3></header>
-    <p>
-      <mark data-status="active">active</mark>
-      <mark data-status="idle">idle</mark>
-      <mark data-status="error">error</mark>
-      <mark data-status="pending">pending</mark>
-      <mark data-status="done">done</mark>
-    </p>
-  </article>
-</section>
-
-<!-- ═══════════════════════════════════════════ -->
-<!-- CONTENT ELEMENTS                           -->
-<!-- ═══════════════════════════════════════════ -->
-
-<section>
-  <h2>Content <em>Elements</em></h2>
-
-  <article>
-    <header><h3>Blockquote</h3></header>
-    <blockquote>
-      <p>The best interface is no interface. The best framework is the platform itself.</p>
-      <footer>-- BaseNative philosophy</footer>
-    </blockquote>
-  </article>
-
-  <article>
-    <header><h3>Table</h3></header>
+    <header><h3>Milestone plan</h3></header>
     <table>
       <thead>
         <tr>
-          <th>Feature</th>
-          <th>Type</th>
+          <th>Milestone</th>
+          <th>Focus</th>
           <th>Status</th>
-          <th>Since</th>
+          <th>Outcome</th>
         </tr>
       </thead>
       <tbody>
-        <template @for="row of tableData; track row.feature">
+        <template @for="stage of releaseStages; track stage.milestone">
           <tr>
-            <td>{{ row.feature }}</td>
-            <td>{{ row.type }}</td>
-            <td><mark data-status="{{ row.status === 'new' ? 'idle' : 'active' }}">{{ row.status }}</mark></td>
-            <td>{{ row.since }}</td>
+            <td>{{ stage.milestone }}</td>
+            <td>{{ stage.focus }}</td>
+            <td><mark data-status="{{ stage.tone }}">{{ stage.status }}</mark></td>
+            <td>{{ stage.outcome }}</td>
           </tr>
         </template>
       </tbody>
     </table>
   </article>
-
-  <article>
-    <header><h3>Details &amp; Summary</h3></header>
-    <details>
-      <summary>What is BaseNative?</summary>
-      <p>A lightweight component library built on native HTML templates and signals-based reactivity. Zero dependencies, zero build steps, ~120 lines of runtime.</p>
-    </details>
-    <details>
-      <summary>How does font-stretch switching work?</summary>
-      <p>A single <code>BaseNative</code> font family maps three typefaces to different <code>font-stretch</code> values: <kbd>normal</kbd> for sans-serif, <kbd>expanded</kbd> for serif, and <kbd>ultra-condensed</kbd> for monospace.</p>
-    </details>
-    <details open>
-      <summary>Is this production-ready?</summary>
-      <p>It is a proof of concept demonstrating what is possible with the modern web platform. Use it as a foundation and adapt it to your needs.</p>
-    </details>
-  </article>
-
-  <article>
-    <header><h3>Keyboard &amp; Inline Elements</h3></header>
-    <p>Press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> to open the command palette. Use <mark>semantic HTML</mark> with <abbr title="Cascading Style Sheets">CSS</abbr> custom properties for a <abbr title="User Interface">UI</abbr> that respects the platform.</p>
-  </article>
-
-  <article>
-    <header><h3>Fieldset</h3></header>
-    <fieldset>
-      <legend>Account</legend>
-      <label>
-        <abbr>Username</abbr>
-        <input type="text" placeholder="@handle">
-      </label>
-      <label>
-        <abbr>Bio</abbr>
-        <textarea placeholder="Tell us about yourself..."></textarea>
-      </label>
-    </fieldset>
-  </article>
 </section>
-
-<!-- ═══════════════════════════════════════════ -->
-<!-- OVERLAYS                                   -->
-<!-- ═══════════════════════════════════════════ -->
 
 <section>
-  <h2><em>Overlays</em></h2>
+  <h2>Trust <em>Blockers</em></h2>
+  <p>The first visible requirement for enterprise use was removing the unsafe and ambiguous parts of the runtime story. These are the core items that were addressed before broader package work.</p>
 
   <article>
-    <header><h3>Dialog</h3></header>
-    <p>Native <code>&lt;dialog&gt;</code> with <code>@starting-style</code> entrance animation and styled <code>::backdrop</code>.</p>
-    <nav data-controls>
-      <button data-open-dialog="demo-dialog">Open Dialog</button>
-    </nav>
-    <dialog id="demo-dialog">
-      <header>
-        <h3>Confirm Action</h3>
-      </header>
-      <p>This dialog uses the native <code>&lt;dialog&gt;</code> element with CSS-only entrance animation via <code>@starting-style</code> and <code>transition-behavior: allow-discrete</code>.</p>
-      <footer>
-        <button data-variant="outline" data-close-dialog>Cancel</button>
-        <button data-close-dialog>Confirm</button>
-      </footer>
-    </dialog>
-  </article>
-
-  <article>
-    <header><h3>Tooltips</h3></header>
-    <p>Hover to reveal. Uses <code>popover</code> with CSS Anchor Positioning for placement.</p>
-    <nav data-controls>
-      <button data-tooltip="Creates a reactive value that notifies dependents on change." style="anchor-name: --tip-signal" popovertarget="tip-signal">signal()</button>
-      <button data-tooltip="Derives a read-only value from other signals." style="anchor-name: --tip-computed" popovertarget="tip-computed">computed()</button>
-      <button data-tooltip="Runs a function and re-runs when dependencies change." style="anchor-name: --tip-effect" popovertarget="tip-effect">effect()</button>
-    </nav>
-    <output popover="manual" id="tip-signal" style="position-anchor: --tip-signal; position-area: top; margin-block-end: var(--anchor-offset);">Creates a reactive value that notifies dependents on change.</output>
-    <output popover="manual" id="tip-computed" style="position-anchor: --tip-computed; position-area: top; margin-block-end: var(--anchor-offset);">Derives a read-only value from other signals.</output>
-    <output popover="manual" id="tip-effect" style="position-anchor: --tip-effect; position-area: top; margin-block-end: var(--anchor-offset);">Runs a function and re-runs when dependencies change.</output>
-  </article>
-
-  <article>
-    <header><h3>Dropdown Menu</h3></header>
-    <p>Click to open. Uses <code>popover="auto"</code> with anchor positioning — clicking one closes the other.</p>
-    <nav data-controls>
-      <button style="anchor-name: --menu-actions" popovertarget="menu-actions">Actions</button>
-      <button style="anchor-name: --menu-view" popovertarget="menu-view">View</button>
-    </nav>
-    <nav popover id="menu-actions" style="position-anchor: --menu-actions; position-area: bottom span-right; margin-block-start: var(--anchor-offset);">
-      <button>Edit</button>
-      <button>Duplicate</button>
-      <button>Move to folder</button>
-      <hr>
-      <button>Delete</button>
-    </nav>
-    <nav popover id="menu-view" style="position-anchor: --menu-view; position-area: bottom span-right; margin-block-start: var(--anchor-offset);">
-      <button>Compact</button>
-      <button>Comfortable</button>
-      <button>Spacious</button>
-    </nav>
-  </article>
-
-  <article>
-    <header><h3>Popover Card</h3></header>
-    <p>A richer popover with article-card styling for previews and info panels.</p>
-    <nav data-controls>
-      <button style="anchor-name: --card-preview" popovertarget="card-preview">Preview Card</button>
-    </nav>
-    <article popover id="card-preview" style="position-anchor: --card-preview; position-area: bottom; margin-block-start: var(--anchor-offset);">
-      <header><h3>BaseNative Runtime</h3></header>
-      <p>~120 lines of client-side JavaScript providing signals, computed values, effects, and template hydration. Zero dependencies.</p>
-      <p><mark data-status="active">stable</mark></p>
-    </article>
-  </article>
-
-  <article>
-    <header><h3>Dialog + Form</h3></header>
-    <p>Open a dialog, submit a form, and see the result rendered by signals.</p>
-    <nav data-controls>
-      <button data-open-dialog="form-dialog">Add Item</button>
-    </nav>
-    <output data-form-result>No items added yet.</output>
-    <dialog id="form-dialog">
-      <header><h3>New Item</h3></header>
-      <fieldset>
-        <legend>Details</legend>
-        <label>
-          <abbr>Item name</abbr>
-          <input type="text" placeholder="Enter a name..." data-form-input>
-        </label>
-      </fieldset>
-      <footer>
-        <button data-variant="outline" data-close-dialog>Cancel</button>
-        <button data-form-submit>Add</button>
-      </footer>
-    </dialog>
+    <header><h3>v0.2 trust release scope</h3></header>
+    <table>
+      <thead>
+        <tr>
+          <th>Area</th>
+          <th>State</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template @for="item of trustBlockers; track item.item">
+          <tr>
+            <td>{{ item.item }}</td>
+            <td><mark data-status="{{ item.tone }}">{{ item.state }}</mark></td>
+            <td>{{ item.notes }}</td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
   </article>
 </section>
 
-<script type="module">
-  import { signal, computed, effect } from '/basenative.js';
+<section>
+  <h2>Package <em>Surface</em></h2>
+  <p>The public API is being kept deliberately small. Runtime and server remain the core today; router, forms, and components are the next explicit packages rather than a sprawl of loosely defined exports.</p>
 
-  // ── Dialog open/close + backdrop dismiss ───
-  document.querySelectorAll('[data-open-dialog]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.getElementById(btn.dataset.openDialog).showModal();
-    });
-  });
-  document.querySelectorAll('[data-close-dialog]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      btn.closest('dialog').close();
-    });
-  });
-  document.querySelectorAll('dialog').forEach(d => {
-    d.addEventListener('click', (e) => {
-      if (e.target === d) d.close();
-    });
-  });
+  <article>
+    <header><h3>Public packages</h3></header>
+    <table>
+      <thead>
+        <tr>
+          <th>Package</th>
+          <th>Status</th>
+          <th>Responsibility</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template @for="pkg of packageSurface; track pkg.pkg">
+          <tr>
+            <td><code>{{ pkg.pkg }}</code></td>
+            <td><mark data-status="{{ pkg.tone }}">{{ pkg.status }}</mark></td>
+            <td>{{ pkg.scope }}</td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </article>
+</section>
 
-  // ── Tooltips (hover to show/hide) ──────────
-  document.querySelectorAll('[data-tooltip]').forEach(btn => {
-    const id = btn.getAttribute('popovertarget');
-    const tip = document.getElementById(id);
-    if (!tip) return;
-    btn.addEventListener('mouseenter', () => tip.showPopover());
-    btn.addEventListener('mouseleave', () => tip.hidePopover());
-    btn.addEventListener('focus', () => tip.showPopover());
-    btn.addEventListener('blur', () => tip.hidePopover());
-  });
+<section>
+  <h2>Workflow <em>Parity</em></h2>
+  <p>The target is not React or Angular component interop. The target is parity across the enterprise workflow categories teams actually rely on when shipping SSR business applications.</p>
 
-  // ── Range binding ──────────────────────────
-  function updateRangeFill(input) {
-    const pct = ((input.value - input.min) / (input.max - input.min)) * 100;
-    input.style.setProperty('--range-pct', pct);
-  }
-  function bindRange(inputSel, valueSel) {
-    const input = document.querySelector(inputSel);
-    const output = document.querySelector(valueSel);
-    if (!input) return;
-    updateRangeFill(input);
-    const val = signal(parseInt(input.value, 10));
-    input.addEventListener('input', () => {
-      val.set(parseInt(input.value, 10));
-      updateRangeFill(input);
-    });
-    effect(() => { if (output) output.textContent = val(); });
-  }
-  bindRange('[data-volume-input]', '[data-volume-value]');
-  bindRange('[data-brightness-input]', '[data-brightness-value]');
+  <article>
+    <header><h3>Enterprise workflow coverage</h3></header>
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Status</th>
+          <th>Detail</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template @for="workflow of workflowParity; track workflow.category">
+          <tr>
+            <td>{{ workflow.category }}</td>
+            <td><mark data-status="{{ workflow.tone }}">{{ workflow.status }}</mark></td>
+            <td>{{ workflow.detail }}</td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </article>
+</section>
 
-  // ── Dialog form demo ───────────────────────
-  const formInput = document.querySelector('[data-form-input]');
-  const formSubmit = document.querySelector('[data-form-submit]');
-  const formResult = document.querySelector('[data-form-result]');
-  const formDialog = document.querySelector('#form-dialog');
+<section>
+  <h2>P0 Component <em>Baseline</em></h2>
+  <p>The first semantic component set is intentionally boring and business-focused: form foundations, feedback surfaces, and table-list primitives that cover the common full-stack app path before advanced widgets.</p>
 
-  if (formSubmit && formInput) {
-    const items = signal([]);
-    formSubmit.addEventListener('click', () => {
-      const name = formInput.value.trim();
-      if (name) {
-        items.set([...items(), name]);
-        formInput.value = '';
-        formDialog.close();
-      }
-    });
-    effect(() => {
-      const list = items();
-      formResult.textContent = list.length
-        ? list.join(', ')
-        : 'No items added yet.';
-    });
-  }
+  <article>
+    <header><h3>Pilot component order</h3></header>
+    <table>
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th>Target release</th>
+          <th>Status</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template @for="component of p0Components; track component.component">
+          <tr>
+            <td>{{ component.component }}</td>
+            <td>{{ component.release }}</td>
+            <td><mark data-status="{{ component.tone }}">{{ component.status }}</mark></td>
+            <td>{{ component.notes }}</td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </article>
+</section>
 
-  // ── Custom Date Picker ─────────────────────
-  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const popover = document.querySelector('#datepicker-popover');
-  const titleBtn = document.querySelector('[data-datepicker-title-btn]');
-  const bodyEl = document.querySelector('[data-datepicker-body]');
-  const gridEl = document.querySelector('[data-datepicker-grid]');
-  const monthsEl = document.querySelector('[data-datepicker-months]');
-  const prevBtn = document.querySelector('[data-datepicker-prev]');
-  const nextBtn = document.querySelector('[data-datepicker-next]');
-  const triggerBtn = document.querySelector('[data-datepicker-trigger]');
+<section>
+  <h2>Browser <em>Policy</em></h2>
+  <p>BaseNative is targeting current Chrome, Edge, Firefox, and Safari in <code>v0.x</code>. Newer platform APIs are used only when a documented fallback keeps the workflow intact.</p>
 
-  const monthInput = document.querySelector('[data-date-month]');
-  const dayInput = document.querySelector('[data-date-day]');
-  const yearInput = document.querySelector('[data-date-year]');
+  <article>
+    <header><h3>Capability and fallback matrix</h3></header>
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Status</th>
+          <th>Fallback</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template @for="browser of browserSupport; track browser.feature">
+          <tr>
+            <td>{{ browser.feature }}</td>
+            <td><mark data-status="{{ browser.tone }}">{{ browser.status }}</mark></td>
+            <td>{{ browser.fallback }}</td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </article>
+</section>
 
-  if (popover && triggerBtn) {
-    const today = new Date();
-    const viewYear = signal(today.getFullYear());
-    const viewMonth = signal(today.getMonth());
-    const selected = signal(null);
-    const showMonths = signal(false);
+<section>
+  <h2>Deferred <em>Breadth</em></h2>
+  <p>Several high-complexity widgets stay out of scope until pilot evidence is green on CSP, accessibility, focus retention, and table-scale business workflows.</p>
 
-    triggerBtn.addEventListener('click', () => popover.togglePopover());
+  <article>
+    <header><h3>Explicitly deferred</h3></header>
+    <ul role="list">
+      <template @for="item of deferredWork; track item.item">
+        <li>
+          <span>{{ item.item }}</span>
+          <span>{{ item.reason }}</span>
+        </li>
+      </template>
+    </ul>
+  </article>
+</section>
 
-    // Auto-advance on input
-    function autoAdvance(el, next, maxLen) {
-      el.addEventListener('input', () => {
-        el.value = el.value.replace(/\D/g, '');
-        if (el.value.length >= maxLen && next) next.focus();
-      });
-    }
-    autoAdvance(monthInput, dayInput, 2);
-    autoAdvance(dayInput, yearInput, 2);
-    autoAdvance(yearInput, null, 4);
+<section>
+  <h2>What This <em>Means</em></h2>
+  <article>
+    <header><h3>Current position</h3></header>
+    <p>BaseNative is no longer being described here as an Angular replacement, a zero-build universal answer, or a finished design system. The current position is narrower and stronger: a CSP-safe, SSR-first foundation that is being prepared for enterprise pilot work with explicit browser policy and a controlled package surface.</p>
+  </article>
 
-    // Commit typed date on blur or Enter
-    function commitTypedDate() {
-      const m = parseInt(monthInput.value, 10);
-      const d = parseInt(dayInput.value, 10);
-      const y = parseInt(yearInput.value, 10);
-      if (m >= 1 && m <= 12 && d >= 1 && d <= 31 && y >= 1900 && y <= 2100) {
-        const date = new Date(y, m - 1, d);
-        if (date.getMonth() === m - 1) {
-          selected.set(date);
-          viewYear.set(y);
-          viewMonth.set(m - 1);
-        }
-      }
-    }
-    [monthInput, dayInput, yearInput].forEach(el => {
-      el.addEventListener('blur', commitTypedDate);
-      el.addEventListener('keydown', (e) => { if (e.key === 'Enter') commitTypedDate(); });
-    });
-
-    // Fill inputs from selected date
-    function fillInputs(date) {
-      if (!date) return;
-      monthInput.value = String(date.getMonth() + 1).padStart(2, '0');
-      dayInput.value = String(date.getDate()).padStart(2, '0');
-      yearInput.value = String(date.getFullYear());
-    }
-
-    // Toggle month picker vs day grid
-    titleBtn.addEventListener('click', () => showMonths.set(!showMonths()));
-
-    prevBtn.addEventListener('click', () => {
-      if (showMonths()) {
-        viewYear.set(viewYear() - 1);
-      } else {
-        if (viewMonth() === 0) { viewMonth.set(11); viewYear.set(viewYear() - 1); }
-        else viewMonth.set(viewMonth() - 1);
-      }
-    });
-
-    nextBtn.addEventListener('click', () => {
-      if (showMonths()) {
-        viewYear.set(viewYear() + 1);
-      } else {
-        if (viewMonth() === 11) { viewMonth.set(0); viewYear.set(viewYear() + 1); }
-        else viewMonth.set(viewMonth() + 1);
-      }
-    });
-
-    // Render month picker
-    effect(() => {
-      const show = showMonths();
-      const y = viewYear();
-      const m = viewMonth();
-      gridEl.style.display = show ? 'none' : '';
-      monthsEl.style.display = show ? 'grid' : 'none';
-      titleBtn.textContent = show ? String(y) : `${MONTHS[m]} ${y}`;
-
-      if (show) {
-        monthsEl.innerHTML = MONTHS_SHORT.map((name, i) =>
-          `<button type="button" data-month-idx="${i}" ${i === m ? 'data-current' : ''}>${name}</button>`
-        ).join('');
-      }
-    });
-
-    monthsEl.addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-month-idx]');
-      if (!btn) return;
-      viewMonth.set(parseInt(btn.dataset.monthIdx, 10));
-      showMonths.set(false);
-    });
-
-    // Render day grid
-    effect(() => {
-      if (showMonths()) return;
-      const y = viewYear();
-      const m = viewMonth();
-      const firstDay = new Date(y, m, 1).getDay();
-      const daysInMonth = new Date(y, m + 1, 0).getDate();
-      const sel = selected();
-      let html = '';
-      let day = 1;
-
-      for (let row = 0; row < 6 && day <= daysInMonth; row++) {
-        html += '<tr>';
-        for (let col = 0; col < 7; col++) {
-          if ((row === 0 && col < firstDay) || day > daysInMonth) {
-            html += '<td></td>';
-          } else {
-            const d = day;
-            const isToday = d === today.getDate() && m === today.getMonth() && y === today.getFullYear();
-            const isSelected = sel && sel.getDate() === d && sel.getMonth() === m && sel.getFullYear() === y;
-            const cls = isSelected ? 'data-selected' : isToday ? 'data-today' : '';
-            html += `<td><button type="button" data-day="${d}" ${cls}>${d}</button></td>`;
-            day++;
-          }
-        }
-        html += '</tr>';
-      }
-      bodyEl.innerHTML = html;
-    });
-
-    bodyEl.addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-day]');
-      if (!btn) return;
-      const d = parseInt(btn.dataset.day, 10);
-      const date = new Date(viewYear(), viewMonth(), d);
-      selected.set(date);
-      fillInputs(date);
-      popover.hidePopover();
-    });
-  }
-</script>
+  <article>
+    <header><h3>Next visible step</h3></header>
+    <p>The next deployment should turn this roadmap into the first pilot-ready package layer: forms, router, semantic component primitives, a reference business app, and published accessibility and browser evidence.</p>
+  </article>
+</section>
