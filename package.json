@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "postinstall": "npx -y skills add nrwl/nx-ai-agents-config -y",
+    "start": "npx nx serve basenative-example-express",
     "build:pages": "nx bundle basenative-example-express && node scripts/build-pages.js",
     "deploy": "pnpm build:pages && wrangler pages deploy dist --project-name basenative"
   },

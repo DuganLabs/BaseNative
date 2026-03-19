@@ -73,10 +73,11 @@ describe('effect', () => {
     flag.set(false);
     assert.equal(runs, 3, 'should re-run when flag changes');
 
-    // Now only b is tracked, but a is still subscribed from prior run
-    // (this implementation doesn't prune stale subscriptions)
     b.set(1);
-    assert.ok(runs >= 4, 'should re-run when b changes');
+    assert.equal(runs, 4, 'should re-run when b changes');
+
+    a.set(2);
+    assert.equal(runs, 4, 'should not re-run when a changes after it is no longer tracked');
   });
 
   it('returns the effect function for manual invocation', () => {
@@ -86,6 +87,21 @@ describe('effect', () => {
     assert.equal(typeof fx, 'function');
     s.set(99);
     assert.equal(value, 99);
+  });
+
+  it('disposes effects and runs cleanup handlers', () => {
+    const s = signal(0);
+    const values = [];
+    const fx = effect(() => {
+      values.push(s());
+      return () => values.push(`cleanup:${s.peek()}`);
+    });
+
+    s.set(1);
+    fx.dispose();
+    s.set(2);
+
+    assert.deepEqual(values, [0, 'cleanup:1', 1, 'cleanup:1']);
   });
 });
 

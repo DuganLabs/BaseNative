@@ -59,9 +59,9 @@ app.get('/', (req, res) => {
       { id: 8, name: 'SSR + hydration example', status: 'done' },
     ],
     stats: [
-      { label: 'lines of runtime', value: '~120' },
-      { label: 'dependencies', value: '0' },
-      { label: 'build steps required', value: '0' },
+      { label: 'runtime direction', value: 'CSP-safe + keyed' },
+      { label: 'workspace tooling', value: 'Nx + esbuild' },
+      { label: 'ssr mode', value: 'render + markers' },
       { label: 'virtual DOM nodes', value: '0' },
     ],
     updates: [

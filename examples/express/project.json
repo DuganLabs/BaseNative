@@ -3,13 +3,15 @@
   "targets": {
     "bundle": {
       "cache": true,
-      "command": "cd examples/express && npx esbuild ../../packages/runtime/src/index.js --bundle --format=esm --outfile=public/basenative.js",
+      "command": "npx esbuild ../../packages/runtime/src/index.js --bundle --format=esm --outfile=public/basenative.js",
+      "options": { "cwd": "{projectRoot}" },
       "inputs": ["{workspaceRoot}/packages/runtime/src/**/*.js"],
       "outputs": ["{projectRoot}/public/basenative.js"]
     },
     "serve": {
       "cache": false,
       "command": "node server.js",
+      "options": { "cwd": "{projectRoot}" },
       "dependsOn": ["bundle"]
     }
   }

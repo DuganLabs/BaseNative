@@ -1,4 +1,4 @@
-import { describe, it, beforeEach } from 'node:test';
+import { describe, it, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { Window } from 'happy-dom';
 import { signal, computed, effect } from './signals.js';
@@ -12,6 +12,15 @@ beforeEach(() => {
   globalThis.document = document;
   globalThis.window = window;
   globalThis.Node = window.Node;
+});
+
+afterEach(async () => {
+  try {
+    document?.activeElement?.blur?.();
+  } catch {}
+
+  await window?.happyDOM?.abort?.();
+  await window?.happyDOM?.close?.();
 });
 
 // Dynamic import after globals are set — hydrate/bind read `document` at call time
@@ -124,6 +133,128 @@ describe('@for directive', () => {
 
     assert.ok(root.textContent.includes('No items'));
   });
+
+  it('reuses keyed DOM nodes when the list is reordered', async () => {
+    const hydrate = await loadHydrate();
+    const root = document.createElement('section');
+    root.innerHTML = `
+      <ul>
+        <template @for="item of items(); track item.id">
+          <li data-id="{{ item.id }}">{{ item.name }}</li>
+        </template>
+      </ul>
+    `;
+    document.body.append(root);
+
+    const items = signal([
+      { id: 1, name: 'Alpha' },
+      { id: 2, name: 'Beta' },
+      { id: 3, name: 'Gamma' },
+    ]);
+
+    hydrate(root, { items });
+    const initialLis = [...root.querySelectorAll('li')];
+
+    items.set([
+      { id: 3, name: 'Gamma' },
+      { id: 1, name: 'Alpha' },
+      { id: 2, name: 'Beta' },
+    ]);
+
+    const reorderedLis = [...root.querySelectorAll('li')];
+    assert.equal(reorderedLis[0], initialLis[2]);
+    assert.equal(reorderedLis[1], initialLis[0]);
+    assert.equal(reorderedLis[2], initialLis[1]);
+  });
+
+  it('preserves input value and focus when keyed rows reorder', async () => {
+    const hydrate = await loadHydrate();
+    const root = document.createElement('section');
+    root.innerHTML = `
+      <ul>
+        <template @for="item of items(); track item.id">
+          <li>
+            <label>
+              {{ item.name }}
+              <input value="{{ item.name }}">
+            </label>
+          </li>
+        </template>
+      </ul>
+    `;
+    document.body.append(root);
+
+    const items = signal([
+      { id: 1, name: 'Alpha' },
+      { id: 2, name: 'Beta' },
+    ]);
+
+    let activeElement = document.body;
+    Object.defineProperty(document, 'activeElement', {
+      configurable: true,
+      get() {
+        return activeElement;
+      },
+    });
+    const originalFocus = window.HTMLElement.prototype.focus;
+    const originalBlur = window.HTMLElement.prototype.blur;
+    window.HTMLElement.prototype.focus = function() {
+      activeElement = this;
+    };
+    window.HTMLElement.prototype.blur = function() {
+      if (activeElement === this) activeElement = document.body;
+    };
+
+    try {
+      hydrate(root, { items });
+      const inputs = [...root.querySelectorAll('input')];
+      const betaInput = inputs[1];
+      betaInput.value = 'Edited Beta';
+      betaInput.focus();
+
+      items.set([
+        { id: 2, name: 'Beta' },
+        { id: 1, name: 'Alpha' },
+      ]);
+
+      const reorderedInputs = [...root.querySelectorAll('input')];
+      assert.equal(reorderedInputs[0], betaInput);
+      assert.equal(reorderedInputs[0].value, 'Edited Beta');
+      assert.equal(document.activeElement, betaInput);
+    } finally {
+      window.HTMLElement.prototype.focus = originalFocus;
+      window.HTMLElement.prototype.blur = originalBlur;
+      delete document.activeElement;
+    }
+  });
+
+  it('reports duplicate track keys and falls back safely', async () => {
+    const hydrate = await loadHydrate();
+    const root = document.createElement('section');
+    root.innerHTML = `
+      <ul>
+        <template @for="item of items(); track item.id">
+          <li>{{ item.name }}</li>
+        </template>
+      </ul>
+    `;
+    document.body.append(root);
+
+    const items = signal([
+      { id: 1, name: 'Alpha' },
+      { id: 1, name: 'Duplicate' },
+    ]);
+
+    const diagnostics = [];
+    hydrate(root, { items }, {
+      onDiagnostic(diagnostic) {
+        diagnostics.push(diagnostic);
+      },
+    });
+
+    assert.ok(diagnostics.some(entry => entry.code === 'BN_FOR_DUPLICATE_TRACK_KEY'));
+    assert.equal(root.querySelectorAll('li').length, 2);
+  });
 });
 
 describe('text interpolation', () => {
@@ -182,9 +313,6 @@ describe('reactive attributes', () => {
   });
 
   it('updates :attr reactively via effect', () => {
-    // Test reactive attribute updates directly via effect (bypassing
-    // hydrate's new Function context which can have module isolation
-    // issues in happy-dom)
     const active = signal(false);
     const btn = document.createElement('button');
     document.body.append(btn);
@@ -233,5 +361,33 @@ describe('SSR → hydration flow', () => {
     // Delete a task
     tasks.set(prev => prev.filter(t => t.id !== 1));
     assert.equal(output.textContent, '2 tasks');
+  });
+});
+
+describe('hydration diagnostics', () => {
+  it('does not report a mismatch for plain interpolation roots', async () => {
+    const hydrate = await loadHydrate();
+    const root = document.createElement('section');
+    root.innerHTML = '<p>Hello, {{ name() }}</p>';
+    document.body.append(root);
+
+    const mismatches = [];
+    const name = signal('BaseNative');
+    hydrate(root, { name }, { onMismatch: mismatch => mismatches.push(mismatch) });
+
+    assert.equal(mismatches.length, 0);
+  });
+
+  it('reports a mismatch when no directives or bindings are present', async () => {
+    const hydrate = await loadHydrate();
+    const root = document.createElement('section');
+    root.innerHTML = '<p>Static HTML only</p>';
+    document.body.append(root);
+
+    const mismatches = [];
+    hydrate(root, {}, { onMismatch: mismatch => mismatches.push(mismatch) });
+
+    assert.equal(mismatches.length, 1);
+    assert.equal(mismatches[0].code, 'BN_HYDRATE_NO_DIRECTIVES');
   });
 });
