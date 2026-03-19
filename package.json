@@ -4,7 +4,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "postinstall": "npx -y skills add nrwl/nx-ai-agents-config -y"
+    "postinstall": "npx -y skills add nrwl/nx-ai-agents-config -y",
+    "start": "npx nx serve basenative-example-express"
   },
   "devDependencies": {
     "esbuild": "^0.25.0",
