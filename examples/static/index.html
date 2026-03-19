@@ -515,7 +515,7 @@
   <header>
     <h1>Base<em>Native</em></h1>
     <p>Angular-inspired control flow over native <code>&lt;template&gt;</code> elements. Semantic HTML as truth. Modern CSS as design. A sprinkle of JS as glue.</p>
-    <small data-badge><strong>~120</strong> lines of runtime · zero dependencies · no build step</small>
+    <small data-badge><strong>small runtime</strong> · semantic HTML · examples use standard tooling</small>
   </header>
 
   <section aria-labelledby="philosophy-heading">
@@ -612,7 +612,7 @@
             </template>
           </ul>
           <nav data-controls>
-            <input type="text" placeholder="New item..." style="flex: 1;" @keydown="if($event.key==='Enter')addItem($event.target)">
+            <input type="text" placeholder="New item..." style="flex: 1;" @keydown="handleAddItemKeydown($event)">
             <button @click="addItem($el.parentElement.querySelector('input'))">Add</button>
             <button @click="items.set([])">Clear</button>
           </nav>
@@ -708,6 +708,9 @@ function addItem(input) {
   input.value = '';
   input.focus();
 }
+function handleAddItemKeydown($event) {
+  if ($event.key === 'Enter') addItem($event.target);
+}
 
 const status = signal('active');
 const statuses = ['active', 'idle', 'error'];
@@ -731,7 +734,7 @@ const stats = computed(() => {
 
 hydrate(document.querySelector('main'), {
   visible, message, items, addItem, status, statuses,
-  tasks, filter, filters, filtered, stats, String,
+  handleAddItemKeydown, tasks, filter, filters, filtered, stats, String,
 });
 
 document.querySelectorAll('section').forEach(s =>

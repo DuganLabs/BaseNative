@@ -1,13 +1,12 @@
-export function evaluate(expr, ctx) {
-  try {
-    const keys = Object.keys(ctx);
-    return new Function(...keys, `return(${expr})`)(...keys.map(k => ctx[k]));
-  } catch { return undefined; }
+import { evaluateExpression } from '../../../src/shared/expression.js';
+
+export function evaluate(expr, ctx, options) {
+  return evaluateExpression(expr, ctx, options);
 }
 
-export function interpolate(text, ctx) {
+export function interpolate(text, ctx, options) {
   return text.replace(/\{\{\s*(.+?)\s*\}\}/g, (_, expr) => {
-    const val = evaluate(expr, ctx);
+    const val = evaluate(expr, ctx, options);
     return val != null ? val : '';
   });
 }

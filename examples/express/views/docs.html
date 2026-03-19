@@ -1,6 +1,6 @@
 <section>
   <h2>API <em>Reference</em></h2>
-  <p>Everything you need to build reactive interfaces with BaseNative — four exports, zero configuration.</p>
+  <p>BaseNative currently exposes a small runtime/server surface and an intentionally constrained expression model. The goal in `v0.x` is correctness and trust, not arbitrary template execution.</p>
 </section>
 
 <section>
@@ -19,7 +19,7 @@
 
 <span class="cmt">// Write a new value</span>
 count.<span class="fn">set</span>(<span class="num">5</span>);
-count.<span class="fn">set</span>(n => n + <span class="num">1</span>);   <span class="cmt">// updater function</span>
+count.<span class="fn">set</span>(count() + <span class="num">1</span>);
 
 <span class="cmt">// Read without tracking</span>
 count.<span class="fn">peek</span>();     <span class="cmt">// → 6</span></code></pre>
@@ -47,7 +47,7 @@ width.<span class="fn">set</span>(<span class="num">20</span>);
       <h3>effect(fn)</h3>
       <mark data-status="active">core</mark>
     </header>
-    <p>Runs a function immediately and re-runs it whenever any signal read inside changes. Returns a cleanup handle.</p>
+    <p>Runs a function immediately and re-runs it whenever any signal read inside changes. The returned runner also exposes <code>.dispose()</code>.</p>
     <pre><code><span class="kw">import</span> { signal, effect } <span class="kw">from</span> <span class="str">'basenative'</span>;
 
 <span class="kw">const</span> name = <span class="fn">signal</span>(<span class="str">'world'</span>);
@@ -65,7 +65,7 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
       <h3>hydrate(root, context)</h3>
       <mark data-status="idle">dom</mark>
     </header>
-    <p>Walks a DOM subtree, binding template directives (<code>@if</code>, <code>@for</code>, <code>@switch</code>) and expression interpolation (<code>{{ }}</code>) to the given context.</p>
+    <p>Walks a DOM subtree, binding template directives (<code>@if</code>, <code>@for</code>, <code>@switch</code>) and expression interpolation (<code>{{ }}</code>) to the given context. Hydration diagnostics are available through optional callbacks.</p>
     <pre><code><span class="kw">import</span> { signal, hydrate } <span class="kw">from</span> <span class="str">'basenative'</span>;
 
 <span class="kw">const</span> items = <span class="fn">signal</span>([<span class="str">'one'</span>, <span class="str">'two'</span>]);
@@ -78,7 +78,7 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
 
 <section>
   <h2>Template <em>Directives</em></h2>
-  <p>Control flow lives in native <code>&lt;template&gt;</code> elements — no custom syntax, just HTML attributes.</p>
+  <p>Control flow lives in native <code>&lt;template&gt;</code> elements. Expressions use a safe subset that favors property access, function calls, and simple operators over arbitrary in-template program bodies.</p>
 </section>
 
 <section>
@@ -131,12 +131,12 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
       <h3>Expression binding</h3>
       <mark data-status="idle">binding</mark>
     </header>
-    <p>Bind attributes reactively with <code>:</code> prefix. Attach events with <code>@</code> prefix. Interpolate text with <code>{{ }}</code>.</p>
+    <p>Bind attributes reactively with <code>:</code> prefix. Attach events with <code>@</code> prefix. Interpolate text with <code>{{ }}</code>. For complex event logic, call a named function from the template instead of embedding control flow in the attribute string.</p>
     <pre><code><span class="cmt">&lt;!-- Reactive attribute --&gt;</span>
 <span class="tag">&lt;img</span> <span class="attr">:src</span>=<span class="str">"imageUrl()"</span> <span class="tag">/&gt;</span>
 
 <span class="cmt">&lt;!-- Event handler --&gt;</span>
-<span class="tag">&lt;button</span> <span class="attr">@click</span>=<span class="str">"count.set(c => c + 1)"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">@click</span>=<span class="str">"incrementCount()"</span><span class="tag">&gt;</span>
   Clicked {{ count() }} times
 <span class="tag">&lt;/button&gt;</span>
 
@@ -147,14 +147,14 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
 
 <section>
   <h2>Server <em>Rendering</em></h2>
-  <p>The SSR module evaluates all directives at request time, outputting clean static HTML with zero client JS by default.</p>
+  <p>The SSR module evaluates all directives at request time. It can also emit hydratable markers for diagnostics and future SSR hydration work.</p>
 
   <article>
     <header>
-      <h3>render(html, context)</h3>
+      <h3>render(html, context, options?)</h3>
       <mark data-status="idle">server</mark>
     </header>
-    <p>Parses an HTML string containing BaseNative directives and returns fully resolved static HTML. Used in Express routes for SSR.</p>
+    <p>Parses an HTML string containing BaseNative directives and returns resolved HTML. Optional render diagnostics and hydratable markers are available through the third argument.</p>
     <pre><code><span class="kw">import</span> { render } <span class="kw">from</span> <span class="str">'basenative/server'</span>;
 
 <span class="kw">const</span> html = <span class="fn">render</span>(<span class="str">`

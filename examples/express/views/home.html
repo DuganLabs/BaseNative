@@ -1,6 +1,6 @@
 <section data-hero>
   <h2>Semantic HTML, <em>natively reactive</em></h2>
-  <p>BaseNative brings Angular-inspired control flow to native template elements. No build step. No virtual DOM. No dependencies. Just HTML.</p>
+  <p>BaseNative brings Angular-inspired control flow to native template elements with a small runtime core, server rendering, and CSP-safe template evaluation. The examples in this repo still use standard workspace tooling.</p>
   <nav data-controls>
     <a href="/playground"><button>Try the playground</button></a>
     <a href="/docs"><button data-variant="outline">Read the docs</button></a>
@@ -39,14 +39,15 @@
 
   <article>
     <header><h3>Reactive counter in 6 lines</h3></header>
-    <pre><code><span class="tag">&lt;button</span> <span class="attr">@click</span>=<span class="str">"count.set(c =&gt; c + 1)"</span><span class="tag">&gt;</span>
+    <pre><code><span class="tag">&lt;button</span> <span class="attr">@click</span>=<span class="str">"incrementCount()"</span><span class="tag">&gt;</span>
   Clicked {{ count() }} times
 <span class="tag">&lt;/button&gt;</span>
 
 <span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="str">"module"</span><span class="tag">&gt;</span>
 <span class="kw">import</span> { signal, hydrate } <span class="kw">from</span> <span class="str">'basenative'</span>;
 <span class="kw">const</span> count = <span class="fn">signal</span>(<span class="num">0</span>);
-<span class="fn">hydrate</span>(document.body, { count });
+<span class="kw">function</span> <span class="fn">incrementCount</span>() { count.<span class="fn">set</span>(count() + <span class="num">1</span>); }
+<span class="fn">hydrate</span>(document.body, { count, incrementCount });
 <span class="tag">&lt;/script&gt;</span></code></pre>
   </article>
 
