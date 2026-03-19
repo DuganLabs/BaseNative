@@ -5,18 +5,23 @@
   "private": true,
   "scripts": {
     "postinstall": "npx -y skills add nrwl/nx-ai-agents-config -y",
-    "start": "npx nx serve basenative-example-express"
+    "start": "npx nx serve basenative-example-express",
+    "build:pages": "nx bundle basenative-example-express && node scripts/build-pages.js",
+    "deploy": "pnpm build:pages && wrangler pages deploy dist --project-name basenative"
   },
   "devDependencies": {
     "esbuild": "^0.25.0",
     "happy-dom": "^17.4.4",
     "nx": "^20.3.2",
-    "nx-mcp": "^0.23.0"
+    "nx-mcp": "^0.23.0",
+    "wrangler": "^4.74.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild",
-      "nx"
+      "nx",
+      "sharp",
+      "workerd"
     ]
   }
 }

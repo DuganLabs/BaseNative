@@ -24,7 +24,7 @@ let tasks = [
 ];
 
 // -- Layout helper --
-const navPages = ['home', 'tasks', 'playground', 'docs'];
+const navPages = ['home', 'tasks', 'playground', 'docs', 'components'];
 
 function renderPage(viewFile, ctx, { title, scripts = '', activePage = '' }) {
   const layout = read('views/layout.html');
@@ -92,6 +92,29 @@ app.get('/playground', (req, res) => {
 
 app.get('/docs', (req, res) => {
   const html = renderPage('docs.html', {}, { title: 'API Docs', activePage: 'docs' });
+  res.send(html);
+});
+
+app.get('/components', (req, res) => {
+  const ctx = {
+    tableData: [
+      { feature: '@if / @else', type: 'Directive', status: 'stable', since: '0.1.0' },
+      { feature: '@for / @empty', type: 'Directive', status: 'stable', since: '0.1.0' },
+      { feature: '@switch / @case', type: 'Directive', status: 'stable', since: '0.1.0' },
+      { feature: 'signal()', type: 'Reactive', status: 'stable', since: '0.1.0' },
+      { feature: 'computed()', type: 'Reactive', status: 'stable', since: '0.1.0' },
+      { feature: 'effect()', type: 'Reactive', status: 'stable', since: '0.1.0' },
+      { feature: 'Popover API', type: 'Platform', status: 'new', since: '0.2.0' },
+      { feature: 'Anchor Positioning', type: 'Platform', status: 'new', since: '0.2.0' },
+    ],
+    selectOptions: [
+      { value: 'signal', label: 'signal()' },
+      { value: 'computed', label: 'computed()' },
+      { value: 'effect', label: 'effect()' },
+      { value: 'hydrate', label: 'hydrate()' },
+    ],
+  };
+  const html = renderPage('components.html', ctx, { title: 'Components', activePage: 'components' });
   res.send(html);
 });
 

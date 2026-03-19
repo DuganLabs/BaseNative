@@ -139,6 +139,68 @@
     /* Container query breakpoints */
     --cq-compact: 20rem;
     --cq-medium: 30rem;
+
+    /* Inset surfaces */
+    --surface-inset: #08080a;
+
+    /* Track (range, progress) */
+    --track-bg: #2a2a38;
+    --track-fill: var(--accent);
+    --track-height: 0.375rem;
+    --thumb-size: 1.125rem;
+
+    /* Meter */
+    --meter-low: var(--danger);
+    --meter-mid: var(--accent);
+    --meter-high: var(--success);
+
+    /* Mark */
+    --mark-bg: #e8a44a22;
+    --mark-text: var(--accent);
+
+    /* Kbd */
+    --kbd-bg: var(--surface-3);
+    --kbd-border: var(--border-accent);
+    --kbd-shadow: 0 2px 0 var(--border);
+
+    /* Blockquote */
+    --blockquote-border: var(--accent-dim);
+
+    /* Table */
+    --table-stripe: #ffffff06;
+    --table-header-bg: var(--surface-2);
+
+    /* Details */
+    --details-marker: var(--accent);
+
+    /* Dialog */
+    --dialog-bg: var(--surface-1);
+    --dialog-border: var(--border-accent);
+    --dialog-backdrop: #0a0a0ccc;
+    --dialog-shadow: 0 16px 64px -16px #000a;
+
+    /* Popover */
+    --popover-bg: var(--surface-2);
+    --popover-border: var(--border-accent);
+    --popover-shadow: 0 8px 32px -8px #000a;
+    --popover-radius: var(--radius-md);
+    --anchor-offset: var(--space-sm);
+
+    /* Tooltip */
+    --tooltip-bg: var(--surface-3);
+    --tooltip-text: var(--text-0);
+    --tooltip-font-size: var(--font-size-xs);
+
+    /* Select */
+    --select-bg: var(--surface-0);
+    --select-option-hover: var(--surface-3);
+
+    /* Checkbox / Radio */
+    --control-size: 1.125rem;
+    --control-bg: var(--surface-0);
+    --control-border: var(--border);
+    --control-checked-bg: var(--accent);
+    --control-checked-border: var(--accent);
   }
 }
 
@@ -459,6 +521,246 @@
   input[type="text"]:focus { border-color: var(--accent); box-shadow: var(--shadow-input), var(--shadow-btn); }
   input[type="text"]::placeholder { color: var(--text-2); }
 
+  /* -- Textarea -- */
+  textarea {
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-code);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--surface-0);
+    color: var(--text-0);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-sm);
+    outline: none;
+    resize: vertical;
+    field-sizing: content;
+    min-block-size: 4lh;
+    transition: border-color var(--duration-med), box-shadow var(--duration-med);
+  }
+  textarea:focus { border-color: var(--accent); box-shadow: var(--shadow-input), var(--shadow-btn); }
+  textarea::placeholder { color: var(--text-2); }
+
+  /* -- Checkbox -- */
+  input[type="checkbox"] {
+    appearance: none;
+    inline-size: var(--control-size);
+    block-size: var(--control-size);
+    background: var(--control-bg);
+    border: var(--border-width) solid var(--control-border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: background var(--duration-fast), border-color var(--duration-fast), box-shadow var(--duration-fast);
+  }
+  input[type="checkbox"]:checked {
+    background: var(--control-checked-bg);
+    border-color: var(--control-checked-border);
+  }
+  input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 0.125rem;
+    inset-inline-start: 0.3125rem;
+    inline-size: 0.3125rem;
+    block-size: 0.5625rem;
+    border: solid var(--surface-0);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  input[type="checkbox"]:focus-visible { outline: var(--border-inline-width) solid var(--accent); outline-offset: var(--border-inline-width); }
+
+  /* -- Radio -- */
+  input[type="radio"] {
+    appearance: none;
+    inline-size: var(--control-size);
+    block-size: var(--control-size);
+    background: var(--control-bg);
+    border: var(--border-width) solid var(--control-border);
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: background var(--duration-fast), border-color var(--duration-fast);
+  }
+  input[type="radio"]:checked {
+    border-color: var(--control-checked-border);
+  }
+  input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    background: var(--control-checked-bg);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+  input[type="radio"]:focus-visible { outline: var(--border-inline-width) solid var(--accent); outline-offset: var(--border-inline-width); }
+
+  /* -- Range -- */
+  input[type="range"] {
+    appearance: none;
+    inline-size: 100%;
+    block-size: var(--track-height);
+    background: linear-gradient(to right, var(--track-fill) calc(var(--range-pct, 50) * 1%), var(--track-bg) calc(var(--range-pct, 50) * 1%));
+    border-radius: var(--radius-pill);
+    outline: none;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    inline-size: var(--thumb-size);
+    block-size: var(--thumb-size);
+    background: var(--accent);
+    border: var(--border-inline-width) solid var(--surface-0);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent-glow);
+    transition: box-shadow var(--duration-fast), scale var(--duration-fast);
+  }
+  input[type="range"]::-webkit-slider-thumb:hover { scale: 1.15; box-shadow: 0 0 16px var(--accent-glow-strong); }
+  input[type="range"]:focus-visible { outline: var(--border-inline-width) solid var(--accent); outline-offset: var(--space-xs); }
+
+  /* -- Date input -- */
+  input[type="date"] {
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
+    font-size: var(--font-size-base);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--surface-0);
+    color: var(--text-0);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-sm);
+    outline: none;
+    color-scheme: dark;
+    transition: border-color var(--duration-med), box-shadow var(--duration-med);
+  }
+  input[type="date"]:focus { border-color: var(--accent); box-shadow: var(--shadow-input), var(--shadow-btn); }
+  input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cursor: pointer; }
+
+  /* -- Select (base-select) -- */
+  select {
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
+    font-size: var(--font-size-base);
+    padding: var(--space-sm) var(--space-md);
+    padding-inline-end: var(--space-xl);
+    background: var(--select-bg);
+    color: var(--text-0);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-sm);
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23e8a44a' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--space-sm) center;
+    background-size: 0.625rem;
+    transition: border-color var(--duration-med), box-shadow var(--duration-med);
+  }
+  select:focus { border-color: var(--accent); box-shadow: var(--shadow-input), var(--shadow-btn); }
+
+  @supports (appearance: base-select) {
+    select,
+    select::picker(select) {
+      appearance: base-select;
+    }
+
+    select {
+      padding-inline-end: var(--space-md);
+      background-image: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    select::picker-icon {
+      content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' width='10' height='7'%3E%3Cpath d='M1.5 1.5l4.5 4.5 4.5-4.5' stroke='%23e8a44a' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      margin-inline-start: auto;
+      transition: rotate var(--duration-fast);
+    }
+    select:open::picker-icon {
+      rotate: 180deg;
+    }
+
+    select::picker(select) {
+      background: var(--popover-bg);
+      border: var(--border-width) solid var(--popover-border);
+      border-radius: var(--popover-radius);
+      box-shadow: var(--popover-shadow);
+      padding: var(--space-xs);
+      transition: opacity var(--duration-fast), scale var(--duration-fast);
+      transition-behavior: allow-discrete;
+      opacity: 1;
+      scale: 1;
+    }
+
+    @starting-style {
+      select::picker(select) {
+        opacity: 0;
+        scale: 0.96;
+      }
+    }
+
+    select option {
+      font-family: var(--font-family);
+      font-stretch: var(--font-mono);
+      font-size: var(--font-size-base);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      color: var(--text-0);
+      transition: background var(--duration-fast);
+    }
+    select option:hover { background: var(--select-option-hover); }
+    select option:checked { color: var(--accent); font-weight: var(--font-weight-semibold); }
+
+    select option::checkmark {
+      color: var(--accent);
+      margin-inline-end: var(--space-sm);
+    }
+
+    select optgroup {
+      font-family: var(--font-family);
+      font-stretch: var(--font-mono);
+      font-size: var(--font-size-xs);
+      color: var(--text-2);
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-wider);
+      padding: var(--space-sm) var(--space-md);
+    }
+  }
+
+  /* -- Progress -- */
+  progress {
+    appearance: none;
+    inline-size: 100%;
+    block-size: var(--track-height);
+    border: none;
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+    background: var(--track-bg);
+  }
+  progress::-webkit-progress-bar { background: var(--track-bg); border-radius: var(--radius-pill); }
+  progress::-webkit-progress-value { background: var(--track-fill); border-radius: var(--radius-pill); transition: inline-size var(--duration-med); }
+  progress::-moz-progress-bar { background: var(--track-fill); border-radius: var(--radius-pill); }
+
+  /* -- Meter -- */
+  meter {
+    appearance: none;
+    inline-size: 100%;
+    block-size: var(--track-height);
+    border: none;
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+    background: var(--track-bg);
+  }
+  meter::-webkit-meter-bar { background: var(--track-bg); border-radius: var(--radius-pill); border: none; block-size: var(--track-height); }
+  meter::-webkit-meter-optimum-value { background: var(--meter-high); border-radius: var(--radius-pill); }
+  meter::-webkit-meter-suboptimum-value { background: var(--meter-mid); border-radius: var(--radius-pill); }
+  meter::-webkit-meter-even-less-good-value { background: var(--meter-low); border-radius: var(--radius-pill); }
+
   /* -- Controls nav -- */
   nav[data-controls] { display: flex; gap: var(--space-sm); flex-wrap: wrap; margin-block-start: var(--space-md); }
 
@@ -470,6 +772,14 @@
     font-size: var(--font-size-sm);
     color: var(--text-1);
     margin-block-end: var(--space-md);
+  }
+
+  /* Inline output inside labels */
+  abbr output {
+    display: inline;
+    margin: 0;
+    font-size: inherit;
+    color: inherit;
   }
 
   /* -- Code blocks -- */
@@ -565,6 +875,531 @@
     margin-block-end: var(--space-md);
   }
 
+  /* -- Fieldset / Legend -- */
+  fieldset {
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    margin-block-end: var(--space-md);
+  }
+
+  legend {
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
+    font-size: var(--font-size-xs);
+    color: var(--accent);
+    letter-spacing: var(--letter-spacing-wider);
+    text-transform: uppercase;
+    padding-inline: var(--space-sm);
+  }
+
+  fieldset > label + label { margin-block-start: var(--space-md); }
+
+  /* -- Inline label (for checkbox/radio rows) -- */
+  label:has(input[type="checkbox"]),
+  label:has(input[type="radio"]) {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-sm);
+    cursor: pointer;
+    font-size: var(--font-size-base);
+    color: var(--text-1);
+  }
+
+  /* -- Table -- */
+  table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-base);
+  }
+
+  thead {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 1;
+  }
+
+  th {
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wider);
+    text-align: start;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--table-header-bg);
+    border-block-end: var(--border-width) solid var(--border-accent);
+  }
+
+  td {
+    padding: var(--space-sm) var(--space-md);
+    border-block-end: var(--border-width) solid var(--border);
+    color: var(--text-1);
+  }
+
+  tbody tr:nth-child(even) { background: var(--table-stripe); }
+  tbody tr { transition: background var(--duration-fast); }
+  tbody tr:hover { background: var(--surface-2); }
+
+  /* -- Blockquote -- */
+  blockquote {
+    font-family: var(--font-family);
+    font-stretch: var(--font-serif);
+    font-size: var(--font-size-lg);
+    font-style: italic;
+    color: var(--text-1);
+    border-inline-start: var(--border-code-width) solid var(--blockquote-border);
+    padding-inline-start: var(--space-lg);
+    padding-block: var(--space-sm);
+    margin-block: var(--space-md);
+  }
+
+  blockquote footer {
+    font-stretch: var(--font-mono);
+    font-style: normal;
+    font-size: var(--font-size-sm);
+    color: var(--text-2);
+    margin-block-start: var(--space-sm);
+    border: none;
+    padding: 0;
+    text-align: start;
+  }
+
+  /* -- Kbd -- */
+  kbd {
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
+    font-size: 0.85em;
+    padding: 0.1em 0.4em;
+    background: var(--kbd-bg);
+    border: var(--border-width) solid var(--kbd-border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--kbd-shadow);
+    color: var(--text-0);
+    white-space: nowrap;
+  }
+
+  /* -- Mark -- */
+  mark {
+    background: var(--mark-bg);
+    color: var(--mark-text);
+    padding-inline: 0.2em;
+    border-radius: 0.15em;
+  }
+
+  /* -- Abbr -- */
+  abbr[title] {
+    text-decoration: underline dotted var(--text-2);
+    text-underline-offset: 0.2em;
+    cursor: help;
+  }
+
+  /* -- Details / Summary -- */
+  details {
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-md);
+    margin-block-end: var(--space-sm);
+    interpolate-size: allow-keywords;
+  }
+
+  summary {
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-0);
+    padding: var(--space-sm) var(--space-md);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    transition: background var(--duration-fast), color var(--duration-fast);
+    border-radius: var(--radius-md);
+  }
+  summary:hover { background: var(--surface-2); color: var(--accent); }
+  summary::-webkit-details-marker { display: none; }
+
+  summary::before {
+    content: '▸';
+    color: var(--details-marker);
+    font-size: 0.85em;
+    transition: rotate var(--duration-fast);
+  }
+  details[open] > summary::before { rotate: 90deg; }
+  details[open] > summary { margin-block-end: 0; }
+
+  details > :not(summary) {
+    padding: var(--space-sm) var(--space-md) var(--space-md);
+    color: var(--text-1);
+    font-size: var(--font-size-base);
+  }
+
+  /* -- Dialog -- */
+  dialog {
+    margin: auto;
+    background: var(--dialog-bg);
+    color: var(--text-0);
+    border: var(--border-width) solid var(--dialog-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    max-inline-size: min(90vi, 28rem);
+    box-shadow: var(--dialog-shadow);
+    transition: opacity var(--duration-med), scale var(--duration-med), overlay var(--duration-med), display var(--duration-med);
+    transition-behavior: allow-discrete;
+  }
+
+  dialog::backdrop {
+    background: var(--dialog-backdrop);
+    transition: opacity var(--duration-med), overlay var(--duration-med), display var(--duration-med);
+    transition-behavior: allow-discrete;
+  }
+
+  dialog[open] { opacity: 1; scale: 1; }
+
+  @starting-style {
+    dialog[open] { opacity: 0; scale: 0.95; }
+    dialog[open]::backdrop { opacity: 0; }
+  }
+
+  dialog > header {
+    margin-block-end: var(--space-md);
+    padding-block-end: var(--space-md);
+    border-block-end: var(--border-width) solid var(--border);
+  }
+
+  dialog > header h3 {
+    font-family: var(--font-family);
+    font-stretch: var(--font-serif);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-normal);
+  }
+
+  dialog > footer {
+    margin-block-start: var(--space-lg);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-sm);
+    border: none;
+    padding: 0;
+    text-align: start;
+  }
+
+  /* -- Popover -- */
+  [popover] {
+    margin: 0;
+    padding: var(--space-md);
+    background: var(--popover-bg);
+    color: var(--text-0);
+    border: var(--border-width) solid var(--popover-border);
+    border-radius: var(--popover-radius);
+    box-shadow: var(--popover-shadow);
+    inset: unset;
+    transition: opacity var(--duration-fast), scale var(--duration-fast), overlay var(--duration-fast), display var(--duration-fast);
+    transition-behavior: allow-discrete;
+    opacity: 1;
+    scale: 1;
+  }
+
+  [popover]::backdrop { background: transparent; }
+
+  @starting-style {
+    [popover]:popover-open { opacity: 0; scale: 0.96; }
+  }
+
+  /* Tooltip variant */
+  output[popover] {
+    display: none;
+    padding: var(--space-xs) var(--space-sm);
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
+    font-size: var(--tooltip-font-size);
+    background: var(--tooltip-bg);
+    color: var(--tooltip-text);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--popover-shadow);
+    max-inline-size: 20rem;
+    pointer-events: none;
+  }
+  output[popover]:popover-open { display: block; }
+
+  /* Dropdown menu variant */
+  nav[popover] {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+    padding: var(--space-xs);
+    min-inline-size: 10rem;
+  }
+  nav[popover]:popover-open { display: flex; }
+
+  nav[popover] a,
+  nav[popover] button {
+    display: block;
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
+    font-size: var(--font-size-sm);
+    padding: var(--space-sm) var(--space-md);
+    color: var(--text-1);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: transparent;
+    text-align: start;
+    inline-size: 100%;
+    cursor: pointer;
+    transition: background var(--duration-fast), color var(--duration-fast);
+  }
+
+  nav[popover] a:hover,
+  nav[popover] button:hover {
+    background: var(--surface-3);
+    color: var(--accent);
+    box-shadow: none;
+  }
+
+  nav[popover] hr {
+    border: none;
+    border-block-start: var(--border-width) solid var(--border);
+    margin-block: var(--space-xs);
+  }
+
+  /* Popover card variant */
+  article[popover] {
+    container-type: normal;
+    inline-size: 20rem;
+    padding: var(--space-lg);
+  }
+
+  /* -- Anchor positioning -- */
+  @supports (anchor-name: --x) {
+    [popover] {
+      position: fixed;
+      position-try-fallbacks: flip-block, flip-inline;
+    }
+  }
+
+  /* -- Datepicker trigger (calendar icon button) -- */
+  [data-datepicker-trigger] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-base);
+    color: var(--text-2);
+    cursor: pointer;
+    transition: color var(--duration-fast), background var(--duration-fast);
+  }
+  [data-datepicker-trigger]:hover { color: var(--accent); background: var(--surface-3); box-shadow: none; }
+  [data-datepicker-trigger] svg { display: block; }
+
+  /* -- Datepicker popover -- */
+  [data-datepicker] {
+    padding: var(--space-md);
+    min-inline-size: 18rem;
+  }
+
+  [data-datepicker-header] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-block-end: var(--space-sm);
+    padding: 0;
+    border: none;
+  }
+
+  [data-datepicker-header] strong {
+    font-family: var(--font-family);
+    font-stretch: var(--font-serif);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+    color: var(--text-0);
+  }
+
+  [data-datepicker-prev],
+  [data-datepicker-next] {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-sm);
+    background: transparent;
+    border: var(--border-width) solid transparent;
+    border-radius: var(--radius-sm);
+    color: var(--text-2);
+    cursor: pointer;
+    transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
+  }
+  [data-datepicker-prev]:hover,
+  [data-datepicker-next]:hover {
+    background: var(--surface-3);
+    color: var(--accent);
+    border-color: var(--accent-dim);
+    box-shadow: none;
+  }
+
+  [data-datepicker-grid] {
+    inline-size: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  [data-datepicker-grid] th {
+    font-size: var(--font-size-xs);
+    padding: var(--space-xs);
+    text-align: center;
+    color: var(--text-2);
+    background: transparent;
+    border: none;
+  }
+
+  [data-datepicker-grid] td {
+    padding: 0;
+    text-align: center;
+    border: none;
+  }
+
+  [data-datepicker-grid] td button {
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    padding: 0;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
+    background: transparent;
+    border: var(--border-width) solid transparent;
+    color: var(--text-1);
+    cursor: pointer;
+    transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
+  }
+
+  [data-datepicker-grid] td button:hover {
+    background: var(--surface-3);
+    color: var(--text-0);
+    border-color: var(--border);
+    box-shadow: none;
+  }
+
+  [data-datepicker-grid] td button[data-today] {
+    border-color: var(--accent-dim);
+    color: var(--accent);
+  }
+
+  [data-datepicker-grid] td button[data-selected] {
+    background: var(--accent);
+    color: var(--surface-0);
+    border-color: var(--accent);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  /* -- Tasks page -- */
+  [data-hydrate] > h3 { margin-block-end: var(--space-md); }
+  [data-hydrate] > nav[data-controls] { margin-block-end: var(--space-md); }
+  [data-hydrate] > output { margin-block: var(--space-sm) var(--space-md); }
+
+  [data-hydrate] ul[role="list"] { gap: var(--space-sm); }
+  [data-hydrate] ul[role="list"] li {
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-md);
+    gap: var(--space-md);
+  }
+
+  /* -- Datepicker input group -- */
+  [data-datepicker-input] {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: var(--surface-0);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-sm);
+    padding-inline-start: var(--space-md);
+    transition: border-color var(--duration-med), box-shadow var(--duration-med);
+  }
+  [data-datepicker-input]:focus-within {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-input), var(--shadow-btn);
+  }
+
+  [data-datepicker-input] input {
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
+    font-size: var(--font-size-base);
+    background: transparent;
+    color: var(--text-0);
+    border: none;
+    outline: none;
+    padding: var(--space-sm) 0;
+    text-align: center;
+  }
+  [data-datepicker-input] input[data-date-month],
+  [data-datepicker-input] input[data-date-day] { inline-size: 2ch; }
+  [data-datepicker-input] input[data-date-year] { inline-size: 4ch; }
+  [data-datepicker-input] input::placeholder { color: var(--text-2); }
+
+  [data-datepicker-input] > span {
+    color: var(--text-2);
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
+    font-size: var(--font-size-base);
+    user-select: none;
+  }
+
+  [data-datepicker-input] > button {
+    margin-inline-start: auto;
+    align-self: stretch;
+    border: none;
+    border-inline-start: var(--border-width) solid var(--border);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    background: var(--surface-2);
+    padding-inline: var(--space-md);
+  }
+
+  /* -- Datepicker month/year picker -- */
+  [data-datepicker-title-btn] {
+    background: transparent;
+    border: none;
+    font-family: var(--font-family);
+    font-stretch: var(--font-serif);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+    color: var(--text-0);
+    cursor: pointer;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    transition: background var(--duration-fast), color var(--duration-fast);
+  }
+  [data-datepicker-title-btn]:hover {
+    background: var(--surface-3);
+    color: var(--accent);
+    box-shadow: none;
+  }
+
+  [data-datepicker-months] {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-xs);
+    padding-block-start: var(--space-sm);
+  }
+
+  [data-datepicker-months] button {
+    padding: var(--space-sm);
+    font-size: var(--font-size-sm);
+    background: transparent;
+    border: var(--border-width) solid transparent;
+    border-radius: var(--radius-sm);
+    color: var(--text-1);
+    cursor: pointer;
+    transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
+  }
+  [data-datepicker-months] button:hover {
+    background: var(--surface-3);
+    color: var(--text-0);
+    box-shadow: none;
+  }
+  [data-datepicker-months] button[data-current] {
+    border-color: var(--accent-dim);
+    color: var(--accent);
+  }
+
   /* -- Docs page -- */
   [data-code-preview] article + article {
     margin-block-start: var(--space-md);
@@ -621,8 +1456,64 @@
     }
   }
 
-  /* Viewport fallback for elements outside containers (header/footer) */
+  /* Table: horizontal scroll on narrow containers */
+  @container card (max-width: 24rem) {
+    table { font-size: var(--font-size-sm); }
+    th, td { padding: var(--space-xs) var(--space-sm); }
+  }
+
+  /* Fieldset: tighter spacing on narrow containers */
+  @container card (max-width: 20rem) {
+    fieldset { padding: var(--space-md); }
+    fieldset > label + label { margin-block-start: var(--space-sm); }
+  }
+
+  /* Datepicker: compact layout on narrow cards */
+  @container card (max-width: 20rem) {
+    [data-datepicker-input] {
+      padding-inline-start: var(--space-sm);
+    }
+
+    [data-datepicker-input] input {
+      font-size: var(--font-size-sm);
+    }
+
+    [data-datepicker-input] > span {
+      font-size: var(--font-size-sm);
+    }
+
+    [data-datepicker-input] > button {
+      padding-inline: var(--space-sm);
+    }
+  }
+
+  /* Datepicker popover: smaller cells on narrow viewports */
   @media (max-width: 40rem) {
+    [data-datepicker] {
+      min-inline-size: auto;
+      padding: var(--space-sm);
+    }
+
+    [data-datepicker-grid] td button {
+      inline-size: 2rem;
+      block-size: 2rem;
+      font-size: var(--font-size-xs);
+    }
+
+    [data-datepicker-grid] th {
+      font-size: 0.625rem;
+      padding: var(--space-xs);
+    }
+
+    [data-datepicker-months] {
+      gap: var(--space-xs);
+    }
+
+    [data-datepicker-months] button {
+      padding: var(--space-xs);
+      font-size: var(--font-size-xs);
+    }
+
     body > header > nav {
       flex-direction: column;
       gap: var(--space-sm);
