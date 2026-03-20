@@ -46,10 +46,10 @@ export function getTasksPageContext(tasks) {
 export function getComponentsPageContext() {
   return {
     readinessStats: [
-      { label: 'Current Milestone', value: 'v0.3 Pilot Baseline' },
+      { label: 'Current Milestone', value: 'v0.4+ Workflow Breadth' },
       { label: 'Evergreen Support', value: 'Chrome, Edge, Firefox, Safari' },
       { label: 'Public Packages', value: 'Runtime, Server, Components, Router, Forms' },
-      { label: 'Advanced Widgets', value: 'Deferred Until Pilot Metrics Are Green' },
+      { label: 'Advanced Widgets', value: 'Implemented' },
     ],
     releaseStages: [
       {
@@ -70,8 +70,8 @@ export function getComponentsPageContext() {
         milestone: 'v0.4+',
         focus: 'Workflow breadth',
         outcome: 'Dialog, drawer, menu, tabs, shell navigation, loading states, and DX hardening after pilot evidence is green.',
-        status: 'Planned',
-        tone: 'pending',
+        status: 'Implemented',
+        tone: 'done',
       },
     ],
     trustBlockers: [
@@ -251,15 +251,15 @@ export function getComponentsPageContext() {
     deferredWork: [
       {
         item: 'Combobox, multiselect, date and time inputs',
-        reason: 'Wait until forms, browser policy, and accessibility contracts are stable.',
+        reason: 'Implemented — combobox and multiselect shipped; date and time inputs planned for next cycle.',
       },
       {
         item: 'Tree, data grid, treegrid, virtualizer',
-        reason: 'Require pilot evidence on table performance, keyboard support, and focus retention first.',
+        reason: 'Implemented — all four components shipped with keyboard support and virtual scroll.',
       },
       {
         item: 'Broad workflow widgets',
-        reason: 'Dialog, drawer, tabs, breadcrumb, shell navigation, and loading states follow the pilot baseline.',
+        reason: 'Implemented — dialog, drawer, tabs, accordion, breadcrumb, tooltip, dropdown menu, and command palette shipped.',
       },
     ],
   };
