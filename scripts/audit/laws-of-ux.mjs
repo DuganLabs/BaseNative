@@ -14,7 +14,7 @@
  *   7. Serial Position  — primary action is first or last in a list
  *   8. Postel's Law     — inputs accept flexible formats (tel, email)
  */
-import { chromium } from 'playwright';
+import { chromium } from '@playwright/test';
 import { createServer } from 'http';
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join, extname } from 'path';
