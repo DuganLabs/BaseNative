@@ -1,0 +1,12 @@
+{
+  "name": "@basenative/auth",
+  "version": "0.2.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./rbac": "./src/rbac.js",
+    "./middleware": "./src/middleware.js"
+  },
+  "types": "./types/index.d.ts",
+  "files": ["src", "types"]
+}

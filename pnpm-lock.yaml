@@ -96,6 +96,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/runtime
 
+  packages/auth: {}
+
   packages/cli: {}
 
   packages/components:
@@ -108,6 +110,8 @@ importers:
         version: link:../runtime
 
   packages/config: {}
+
+  packages/db: {}
 
   packages/fonts: {}
 
