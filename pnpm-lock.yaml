@@ -111,7 +111,15 @@ importers:
 
   packages/config: {}
 
+  packages/date: {}
+
   packages/db: {}
+
+  packages/fetch:
+    dependencies:
+      '@basenative/runtime':
+        specifier: workspace:*
+        version: link:../runtime
 
   packages/fonts: {}
 
@@ -122,6 +130,8 @@ importers:
         version: link:../runtime
 
   packages/icons: {}
+
+  packages/logger: {}
 
   packages/middleware: {}
 
