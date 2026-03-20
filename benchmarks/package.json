@@ -1,0 +1,10 @@
+{
+  "name": "basenative-benchmarks",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@basenative/runtime": "workspace:*",
+    "@basenative/server": "workspace:*"
+  }
+}

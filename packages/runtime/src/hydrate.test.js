@@ -331,7 +331,7 @@ describe('reactive attributes', () => {
 
 describe('SSR → hydration flow', () => {
   it('hydrates server-rendered content and makes it reactive', async () => {
-    const hydrate = await loadHydrate();
+    const _hydrate = await loadHydrate();
     // Simulate what the server would render: static HTML + a script with initial data
     const root = document.createElement('section');
     root.innerHTML = `
