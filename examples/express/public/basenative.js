@@ -1,4 +1,4 @@
-// packages/runtime/src/signals.js
+// ../../packages/runtime/src/signals.js
 var currentEffect = null;
 function cleanupEffect(effectRef) {
   for (const subscribers of effectRef.subscriptions) {
@@ -66,7 +66,7 @@ function effect(fn) {
   return execute;
 }
 
-// src/shared/expression.js
+// ../../src/shared/expression.js
 var SCOPE_SLOT = Symbol.for("basenative.scopeSlot");
 var EXPRESSION_CACHE = /* @__PURE__ */ new Map();
 var UNSAFE_PROPERTIES = /* @__PURE__ */ new Set(["__proto__", "prototype", "constructor"]);
@@ -692,7 +692,7 @@ function evaluateExpression(source, ctx = {}, options = {}) {
   }
 }
 
-// packages/runtime/src/evaluate.js
+// ../../packages/runtime/src/evaluate.js
 function evaluate(expr, ctx, options) {
   return evaluateExpression(expr, ctx, options);
 }
@@ -703,7 +703,7 @@ function interpolate(text, ctx, options) {
   });
 }
 
-// packages/runtime/src/dom-lifecycle.js
+// ../../packages/runtime/src/dom-lifecycle.js
 var CLEANUPS = Symbol("basenative.cleanups");
 function registerCleanup(node, cleanup) {
   if (!node || typeof cleanup !== "function") return cleanup;
@@ -740,7 +740,7 @@ function removeNodeRange(start, end) {
   }
 }
 
-// packages/runtime/src/scope.js
+// ../../packages/runtime/src/scope.js
 function createScopeSlot(initial) {
   const state = signal(initial);
   return {
@@ -782,7 +782,7 @@ function updateLoopContext(slots, itemName, item, index, length) {
   slots.$odd.set(index % 2 !== 0);
 }
 
-// packages/runtime/src/bind.js
+// ../../packages/runtime/src/bind.js
 function bindNode(node, ctx, options) {
   let processed = 0;
   if (node.nodeType === Node.TEXT_NODE) {
@@ -837,7 +837,7 @@ function bindNode(node, ctx, options) {
   return processed;
 }
 
-// packages/runtime/src/diagnostics.js
+// ../../packages/runtime/src/diagnostics.js
 function logDiagnostic(diagnostic) {
   const method = diagnostic.level === "error" ? "error" : "warn";
   console[method]?.(`[BaseNative:${diagnostic.code}] ${diagnostic.message}`, diagnostic);
@@ -874,7 +874,7 @@ function reportHydrationMismatch(options, message, detail = {}) {
   }
 }
 
-// packages/runtime/src/hydrate.js
+// ../../packages/runtime/src/hydrate.js
 function insertAfterAnchor(anchor, nodes) {
   let ref = anchor;
   for (const node of nodes) {
@@ -1201,7 +1201,7 @@ function hydrate(root, ctx, options = {}) {
   return () => disposeNodeTree(root);
 }
 
-// packages/runtime/src/features.js
+// ../../packages/runtime/src/features.js
 function cssSupports(target, rule) {
   return Boolean(target?.CSS?.supports?.(rule));
 }
