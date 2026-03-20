@@ -28,40 +28,33 @@ function gradeIndex(g) {
   return i === -1 ? GRADE_ORDER.length : i;
 }
 
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
 async function runScan() {
   mkdirSync(REPORTS_DIR, { recursive: true });
 
-  // Use v2 API
-  const API = 'https://observatory.mozilla.org/api/v2';
+  // MDN HTTP Observatory v2 API (old observatory.mozilla.org was shut down Oct 2024)
+  const API = 'https://observatory-api.mdn.mozilla.net/api/v2';
 
-  // Trigger scan
-  const triggerRes = await fetch(`${API}/analyze?host=${hostname}&rescan=true`, {
+  // Trigger scan — v2 returns results synchronously, no polling needed
+  const scanRes = await fetch(`${API}/scan?host=${hostname}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
   });
 
-  if (!triggerRes.ok && triggerRes.status !== 200) {
-    // Fall back: just GET current results
-    console.log(`  Trigger returned ${triggerRes.status}, fetching existing results...`);
+  if (!scanRes.ok) {
+    console.log(`  Scan returned HTTP ${scanRes.status} — falling back to manual header check...\n`);
+    await manualHeaderCheck(hostname);
+    return;
   }
 
-  // Poll for completion
-  let result;
-  for (let i = 0; i < 24; i++) {
-    await sleep(5000);
-    const res = await fetch(`${API}/analyze?host=${hostname}`);
-    if (!res.ok) { console.log(`  Poll ${i+1}: HTTP ${res.status}`); continue; }
-    result = await res.json();
-    console.log(`  Status: ${result.state ?? result.status ?? 'unknown'} (attempt ${i+1})`);
-    if ((result.state === 'FINISHED') || result.grade) break;
-    if (result.state === 'FAILED') throw new Error(`Scan failed: ${JSON.stringify(result)}`);
+  const result = await scanRes.json();
+
+  if (result.error) {
+    console.log(`  Observatory error: ${result.error} — falling back to manual header check...\n`);
+    await manualHeaderCheck(hostname);
+    return;
   }
 
-  if (!result?.grade) {
-    // If Observatory API is unavailable, do a manual header check instead
-    console.log('\n  Observatory API unavailable — running manual header security check...\n');
+  if (!result.grade) {
+    console.log('  No grade returned — falling back to manual header check...\n');
     await manualHeaderCheck(hostname);
     return;
   }
