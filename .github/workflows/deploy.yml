@@ -33,7 +33,7 @@ jobs:
           command: pages deploy dist --project-name basenative
 
       - id: prod-url
-        run: echo "url=https://basenative.pages.dev" >> "$GITHUB_OUTPUT"
+        run: echo "url=https://basenative-docs.pages.dev" >> "$GITHUB_OUTPUT"
 
   audit:
     runs-on: ubuntu-latest
