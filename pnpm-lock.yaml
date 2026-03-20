@@ -121,6 +121,8 @@ importers:
         specifier: workspace:*
         version: link:../runtime
 
+  packages/flags: {}
+
   packages/fonts: {}
 
   packages/forms:
@@ -129,11 +131,15 @@ importers:
         specifier: workspace:*
         version: link:../runtime
 
+  packages/i18n: {}
+
   packages/icons: {}
 
   packages/logger: {}
 
   packages/middleware: {}
+
+  packages/realtime: {}
 
   packages/router:
     dependencies:
@@ -148,6 +154,10 @@ importers:
       node-html-parser:
         specifier: ^7.0.1
         version: 7.1.0
+
+  packages/tenant: {}
+
+  packages/upload: {}
 
 packages:
 

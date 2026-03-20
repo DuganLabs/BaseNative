@@ -1,0 +1,15 @@
+{
+  "name": "@basenative/upload",
+  "targets": {
+    "test": {
+      "cache": true,
+      "command": "node --test",
+      "inputs": ["{projectRoot}/src/**/*.js"]
+    },
+    "lint": {
+      "cache": true,
+      "command": "pnpm exec eslint src/",
+      "inputs": ["{projectRoot}/src/**/*.js"]
+    }
+  }
+}
