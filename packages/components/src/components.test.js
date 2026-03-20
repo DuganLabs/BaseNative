@@ -16,6 +16,20 @@ import { renderCard } from './card.js';
 import { renderProgress, renderSpinner } from './progress.js';
 import { renderSkeleton } from './skeleton.js';
 import { renderToastContainer } from './toast.js';
+import { renderDialog } from './dialog.js';
+import { renderDrawer } from './drawer.js';
+import { renderTabs } from './tabs.js';
+import { renderAccordion } from './accordion.js';
+import { renderBreadcrumb } from './breadcrumb.js';
+import { renderTooltip } from './tooltip.js';
+import { renderDropdownMenu } from './dropdown-menu.js';
+import { renderCommandPalette } from './command-palette.js';
+import { renderCombobox } from './combobox.js';
+import { renderMultiselect } from './multiselect.js';
+import { renderDataGrid } from './datagrid.js';
+import { renderTree, renderTreeGrid } from './tree.js';
+import { renderVirtualList } from './virtualizer.js';
+import { renderAvatar } from './avatar.js';
 
 describe('Button', () => {
   it('renders a primary button', () => {
@@ -211,5 +225,200 @@ describe('ToastContainer', () => {
     const html = renderToastContainer('top-right');
     assert.ok(html.includes('data-bn="toast-container"'));
     assert.ok(html.includes('aria-live="polite"'));
+  });
+});
+
+describe('Dialog', () => {
+  it('renders a modal dialog', () => {
+    const html = renderDialog({ title: 'Confirm', content: 'Are you sure?' });
+    assert.ok(html.includes('<dialog'));
+    assert.ok(html.includes('Confirm'));
+    assert.ok(html.includes('Are you sure?'));
+  });
+
+  it('renders close button when closable', () => {
+    const html = renderDialog({ closable: true });
+    assert.ok(html.includes('dialog-close'));
+  });
+
+  it('omits close button when not closable', () => {
+    const html = renderDialog({ closable: false });
+    assert.ok(!html.includes('dialog-close'));
+  });
+});
+
+describe('Drawer', () => {
+  it('renders a drawer with position', () => {
+    const html = renderDrawer({ title: 'Settings', position: 'left' });
+    assert.ok(html.includes('data-position="left"'));
+    assert.ok(html.includes('Settings'));
+    assert.ok(html.includes('role="dialog"'));
+  });
+});
+
+describe('Tabs', () => {
+  it('renders tabs with panels', () => {
+    const html = renderTabs({
+      tabs: [
+        { id: 'a', label: 'Tab A', content: 'Panel A' },
+        { id: 'b', label: 'Tab B', content: 'Panel B' },
+      ],
+      activeTab: 'a',
+    });
+    assert.ok(html.includes('role="tablist"'));
+    assert.ok(html.includes('role="tab"'));
+    assert.ok(html.includes('role="tabpanel"'));
+    assert.ok(html.includes('aria-selected="true"'));
+    assert.ok(html.includes('Panel A'));
+  });
+});
+
+describe('Accordion', () => {
+  it('renders accordion with details/summary', () => {
+    const html = renderAccordion({
+      items: [
+        { title: 'Section 1', content: 'Content 1', open: true },
+        { title: 'Section 2', content: 'Content 2' },
+      ],
+    });
+    assert.ok(html.includes('<details'));
+    assert.ok(html.includes('<summary'));
+    assert.ok(html.includes('Section 1'));
+    assert.ok(html.includes(' open'));
+  });
+});
+
+describe('Breadcrumb', () => {
+  it('renders breadcrumb navigation', () => {
+    const html = renderBreadcrumb({ items: [{ label: 'Home', href: '/' }, { label: 'Page' }] });
+    assert.ok(html.includes('aria-label="Breadcrumb"'));
+    assert.ok(html.includes('Home'));
+    assert.ok(html.includes('Page'));
+  });
+});
+
+describe('Tooltip', () => {
+  it('renders tooltip with trigger', () => {
+    const html = renderTooltip({ content: 'Help text', trigger: 'Hover me' });
+    assert.ok(html.includes('data-bn="tooltip"'));
+    assert.ok(html.includes('Help text'));
+    assert.ok(html.includes('Hover me'));
+  });
+});
+
+describe('DropdownMenu', () => {
+  it('renders dropdown with items', () => {
+    const html = renderDropdownMenu({
+      trigger: 'Menu',
+      items: [{ label: 'Edit', action: 'edit' }, { separator: true }, { label: 'Delete', action: 'delete' }],
+    });
+    assert.ok(html.includes('role="menu"'));
+    assert.ok(html.includes('role="menuitem"'));
+    assert.ok(html.includes('Edit'));
+    assert.ok(html.includes('role="separator"'));
+  });
+});
+
+describe('CommandPalette', () => {
+  it('renders command palette', () => {
+    const html = renderCommandPalette({
+      commands: [{ label: 'Save', action: 'save', shortcut: '⌘S' }],
+    });
+    assert.ok(html.includes('<dialog'));
+    assert.ok(html.includes('role="combobox"'));
+    assert.ok(html.includes('Save'));
+    assert.ok(html.includes('⌘S'));
+  });
+});
+
+describe('Combobox', () => {
+  it('renders combobox with datalist', () => {
+    const html = renderCombobox({ name: 'fruit', items: ['Apple', 'Banana'] });
+    assert.ok(html.includes('role="combobox"'));
+    assert.ok(html.includes('<datalist'));
+    assert.ok(html.includes('Apple'));
+  });
+});
+
+describe('Multiselect', () => {
+  it('renders multiselect with tags', () => {
+    const html = renderMultiselect({
+      name: 'tags',
+      items: ['React', 'Vue', 'Svelte'],
+      selected: ['React'],
+    });
+    assert.ok(html.includes('data-bn="multiselect"'));
+    assert.ok(html.includes('data-bn="tag"'));
+    assert.ok(html.includes('React'));
+  });
+});
+
+describe('DataGrid', () => {
+  it('renders a data grid with sorting', () => {
+    const html = renderDataGrid({
+      columns: [{ key: 'name', label: 'Name', sortable: true }],
+      rows: [{ name: 'Alice' }],
+      sortBy: 'name',
+      sortDir: 'asc',
+    });
+    assert.ok(html.includes('role="grid"'));
+    assert.ok(html.includes('data-sorted="asc"'));
+    assert.ok(html.includes('Alice'));
+  });
+
+  it('renders selectable rows', () => {
+    const html = renderDataGrid({
+      columns: [{ key: 'name', label: 'Name' }],
+      rows: [{ id: 1, name: 'Bob' }],
+      selectable: true,
+    });
+    assert.ok(html.includes('Select all'));
+    assert.ok(html.includes('Select row 1'));
+  });
+});
+
+describe('Tree', () => {
+  it('renders a tree view', () => {
+    const html = renderTree({
+      items: [
+        { id: 'root', label: 'Root', children: [{ id: 'child', label: 'Child' }] },
+      ],
+      expanded: new Set(['root']),
+    });
+    assert.ok(html.includes('role="tree"'));
+    assert.ok(html.includes('role="treeitem"'));
+    assert.ok(html.includes('Root'));
+    assert.ok(html.includes('Child'));
+  });
+});
+
+describe('TreeGrid', () => {
+  it('renders a tree grid', () => {
+    const html = renderTreeGrid({
+      columns: [{ key: 'name', label: 'Name' }],
+      items: [{ name: 'Parent', children: [{ name: 'Child' }] }],
+      expanded: new Set(['Parent']),
+    });
+    assert.ok(html.includes('role="treegrid"'));
+    assert.ok(html.includes('Parent'));
+    assert.ok(html.includes('Child'));
+  });
+});
+
+describe('VirtualList', () => {
+  it('renders a virtual scroll container', () => {
+    const items = Array.from({ length: 100 }, (_, i) => `Item ${i}`);
+    const html = renderVirtualList({ items, itemHeight: 40, containerHeight: 200 });
+    assert.ok(html.includes('data-bn="virtualizer"'));
+    assert.ok(html.includes('data-total="100"'));
+    assert.ok(html.includes('height:4000px'));
+  });
+});
+
+describe('Avatar', () => {
+  it('renders an avatar', () => {
+    const html = renderAvatar({ name: 'Jane Doe', src: '/img/jane.jpg' });
+    assert.ok(html.includes('data-bn="avatar"'));
+    assert.ok(html.includes('Jane Doe'));
   });
 });
