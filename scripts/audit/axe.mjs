@@ -4,7 +4,7 @@
  * Serves the built static site, runs axe on every route,
  * writes a JSON report, exits 1 if any violations found.
  */
-import { chromium } from 'playwright';
+import { chromium } from '@playwright/test';
 import { createServer } from 'http';
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join, extname } from 'path';

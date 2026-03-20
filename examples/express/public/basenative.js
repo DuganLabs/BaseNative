@@ -1,4 +1,4 @@
-// ../../packages/runtime/src/signals.js
+// packages/runtime/src/signals.js
 var currentEffect = null;
 function cleanupEffect(effectRef) {
   for (const subscribers of effectRef.subscriptions) {
@@ -66,7 +66,7 @@ function effect(fn) {
   return execute;
 }
 
-// ../../src/shared/expression.js
+// src/shared/expression.js
 var SCOPE_SLOT = Symbol.for("basenative.scopeSlot");
 var EXPRESSION_CACHE = /* @__PURE__ */ new Map();
 var UNSAFE_PROPERTIES = /* @__PURE__ */ new Set(["__proto__", "prototype", "constructor"]);
@@ -692,7 +692,7 @@ function evaluateExpression(source, ctx = {}, options = {}) {
   }
 }
 
-// ../../packages/runtime/src/evaluate.js
+// packages/runtime/src/evaluate.js
 function evaluate(expr, ctx, options) {
   return evaluateExpression(expr, ctx, options);
 }
@@ -703,7 +703,7 @@ function interpolate(text, ctx, options) {
   });
 }
 
-// ../../packages/runtime/src/dom-lifecycle.js
+// packages/runtime/src/dom-lifecycle.js
 var CLEANUPS = Symbol("basenative.cleanups");
 function registerCleanup(node, cleanup) {
   if (!node || typeof cleanup !== "function") return cleanup;
@@ -740,7 +740,7 @@ function removeNodeRange(start, end) {
   }
 }
 
-// ../../packages/runtime/src/scope.js
+// packages/runtime/src/scope.js
 function createScopeSlot(initial) {
   const state = signal(initial);
   return {
@@ -782,7 +782,7 @@ function updateLoopContext(slots, itemName, item, index, length) {
   slots.$odd.set(index % 2 !== 0);
 }
 
-// ../../packages/runtime/src/bind.js
+// packages/runtime/src/bind.js
 function bindNode(node, ctx, options) {
   let processed = 0;
   if (node.nodeType === Node.TEXT_NODE) {
@@ -837,7 +837,7 @@ function bindNode(node, ctx, options) {
   return processed;
 }
 
-// ../../packages/runtime/src/diagnostics.js
+// packages/runtime/src/diagnostics.js
 function logDiagnostic(diagnostic) {
   const method = diagnostic.level === "error" ? "error" : "warn";
   console[method]?.(`[BaseNative:${diagnostic.code}] ${diagnostic.message}`, diagnostic);
@@ -874,7 +874,7 @@ function reportHydrationMismatch(options, message, detail = {}) {
   }
 }
 
-// ../../packages/runtime/src/hydrate.js
+// packages/runtime/src/hydrate.js
 function insertAfterAnchor(anchor, nodes) {
   let ref = anchor;
   for (const node of nodes) {
@@ -1201,7 +1201,7 @@ function hydrate(root, ctx, options = {}) {
   return () => disposeNodeTree(root);
 }
 
-// ../../packages/runtime/src/features.js
+// packages/runtime/src/features.js
 function cssSupports(target, rule) {
   return Boolean(target?.CSS?.supports?.(rule));
 }
@@ -1220,7 +1220,7 @@ function supportsFeature(name, target = globalThis) {
 }
 var browserFeatures = detectBrowserFeatures();
 
-// ../../packages/runtime/src/devtools.js
+// packages/runtime/src/devtools.js
 var devtoolsState = {
   signals: /* @__PURE__ */ new Map(),
   effects: /* @__PURE__ */ new Map(),
@@ -1289,7 +1289,7 @@ function isDevtoolsEnabled() {
   return devtoolsState.enabled;
 }
 
-// ../../packages/runtime/src/error-boundary.js
+// packages/runtime/src/error-boundary.js
 function createErrorBoundary(options = {}) {
   let lastError = null;
   let hasError = false;
@@ -1358,17 +1358,328 @@ function renderWithBoundary(renderFn, options = {}) {
 function escapeComment(str) {
   return String(str).replace(/--/g, "- -");
 }
+
+// packages/runtime/src/plugins.js
+var VALID_HOOKS = [
+  "beforeRender",
+  "afterRender",
+  "beforeHydrate",
+  "afterHydrate",
+  "error"
+];
+function definePlugin(config) {
+  if (!config || typeof config.name !== "string" || config.name === "") {
+    throw new Error('Plugin must have a non-empty "name" string.');
+  }
+  return {
+    name: config.name,
+    setup: typeof config.setup === "function" ? config.setup : () => {
+    }
+  };
+}
+function createPluginRegistry() {
+  const plugins = /* @__PURE__ */ new Map();
+  const hooks = /* @__PURE__ */ new Map();
+  const directives = /* @__PURE__ */ new Map();
+  function addDirective(name, handler) {
+    if (typeof name !== "string" || name === "") {
+      throw new Error("Directive name must be a non-empty string.");
+    }
+    if (typeof handler !== "function") {
+      throw new Error(`Directive handler for "${name}" must be a function.`);
+    }
+    directives.set(name, handler);
+  }
+  function addHook(hookName, fn) {
+    if (!VALID_HOOKS.includes(hookName)) {
+      throw new Error(
+        `Unknown hook "${hookName}". Valid hooks: ${VALID_HOOKS.join(", ")}`
+      );
+    }
+    if (typeof fn !== "function") {
+      throw new Error(`Hook "${hookName}" handler must be a function.`);
+    }
+    if (!hooks.has(hookName)) {
+      hooks.set(hookName, []);
+    }
+    hooks.get(hookName).push(fn);
+  }
+  function register(plugin) {
+    if (!plugin || typeof plugin.name !== "string") {
+      throw new Error('Invalid plugin: must have a "name" property.');
+    }
+    if (plugins.has(plugin.name)) {
+      throw new Error(`Plugin "${plugin.name}" is already registered.`);
+    }
+    plugins.set(plugin.name, plugin);
+    const api = {
+      addDirective,
+      onBeforeRender: (fn) => addHook("beforeRender", fn),
+      onAfterRender: (fn) => addHook("afterRender", fn),
+      onBeforeHydrate: (fn) => addHook("beforeHydrate", fn),
+      onAfterHydrate: (fn) => addHook("afterHydrate", fn),
+      onError: (fn) => addHook("error", fn)
+    };
+    plugin.setup(api);
+  }
+  function runHook(hookName, ...args) {
+    const fns = hooks.get(hookName);
+    if (!fns) return;
+    for (const fn of fns) {
+      fn(...args);
+    }
+  }
+  function getDirective(name) {
+    return directives.get(name);
+  }
+  function getPlugins() {
+    return [...plugins.keys()];
+  }
+  return { register, runHook, getDirective, getPlugins };
+}
+
+// packages/runtime/src/lazy.js
+function createLazyHydrator(options = {}) {
+  const { rootMargin = "0px", threshold = 0 } = options;
+  const pending = /* @__PURE__ */ new Map();
+  const hydrated = /* @__PURE__ */ new WeakSet();
+  let observer = null;
+  function runHydrate(element) {
+    if (hydrated.has(element)) return;
+    const hydrateFn = pending.get(element);
+    if (!hydrateFn) return;
+    pending.delete(element);
+    hydrated.add(element);
+    observer?.unobserve(element);
+    hydrateFn();
+  }
+  if (typeof IntersectionObserver !== "undefined") {
+    observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            runHydrate(entry.target);
+          }
+        }
+      },
+      { rootMargin, threshold }
+    );
+  }
+  return {
+    /**
+     * Watch an element and call hydrateFn when it becomes visible.
+     * Falls back to immediate hydration when IntersectionObserver is unavailable.
+     */
+    observe(element, hydrateFn) {
+      if (hydrated.has(element)) return;
+      pending.set(element, hydrateFn);
+      if (observer) {
+        observer.observe(element);
+      } else {
+        runHydrate(element);
+      }
+    },
+    /** Stop observing all elements and clear pending queue. */
+    disconnect() {
+      observer?.disconnect();
+      pending.clear();
+    },
+    /** Force immediate hydration of a tracked element. */
+    hydrateNow(element) {
+      runHydrate(element);
+    },
+    /** Get count of elements still waiting for hydration. */
+    getPending() {
+      return pending.size;
+    }
+  };
+}
+function lazyHydrate(element, hydrateFn, options = {}) {
+  const hydrator = createLazyHydrator(options);
+  hydrator.observe(element, hydrateFn);
+  return hydrator;
+}
+function hydrateOnIdle(hydrateFn) {
+  let id;
+  if (typeof requestIdleCallback !== "undefined") {
+    id = requestIdleCallback(() => hydrateFn());
+    return () => cancelIdleCallback(id);
+  }
+  id = setTimeout(() => hydrateFn(), 0);
+  return () => clearTimeout(id);
+}
+function hydrateOnInteraction(element, hydrateFn, events) {
+  const eventList = events ?? ["click", "focus", "mouseenter"];
+  let hydrated = false;
+  function handler() {
+    if (hydrated) return;
+    hydrated = true;
+    cleanup();
+    hydrateFn();
+  }
+  function cleanup() {
+    for (const evt of eventList) {
+      element.removeEventListener(evt, handler);
+    }
+  }
+  for (const evt of eventList) {
+    element.addEventListener(evt, handler, { once: true });
+  }
+  return cleanup;
+}
+function hydrateOnMedia(hydrateFn, query) {
+  const mql = matchMedia(query);
+  let hydrated = false;
+  function check() {
+    if (hydrated) return;
+    if (mql.matches) {
+      hydrated = true;
+      cleanup();
+      hydrateFn();
+    }
+  }
+  function cleanup() {
+    mql.removeEventListener("change", check);
+  }
+  if (mql.matches) {
+    hydrated = true;
+    hydrateFn();
+    return cleanup;
+  }
+  mql.addEventListener("change", check);
+  return cleanup;
+}
+
+// packages/runtime/src/vitals.js
+function createObserver(type, callback) {
+  if (typeof PerformanceObserver === "undefined") return null;
+  try {
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        callback(entry);
+      }
+    });
+    observer.observe({ type, buffered: true });
+    return observer;
+  } catch {
+    return null;
+  }
+}
+function observeLCP(callback) {
+  const observer = createObserver("largest-contentful-paint", (entry) => {
+    callback({ name: "LCP", value: entry.startTime, entries: [entry] });
+  });
+  return observer ? () => observer.disconnect() : null;
+}
+function observeFID(callback) {
+  const observer = createObserver("first-input", (entry) => {
+    callback({
+      name: "FID",
+      value: entry.processingStart - entry.startTime,
+      entries: [entry]
+    });
+  });
+  return observer ? () => observer.disconnect() : null;
+}
+function observeCLS(callback) {
+  let clsValue = 0;
+  const allEntries = [];
+  const observer = createObserver("layout-shift", (entry) => {
+    if (entry.hadRecentInput) return;
+    clsValue += entry.value;
+    allEntries.push(entry);
+    callback({ name: "CLS", value: clsValue, entries: allEntries });
+  });
+  return observer ? () => observer.disconnect() : null;
+}
+function observeFCP(callback) {
+  const observer = createObserver("paint", (entry) => {
+    if (entry.name === "first-contentful-paint") {
+      callback({ name: "FCP", value: entry.startTime, entries: [entry] });
+    }
+  });
+  return observer ? () => observer.disconnect() : null;
+}
+function observeTTFB(callback) {
+  const observer = createObserver("navigation", (entry) => {
+    callback({
+      name: "TTFB",
+      value: entry.responseStart,
+      entries: [entry]
+    });
+  });
+  return observer ? () => observer.disconnect() : null;
+}
+function observeINP(callback) {
+  let maxDuration = 0;
+  const observer = createObserver("event", (entry) => {
+    const duration = entry.duration;
+    if (duration > maxDuration) {
+      maxDuration = duration;
+      callback({ name: "INP", value: duration, entries: [entry] });
+    }
+  });
+  return observer ? () => observer.disconnect() : null;
+}
+function createVitalsReporter(options = {}) {
+  const { onReport } = options;
+  const metrics = {};
+  const cleanups = [];
+  function handleMetric(metric) {
+    metrics[metric.name] = metric.value;
+    onReport?.(metric);
+  }
+  return {
+    /** Begin observing all Web Vitals. */
+    start() {
+      const observers = [
+        observeLCP(handleMetric),
+        observeFID(handleMetric),
+        observeCLS(handleMetric),
+        observeFCP(handleMetric),
+        observeTTFB(handleMetric),
+        observeINP(handleMetric)
+      ];
+      for (const cleanup of observers) {
+        if (cleanup) cleanups.push(cleanup);
+      }
+    },
+    /** Stop all observers. */
+    stop() {
+      for (const cleanup of cleanups) cleanup();
+      cleanups.length = 0;
+    },
+    /** Return a snapshot of collected metrics. */
+    getMetrics() {
+      return { ...metrics };
+    }
+  };
+}
 export {
   browserFeatures,
   computed,
   createErrorBoundary,
+  createLazyHydrator,
+  createPluginRegistry,
+  createVitalsReporter,
+  definePlugin,
   detectBrowserFeatures,
   disableDevtools,
   effect,
   emitDiagnostic,
   enableDevtools,
   hydrate,
+  hydrateOnIdle,
+  hydrateOnInteraction,
+  hydrateOnMedia,
   isDevtoolsEnabled,
+  lazyHydrate,
+  observeCLS,
+  observeFCP,
+  observeFID,
+  observeINP,
+  observeLCP,
+  observeTTFB,
   recordHydration,
   renderWithBoundary,
   reportHydrationMismatch,
