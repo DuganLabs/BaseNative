@@ -11,6 +11,9 @@ importers:
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.0.3)
+      '@playwright/test':
+        specifier: ^1.52.0
+        version: 1.58.2
       esbuild:
         specifier: ^0.25.0
         version: 0.25.12
@@ -32,9 +35,6 @@ importers:
       nx-mcp:
         specifier: ^0.23.0
         version: 0.23.0
-      playwright:
-        specifier: ^1.52.0
-        version: 1.58.2
       prettier:
         specifier: ^3.8.1
         version: 3.8.1
@@ -883,6 +883,11 @@ packages:
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
+
+  '@playwright/test@1.58.2':
+    resolution: {integrity: sha512-akea+6bHYBBfA9uQqSYmlJXn61cTa+jbO87xVLCWbTqbWadRVmhxlXATaOjOgcBaWU4ePo0wB41KMFv3o35IXA==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   '@poppinss/colors@4.1.6':
     resolution: {integrity: sha512-H9xkIdFswbS8n1d6vmRd8+c10t2Qe+rZITbbDHHkQixH5+2x1FDGmi/0K+WgWiqQFKPSlIYB7jlH6Kpfn6Fleg==}
@@ -2312,6 +2317,10 @@ snapshots:
 
   '@nx/nx-win32-x64-msvc@20.8.4':
     optional: true
+
+  '@playwright/test@1.58.2':
+    dependencies:
+      playwright: 1.58.2
 
   '@poppinss/colors@4.1.6':
     dependencies:

@@ -22,7 +22,7 @@
     "happy-dom": "^17.4.4",
     "nx": "^20.3.2",
     "nx-mcp": "^0.23.0",
-    "playwright": "^1.52.0",
+    "@playwright/test": "^1.52.0",
     "prettier": "^3.8.1",
     "wrangler": "^4.74.0"
   },
@@ -30,7 +30,7 @@
     "onlyBuiltDependencies": [
       "esbuild",
       "nx",
-      "playwright",
+      "@playwright/test",
       "sharp",
       "workerd"
     ]
