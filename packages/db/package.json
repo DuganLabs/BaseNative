@@ -1,0 +1,13 @@
+{
+  "name": "@basenative/db",
+  "version": "0.2.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./sqlite": "./src/adapters/sqlite.js",
+    "./postgres": "./src/adapters/postgres.js",
+    "./d1": "./src/adapters/d1.js"
+  },
+  "types": "./types/index.d.ts",
+  "files": ["src", "types"]
+}

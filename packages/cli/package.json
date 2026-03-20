@@ -1,0 +1,14 @@
+{
+  "name": "@basenative/cli",
+  "version": "0.2.0",
+  "type": "module",
+  "bin": {
+    "bn": "./src/index.js",
+    "create-basenative": "./src/commands/create.js"
+  },
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "types": "./types/index.d.ts",
+  "files": ["src", "types"]
+}

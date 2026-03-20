@@ -11,6 +11,9 @@ importers:
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.0.3)
+      '@playwright/test':
+        specifier: ^1.52.0
+        version: 1.58.2
       esbuild:
         specifier: ^0.25.0
         version: 0.25.12
@@ -32,9 +35,6 @@ importers:
       nx-mcp:
         specifier: ^0.23.0
         version: 0.23.0
-      playwright:
-        specifier: ^1.52.0
-        version: 1.58.2
       prettier:
         specifier: ^3.8.1
         version: 3.8.1
@@ -72,6 +72,66 @@ importers:
         specifier: ^5.1.0
         version: 5.2.1
 
+  examples/enterprise-v2:
+    dependencies:
+      '@basenative/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
+      '@basenative/components':
+        specifier: workspace:*
+        version: link:../../packages/components
+      '@basenative/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@basenative/date':
+        specifier: workspace:*
+        version: link:../../packages/date
+      '@basenative/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@basenative/fetch':
+        specifier: workspace:*
+        version: link:../../packages/fetch
+      '@basenative/flags':
+        specifier: workspace:*
+        version: link:../../packages/flags
+      '@basenative/forms':
+        specifier: workspace:*
+        version: link:../../packages/forms
+      '@basenative/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
+      '@basenative/logger':
+        specifier: workspace:*
+        version: link:../../packages/logger
+      '@basenative/middleware':
+        specifier: workspace:*
+        version: link:../../packages/middleware
+      '@basenative/notify':
+        specifier: workspace:*
+        version: link:../../packages/notify
+      '@basenative/realtime':
+        specifier: workspace:*
+        version: link:../../packages/realtime
+      '@basenative/router':
+        specifier: workspace:*
+        version: link:../../packages/router
+      '@basenative/runtime':
+        specifier: workspace:*
+        version: link:../../packages/runtime
+      '@basenative/server':
+        specifier: workspace:*
+        version: link:../../packages/server
+      '@basenative/tenant':
+        specifier: workspace:*
+        version: link:../../packages/tenant
+      '@basenative/upload':
+        specifier: workspace:*
+        version: link:../../packages/upload
+      express:
+        specifier: ^5.1.0
+        version: 5.2.1
+
   examples/express:
     dependencies:
       '@basenative/fonts':
@@ -96,6 +156,10 @@ importers:
         specifier: workspace:*
         version: link:../../packages/runtime
 
+  packages/auth: {}
+
+  packages/cli: {}
+
   packages/components:
     dependencies:
       '@basenative/forms':
@@ -105,6 +169,20 @@ importers:
         specifier: workspace:*
         version: link:../runtime
 
+  packages/config: {}
+
+  packages/date: {}
+
+  packages/db: {}
+
+  packages/fetch:
+    dependencies:
+      '@basenative/runtime':
+        specifier: workspace:*
+        version: link:../runtime
+
+  packages/flags: {}
+
   packages/fonts: {}
 
   packages/forms:
@@ -113,7 +191,19 @@ importers:
         specifier: workspace:*
         version: link:../runtime
 
+  packages/i18n: {}
+
   packages/icons: {}
+
+  packages/logger: {}
+
+  packages/marketplace: {}
+
+  packages/middleware: {}
+
+  packages/notify: {}
+
+  packages/realtime: {}
 
   packages/router:
     dependencies:
@@ -128,6 +218,12 @@ importers:
       node-html-parser:
         specifier: ^7.0.1
         version: 7.1.0
+
+  packages/tenant: {}
+
+  packages/upload: {}
+
+  packages/visual-builder: {}
 
 packages:
 
@@ -787,6 +883,11 @@ packages:
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
+
+  '@playwright/test@1.58.2':
+    resolution: {integrity: sha512-akea+6bHYBBfA9uQqSYmlJXn61cTa+jbO87xVLCWbTqbWadRVmhxlXATaOjOgcBaWU4ePo0wB41KMFv3o35IXA==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   '@poppinss/colors@4.1.6':
     resolution: {integrity: sha512-H9xkIdFswbS8n1d6vmRd8+c10t2Qe+rZITbbDHHkQixH5+2x1FDGmi/0K+WgWiqQFKPSlIYB7jlH6Kpfn6Fleg==}
@@ -2216,6 +2317,10 @@ snapshots:
 
   '@nx/nx-win32-x64-msvc@20.8.4':
     optional: true
+
+  '@playwright/test@1.58.2':
+    dependencies:
+      playwright: 1.58.2
 
   '@poppinss/colors@4.1.6':
     dependencies:

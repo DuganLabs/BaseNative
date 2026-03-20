@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.git/
+.github/
+.changeset/
+.env.local
+.env.*.local
+*.md
+!README.md
+benchmarks/
+docs/
+coverage/
+.nx/
+tmp/

@@ -101,3 +101,69 @@ export interface BrowserFeatures {
   anchorPositioning: boolean;
   baseSelect: boolean;
 }
+
+// --- Plugins ---
+
+export interface PluginAPI {
+  addDirective(name: string, handler: (el: Element, value: unknown, ctx: Record<string, unknown>) => void): void;
+  onBeforeRender(hook: (...args: unknown[]) => void): void;
+  onAfterRender(hook: (...args: unknown[]) => void): void;
+  onBeforeHydrate(hook: (...args: unknown[]) => void): void;
+  onAfterHydrate(hook: (...args: unknown[]) => void): void;
+  onError(hook: (error: Error) => void): void;
+}
+
+export interface Plugin {
+  name: string;
+  setup: (api: PluginAPI) => void;
+}
+
+export interface PluginRegistry {
+  register(plugin: Plugin): void;
+  runHook(hookName: string, ...args: unknown[]): void;
+  getDirective(name: string): ((el: Element, value: unknown, ctx: Record<string, unknown>) => void) | undefined;
+  getPlugins(): Plugin[];
+}
+
+export function definePlugin(config: { name: string; setup: (api: PluginAPI) => void }): Plugin;
+export function createPluginRegistry(): PluginRegistry;
+
+// --- Lazy Hydration ---
+
+export interface LazyHydrator {
+  observe(element: Element, hydrateFn: () => void): void;
+  disconnect(): void;
+  hydrateNow(element: Element): void;
+  getPending(): number;
+}
+
+export function createLazyHydrator(options?: { rootMargin?: string; threshold?: number }): LazyHydrator;
+export function lazyHydrate(element: Element, hydrateFn: () => void, options?: { rootMargin?: string; threshold?: number }): void;
+export function hydrateOnIdle(hydrateFn: () => void): void;
+export function hydrateOnInteraction(element: Element, hydrateFn: () => void, events?: string[]): () => void;
+export function hydrateOnMedia(hydrateFn: () => void, query: string): () => void;
+
+// --- Web Vitals ---
+
+export interface VitalsMetrics {
+  lcp?: number;
+  fid?: number;
+  cls?: number;
+  fcp?: number;
+  ttfb?: number;
+  inp?: number;
+}
+
+export interface VitalsReporter {
+  start(): void;
+  stop(): void;
+  getMetrics(): VitalsMetrics;
+}
+
+export function createVitalsReporter(options?: { onReport?: (metric: { name: string; value: number }) => void; threshold?: Partial<VitalsMetrics> }): VitalsReporter;
+export function observeLCP(callback: (value: number) => void): (() => void) | null;
+export function observeFID(callback: (value: number) => void): (() => void) | null;
+export function observeCLS(callback: (value: number) => void): (() => void) | null;
+export function observeFCP(callback: (value: number) => void): (() => void) | null;
+export function observeTTFB(callback: (value: number) => void): (() => void) | null;
+export function observeINP(callback: (value: number) => void): (() => void) | null;

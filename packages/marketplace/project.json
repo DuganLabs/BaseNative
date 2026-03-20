@@ -1,0 +1,11 @@
+{
+  "name": "marketplace",
+  "targets": {
+    "test": {
+      "command": "node --test",
+      "options": {
+        "cwd": "packages/marketplace"
+      }
+    }
+  }
+}
