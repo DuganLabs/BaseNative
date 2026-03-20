@@ -96,6 +96,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/runtime
 
+  packages/cli: {}
+
   packages/components:
     dependencies:
       '@basenative/forms':
@@ -104,6 +106,8 @@ importers:
       '@basenative/runtime':
         specifier: workspace:*
         version: link:../runtime
+
+  packages/config: {}
 
   packages/fonts: {}
 
@@ -114,6 +118,8 @@ importers:
         version: link:../runtime
 
   packages/icons: {}
+
+  packages/middleware: {}
 
   packages/router:
     dependencies:

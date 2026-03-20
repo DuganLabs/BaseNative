@@ -1,0 +1,15 @@
+{
+  "name": "@basenative/middleware",
+  "version": "0.2.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./express": "./src/adapters/express.js",
+    "./cors": "./src/builtins/cors.js",
+    "./rate-limit": "./src/builtins/rate-limit.js",
+    "./csrf": "./src/builtins/csrf.js",
+    "./logger": "./src/builtins/logger.js"
+  },
+  "types": "./types/index.d.ts",
+  "files": ["src", "types"]
+}

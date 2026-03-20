@@ -1,5 +1,5 @@
 {
-  "name": "@basenative/router",
+  "name": "@basenative/cli",
   "targets": {
     "test": {
       "cache": true,
