@@ -1219,14 +1219,161 @@ function supportsFeature(name, target = globalThis) {
   return Boolean(detectBrowserFeatures(target)[name]);
 }
 var browserFeatures = detectBrowserFeatures();
+
+// ../../packages/runtime/src/devtools.js
+var devtoolsState = {
+  signals: /* @__PURE__ */ new Map(),
+  effects: /* @__PURE__ */ new Map(),
+  hydrations: [],
+  enabled: false
+};
+var nextSignalId = 1;
+var nextEffectId = 1;
+function enableDevtools() {
+  devtoolsState.enabled = true;
+  if (typeof globalThis !== "undefined") {
+    globalThis.__BASENATIVE_DEVTOOLS__ = {
+      getSignals: () => [...devtoolsState.signals.entries()].map(([id, info]) => ({
+        id,
+        label: info.label,
+        value: info.accessor(),
+        subscriberCount: info.subscriberCount?.() ?? 0
+      })),
+      getEffects: () => [...devtoolsState.effects.entries()].map(([id, info]) => ({
+        id,
+        label: info.label,
+        disposed: info.disposed?.() ?? false
+      })),
+      getHydrations: () => [...devtoolsState.hydrations],
+      getState: () => ({ ...devtoolsState, signalCount: devtoolsState.signals.size, effectCount: devtoolsState.effects.size })
+    };
+  }
+}
+function trackSignal(accessor, label) {
+  if (!devtoolsState.enabled) return;
+  const id = nextSignalId++;
+  devtoolsState.signals.set(id, {
+    label: label || `signal_${id}`,
+    accessor
+  });
+  return id;
+}
+function trackEffect(handle, label) {
+  if (!devtoolsState.enabled) return;
+  const id = nextEffectId++;
+  devtoolsState.effects.set(id, {
+    label: label || `effect_${id}`,
+    disposed: () => false
+  });
+  return id;
+}
+function recordHydration(root, details = {}) {
+  if (!devtoolsState.enabled) return;
+  devtoolsState.hydrations.push({
+    timestamp: Date.now(),
+    root: root?.tagName || "unknown",
+    directivesProcessed: details.directivesProcessed || 0,
+    duration: details.duration || 0
+  });
+}
+function disableDevtools() {
+  devtoolsState.enabled = false;
+  devtoolsState.signals.clear();
+  devtoolsState.effects.clear();
+  devtoolsState.hydrations = [];
+  if (typeof globalThis !== "undefined") {
+    delete globalThis.__BASENATIVE_DEVTOOLS__;
+  }
+}
+function isDevtoolsEnabled() {
+  return devtoolsState.enabled;
+}
+
+// ../../packages/runtime/src/error-boundary.js
+function createErrorBoundary(options = {}) {
+  let lastError = null;
+  let hasError = false;
+  return {
+    /**
+     * Wraps a function call in error handling.
+     * Returns the result on success, or null on error.
+     */
+    try(fn) {
+      try {
+        const result = fn();
+        return result;
+      } catch (error) {
+        lastError = error;
+        hasError = true;
+        if (options.onError) {
+          options.onError(error);
+        }
+        emitDiagnostic(options, {
+          level: "error",
+          domain: "boundary",
+          code: "BN_ERROR_BOUNDARY_CAUGHT",
+          message: error.message || "An error occurred during rendering",
+          error
+        });
+        return null;
+      }
+    },
+    /**
+     * Returns the last caught error, if any.
+     */
+    getError() {
+      return lastError;
+    },
+    /**
+     * Returns whether an error has been caught.
+     */
+    hasError() {
+      return hasError;
+    },
+    /**
+     * Returns the fallback HTML string.
+     */
+    getFallback() {
+      return options.fallback || "";
+    },
+    /**
+     * Resets the error state.
+     */
+    reset() {
+      lastError = null;
+      hasError = false;
+    }
+  };
+}
+function renderWithBoundary(renderFn, options = {}) {
+  try {
+    return renderFn();
+  } catch (error) {
+    if (options.onError) {
+      options.onError(error);
+    }
+    return options.fallback || `<!-- BaseNative render error: ${escapeComment(error.message)} -->`;
+  }
+}
+function escapeComment(str) {
+  return String(str).replace(/--/g, "- -");
+}
 export {
   browserFeatures,
   computed,
+  createErrorBoundary,
   detectBrowserFeatures,
+  disableDevtools,
   effect,
   emitDiagnostic,
+  enableDevtools,
   hydrate,
+  isDevtoolsEnabled,
+  recordHydration,
+  renderWithBoundary,
   reportHydrationMismatch,
   signal,
-  supportsFeature
+  supportsFeature,
+  trackEffect,
+  trackSignal
 };
