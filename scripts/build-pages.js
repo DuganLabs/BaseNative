@@ -114,4 +114,17 @@ cpSync(join(root, 'packages', 'fonts'), join(dist, 'fonts'), { recursive: true }
 // Copy icons
 cpSync(join(root, 'packages', 'icons', 'src'), join(dist, 'icons'), { recursive: true });
 
+// Write Cloudflare Pages _headers file for security headers
+const headers = `/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Cross-Origin-Opener-Policy: same-origin
+`;
+writeFileSync(join(dist, '_headers'), headers);
+console.log('  _headers (security)');
+
 console.log('Done → dist/');
