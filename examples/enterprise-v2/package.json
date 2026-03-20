@@ -1,0 +1,31 @@
+{
+  "name": "@basenative/example-enterprise-v2",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "@basenative/runtime": "workspace:*",
+    "@basenative/server": "workspace:*",
+    "@basenative/router": "workspace:*",
+    "@basenative/forms": "workspace:*",
+    "@basenative/components": "workspace:*",
+    "@basenative/middleware": "workspace:*",
+    "@basenative/config": "workspace:*",
+    "@basenative/db": "workspace:*",
+    "@basenative/auth": "workspace:*",
+    "@basenative/logger": "workspace:*",
+    "@basenative/fetch": "workspace:*",
+    "@basenative/date": "workspace:*",
+    "@basenative/tenant": "workspace:*",
+    "@basenative/i18n": "workspace:*",
+    "@basenative/realtime": "workspace:*",
+    "@basenative/upload": "workspace:*",
+    "@basenative/flags": "workspace:*",
+    "@basenative/notify": "workspace:*"
+  }
+}

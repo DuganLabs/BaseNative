@@ -72,6 +72,66 @@ importers:
         specifier: ^5.1.0
         version: 5.2.1
 
+  examples/enterprise-v2:
+    dependencies:
+      '@basenative/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
+      '@basenative/components':
+        specifier: workspace:*
+        version: link:../../packages/components
+      '@basenative/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@basenative/date':
+        specifier: workspace:*
+        version: link:../../packages/date
+      '@basenative/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@basenative/fetch':
+        specifier: workspace:*
+        version: link:../../packages/fetch
+      '@basenative/flags':
+        specifier: workspace:*
+        version: link:../../packages/flags
+      '@basenative/forms':
+        specifier: workspace:*
+        version: link:../../packages/forms
+      '@basenative/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
+      '@basenative/logger':
+        specifier: workspace:*
+        version: link:../../packages/logger
+      '@basenative/middleware':
+        specifier: workspace:*
+        version: link:../../packages/middleware
+      '@basenative/notify':
+        specifier: workspace:*
+        version: link:../../packages/notify
+      '@basenative/realtime':
+        specifier: workspace:*
+        version: link:../../packages/realtime
+      '@basenative/router':
+        specifier: workspace:*
+        version: link:../../packages/router
+      '@basenative/runtime':
+        specifier: workspace:*
+        version: link:../../packages/runtime
+      '@basenative/server':
+        specifier: workspace:*
+        version: link:../../packages/server
+      '@basenative/tenant':
+        specifier: workspace:*
+        version: link:../../packages/tenant
+      '@basenative/upload':
+        specifier: workspace:*
+        version: link:../../packages/upload
+      express:
+        specifier: ^5.1.0
+        version: 5.2.1
+
   examples/express:
     dependencies:
       '@basenative/fonts':
@@ -138,6 +198,8 @@ importers:
   packages/logger: {}
 
   packages/middleware: {}
+
+  packages/notify: {}
 
   packages/realtime: {}
 

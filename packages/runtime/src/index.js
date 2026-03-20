@@ -4,3 +4,6 @@ export { browserFeatures, detectBrowserFeatures, supportsFeature } from './featu
 export { emitDiagnostic, reportHydrationMismatch } from './diagnostics.js';
 export { enableDevtools, disableDevtools, isDevtoolsEnabled, trackSignal, trackEffect, recordHydration } from './devtools.js';
 export { createErrorBoundary, renderWithBoundary } from './error-boundary.js';
+export { definePlugin, createPluginRegistry } from './plugins.js';
+export { createLazyHydrator, lazyHydrate, hydrateOnIdle, hydrateOnInteraction, hydrateOnMedia } from './lazy.js';
+export { createVitalsReporter, observeLCP, observeFID, observeCLS, observeFCP, observeTTFB, observeINP } from './vitals.js';

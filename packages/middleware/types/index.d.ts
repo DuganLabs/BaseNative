@@ -80,3 +80,6 @@ export function csrf(options?: CsrfOptions): MiddlewareFn;
 export function logger(options?: LoggerOptions): MiddlewareFn;
 
 export function toExpressMiddleware(pipeline: Pipeline): (req: unknown, res: unknown, next: (err?: unknown) => void) => Promise<void>;
+export function toHonoMiddleware(pipeline: Pipeline): (c: unknown, next: () => Promise<void>) => Promise<void | Response>;
+export function toFastifyPlugin(pipeline: Pipeline): (fastify: unknown, opts: unknown, done: () => void) => void;
+export function toCloudflareHandler(pipeline: Pipeline): (request: Request, env?: unknown, ctx?: unknown) => Promise<Response>;

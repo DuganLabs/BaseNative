@@ -1,0 +1,26 @@
+<div class="center-card">
+  <div class="card">
+    <div class="card-header">Sign In</div>
+    <div class="card-body">
+      <p style="font-size:var(--bn-font-size-sm);color:var(--bn-color-text-muted);margin-bottom:var(--bn-space-4)">Enter your credentials to continue.</p>
+      <template @if="error">
+        <div class="alert alert-error">{{ error }}</div>
+      </template>
+      <form method="POST" action="/login" class="form-grid">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+        <div class="field">
+          <label for="username">Username</label>
+          <input id="username" name="username" type="text" required autocomplete="username">
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" required autocomplete="current-password">
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Sign In</button>
+          <a href="/register" class="btn btn-secondary">Register</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
