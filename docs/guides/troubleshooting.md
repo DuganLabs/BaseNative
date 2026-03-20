@@ -1,222 +1,516 @@
-# Troubleshooting Guide
+# BaseNative Troubleshooting Guide
 
-Common issues and solutions for BaseNative applications.
+## Common Errors and Solutions
 
-## Hydration Mismatches
+### `BN_CONFIG_INVALID`
 
-**Symptom:** Console warnings about hydration mismatches; UI flickers on page load.
+**Symptom:** Application crashes at startup with a validation error listing
+invalid environment variables.
 
-**Cause:** Server-rendered HTML differs from what the client expects.
+**Cause:** `validateConfig` found one or more environment variables that do not
+match the schema.
 
-**Solutions:**
+**Fix:** Check your `.env` file against the schema. Common issues:
+- Missing required variables
+- `PORT` set to a string like `"three-thousand"` instead of `3000`
+- Boolean values not recognized (use `"true"` or `"false"`, not `"yes"`)
 
-1. Ensure server and client use the same data:
 ```js
-// Server: pass the same context to both render and hydrate
-const context = { user, items };
-const html = render(template, context);
-// Embed context for client hydration
-const script = `<script type="application/json" id="ctx">${JSON.stringify(context)}</script>`;
-```
-
-2. Enable mismatch reporting:
-```js
-import { hydrate } from '@basenative/runtime';
-
-hydrate(root, context, {
-  onMismatch: (message, detail) => {
-    console.warn('Hydration mismatch:', message, detail);
-  },
-  recover: 'client', // Fall back to client rendering
+// Check your schema
+const config = validateConfig(process.env, {
+  PORT: number({ min: 1, max: 65535 }),  // must be numeric
+  ENABLE_CSRF: boolean(),                 // must be "true" or "false"
 });
 ```
 
-3. Avoid non-deterministic rendering (dates, random IDs) in initial render.
+### `TypeError: pipeline.use is not a function`
 
-## Signal Dependency Tracking
+**Cause:** Importing `createPipeline` from the wrong path or using a stale
+import.
 
-**Symptom:** Effects don't re-run when signals change.
-
-**Cause:** Signal was read outside the effect tracking scope.
+**Fix:** Ensure you import from `@basenative/middleware`:
 
 ```js
-// Wrong: signal read happens outside effect
-const value = count();
-effect(() => {
-  element.textContent = value; // Captured by closure, not tracked
-});
+import { createPipeline } from '@basenative/middleware';
+const pipeline = createPipeline();
+```
 
-// Correct: signal read inside effect
-effect(() => {
-  element.textContent = count(); // Automatically tracked
+### `Cannot read properties of undefined (reading 'host')`
+
+**Cause:** The tenant resolver received a context without properly structured
+request headers.
+
+**Fix:** Ensure your platform adapter correctly maps headers. Check that
+`ctx.request.headers` is an object:
+
+```js
+pipeline.use(async (ctx, next) => {
+  console.log('Headers:', ctx.request.headers);  // Should be an object, not undefined
+  await next();
 });
 ```
 
-**Symptom:** Infinite effect loop.
+---
 
-**Cause:** Effect writes to a signal it reads from.
+## Hydration Mismatch Debugging
+
+### `BN_HYDRATE_MARKERS_WITHOUT_TEMPLATE`
+
+**Symptom:** Console warning that hydration markers exist in the DOM but no
+matching `<template>` directives were found.
+
+**Cause:** The server rendered HTML with `hydratable: true`, but the client
+hydration context is missing the data or the template structure changed
+between server and client rendering.
+
+**Diagnosis:**
+
+1. Inspect the DOM for `<!--bn:if-->` or `<!--bn:for:item-->` comments.
+2. Verify the same template HTML is used on server and client.
+3. Ensure the hydration context provides all variables referenced in templates.
 
 ```js
-// Wrong: creates infinite loop
-effect(() => {
-  count.set(count() + 1);
+// Server
+const html = render(template, { items, showBanner: true }, { hydratable: true });
+
+// Client -- must provide the same variables
+hydrate(root, {
+  items: itemsSignal,
+  showBanner: showBannerSignal,  // Do not forget this
+});
+```
+
+### `BN_HYDRATE_NO_DIRECTIVES`
+
+**Symptom:** `hydrate()` finds no directives in the target element.
+
+**Cause:** Usually one of:
+- The wrong root element was passed to `hydrate()`
+- The server rendered without `hydratable: true`
+- JavaScript loaded before the SSR HTML was in the DOM
+
+**Fix:**
+
+```js
+// Ensure the root element contains the rendered HTML
+const root = document.getElementById('app');
+console.log('Root innerHTML length:', root.innerHTML.length);  // Should be > 0
+
+// Ensure hydratable was enabled on the server
+const html = render(template, data, { hydratable: true });  // <-- required
+```
+
+### Content Mismatch Between Server and Client
+
+**Symptom:** The page flickers or content changes after hydration.
+
+**Cause:** The data used for server rendering differs from the initial signal
+values on the client.
+
+**Fix:** Serialize the server data and use it to initialize client signals:
+
+```html
+<!-- Server: inject serialized state -->
+<script type="application/json" id="__BN_STATE__">
+  {{ JSON.stringify(serverData) }}
+</script>
+```
+
+```js
+// Client: read serialized state
+const state = JSON.parse(document.getElementById('__BN_STATE__').textContent);
+const items = signal(state.items);
+
+hydrate(root, { items });
+```
+
+### Non-Deterministic Rendering
+
+**Symptom:** Hydration mismatches on every page load, even with correct data.
+
+**Cause:** The template uses values that differ between server and client, such
+as `Date.now()`, `Math.random()`, or locale-dependent formatting.
+
+**Fix:** Generate these values on the server and pass them as data:
+
+```js
+// Server
+const html = render(template, {
+  timestamp: Date.now(),
+  requestId: crypto.randomUUID(),
 });
 
-// Correct: use peek() to read without subscribing
+// Client: use the same values from serialized state
+const state = JSON.parse(document.getElementById('__BN_STATE__').textContent);
+const timestamp = signal(state.timestamp);
+```
+
+---
+
+## Signal Dependency Tracking Issues
+
+### Effect Not Re-running
+
+**Symptom:** An effect does not fire when a signal it reads changes.
+
+**Cause:** The signal was read outside the effect's tracking scope, or
+`peek()` was used instead of the accessor.
+
+**Diagnosis:**
+
+```js
+const count = signal(0);
+
+// Bug: count is read outside the effect body
+const current = count();
 effect(() => {
-  if (someCondition()) {
-    count.set(count.peek() + 1);
+  console.log(current);  // This captures the value, not the signal
+});
+
+// Fix: read the signal inside the effect
+effect(() => {
+  console.log(count());  // Now the effect subscribes to count
+});
+```
+
+### Infinite Effect Loop
+
+**Symptom:** The page freezes or you see "Maximum call stack size exceeded."
+
+**Cause:** An effect both reads and writes the same signal:
+
+```js
+// Bug: infinite loop
+const items = signal([]);
+effect(() => {
+  items.set([...items(), newItem]);  // reads and writes items
+});
+```
+
+**Fix:** Use `peek()` to break the cycle, or restructure so the write
+happens outside the reading effect:
+
+```js
+// Fix with peek
+effect(() => {
+  const current = items.peek();
+  items.set([...current, newItem]);
+});
+
+// Better: use a separate action function
+function addItem(item) {
+  items.set(prev => [...prev, item]);
+}
+```
+
+### Computed Not Updating
+
+**Symptom:** A `computed` value seems stale.
+
+**Cause:** The dependency was accessed conditionally and not reached on the
+first run:
+
+```js
+const showDetails = signal(false);
+const details = signal({ name: 'Alice' });
+
+// Bug: details() is only called when showDetails is true.
+// If showDetails starts as false, computed never subscribes to details.
+const label = computed(() => {
+  if (showDetails()) {
+    return details().name;
   }
+  return 'Hidden';
 });
 ```
 
-## Middleware Ordering
+**Fix:** Access all dependencies unconditionally when possible, or restructure
+the computation:
 
-**Symptom:** CSRF validation fails; auth middleware can't find session.
+```js
+const label = computed(() => {
+  const d = details();  // always subscribe
+  return showDetails() ? d.name : 'Hidden';
+});
+```
 
-**Cause:** Middleware is in the wrong order.
+### Memory Leaks from Undisposed Effects
 
-**Correct order:**
+**Symptom:** Memory usage grows over time, especially in single-page
+applications.
+
+**Cause:** Effects created during navigation are not disposed when the view
+changes.
+
+**Fix:** Always store and call the dispose function returned by `hydrate()`
+and `effect()`:
+
+```js
+let currentDispose = null;
+
+function navigateTo(view) {
+  if (currentDispose) currentDispose();  // clean up previous view
+  const html = render(views[view], data, { hydratable: true });
+  root.innerHTML = html;
+  currentDispose = hydrate(root, context);
+}
+```
+
+---
+
+## Middleware Ordering Problems
+
+### CSRF Token Not Found
+
+**Symptom:** POST requests fail with "CSRF token invalid" even though the
+token is sent.
+
+**Cause:** CSRF middleware runs before the cookie parser, so the token cookie
+is not available.
+
+**Fix:** Ensure middleware is ordered correctly. The pipeline adapter should
+parse cookies before CSRF validation:
+
+```js
+pipeline.use(cors({ origin: '...' }));
+pipeline.use(rateLimit({ windowMs: 60_000, max: 100 }));
+// Cookies must be parsed before CSRF
+pipeline.use(csrf({ cookieName: '_csrf', headerName: 'x-csrf-token' }));
+```
+
+### Auth Middleware Returns 401 for Public Routes
+
+**Cause:** `requireAuth` is applied globally instead of selectively.
+
+**Fix:** Apply auth only to protected routes:
+
+```js
+const authRequired = requireAuth({ redirectTo: '/login' });
+
+pipeline.use(async (ctx, next) => {
+  const publicPaths = ['/login', '/register', '/health', '/assets'];
+  if (publicPaths.some(p => ctx.request.path.startsWith(p))) {
+    await next();
+    return;
+  }
+  await authRequired(ctx, next);
+});
+```
+
+### Tenant Middleware Returns Null
+
+**Cause:** The tenant resolver runs before the request headers or path are
+fully populated by the platform adapter.
+
+**Fix:** Place tenant middleware after the platform adapter has constructed
+the full request context. Verify with logging:
+
+```js
+pipeline.use(async (ctx, next) => {
+  console.log('Host:', ctx.request.headers.host);
+  console.log('Path:', ctx.request.path);
+  await next();
+});
+pipeline.use(tenantMiddleware(resolver));
+```
+
+### Recommended Middleware Order
+
 ```js
 const pipeline = createPipeline();
-pipeline.use(logger());          // 1. Logging (first, to capture all requests)
-pipeline.use(cors());            // 2. CORS (before any response)
-pipeline.use(rateLimit());       // 3. Rate limiting (before processing)
-pipeline.use(sessionMiddleware()); // 4. Session (before auth)
-pipeline.use(csrf());            // 5. CSRF (after session, before handlers)
-pipeline.use(requireAuth());     // 6. Auth (after session)
-pipeline.use(tenantMiddleware()); // 7. Tenant (after auth)
+pipeline.use(cors());              // 1. CORS (handle preflight first)
+pipeline.use(rateLimit());         // 2. Rate limiting (reject abuse early)
+pipeline.use(loggerMiddleware());  // 3. Logger (start timing)
+pipeline.use(csrf());              // 4. CSRF (validate tokens)
+pipeline.use(sessionMiddleware()); // 5. Session (load user)
+pipeline.use(requireAuth());       // 6. Auth guard (reject unauthenticated)
+pipeline.use(tenantMiddleware());  // 7. Tenant (resolve after auth)
+pipeline.use(flagMiddleware());    // 8. Feature flags (needs user + tenant)
 ```
+
+---
 
 ## Database Connection Issues
 
-**Symptom:** `SQLITE_BUSY` errors.
+### `ECONNREFUSED` or `Connection timed out`
 
-**Solution:** Enable WAL mode:
-```js
-const db = createSqliteAdapter({
-  filename: './data/app.db',
-  wal: true,
-});
-```
+**Cause:** The database is not running, or the connection string is wrong.
 
-**Symptom:** PostgreSQL `too many connections`.
+**Diagnosis:**
+1. Verify the database is running: `pg_isready -h localhost -p 5432`
+2. Check `DATABASE_URL` in your `.env` file
+3. Ensure network access (firewalls, security groups)
+4. In Docker, use the service name (e.g. `db`) not `localhost`
 
-**Solution:** Configure pool limits:
+### Connection Pool Exhaustion
+
+**Symptom:** Requests hang and eventually time out. Logs show "connection pool
+exhausted" or "timeout waiting for available connection."
+
+**Cause:** Long-running queries or leaked connections.
+
+**Fix:**
+1. Reduce `pool.max` and set `connectionTimeoutMs`:
+
 ```js
 const db = createPostgresAdapter({
   connectionString: process.env.DATABASE_URL,
-  max: 10, // Reduce from default
+  pool: { max: 10, connectionTimeoutMs: 5_000 },
 });
 ```
+
+2. Ensure every query uses `await` to return connections to the pool.
+3. Add query timeouts: `SET statement_timeout = 5000;`
+
+### D1 Binding Not Available
+
+**Symptom:** `ctx.env.DB` is undefined in Cloudflare Workers.
+
+**Fix:** Check `wrangler.toml` for the D1 binding and ensure the binding
+name matches:
+
+```toml
+[[d1_databases]]
+binding = "DB"            # Must match ctx.env.DB
+database_name = "app-db"
+database_id = "your-id"
+```
+
+### `SQLITE_BUSY` Errors
+
+**Cause:** Multiple write operations contending for the database lock.
+
+**Fix:** Enable WAL mode and set a busy timeout:
+
+```js
+const db = createSQLiteAdapter({
+  filename: './data/app.db',
+  pragmas: { journal_mode: 'WAL', busy_timeout: 5000 },
+});
+```
+
+---
 
 ## Auth Session Problems
 
-**Symptom:** User gets logged out unexpectedly.
+### Session Lost After Redirect
 
-**Causes and fixes:**
+**Symptom:** User is authenticated, gets redirected, and is no longer
+authenticated on the next page.
 
-1. **In-memory session store resets on restart** — use database-backed store:
+**Cause:** The session cookie is not being set or read correctly. Common
+reasons:
+- `secure: true` on HTTP (non-HTTPS) in development
+- `sameSite: 'strict'` blocking the cookie on cross-origin redirects
+- Missing `path: '/'` on the cookie
+
+**Fix:**
+
+```js
+const sessions = createSessionManager({
+  store: createDbStore(db),
+  secure: process.env.NODE_ENV === 'production',  // false in dev
+  sameSite: 'lax',     // allows cookies on top-level navigations
+  httpOnly: true,
+});
+```
+
+### Session Data Not Persisting
+
+**Symptom:** `ctx.state.user` is null even after successful login.
+
+**Cause:** Using `createMemoryStore` across multiple processes or after a
+restart.
+
+**Fix:** Use `createDbStore` for persistent sessions:
+
 ```js
 import { createDbStore } from '@basenative/auth';
+
 const store = createDbStore(dbAdapter, { tableName: 'sessions' });
+const sessions = createSessionManager({ store });
 ```
 
-2. **Cookie not sent cross-origin** — check sameSite and secure settings:
+### Session Fixation
+
+**Symptom:** Security audit flags session fixation vulnerability.
+
+**Fix:** Rotate the session ID after authentication:
+
 ```js
-sessionMiddleware({
-  cookie: {
-    sameSite: 'lax',    // or 'none' for cross-origin (requires secure)
-    secure: true,        // Required for sameSite: 'none'
-    httpOnly: true,
-  },
-});
+import { login } from '@basenative/auth';
+
+// After verifying credentials, destroy old session and create new one
+if (ctx.state.session) {
+  await sessions.destroy(ctx.state.session.id);
+}
+await login(sessions, ctx, user);
 ```
 
-3. **Session expired** — increase maxAge:
-```js
-sessionMiddleware({
-  cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 }, // 7 days
-});
-```
-
-## Feature Flags Not Updating
-
-**Symptom:** Remote flag changes don't take effect.
-
-**Solution:** Check polling configuration:
-```js
-import { createRemoteProvider } from '@basenative/flags';
-
-const provider = createRemoteProvider({
-  url: 'https://flags.example.com/api/flags',
-  pollInterval: 30_000, // 30 seconds (default is 60s)
-  timeout: 5000,
-});
-
-// Force immediate refresh
-await provider.refresh();
-
-// Start background polling
-provider.startPolling();
-```
-
-## I18n Missing Translations
-
-**Symptom:** Translation keys shown instead of translated text.
-
-**Solution:** Check locale and message loading:
-```js
-import { createI18n } from '@basenative/i18n';
-
-const i18n = createI18n({ defaultLocale: 'en' });
-i18n.addMessages('en', { greeting: 'Hello, {{ name }}!' });
-
-// Verify the key exists
-console.log(i18n.t('greeting', { name: 'World' }));
-// If it prints "greeting" instead of "Hello, World!", messages weren't loaded
-```
-
-## File Upload Failures
-
-**Symptom:** Upload returns 413 or file is rejected.
-
-**Check:**
-```js
-import { createUploadHandler } from '@basenative/upload';
-
-const upload = createUploadHandler({
-  maxFileSize: 10 * 1024 * 1024, // 10MB
-  allowedTypes: ['image/jpeg', 'image/png', 'application/pdf'],
-});
-```
-
-Also check reverse proxy limits (nginx: `client_max_body_size`, etc.).
+---
 
 ## Performance Profiling
 
-Use the built-in logger for timing:
+### Server-Side Profiling
+
+Add timing middleware to identify slow handlers:
+
 ```js
 import { createLogger } from '@basenative/logger';
-
-const logger = createLogger({ level: 'debug' });
+const logger = createLogger({ name: 'perf' });
 
 pipeline.use(async (ctx, next) => {
   const start = performance.now();
   await next();
   const duration = performance.now() - start;
-  if (duration > 1000) {
-    logger.warn('Slow request', {
+
+  if (duration > 500) {
+    logger.warn({
       path: ctx.request.path,
-      duration: `${duration.toFixed(0)}ms`,
-    });
+      method: ctx.request.method,
+      duration: Math.round(duration),
+    }, `Slow request: ${Math.round(duration)}ms`);
   }
 });
 ```
 
+### Client-Side Profiling
+
+Use the vitals reporter to track real-user performance:
+
+```js
+import { createVitalsReporter } from '@basenative/runtime';
+
+createVitalsReporter({
+  onReport(metric) {
+    if (metric.rating === 'poor') {
+      console.warn(`Poor ${metric.name}: ${metric.value}`);
+    }
+    navigator.sendBeacon('/api/vitals', JSON.stringify(metric));
+  },
+}).start();
+```
+
+### Identifying Hydration Bottlenecks
+
+Profile hydration time by wrapping the call:
+
+```js
+const start = performance.now();
+const dispose = hydrate(root, context);
+const duration = performance.now() - start;
+console.log(`Hydration took ${duration.toFixed(1)}ms`);
+```
+
+If hydration takes more than 50ms, consider lazy hydration strategies
+(see [performance guide](performance.md)).
+
+---
+
 ## Getting Help
 
-- Check the [Architecture Guide](./architecture.md) for system overview
-- Review [Security Guide](./security.md) for auth/session issues
-- See [Performance Guide](./performance.md) for optimization
-- Report issues at https://github.com/basenative/basenative/issues
+- Check the [Architecture Guide](architecture.md) for system overview
+- Review the [Security Guide](security.md) for auth and session issues
+- See the [Performance Guide](performance.md) for optimization strategies
+- See the [Scaling Guide](scaling.md) for production deployment issues
+- See the [Multi-Tenancy Guide](multi-tenancy.md) for tenant resolution issues
