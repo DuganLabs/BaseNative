@@ -8,7 +8,7 @@ test.describe('Express Example', () => {
 
   test('tasks page loads', async ({ page }) => {
     await page.goto('/tasks');
-    await expect(page.locator('h1, h2, [data-bn]')).toBeVisible();
+    await expect(page.locator('h1, h2, [data-bn]').first()).toBeVisible();
   });
 
   test('components page loads', async ({ page }) => {
