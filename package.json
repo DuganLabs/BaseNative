@@ -14,7 +14,9 @@
     "audit": "pnpm audit:axe && pnpm audit:ux"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.30.0",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.52.0",
     "esbuild": "^0.25.0",
     "eslint": "^10.0.3",
     "eslint-config-prettier": "^10.1.8",
@@ -22,7 +24,6 @@
     "happy-dom": "^17.4.4",
     "nx": "^20.3.2",
     "nx-mcp": "^0.23.0",
-    "@playwright/test": "^1.52.0",
     "prettier": "^3.8.1",
     "wrangler": "^4.74.0"
   },
