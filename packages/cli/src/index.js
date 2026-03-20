@@ -7,6 +7,9 @@ const commands = {
   dev: () => import('./commands/dev.js'),
   build: () => import('./commands/build.js'),
   generate: () => import('./commands/generate.js'),
+  deploy: () => import('./commands/deploy.js'),
+  env: () => import('./commands/env.js'),
+  analyze: () => import('./commands/analyze.js'),
   help: () => ({ run: showHelp }),
 };
 
@@ -21,6 +24,9 @@ function showHelp() {
     dev               Start development server with hot reload
     build             Build for production
     generate <type>   Generate component, route, or page
+    deploy            Deploy to BaseNative Cloud
+    env               Manage environment variables
+    analyze           Analyze bundle size and dependencies
     help              Show this help message
 
   Options:
@@ -36,6 +42,9 @@ function showHelp() {
     bn generate component MyButton
     bn generate route /users
     bn generate page dashboard
+    bn deploy --env production
+    bn env set API_KEY sk-123
+    bn analyze
 `);
 }
 
