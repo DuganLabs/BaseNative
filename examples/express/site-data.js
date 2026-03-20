@@ -46,10 +46,10 @@ export function getTasksPageContext(tasks) {
 export function getComponentsPageContext() {
   return {
     readinessStats: [
-      { label: 'current milestone', value: 'v0.2 trust release' },
-      { label: 'evergreen support', value: 'Chrome Edge Firefox Safari' },
-      { label: 'public packages', value: 'runtime server next: forms router components' },
-      { label: 'advanced widgets', value: 'deferred until pilot metrics are green' },
+      { label: 'Current Milestone', value: 'v0.2 Trust Release' },
+      { label: 'Evergreen Support', value: 'Chrome, Edge, Firefox, Safari' },
+      { label: 'Public Packages', value: 'Runtime, Server, Next, Forms, Router, Components' },
+      { label: 'Advanced Widgets', value: 'Deferred Until Pilot Metrics Are Green' },
     ],
     releaseStages: [
       {
