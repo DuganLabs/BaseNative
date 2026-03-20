@@ -1,0 +1,25 @@
+<div class="detail-header">
+  <div>
+    <h1>{{ user.name }}</h1>
+    <p style="color:var(--bn-color-text-muted)">{{ user.email }}</p>
+  </div>
+  {{ statusBadge }}
+</div>
+
+<article data-bn="card">
+  <header data-bn="card-header">User Details</header>
+  <div data-bn="card-body">
+    <dl style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem">
+      <dt style="font-weight:500">Name</dt><dd>{{ user.name }}</dd>
+      <dt style="font-weight:500">Email</dt><dd>{{ user.email }}</dd>
+      <dt style="font-weight:500">Role</dt><dd>{{ user.role }}</dd>
+      <dt style="font-weight:500">Status</dt><dd>{{ user.status }}</dd>
+    </dl>
+  </div>
+  <footer data-bn="card-footer">
+    <div class="detail-actions">
+      {{ editButton }}
+      {{ deleteButton }}
+    </div>
+  </footer>
+</article>

@@ -8,7 +8,7 @@
     },
     "lint": {
       "cache": true,
-      "command": "node --check src/**/*.js",
+      "command": "pnpm exec eslint src/",
       "inputs": ["{projectRoot}/src/**/*.js"]
     }
   }

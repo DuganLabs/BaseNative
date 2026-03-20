@@ -1,0 +1,35 @@
+/* BaseNative Theme — Dark Mode */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bn-color-surface: var(--bn-color-gray-950);
+    --bn-color-surface-subtle: var(--bn-color-gray-900);
+    --bn-color-surface-muted: var(--bn-color-gray-800);
+    --bn-color-surface-inverse: var(--bn-color-gray-50);
+
+    --bn-color-text: var(--bn-color-gray-50);
+    --bn-color-text-muted: var(--bn-color-gray-400);
+    --bn-color-text-subtle: var(--bn-color-gray-500);
+    --bn-color-text-inverse: var(--bn-color-gray-900);
+    --bn-color-text-link: var(--bn-color-primary-400);
+
+    --bn-color-border: var(--bn-color-gray-800);
+    --bn-color-border-strong: var(--bn-color-gray-700);
+  }
+}
+
+/* Explicit dark theme override */
+[data-theme="dark"] {
+  --bn-color-surface: var(--bn-color-gray-950);
+  --bn-color-surface-subtle: var(--bn-color-gray-900);
+  --bn-color-surface-muted: var(--bn-color-gray-800);
+  --bn-color-surface-inverse: var(--bn-color-gray-50);
+
+  --bn-color-text: var(--bn-color-gray-50);
+  --bn-color-text-muted: var(--bn-color-gray-400);
+  --bn-color-text-subtle: var(--bn-color-gray-500);
+  --bn-color-text-inverse: var(--bn-color-gray-900);
+  --bn-color-text-link: var(--bn-color-primary-400);
+
+  --bn-color-border: var(--bn-color-gray-800);
+  --bn-color-border-strong: var(--bn-color-gray-700);
+}
