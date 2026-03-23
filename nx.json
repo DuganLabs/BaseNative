@@ -6,5 +6,6 @@
     "server": ["{workspaceRoot}/packages/server/src/**/*.js"],
     "views": ["{workspaceRoot}/examples/express/views/**/*.html"],
     "styles": ["{workspaceRoot}/examples/express/public/**/*.css"]
-  }
+  },
+  "nxCloudId": "69c0aacef18324698d128b16"
 }
