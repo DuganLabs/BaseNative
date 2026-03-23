@@ -61,3 +61,6 @@ jobs:
 
       - name: Run E2E tests
         run: pnpm exec playwright test tests/e2e/
+
+      - run: npx nx fix-ci
+        if: always()
