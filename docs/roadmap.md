@@ -79,7 +79,7 @@
 - ✅ server adapters (Hono, Fastify, Cloudflare Workers)
 - ✅ enterprise documentation (architecture, deployment, security, scaling, multi-tenancy guides)
 - ✅ enterprise-v2 reference app (multi-tenant SaaS patterns)
-- ✅ comprehensive test coverage (1289 tests across 23 packages — 1270 unit + 19 integration)
+- ✅ comprehensive test coverage (1461 tests across 23 packages — 1442 unit + 19 integration)
 - ✅ Cloudflare Workers example (`examples/cloudflare-workers/`)
 - ✅ standalone Node.js server example (`examples/node/`)
 
