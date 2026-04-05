@@ -118,3 +118,44 @@ describe('interpolate — additional', () => {
     assert.equal(interpolate('Count: {{ n }}', { n: 99 }), 'Count: 99');
   });
 });
+
+describe('evaluate — object and method calls', () => {
+  it('evaluates array.length method access', () => {
+    assert.equal(evaluate('items.length', { items: [1, 2, 3] }), 3);
+  });
+
+  it('evaluates string method calls', () => {
+    assert.equal(evaluate('name.toUpperCase()', { name: 'hello' }), 'HELLO');
+  });
+
+  it('evaluates array.includes() method', () => {
+    assert.equal(evaluate('tags.includes("vue")', { tags: ['react', 'vue'] }), true);
+  });
+
+  it('evaluates template with 0 value (falsy but valid)', () => {
+    assert.equal(evaluate('n', { n: 0 }), 0);
+  });
+
+  it('evaluates object literal access', () => {
+    const ctx = { cfg: { debug: true } };
+    assert.equal(evaluate('cfg.debug', ctx), true);
+  });
+});
+
+describe('interpolate — additional edge cases', () => {
+  it('handles false value as empty string', () => {
+    // false is falsy — evaluate returns false, interpolate renders ''
+    const result = interpolate('{{ flag }}', { flag: false });
+    assert.equal(result, 'false');
+  });
+
+  it('handles 0 as non-empty value', () => {
+    const result = interpolate('Count: {{ n }}', { n: 0 });
+    assert.equal(result, 'Count: 0');
+  });
+
+  it('handles nested property in template string', () => {
+    const result = interpolate('City: {{ user.city }}', { user: { city: 'Portland' } });
+    assert.equal(result, 'City: Portland');
+  });
+});

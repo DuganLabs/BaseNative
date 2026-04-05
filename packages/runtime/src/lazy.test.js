@@ -234,3 +234,52 @@ describe('hydrateOnMedia', () => {
     globalThis.matchMedia = origMatchMedia;
   });
 });
+
+describe('lazyHydrate — additional', () => {
+  it('returns the hydrator object', () => {
+    const el = makeElement();
+    const h = lazyHydrate(el, () => {});
+    assert.equal(typeof h.observe, 'function');
+    assert.equal(typeof h.disconnect, 'function');
+  });
+
+  it('hydrateNow on an element that was not observed is a no-op', () => {
+    const h = createLazyHydrator();
+    const el = makeElement();
+    // hydrateNow for an unobserved element should not throw
+    assert.doesNotThrow(() => h.hydrateNow(el));
+  });
+});
+
+describe('hydrateOnInteraction — additional', () => {
+  it('hydrates on focus event', () => {
+    const el = makeElement();
+    let called = false;
+    hydrateOnInteraction(el, () => { called = true; });
+    el._fire('focus');
+    assert.equal(called, true);
+  });
+
+  it('hydrates on mouseenter event', () => {
+    const el = makeElement();
+    let called = false;
+    hydrateOnInteraction(el, () => { called = true; });
+    el._fire('mouseenter');
+    assert.equal(called, true);
+  });
+});
+
+describe('hydrateOnMedia — additional', () => {
+  it('immediately hydrates when query matches at call time (variant)', () => {
+    const origMatchMedia = globalThis.matchMedia;
+    globalThis.matchMedia = () => ({
+      matches: true,
+      addEventListener() {},
+      removeEventListener() {},
+    });
+    let count = 0;
+    hydrateOnMedia(() => { count++; }, '(prefers-color-scheme: dark)');
+    assert.equal(count, 1);
+    globalThis.matchMedia = origMatchMedia;
+  });
+});
