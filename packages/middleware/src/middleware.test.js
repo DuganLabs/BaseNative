@@ -198,3 +198,87 @@ describe('logger', () => {
     assert.equal(logs.length, 0);
   });
 });
+
+describe('createPipeline — additional', () => {
+  it('run resolves even with empty pipeline', async () => {
+    const pipeline = createPipeline();
+    await assert.doesNotReject(() => pipeline.run(createCtx()));
+  });
+
+  it('error thrown inside middleware propagates', async () => {
+    const pipeline = createPipeline();
+    pipeline.use(async () => { throw new Error('boom'); });
+    await assert.rejects(() => pipeline.run(createCtx()), /boom/);
+  });
+
+  it('context modifications after await next() are visible', async () => {
+    const pipeline = createPipeline();
+    pipeline.use(async (ctx, next) => {
+      await next();
+      ctx.state.after = true; // set AFTER inner middleware
+    });
+    pipeline.use(async (ctx, next) => {
+      ctx.state.inner = true;
+      await next();
+    });
+    const ctx = createCtx();
+    await pipeline.run(ctx);
+    assert.equal(ctx.state.inner, true);
+    assert.equal(ctx.state.after, true);
+  });
+});
+
+describe('cors — additional', () => {
+  it('uses function-based origin', async () => {
+    const mw = cors({ origin: (origin) => origin.endsWith('.example.com') });
+    const ctx = createCtx({ request: { headers: { origin: 'https://app.example.com' } } });
+    await mw(ctx, async () => {});
+    assert.equal(ctx.response.headers['access-control-allow-origin'], 'https://app.example.com');
+  });
+
+  it('rejects origin not in function allowlist', async () => {
+    const mw = cors({ origin: (origin) => origin === 'https://allowed.com' });
+    const ctx = createCtx({ request: { headers: { origin: 'https://evil.com' } } });
+    await mw(ctx, async () => {});
+    assert.equal(ctx.response.headers['access-control-allow-origin'], undefined);
+  });
+
+  it('exposes listed headers', async () => {
+    const mw = cors({ exposedHeaders: ['x-request-id', 'x-trace'] });
+    const ctx = createCtx();
+    await mw(ctx, async () => {});
+    assert.match(ctx.response.headers['access-control-expose-headers'], /x-request-id/);
+    assert.match(ctx.response.headers['access-control-expose-headers'], /x-trace/);
+  });
+
+  it('preflight sets access-control-allow-methods', async () => {
+    const mw = cors({ methods: ['GET', 'POST'] });
+    const ctx = createCtx({ request: { method: 'OPTIONS', headers: {} } });
+    await mw(ctx, async () => {});
+    assert.match(ctx.response.headers['access-control-allow-methods'], /GET/);
+    assert.match(ctx.response.headers['access-control-allow-methods'], /POST/);
+  });
+});
+
+describe('csrf — additional', () => {
+  it('rejects PUT request without token', async () => {
+    const mw = csrf();
+    const ctx = createCtx({ request: { method: 'PUT', headers: {} } });
+    await mw(ctx, async () => {});
+    assert.equal(ctx.response.status, 403);
+  });
+
+  it('rejects PATCH request without token', async () => {
+    const mw = csrf();
+    const ctx = createCtx({ request: { method: 'PATCH', headers: {} } });
+    await mw(ctx, async () => {});
+    assert.equal(ctx.response.status, 403);
+  });
+
+  it('rejects DELETE request without token', async () => {
+    const mw = csrf();
+    const ctx = createCtx({ request: { method: 'DELETE', headers: {} } });
+    await mw(ctx, async () => {});
+    assert.equal(ctx.response.status, 403);
+  });
+});
