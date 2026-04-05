@@ -75,3 +75,33 @@ describe('browser feature detection', () => {
     assert.equal(supportsFeature('anchorPositioning', {}), false);
   });
 });
+
+describe('browser feature detection — additional', () => {
+  it('supportsFeature returns true when popover is present', () => {
+    const target = {
+      HTMLElement: { prototype: { showPopover() {} } },
+    };
+    assert.equal(supportsFeature('popover', target), true);
+  });
+
+  it('supportsFeature returns false for unknown feature name', () => {
+    assert.equal(supportsFeature('unknownFeature', {}), false);
+  });
+
+  it('detectBrowserFeatures returns an object with all 4 keys', () => {
+    const features = detectBrowserFeatures({});
+    assert.ok('dialog' in features);
+    assert.ok('popover' in features);
+    assert.ok('anchorPositioning' in features);
+    assert.ok('baseSelect' in features);
+  });
+
+  it('detects dialog when showModal is present on HTMLDialogElement prototype', () => {
+    const target = {
+      HTMLDialogElement: { prototype: { showModal() {} } },
+    };
+    const features = detectBrowserFeatures(target);
+    assert.equal(features.dialog, true);
+    assert.equal(features.popover, false);
+  });
+});

@@ -98,3 +98,47 @@ describe('renderWithBoundary', () => {
     assert.ok(!result.includes('--b'), 'double-dash should be escaped in comment');
   });
 });
+
+describe('createErrorBoundary — additional', () => {
+  it('getError() returns null when no error has occurred', () => {
+    const boundary = createErrorBoundary();
+    assert.equal(boundary.getError(), null);
+  });
+
+  it('try returns the value of a non-throwing function', () => {
+    const boundary = createErrorBoundary();
+    const result = boundary.try(() => [1, 2, 3]);
+    assert.deepEqual(result, [1, 2, 3]);
+    assert.equal(boundary.hasError(), false);
+  });
+
+  it('getFallback returns function result when fallback is a function', () => {
+    const boundary = createErrorBoundary({ fallback: '<p>fallback html</p>' });
+    boundary.try(() => { throw new Error('x'); });
+    assert.equal(boundary.getFallback(), '<p>fallback html</p>');
+  });
+
+  it('reset() allows boundary to be reused after error', () => {
+    const boundary = createErrorBoundary();
+    boundary.try(() => { throw new Error('first error'); });
+    assert.ok(boundary.hasError());
+    boundary.reset();
+    const result = boundary.try(() => 'ok after reset');
+    assert.equal(result, 'ok after reset');
+    assert.equal(boundary.hasError(), false);
+    assert.equal(boundary.getError(), null);
+  });
+});
+
+describe('renderWithBoundary — additional', () => {
+  it('returns result for successful synchronous render', () => {
+    const result = renderWithBoundary(() => '<h1>Hello</h1>');
+    assert.equal(result, '<h1>Hello</h1>');
+  });
+
+  it('includes escaped error message in default comment fallback', () => {
+    const result = renderWithBoundary(() => { throw new Error('bad--thing'); });
+    assert.match(result, /<!-- BaseNative render error:/);
+    assert.ok(!result.includes('--thing'));
+  });
+});
