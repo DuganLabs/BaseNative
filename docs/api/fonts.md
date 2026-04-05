@@ -1,10 +1,10 @@
 # @basenative/fonts
 
-> The BaseNative design system font family: Sans, Serif, and Mono variants.
+> Pre-bundled web fonts for BaseNative applications
 
 ## Overview
 
-`@basenative/fonts` ships the `BaseNative` font family in three optical variants (Sans, Serif, and Mono) as prebuilt WOFF2 files with a ready-to-use CSS `@font-face` declaration. All three variants share a single family name and are differentiated by `font-stretch` so you can select them with standard CSS. Fonts use `font-display: swap` and cover the Latin-1 Unicode range.
+`@basenative/fonts` provides a curated set of web fonts as woff2 files plus a single CSS stylesheet. Import the CSS to get Inter (sans-serif), JetBrains Mono (monospace), Source Serif 4 (serif), and DM Serif Display — along with the BaseNative-branded variants.
 
 ## Installation
 
@@ -12,64 +12,55 @@
 npm install @basenative/fonts
 ```
 
-## Quick Start
+## Usage
 
-Import the CSS file in your layout to register the `@font-face` declarations:
-
-```css
-@import '@basenative/fonts/fonts.css';
-```
-
-Or link it in HTML:
+### In a CSS file or `<link>` tag
 
 ```html
 <link rel="stylesheet" href="/node_modules/@basenative/fonts/fonts.css">
 ```
 
-Then apply the font family:
+### In a bundler
+
+```js
+import '@basenative/fonts/fonts.css';
+```
+
+### Direct woff2 references
+
+The package ships the following font files under `src/`:
+
+| File | Font |
+|------|------|
+| `inter-latin.woff2` | Inter (variable) — default sans-serif |
+| `jetbrains-mono-latin-variable.woff2` | JetBrains Mono — monospace / code |
+| `source-serif-4-latin-variable.woff2` | Source Serif 4 — body serif |
+| `dm-serif-display-latin.woff2` | DM Serif Display — display serif |
+| `BaseNative-Sans.woff2` | BaseNative Sans — branded sans |
+| `BaseNative-Serif.woff2` | BaseNative Serif — branded serif |
+| `BaseNative-Mono.woff2` | BaseNative Mono — branded mono |
+
+## CSS Custom Properties
+
+After importing `fonts.css`, the following CSS custom properties are available:
 
 ```css
 :root {
-  font-family: 'BaseNative', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif: 'Source Serif 4', Georgia, serif;
+  --font-display: 'DM Serif Display', serif;
 }
 ```
 
-## Font Variants
+These align with `@basenative/components` design tokens.
 
-All variants share the family name `BaseNative` and weight `400`. Select them using `font-stretch`:
+## Notes
 
-| Variant | `font-stretch` | File |
-|---------|---------------|------|
-| Sans | `normal` | `BaseNative-Sans.woff2` |
-| Serif | `expanded` | `BaseNative-Serif.woff2` |
-| Mono | `ultra-condensed` | `BaseNative-Mono.woff2` |
+- All fonts use `font-display: swap` for performance
+- Variable fonts are used where available for smaller bundle size
+- Only Latin character set is included
 
-**Example:**
-```css
-/* Sans (default) */
-body {
-  font-family: 'BaseNative', system-ui;
-  font-stretch: normal;
-}
+## License
 
-/* Serif for article text */
-article {
-  font-stretch: expanded;
-}
-
-/* Mono for code */
-code, pre {
-  font-stretch: ultra-condensed;
-}
-```
-
-## CSS Reference
-
-The `fonts.css` file registers `@font-face` rules for each variant with:
-- `font-display: swap` — text remains visible during font load
-- `unicode-range` — restricted to Latin-1 and common symbols so fallback fonts handle other scripts
-- No subsetting or variable font axes beyond the three optical variants
-
-## Integration
-
-Import `fonts.css` once in your root layout template. No JavaScript is required. The font files are served directly from `node_modules` in development; in production, copy or bundle them alongside your application assets.
+Apache-2.0
