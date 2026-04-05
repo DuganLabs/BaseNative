@@ -10,7 +10,7 @@ BaseNative adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ## [Unreleased] — 0.3.x (v1-Readiness)
 
 ### Added
-- Comprehensive test suites across all 23 packages (1245 unit tests + 19 cross-package integration tests)
+- Comprehensive test suites across all 23 packages (1270 unit tests + 19 cross-package integration tests)
 - `@basenative/runtime`: 81 edge case + security boundary tests for the CSP expression evaluator
 - "Building a Todo App" tutorial in `docs/guides/todo-app.md` (SSR + signals + forms + flags)
 - `@basenative/date`: full date utility coverage — timezone, relative time, date ranges
