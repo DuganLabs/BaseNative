@@ -341,3 +341,68 @@ describe('number / date formatting — additional', () => {
     assert.ok(typeof result === 'string' && result.length > 0);
   });
 });
+
+describe('i18nMiddleware — additional', () => {
+  it('detects locale from request.url (nested under request)', () => {
+    const i18n = createI18n({
+      defaultLocale: 'en',
+      messages: { en: { hi: 'Hi' }, fr: { hi: 'Bonjour' } },
+    });
+    const mw = i18nMiddleware(i18n);
+    const ctx = { request: { url: '/page?locale=fr', headers: {} }, state: {} };
+    mw(ctx, () => {});
+    assert.equal(i18n.t('hi'), 'Bonjour');
+  });
+
+  it('falls back to Accept-Language base language (en-US → en)', () => {
+    const i18n = createI18n({
+      defaultLocale: 'en',
+      messages: { en: { hi: 'Hello' } },
+    });
+    const mw = i18nMiddleware(i18n, { supportedLocales: ['en'] });
+    const ctx = {
+      request: { headers: { 'accept-language': 'en-US,en;q=0.9' } },
+      state: {},
+    };
+    mw(ctx, () => {});
+    // Should have resolved to 'en' (base of 'en-US')
+    assert.equal(i18n.t('hi'), 'Hello');
+  });
+
+  it('works without a next function', () => {
+    const i18n = createI18n({ defaultLocale: 'en' });
+    const mw = i18nMiddleware(i18n);
+    const ctx = { request: { headers: {} }, state: {} };
+    // Should not throw
+    assert.doesNotThrow(() => mw(ctx));
+  });
+
+  it('ignores unsupported locale from query param and falls back', () => {
+    const i18n = createI18n({
+      defaultLocale: 'en',
+      messages: { en: { hi: 'Hi' }, es: { hi: 'Hola' } },
+    });
+    const mw = i18nMiddleware(i18n, { supportedLocales: ['en', 'es'] });
+    // 'de' is not in supportedLocales
+    const ctx = { url: '/page?locale=de', request: { headers: {} }, state: {} };
+    mw(ctx, () => {});
+    assert.equal(i18n.locale, 'en'); // stays at default
+  });
+
+  it('uses custom queryParam name', () => {
+    const i18n = createI18n({
+      defaultLocale: 'en',
+      messages: { en: { hi: 'Hi' }, ja: { hi: 'こんにちは' } },
+    });
+    const mw = i18nMiddleware(i18n, { queryParam: 'lang' });
+    const ctx = { url: '/page?lang=ja', request: { headers: {} }, state: {} };
+    mw(ctx, () => {});
+    assert.equal(i18n.t('hi'), 'こんにちは');
+  });
+});
+
+describe('createLoader — additional', () => {
+  it('throws when directory is not provided', () => {
+    assert.throws(() => createLoader({}), /requires a "directory"/);
+  });
+});
