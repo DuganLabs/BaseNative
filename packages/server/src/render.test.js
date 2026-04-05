@@ -214,6 +214,152 @@ describe('render', () => {
   });
 });
 
+describe('render — additional edge cases', () => {
+  // --- Deeply nested directives ---
+  it('handles nested @if inside @for', () => {
+    const html = render(`
+      <template @for="item of items">
+        <template @if="item.active"><span>{{ item.name }}</span></template>
+      </template>
+    `, {
+      items: [
+        { name: 'Alpha', active: true },
+        { name: 'Beta', active: false },
+      ],
+    });
+    assert.match(html, /Alpha/);
+    assert.ok(!html.includes('Beta'));
+  });
+
+  it('handles @for inside @if', () => {
+    const html = render(`
+      <template @if="show">
+        <ul><template @for="x of items"><li>{{ x }}</li></template></ul>
+      </template>
+    `, { show: true, items: ['a', 'b'] });
+    assert.match(html, /<li>a<\/li>/);
+    assert.match(html, /<li>b<\/li>/);
+  });
+
+  // --- @for metadata ---
+  it('@for $index is 0-based', () => {
+    const html = render(
+      `<template @for="x of items">{{ $index }}</template>`,
+      { items: ['a', 'b', 'c'] }
+    );
+    assert.match(html, /0/);
+    assert.match(html, /1/);
+    assert.match(html, /2/);
+  });
+
+  // --- Non-array in @for ---
+  it('@for emits diagnostic for non-array and renders nothing', () => {
+    const diagnostics = [];
+    const html = render(
+      `<template @for="x of notAnArray"><span>{{ x }}</span></template>`,
+      { notAnArray: 'oops' },
+      { onDiagnostic: (d) => diagnostics.push(d) }
+    );
+    assert.ok(!html.includes('<span>'));
+    assert.ok(diagnostics.some(d => d.code === 'BN_FOR_NON_ARRAY'));
+  });
+
+  // --- :style and data-* bindings ---
+  it(':style binding renders CSS string', () => {
+    const html = render('<div :style="styles">', { styles: 'color:red;font-size:14px' });
+    assert.match(html, /style="color:red;font-size:14px"/);
+  });
+
+  it('data-* attribute passes through unchanged', () => {
+    const html = render('<div data-id="42" data-name="{{ label }}">', { label: 'test' });
+    assert.match(html, /data-id="42"/);
+    assert.match(html, /data-name="test"/);
+  });
+
+  it(':data-x dynamic data attribute', () => {
+    const html = render('<span :data-value="val">', { val: 'hello' });
+    assert.match(html, /data-value="hello"/);
+  });
+
+  // --- Boolean attributes ---
+  it(':checked boolean attribute is included when true', () => {
+    const html = render('<input :checked="isChecked">', { isChecked: true });
+    assert.match(html, /checked/);
+  });
+
+  it(':checked boolean attribute is omitted when false', () => {
+    const html = render('<input :checked="isChecked">', { isChecked: false });
+    assert.ok(!html.includes('checked'));
+  });
+
+  it(':required attribute omitted when null', () => {
+    const html = render('<input :required="req">', { req: null });
+    assert.ok(!html.includes('required'));
+  });
+
+  // --- Ternary in attribute binding ---
+  it(':class with ternary expression', () => {
+    const html = render('<div :class="active ? \'on\' : \'off\'">', { active: true });
+    assert.match(html, /class="on"/);
+  });
+
+  // --- Expression in nested object ---
+  it('renders deeply nested property access', () => {
+    const html = render('{{ a.b.c }}', { a: { b: { c: 'deep' } } });
+    assert.equal(html.trim(), 'deep');
+  });
+
+  // --- Template with no directives ---
+  it('renders plain HTML with no context', () => {
+    const html = render('<p>Hello, world!</p>', {});
+    assert.equal(html.trim(), '<p>Hello, world!</p>');
+  });
+
+  it('renders empty string template', () => {
+    const html = render('', {});
+    assert.equal(html, '');
+  });
+
+  // --- Style/script passthrough ---
+  it('preserves style tag contents without processing', () => {
+    const html = render('<style>.x { color: red; }</style>', {});
+    assert.match(html, /\.x \{ color: red; \}/);
+  });
+
+  // --- @if without @else ---
+  it('@if with no else renders nothing when false', () => {
+    const html = render(`<template @if="false"><p>Hidden</p></template>`, { false: false });
+    assert.ok(!html.includes('Hidden'));
+  });
+
+  // --- @switch with no matching case and no default ---
+  it('@switch with no match and no default renders empty', () => {
+    const html = render(`
+      <template @switch="val">
+        <template @case="'a'"><span>A</span></template>
+      </template>
+    `, { val: 'z' });
+    assert.ok(!html.includes('<span>'));
+  });
+
+  // --- Arithmetic in interpolation ---
+  it('renders arithmetic expression', () => {
+    const html = render('<p>{{ a * b + c }}</p>', { a: 3, b: 4, c: 2 });
+    assert.equal(render('<p>{{ a * b + c }}</p>', { a: 3, b: 4, c: 2 }).trim(), '<p>14</p>');
+  });
+
+  it('renders ternary expression', () => {
+    const html = render('<p>{{ x > 0 ? "pos" : "neg" }}</p>', { x: 5 });
+    assert.match(html, /pos/);
+  });
+
+  // --- @for with empty array uses @empty ---
+  it('@for with empty array and no @empty renders nothing', () => {
+    const html = render(`<template @for="x of items"><li>{{ x }}</li></template>`, { items: [] });
+    assert.ok(!html.includes('<li>'));
+  });
+});
+
 describe('renderToStream', () => {
   it('writes rendered content to a stream and calls end()', async () => {
     const chunks = [];
