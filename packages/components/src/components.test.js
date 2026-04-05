@@ -529,3 +529,129 @@ describe('buttonVariants — additional', () => {
     assert.ok(cls.includes('destructive'));
   });
 });
+
+describe('Input — additional', () => {
+  it('renders required and disabled attributes', () => {
+    const html = renderInput({ name: 'email', required: true, disabled: true });
+    assert.ok(html.includes(' required'));
+    assert.ok(html.includes(' disabled'));
+  });
+
+  it('renders help text with aria-describedby', () => {
+    const html = renderInput({ name: 'email', helpText: 'Enter your email' });
+    assert.ok(html.includes('Enter your email'));
+    assert.ok(html.includes('aria-describedby'));
+    assert.ok(html.includes('data-bn="field-help"'));
+  });
+
+  it('renders placeholder attribute', () => {
+    const html = renderInput({ name: 'search', placeholder: 'Search...' });
+    assert.ok(html.includes('placeholder="Search..."'));
+  });
+
+  it('renders with existing value', () => {
+    const html = renderInput({ name: 'name', value: 'Alice' });
+    assert.ok(html.includes('value="Alice"'));
+  });
+
+  it('escapes HTML in value attribute', () => {
+    const html = renderInput({ name: 'q', value: '<script>' });
+    assert.ok(!html.includes('<script>'));
+    assert.ok(html.includes('&lt;script'));
+  });
+});
+
+describe('Pagination — additional', () => {
+  it('on first page, prev is disabled', () => {
+    const html = renderPagination({ currentPage: 1, totalPages: 5 });
+    assert.ok(html.includes('aria-disabled="true"'));
+    assert.ok(html.includes('rel="next"'));
+    assert.ok(!html.includes('rel="prev"'));
+  });
+
+  it('on last page, next is disabled', () => {
+    const html = renderPagination({ currentPage: 5, totalPages: 5 });
+    assert.ok(html.includes('rel="prev"'));
+    assert.ok(!html.includes('rel="next"'));
+  });
+
+  it('includes baseUrl in page links', () => {
+    const html = renderPagination({ currentPage: 2, totalPages: 3, baseUrl: '/posts' });
+    assert.ok(html.includes('/posts?page='));
+  });
+});
+
+describe('Avatar — additional', () => {
+  it('renders initials when no src', () => {
+    const html = renderAvatar({ name: 'John Doe' });
+    assert.ok(html.includes('JD'));
+    assert.ok(html.includes('data-bn="avatar-initials"'));
+  });
+
+  it('uses ? when no name and no src', () => {
+    const html = renderAvatar({});
+    assert.ok(html.includes('?'));
+  });
+
+  it('renders custom size and shape', () => {
+    const html = renderAvatar({ name: 'AB', size: 'lg', shape: 'square' });
+    assert.ok(html.includes('data-size="lg"'));
+    assert.ok(html.includes('data-shape="square"'));
+  });
+});
+
+describe('Badge — additional', () => {
+  it('escapes HTML in badge content', () => {
+    const html = renderBadge('<b>bold</b>');
+    assert.ok(!html.includes('<b>'));
+    assert.ok(html.includes('&lt;b&gt;'));
+  });
+
+  it('renders default variant when none given', () => {
+    const html = renderBadge('New');
+    assert.ok(html.includes('data-variant="default"'));
+  });
+});
+
+describe('VirtualList — additional', () => {
+  it('renders custom renderItem function', () => {
+    const html = renderVirtualList({
+      items: ['alpha', 'beta'],
+      itemHeight: 30,
+      containerHeight: 100,
+      renderItem: (item) => `<li>${item}</li>`,
+    });
+    assert.ok(html.includes('<li>alpha</li>'));
+    assert.ok(html.includes('<li>beta</li>'));
+  });
+
+  it('includes container height in style', () => {
+    const html = renderVirtualList({ items: [], itemHeight: 40, containerHeight: 300 });
+    assert.ok(html.includes('height:300px'));
+  });
+});
+
+describe('Checkbox — additional', () => {
+  it('renders checked state', () => {
+    const html = renderCheckbox({ name: 'agree', label: 'Yes', checked: true });
+    assert.ok(html.includes(' checked'));
+  });
+
+  it('renders disabled state', () => {
+    const html = renderCheckbox({ name: 'terms', label: 'Terms', disabled: true });
+    assert.ok(html.includes(' disabled'));
+  });
+});
+
+describe('Textarea — additional', () => {
+  it('renders error state', () => {
+    const html = renderTextarea({ name: 'bio', error: 'Too short' });
+    assert.ok(html.includes('aria-invalid="true"'));
+    assert.ok(html.includes('Too short'));
+  });
+
+  it('renders placeholder', () => {
+    const html = renderTextarea({ name: 'note', placeholder: 'Enter note...' });
+    assert.ok(html.includes('placeholder="Enter note..."'));
+  });
+});
