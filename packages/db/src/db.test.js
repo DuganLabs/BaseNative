@@ -82,6 +82,60 @@ describe('query builder', () => {
     assert.equal(q.sql, 'SELECT COUNT(*) as count FROM users WHERE status = ?');
     assert.deepEqual(q.params, ['active']);
   });
+
+  it('raw with no params defaults to empty array', () => {
+    const q = raw('SELECT 1');
+    assert.deepEqual(q.params, []);
+  });
+
+  it('select without where omits WHERE clause', () => {
+    const q = select('posts').columns('id', 'title').build();
+    assert.equal(q.sql, 'SELECT id, title FROM posts');
+    assert.ok(!q.sql.includes('WHERE'));
+  });
+
+  it('select with multiple orderBy columns', () => {
+    const q = select('posts')
+      .orderBy('created_at', 'DESC')
+      .orderBy('title', 'ASC')
+      .build();
+    assert.match(q.sql, /ORDER BY created_at DESC, title ASC/);
+  });
+
+  it('update without where updates all rows', () => {
+    const q = update('settings').set({ maintenance: true }).build();
+    assert.equal(q.sql, 'UPDATE settings SET maintenance = ?');
+    assert.deepEqual(q.params, [true]);
+  });
+
+  it('delete without where deletes all rows', () => {
+    const q = deleteFrom('sessions').build();
+    assert.equal(q.sql, 'DELETE FROM sessions');
+    assert.deepEqual(q.params, []);
+  });
+
+  it('delete with multiple where conditions', () => {
+    const q = deleteFrom('logs')
+      .where('created_at < ?', '2024-01-01')
+      .where('level = ?', 'debug')
+      .build();
+    assert.match(q.sql, /WHERE created_at < \? AND level = \?/);
+    assert.deepEqual(q.params, ['2024-01-01', 'debug']);
+  });
+
+  it('insert with single column', () => {
+    const q = insert('events').values({ name: 'click' }).build();
+    assert.equal(q.sql, 'INSERT INTO events (name) VALUES (?)');
+    assert.deepEqual(q.params, ['click']);
+  });
+
+  it('parameterized queries prevent SQL injection patterns', () => {
+    const injection = "'; DROP TABLE users; --";
+    const q = select('users').where('name = ?', injection).build();
+    // SQL should use ? placeholder, not inline the value
+    assert.ok(!q.sql.includes('DROP'));
+    assert.deepEqual(q.params, [injection]);
+  });
 });
 
 describe('validateAdapter', () => {

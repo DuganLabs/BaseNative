@@ -111,3 +111,165 @@ describe('flagMiddleware', () => {
     });
   });
 });
+
+// --- Additional tests ---
+
+describe('createFlagManager – extended', () => {
+  it('uses custom defaultValue when flag is absent', async () => {
+    const provider = createMemoryProvider({});
+    const fm = createFlagManager(provider, { defaultValue: true });
+    assert.equal(await fm.isEnabled('missing'), true);
+  });
+
+  it('percentage rollout is deterministic across calls for same user', async () => {
+    const provider = createMemoryProvider({
+      rollout: { percentage: 50 },
+    });
+    const fm = createFlagManager(provider);
+    const r1 = await fm.isEnabled('rollout', { userId: 'stable-user' });
+    const r2 = await fm.isEnabled('rollout', { userId: 'stable-user' });
+    assert.equal(r1, r2);
+  });
+
+  it('percentage rollout uses sessionId when userId is absent', async () => {
+    const provider = createMemoryProvider({
+      rollout: { percentage: 100 },
+    });
+    const fm = createFlagManager(provider);
+    // 100% rollout — every session should be enabled
+    assert.equal(await fm.isEnabled('rollout', { sessionId: 'sess-xyz' }), true);
+  });
+
+  it('percentage 0 always returns false', async () => {
+    const provider = createMemoryProvider({
+      never: { percentage: 0 },
+    });
+    const fm = createFlagManager(provider);
+    assert.equal(await fm.isEnabled('never', { userId: 'anyone' }), false);
+  });
+
+  it('percentage 100 always returns true', async () => {
+    const provider = createMemoryProvider({
+      always: { percentage: 100 },
+    });
+    const fm = createFlagManager(provider);
+    assert.equal(await fm.isEnabled('always', { userId: 'anyone' }), true);
+  });
+
+  it('rule with custom condition function is evaluated', async () => {
+    const provider = createMemoryProvider({
+      custom_flag: {
+        enabled: false,
+        rules: [
+          {
+            condition: (ctx) => ctx.country === 'CA',
+            value: true,
+          },
+        ],
+      },
+    });
+    const fm = createFlagManager(provider);
+    assert.equal(await fm.isEnabled('custom_flag', { country: 'CA' }), true);
+    assert.equal(await fm.isEnabled('custom_flag', { country: 'US' }), false);
+  });
+
+  it('rule without explicit value defaults to true', async () => {
+    const provider = createMemoryProvider({
+      implicit_true: {
+        enabled: false,
+        rules: [{ userIds: ['tester'] }],
+      },
+    });
+    const fm = createFlagManager(provider);
+    assert.equal(await fm.isEnabled('implicit_true', { userId: 'tester' }), true);
+  });
+
+  it('getAll reflects updated flags after setFlag', async () => {
+    const provider = createMemoryProvider({
+      a: { enabled: true },
+      b: { enabled: false },
+    });
+    const fm = createFlagManager(provider);
+    await fm.setFlag('b', { enabled: true });
+    const all = await fm.getAll();
+    assert.equal(all.a, true);
+    assert.equal(all.b, true);
+  });
+
+  it('setFlag is a no-op when provider does not support it', async () => {
+    // Provider without setFlag
+    const provider = {
+      async getFlag() { return null; },
+      async getAllFlags() { return {}; },
+    };
+    const fm = createFlagManager(provider);
+    // Should not throw
+    await fm.setFlag('x', { enabled: true });
+  });
+});
+
+describe('memoryProvider – extended', () => {
+  it('getAllFlags returns all stored flags', async () => {
+    const provider = createMemoryProvider({
+      f1: { enabled: true },
+      f2: { enabled: false },
+    });
+    const all = await provider.getAllFlags();
+    assert.deepEqual(Object.keys(all).sort(), ['f1', 'f2']);
+  });
+
+  it('overwrites existing flag on setFlag', async () => {
+    const provider = createMemoryProvider({ f: { enabled: false } });
+    await provider.setFlag('f', { enabled: true });
+    const flag = await provider.getFlag('f');
+    assert.equal(flag.enabled, true);
+  });
+
+  it('deleteFlag on non-existent key is a no-op', async () => {
+    const provider = createMemoryProvider({});
+    await provider.deleteFlag('ghost'); // should not throw
+    assert.equal(await provider.getFlag('ghost'), null);
+  });
+});
+
+describe('flagMiddleware – extended', () => {
+  it('isEnabled uses userId from ctx.state.user', async () => {
+    const provider = createMemoryProvider({
+      vip: {
+        enabled: false,
+        rules: [{ userIds: ['vip-user'], value: true }],
+      },
+    });
+    const fm = createFlagManager(provider);
+    const mw = flagMiddleware(fm);
+    const ctx = {
+      state: {
+        user: { id: 'vip-user', role: 'user' },
+        session: {},
+      },
+    };
+    await mw(ctx, async () => {
+      assert.equal(await ctx.state.isEnabled('vip'), true);
+    });
+  });
+
+  it('isEnabled uses role from ctx.state.user', async () => {
+    const provider = createMemoryProvider({
+      admin_panel: {
+        enabled: false,
+        rules: [{ roles: ['admin'], value: true }],
+      },
+    });
+    const fm = createFlagManager(provider);
+    const mw = flagMiddleware(fm);
+    const ctx = {
+      state: {
+        user: { id: 'u1', role: 'admin' },
+        session: {},
+      },
+    };
+    await mw(ctx, async () => {
+      assert.equal(await ctx.state.isEnabled('admin_panel'), true);
+    });
+  });
+});
