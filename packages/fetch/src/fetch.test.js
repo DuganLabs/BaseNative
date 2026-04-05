@@ -425,3 +425,80 @@ describe('createCache — additional', () => {
     assert.equal(cache.size, 0);
   });
 });
+
+describe('createResource — status signal', () => {
+  it('status is "success" after successful fetch', async () => {
+    const resource = createResource(async () => 'data', { immediate: false });
+    await resource.fetch();
+    assert.equal(resource.status(), 'success');
+  });
+
+  it('status is "error" after failed fetch', async () => {
+    const resource = createResource(async () => {
+      throw new Error('fail');
+    }, { immediate: false });
+    await resource.fetch();
+    assert.equal(resource.status(), 'error');
+  });
+
+  it('status is "idle" when no data and no error', () => {
+    const resource = createResource(async () => 'data', { immediate: false });
+    assert.equal(resource.status(), 'idle');
+  });
+});
+
+describe('createMutation — status signal', () => {
+  it('status is "success" after successful mutation', async () => {
+    const m = createMutation(async () => 'done');
+    await m.mutate();
+    assert.equal(m.status(), 'success');
+  });
+
+  it('status is "error" after failed mutation', async () => {
+    const m = createMutation(async () => { throw new Error('fail'); });
+    await m.mutate();
+    assert.equal(m.status(), 'error');
+  });
+
+  it('status is "idle" initially', () => {
+    const m = createMutation(async () => 'ok');
+    assert.equal(m.status(), 'idle');
+  });
+});
+
+describe('fetchJson — additional', () => {
+  it('custom headers override Content-Type when provided', async () => {
+    const originalFetch = globalThis.fetch;
+    let capturedInit;
+    globalThis.fetch = async (_url, init) => {
+      capturedInit = init;
+      return { ok: true, json: async () => ({}) };
+    };
+    try {
+      await fetchJson('https://example.com/api', {
+        headers: { 'X-Custom': 'value', 'Content-Type': 'text/plain' },
+      });
+      // User headers override the default Content-Type
+      assert.equal(capturedInit.headers['Content-Type'], 'text/plain');
+      assert.equal(capturedInit.headers['X-Custom'], 'value');
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('error includes statusText in message', async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => ({ ok: false, status: 503, statusText: 'Service Unavailable' });
+    try {
+      await assert.rejects(
+        () => fetchJson('https://example.com/api'),
+        (err) => {
+          assert.ok(err.message.includes('503'));
+          return true;
+        },
+      );
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+});
