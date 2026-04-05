@@ -197,3 +197,70 @@ describe('sqlite adapter', () => {
     if (!adapter) await adapter?.close();
   });
 });
+
+describe('query builder — additional', () => {
+  it('select with limit but no offset omits OFFSET', () => {
+    const q = select('posts').limit(5).build();
+    assert.match(q.sql, /LIMIT 5/);
+    assert.ok(!q.sql.includes('OFFSET'));
+  });
+
+  it('select with offset but no limit omits LIMIT', () => {
+    const q = select('posts').offset(10).build();
+    assert.match(q.sql, /OFFSET 10/);
+    assert.ok(!q.sql.includes('LIMIT'));
+  });
+
+  it('select with multiple where conditions chains with AND', () => {
+    const q = select('orders')
+      .where('status = ?', 'pending')
+      .where('total > ?', 100)
+      .where('user_id = ?', 5)
+      .build();
+    assert.match(q.sql, /WHERE status = \? AND total > \? AND user_id = \?/);
+    assert.deepEqual(q.params, ['pending', 100, 5]);
+  });
+
+  it('insert returning * lists all columns', () => {
+    const q = insert('users').values({ name: 'Eve' }).returning('*').build();
+    assert.match(q.sql, /RETURNING \*/);
+  });
+
+  it('update chained set calls merge data', () => {
+    const q = update('users')
+      .set({ status: 'active' })
+      .set({ role: 'editor' })
+      .where('id = ?', 7)
+      .build();
+    assert.match(q.sql, /SET status = \?, role = \?/);
+    assert.deepEqual(q.params, ['active', 'editor', 7]);
+  });
+
+  it('select columns accepts flat array', () => {
+    const q = select('items').columns(['id', 'name', 'price']).build();
+    assert.match(q.sql, /SELECT id, name, price FROM items/);
+  });
+
+  it('insert parameter order matches column order', () => {
+    const q = insert('events').values({ a: 1, b: 2, c: 3 }).build();
+    assert.deepEqual(q.params, [1, 2, 3]);
+  });
+
+  it('select with join and where produces correct SQL', () => {
+    const q = select('orders')
+      .columns('orders.id', 'users.email')
+      .join('users', 'users.id = orders.user_id')
+      .where('orders.status = ?', 'paid')
+      .build();
+    assert.match(q.sql, /JOIN users ON/);
+    assert.match(q.sql, /WHERE orders.status = \?/);
+    assert.deepEqual(q.params, ['paid']);
+  });
+
+  it('raw preserves sql exactly', () => {
+    const sql = 'SELECT id, name FROM users WHERE deleted_at IS NULL ORDER BY created_at DESC';
+    const q = raw(sql);
+    assert.equal(q.sql, sql);
+    assert.deepEqual(q.params, []);
+  });
+});

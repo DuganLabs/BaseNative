@@ -229,4 +229,98 @@ describe('tenantScope', () => {
     scoped.query(ctx, 'items', {});
     assert.deepEqual(calls[0], { table: 'items', filters: { org_id: 'corp' } });
   });
+
+  it('query with no extra filters only adds tenant_id', () => {
+    const calls = [];
+    const adapter = { query: (table, filters) => { calls.push(filters); } };
+    const scoped = tenantScope(adapter);
+    const ctx = createCtx({ state: { tenant: 'xyz' } });
+    scoped.query(ctx, 'products');
+    assert.deepEqual(calls[0], { tenant_id: 'xyz' });
+  });
+
+  it('delete with no extra filters only adds tenant_id', () => {
+    const calls = [];
+    const adapter = { delete: (table, filters) => { calls.push(filters); } };
+    const scoped = tenantScope(adapter);
+    const ctx = createCtx({ state: { tenant: 'xyz' } });
+    scoped.delete(ctx, 'sessions');
+    assert.deepEqual(calls[0], { tenant_id: 'xyz' });
+  });
+});
+
+describe('createSubdomainResolver — additional', () => {
+  it('strips port from host before resolving', () => {
+    const resolve = createSubdomainResolver({ baseDomain: 'example.com' });
+    const ctx = createCtx({ request: { headers: { host: 'acme.example.com:3000' } } });
+    assert.equal(resolve(ctx), 'acme');
+  });
+
+  it('respects custom exclude list', () => {
+    const resolve = createSubdomainResolver({ baseDomain: 'example.com', exclude: ['api', 'www'] });
+    const ctx = createCtx({ request: { headers: { host: 'api.example.com' } } });
+    assert.equal(resolve(ctx), null);
+  });
+
+  it('allows excluded subdomains if they are not in the list', () => {
+    const resolve = createSubdomainResolver({ baseDomain: 'example.com', exclude: [] });
+    const ctx = createCtx({ request: { headers: { host: 'www.example.com' } } });
+    assert.equal(resolve(ctx), 'www');
+  });
+});
+
+describe('createPathResolver — additional', () => {
+  it('returns null for exact prefix with no tenant segment', () => {
+    const resolve = createPathResolver();
+    const ctx = createCtx({ request: { path: '/t' } });
+    assert.equal(resolve(ctx), null);
+  });
+
+  it('returns null for path that does not start with prefix', () => {
+    const resolve = createPathResolver({ prefix: '/org' });
+    const ctx = createCtx({ request: { path: '/t/something/path' } });
+    assert.equal(resolve(ctx), null);
+  });
+
+  it('uses request.url when path is not present', () => {
+    const resolve = createPathResolver();
+    const ctx = { request: { url: '/t/beta/dashboard' } };
+    assert.equal(resolve(ctx), 'beta');
+  });
+});
+
+describe('createHeaderResolver — additional', () => {
+  it('returns first value when header is an array', () => {
+    const resolve = createHeaderResolver();
+    const ctx = createCtx({ request: { headers: { 'x-tenant-id': ['alpha', 'beta'] } } });
+    assert.equal(resolve(ctx), 'alpha');
+  });
+});
+
+describe('tenantMiddleware — additional', () => {
+  it('still calls next when tenant is null and no onNotFound', async () => {
+    const mw = tenantMiddleware(() => null);
+    const ctx = createCtx();
+    let called = false;
+    await mw(ctx, async () => { called = true; });
+    assert.ok(called);
+    assert.equal(ctx.state.tenant, null);
+  });
+});
+
+describe('requireTenant — additional', () => {
+  it('uses custom stateKey to check tenant', async () => {
+    const mw = requireTenant({ stateKey: 'org' });
+    const ctx = createCtx({ state: { org: 'beta' } });
+    let called = false;
+    await mw(ctx, async () => { called = true; });
+    assert.ok(called);
+  });
+
+  it('rejects when custom stateKey is absent', async () => {
+    const mw = requireTenant({ stateKey: 'org' });
+    const ctx = createCtx();
+    await mw(ctx, async () => {});
+    assert.equal(ctx.response.status, 400);
+  });
 });
