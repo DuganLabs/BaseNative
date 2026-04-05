@@ -178,6 +178,7 @@ npx nx run-many --target=lint --all
 | Guide | Description |
 |-------|-------------|
 | [Getting Started](docs/getting-started.md) | Install, first component, routing, SSR |
+| [Building a Todo App](docs/guides/todo-app.md) | End-to-end tutorial: SSR + signals + forms + flags |
 | [API Reference](docs/api/) | Full API docs for all 23 packages |
 | [Migration Guide](docs/migration.md) | Moving from React, Vue, Svelte, or vanilla JS |
 | [Accessibility](docs/accessibility.md) | ARIA, keyboard nav, screen reader support |
