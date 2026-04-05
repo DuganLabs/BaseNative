@@ -2,10 +2,83 @@
 
 All notable changes to BaseNative will be documented in this file.
 
-## 0.2.0 — 2026-03-20 (Trust Release)
+The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and
+BaseNative adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-- Replaced eval-like template execution with a shared CSP-safe expression interpreter.
-- Added keyed `@for ... track ...` reconciliation in the runtime.
-- Added hydration diagnostics hooks and server-side hydratable markers.
-- Added browser feature detection utilities and explicit browser support documentation.
-- Tightened the public positioning from demo claims toward pilot-stage framework documentation.
+---
+
+## [Unreleased] — 0.3.x (v1-Readiness)
+
+### Added
+- Comprehensive test suites across all 23 packages (650+ test cases)
+- `@basenative/date`: full date utility coverage — timezone, relative time, date ranges
+- `@basenative/fetch`: signal-based resource caching, SSR preload, abort controller, retry logic
+- `@basenative/flags`: percentage rollout bucketing, user context evaluation, `@feature` directive
+- `@basenative/logger`: structured JSON output, file transport, child loggers, correlation IDs
+- `@basenative/notify`: email template rendering, SMTP and SendGrid transports
+- `@basenative/upload`: multipart parsing, file validation, R2 and S3 adapters, progress tracking
+- Node.js 18/20/22 matrix in CI workflow
+- Package-level READMEs for all packages
+- API documentation for all packages in `docs/api/`
+- `description`, `license`, `repository`, `keywords` fields in all `package.json` files
+
+### Changed
+- CI workflow: replaced `test:coverage` (undefined target) with `test`, added node version matrix
+- Root `README.md` rewritten for open-source audience with full package table
+
+### Fixed
+- Nx Cloud 401 auth errors no longer block local test runs (cloud token is optional)
+
+---
+
+## [0.3.0] — 2026-03-28 (Pilot Baseline)
+
+### Added
+- `@basenative/runtime`: error boundaries (`createErrorBoundary`, `renderWithBoundary`)
+- `@basenative/runtime`: plugin system (`definePlugin`, `createPluginRegistry`)
+- `@basenative/runtime`: lazy hydration strategies (`hydrateOnIdle`, `hydrateOnInteraction`, `hydrateOnMedia`)
+- `@basenative/runtime`: Web Vitals integration (`observeLCP`, `observeFID`, `observeCLS`, `observeFCP`, `observeTTFB`, `observeINP`)
+- `@basenative/runtime`: devtools hooks (`enableDevtools`, `trackSignal`, `trackEffect`)
+- `@basenative/server`: `renderToStream` (Node.js) and `renderToReadableStream` (Web Streams API)
+- `@basenative/server`: server adapter compatibility (Express, Hono)
+- `@basenative/router`: guard functions (before-enter, before-leave, redirect)
+- `@basenative/forms`: Zod schema adapter
+- `@basenative/components`: 15 semantic UI components with CSS custom property theming
+- `@basenative/components`: light/dark mode, density scales (compact/default/spacious)
+- Unified design system with design token showcase
+- Nx Cloud workspace integration
+- Enterprise reference app (`examples/enterprise/`)
+- `@basenative/auth`, `@basenative/db`, `@basenative/middleware`, `@basenative/config`
+- `@basenative/i18n`, `@basenative/realtime`, `@basenative/tenant`
+- `@basenative/upload`, `@basenative/notify`, `@basenative/flags`, `@basenative/date`
+- `@basenative/visual-builder` and `@basenative/marketplace`
+
+---
+
+## [0.2.0] — 2026-03-20 (Trust Release)
+
+### Changed
+- Replaced eval-based template execution with a shared CSP-safe expression interpreter (no `eval`, no `new Function`)
+- Keyed `@for ... track ...` reconciliation in the runtime
+
+### Added
+- Hydration diagnostics hooks and server-side hydratable markers
+- Browser feature detection utilities (`browserFeatures`, `detectBrowserFeatures`, `supportsFeature`)
+- Explicit browser support documentation
+
+### Fixed
+- Public positioning tightened from demo claims toward pilot-stage framework documentation
+
+---
+
+## [0.1.0] — 2026-02-15 (Foundation)
+
+### Added
+- `@basenative/runtime`: `signal()`, `computed()`, `effect()`, `hydrate()`
+- `@basenative/server`: `render()` with `@if`, `@for`, `@switch` directive support
+- `@basenative/router`: path matching with named params and wildcards
+- `@basenative/forms`: signal-based field state and validators
+- `@basenative/cli`: `bn` / `create-basenative` scaffolding
+- Express reference example
+- CSP-safe expression evaluator shared between server and runtime
+- Nx + pnpm monorepo setup with GitHub Actions CI

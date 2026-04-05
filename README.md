@@ -1,129 +1,183 @@
 # BaseNative
 
-BaseNative is a semantic HTML application runtime for server-rendered interfaces.
-It combines:
+**A signal-based web runtime over native HTML — zero build step, zero production dependencies.**
 
-- signal-based reactivity
-- native `<template>` control flow
-- server rendering with streaming support
-- client-side template hydration
-- a CSP-safe expression interpreter
-- a complete component library with design tokens
+BaseNative makes the browser's own primitives the component model. A `<template>` element is the component. A `{{ }}` interpolation is the binding. `signal()` is the state. No JSX, no virtual DOM, no namespace theater.
+
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![npm](https://img.shields.io/npm/v/@basenative/runtime)](https://www.npmjs.com/package/@basenative/runtime)
+
+---
+
+## Why BaseNative?
+
+| Problem | BaseNative |
+|---------|------------|
+| Frameworks ship 50-300KB of runtime | Core runtime is < 5KB gzipped |
+| Build pipelines break, lock you in | No build step — `<script type="module">` is enough |
+| JSX/template syntax is proprietary | Standard HTML — any LLM reads it in zero shots |
+| State is tangled across multiple files | Trinity Standard — state + logic + template in one file |
+| CSS-in-JS pollutes markup | Zero inline styles — cascade layers only |
+
+---
+
+## Quick Start
+
+```bash
+npm install @basenative/runtime @basenative/server
+```
+
+**Server (Node.js / Cloudflare Workers):**
+
+```js
+import { render } from '@basenative/server';
+
+const html = render(`
+  <h1>{{ title }}</h1>
+  <template @if="user">
+    <p>Welcome, {{ user.name }}!</p>
+  </template>
+  <template @else>
+    <p><a href="/login">Sign in</a></p>
+  </template>
+  <ul>
+    <template @for="item of items; track item.id">
+      <li>{{ item.name }}</li>
+    </template>
+  </ul>
+`, { title: 'Dashboard', user: { name: 'Alice' }, items });
+```
+
+**Client (browser):**
+
+```js
+import { signal, computed, effect, hydrate } from '@basenative/runtime';
+
+const count = signal(0);
+const doubled = computed(() => count() * 2);
+
+effect(() => console.log(`${count()} → ${doubled()}`));
+
+hydrate(document.getElementById('app'), { count, doubled });
+```
+
+---
 
 ## Packages
 
 | Package | Description |
 |---------|-------------|
-| `@basenative/runtime` | Core reactivity, template hydration, diagnostics, devtools, error boundaries |
-| `@basenative/server` | Server-side rendering with optional streaming |
-| `@basenative/router` | SSR-aware client + server routing with params, wildcards, and query helpers |
-| `@basenative/forms` | Signal-based field state, validation, and form management |
-| `@basenative/components` | 15 semantic UI components with design tokens and theming |
+| [`@basenative/runtime`](packages/runtime) | Signals, computed, effects, hydration, lazy loading, Web Vitals |
+| [`@basenative/server`](packages/server) | SSR — render(), streaming, hydration markers |
+| [`@basenative/router`](packages/router) | SSR-aware routing with params, wildcards, query helpers |
+| [`@basenative/forms`](packages/forms) | Signal-based field state, validators, Zod adapter |
+| [`@basenative/components`](packages/components) | 15 semantic UI components with design token theming |
+| [`@basenative/auth`](packages/auth) | Session management, RBAC, password hashing, OAuth providers |
+| [`@basenative/db`](packages/db) | Query builder + SQLite/PostgreSQL/D1 adapters |
+| [`@basenative/middleware`](packages/middleware) | Pipeline, CORS, rate-limit, CSRF — Hono/Fastify/CF Workers adapters |
+| [`@basenative/config`](packages/config) | Env loading, type-safe schema validation |
+| [`@basenative/logger`](packages/logger) | Structured logging, multiple transports, child loggers |
+| [`@basenative/fetch`](packages/fetch) | Signal-based resource fetching with SSR preload and cache |
+| [`@basenative/i18n`](packages/i18n) | ICU message formatting, locale detection, `@t` directive |
+| [`@basenative/realtime`](packages/realtime) | SSE + WebSocket with reactive channel management |
+| [`@basenative/tenant`](packages/tenant) | Multi-tenant middleware — subdomain, path, header resolvers |
+| [`@basenative/upload`](packages/upload) | Multipart upload with R2/S3 storage adapters |
+| [`@basenative/notify`](packages/notify) | Email templates + SMTP/SendGrid transports |
+| [`@basenative/flags`](packages/flags) | Feature flags with percentage rollouts and user context |
+| [`@basenative/date`](packages/date) | Date utilities, formatting, calendar generation |
+| [`@basenative/cli`](packages/cli) | `create-basenative` scaffolding and `bn` dev commands |
+| [`@basenative/fonts`](packages/fonts) | Font loading utilities |
+| [`@basenative/icons`](packages/icons) | Icon system |
+| [`@basenative/marketplace`](packages/marketplace) | Community component registry |
+| [`@basenative/visual-builder`](packages/visual-builder) | No-code template builder |
 
-## Quick Start
+---
 
-```bash
-pnpm add @basenative/runtime @basenative/server
+## Template Directives
+
+```html
+<!-- Interpolation -->
+<p>Hello, {{ user.name }}!</p>
+
+<!-- Conditional -->
+<template @if="isAdmin"><button>Delete</button></template>
+<template @else><span>Read-only</span></template>
+
+<!-- Lists with keyed reconciliation -->
+<template @for="item of items; track item.id">
+  <li>{{ item.name }}</li>
+</template>
+<template @empty><p>No items.</p></template>
+
+<!-- Switch/case -->
+<template @switch="role">
+  <template @case="'admin'"><AdminPanel /></template>
+  <template @case="'editor'"><EditorTools /></template>
+  <template @default><ViewerMode /></template>
+</template>
+
+<!-- Dynamic attributes -->
+<input :disabled="!canEdit" :class="isActive ? 'active' : ''">
 ```
 
-```js
-import { render } from '@basenative/server';
+---
 
-const html = render('<h1>{{ title }}</h1>', { title: 'Hello World' });
+## CSP-Safe Expression Evaluator
+
+BaseNative never calls `eval` or `new Function`. The expression evaluator supports a deliberate safe subset: property access, method calls, arithmetic, comparison, logical operators, ternary, array/object literals. Move complex logic into named functions in your context object.
+
+---
+
+## Architecture
+
+```
+Template (HTML)
+    ↓ @basenative/server (Node / Workers)
+Rendered HTML + <!--bn:*--> markers
+    ↓ @basenative/runtime (browser)
+Hydrated DOM with live signal bindings
+    ↓ signal updates
+Targeted DOM patches (no full re-render)
 ```
 
-```js
-import { signal, hydrate } from '@basenative/runtime';
-
-const count = signal(0);
-hydrate(document.body, {
-  count,
-  increment() { count.set(c => c + 1); },
-});
-```
-
-See [docs/getting-started.md](docs/getting-started.md) for a complete walkthrough.
-
-## Current Status
-
-### Runtime
-- `@if`, `@else`, `@for`, `@empty`, `@switch`, `@case`, `@default`
-- keyed `@for ... track ...` reconciliation
-- signal, computed, and effect primitives
-- CSP-safe expression interpreter (no eval, no new Function)
-- browser feature detection (dialog, popover, anchor positioning, base-select)
-- hydration diagnostics and mismatch reporting
-- devtools hooks (`window.__BASENATIVE_DEVTOOLS__`)
-- error boundary system
-
-### Server
-- HTML template rendering with expression evaluation
-- hydratable SSR markers for diagnostics
-- streaming support (Node streams and Web ReadableStream)
-
-### Router
-- Path patterns with named params (`:id`) and wildcards (`*path`)
-- Nested route support
-- SSR-aware route resolution
-- Client-side History API navigation
-- Query string utilities
-- Link interception for SPA navigation
-
-### Forms
-- Signal-based field state (value, touched, dirty, errors)
-- Built-in validators (required, minLength, maxLength, pattern, email, min, max)
-- Schema adapter interface (Zod adapter included)
-- Form-level validity, submission, and server error handling
-
-### Components
-Button, Input, Textarea, Checkbox, Radio, Toggle/Switch, Select, Alert, Toast, Table, Pagination, Badge, Card, Progress/Spinner, Skeleton
-
-### Design System
-- CSS custom properties for color, spacing, typography, radius, shadows
-- Light/dark mode (prefers-color-scheme + data-theme override)
-- Density scales (compact, default, spacious)
-
-## Expression Model
-
-BaseNative uses a CSP-safe expression interpreter. The runtime supports a deliberate safe subset:
-
-- property access
-- function and method calls
-- literals, arrays, and plain objects
-- arithmetic, comparison, logical, and conditional operators
-
-It does **not** execute arbitrary JavaScript. Move complex logic into named functions.
+---
 
 ## Browser Support
 
-BaseNative targets **current evergreen Chrome, Edge, Firefox, and Safari**.
+Current evergreen browsers: Chrome, Edge, Firefox, Safari.
 
-See [docs/browser-support.md](docs/browser-support.md) for the support policy.
+---
 
 ## Development
 
-This repository is an Nx + pnpm workspace.
-
 ```bash
-pnpm install              # Install dependencies
-pnpm exec nx run-many --target=test  # Run all tests
-pnpm exec nx run-many --target=lint  # Lint all packages
-pnpm start                # Start example app
-node scripts/bundle-size.js  # Check bundle sizes
+pnpm install
+node --test                          # tests in any package directory
+npx nx run-many --target=test --all  # all packages via Nx
+npx nx run-many --target=lint --all
 ```
 
-## Documentation
+---
 
-- [Getting Started](docs/getting-started.md)
-- [API Reference](docs/api/)
-- [Accessibility](docs/accessibility.md)
-- [Roadmap](docs/roadmap.md)
-- [Limitations](docs/limitations.md)
-- [Migration Guide](docs/migration.md)
-- [Release Process](docs/releasing.md)
-- [Browser Support](docs/browser-support.md)
-- [Contributing](CONTRIBUTING.md)
-- [Security](SECURITY.md)
+## Examples
+
+| Example | Description |
+|---------|-------------|
+| [`examples/express`](examples/express) | Full Express app with components showcase |
+| [`examples/cloudflare-workers`](examples/cloudflare-workers) | Cloudflare Workers with SSR + routing |
+| [`examples/node`](examples/node) | Standalone Node.js HTTP server |
+| [`examples/enterprise`](examples/enterprise) | Auth + DB + middleware stack |
+| [`examples/enterprise-v2`](examples/enterprise-v2) | Multi-tenant enterprise patterns |
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Built on conventional commits with Changesets for versioning.
+
+## Security
+
+See [SECURITY.md](SECURITY.md) for the security policy and how to report vulnerabilities.
 
 ## License
 

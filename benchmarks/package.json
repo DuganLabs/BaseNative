@@ -3,8 +3,12 @@
   "version": "0.2.0",
   "private": true,
   "type": "module",
+  "scripts": {
+    "bench": "node signals.bench.js && node render.bench.js && node router.bench.js"
+  },
   "dependencies": {
     "@basenative/runtime": "workspace:*",
-    "@basenative/server": "workspace:*"
+    "@basenative/server": "workspace:*",
+    "@basenative/router": "workspace:*"
   }
 }
