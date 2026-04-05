@@ -266,3 +266,70 @@ describe('validateConfig — additional edge cases', () => {
     assert.throws(() => validateConfig({ KEY: 'short' }, schema), /Config validation failed/);
   });
 });
+
+describe('zodAdapter', () => {
+  it('passes parsed data through on success', () => {
+    const fakeZodSchema = {
+      safeParse: (values) => ({ success: true, data: { parsed: true, ...values } }),
+    };
+    const adapter = zodAdapter(fakeZodSchema);
+    const result = adapter({ foo: 'bar' });
+    assert.equal(result.parsed, true);
+    assert.equal(result.foo, 'bar');
+  });
+
+  it('throws on parse failure with formatted message', () => {
+    const fakeZodSchema = {
+      safeParse: () => ({
+        success: false,
+        error: {
+          issues: [
+            { path: ['port'], message: 'Expected number' },
+            { path: ['host'], message: 'Required' },
+          ],
+        },
+      }),
+    };
+    const adapter = zodAdapter(fakeZodSchema);
+    assert.throws(() => adapter({}), /Config validation failed/);
+    assert.throws(() => adapter({}), /port/);
+  });
+});
+
+describe('parseEnvFile — more edge cases', () => {
+  it('skips line with only whitespace', () => {
+    const result = parseEnvFile('   \nFOO=bar\n   ');
+    assert.deepEqual(result, { FOO: 'bar' });
+  });
+
+  it('value can be empty string', () => {
+    const result = parseEnvFile('EMPTY=');
+    assert.deepEqual(result, { EMPTY: '' });
+  });
+
+  it('handles multiword key with no spaces', () => {
+    const result = parseEnvFile('MULTI_WORD_KEY=value');
+    assert.deepEqual(result, { MULTI_WORD_KEY: 'value' });
+  });
+
+  it('hash inside quoted value is preserved', () => {
+    const result = parseEnvFile('COLOR="#ff0000"');
+    assert.equal(result.COLOR, '#ff0000');
+  });
+});
+
+describe('defineConfig — additional', () => {
+  it('throws when schema object validation fails', () => {
+    assert.throws(() => {
+      defineConfig({
+        schema: { REQUIRED_NUM: number() },
+        env: { REQUIRED_NUM: 'not-a-number' },
+      });
+    }, /Config validation failed/);
+  });
+
+  it('works with empty schema', () => {
+    const config = defineConfig({ schema: {}, env: { EXTRA: 'ignored' } });
+    assert.deepEqual(config, {});
+  });
+});

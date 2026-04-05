@@ -324,3 +324,71 @@ describe('requireTenant — additional', () => {
     assert.equal(ctx.response.status, 400);
   });
 });
+
+describe('createCompositeResolver — additional', () => {
+  it('single resolver returning null returns null', () => {
+    const resolve = createCompositeResolver([() => null]);
+    assert.equal(resolve(createCtx()), null);
+  });
+
+  it('single resolver returning a value returns it', () => {
+    const resolve = createCompositeResolver([() => 'solo']);
+    assert.equal(resolve(createCtx()), 'solo');
+  });
+
+  it('skips null resolvers and uses third', () => {
+    const resolve = createCompositeResolver([
+      () => null,
+      () => null,
+      () => 'third',
+    ]);
+    assert.equal(resolve(createCtx()), 'third');
+  });
+});
+
+describe('createSubdomainResolver — more edge cases', () => {
+  it('returns null when no host header present', () => {
+    const resolve = createSubdomainResolver({ baseDomain: 'example.com' });
+    const ctx = createCtx({ request: { headers: {} } });
+    assert.equal(resolve(ctx), null);
+  });
+
+  it('handles Host header (capital H)', () => {
+    const resolve = createSubdomainResolver({ baseDomain: 'example.com' });
+    const ctx = createCtx({ request: { headers: { Host: 'tenant.example.com' } } });
+    assert.equal(resolve(ctx), 'tenant');
+  });
+
+  it('returns null for two-part host without baseDomain (no subdomain)', () => {
+    const resolve = createSubdomainResolver();
+    const ctx = createCtx({ request: { headers: { host: 'example.com' } } });
+    assert.equal(resolve(ctx), null);
+  });
+});
+
+describe('tenantScope — additional', () => {
+  it('passes return value from adapter.query through', () => {
+    const adapter = { query: (_table, _filters) => [{ id: 1 }] };
+    const scoped = tenantScope(adapter);
+    const ctx = createCtx({ state: { tenant: 'acme' } });
+    const result = scoped.query(ctx, 'users', {});
+    assert.deepEqual(result, [{ id: 1 }]);
+  });
+
+  it('passes return value from adapter.insert through', () => {
+    const adapter = { insert: (_table, data) => ({ ...data, id: 99 }) };
+    const scoped = tenantScope(adapter);
+    const ctx = createCtx({ state: { tenant: 'acme' } });
+    const result = scoped.insert(ctx, 'users', { name: 'alice' });
+    assert.equal(result.id, 99);
+    assert.equal(result.tenant_id, 'acme');
+  });
+
+  it('passes return value from adapter.update through', () => {
+    const adapter = { update: () => ({ changes: 1 }) };
+    const scoped = tenantScope(adapter);
+    const ctx = createCtx({ state: { tenant: 'acme' } });
+    const result = scoped.update(ctx, 'users', { id: 1 }, { name: 'bob' });
+    assert.equal(result.changes, 1);
+  });
+});
