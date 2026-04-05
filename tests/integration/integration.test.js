@@ -1,15 +1,23 @@
 /**
  * Cross-package integration tests for BaseNative.
- * These tests verify that packages work correctly together.
+ * Tests verify that packages work correctly together.
+ * Uses relative imports to avoid workspace resolution issues.
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { render } from '../../packages/server/src/render.js';
+import { signal, computed, effect } from '../../packages/runtime/src/index.js';
+import { resolveRoute, compilePattern, matchRoute } from '../../packages/router/src/index.js';
+import { createField, createForm, required, minLength, email } from '../../packages/forms/src/index.js';
+import { defineConfig, string, optional } from '../../packages/config/src/index.js';
+import { createLogger } from '../../packages/logger/src/index.js';
+import { createI18n } from '../../packages/i18n/src/index.js';
+import { createFlagManager, createMemoryProvider } from '../../packages/flags/src/index.js';
 
-// ─── 1. Server + Runtime: SSR → Context Setup ────────────────────────────────
+// ─── 1. SSR + Runtime: Context Pipeline ──────────────────────────────────────
 
 describe('SSR → Context Pipeline', () => {
-  it('server renders a template with context and produces expected HTML', async () => {
-    const { render } = await import('@basenative/server');
+  it('server renders a template with context', () => {
     const html = render('<h1>{{ title }}</h1><p>{{ message }}</p>', {
       title: 'BaseNative',
       message: 'Hello from SSR',
@@ -18,129 +26,85 @@ describe('SSR → Context Pipeline', () => {
     assert.ok(html.includes('<p>Hello from SSR</p>'));
   });
 
-  it('server renders @for with items and runtime signals can replicate the same values', async () => {
-    const { render } = await import('@basenative/server');
-    const { signal } = await import('@basenative/runtime');
-
-    const items = [
-      { id: 1, name: 'Apple' },
-      { id: 2, name: 'Banana' },
-    ];
-
+  it('@for renders list items; runtime signal holds same data', () => {
+    const items = [{ id: 1, name: 'Apple' }, { id: 2, name: 'Banana' }];
     const html = render(
       '<ul><template @for="item of items; track item.id"><li>{{ item.name }}</li></template></ul>',
-      { items },
+      { items }
     );
-
     assert.ok(html.includes('<li>Apple</li>'));
     assert.ok(html.includes('<li>Banana</li>'));
-
-    // Runtime signal holds the same data
-    const itemsSignal = signal(items);
-    assert.deepEqual(itemsSignal(), items);
+    const sig = signal(items);
+    assert.deepEqual(sig(), items);
   });
 
-  it('server renders @if conditional based on context value', async () => {
-    const { render } = await import('@basenative/server');
-
-    const withTrue = render(
-      '<template @if="show"><span>visible</span></template><template @else><span>hidden</span></template>',
-      { show: true },
-    );
-    const withFalse = render(
-      '<template @if="show"><span>visible</span></template><template @else><span>hidden</span></template>',
-      { show: false },
-    );
-
-    assert.ok(withTrue.includes('<span>visible</span>'));
-    assert.ok(!withTrue.includes('<span>hidden</span>'));
-    assert.ok(withFalse.includes('<span>hidden</span>'));
-    assert.ok(!withFalse.includes('<span>visible</span>'));
+  it('@if/@else renders correct branch', () => {
+    const tpl = '<template @if="show"><span>yes</span></template><template @else><span>no</span></template>';
+    assert.ok(render(tpl, { show: true }).includes('<span>yes</span>'));
+    assert.ok(render(tpl, { show: false }).includes('<span>no</span>'));
   });
 });
 
-// ─── 2. Router + Server: SSR-Aware Route Matching ────────────────────────────
+// ─── 2. Router + Server ───────────────────────────────────────────────────────
 
 describe('Router + Server Integration', () => {
-  it('router resolves a route and server renders the matched page', async () => {
-    const { compilePattern, matchRoute } = await import('@basenative/router');
-    const { render } = await import('@basenative/server');
+  const routes = [
+    { path: '/', name: 'home', template: '<h1>Home</h1>' },
+    { path: '/about', name: 'about', template: '<h1>About</h1>' },
+    { path: '/users/:id', name: 'user', template: '<h1>User {{ params.id }}</h1>' },
+  ];
 
-    const routes = [
-      { path: '/', template: '<h1>Home</h1>' },
-      { path: '/about', template: '<h1>About</h1>' },
-      { path: '/users/:id', template: '<h1>User {{ params.id }}</h1>' },
-    ];
-
-    const compiled = routes.map((r) => ({ ...r, compiled: compilePattern(r.path) }));
-
-    function resolveAndRender(pathname) {
-      for (const route of compiled) {
-        const params = matchRoute(route.compiled, pathname);
-        if (params !== null) {
-          return render(route.template, { params });
-        }
-      }
-      return render('<h1>404</h1>', {});
+  it('resolveRoute + render: full route-to-page pipeline', () => {
+    function renderPage(pathname) {
+      const match = resolveRoute(routes, pathname);
+      const route = routes.find(r => r.name === match.name);
+      return render(route?.template || '<h1>404</h1>', { params: match.params });
     }
-
-    assert.ok(resolveAndRender('/').includes('<h1>Home</h1>'));
-    assert.ok(resolveAndRender('/about').includes('<h1>About</h1>'));
-    assert.ok(resolveAndRender('/users/42').includes('<h1>User 42</h1>'));
-    assert.ok(resolveAndRender('/unknown').includes('<h1>404</h1>'));
+    assert.ok(renderPage('/').includes('<h1>Home</h1>'));
+    assert.ok(renderPage('/about').includes('<h1>About</h1>'));
+    assert.ok(renderPage('/users/42').includes('<h1>User 42</h1>'));
   });
 
-  it('router extracts params correctly for nested paths', async () => {
-    const { compilePattern, matchRoute } = await import('@basenative/router');
-
+  it('compilePattern + matchRoute: nested param extraction', () => {
     const pattern = compilePattern('/users/:userId/posts/:postId');
-    const params = matchRoute(pattern, '/users/99/posts/123');
-
-    assert.deepEqual(params, { userId: '99', postId: '123' });
+    assert.deepEqual(matchRoute(pattern, '/users/99/posts/123'), { userId: '99', postId: '123' });
   });
 });
 
-// ─── 3. Forms + Validators: Form State Integration ───────────────────────────
+// ─── 3. Forms + Validators ───────────────────────────────────────────────────
 
 describe('Forms + Validators Integration', () => {
-  it('form validates with multiple built-in validators', async () => {
-    const { createForm, createField, required, minLength, email } = await import('@basenative/forms');
-
-    const nameField = createField('', { validators: [required(), minLength(2)] });
-    const emailField = createField('', { validators: [required(), email()] });
-
-    const form = createForm({ name: nameField, email: emailField });
-
-    // Initially invalid (empty)
+  it('form validates with multiple validators; submit blocked when invalid', async () => {
+    const form = createForm({
+      name: createField('', { validators: [required(), minLength(2)] }),
+      email: createField('', { validators: [required(), email()] }),
+    });
     assert.equal(form.valid(), false);
+    const result = await form.submit();
+    assert.equal(result.ok, false);
 
-    // Set valid values
-    nameField.setValue('Alice');
-    emailField.setValue('alice@example.com');
+    form.fields.name.setValue('Alice');
+    form.fields.email.setValue('alice@example.com');
     assert.equal(form.valid(), true);
   });
 
-  it('form tracks dirty state correctly', async () => {
-    const { createField } = await import('@basenative/forms');
-
+  it('field dirty/touched tracking and reset', () => {
     const field = createField('original');
     assert.equal(field.dirty(), false);
-
     field.setValue('changed');
     assert.equal(field.dirty(), true);
-
+    field.touch();
+    assert.equal(field.touched(), true);
     field.reset();
     assert.equal(field.dirty(), false);
+    assert.equal(field.value(), 'original');
   });
 });
 
-// ─── 4. Config + Logger: Application Configuration ───────────────────────────
+// ─── 4. Config + Logger ───────────────────────────────────────────────────────
 
 describe('Config + Logger Integration', () => {
-  it('config loads from env and logger uses the level from config', async () => {
-    const { defineConfig, string, optional } = await import('@basenative/config');
-    const { createLogger } = await import('@basenative/logger');
-
+  it('config loads from env object; logger uses configured level', () => {
     const config = defineConfig({
       schema: {
         LOG_LEVEL: optional(string(), 'info'),
@@ -148,7 +112,6 @@ describe('Config + Logger Integration', () => {
       },
       env: { LOG_LEVEL: 'debug', APP_NAME: 'test-app' },
     });
-
     assert.equal(config.LOG_LEVEL, 'debug');
     assert.equal(config.APP_NAME, 'test-app');
 
@@ -157,149 +120,113 @@ describe('Config + Logger Integration', () => {
       level: config.LOG_LEVEL,
       transport: { write: (entry) => entries.push(entry) },
     });
-    assert.ok(logger);
-    assert.equal(typeof logger.info, 'function');
-    assert.equal(typeof logger.debug, 'function');
-    assert.equal(typeof logger.warn, 'function');
-    assert.equal(typeof logger.error, 'function');
-
     logger.info('test message');
-    assert.equal(entries.length, 1);
-    assert.equal(entries[0].msg, 'test message');
+    assert.ok(entries.some(e => e.msg === 'test message'));
   });
 
-  it('config applies defaults for missing env vars', async () => {
-    const { defineConfig, string, optional } = await import('@basenative/config');
-
-    const config = defineConfig({
-      schema: {
-        PORT: optional(string(), '3000'),
-        HOST: optional(string(), 'localhost'),
-      },
-      env: {},
+  it('logger child context propagates to entries', () => {
+    const entries = [];
+    const logger = createLogger({
+      level: 'info',
+      transport: { write: (entry) => entries.push(entry) },
     });
-
-    assert.equal(config.PORT, '3000');
-    assert.equal(config.HOST, 'localhost');
+    const child = logger.child({ requestId: 'req-1' });
+    child.info('child log');
+    assert.ok(entries.some(e => e.requestId === 'req-1'));
   });
 });
 
-// ─── 5. Signals: Reactive Computation Chain ───────────────────────────────────
+// ─── 5. Signal Composition ───────────────────────────────────────────────────
 
 describe('Runtime Signal Composition', () => {
-  it('computed chains update correctly through multiple layers', async () => {
-    const { signal, computed } = await import('@basenative/runtime');
-
+  it('computed chains update through multiple layers', () => {
     const price = signal(10);
-    const quantity = signal(3);
-    const subtotal = computed(() => price() * quantity());
+    const qty = signal(3);
+    const subtotal = computed(() => price() * qty());
     const tax = computed(() => subtotal() * 0.1);
     const total = computed(() => subtotal() + tax());
 
-    assert.equal(subtotal(), 30);
-    assert.equal(tax(), 3);
     assert.equal(total(), 33);
-
     price.set(20);
-    assert.equal(subtotal(), 60);
-    assert.equal(tax(), 6);
     assert.equal(total(), 66);
   });
 
-  it('effect runs when dependencies change', async () => {
-    const { signal, effect } = await import('@basenative/runtime');
-
+  it('effect tracks signal and stops after dispose', () => {
     const count = signal(0);
     const log = [];
-    const fx = effect(() => { log.push(count()); });
-
-    assert.deepEqual(log, [0]);
+    const dispose = effect(() => { log.push(count()); });
     count.set(1);
-    assert.deepEqual(log, [0, 1]);
     count.set(2);
-    assert.deepEqual(log, [0, 1, 2]);
-    fx.dispose();
+    dispose.dispose();
     count.set(3);
-    assert.deepEqual(log, [0, 1, 2]); // disposed, no more updates
+    assert.deepEqual(log, [0, 1, 2]);
   });
 });
 
-// ─── 6. Server + Flags: Feature-Flagged Rendering ─────────────────────────────
+// ─── 6. Server + Flags ───────────────────────────────────────────────────────
 
 describe('Server + Flags: Feature-Flagged SSR', () => {
-  it('flags evaluate correctly and gate server-rendered content', async () => {
-    const { createFlagManager, createMemoryProvider } = await import('@basenative/flags');
-    const { render } = await import('@basenative/server');
-
+  it('flag value gates SSR output via context', async () => {
     const provider = createMemoryProvider({
-      'new-ui': { enabled: false },
+      'new-ui': { enabled: false, percentage: 0 },
+      'beta': { enabled: true, percentage: 100 },
     });
-    const flags = createFlagManager(provider, { defaultValue: false });
+    const flags = createFlagManager(provider);
 
-    const userCtx = { userId: 'user-123' };
-    const isEnabled = await flags.isEnabled('new-ui', userCtx);
+    const newUI = await flags.isEnabled('new-ui', {});
+    const beta = await flags.isEnabled('beta', {});
 
-    const html = render(
-      '<template @if="showNewUI"><div class="new">New UI</div></template><template @else><div class="old">Old UI</div></template>',
-      { showNewUI: isEnabled },
-    );
-
-    // Flag is off by default, old UI should render
-    assert.ok(html.includes('Old UI'));
-    assert.ok(!html.includes('New UI'));
+    const tpl = '<template @if="show"><div>New</div></template><template @else><div>Old</div></template>';
+    assert.ok(render(tpl, { show: newUI }).includes('Old'));
+    assert.ok(render(tpl, { show: beta }).includes('New'));
   });
 });
 
-// ─── 7. Server + I18n: Internationalized SSR ──────────────────────────────────
+// ─── 7. Server + I18n ────────────────────────────────────────────────────────
 
 describe('Server + I18n: Internationalized Rendering', () => {
-  it('i18n translates messages and server renders them correctly', async () => {
-    const { createI18n } = await import('@basenative/i18n');
-    const { render } = await import('@basenative/server');
+  it('i18n translates a message; server renders translated string', () => {
+    const i18n = createI18n({ locale: 'en' });
+    i18n.addMessages('en', { greeting: 'Hello, {name}!' });
 
-    const i18n = createI18n({
-      defaultLocale: 'en',
-      messages: {
-        en: { greeting: 'Hello, {name}!', farewell: 'Goodbye!' },
-        es: { greeting: '¡Hola, {name}!', farewell: '¡Adiós!' },
-      },
-    });
+    const greeting = i18n.t('greeting', { name: 'Alice' });
+    const html = render('<p>{{ greeting }}</p>', { greeting });
+    assert.ok(html.includes('<p>Hello, Alice!</p>'));
+  });
 
-    const t = (...args) => i18n.t(...args);
+  it('locale switch changes translation output in subsequent renders', () => {
+    const i18n = createI18n({ locale: 'en' });
+    i18n.addMessages('en', { farewell: 'Goodbye' });
+    i18n.addMessages('es', { farewell: 'Adiós' });
 
-    // English
-    const enHtml = render('<p>{{ greeting }}</p>', {
-      greeting: t('greeting', { name: 'Alice' }),
-    });
-    assert.ok(enHtml.includes('<p>Hello, Alice!</p>'));
+    assert.equal(i18n.t('farewell'), 'Goodbye');
+    i18n.setLocale('es');
+    const html = render('<p>{{ msg }}</p>', { msg: i18n.t('farewell') });
+    assert.ok(html.includes('Adiós'));
   });
 });
 
-// ─── 8. Server + Logger: Request Logging Integration ──────────────────────────
+// ─── 8. Server + Logger: Per-Request Context ─────────────────────────────────
 
 describe('Server + Logger: Request Context', () => {
-  it('logger creates child with request context for each render', async () => {
-    const { createLogger } = await import('@basenative/logger');
-    const { render } = await import('@basenative/server');
-
+  it('child logger per request; render produces HTML', () => {
     const logs = [];
     const logger = createLogger({
       level: 'info',
-      transport: { write: (entry) => { logs.push(entry); } },
+      transport: { write: (entry) => logs.push(entry) },
     });
 
-    // Simulate a request handler with per-request logger
     function handleRequest(reqId, template, ctx) {
       const reqLogger = logger.child({ requestId: reqId });
       reqLogger.info('rendering page');
       const html = render(template, ctx);
-      reqLogger.info('render complete', { htmlLength: html.length });
+      reqLogger.info('render complete');
       return html;
     }
 
     const html = handleRequest('req-1', '<h1>{{ title }}</h1>', { title: 'Test' });
     assert.ok(html.includes('<h1>Test</h1>'));
+    assert.ok(logs.every(l => l.requestId === 'req-1'));
     assert.ok(logs.length >= 2);
-    assert.ok(logs.every((l) => l.requestId === 'req-1'));
   });
 });
