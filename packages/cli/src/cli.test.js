@@ -99,6 +99,81 @@ describe('create command', () => {
   });
 });
 
+describe('create command — additional', () => {
+  let tempDir;
+  const originalCwd = process.cwd();
+
+  afterEach(() => {
+    process.chdir(originalCwd);
+    if (tempDir && existsSync(tempDir)) {
+      rmSync(tempDir, { recursive: true });
+    }
+  });
+
+  it('minimal template package.json has type:module', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-test-'));
+    process.chdir(tempDir);
+    await createRun(['type-module-app']);
+    const pkg = JSON.parse(readFileSync(join(tempDir, 'type-module-app', 'package.json'), 'utf-8'));
+    assert.equal(pkg.type, 'module');
+  });
+
+  it('minimal template creates .gitignore', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-test-'));
+    process.chdir(tempDir);
+    await createRun(['gitignore-app']);
+    assert.ok(existsSync(join(tempDir, 'gitignore-app', '.gitignore')));
+  });
+
+  it('minimal template server.js contains signal or runtime import', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-test-'));
+    process.chdir(tempDir);
+    await createRun(['runtime-app']);
+    const server = readFileSync(join(tempDir, 'runtime-app', 'server.js'), 'utf-8');
+    assert.ok(server.includes('@basenative') || server.includes('import'));
+  });
+});
+
+describe('build command — additional', () => {
+  let tempDir;
+  let originalCwd;
+
+  afterEach(() => {
+    if (originalCwd) process.chdir(originalCwd);
+    if (tempDir && existsSync(tempDir)) {
+      rmSync(tempDir, { recursive: true });
+    }
+  });
+
+  it('recursively copies nested subdirectories in public', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-build-'));
+    originalCwd = process.cwd();
+    process.chdir(tempDir);
+
+    mkdirSync(join(tempDir, 'public', 'images'), { recursive: true });
+    writeFileSync(join(tempDir, 'public', 'images', 'logo.svg'), '<svg/>');
+
+    const { run } = await import('./commands/build.js');
+    await run([]);
+
+    assert.ok(existsSync(join(tempDir, 'dist', 'public', 'images', 'logo.svg')));
+  });
+
+  it('falls back to src/server.js when server.js is absent', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-build-'));
+    originalCwd = process.cwd();
+    process.chdir(tempDir);
+
+    mkdirSync(join(tempDir, 'src'), { recursive: true });
+    writeFileSync(join(tempDir, 'src', 'server.js'), 'export {}');
+
+    const { run } = await import('./commands/build.js');
+    await run([]);
+
+    assert.ok(existsSync(join(tempDir, 'dist', 'src', 'server.js')));
+  });
+});
+
 describe('deploy command', () => {
   let tempDir;
   let originalCwd;
@@ -135,6 +210,19 @@ describe('deploy command', () => {
     assert.ok(manifest.files.length > 0);
     assert.ok(manifest.timestamp);
     assert.ok(manifest.totalSize > 0);
+  });
+
+  it('deploy --dry-run with --env staging sets environment', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-deploy-'));
+    originalCwd = process.cwd();
+    process.chdir(tempDir);
+
+    writeFileSync(join(tempDir, 'package.json'), JSON.stringify({ name: 'staging-app' }));
+    writeFileSync(join(tempDir, 'server.js'), '// server');
+
+    const { run } = await import('./commands/deploy.js');
+    const manifest = await run(['--dry-run', '--env', 'staging']);
+    assert.equal(manifest.environment, 'staging');
   });
 });
 
