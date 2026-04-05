@@ -230,3 +230,98 @@ describe('Server + Logger: Request Context', () => {
     assert.ok(logs.length >= 2);
   });
 });
+
+// ─── 9. Config + Logger: Validated App Config ────────────────────────────────
+
+describe('Config + Logger: Validated Configuration', () => {
+  it('config schema validates and logger logs at configured level', () => {
+    const logs = [];
+    const config = defineConfig({
+      schema: {
+        logLevel: string({ default: 'info' }),
+        serviceName: optional(string()),
+      },
+      env: { logLevel: 'warn', serviceName: 'test-service' },
+    });
+
+    const logger = createLogger({
+      level: config.logLevel,
+      name: config.serviceName,
+      transport: { write: (entry) => logs.push(entry) },
+    });
+
+    logger.info('should be filtered at warn level');
+    logger.warn('should appear');
+    logger.error('should appear too');
+
+    assert.equal(logs.length, 2);
+    assert.equal(logs[0].msg, 'should appear');
+    assert.equal(logs[0].name, 'test-service');
+  });
+});
+
+// ─── 10. Forms + Server: Server-Side Form Validation ─────────────────────────
+
+describe('Forms + Server: Server-Side Validation Flow', () => {
+  it('invalid form submission yields error context for SSR error page', async () => {
+    const form = createForm(
+      {
+        email: createField('', { validators: [required(), email()] }),
+        name: createField('', { validators: [required(), minLength(2)] }),
+      },
+    );
+
+    // Submit with empty values
+    const result = await form.submit();
+    assert.equal(result.ok, false);
+
+    // Build error context for SSR
+    const errorCtx = {
+      emailError: result.errors.email?.[0]?.message ?? '',
+      nameError: result.errors.name?.[0]?.message ?? '',
+    };
+
+    const html = render(
+      `<template @if="emailError"><p class="error">{{ emailError }}</p></template>
+       <template @if="nameError"><p class="error">{{ nameError }}</p></template>`,
+      errorCtx,
+    );
+    assert.ok(html.includes('class="error"'));
+  });
+
+  it('valid form submission produces clean SSR context', async () => {
+    const form = createForm({
+      username: createField('alice', { validators: [required(), minLength(3)] }),
+    });
+
+    const result = await form.submit();
+    assert.equal(result.ok, true);
+
+    const html = render('<p>Welcome, {{ username }}!</p>', result.data);
+    assert.ok(html.includes('<p>Welcome, alice!</p>'));
+  });
+});
+
+// ─── 11. Flags + I18n: Locale-Gated Feature ──────────────────────────────────
+
+describe('Flags + I18n: Locale-Gated Feature', () => {
+  it('feature flag enables a localized message variant', async () => {
+    const provider = createMemoryProvider({
+      'new-greeting': { enabled: true, rules: [{ roles: ['beta'], value: true }] },
+    });
+    const fm = createFlagManager(provider);
+    const i18n = createI18n({
+      messages: {
+        en: {
+          greeting_new: 'Welcome to the new experience!',
+          greeting_old: 'Welcome back.',
+        },
+      },
+    });
+
+    const isBeta = await fm.isEnabled('new-greeting', { role: 'beta' });
+    const msgKey = isBeta ? 'greeting_new' : 'greeting_old';
+    const html = render('<p>{{ greeting }}</p>', { greeting: i18n.t(msgKey) });
+    assert.ok(html.includes('Welcome to the new experience!'));
+  });
+});
