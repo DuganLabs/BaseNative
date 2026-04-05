@@ -178,6 +178,21 @@ importers:
         specifier: workspace:*
         version: link:../../packages/server
 
+  examples/starter:
+    dependencies:
+      '@basenative/forms':
+        specifier: workspace:*
+        version: link:../../packages/forms
+      '@basenative/router':
+        specifier: workspace:*
+        version: link:../../packages/router
+      '@basenative/runtime':
+        specifier: workspace:*
+        version: link:../../packages/runtime
+      '@basenative/server':
+        specifier: workspace:*
+        version: link:../../packages/server
+
   examples/static:
     dependencies:
       '@basenative/runtime':
