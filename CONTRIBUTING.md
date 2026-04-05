@@ -2,7 +2,7 @@
 
 ## Scope
 
-BaseNative is an enterprise-grade `v0.x` framework. Contributions should favor:
+BaseNative is an open-source `v0.x` framework preparing for v1.0. Contributions should favor:
 
 - security and correctness
 - semantic HTML defaults
@@ -13,7 +13,7 @@ BaseNative is an enterprise-grade `v0.x` framework. Contributions should favor:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/basenative.git
+git clone https://github.com/DuganLabs/BaseNative.git
 cd basenative
 
 # Install dependencies (requires pnpm v10+)
@@ -104,11 +104,28 @@ docs/         — API reference, guides, accessibility
 
 ## Commit Messages
 
-Follow conventional commit style:
-- `feat:` new features
-- `fix:` bug fixes
-- `docs:` documentation changes
-- `test:` test changes
-- `refactor:` code restructuring
-- `perf:` performance improvements
-- `chore:` build/tooling changes
+Follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+feat(runtime): add batch() API for synchronous signal updates
+fix(server): handle null ctx in attribute binding
+test(auth): add RBAC hierarchical inheritance tests
+docs(api): add @basenative/fetch API reference
+chore(ci): add bundle size check to PR workflow
+```
+
+Include a changeset for user-facing changes: `pnpm exec changeset`
+
+## Adding a New Package
+
+1. Create `packages/<name>/src/index.js`
+2. Create `packages/<name>/package.json` with `"type": "module"` and `"exports": { ".": "./src/index.js" }`
+3. Create `packages/<name>/project.json` with test and lint targets
+4. Create `packages/<name>/src/<name>.test.js` with at least 10 test cases
+5. Create `packages/<name>/README.md` for npm
+6. Add docs to `docs/api/<name>.md`
+7. Add the package to the packages table in the root `README.md`
+
+## AI Assistant Guidelines
+
+See [CLAUDE.md](CLAUDE.md) for guidance specific to AI assistants contributing to this repository.
