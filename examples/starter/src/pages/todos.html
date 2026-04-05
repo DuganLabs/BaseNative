@@ -1,0 +1,55 @@
+<!--
+  Todo list — server-rendered with live signal updates.
+  Demonstrates @for, @if, API calls, and reactive lists.
+-->
+<section>
+  <h1>Todos</h1>
+
+  <p>
+    @if remaining === 0
+      All done! 🎉
+    @else
+      {{ remaining }} item{{ remaining === 1 ? '' : 's' }} remaining.
+    @endif
+  </p>
+
+  <form @submit.prevent="addTodo(newTodo)">
+    <label>
+      Add a todo
+      <input
+        type="text"
+        :value="newTodo"
+        @input="newTodo = $event.target.value"
+        placeholder="What needs doing?"
+        required
+      >
+    </label>
+    <button type="submit">Add</button>
+  </form>
+
+  @if todos.length === 0
+    <p>No todos yet. Add one above.</p>
+  @else
+    <ul role="list">
+      @for todo in todos track todo.id
+        <li :class="todo.done ? 'done' : ''">
+          <label>
+            <input
+              type="checkbox"
+              :checked="todo.done"
+              @change="toggleTodo(todo.id)"
+            >
+            {{ todo.text }}
+          </label>
+          <button @click="deleteTodo(todo.id)" aria-label="Delete {{ todo.text }}">
+            &times;
+          </button>
+        </li>
+      @endfor
+    </ul>
+
+    <button @click="clearDone()" :disabled="todos.filter(t => t.done).length === 0">
+      Clear completed
+    </button>
+  @endif
+</section>

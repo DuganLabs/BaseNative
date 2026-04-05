@@ -1,0 +1,16 @@
+{
+  "name": "my-basenative-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "@basenative/server": "workspace:*",
+    "@basenative/router": "workspace:*",
+    "@basenative/forms": "workspace:*",
+    "@basenative/runtime": "workspace:*"
+  }
+}
