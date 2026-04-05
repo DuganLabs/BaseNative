@@ -50,4 +50,51 @@ describe('resolveRoute', () => {
     assert.equal(result.name, 'user-detail');
     assert.deepEqual(result.params, { id: '5' });
   });
+
+  it('resolves trailing slash in URL', () => {
+    const result = resolveRoute(routes, '/users/');
+    assert.equal(result.name, 'users');
+  });
+
+  it('extracts wildcard params across multiple segments', () => {
+    const result = resolveRoute(routes, '/files/docs/api/router.md');
+    assert.equal(result.name, 'files');
+    assert.equal(result.params.path, 'docs/api/router.md');
+  });
+
+  it('returns empty params for matched static route', () => {
+    const result = resolveRoute(routes, '/');
+    assert.deepEqual(result.params, {});
+  });
+
+  it('includes empty query object when no query string', () => {
+    const result = resolveRoute(routes, '/users/1');
+    assert.deepEqual(result.query, {});
+  });
+
+  it('first matching route wins (route priority)', () => {
+    const priorityRoutes = [
+      { path: '/users/new', name: 'user-new' },
+      { path: '/users/:id', name: 'user-detail' },
+    ];
+    const result = resolveRoute(priorityRoutes, '/users/new');
+    assert.equal(result.name, 'user-new');
+  });
+
+  it('returns correct matched route object reference', () => {
+    const result = resolveRoute(routes, '/users/42');
+    assert.ok(result.matched);
+    assert.equal(result.matched.name, 'user-detail');
+  });
+
+  it('returns path from route definition', () => {
+    const result = resolveRoute(routes, '/users');
+    assert.equal(result.path, '/users');
+  });
+
+  it('handles routes with no name — falls back to path', () => {
+    const noNameRoutes = [{ path: '/no-name' }];
+    const result = resolveRoute(noNameRoutes, '/no-name');
+    assert.equal(result.name, '/no-name');
+  });
 });
