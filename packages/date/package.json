@@ -1,10 +1,22 @@
 {
   "name": "@basenative/date",
   "version": "0.2.0",
+  "description": "Date utilities, timezone handling, relative time formatting, and date ranges",
   "type": "module",
   "exports": {
     ".": "./src/index.js"
   },
   "types": "./types/index.d.ts",
-  "files": ["src", "types"]
+  "files": ["src", "types"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/date"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": ["basenative", "web-components", "signals", "date", "timezone", "formatting"]
 }

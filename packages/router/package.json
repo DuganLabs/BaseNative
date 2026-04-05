@@ -1,6 +1,7 @@
 {
   "name": "@basenative/router",
   "version": "0.3.0",
+  "description": "SSR-aware path routing with named params, wildcards, and history API integration",
   "type": "module",
   "exports": {
     ".": "./src/index.js"
@@ -9,5 +10,16 @@
   "dependencies": {
     "@basenative/runtime": "workspace:*"
   },
-  "files": ["src", "types"]
+  "files": ["src", "types"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/router"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": ["basenative", "web-components", "signals", "router", "ssr", "history-api"]
 }

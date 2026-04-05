@@ -1,10 +1,22 @@
 {
   "name": "@basenative/runtime",
   "version": "0.3.0",
+  "description": "Signal-based web runtime over native HTML — zero build step, zero production dependencies",
   "type": "module",
   "exports": {
     ".": "./src/index.js"
   },
   "types": "./types/index.d.ts",
-  "files": ["src", "types"]
+  "files": ["src", "types"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/runtime"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": ["basenative", "web-components", "signals", "reactive", "ssr", "zero-dependencies"]
 }

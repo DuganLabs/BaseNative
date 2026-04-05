@@ -1,9 +1,21 @@
 {
   "name": "@basenative/icons",
   "version": "0.1.0",
+  "description": "Icon system for BaseNative applications",
   "private": true,
   "type": "module",
   "exports": {
     "./src/*": "./src/*"
-  }
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/icons"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": ["basenative", "web-components", "signals", "icons", "svg"]
 }

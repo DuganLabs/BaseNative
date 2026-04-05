@@ -1,8 +1,20 @@
 {
   "name": "@basenative/visual-builder",
   "version": "0.2.0",
+  "description": "No-code template builder for BaseNative components",
   "type": "module",
   "main": "src/index.js",
   "types": "types/index.d.ts",
-  "files": ["src", "types"]
+  "files": ["src", "types"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/visual-builder"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": ["basenative", "web-components", "signals", "visual-builder", "no-code", "templates"]
 }

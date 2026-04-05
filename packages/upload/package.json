@@ -1,10 +1,22 @@
 {
   "name": "@basenative/upload",
   "version": "0.2.0",
+  "description": "File upload handling with R2 and S3 adapter support",
   "type": "module",
   "exports": {
     ".": "./src/index.js"
   },
   "types": "./types/index.d.ts",
-  "files": ["src", "types"]
+  "files": ["src", "types"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/upload"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": ["basenative", "web-components", "signals", "upload", "r2", "s3"]
 }
