@@ -265,3 +265,87 @@ describe('renderDateRange', () => {
     assert.ok(html.includes('data-bn="daterange-separator"'));
   });
 });
+
+describe('renderDatepicker — additional', () => {
+  it('renders with no options (all defaults)', () => {
+    const html = renderDatepicker({});
+    assert.ok(html.includes('type="date"'));
+    assert.ok(html.includes('data-bn="datepicker"'));
+  });
+
+  it('omits min attribute when not provided', () => {
+    const html = renderDatepicker({ name: 'date' });
+    assert.ok(!html.includes('min='));
+  });
+
+  it('omits max attribute when not provided', () => {
+    const html = renderDatepicker({ name: 'date' });
+    assert.ok(!html.includes('max='));
+  });
+
+  it('id attribute links label to input', () => {
+    const html = renderDatepicker({ name: 'dob', label: 'DOB', id: 'my-id' });
+    assert.ok(html.includes('for="my-id"'));
+    assert.ok(html.includes('id="my-id"'));
+  });
+
+  it('passes through custom attrs string', () => {
+    const html = renderDatepicker({ name: 'date', attrs: 'data-custom="yes"' });
+    assert.ok(html.includes('data-custom="yes"'));
+  });
+
+  it('value is empty string by default', () => {
+    const html = renderDatepicker({ name: 'date' });
+    assert.ok(html.includes('value=""'));
+  });
+});
+
+describe('renderTimepicker — additional', () => {
+  it('renders with no options (all defaults)', () => {
+    const html = renderTimepicker({});
+    assert.ok(html.includes('type="time"'));
+    assert.ok(html.includes('data-bn="timepicker"'));
+  });
+
+  it('passes through custom attrs string', () => {
+    const html = renderTimepicker({ name: 'appt', attrs: 'data-time="yes"' });
+    assert.ok(html.includes('data-time="yes"'));
+  });
+
+  it('id attribute links label to input', () => {
+    const html = renderTimepicker({ name: 'appt', label: 'Appt', id: 'appt-id' });
+    assert.ok(html.includes('for="appt-id"'));
+    assert.ok(html.includes('id="appt-id"'));
+  });
+
+  it('value defaults to empty string', () => {
+    const html = renderTimepicker({ name: 'time' });
+    assert.ok(html.includes('value=""'));
+  });
+});
+
+describe('generateCalendarMonth — additional', () => {
+  it('March 2024 starts on Friday (index 5)', () => {
+    const cal = generateCalendarMonth(2024, 2); // month 2 = March
+    assert.equal(cal.weeks[0].filter(d => d !== null).length, 2); // Mar 1 and 2
+    assert.equal(cal.weeks[0][5].day, 1);
+    assert.equal(cal.weeks[0][6].day, 2);
+  });
+
+  it('generates correct daysInMonth for months with 30 days', () => {
+    const cal = generateCalendarMonth(2024, 3); // April = 30 days
+    assert.equal(cal.daysInMonth, 30);
+  });
+
+  it('monthName is not empty', () => {
+    const cal = generateCalendarMonth(2024, 0);
+    assert.ok(typeof cal.monthName === 'string');
+    assert.ok(cal.monthName.length > 0);
+  });
+
+  it('total day cells equals daysInMonth (non-null cells)', () => {
+    const cal = generateCalendarMonth(2024, 5); // June
+    const nonNull = cal.weeks.flatMap(w => w).filter(d => d !== null);
+    assert.equal(nonNull.length, cal.daysInMonth);
+  });
+});
