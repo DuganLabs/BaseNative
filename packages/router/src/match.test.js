@@ -100,3 +100,72 @@ describe('buildQuery', () => {
     assert.equal(buildQuery({ a: '1', b: null, c: undefined }), '?a=1');
   });
 });
+
+describe('compilePattern — additional', () => {
+  it('root path compiles to match /', () => {
+    const { regex } = compilePattern('/');
+    assert.ok(regex.test('/'));
+  });
+
+  it('escapes special chars in static segments', () => {
+    const { regex } = compilePattern('/v1.0/docs');
+    assert.ok(regex.test('/v1.0/docs'));
+    assert.ok(!regex.test('/v100/docs'));
+  });
+
+  it('unnamed wildcard defaults param name to "wild"', () => {
+    const { params } = compilePattern('/catch/*');
+    assert.deepEqual(params, ['wild']);
+  });
+
+  it('does not match subpaths for static route', () => {
+    const { regex } = compilePattern('/exact');
+    assert.ok(!regex.test('/exact/more'));
+  });
+});
+
+describe('matchRoute — additional', () => {
+  it('returns empty object for root path match', () => {
+    const result = matchRoute('/', '/');
+    assert.deepEqual(result, {});
+  });
+
+  it('returns null for partial path match', () => {
+    const result = matchRoute('/users', '/userss');
+    assert.equal(result, null);
+  });
+
+  it('handles trailing slash on pattern', () => {
+    const result = matchRoute('/about/', '/about');
+    assert.deepEqual(result, {});
+  });
+
+  it('wildcard without name captures as "wild"', () => {
+    const result = matchRoute('/catch/*', '/catch/a/b/c');
+    assert.deepEqual(result, { wild: 'a/b/c' });
+  });
+});
+
+describe('parseQuery — additional', () => {
+  it('handles param with no value', () => {
+    const result = parseQuery('?flag');
+    assert.equal(result.flag, '');
+  });
+
+  it('handles encoded key', () => {
+    const result = parseQuery('?hello%20world=1');
+    assert.equal(result['hello world'], '1');
+  });
+});
+
+describe('buildQuery — additional', () => {
+  it('encodes special characters in keys and values', () => {
+    const result = buildQuery({ 'hello world': 'a&b' });
+    assert.equal(result, '?hello%20world=a%26b');
+  });
+
+  it('single param has no trailing ampersand', () => {
+    const result = buildQuery({ only: 'one' });
+    assert.equal(result, '?only=one');
+  });
+});
