@@ -255,3 +255,74 @@ describe('requestLogger', () => {
     assert.equal(ids[2], 'req-3');
   });
 });
+
+describe('createLogger — additional', () => {
+  it('child logger inherits level', () => {
+    const t = captureTransport();
+    const log = createLogger({ level: 'error', transport: t });
+    const child = log.child({ requestId: 'x' });
+    child.warn('should be filtered');
+    child.error('should pass');
+    assert.equal(t.entries.length, 1);
+    assert.equal(t.entries[0].msg, 'should pass');
+  });
+
+  it('child of child merges context correctly', () => {
+    const t = captureTransport();
+    const root = createLogger({ transport: t, context: { service: 'api' } });
+    const mid = root.child({ requestId: 'r1' });
+    const leaf = mid.child({ userId: 42 });
+    leaf.info('nested child');
+    assert.equal(t.entries[0].service, 'api');
+    assert.equal(t.entries[0].requestId, 'r1');
+    assert.equal(t.entries[0].userId, 42);
+  });
+
+  it('log data overrides context fields', () => {
+    const t = captureTransport();
+    const log = createLogger({ transport: t, context: { env: 'dev' } });
+    log.info('override', { env: 'prod' });
+    assert.equal(t.entries[0].env, 'prod');
+  });
+
+  it('all level methods produce entries with correct level numbers', () => {
+    const t = captureTransport();
+    const log = createLogger({ level: 'trace', transport: t });
+    log.trace('t'); log.debug('d'); log.info('i');
+    log.warn('w'); log.error('e'); log.fatal('f');
+    const levels = t.entries.map(e => e.level);
+    assert.deepEqual(levels, [10, 20, 30, 40, 50, 60]);
+  });
+
+  it('child logger exposes same level as parent', () => {
+    const t = captureTransport();
+    const log = createLogger({ level: 'warn', transport: t });
+    const child = log.child({ ctx: 'x' });
+    assert.equal(child.level, 'warn');
+  });
+});
+
+describe('streamTransport — additional', () => {
+  it('serializes all entry fields', () => {
+    const chunks = [];
+    const t = streamTransport({ write(c) { chunks.push(c); } });
+    t.write({ level: 40, msg: 'warn', requestId: 'abc', time: 9999 });
+    const parsed = JSON.parse(chunks[0]);
+    assert.equal(parsed.level, 40);
+    assert.equal(parsed.msg, 'warn');
+    assert.equal(parsed.requestId, 'abc');
+    assert.equal(parsed.time, 9999);
+  });
+});
+
+describe('multiTransport — additional', () => {
+  it('order of transports is preserved', () => {
+    const order = [];
+    const t1 = { write() { order.push(1); } };
+    const t2 = { write() { order.push(2); } };
+    const t3 = { write() { order.push(3); } };
+    const multi = multiTransport([t1, t2, t3]);
+    multi.write({ level: 30, msg: 'hi' });
+    assert.deepEqual(order, [1, 2, 3]);
+  });
+});

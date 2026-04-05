@@ -244,3 +244,125 @@ describe('credentials provider', () => {
     assert.equal(user.name, 'Bob');
   });
 });
+
+describe('session manager — additional', () => {
+  it('touch extends session expiry', async () => {
+    const mgr = createSessionManager({ maxAge: 60000 });
+    const session = await mgr.create({ user: { id: 1 } });
+    const oldExpiry = session.expiresAt;
+    await new Promise(r => setTimeout(r, 5));
+    const touched = await mgr.touch(session.id);
+    assert.ok(touched.expiresAt >= oldExpiry);
+  });
+
+  it('touch returns null for missing session', async () => {
+    const mgr = createSessionManager();
+    const result = await mgr.touch('nonexistent');
+    assert.equal(result, null);
+  });
+
+  it('cookieOptions returns expected shape', () => {
+    const mgr = createSessionManager({ maxAge: 3600000 });
+    const opts = mgr.cookieOptions();
+    assert.equal(opts.httpOnly, true);
+    assert.equal(opts.maxAge, 3600);
+    assert.equal(opts.path, '/');
+    assert.equal(opts.sameSite, 'lax');
+  });
+
+  it('update returns null for missing session', async () => {
+    const mgr = createSessionManager();
+    const result = await mgr.update('missing-id', { foo: 'bar' });
+    assert.equal(result, null);
+  });
+});
+
+describe('createMemoryStore', () => {
+  it('size reflects stored entries', async () => {
+    const store = createMemoryStore();
+    assert.equal(store.size, 0);
+    await store.set('a', { data: 1 });
+    await store.set('b', { data: 2 });
+    assert.equal(store.size, 2);
+  });
+
+  it('clear empties the store', async () => {
+    const store = createMemoryStore();
+    await store.set('x', { data: 1 });
+    await store.clear();
+    assert.equal(store.size, 0);
+    assert.equal(await store.get('x'), null);
+  });
+});
+
+describe('RBAC — additional', () => {
+  const rbac = defineRoles({
+    admin: { permissions: ['*'] },
+    editor: { permissions: ['write', 'publish'], inherits: ['viewer'] },
+    viewer: { permissions: ['read'] },
+  });
+
+  it('hasRole returns true for defined roles', () => {
+    assert.ok(rbac.hasRole('admin'));
+    assert.ok(rbac.hasRole('viewer'));
+  });
+
+  it('hasRole returns false for unknown roles', () => {
+    assert.ok(!rbac.hasRole('superuser'));
+  });
+
+  it('canAll with wildcard always returns true', () => {
+    assert.ok(rbac.canAll('admin', ['read', 'write', 'delete', 'publish']));
+  });
+
+  it('canAny with wildcard always returns true', () => {
+    assert.ok(rbac.canAny('admin', ['any-permission']));
+  });
+});
+
+describe('guard — additional', () => {
+  const rbac = defineRoles({
+    admin: { permissions: ['*'] },
+    editor: { permissions: ['write'] },
+    viewer: { permissions: ['read'] },
+  });
+  const guard = createGuard(rbac);
+
+  function makeCtx(role) {
+    return {
+      request: { headers: {} },
+      response: { headers: {} },
+      state: { user: role ? { role } : null },
+    };
+  }
+
+  it('requireAny allows when user has one matching permission', async () => {
+    const ctx = makeCtx('editor');
+    let called = false;
+    await guard.requireAny('write', 'publish')(ctx, async () => { called = true; });
+    assert.ok(called);
+  });
+
+  it('requireAny denies when user has none of the permissions', async () => {
+    const ctx = makeCtx('viewer');
+    let called = false;
+    await guard.requireAny('write', 'delete')(ctx, async () => { called = true; });
+    assert.ok(!called);
+    assert.equal(ctx.response.status, 403);
+  });
+
+  it('requireRole allows matching role', async () => {
+    const ctx = makeCtx('admin');
+    let called = false;
+    await guard.requireRole('admin', 'editor')(ctx, async () => { called = true; });
+    assert.ok(called);
+  });
+
+  it('requireRole denies non-matching role', async () => {
+    const ctx = makeCtx('viewer');
+    let called = false;
+    await guard.requireRole('admin')(ctx, async () => { called = true; });
+    assert.ok(!called);
+    assert.equal(ctx.response.status, 403);
+  });
+});
