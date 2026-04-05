@@ -18,9 +18,14 @@ BaseNative adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - `@basenative/notify`: email template rendering, SMTP and SendGrid transports
 - `@basenative/upload`: multipart parsing, file validation, R2 and S3 adapters, progress tracking
 - Node.js 18/20/22 matrix in CI workflow
-- Package-level READMEs for all packages
+- Package-level READMEs for all 23 packages
 - API documentation for all packages in `docs/api/`
 - `description`, `license`, `repository`, `keywords` fields in all `package.json` files
+- Cloudflare Workers deployment example (`examples/cloudflare-workers/`)
+- Node.js standalone HTTP server example (`examples/node/`)
+- `CLAUDE.md` AI assistant guide with architecture, commands, and invariants
+- Cross-package integration tests (`tests/integration/`)
+- Changeset for all packages (`v1-readiness`)
 
 ### Changed
 - CI workflow: replaced `test:coverage` (undefined target) with `test`, added node version matrix

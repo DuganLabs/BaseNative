@@ -1,8 +1,19 @@
 # Security Policy
 
-## Supported Line
+## Supported Versions
 
-Security fixes are applied to the current `main` branch while BaseNative remains in `v0.x`.
+| Version | Supported |
+|---------|-----------|
+| 0.3.x (current) | ✓ |
+| < 0.3.0 | ✗ |
+
+Security fixes are applied to the current `main` branch. Once v1.0 ships, the latest minor will receive security patches.
+
+## Reporting a Vulnerability
+
+Please **do not** open a public GitHub issue for security vulnerabilities.
+
+Report privately via [GitHub Security Advisories](https://github.com/DuganLabs/BaseNative/security/advisories/new) or email the maintainers directly.
 
 ## Reporting
 
