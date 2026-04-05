@@ -145,4 +145,124 @@ describe('defineConfig', () => {
     });
     assert.deepEqual(config, { port: 4000, host: '127.0.0.1' });
   });
+
+  it('uses process.env by default when no env provided', () => {
+    process.env.__BN_TEST_PORT__ = '7070';
+    const config = defineConfig({
+      schema: { __BN_TEST_PORT__: optional(number(), 3000) },
+    });
+    assert.equal(config.__BN_TEST_PORT__, 7070);
+    delete process.env.__BN_TEST_PORT__;
+  });
+
+  it('prefix with function schema strips prefix and lowercases keys', () => {
+    const adapter = (values) => ({ port: Number(values.port || 0) });
+    const config = defineConfig({
+      schema: adapter,
+      env: { SVC_PORT: '9000' },
+      prefix: 'SVC_',
+    });
+    assert.equal(config.port, 9000);
+  });
+});
+
+describe('parseEnvFile — additional edge cases', () => {
+  it('handles CRLF line endings', () => {
+    const result = parseEnvFile('FOO=bar\r\nBAZ=qux\r\n');
+    assert.deepEqual(result, { FOO: 'bar', BAZ: 'qux' });
+  });
+
+  it('handles empty file', () => {
+    const result = parseEnvFile('');
+    assert.deepEqual(result, {});
+  });
+
+  it('handles file with only comments', () => {
+    const result = parseEnvFile('# just a comment\n# another');
+    assert.deepEqual(result, {});
+  });
+
+  it('preserves spaces inside quoted values', () => {
+    const result = parseEnvFile('MSG="  spaced  "');
+    assert.deepEqual(result, { MSG: '  spaced  ' });
+  });
+
+  it('handles value containing equals sign', () => {
+    const result = parseEnvFile('URL=postgres://user:pass@host/db?ssl=true');
+    assert.equal(result.URL, 'postgres://user:pass@host/db?ssl=true');
+  });
+});
+
+describe('schema validators — additional edge cases', () => {
+  it('string maxLength rejects too-long value', () => {
+    const v = string({ maxLength: 5 });
+    assert.ok(v('toolong').error);
+    assert.deepEqual(v('ok').value, 'ok');
+  });
+
+  it('string accepts empty string when no minLength', () => {
+    const v = string();
+    assert.deepEqual(v(''), { value: '' });
+  });
+
+  it('number parses float', () => {
+    const v = number();
+    assert.equal(v('3.14').value, 3.14);
+  });
+
+  it('number allows negative values', () => {
+    const v = number({ min: -100, max: 0 });
+    assert.equal(v('-50').value, -50);
+  });
+
+  it('boolean accepts actual boolean true/false', () => {
+    const v = boolean();
+    assert.deepEqual(v(true), { value: true });
+    assert.deepEqual(v(false), { value: false });
+  });
+
+  it('oneOf is case-sensitive', () => {
+    const v = oneOf(['dev', 'prod']);
+    assert.ok(v('DEV').error);
+    assert.deepEqual(v('dev'), { value: 'dev' });
+  });
+
+  it('optional with null falls back to default', () => {
+    const v = optional(string(), 'default');
+    assert.deepEqual(v(null), { value: 'default' });
+  });
+
+  it('optional with empty string falls back to default', () => {
+    const v = optional(boolean(), true);
+    assert.deepEqual(v(''), { value: true });
+  });
+
+  it('optional propagates inner validation errors for provided values', () => {
+    const v = optional(number({ min: 1 }), 5);
+    const result = v('0'); // provided but fails min check
+    assert.ok(result.error);
+  });
+});
+
+describe('validateConfig — additional edge cases', () => {
+  it('collects all errors before throwing', () => {
+    const schema = { PORT: number(), HOST: number() };
+    try {
+      validateConfig({ PORT: 'abc', HOST: 'localhost' }, schema);
+      assert.fail('should have thrown');
+    } catch (err) {
+      assert.ok(err.message.includes('PORT'));
+      assert.ok(err.message.includes('HOST'));
+    }
+  });
+
+  it('returns empty object for empty schema', () => {
+    const result = validateConfig({}, {});
+    assert.deepEqual(result, {});
+  });
+
+  it('error message mentions Config validation failed', () => {
+    const schema = { KEY: string({ minLength: 10 }) };
+    assert.throws(() => validateConfig({ KEY: 'short' }, schema), /Config validation failed/);
+  });
 });

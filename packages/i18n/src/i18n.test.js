@@ -231,3 +231,113 @@ describe('loader', () => {
     await rm(dir, { recursive: true, force: true });
   });
 });
+
+describe('createI18n — additional edge cases', () => {
+  it('returns key unchanged for completely missing key', () => {
+    const i18n = createI18n({ messages: { en: { known: 'yes' } } });
+    assert.equal(i18n.t('unknown.key'), 'unknown.key');
+  });
+
+  it('does not call listeners when setting same locale', () => {
+    const i18n = createI18n({ defaultLocale: 'en' });
+    const changes = [];
+    i18n.onLocaleChange(l => changes.push(l));
+    i18n.setLocale('en');
+    assert.equal(changes.length, 0);
+  });
+
+  it('unsubscribes locale change listener', () => {
+    const i18n = createI18n();
+    const calls = [];
+    const unsubscribe = i18n.onLocaleChange(l => calls.push(l));
+    i18n.setLocale('fr');
+    unsubscribe();
+    i18n.setLocale('de');
+    assert.deepEqual(calls, ['fr']);
+  });
+
+  it('addMessages merges with existing messages', () => {
+    const i18n = createI18n({ messages: { en: { a: 'Alpha' } } });
+    i18n.addMessages('en', { b: 'Beta' });
+    assert.equal(i18n.t('a'), 'Alpha');
+    assert.equal(i18n.t('b'), 'Beta');
+  });
+
+  it('addMessages overwrites existing key', () => {
+    const i18n = createI18n({ messages: { en: { greeting: 'Hello' } } });
+    i18n.addMessages('en', { greeting: 'Hi there' });
+    assert.equal(i18n.t('greeting'), 'Hi there');
+  });
+
+  it('interpolates number values', () => {
+    const i18n = createI18n({ messages: { en: { score: 'Score: {value}' } } });
+    assert.equal(i18n.t('score', { value: 100 }), 'Score: 100');
+  });
+
+  it('leaves unmatched placeholders intact', () => {
+    const i18n = createI18n({ messages: { en: { msg: 'Hello {name}' } } });
+    assert.equal(i18n.t('msg', { other: 'Bob' }), 'Hello {name}');
+  });
+
+  it('t with no params on parameterized message returns template', () => {
+    const i18n = createI18n({ messages: { en: { msg: 'Hi {name}' } } });
+    assert.equal(i18n.t('msg'), 'Hi {name}');
+  });
+
+  it('handles plural two category', () => {
+    const i18n = createI18n({
+      messages: {
+        en: {
+          items: '{count, plural, one {# item} two {# items (pair)} other {# items}}',
+        },
+      },
+    });
+    assert.equal(i18n.t('items', { count: 2 }), '2 items (pair)');
+    assert.equal(i18n.t('items', { count: 3 }), '3 items');
+  });
+
+  it('plural replaces # with the count value', () => {
+    const i18n = createI18n({
+      messages: { en: { n: '{x, plural, other {# things}}' } },
+    });
+    assert.equal(i18n.t('n', { x: 7 }), '7 things');
+  });
+
+  it('sets locale via property assignment (locale setter)', () => {
+    const i18n = createI18n({
+      defaultLocale: 'en',
+      messages: { en: { hi: 'Hi' }, es: { hi: 'Hola' } },
+    });
+    i18n.locale = 'es';
+    assert.equal(i18n.t('hi'), 'Hola');
+  });
+});
+
+describe('number / date formatting — additional', () => {
+  it('n formats integer with options', () => {
+    const i18n = createI18n({ defaultLocale: 'en' });
+    const result = i18n.n(1000000, { style: 'decimal', maximumFractionDigits: 0 });
+    assert.ok(result.includes('1'));
+    assert.ok(result.includes('000'));
+  });
+
+  it('n formats percent', () => {
+    const i18n = createI18n({ defaultLocale: 'en' });
+    const result = i18n.n(0.42, { style: 'percent' });
+    assert.ok(result.includes('42'));
+  });
+
+  it('d formats a timestamp number', () => {
+    const i18n = createI18n({ defaultLocale: 'en' });
+    const ts = new Date(2025, 0, 1).getTime();
+    const result = i18n.d(ts);
+    assert.ok(result.includes('2025') || result.includes('1/1') || result.includes('01'));
+  });
+
+  it('d accepts weekday format option', () => {
+    const i18n = createI18n({ defaultLocale: 'en' });
+    const date = new Date(2025, 11, 25); // Christmas 2025 is a Thursday
+    const result = i18n.d(date, { weekday: 'long' });
+    assert.ok(typeof result === 'string' && result.length > 0);
+  });
+});
