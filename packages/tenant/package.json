@@ -1,10 +1,22 @@
 {
   "name": "@basenative/tenant",
   "version": "0.2.0",
+  "description": "Multi-tenant middleware with subdomain/path resolution and row-level query scoping",
   "type": "module",
   "exports": {
     ".": "./src/index.js"
   },
   "types": "./types/index.d.ts",
-  "files": ["src", "types"]
+  "files": ["src", "types"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/tenant"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": ["basenative", "web-components", "signals", "multi-tenant", "middleware", "saas"]
 }

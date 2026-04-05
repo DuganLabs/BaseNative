@@ -1,10 +1,22 @@
 {
   "name": "@basenative/fonts",
   "version": "0.1.0",
+  "description": "Font loading utilities for BaseNative applications",
   "private": true,
   "type": "module",
   "exports": {
     ".": "./fonts.css",
     "./src/*": "./src/*"
-  }
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/fonts"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": ["basenative", "web-components", "signals", "fonts", "css"]
 }

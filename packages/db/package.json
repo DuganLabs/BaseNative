@@ -1,6 +1,7 @@
 {
   "name": "@basenative/db",
   "version": "0.2.0",
+  "description": "Query builder with SQLite, PostgreSQL, and Cloudflare D1 adapters",
   "type": "module",
   "exports": {
     ".": "./src/index.js",
@@ -9,5 +10,16 @@
     "./d1": "./src/adapters/d1.js"
   },
   "types": "./types/index.d.ts",
-  "files": ["src", "types"]
+  "files": ["src", "types"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/db"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": ["basenative", "web-components", "signals", "database", "query-builder", "sqlite"]
 }

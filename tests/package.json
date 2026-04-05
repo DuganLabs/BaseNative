@@ -1,0 +1,19 @@
+{
+  "name": "basenative-tests",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:integration": "node --test integration/integration.test.js"
+  },
+  "dependencies": {
+    "@basenative/server": "workspace:*",
+    "@basenative/runtime": "workspace:*",
+    "@basenative/router": "workspace:*",
+    "@basenative/forms": "workspace:*",
+    "@basenative/config": "workspace:*",
+    "@basenative/logger": "workspace:*",
+    "@basenative/flags": "workspace:*",
+    "@basenative/i18n": "workspace:*"
+  }
+}

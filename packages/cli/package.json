@@ -1,6 +1,7 @@
 {
   "name": "@basenative/cli",
   "version": "0.2.0",
+  "description": "CLI tools — bn and create-basenative — for scaffolding and development",
   "type": "module",
   "bin": {
     "bn": "./src/index.js",
@@ -10,5 +11,16 @@
     ".": "./src/index.js"
   },
   "types": "./types/index.d.ts",
-  "files": ["src", "types"]
+  "files": ["src", "types"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": ["basenative", "web-components", "signals", "cli", "scaffolding", "create"]
 }

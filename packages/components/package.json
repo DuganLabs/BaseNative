@@ -1,6 +1,7 @@
 {
   "name": "@basenative/components",
   "version": "0.3.0",
+  "description": "15 semantic UI components with CSS custom property theming and density scales",
   "type": "module",
   "exports": {
     ".": "./src/index.js",
@@ -17,5 +18,16 @@
     "@basenative/runtime": "workspace:*",
     "@basenative/forms": "workspace:*"
   },
-  "files": ["src", "types"]
+  "files": ["src", "types"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/components"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": ["basenative", "web-components", "signals", "ui-components", "css", "semantic-html"]
 }

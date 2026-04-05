@@ -1,6 +1,7 @@
 {
   "name": "@basenative/fetch",
   "version": "0.2.0",
+  "description": "Signal-based resource fetching with caching and SSR preload support",
   "type": "module",
   "exports": {
     ".": "./src/index.js"
@@ -9,5 +10,16 @@
   "dependencies": {
     "@basenative/runtime": "workspace:*"
   },
-  "files": ["src", "types"]
+  "files": ["src", "types"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/fetch"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": ["basenative", "web-components", "signals", "fetch", "cache", "ssr"]
 }

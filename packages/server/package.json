@@ -1,6 +1,7 @@
 {
   "name": "@basenative/server",
   "version": "0.3.0",
+  "description": "Server-side rendering with streaming support for BaseNative templates",
   "type": "module",
   "exports": {
     ".": "./src/render.js",
@@ -10,5 +11,16 @@
   "dependencies": {
     "node-html-parser": "^7.0.1"
   },
-  "files": ["src", "types"]
+  "files": ["src", "types"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/server"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": ["basenative", "web-components", "signals", "ssr", "streaming", "server-rendering"]
 }

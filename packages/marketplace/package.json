@@ -1,6 +1,7 @@
 {
   "name": "@basenative/marketplace",
   "version": "0.2.0",
+  "description": "Community component marketplace for BaseNative",
   "type": "module",
   "main": "src/index.js",
   "types": "types/index.d.ts",
@@ -8,5 +9,15 @@
     "src",
     "types"
   ],
-  "license": "MIT"
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/marketplace"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": ["basenative", "web-components", "signals", "marketplace", "community", "components"]
 }
