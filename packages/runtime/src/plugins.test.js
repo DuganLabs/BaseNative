@@ -117,4 +117,59 @@ describe('createPluginRegistry', () => {
     registry.runHook('beforeRender');
     registry.runHook('afterHydrate', { data: 1 });
   });
+
+  it('all five lifecycle hooks fire correctly', () => {
+    const registry = createPluginRegistry();
+    const fired = [];
+    registry.register(definePlugin({
+      name: 'all-hooks',
+      setup(api) {
+        api.onBeforeRender(() => fired.push('beforeRender'));
+        api.onAfterRender(() => fired.push('afterRender'));
+        api.onBeforeHydrate(() => fired.push('beforeHydrate'));
+        api.onAfterHydrate(() => fired.push('afterHydrate'));
+        api.onError(() => fired.push('error'));
+      },
+    }));
+    for (const hook of ['beforeRender', 'afterRender', 'beforeHydrate', 'afterHydrate', 'error']) {
+      registry.runHook(hook);
+    }
+    assert.deepStrictEqual(fired, ['beforeRender', 'afterRender', 'beforeHydrate', 'afterHydrate', 'error']);
+  });
+
+  it('invalid directive name throws', () => {
+    const registry = createPluginRegistry();
+    assert.throws(() => {
+      registry.register(definePlugin({
+        name: 'bad-dir',
+        setup(api) { api.addDirective('', () => {}); },
+      }));
+    }, /non-empty string/);
+  });
+
+  it('invalid directive handler throws', () => {
+    const registry = createPluginRegistry();
+    assert.throws(() => {
+      registry.register(definePlugin({
+        name: 'bad-handler',
+        setup(api) { api.addDirective('my-dir', 'not-a-function'); },
+      }));
+    }, /must be a function/);
+  });
+
+  it('multiple plugins can each register the same hook', () => {
+    const registry = createPluginRegistry();
+    const calls = [];
+    registry.register(definePlugin({ name: 'p1', setup(api) { api.onAfterRender(() => calls.push('p1')); } }));
+    registry.register(definePlugin({ name: 'p2', setup(api) { api.onAfterRender(() => calls.push('p2')); } }));
+    registry.runHook('afterRender');
+    assert.deepStrictEqual(calls, ['p1', 'p2']);
+  });
+
+  it('getPlugins returns all registered plugin names', () => {
+    const registry = createPluginRegistry();
+    registry.register(definePlugin({ name: 'a', setup() {} }));
+    registry.register(definePlugin({ name: 'b', setup() {} }));
+    assert.deepStrictEqual(registry.getPlugins(), ['a', 'b']);
+  });
 });
