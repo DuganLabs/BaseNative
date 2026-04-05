@@ -215,3 +215,200 @@ describe('createResendTransport', () => {
     }
   });
 });
+
+// --- Additional tests ---
+
+describe('renderEmail – extended', () => {
+  it('trims whitespace around variable names', () => {
+    const result = renderEmail('<p>{{  name  }}</p>', { name: 'Trimmed' });
+    assert.equal(result.html, '<p>Trimmed</p>');
+  });
+
+  it('converts number values to string', () => {
+    const result = renderEmail('<p>{{ count }}</p>', { count: 42 });
+    assert.equal(result.html, '<p>42</p>');
+  });
+
+  it('strips <style> blocks from text output', () => {
+    const template = '<style>body{color:red}</style><p>Hello</p>';
+    const { text } = renderEmail(template, {});
+    assert.ok(!text.includes('body'));
+    assert.ok(!text.includes('color'));
+    assert.ok(text.includes('Hello'));
+  });
+
+  it('strips <script> blocks from text output', () => {
+    const template = '<script>alert(1)</script><p>Safe</p>';
+    const { text } = renderEmail(template, {});
+    assert.ok(!text.includes('alert'));
+    assert.ok(text.includes('Safe'));
+  });
+
+  it('converts <br> to newline in text output', () => {
+    const { text } = renderEmail('Line1<br>Line2<br/>Line3', {});
+    assert.ok(text.includes('\n'));
+  });
+
+  it('decodes HTML entities in text output', () => {
+    const { text } = renderEmail('<p>a &amp; b &lt;c&gt;</p>', {});
+    assert.ok(text.includes('a & b <c>'));
+  });
+
+  it('returns both html and text keys', () => {
+    const result = renderEmail('<p>hi</p>', {});
+    assert.ok('html' in result);
+    assert.ok('text' in result);
+  });
+});
+
+describe('createNotificationCenter – extended', () => {
+  it('auto-generates id when none provided', () => {
+    const center = createNotificationCenter();
+    const n = center.notify({ title: 'Auto', message: 'id' });
+    assert.ok(typeof n.id === 'string' && n.id.length > 0);
+  });
+
+  it('defaults type to "info"', () => {
+    const center = createNotificationCenter();
+    const n = center.notify({ title: 'T', message: 'M' });
+    assert.equal(n.type, 'info');
+  });
+
+  it('preserves explicit type', () => {
+    const center = createNotificationCenter();
+    const n = center.notify({ title: 'T', message: 'M', type: 'error' });
+    assert.equal(n.type, 'error');
+  });
+
+  it('auto-sets createdAt when not provided', () => {
+    const center = createNotificationCenter();
+    const n = center.notify({ title: 'T', message: 'M' });
+    assert.ok(typeof n.createdAt === 'string');
+    assert.ok(!isNaN(Date.parse(n.createdAt)));
+  });
+
+  it('preserves explicit createdAt', () => {
+    const center = createNotificationCenter();
+    const ts = '2024-01-01T00:00:00.000Z';
+    const n = center.notify({ title: 'T', message: 'M', createdAt: ts });
+    assert.equal(n.createdAt, ts);
+  });
+
+  it('markRead on non-existent id is a no-op', () => {
+    const center = createNotificationCenter();
+    center.notify({ id: 'real', title: 'T', message: 'M' });
+    center.markRead('ghost'); // should not throw
+    assert.equal(center.getAll().length, 1);
+    assert.equal(center.getAll()[0].read, false);
+  });
+
+  it('remove on non-existent id is a no-op', () => {
+    const center = createNotificationCenter();
+    center.notify({ id: 'keep', title: 'T', message: 'M' });
+    center.remove('ghost');
+    assert.equal(center.getAll().length, 1);
+  });
+
+  it('multiple subscribers each receive events', () => {
+    const center = createNotificationCenter();
+    const a = [];
+    const b = [];
+    center.subscribe((ns) => a.push(ns.length));
+    center.subscribe((ns) => b.push(ns.length));
+    center.notify({ title: 'T', message: 'M' });
+    assert.deepEqual(a, [1]);
+    assert.deepEqual(b, [1]);
+  });
+});
+
+describe('createSendGridTransport – extended', () => {
+  it('omits text/plain content when text is not provided', async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async (_url, init) => {
+      return { ok: true, status: 202, body: init.body };
+    };
+    try {
+      const transport = createSendGridTransport({ apiKey: 'sg-key' });
+      // capture body by checking what was sent
+      let sentBody;
+      globalThis.fetch = async (_url, init) => {
+        sentBody = JSON.parse(init.body);
+        return { ok: true, status: 202 };
+      };
+      await transport.send({
+        to: 'r@example.com',
+        from: 's@example.com',
+        subject: 'No text',
+        html: '<p>html only</p>',
+      });
+      assert.equal(sentBody.content.length, 1);
+      assert.equal(sentBody.content[0].type, 'text/html');
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('returns ok false on non-2xx response', async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => ({ ok: false, status: 401 });
+    try {
+      const transport = createSendGridTransport({ apiKey: 'bad-key' });
+      const result = await transport.send({
+        to: 'r@example.com',
+        from: 's@example.com',
+        subject: 'Fail',
+        html: '<p>x</p>',
+      });
+      assert.equal(result.ok, false);
+      assert.equal(result.status, 401);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+});
+
+describe('createResendTransport – extended', () => {
+  it('includes text field when provided', async () => {
+    const originalFetch = globalThis.fetch;
+    let sentBody;
+    globalThis.fetch = async (_url, init) => {
+      sentBody = JSON.parse(init.body);
+      return { ok: true, status: 200, json: async () => ({ id: 'x' }) };
+    };
+    try {
+      const transport = createResendTransport({ apiKey: 're-key' });
+      await transport.send({
+        to: 'r@example.com',
+        from: 's@example.com',
+        subject: 'With text',
+        html: '<p>hi</p>',
+        text: 'hi',
+      });
+      assert.equal(sentBody.text, 'hi');
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('returns ok false on non-2xx response', async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => ({
+      ok: false,
+      status: 403,
+      json: async () => ({}),
+    });
+    try {
+      const transport = createResendTransport({ apiKey: 'bad' });
+      const result = await transport.send({
+        to: 'r@example.com',
+        from: 's@example.com',
+        subject: 'Fail',
+        html: '<p>x</p>',
+      });
+      assert.equal(result.ok, false);
+      assert.equal(result.status, 403);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+});
