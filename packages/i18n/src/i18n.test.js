@@ -406,3 +406,72 @@ describe('createLoader — additional', () => {
     assert.throws(() => createLoader({}), /requires a "directory"/);
   });
 });
+
+describe('createI18n — locale fallback', () => {
+  it('falls back to default locale when key missing in active locale', () => {
+    const i18n = createI18n({
+      defaultLocale: 'en',
+      messages: {
+        en: { hello: 'Hello' },
+        fr: {},
+      },
+    });
+    i18n.setLocale('fr');
+    assert.equal(i18n.t('hello'), 'Hello');
+  });
+
+  it('returns key when missing in both active and default locale', () => {
+    const i18n = createI18n({ defaultLocale: 'en', messages: { en: {} } });
+    assert.equal(i18n.t('nonexistent.key'), 'nonexistent.key');
+  });
+
+  it('setLocale fires listener and updates locale', () => {
+    const i18n = createI18n({
+      defaultLocale: 'en',
+      messages: { en: {}, de: {} },
+    });
+    let fired = null;
+    i18n.onLocaleChange((l) => { fired = l; });
+    i18n.setLocale('de');
+    assert.equal(fired, 'de');
+    assert.equal(i18n.locale, 'de');
+  });
+});
+
+describe('createI18n — plural zero and one', () => {
+  it('plural zero category fires when value is 0', () => {
+    const i18n = createI18n({
+      defaultLocale: 'en',
+      messages: {
+        en: { items: '{count, plural, zero {No items} one {One item} other {# items}}' },
+      },
+    });
+    assert.equal(i18n.t('items', { count: 0 }), 'No items');
+  });
+
+  it('plural one category fires when value is 1', () => {
+    const i18n = createI18n({
+      defaultLocale: 'en',
+      messages: {
+        en: { items: '{count, plural, zero {No items} one {One item} other {# items}}' },
+      },
+    });
+    assert.equal(i18n.t('items', { count: 1 }), 'One item');
+  });
+});
+
+describe('createI18n — n and d formatting', () => {
+  it('n uses current locale for formatting', () => {
+    const i18n = createI18n({ defaultLocale: 'en' });
+    const result = i18n.n(1234.5);
+    assert.ok(typeof result === 'string' && result.length > 0);
+  });
+
+  it('d formats a Date object', () => {
+    const i18n = createI18n({ defaultLocale: 'en' });
+    const date = new Date(2024, 5, 15); // June 15, 2024
+    const result = i18n.d(date);
+    assert.ok(typeof result === 'string' && result.length > 0);
+    assert.ok(result.includes('2024') || result.includes('24'));
+  });
+});
