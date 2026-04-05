@@ -5,6 +5,7 @@ import { hashPassword, verifyPassword } from './password.js';
 import { defineRoles, createGuard } from './rbac.js';
 import { sessionMiddleware, requireAuth, login, logout } from './middleware.js';
 import { credentialsProvider } from './providers/credentials.js';
+import { oauthProvider, providers } from './providers/oauth.js';
 
 describe('session manager', () => {
   it('creates and retrieves sessions', async () => {
@@ -364,5 +365,115 @@ describe('guard — additional', () => {
     await guard.requireRole('admin')(ctx, async () => { called = true; });
     assert.ok(!called);
     assert.equal(ctx.response.status, 403);
+  });
+});
+
+describe('oauthProvider', () => {
+  const baseConfig = {
+    clientId: 'client-id',
+    clientSecret: 'client-secret',
+    authorizeUrl: 'https://auth.example.com/authorize',
+    tokenUrl: 'https://auth.example.com/token',
+    userInfoUrl: 'https://auth.example.com/userinfo',
+    redirectUri: 'https://myapp.com/callback',
+  };
+
+  it('getAuthUrl returns URL with correct query params', () => {
+    const provider = oauthProvider(baseConfig);
+    const { url, state } = provider.getAuthUrl('my-state');
+    assert.ok(url.includes('client_id=client-id'));
+    assert.ok(url.includes('response_type=code'));
+    assert.ok(url.includes('redirect_uri='));
+    assert.equal(state, 'my-state');
+  });
+
+  it('getAuthUrl generates state when none provided', () => {
+    const provider = oauthProvider(baseConfig);
+    const { url, state } = provider.getAuthUrl();
+    assert.ok(typeof state === 'string' && state.length > 0);
+    assert.ok(url.includes(`state=${state}`));
+  });
+
+  it('getAuthUrl includes custom scopes', () => {
+    const provider = oauthProvider({ ...baseConfig, scopes: ['read', 'write'] });
+    const { url } = provider.getAuthUrl('s');
+    assert.ok(url.includes('scope=read+write') || url.includes('scope=read%20write'));
+  });
+
+  it('handleCallback returns success with user info', async () => {
+    const originalFetch = globalThis.fetch;
+    let callCount = 0;
+    globalThis.fetch = async () => {
+      callCount++;
+      if (callCount === 1) {
+        return { ok: true, json: async () => ({ access_token: 'tok-123' }) };
+      }
+      return { ok: true, json: async () => ({ id: 'user-1', email: 'u@example.com' }) };
+    };
+    try {
+      const provider = oauthProvider(baseConfig);
+      const result = await provider.handleCallback('auth-code');
+      assert.equal(result.success, true);
+      assert.equal(result.user.id, 'user-1');
+      assert.equal(result.tokens.access_token, 'tok-123');
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('handleCallback returns error when token exchange fails', async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => ({ ok: false, status: 400 });
+    try {
+      const provider = oauthProvider(baseConfig);
+      const result = await provider.handleCallback('bad-code');
+      assert.equal(result.success, false);
+      assert.ok(result.error.includes('Token'));
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('handleCallback returns error when user info fetch fails', async () => {
+    const originalFetch = globalThis.fetch;
+    let callCount = 0;
+    globalThis.fetch = async () => {
+      callCount++;
+      if (callCount === 1) return { ok: true, json: async () => ({ access_token: 'tok' }) };
+      return { ok: false, status: 401 };
+    };
+    try {
+      const provider = oauthProvider(baseConfig);
+      const result = await provider.handleCallback('code');
+      assert.equal(result.success, false);
+      assert.ok(result.error.includes('user info'));
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('provider.type is "oauth"', () => {
+    const provider = oauthProvider(baseConfig);
+    assert.equal(provider.type, 'oauth');
+  });
+});
+
+describe('providers (pre-configured OAuth)', () => {
+  it('providers.github creates provider with GitHub URLs', () => {
+    const p = providers.github({ clientId: 'cid', clientSecret: 'sec', redirectUri: '/cb' });
+    const { url } = p.getAuthUrl('s');
+    assert.ok(url.includes('github.com'));
+  });
+
+  it('providers.google creates provider with Google URLs', () => {
+    const p = providers.google({ clientId: 'cid', clientSecret: 'sec', redirectUri: '/cb' });
+    const { url } = p.getAuthUrl('s');
+    assert.ok(url.includes('google.com') || url.includes('accounts.google'));
+  });
+
+  it('providers.microsoft accepts custom tenant', () => {
+    const p = providers.microsoft({ clientId: 'cid', clientSecret: 'sec', redirectUri: '/cb', tenant: 'mytenant' });
+    const { url } = p.getAuthUrl('s');
+    assert.ok(url.includes('mytenant'));
   });
 });
