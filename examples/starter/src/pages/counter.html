@@ -1,0 +1,28 @@
+<!--
+  Counter demo — server renders initialCount, client hydrates with live signals.
+  This demonstrates the SSR → hydration pipeline.
+-->
+<section>
+  <h1>Signal Counter</h1>
+  <p>
+    The count was server-rendered as <strong>{{ initialCount }}</strong>.
+    After hydration, the buttons below update it reactively.
+  </p>
+
+  <div>
+    <output>{{ count }}</output>
+    <button @click="decrement()">−</button>
+    <button @click="increment()">+</button>
+    <button @click="reset()">Reset</button>
+  </div>
+
+  <p>
+    @if count > 0
+      Counting up. {{ count }} click{{ count === 1 ? '' : 's' }} so far.
+    @else-if count < 0
+      Counting down. You're at {{ count }}.
+    @else
+      Counter is at zero.
+    @endif
+  </p>
+</section>

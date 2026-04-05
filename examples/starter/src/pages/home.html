@@ -1,0 +1,21 @@
+<section>
+  <h1>{{ title }}</h1>
+  <p>
+    A signal-based web runtime over native HTML — zero build step,
+    zero production dependencies in the core runtime.
+  </p>
+
+  <ul role="list">
+    @for feature in features track feature.name
+      <li>
+        <strong>{{ feature.name }}</strong>
+        <p>{{ feature.description }}</p>
+      </li>
+    @endfor
+  </ul>
+
+  <nav aria-label="Try an example">
+    <a href="/counter">Counter demo &rarr;</a>
+    <a href="/todos">Todo list &rarr;</a>
+  </nav>
+</section>

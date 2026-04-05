@@ -1,0 +1,27 @@
+<section>
+  <h1>About BaseNative</h1>
+  <p>BaseNative v{{ version }} — an open specifications project delivering
+  a signal-based web runtime over native HTML.</p>
+
+  <h2>Packages</h2>
+  <ul>
+    @for pkg in packages track pkg
+      <li><code>@basenative/{{ pkg }}</code></li>
+    @endfor
+  </ul>
+
+  <h2>Design principles</h2>
+  <dl>
+    <dt>No namespace theater</dt>
+    <dd>Semantic HTML only. W3C primitives are the component model.</dd>
+
+    <dt>Zero inline styles</dt>
+    <dd>All CSS lives in cascade layers. No <code>style=""</code>, no CSS-in-JS.</dd>
+
+    <dt>Trinity Standard</dt>
+    <dd>State, logic, and template fuse in one file.</dd>
+
+    <dt>No build step</dt>
+    <dd>Native ESM. No bundler required in development.</dd>
+  </dl>
+</section>
