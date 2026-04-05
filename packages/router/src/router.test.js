@@ -97,4 +97,42 @@ describe('resolveRoute', () => {
     const result = resolveRoute(noNameRoutes, '/no-name');
     assert.equal(result.name, '/no-name');
   });
+
+  it('handles multiple query params', () => {
+    const result = resolveRoute(routes, '/users?page=3&sort=email&dir=asc');
+    assert.deepEqual(result.query, { page: '3', sort: 'email', dir: 'asc' });
+  });
+
+  it('returns path from matched url for unmatched routes', () => {
+    const result = resolveRoute(routes, '/404page');
+    assert.equal(result.path, '/404page');
+  });
+
+  it('resolves root with trailing slash and base path', () => {
+    const result = resolveRoute(routes, '/app/', { base: '/app' });
+    assert.equal(result.name, 'home');
+  });
+
+  it('extracts param from URL with query string', () => {
+    const result = resolveRoute(routes, '/users/99?foo=bar');
+    assert.equal(result.params.id, '99');
+    assert.deepEqual(result.query, { foo: 'bar' });
+  });
+
+  it('handles empty routes array', () => {
+    const result = resolveRoute([], '/users');
+    assert.equal(result.name, null);
+    assert.equal(result.matched, null);
+  });
+
+  it('params are always strings', () => {
+    const result = resolveRoute(routes, '/users/123');
+    assert.equal(typeof result.params.id, 'string');
+    assert.equal(result.params.id, '123');
+  });
+
+  it('includes matched route reference', () => {
+    const result = resolveRoute(routes, '/users');
+    assert.equal(result.matched, routes[1]);
+  });
 });
