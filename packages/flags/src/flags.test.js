@@ -2,6 +2,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { createFlagManager, flagMiddleware } from './flags.js';
 import { createMemoryProvider } from './providers/memory.js';
+import { createRemoteProvider } from './providers/remote.js';
 
 describe('createFlagManager', () => {
   it('returns default for unknown flags', async () => {
@@ -271,5 +272,65 @@ describe('flagMiddleware – extended', () => {
     await mw(ctx, async () => {
       assert.equal(await ctx.state.isEnabled('admin_panel'), true);
     });
+  });
+});
+
+describe('createRemoteProvider', () => {
+  it('throws if URL is not provided', () => {
+    assert.throws(() => createRemoteProvider(), /requires a URL/);
+  });
+
+  it('getFlag returns null before any fetch', async () => {
+    const provider = createRemoteProvider({ url: 'http://example.com/flags' });
+    assert.equal(await provider.getFlag('any'), null);
+  });
+
+  it('getAllFlags returns empty object before any fetch', async () => {
+    const provider = createRemoteProvider({ url: 'http://example.com/flags' });
+    assert.deepEqual(await provider.getAllFlags(), {});
+  });
+
+  it('refresh fetches and caches flags', async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => ({
+      ok: true,
+      json: async () => ({ feature_x: { enabled: true } }),
+    });
+    try {
+      const provider = createRemoteProvider({ url: 'http://flags.test/api' });
+      await provider.refresh();
+      const flag = await provider.getFlag('feature_x');
+      assert.deepEqual(flag, { enabled: true });
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('keeps stale cache when refresh request fails', async () => {
+    const originalFetch = globalThis.fetch;
+    // First call succeeds, second fails
+    let callCount = 0;
+    globalThis.fetch = async () => {
+      callCount++;
+      if (callCount === 1) return { ok: true, json: async () => ({ stale: { enabled: true } }) };
+      throw new Error('network error');
+    };
+    try {
+      const provider = createRemoteProvider({ url: 'http://flags.test/api' });
+      await provider.refresh();
+      await provider.refresh(); // fails silently
+      const flag = await provider.getFlag('stale');
+      assert.deepEqual(flag, { enabled: true }); // stale cache preserved
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('stopPolling after startPolling does not throw', () => {
+    const provider = createRemoteProvider({ url: 'http://flags.test/api', pollInterval: 9999999 });
+    provider.startPolling();
+    provider.startPolling(); // idempotent
+    assert.doesNotThrow(() => provider.stopPolling());
+    assert.doesNotThrow(() => provider.stopPolling()); // double stop safe
   });
 });
