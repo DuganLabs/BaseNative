@@ -549,3 +549,69 @@ describe('createLocalStorage — additional', () => {
     assert.equal(result.contentType, undefined);
   });
 });
+
+describe('parseMultipart — additional', () => {
+  it('accepts Buffer body', () => {
+    const boundary = 'bufbound';
+    const body = buildMultipartBody(boundary, [
+      { name: 'field', value: 'from-buffer' },
+    ]);
+    const parts = parseMultipart(Buffer.from(body, 'utf-8'), `multipart/form-data; boundary=${boundary}`);
+    assert.equal(parts.length, 1);
+    assert.equal(parts[0].name, 'field');
+  });
+
+  it('parses multiple fields without filenames', () => {
+    const boundary = 'fields';
+    const body = buildMultipartBody(boundary, [
+      { name: 'name', value: 'Alice' },
+      { name: 'age', value: '30' },
+    ]);
+    const parts = parseMultipart(body, `multipart/form-data; boundary=${boundary}`);
+    assert.equal(parts.length, 2);
+    assert.equal(parts[0].filename, null);
+    assert.equal(parts[1].filename, null);
+  });
+});
+
+describe('createS3Storage — additional', () => {
+  it('put generates default S3 URL when no baseUrl', async () => {
+    const client = {
+      putObject() { return Promise.resolve(); },
+    };
+    const storage = createS3Storage({ client, bucket: 'my-bucket' });
+    const result = await storage.put('photo.jpg', Buffer.from('data'), { contentType: 'image/jpeg' });
+    assert.ok(result.url.includes('my-bucket.s3.amazonaws.com'));
+    assert.ok(result.url.includes('photo.jpg'));
+  });
+
+  it('delete uses prefix in key', async () => {
+    const calls = [];
+    const client = {
+      deleteObject(params) { calls.push(params); return Promise.resolve(); },
+    };
+    const storage = createS3Storage({ client, bucket: 'b', prefix: 'uploads' });
+    await storage.delete('old.txt');
+    assert.equal(calls[0].Key, 'uploads/old.txt');
+  });
+
+  it('get uses prefix in key', async () => {
+    const calls = [];
+    const client = {
+      getObject(params) { calls.push(params); return Promise.resolve({ Body: Buffer.from('data') }); },
+    };
+    const storage = createS3Storage({ client, bucket: 'b', prefix: 'docs' });
+    await storage.get('file.txt');
+    assert.equal(calls[0].Key, 'docs/file.txt');
+  });
+
+  it('returns size in put result', async () => {
+    const client = {
+      putObject() { return Promise.resolve(); },
+    };
+    const storage = createS3Storage({ client, bucket: 'b' });
+    const buf = Buffer.from('hello world');
+    const result = await storage.put('f.txt', buf, {});
+    assert.equal(result.size, buf.length);
+  });
+});
