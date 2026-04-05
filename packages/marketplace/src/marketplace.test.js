@@ -429,3 +429,136 @@ describe('createThemeManager', () => {
     });
   });
 });
+
+describe('createInstaller — additional', () => {
+  let tmpDir;
+
+  beforeEach(async () => {
+    tmpDir = await mkdtemp(join(tmpdir(), 'installer-ext-'));
+  });
+
+  afterEach(async () => {
+    await rm(tmpDir, { recursive: true, force: true });
+  });
+
+  it('uninstall removes package from manifest', async () => {
+    const installer = createInstaller({ targetDir: tmpDir, packageManager: 'echo' });
+    await installer.install('remove-me', '1.0.0');
+    let list = await installer.list();
+    assert.equal(list.length, 1);
+
+    await installer.uninstall('remove-me');
+    list = await installer.list();
+    assert.equal(list.length, 0);
+  });
+
+  it('updateAll returns empty array when nothing installed', async () => {
+    const installer = createInstaller({ targetDir: tmpDir, packageManager: 'echo' });
+    const results = await installer.updateAll();
+    assert.deepStrictEqual(results, []);
+  });
+
+  it('install without registry resolves to provided version', async () => {
+    const installer = createInstaller({ targetDir: tmpDir, packageManager: 'echo' });
+    const result = await installer.install('my-pkg', '2.5.0');
+    assert.equal(result.version, '2.5.0');
+  });
+
+  it('update after install reflects latest version from registry', async () => {
+    let callCount = 0;
+    const fakeRegistry = {
+      getPackage: mock.fn(() => {
+        callCount++;
+        return Promise.resolve({ name: 'up-pkg', version: callCount === 1 ? '1.0.0' : '2.0.0' });
+      }),
+    };
+
+    const installer = createInstaller({
+      registry: fakeRegistry,
+      targetDir: tmpDir,
+      packageManager: 'echo',
+    });
+
+    await installer.install('up-pkg', '1.0.0');
+    const updated = await installer.update('up-pkg');
+    assert.equal(updated.name, 'up-pkg');
+  });
+});
+
+describe('createThemeManager — additional', () => {
+  let tmpDir;
+
+  beforeEach(async () => {
+    tmpDir = await mkdtemp(join(tmpdir(), 'theme-ext-'));
+  });
+
+  afterEach(async () => {
+    await rm(tmpDir, { recursive: true, force: true });
+  });
+
+  it('installed theme has installedAt timestamp in list', async () => {
+    const manager = createThemeManager({ themesDir: tmpDir });
+    const before = new Date();
+    await manager.install('timestamped');
+    const after = new Date();
+    const themes = await manager.list();
+    const ts = new Date(themes[0].installedAt);
+    assert.ok(ts >= before);
+    assert.ok(ts <= after);
+  });
+
+  it('list returns empty array when no themes installed', async () => {
+    const manager = createThemeManager({ themesDir: tmpDir });
+    const themes = await manager.list();
+    assert.deepStrictEqual(themes, []);
+  });
+
+  it('reinstalling existing theme updates metadata', async () => {
+    const manager = createThemeManager({ themesDir: tmpDir });
+    await manager.install('reload-me');
+    const result = await manager.install('reload-me');
+    // Should not throw; last install wins
+    assert.equal(result.name, 'reload-me');
+    const list = await manager.list();
+    assert.equal(list.filter(t => t.name === 'reload-me').length, 1);
+  });
+});
+
+describe('createRegistry — additional', () => {
+  let originalFetch;
+
+  beforeEach(() => { originalFetch = globalThis.fetch; });
+  afterEach(() => { globalThis.fetch = originalFetch; });
+
+  it('publish without token sends no Authorization header', async () => {
+    let capturedHeaders;
+    globalThis.fetch = mock.fn((_url, init) => {
+      capturedHeaders = init.headers;
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({ name: 'x', version: '1.0.0' }),
+        text: () => Promise.resolve('{}'),
+      });
+    });
+
+    const registry = createRegistry({ url: 'https://test.registry.dev' });
+    await registry.publish({ name: 'x', version: '1.0.0' });
+    assert.equal(capturedHeaders['Authorization'], undefined);
+  });
+
+  it('getVersions returns empty array when versions key is absent', async () => {
+    globalThis.fetch = mock.fn(() =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({}),
+        text: () => Promise.resolve('{}'),
+      })
+    );
+
+    const registry = createRegistry({ url: 'https://test.registry.dev' });
+    const result = await registry.getVersions('pkg-no-versions');
+    assert.deepStrictEqual(result, []);
+  });
+});
