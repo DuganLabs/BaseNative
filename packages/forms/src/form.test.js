@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { createField } from './field.js';
-import { createForm } from './form.js';
+import { createForm, zodAdapter } from './form.js';
 import { required } from './validators.js';
 
 describe('createForm', () => {
@@ -98,5 +98,92 @@ describe('createForm', () => {
 
     assert.equal(form.valid(), false);
     assert.equal(form.fields.name.valid(), false);
+  });
+
+  it('invalid computed is inverse of valid', () => {
+    const form = makeForm();
+    assert.equal(form.invalid(), true);
+    form.fields.name.setValue('John');
+    form.fields.email.setValue('j@test.com');
+    assert.equal(form.invalid(), false);
+  });
+
+  it('getValues returns same as values()', () => {
+    const form = makeForm();
+    form.fields.name.setValue('Val');
+    form.fields.email.setValue('val@test.com');
+    assert.deepEqual(form.getValues(), form.values());
+  });
+
+  it('submit returns ok:false with error when onSubmit throws', async () => {
+    const form = createForm(
+      { name: createField('John', { validators: [required()] }) },
+      { onSubmit: () => { throw new Error('server down'); } }
+    );
+    const result = await form.submit();
+    assert.equal(result.ok, false);
+    assert.ok(result.error instanceof Error);
+  });
+
+  it('submit returns values when no onSubmit provided', async () => {
+    const form = createForm({ name: createField('Alice', { validators: [required()] }) });
+    const result = await form.submit();
+    assert.equal(result.ok, true);
+    assert.deepEqual(result.data, { name: 'Alice' });
+  });
+
+  it('schema option adds cross-field validation errors', () => {
+    const schema = (values) => {
+      if (values.name === values.email) {
+        return { name: [{ code: 'same', message: 'Name and email must differ' }] };
+      }
+      return {};
+    };
+    const form = createForm(
+      {
+        name: createField('same@test.com'),
+        email: createField('same@test.com'),
+      },
+      { schema }
+    );
+    const errs = form.errors();
+    assert.ok(errs.name);
+  });
+
+  it('touchAll marks all fields as touched', () => {
+    const form = makeForm();
+    form.touchAll();
+    for (const field of Object.values(form.fields)) {
+      assert.equal(field.touched(), true);
+    }
+  });
+});
+
+describe('zodAdapter', () => {
+  it('returns empty object when schema passes', () => {
+    const mockSchema = {
+      safeParse: () => ({ success: true }),
+    };
+    const validate = zodAdapter(mockSchema);
+    assert.deepEqual(validate({ name: 'John' }), {});
+  });
+
+  it('maps Zod issues to field error paths', () => {
+    const mockSchema = {
+      safeParse: () => ({
+        success: false,
+        error: {
+          issues: [
+            { path: ['name'], code: 'too_small', message: 'Too short' },
+            { path: ['email'], code: 'invalid_string', message: 'Invalid email' },
+          ],
+        },
+      }),
+    };
+    const validate = zodAdapter(mockSchema);
+    const result = validate({});
+    assert.ok(result.name);
+    assert.ok(result.email);
+    assert.equal(result.name[0].message, 'Too short');
   });
 });

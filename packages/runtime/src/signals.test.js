@@ -177,3 +177,143 @@ describe('integration', () => {
     assert.equal(full, 'John Smith');
   });
 });
+
+describe('signal advanced', () => {
+  it('stores undefined as initial value', () => {
+    const s = signal(undefined);
+    assert.equal(s(), undefined);
+  });
+
+  it('stores null as initial value', () => {
+    const s = signal(null);
+    assert.equal(s(), null);
+  });
+
+  it('stores objects by reference', () => {
+    const obj = { x: 1 };
+    const s = signal(obj);
+    assert.strictEqual(s(), obj);
+  });
+
+  it('set() with same reference does not notify', () => {
+    const obj = { x: 1 };
+    const s = signal(obj);
+    let runs = 0;
+    effect(() => { s(); runs++; });
+    assert.equal(runs, 1);
+    s.set(obj); // same reference
+    assert.equal(runs, 1);
+  });
+
+  it('supports boolean signals', () => {
+    const flag = signal(false);
+    flag.set(true);
+    assert.equal(flag(), true);
+    flag.set(v => !v);
+    assert.equal(flag(), false);
+  });
+});
+
+describe('computed advanced', () => {
+  it('diamond dependency: two computeds share source, effect sees consistent values', () => {
+    // A → B, A → C, effect reads B + C
+    const a = signal(1);
+    const b = computed(() => a() * 2);
+    const c = computed(() => a() * 3);
+    const values = [];
+    effect(() => { values.push(b() + c()); });
+    assert.equal(values[values.length - 1], 5); // 2 + 3
+    a.set(2);
+    assert.equal(values[values.length - 1], 10); // 4 + 6
+    a.set(10);
+    assert.equal(values[values.length - 1], 50); // 20 + 30
+  });
+
+  it('deeply chained computeds propagate changes', () => {
+    const base = signal(1);
+    let prev = base;
+    for (let i = 0; i < 10; i++) {
+      const p = prev;
+      prev = computed(() => p() + 1);
+    }
+    assert.equal(prev(), 11);
+    base.set(10);
+    assert.equal(prev(), 20);
+  });
+
+  it('computed can return an array', () => {
+    const src = signal([1, 2, 3]);
+    const doubled = computed(() => src().map(x => x * 2));
+    assert.deepEqual(doubled(), [2, 4, 6]);
+    src.set([5, 10]);
+    assert.deepEqual(doubled(), [10, 20]);
+  });
+
+  it('computed with conditional dependency', () => {
+    const flag = signal(true);
+    const a = signal(1);
+    const b = signal(100);
+    const result = computed(() => flag() ? a() : b());
+    assert.equal(result(), 1);
+    flag.set(false);
+    assert.equal(result(), 100);
+    b.set(200);
+    assert.equal(result(), 200);
+  });
+});
+
+describe('effect advanced', () => {
+  it('nested effects each track their own dependencies', () => {
+    const outer = signal('outer');
+    const inner = signal('inner');
+    let outerRuns = 0;
+    let innerRuns = 0;
+    effect(() => {
+      outer();
+      outerRuns++;
+      effect(() => { inner(); innerRuns++; });
+    });
+    assert.equal(outerRuns, 1);
+    assert.ok(innerRuns >= 1);
+    inner.set('changed');
+    assert.equal(outerRuns, 1); // outer should not re-run
+    assert.ok(innerRuns >= 2);
+  });
+
+  it('disposed effect does not re-run', () => {
+    const s = signal(0);
+    let runs = 0;
+    const fx = effect(() => { s(); runs++; });
+    assert.equal(runs, 1);
+    fx.dispose();
+    s.set(1);
+    assert.equal(runs, 1); // should not re-run
+  });
+
+  it('disposing twice is safe', () => {
+    const s = signal(0);
+    const fx = effect(() => { s(); });
+    fx.dispose();
+    assert.doesNotThrow(() => fx.dispose());
+  });
+
+  it('cleanup runs before each re-execution', () => {
+    const s = signal(0);
+    const log = [];
+    effect(() => {
+      log.push(`run:${s()}`);
+      return () => log.push(`cleanup:${s.peek()}`);
+    });
+    s.set(1);
+    s.set(2);
+    assert.deepEqual(log, ['run:0', 'cleanup:1', 'run:1', 'cleanup:2', 'run:2']);
+  });
+
+  it('error in effect body propagates synchronously', () => {
+    const s = signal(0);
+    const fx = effect(() => {
+      if (s() > 0) throw new Error('boom');
+    });
+    assert.throws(() => s.set(1), /boom/);
+  });
+});
