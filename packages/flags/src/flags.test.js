@@ -334,3 +334,89 @@ describe('createRemoteProvider', () => {
     assert.doesNotThrow(() => provider.stopPolling()); // double stop safe
   });
 });
+
+describe('createFlagManager — getAll', () => {
+  it('getAll with context evaluates each flag', async () => {
+    const provider = createMemoryProvider({
+      feature_a: { enabled: true },
+      feature_b: {
+        enabled: false,
+        rules: [{ userIds: ['tester'], value: true }],
+      },
+    });
+    const fm = createFlagManager(provider);
+    const all = await fm.getAll({ userId: 'tester' });
+    assert.equal(all.feature_a, true);
+    assert.equal(all.feature_b, true);
+  });
+
+  it('getAll returns false for disabled flag', async () => {
+    const provider = createMemoryProvider({ off_flag: { enabled: false } });
+    const fm = createFlagManager(provider);
+    const all = await fm.getAll();
+    assert.equal(all.off_flag, false);
+  });
+});
+
+describe('flagMiddleware — flagContext', () => {
+  it('uses ctx.state.flagContext when available', async () => {
+    const provider = createMemoryProvider({
+      locale_flag: {
+        enabled: false,
+        rules: [{ condition: (ctx) => ctx.locale === 'en', value: true }],
+      },
+    });
+    const fm = createFlagManager(provider);
+    const mw = flagMiddleware(fm);
+    const ctx = {
+      state: {
+        user: null,
+        session: null,
+        flagContext: { locale: 'en' },
+      },
+    };
+    await mw(ctx, async () => {
+      assert.equal(await ctx.state.isEnabled('locale_flag'), true);
+    });
+  });
+});
+
+describe('createRemoteProvider — additional', () => {
+  it('refresh stores multiple flags', async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => ({
+      ok: true,
+      json: async () => ({
+        flag_a: { enabled: true },
+        flag_b: { enabled: false },
+      }),
+    });
+    try {
+      const provider = createRemoteProvider({ url: 'http://flags.test/api' });
+      await provider.refresh();
+      const a = await provider.getFlag('flag_a');
+      const b = await provider.getFlag('flag_b');
+      assert.deepEqual(a, { enabled: true });
+      assert.deepEqual(b, { enabled: false });
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('getAllFlags returns all refreshed flags', async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => ({
+      ok: true,
+      json: async () => ({ x: { enabled: true }, y: { enabled: false } }),
+    });
+    try {
+      const provider = createRemoteProvider({ url: 'http://flags.test/api' });
+      await provider.refresh();
+      const all = await provider.getAllFlags();
+      assert.ok('x' in all);
+      assert.ok('y' in all);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+});
