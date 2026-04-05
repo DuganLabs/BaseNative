@@ -427,4 +427,125 @@ describe('createUploadHandler', () => {
     await handler(ctx, async () => {});
     assert.equal(ctx.state.files.length, 1);
   });
+
+  it('processes multiple files in one request', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-upload-'));
+    const storage = createLocalStorage({ directory: tempDir });
+    const handler = createUploadHandler(storage, { generateFilename: (orig) => orig });
+    const boundary = 'multi-bnd';
+    const body = buildMultipartBody(boundary, [
+      { name: 'file1', filename: 'a.txt', contentType: 'text/plain', value: 'aaa' },
+      { name: 'file2', filename: 'b.txt', contentType: 'text/plain', value: 'bbb' },
+    ]);
+    const ctx = {
+      request: { method: 'POST', headers: { 'content-type': `multipart/form-data; boundary=${boundary}` }, body },
+      state: {},
+    };
+    await handler(ctx, async () => {});
+    assert.equal(ctx.state.files.length, 2);
+    assert.equal(ctx.state.uploadErrors.length, 0);
+    const names = ctx.state.files.map(f => f.originalName);
+    assert.ok(names.includes('a.txt'));
+    assert.ok(names.includes('b.txt'));
+  });
+
+  it('collects multiple upload errors when multiple files fail', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-upload-'));
+    const storage = createLocalStorage({ directory: tempDir });
+    const handler = createUploadHandler(storage, { maxFileSize: 2 });
+    const boundary = 'err-bnd';
+    const body = buildMultipartBody(boundary, [
+      { name: 'f1', filename: 'big1.txt', contentType: 'text/plain', value: 'too long' },
+      { name: 'f2', filename: 'big2.txt', contentType: 'text/plain', value: 'also too long' },
+    ]);
+    const ctx = {
+      request: { method: 'POST', headers: { 'content-type': `multipart/form-data; boundary=${boundary}` }, body },
+      state: {},
+    };
+    await handler(ctx, async () => {});
+    assert.equal(ctx.state.files.length, 0);
+    assert.equal(ctx.state.uploadErrors.length, 2);
+  });
+
+  it('calls next after upload processing', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-upload-'));
+    const storage = createLocalStorage({ directory: tempDir });
+    const handler = createUploadHandler(storage, { generateFilename: (orig) => orig });
+    const boundary = 'next-bnd';
+    const body = buildMultipartBody(boundary, [
+      { name: 'file', filename: 'item.txt', contentType: 'text/plain', value: 'data' },
+    ]);
+    const ctx = {
+      request: { method: 'POST', headers: { 'content-type': `multipart/form-data; boundary=${boundary}` }, body },
+      state: {},
+    };
+    let nextCalled = false;
+    await handler(ctx, async () => { nextCalled = true; });
+    assert.ok(nextCalled);
+  });
+
+  it('empty body produces empty files and fields', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-upload-'));
+    const storage = createLocalStorage({ directory: tempDir });
+    const handler = createUploadHandler(storage, { generateFilename: (orig) => orig });
+    const boundary = 'empty-bnd';
+    const body = `--${boundary}--`;
+    const ctx = {
+      request: { method: 'POST', headers: { 'content-type': `multipart/form-data; boundary=${boundary}` }, body },
+      state: {},
+    };
+    await handler(ctx, async () => {});
+    assert.equal(ctx.state.files.length, 0);
+    assert.equal(ctx.state.uploadErrors.length, 0);
+    assert.deepEqual(ctx.state.fields, {});
+  });
+});
+
+// ---- createR2Storage — additional ----
+
+describe('createR2Storage — additional', () => {
+  it('delete calls bucket.delete with correct key', async () => {
+    const deleteCalls = [];
+    const bucket = {
+      put() { return Promise.resolve(); },
+      delete(key) { deleteCalls.push(key); return Promise.resolve(); },
+    };
+    const storage = createR2Storage({ bucket });
+    await storage.delete('old-file.bin');
+    assert.deepEqual(deleteCalls, ['old-file.bin']);
+  });
+
+  it('put without baseUrl returns filename as url', async () => {
+    const bucket = {
+      put() { return Promise.resolve(); },
+    };
+    const storage = createR2Storage({ bucket });
+    const result = await storage.put('file.txt', Buffer.from('x'), {});
+    assert.equal(result.url, 'file.txt');
+    assert.equal(result.key, 'file.txt');
+  });
+});
+
+// ---- createLocalStorage — additional ----
+
+describe('createLocalStorage — additional', () => {
+  let tempDir;
+
+  afterEach(() => {
+    if (tempDir && existsSync(tempDir)) rmSync(tempDir, { recursive: true });
+  });
+
+  it('defaults baseUrl to /uploads when not provided', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-upload-'));
+    const storage = createLocalStorage({ directory: tempDir });
+    const result = await storage.put('readme.txt', Buffer.from('r'));
+    assert.ok(result.url.includes('/uploads/readme.txt'));
+  });
+
+  it('put returns undefined contentType when not provided', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-upload-'));
+    const storage = createLocalStorage({ directory: tempDir });
+    const result = await storage.put('file.bin', Buffer.from('data'));
+    assert.equal(result.contentType, undefined);
+  });
 });

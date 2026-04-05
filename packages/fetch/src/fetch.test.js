@@ -345,4 +345,83 @@ describe('fetchJson', () => {
       globalThis.fetch = originalFetch;
     }
   });
+
+  it('sets Content-Type: application/json by default', async () => {
+    const originalFetch = globalThis.fetch;
+    let capturedInit;
+    globalThis.fetch = async (_url, init) => {
+      capturedInit = init;
+      return { ok: true, json: async () => ({}) };
+    };
+    try {
+      await fetchJson('https://example.com/api');
+      assert.equal(capturedInit.headers['Content-Type'], 'application/json');
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('does not set body when body option is absent', async () => {
+    const originalFetch = globalThis.fetch;
+    let capturedInit;
+    globalThis.fetch = async (_url, init) => {
+      capturedInit = init;
+      return { ok: true, json: async () => ({}) };
+    };
+    try {
+      await fetchJson('https://example.com/api', { method: 'GET' });
+      assert.equal(capturedInit.body, undefined);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+});
+
+describe('createResource — abort handling', () => {
+  it('AbortError is silently ignored and does not update error signal', async () => {
+    const resource = createResource(async () => {
+      const err = new DOMException('aborted', 'AbortError');
+      throw err;
+    }, { immediate: false });
+    await resource.fetch();
+    // AbortError must not propagate to error signal
+    assert.equal(resource.error(), null);
+  });
+
+  it('fetcher receives signal as second argument', async () => {
+    let receivedSignal;
+    const resource = createResource(async (_params, opts) => {
+      receivedSignal = opts?.signal;
+      return 'done';
+    }, { immediate: false });
+    await resource.fetch();
+    assert.ok(receivedSignal instanceof AbortSignal);
+  });
+});
+
+describe('createCache — additional', () => {
+  it('multiple sets to same key do not grow the cache beyond 1 entry', () => {
+    const cache = createCache({ maxSize: 5 });
+    for (let i = 0; i < 10; i++) {
+      cache.set('same', i);
+    }
+    assert.equal(cache.size, 1);
+    assert.equal(cache.get('same'), 9);
+  });
+
+  it('get returns undefined for expired entry', async () => {
+    const cache = createCache({ maxAge: 5 });
+    cache.set('temp', 'value');
+    await new Promise(r => setTimeout(r, 15));
+    assert.equal(cache.get('temp'), undefined);
+  });
+
+  it('invalidate with no args clears all entries', () => {
+    const cache = createCache();
+    cache.set('a', 1);
+    cache.set('b', 2);
+    cache.set('c', 3);
+    cache.invalidate();
+    assert.equal(cache.size, 0);
+  });
 });
