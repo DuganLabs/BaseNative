@@ -10,7 +10,9 @@ BaseNative adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ## [Unreleased] — 0.3.x (v1-Readiness)
 
 ### Added
-- Comprehensive test suites across all 23 packages (682 unit tests + 15 cross-package integration tests)
+- Comprehensive test suites across all 23 packages (842 unit tests + 15 cross-package integration tests)
+- `@basenative/runtime`: 81 edge case + security boundary tests for the CSP expression evaluator
+- "Building a Todo App" tutorial in `docs/guides/todo-app.md` (SSR + signals + forms + flags)
 - `@basenative/date`: full date utility coverage — timezone, relative time, date ranges
 - `@basenative/fetch`: signal-based resource caching, SSR preload, abort controller, retry logic
 - `@basenative/flags`: percentage rollout bucketing, user context evaluation, `@feature` directive
@@ -25,6 +27,7 @@ BaseNative adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Node.js standalone HTTP server example (`examples/node/`)
 - `CLAUDE.md` AI assistant guide with architecture, commands, and invariants
 - Cross-package integration tests (`tests/integration/`)
+- Framework migration guides (React, Vue, Svelte, vanilla JS) in `docs/migration.md`
 - Changeset for all packages (`v1-readiness`)
 
 ### Changed
