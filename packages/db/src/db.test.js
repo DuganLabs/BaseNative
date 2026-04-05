@@ -355,3 +355,55 @@ describe('rollback', () => {
     }
   });
 });
+
+describe('query builder — more edge cases', () => {
+  it('select with no table builds from empty string', () => {
+    const q = select('').build();
+    assert.ok(typeof q.sql === 'string');
+  });
+
+  it('update returns to chained build', () => {
+    const q = update('users').set({ name: 'Alice' }).where('id', 1).build();
+    assert.match(q.sql, /UPDATE users SET/);
+    assert.match(q.sql, /WHERE/);
+    assert.ok(q.params.includes('Alice'));
+    assert.ok(q.params.includes(1));
+  });
+
+  it('deleteFrom builds correct SQL', () => {
+    const q = deleteFrom('sessions').where('expired', true).build();
+    assert.match(q.sql, /DELETE FROM sessions/);
+    assert.match(q.sql, /WHERE/);
+    assert.ok(q.params.includes(true));
+  });
+
+  it('select builds with no columns defaults to SELECT *', () => {
+    const q = select('orders').build();
+    assert.match(q.sql, /SELECT \*/);
+    assert.match(q.sql, /FROM orders/);
+  });
+});
+
+describe('validateAdapter — additional', () => {
+  it('does not throw for adapter with all required methods plus extras', () => {
+    const adapter = {
+      execute: () => {},
+      query: () => {},
+      queryOne: () => {},
+      transaction: () => {},
+      close: () => {},
+      extraMethod: () => {},
+    };
+    assert.doesNotThrow(() => validateAdapter(adapter));
+  });
+
+  it('throws for missing close method', () => {
+    const adapter = {
+      execute: () => {},
+      query: () => {},
+      queryOne: () => {},
+      transaction: () => {},
+    };
+    assert.throws(() => validateAdapter(adapter), /close/);
+  });
+});
