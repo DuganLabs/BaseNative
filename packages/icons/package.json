@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/DuganLabs/basenative/issues"
   },
-  "keywords": ["basenative", "web-components", "signals", "icons", "svg"]
+  "keywords": ["basenative", "web-components", "signals", "icons", "svg"],
+  "scripts": {
+    "test": "node --test test.js"
+  }
 }

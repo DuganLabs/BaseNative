@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/DuganLabs/basenative/issues"
   },
-  "keywords": ["basenative", "web-components", "signals", "fonts", "css"]
+  "keywords": ["basenative", "web-components", "signals", "fonts", "css"],
+  "scripts": {
+    "test": "node --test test.js"
+  }
 }
