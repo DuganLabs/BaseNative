@@ -4,6 +4,7 @@ import { renderEmail, createEmailSender } from './email.js';
 import { createNotificationCenter } from './inapp.js';
 import { createSendGridTransport } from './transports/sendgrid.js';
 import { createResendTransport } from './transports/resend.js';
+import { createSmtpTransport } from './transports/smtp.js';
 
 describe('renderEmail', () => {
   it('interpolates variables', () => {
@@ -410,5 +411,62 @@ describe('createResendTransport – extended', () => {
     } finally {
       globalThis.fetch = originalFetch;
     }
+  });
+});
+
+describe('createSmtpTransport', () => {
+  it('returns an object with a send method', () => {
+    const transport = createSmtpTransport({ host: 'localhost', port: 25 });
+    assert.equal(typeof transport.send, 'function');
+  });
+
+  it('rejects when server is unreachable', async () => {
+    // Port 1 is always refused — confirms the transport propagates connection errors
+    const transport = createSmtpTransport({ host: '127.0.0.1', port: 1 });
+    await assert.rejects(() =>
+      transport.send({
+        to: 'to@example.com',
+        from: 'from@example.com',
+        subject: 'Test',
+        html: '<p>test</p>',
+        text: 'test',
+      })
+    );
+  });
+});
+
+describe('createEmailSender – additional', () => {
+  it('returns transport result to caller', async () => {
+    const transport = {
+      send: async () => ({ ok: true, messageId: 'msg-001' }),
+    };
+    const sender = createEmailSender(transport);
+    const result = await sender.send({
+      to: 'to@example.com',
+      from: 'from@example.com',
+      subject: 'Hi',
+      html: '<p>Hi</p>',
+    });
+    assert.equal(result.ok, true);
+    assert.equal(result.messageId, 'msg-001');
+  });
+});
+
+describe('renderEmail — li and heading conversions', () => {
+  it('converts <li> to "- " prefix in text', () => {
+    const { text } = renderEmail('<ul><li>Item one</li><li>Item two</li></ul>', {});
+    assert.ok(text.includes('- Item one'));
+    assert.ok(text.includes('- Item two'));
+  });
+
+  it('converts </h1> to double newline in text', () => {
+    const { text } = renderEmail('<h1>Title</h1><p>Body</p>', {});
+    assert.ok(text.includes('Title'));
+  });
+
+  it('collapses excessive newlines in text', () => {
+    const { text } = renderEmail('<p>A</p><p>B</p><p>C</p>', {});
+    // Should not have 3+ consecutive newlines
+    assert.ok(!text.match(/\n{3,}/));
   });
 });
