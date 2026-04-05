@@ -432,6 +432,167 @@ describe('generate command', () => {
   });
 });
 
+describe('create command — error paths', () => {
+  let tempDir;
+  const originalCwd = process.cwd();
+
+  afterEach(() => {
+    process.chdir(originalCwd);
+    if (tempDir && existsSync(tempDir)) {
+      rmSync(tempDir, { recursive: true });
+    }
+  });
+
+  it('exits with code 1 when project name is missing', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-test-'));
+    process.chdir(tempDir);
+
+    const originalExit = process.exit;
+    process.exit = (code) => { throw Object.assign(new Error('exit'), { exitCode: code }); };
+
+    try {
+      await createRun([]);
+      assert.fail('Should have thrown');
+    } catch (err) {
+      assert.equal(err.exitCode, 1);
+    } finally {
+      process.exit = originalExit;
+    }
+  });
+
+  it('exits with code 1 for unknown template', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-test-'));
+    process.chdir(tempDir);
+
+    const originalExit = process.exit;
+    process.exit = (code) => { throw Object.assign(new Error('exit'), { exitCode: code }); };
+
+    try {
+      await createRun(['my-app', '--template', 'nonexistent']);
+      assert.fail('Should have thrown');
+    } catch (err) {
+      assert.equal(err.exitCode, 1);
+    } finally {
+      process.exit = originalExit;
+    }
+  });
+});
+
+describe('env command — edge cases', () => {
+  let tempDir;
+  let originalCwd;
+
+  afterEach(() => {
+    if (originalCwd) process.chdir(originalCwd);
+    if (tempDir && existsSync(tempDir)) {
+      rmSync(tempDir, { recursive: true });
+    }
+  });
+
+  it('env list returns empty object when .env is absent', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-env-'));
+    originalCwd = process.cwd();
+    process.chdir(tempDir);
+
+    const { run } = await import('./commands/env.js');
+    const vars = await run(['list']);
+    assert.deepEqual(vars, {});
+  });
+
+  it('env list ignores comment lines in .env', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-env-'));
+    originalCwd = process.cwd();
+    process.chdir(tempDir);
+
+    writeFileSync(join(tempDir, '.env'), '# comment\nFOO=bar\n');
+
+    const { run } = await import('./commands/env.js');
+    const vars = await run(['list']);
+    assert.equal(vars.FOO, 'bar');
+    assert.ok(!('#' in vars));
+  });
+
+  it('env set overwrites existing variable', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-env-'));
+    originalCwd = process.cwd();
+    process.chdir(tempDir);
+
+    writeFileSync(join(tempDir, '.env'), 'FOO=old\n');
+
+    const { run } = await import('./commands/env.js');
+    const vars = await run(['set', 'FOO', 'new']);
+    assert.equal(vars.FOO, 'new');
+  });
+
+  it('env unset exits with code 1 when key not in .env', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-env-'));
+    originalCwd = process.cwd();
+    process.chdir(tempDir);
+
+    writeFileSync(join(tempDir, '.env'), 'REAL=yes\n');
+
+    const originalExit = process.exit;
+    let exitCode = null;
+    process.exit = (code) => { exitCode = code; };
+
+    try {
+      const { run } = await import('./commands/env.js');
+      await run(['unset', 'GHOST']);
+      assert.equal(exitCode, 1);
+    } finally {
+      process.exit = originalExit;
+    }
+  });
+
+  it('env pull fetches and writes remote vars', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-env-'));
+    originalCwd = process.cwd();
+    process.chdir(tempDir);
+
+    writeFileSync(join(tempDir, 'package.json'), JSON.stringify({ name: 'pull-app' }));
+
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => ({
+      ok: true,
+      json: async () => ({ REMOTE_VAR: 'remote_value' }),
+    });
+
+    try {
+      const { run } = await import('./commands/env.js');
+      const vars = await run(['pull', '--token', 'tok123']);
+      assert.equal(vars.REMOTE_VAR, 'remote_value');
+      const content = readFileSync(join(tempDir, '.env'), 'utf-8');
+      assert.ok(content.includes('REMOTE_VAR=remote_value'));
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('env push sends local vars to API', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-env-'));
+    originalCwd = process.cwd();
+    process.chdir(tempDir);
+
+    writeFileSync(join(tempDir, 'package.json'), JSON.stringify({ name: 'push-app' }));
+    writeFileSync(join(tempDir, '.env'), 'LOCAL_VAR=local_value\n');
+
+    let capturedBody;
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async (_url, init) => {
+      capturedBody = JSON.parse(init.body);
+      return { ok: true };
+    };
+
+    try {
+      const { run } = await import('./commands/env.js');
+      await run(['push', '--token', 'tok123']);
+      assert.equal(capturedBody.LOCAL_VAR, 'local_value');
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+});
+
 describe('build command', () => {
   let tempDir;
   let originalCwd;
