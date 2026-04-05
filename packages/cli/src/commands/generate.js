@@ -40,11 +40,13 @@ export async function run(args) {
   if (!generator) {
     console.error(`Unknown type: ${type}\nAvailable: ${Object.keys(generators).join(', ')}`);
     process.exit(1);
+    return;
   }
 
   if (!name) {
     console.error(`Please provide a name: bn generate ${type} <name>`);
     process.exit(1);
+    return;
   }
 
   generator(name);

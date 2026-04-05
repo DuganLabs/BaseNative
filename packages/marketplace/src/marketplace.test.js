@@ -7,12 +7,12 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
-function mockFetch(response) {
+function mockFetch(response, ok = true, status = 200) {
   const fn = mock.fn(() =>
     Promise.resolve({
-      ok: true,
-      status: 200,
-      statusText: 'OK',
+      ok,
+      status,
+      statusText: ok ? 'OK' : 'Not Found',
       json: () => Promise.resolve(response),
       text: () => Promise.resolve(JSON.stringify(response)),
     })
@@ -55,6 +55,31 @@ describe('createRegistry', () => {
     assert.equal(headers['Authorization'], 'Bearer test-token');
   });
 
+  it('search with offset, category, and sort params', async () => {
+    const expected = { packages: [], total: 0 };
+    globalThis.fetch = mockFetch(expected);
+
+    const registry = createRegistry({ url: 'https://test.registry.dev' });
+    await registry.search('table', { offset: 40, limit: 10, category: 'data', sort: 'downloads' });
+
+    const call = globalThis.fetch.mock.calls[0];
+    const url = new URL(call.arguments[0]);
+    assert.equal(url.searchParams.get('offset'), '40');
+    assert.equal(url.searchParams.get('category'), 'data');
+    assert.equal(url.searchParams.get('sort'), 'downloads');
+  });
+
+  it('omits Authorization header when no token provided', async () => {
+    globalThis.fetch = mockFetch({ packages: [], total: 0 });
+
+    const registry = createRegistry({ url: 'https://test.registry.dev' });
+    await registry.search('x');
+
+    const call = globalThis.fetch.mock.calls[0];
+    const headers = call.arguments[1].headers;
+    assert.equal(headers['Authorization'], undefined);
+  });
+
   it('getPackage returns package details', async () => {
     const expected = {
       name: 'my-component',
@@ -73,6 +98,46 @@ describe('createRegistry', () => {
     const call = globalThis.fetch.mock.calls[0];
     const url = new URL(call.arguments[0]);
     assert.ok(url.pathname.includes('my-component'));
+  });
+
+  it('getPackage URL-encodes package name', async () => {
+    globalThis.fetch = mockFetch({ name: '@scope/pkg', version: '1.0.0' });
+
+    const registry = createRegistry({ url: 'https://test.registry.dev' });
+    await registry.getPackage('@scope/pkg');
+
+    const call = globalThis.fetch.mock.calls[0];
+    const urlStr = call.arguments[0];
+    assert.ok(urlStr.includes('%40scope%2Fpkg') || urlStr.includes('%40'));
+  });
+
+  it('getVersions sorts by semver descending', async () => {
+    const versions = [
+      { version: '1.0.0' },
+      { version: '2.1.0' },
+      { version: '1.5.3' },
+      { version: '0.9.0' },
+    ];
+    globalThis.fetch = mockFetch({ versions });
+
+    const registry = createRegistry({ url: 'https://test.registry.dev' });
+    const result = await registry.getVersions('my-pkg');
+
+    assert.equal(result[0].version, '2.1.0');
+    assert.equal(result[1].version, '1.5.3');
+    assert.equal(result[2].version, '1.0.0');
+    assert.equal(result[3].version, '0.9.0');
+  });
+
+  it('getVersions handles array response directly', async () => {
+    const versions = [{ version: '1.0.0' }, { version: '2.0.0' }];
+    globalThis.fetch = mockFetch(versions);
+
+    const registry = createRegistry({ url: 'https://test.registry.dev' });
+    const result = await registry.getVersions('my-pkg');
+
+    assert.equal(result[0].version, '2.0.0');
+    assert.equal(result[1].version, '1.0.0');
   });
 
   it('publish sends correct POST request', async () => {
@@ -95,6 +160,30 @@ describe('createRegistry', () => {
     assert.equal(opts.headers['Authorization'], 'Bearer pub-token');
     assert.deepStrictEqual(JSON.parse(opts.body), packageData);
   });
+
+  it('unpublish sends DELETE request to correct URL', async () => {
+    globalThis.fetch = mockFetch({ success: true });
+
+    const registry = createRegistry({ url: 'https://test.registry.dev', token: 'tok' });
+    await registry.unpublish('my-pkg', '1.2.3');
+
+    const call = globalThis.fetch.mock.calls[0];
+    const urlStr = call.arguments[0];
+    assert.ok(urlStr.includes('my-pkg'));
+    assert.ok(urlStr.includes('1.2.3'));
+    assert.equal(call.arguments[1].method, 'DELETE');
+  });
+
+  it('throws on non-ok response with status and body', async () => {
+    globalThis.fetch = mockFetch({ error: 'not found' }, false, 404);
+
+    const registry = createRegistry({ url: 'https://test.registry.dev' });
+
+    const err = await registry.getPackage('missing').catch(e => e);
+    assert.ok(err instanceof Error);
+    assert.ok(err.message.includes('404'));
+    assert.equal(err.status, 404);
+  });
 });
 
 describe('createInstaller', () => {
@@ -108,6 +197,12 @@ describe('createInstaller', () => {
     await rm(tmpDir, { recursive: true, force: true });
   });
 
+  it('list returns empty array when no packages installed', async () => {
+    const installer = createInstaller({ targetDir: tmpDir });
+    const list = await installer.list();
+    assert.deepStrictEqual(list, []);
+  });
+
   it('tracks installed packages in manifest', async () => {
     const fakeRegistry = {
       getPackage: mock.fn(() =>
@@ -115,11 +210,10 @@ describe('createInstaller', () => {
       ),
     };
 
-    // Override execFile to avoid actual npm calls
     const installer = createInstaller({
       registry: fakeRegistry,
       targetDir: tmpDir,
-      packageManager: 'echo', // use echo as a no-op command
+      packageManager: 'echo',
     });
 
     await installer.install('test-pkg', '1.2.3');
@@ -153,6 +247,53 @@ describe('createInstaller', () => {
     assert.ok(names.includes('pkg-a'));
     assert.ok(names.includes('pkg-b'));
   });
+
+  it('install records installedAt timestamp', async () => {
+    const installer = createInstaller({
+      targetDir: tmpDir,
+      packageManager: 'echo',
+    });
+
+    const before = new Date();
+    await installer.install('my-pkg', '1.0.0');
+    const after = new Date();
+
+    const list = await installer.list();
+    const ts = new Date(list[0].installedAt);
+    assert.ok(ts >= before);
+    assert.ok(ts <= after);
+  });
+
+  it('update throws if package not installed', async () => {
+    const installer = createInstaller({ targetDir: tmpDir, packageManager: 'echo' });
+
+    await assert.rejects(() => installer.update('uninstalled-pkg'), {
+      message: 'Package "uninstalled-pkg" is not installed',
+    });
+  });
+
+  it('updateAll updates all tracked packages', async () => {
+    const fakeRegistry = {
+      getPackage: mock.fn((name) =>
+        Promise.resolve({ name, version: '2.0.0' })
+      ),
+    };
+
+    const installer = createInstaller({
+      registry: fakeRegistry,
+      targetDir: tmpDir,
+      packageManager: 'echo',
+    });
+
+    await installer.install('alpha', '1.0.0');
+    await installer.install('beta', '1.0.0');
+
+    const results = await installer.updateAll();
+    assert.equal(results.length, 2);
+    const names = results.map(r => r.name);
+    assert.ok(names.includes('alpha'));
+    assert.ok(names.includes('beta'));
+  });
 });
 
 describe('createThemeManager', () => {
@@ -180,6 +321,26 @@ describe('createThemeManager', () => {
     assert.ok(names.includes('ocean-blue'));
   });
 
+  it('install with registry populates version and description', async () => {
+    const fakeRegistry = {
+      getPackage: mock.fn(() =>
+        Promise.resolve({
+          name: 'forest',
+          version: '3.0.0',
+          description: 'A forest theme',
+          author: 'designer',
+        })
+      ),
+    };
+
+    const manager = createThemeManager({ registry: fakeRegistry, themesDir: tmpDir });
+    const result = await manager.install('forest');
+
+    assert.equal(result.version, '3.0.0');
+    assert.equal(result.description, 'A forest theme');
+    assert.equal(result.author, 'designer');
+  });
+
   it('activate sets the active theme', async () => {
     const manager = createThemeManager({ themesDir: tmpDir });
 
@@ -188,6 +349,32 @@ describe('createThemeManager', () => {
 
     const active = await manager.getActive();
     assert.equal(active.name, 'sunset');
+  });
+
+  it('switching active theme updates correctly', async () => {
+    const manager = createThemeManager({ themesDir: tmpDir });
+
+    await manager.install('light');
+    await manager.install('dark');
+    await manager.activate('light');
+    await manager.activate('dark');
+
+    const active = await manager.getActive();
+    assert.equal(active.name, 'dark');
+  });
+
+  it('list marks active theme with active: true', async () => {
+    const manager = createThemeManager({ themesDir: tmpDir });
+
+    await manager.install('red');
+    await manager.install('blue');
+    await manager.activate('red');
+
+    const themes = await manager.list();
+    const red = themes.find(t => t.name === 'red');
+    const blue = themes.find(t => t.name === 'blue');
+    assert.equal(red.active, true);
+    assert.equal(blue.active, false);
   });
 
   it('getActive returns null when no theme is active', async () => {
@@ -211,11 +398,34 @@ describe('createThemeManager', () => {
     assert.equal(active, null);
   });
 
+  it('remove non-active theme leaves active unchanged', async () => {
+    const manager = createThemeManager({ themesDir: tmpDir });
+
+    await manager.install('alpha');
+    await manager.install('beta');
+    await manager.activate('alpha');
+    await manager.remove('beta');
+
+    const active = await manager.getActive();
+    assert.equal(active.name, 'alpha');
+
+    const themes = await manager.list();
+    assert.equal(themes.length, 1);
+  });
+
   it('activate throws if theme is not installed', async () => {
     const manager = createThemeManager({ themesDir: tmpDir });
 
     await assert.rejects(() => manager.activate('nonexistent'), {
       message: 'Theme "nonexistent" is not installed',
+    });
+  });
+
+  it('remove throws if theme is not installed', async () => {
+    const manager = createThemeManager({ themesDir: tmpDir });
+
+    await assert.rejects(() => manager.remove('ghost'), {
+      message: 'Theme "ghost" is not installed',
     });
   });
 });
