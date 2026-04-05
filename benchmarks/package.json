@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "bench": "node signals.bench.js && node render.bench.js && node router.bench.js"
+    "bench": "node signals.bench.js && node render.bench.js && node router.bench.js && node comparison.bench.js && node signal-comparison.bench.js"
   },
   "dependencies": {
     "@basenative/runtime": "workspace:*",
