@@ -1,7 +1,11 @@
-import { describe, it } from 'node:test';
+import { describe, it, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
+import { mkdtempSync, rmSync, writeFileSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 import { select, insert, update, deleteFrom, raw } from './query.js';
 import { validateAdapter } from './adapter.js';
+import { migrate, rollback } from './migrate.js';
 
 describe('query builder', () => {
   it('builds simple select', () => {
@@ -262,5 +266,92 @@ describe('query builder — additional', () => {
     const q = raw(sql);
     assert.equal(q.sql, sql);
     assert.deepEqual(q.params, []);
+  });
+});
+
+// ---- migrate ----
+
+describe('migrate', () => {
+  let tmpDir;
+
+  afterEach(() => {
+    if (tmpDir && existsSync(tmpDir)) rmSync(tmpDir, { recursive: true });
+  });
+
+  function makeAdapter() {
+    // In-memory SQLite-like adapter using maps
+    const tables = new Map();
+    const migTable = '_migrations';
+
+    async function execute(sql, params = []) {
+      // Minimal in-memory adapter
+    }
+
+    async function query(sql) {
+      if (sql.includes('SELECT name FROM')) {
+        return { rows: [] };
+      }
+      return { rows: [] };
+    }
+
+    async function queryOne(sql) {
+      return null;
+    }
+
+    async function transaction(fn) {
+      const tx = { execute: async () => {}, query: async () => ({ rows: [] }) };
+      await fn(tx);
+    }
+
+    return { execute, query, queryOne, transaction };
+  }
+
+  it('returns applied:0 when no migration files exist', async () => {
+    tmpDir = mkdtempSync(join(tmpdir(), 'bn-migrate-'));
+    const adapter = makeAdapter();
+    const result = await migrate(adapter, tmpDir);
+    assert.equal(result.applied, 0);
+    assert.equal(result.total, 0);
+  });
+
+  it('calls onApply for each new migration file', async () => {
+    tmpDir = mkdtempSync(join(tmpdir(), 'bn-migrate-'));
+    writeFileSync(join(tmpDir, '001_init.sql'), 'CREATE TABLE users (id INTEGER)');
+    writeFileSync(join(tmpDir, '002_add.sql'), 'ALTER TABLE users ADD COLUMN name TEXT');
+
+    const applied = [];
+    const adapter = makeAdapter();
+    const result = await migrate(adapter, tmpDir, { onApply: (f) => applied.push(f) });
+    assert.equal(result.total, 2);
+    assert.ok(applied.includes('001_init.sql'));
+    assert.ok(applied.includes('002_add.sql'));
+  });
+
+  it('ignores non-.sql files in migrations dir', async () => {
+    tmpDir = mkdtempSync(join(tmpdir(), 'bn-migrate-'));
+    writeFileSync(join(tmpDir, 'readme.md'), '# Migrations');
+    writeFileSync(join(tmpDir, '001_init.sql'), 'SELECT 1');
+
+    const adapter = makeAdapter();
+    const result = await migrate(adapter, tmpDir);
+    assert.equal(result.total, 1);
+  });
+});
+
+describe('rollback', () => {
+  it('returns rolled_back:null when no migrations applied', async () => {
+    const adapter = {
+      async execute() {},
+      async query() { return { rows: [] }; },
+      async queryOne() { return null; },
+      async transaction(fn) { await fn({ execute: async () => {}, query: async () => ({ rows: [] }) }); },
+    };
+    const tmpDir = mkdtempSync(join(tmpdir(), 'bn-rb-'));
+    try {
+      const result = await rollback(adapter, tmpDir);
+      assert.equal(result.rolled_back, null);
+    } finally {
+      rmSync(tmpDir, { recursive: true });
+    }
   });
 });

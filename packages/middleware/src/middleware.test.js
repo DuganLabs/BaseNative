@@ -282,3 +282,67 @@ describe('csrf — additional', () => {
     assert.equal(ctx.response.status, 403);
   });
 });
+
+describe('rateLimit — additional', () => {
+  it('sets x-ratelimit-limit header', async () => {
+    const mw = rateLimit({ max: 5, windowMs: 60000 });
+    const ctx = createCtx({ request: { method: 'GET', ip: '1.1.1.1', headers: {} } });
+    await mw(ctx, async () => {});
+    assert.equal(ctx.response.headers['x-ratelimit-limit'], '5');
+  });
+
+  it('decrements x-ratelimit-remaining with each request', async () => {
+    const mw = rateLimit({ max: 10, windowMs: 60000 });
+    const ctx1 = createCtx({ request: { method: 'GET', ip: '2.2.2.2', headers: {} } });
+    const ctx2 = createCtx({ request: { method: 'GET', ip: '2.2.2.2', headers: {} } });
+    await mw(ctx1, async () => {});
+    await mw(ctx2, async () => {});
+    assert.equal(ctx1.response.headers['x-ratelimit-remaining'], '9');
+    assert.equal(ctx2.response.headers['x-ratelimit-remaining'], '8');
+  });
+
+  it('uses custom keyGenerator', async () => {
+    const keys = [];
+    const mw = rateLimit({
+      max: 100,
+      keyGenerator: (ctx) => {
+        const k = ctx.request.headers['x-user-id'];
+        keys.push(k);
+        return k;
+      },
+    });
+    const ctx = createCtx({ request: { method: 'GET', headers: { 'x-user-id': 'user-42' } } });
+    await mw(ctx, async () => {});
+    assert.deepEqual(keys, ['user-42']);
+  });
+
+  it('sets retry-after header on 429', async () => {
+    const mw = rateLimit({ max: 1, windowMs: 60000 });
+    const ip = '3.3.3.3';
+    // First request is fine
+    await mw(createCtx({ request: { method: 'GET', ip, headers: {} } }), async () => {});
+    // Second request is fine (max=1, count becomes 2)
+    const ctx = createCtx({ request: { method: 'GET', ip, headers: {} } });
+    await mw(ctx, async () => {});
+    assert.equal(ctx.response.status, 429);
+    assert.ok(ctx.response.headers['retry-after']);
+  });
+});
+
+describe('csrf — additional', () => {
+  it('HEAD request is not blocked (passes through)', async () => {
+    const mw = csrf();
+    const ctx = createCtx({ request: { method: 'HEAD', headers: {} } });
+    let nextCalled = false;
+    await mw(ctx, async () => { nextCalled = true; });
+    // HEAD is safe method — should call next
+    assert.ok(nextCalled);
+  });
+
+  it('generates token on GET and stores in session', async () => {
+    const mw = csrf();
+    const ctx = createCtx({ request: { method: 'GET', headers: {} } });
+    await mw(ctx, async () => {});
+    assert.ok(typeof ctx.state.csrfToken === 'string' && ctx.state.csrfToken.length > 0);
+  });
+});
