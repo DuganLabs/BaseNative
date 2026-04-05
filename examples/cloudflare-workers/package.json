@@ -1,0 +1,17 @@
+{
+  "name": "basenative-cloudflare-workers-example",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@basenative/server": "workspace:*",
+    "@basenative/router": "workspace:*"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}

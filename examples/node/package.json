@@ -1,0 +1,14 @@
+{
+  "name": "basenative-node-example",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "@basenative/server": "workspace:*",
+    "@basenative/router": "workspace:*"
+  }
+}
