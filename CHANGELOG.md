@@ -10,7 +10,7 @@ BaseNative adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ## [Unreleased] — 0.3.x (v1-Readiness)
 
 ### Added
-- Comprehensive test suites across all 23 packages (842 unit tests + 15 cross-package integration tests)
+- Comprehensive test suites across all 23 packages (1029 unit tests + 15 cross-package integration tests)
 - `@basenative/runtime`: 81 edge case + security boundary tests for the CSP expression evaluator
 - "Building a Todo App" tutorial in `docs/guides/todo-app.md` (SSR + signals + forms + flags)
 - `@basenative/date`: full date utility coverage — timezone, relative time, date ranges
@@ -29,6 +29,12 @@ BaseNative adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Cross-package integration tests (`tests/integration/`)
 - Framework migration guides (React, Vue, Svelte, vanilla JS) in `docs/migration.md`
 - Changeset for all packages (`v1-readiness`)
+- `@basenative/runtime`: debug mode (`enableDebug`, `debugSignal`, `debugEffect`, `debugTime`, `debugAssert`)
+- Signal comparison benchmarks vs Preact-style and Solid-style reactive primitives (`benchmarks/signal-comparison.bench.js`)
+- "Building a Multi-tenant SaaS" tutorial (`docs/guides/multitenant-saas.md`)
+- Starter template example (`examples/starter/`) — Node.js, routing, SSR, client hydration
+- Tests for `@basenative/fonts` (26) and `@basenative/icons` (58)
+- Expanded test coverage: `@basenative/realtime` (17→39), `@basenative/i18n` (21→36), `@basenative/config` (20→39), `@basenative/server` (30→50)
 
 ### Changed
 - CI workflow: replaced `test:coverage` (undefined target) with `test`, added node version matrix
