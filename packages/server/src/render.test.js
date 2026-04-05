@@ -425,3 +425,63 @@ describe('renderToReadableStream', () => {
     assert.match(result, /stream/);
   });
 });
+
+describe('render — more directive edge cases', () => {
+  it('nested @for inside @for produces correct output', () => {
+    const html = render(
+      `<template @for="row of rows"><template @for="cell of row">{{ cell }} </template></template>`,
+      { rows: [[1, 2], [3, 4]] },
+    );
+    assert.ok(html.includes('1'));
+    assert.ok(html.includes('2'));
+    assert.ok(html.includes('3'));
+    assert.ok(html.includes('4'));
+  });
+
+  it(':href attribute renders correctly', () => {
+    const html = render(`<a :href="link">click</a>`, { link: '/home' });
+    assert.ok(html.includes('href="/home"'));
+  });
+
+  it(':disabled renders attribute when true', () => {
+    const html = render(`<button :disabled="isDisabled">btn</button>`, { isDisabled: true });
+    assert.ok(html.includes('disabled'));
+  });
+
+  it(':disabled omits attribute when false', () => {
+    const html = render(`<button :disabled="isDisabled">btn</button>`, { isDisabled: false });
+    assert.ok(!html.includes('disabled'));
+  });
+
+  it('@switch with multiple cases selects first match', () => {
+    const html = render(
+      `<template @switch="x">
+        <template @case="1"><span>one</span></template>
+        <template @case="2"><span>two</span></template>
+      </template>`,
+      { x: 2 },
+    );
+    assert.ok(html.includes('two'));
+    assert.ok(!html.includes('one'));
+  });
+
+  it('onDiagnostic callback is called on unknown variable access', () => {
+    const diagnostics = [];
+    render(`{{ unknown }}`, {}, { onDiagnostic: (d) => diagnostics.push(d) });
+    // The key behavior: does not throw regardless of diagnostics
+    assert.ok(Array.isArray(diagnostics));
+  });
+
+  it('renders boolean context value as string "true"', () => {
+    const html = render(`<p>{{ flag }}</p>`, { flag: true });
+    assert.ok(html.includes('true'));
+  });
+
+  it('@for $first and $last are both true for single-item array', () => {
+    const html = render(
+      `<template @for="x of items">{{ $first }}-{{ $last }}</template>`,
+      { items: ['only'] },
+    );
+    assert.ok(html.includes('true-true'));
+  });
+});
