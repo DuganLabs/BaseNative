@@ -425,3 +425,87 @@ describe('createChannelManager — edge cases', () => {
     assert.deepEqual(cm.getMembers('room'), ['a']); // member should still be there
   });
 });
+
+describe('createSSEServer — broadcast edge cases', () => {
+  it('broadcast with no clients returns 0', () => {
+    const sse = createSSEServer({ heartbeatInterval: 0 });
+    const count = sse.broadcast('update', { value: 1 });
+    assert.equal(count, 0);
+    sse.close();
+  });
+
+  it('broadcast serialises object data to JSON', () => {
+    const sse = createSSEServer({ heartbeatInterval: 0 });
+    const res = mockResponse();
+    sse.addClient(res, { id: 'c1' });
+    sse.broadcast('tick', { n: 99 });
+    const all = res.chunks.join('');
+    assert.ok(all.includes('data: {"n":99}'));
+    sse.close();
+  });
+
+  it('sseMiddleware stores url in client metadata', () => {
+    const sse = createSSEServer({ heartbeatInterval: 0 });
+    const mw = sseMiddleware(sse);
+    const req = { headers: { accept: 'text/event-stream' }, url: '/events/live' };
+    const res = mockResponse();
+    mw(req, res, () => {});
+    const clients = sse.getClients();
+    assert.equal(clients[0].metadata.url, '/events/live');
+    sse.close();
+  });
+
+  it('send formats plain string data without JSON serialization', () => {
+    const sse = createSSEServer({ heartbeatInterval: 0 });
+    const res = mockResponse();
+    sse.addClient(res, { id: 'plain' });
+    sse.send('plain', 'msg', 'just a string');
+    const all = res.chunks.join('');
+    assert.ok(all.includes('data: just a string'));
+    sse.close();
+  });
+});
+
+describe('createWSHandler — additional', () => {
+  it('getConnections returns all connection ids', () => {
+    const handler = createWSHandler();
+    const ws1 = mockWS();
+    const ws2 = mockWS();
+    const c1 = handler.handleConnection(ws1, {});
+    const c2 = handler.handleConnection(ws2, {});
+    const ids = handler.getConnections().map(c => c.id);
+    assert.ok(ids.includes(c1.id));
+    assert.ok(ids.includes(c2.id));
+    handler.close();
+  });
+
+  it('connection alive defaults to true', () => {
+    const handler = createWSHandler();
+    const ws = mockWS();
+    handler.handleConnection(ws, {});
+    const conns = handler.getConnections();
+    assert.equal(conns[0].alive, true);
+    handler.close();
+  });
+
+  it('onConnect error is swallowed and connection still added', () => {
+    const handler = createWSHandler({
+      onConnect: () => { throw new Error('connect error'); },
+    });
+    const ws = mockWS();
+    const conn = handler.handleConnection(ws, {});
+    assert.ok(conn.id);
+    assert.equal(handler.getConnections().length, 1);
+    handler.close();
+  });
+
+  it('pong event sets alive back to true', () => {
+    const handler = createWSHandler({ heartbeatInterval: 0 });
+    const ws = mockWS();
+    handler.handleConnection(ws, {});
+    ws.emit('pong');
+    const conns = handler.getConnections();
+    assert.equal(conns[0].alive, true);
+    handler.close();
+  });
+});
