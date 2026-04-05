@@ -282,6 +282,35 @@ describe('generate command', () => {
     assert.ok(content.includes('data-bn="user-card"'));
   });
 
+  it('converts PascalCase component name to kebab-case filename', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-gen-'));
+    originalCwd = process.cwd();
+    process.chdir(tempDir);
+
+    const { run } = await import('./commands/generate.js');
+    await run(['component', 'MyBigButton']);
+
+    const filePath = join(tempDir, 'src', 'components', 'my-big-button.js');
+    assert.ok(existsSync(filePath));
+    const content = readFileSync(filePath, 'utf-8');
+    assert.ok(content.includes('renderMyBigButton'));
+  });
+
+  it('generates a route handler', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-gen-'));
+    originalCwd = process.cwd();
+    process.chdir(tempDir);
+
+    const { run } = await import('./commands/generate.js');
+    await run(['route', '/api/users']);
+
+    const filePath = join(tempDir, 'src', 'routes', 'api-users.js');
+    assert.ok(existsSync(filePath));
+    const content = readFileSync(filePath, 'utf-8');
+    assert.ok(content.includes('handler'));
+    assert.ok(content.includes('/api/users'));
+  });
+
   it('generates a page', async () => {
     tempDir = mkdtempSync(join(tmpdir(), 'bn-gen-'));
     originalCwd = process.cwd();
@@ -294,5 +323,91 @@ describe('generate command', () => {
     assert.ok(existsSync(filePath));
     const content = readFileSync(filePath, 'utf-8');
     assert.ok(content.includes('Dashboard'));
+  });
+
+  it('exits with code 1 for unknown generate type', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-gen-'));
+    originalCwd = process.cwd();
+    process.chdir(tempDir);
+
+    const originalExit = process.exit;
+    let exitCode = null;
+    process.exit = (code) => { exitCode = code; };
+
+    try {
+      const { run } = await import('./commands/generate.js');
+      await run(['widget', 'Foo']);
+      assert.equal(exitCode, 1);
+    } finally {
+      process.exit = originalExit;
+    }
+  });
+});
+
+describe('build command', () => {
+  let tempDir;
+  let originalCwd;
+
+  afterEach(() => {
+    if (originalCwd) process.chdir(originalCwd);
+    if (tempDir && existsSync(tempDir)) {
+      rmSync(tempDir, { recursive: true });
+    }
+  });
+
+  it('copies server.js and package.json to dist', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-build-'));
+    originalCwd = process.cwd();
+    process.chdir(tempDir);
+
+    writeFileSync(join(tempDir, 'server.js'), 'console.log("server");');
+    writeFileSync(join(tempDir, 'package.json'), JSON.stringify({ name: 'test-build' }));
+
+    const { run } = await import('./commands/build.js');
+    await run([]);
+
+    assert.ok(existsSync(join(tempDir, 'dist', 'server.js')));
+    assert.ok(existsSync(join(tempDir, 'dist', 'package.json')));
+  });
+
+  it('copies views directory to dist', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-build-'));
+    originalCwd = process.cwd();
+    process.chdir(tempDir);
+
+    mkdirSync(join(tempDir, 'views'));
+    writeFileSync(join(tempDir, 'views', 'home.html'), '<p>home</p>');
+
+    const { run } = await import('./commands/build.js');
+    await run([]);
+
+    assert.ok(existsSync(join(tempDir, 'dist', 'views', 'home.html')));
+  });
+
+  it('copies public directory to dist', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-build-'));
+    originalCwd = process.cwd();
+    process.chdir(tempDir);
+
+    mkdirSync(join(tempDir, 'public'));
+    writeFileSync(join(tempDir, 'public', 'style.css'), 'body {}');
+
+    const { run } = await import('./commands/build.js');
+    await run([]);
+
+    assert.ok(existsSync(join(tempDir, 'dist', 'public', 'style.css')));
+  });
+
+  it('respects --outdir option', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'bn-build-'));
+    originalCwd = process.cwd();
+    process.chdir(tempDir);
+
+    writeFileSync(join(tempDir, 'server.js'), 'console.log("hi");');
+
+    const { run } = await import('./commands/build.js');
+    await run(['--outdir', 'output']);
+
+    assert.ok(existsSync(join(tempDir, 'output', 'server.js')));
   });
 });
