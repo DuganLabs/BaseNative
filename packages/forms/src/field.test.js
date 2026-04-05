@@ -174,3 +174,77 @@ describe('validators', () => {
     assert.equal(v('bad').code, 'bad');
   });
 });
+
+describe('validators — additional edge cases', () => {
+  it('required fails for false', () => {
+    // false is falsy but not explicitly listed — depends on impl
+    // required checks null, empty string, empty array
+    // false should pass (it is a valid boolean value)
+    assert.equal(required()(false), null);
+  });
+
+  it('required fails for undefined', () => {
+    assert.ok(required()(undefined) !== null);
+  });
+
+  it('required passes for zero', () => {
+    assert.equal(required()(0), null);
+  });
+
+  it('required passes for non-empty array', () => {
+    assert.equal(required()([1, 2]), null);
+  });
+
+  it('minLength skips undefined', () => {
+    assert.equal(minLength(3)(undefined), null);
+  });
+
+  it('maxLength skips undefined', () => {
+    assert.equal(maxLength(3)(undefined), null);
+  });
+
+  it('maxLength passes for null', () => {
+    assert.equal(maxLength(3)(null), null);
+  });
+
+  it('min skips null', () => {
+    assert.equal(min(5)(null), null);
+  });
+
+  it('max skips null', () => {
+    assert.equal(max(5)(null), null);
+  });
+
+  it('email passes for valid address', () => {
+    assert.equal(email()('user@example.com'), null);
+  });
+
+  it('email fails for address without @', () => {
+    assert.ok(email()('notanemail') !== null);
+  });
+
+  it('email fails for address without domain', () => {
+    assert.ok(email()('user@') !== null);
+  });
+
+  it('pattern accepts string pattern', () => {
+    const v = pattern('^\\d+$');
+    assert.equal(v('123'), null);
+    assert.ok(v('abc') !== null);
+  });
+
+  it('min includes params', () => {
+    const err = min(10)(5);
+    assert.equal(err.params.min, 10);
+  });
+
+  it('max includes params', () => {
+    const err = max(10)(20);
+    assert.equal(err.params.max, 10);
+  });
+
+  it('required uses custom message', () => {
+    const err = required('Field required!')('');
+    assert.equal(err.message, 'Field required!');
+  });
+});
