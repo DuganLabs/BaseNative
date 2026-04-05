@@ -186,14 +186,22 @@
 
   <article>
     <header><h3>Explicitly deferred</h3></header>
-    <ul role="list">
-      <template @for="item of deferredWork; track item.item">
-        <li>
-          <span>{{ item.item }}</span>
-          <span>{{ item.reason }}</span>
-        </li>
-      </template>
-    </ul>
+    <table>
+      <thead>
+        <tr>
+          <th>Scope</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template @for="item of deferredWork; track item.item">
+          <tr>
+            <td>{{ item.item }}</td>
+            <td>{{ item.reason }}</td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
   </article>
 </section>
 

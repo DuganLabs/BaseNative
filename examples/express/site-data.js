@@ -1,4 +1,4 @@
-export const navPages = ['home', 'tasks', 'playground', 'docs', 'components'];
+export const navPages = ['home', 'tasks', 'playground', 'docs', 'components', 'showcase'];
 
 export const staticTasks = [
   { id: 1, title: 'Design token system', status: 'done' },
@@ -46,10 +46,10 @@ export function getTasksPageContext(tasks) {
 export function getComponentsPageContext() {
   return {
     readinessStats: [
-      { label: 'Current Milestone', value: 'v0.4+ Workflow Breadth' },
-      { label: 'Evergreen Support', value: 'Chrome, Edge, Firefox, Safari' },
-      { label: 'Public Packages', value: 'Runtime, Server, Components, Router, Forms' },
-      { label: 'Advanced Widgets', value: 'Implemented' },
+      { label: 'Current Milestone', value: 'v0.4+' },
+      { label: 'Browser Support', value: '4 engines' },
+      { label: 'Public Packages', value: '5' },
+      { label: 'Advanced Widgets', value: 'Shipped' },
     ],
     releaseStages: [
       {

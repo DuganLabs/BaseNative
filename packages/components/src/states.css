@@ -1,0 +1,45 @@
+@layer states {
+  /* Container Queries — Stats Grid */
+  @container stats (max-width: 36rem) {
+    [data-bn="stats-grid"] {
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+  }
+  @container stats (max-width: 20rem) {
+    [data-bn="stats-grid"] {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Container Queries — Page Content */
+  @container page (max-width: 40rem) {
+    [data-bn="form-grid"] { max-width: 100%; }
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Print */
+  @media print {
+    [data-bn="topbar"],
+    [data-bn="sidebar"],
+    [data-bn="footer"],
+    .skip-link { display: none; }
+
+    [data-bn="content"] {
+      max-inline-size: 100%;
+      padding: 0;
+    }
+
+    [data-bn="page"] {
+      min-height: auto;
+    }
+  }
+}

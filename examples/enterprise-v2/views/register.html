@@ -1,32 +1,32 @@
-<div class="center-card">
-  <div class="card">
-    <div class="card-header">Create Account</div>
-    <div class="card-body">
+<div data-bn="center-card">
+  <div data-bn="card">
+    <div data-bn="card-header">Create Account</div>
+    <div data-bn="card-body">
       <p style="font-size:var(--bn-font-size-sm);color:var(--bn-color-text-muted);margin-bottom:var(--bn-space-4)">Fill in the details below to register.</p>
       <template @if="error">
-        <div class="alert alert-error">{{ error }}</div>
+        <div data-bn="alert" data-variant="error">{{ error }}</div>
       </template>
-      <form method="POST" action="/register" class="form-grid">
+      <form method="POST" action="/register" data-bn="form-grid">
         <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-        <div class="field">
+        <div data-bn="field">
           <label for="username">Username</label>
-          <input id="username" name="username" type="text" required autocomplete="username">
+          <input data-bn="input" id="username" name="username" type="text" required autocomplete="username">
         </div>
-        <div class="field">
+        <div data-bn="field">
           <label for="email">Email</label>
-          <input id="email" name="email" type="email" required autocomplete="email">
+          <input data-bn="input" id="email" name="email" type="email" required autocomplete="email">
         </div>
-        <div class="field">
+        <div data-bn="field">
           <label for="password">Password</label>
-          <input id="password" name="password" type="password" required minlength="6" autocomplete="new-password">
+          <input data-bn="input" id="password" name="password" type="password" required minlength="6" autocomplete="new-password">
         </div>
-        <div class="field">
+        <div data-bn="field">
           <label for="confirm_password">Confirm Password</label>
-          <input id="confirm_password" name="confirm_password" type="password" required minlength="6" autocomplete="new-password">
+          <input data-bn="input" id="confirm_password" name="confirm_password" type="password" required minlength="6" autocomplete="new-password">
         </div>
-        <div class="form-actions">
-          <button type="submit" class="btn btn-primary">Create Account</button>
-          <a href="/login" class="btn btn-secondary">Sign In</a>
+        <div data-bn="form-actions">
+          <button data-bn="button" data-variant="primary" type="submit">Create Account</button>
+          <a data-bn="button" data-variant="secondary" href="/login">Sign In</a>
         </div>
       </form>
     </div>

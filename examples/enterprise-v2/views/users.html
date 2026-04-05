@@ -1,9 +1,9 @@
 <h1>User Management</h1>
 
 <template @if="user.role === 'admin'">
-  <div class="card">
-    <div class="card-body" style="overflow-x:auto">
-      <table class="data-table">
+  <div data-bn="card">
+    <div data-bn="card-body" style="overflow-x:auto">
+      <table data-bn="table">
         <thead>
           <tr>
             <th>ID</th>
@@ -19,7 +19,7 @@
               <td>{{ row.id }}</td>
               <td>{{ row.username }}</td>
               <td>{{ row.email }}</td>
-              <td><span class="role-badge">{{ row.role }}</span></td>
+              <td><span data-bn="badge" data-variant="default">{{ row.role }}</span></td>
               <td>{{ row.created_at }}</td>
             </tr>
           </template>
@@ -33,5 +33,5 @@
 </template>
 
 <template @if="user.role !== 'admin'">
-  <div class="alert alert-error">You do not have permission to view this page.</div>
+  <div data-bn="alert" data-variant="error">You do not have permission to view this page.</div>
 </template>

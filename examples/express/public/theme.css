@@ -1,0 +1,126 @@
+/*
+ * Express Example Theme — Dark / Golden Amber
+ *
+ * Overrides core --bn-* semantic tokens to produce the distinctive
+ * dark background + golden accent look. The express-specific tokens
+ * (--surface-*, --text-*, --accent, etc.) are also defined here so
+ * existing styles.css rules continue to work as the migration to
+ * fully --bn-* based styles progresses.
+ */
+
+:root {
+  /* === Core token overrides === */
+
+  /* Surfaces — dark */
+  --bn-color-surface: #0a0a0c;
+  --bn-color-surface-subtle: #131318;
+  --bn-color-surface-muted: #1a1a22;
+  --bn-color-surface-raised: #131318;
+  --bn-color-surface-inset: #08080a;
+  --bn-color-surface-inverse: #e8e6f0;
+
+  /* Text — light on dark */
+  --bn-color-text: #e8e6f0;
+  --bn-color-text-muted: #b0adc0;
+  --bn-color-text-subtle: #7a7890;
+  --bn-color-text-inverse: #0a0a0c;
+  --bn-color-text-link: #e8a44a;
+
+  /* Borders — dark */
+  --bn-color-border: #2a2a38;
+  --bn-color-border-strong: #3d3d52;
+  --bn-color-border-focus: #e8a44a;
+
+  /* Font — BaseNative with font-stretch */
+  --bn-font-family: 'BaseNative', system-ui, sans-serif;
+
+  /* Primary — remap to golden for buttons/links */
+  --bn-color-primary-50: #fdf4e7;
+  --bn-color-primary-100: #fbe5c4;
+  --bn-color-primary-200: #f5cc8a;
+  --bn-color-primary-300: #efb35e;
+  --bn-color-primary-400: #e8a44a;
+  --bn-color-primary-500: #d4913a;
+  --bn-color-primary-600: #b07a30;
+  --bn-color-primary-700: #8c6126;
+  --bn-color-primary-800: #68491c;
+  --bn-color-primary-900: #4a3414;
+
+  /* Radius — tighter for BaseNative aesthetic */
+  --bn-radius-sm: 0.15rem;
+  --bn-radius-md: 0.25rem;
+  --bn-radius-lg: 0.5rem;
+  --bn-radius-xl: 0.75rem;
+
+  /* Accent — golden amber (overrides primary-as-accent) */
+  --bn-color-accent-50: #fdf4e7;
+  --bn-color-accent-100: #fbe5c4;
+  --bn-color-accent-200: #f5cc8a;
+  --bn-color-accent-300: #efb35e;
+  --bn-color-accent-400: #e8a44a;
+  --bn-color-accent-500: #d4913a;
+  --bn-color-accent-600: #b07a30;
+  --bn-color-accent-700: #8c6126;
+  --bn-color-accent-800: #68491c;
+  --bn-color-accent-900: #4a3414;
+
+  /* Alert/badge semantic — dark theme */
+  --bn-color-info-bg: rgb(130 170 255 / 0.1);
+  --bn-color-info-border: rgb(130 170 255 / 0.2);
+  --bn-color-info-text: #82aaff;
+  --bn-color-success-bg: rgb(195 232 141 / 0.1);
+  --bn-color-success-border: rgb(195 232 141 / 0.2);
+  --bn-color-success-text: #c3e88d;
+  --bn-color-warning-bg: rgb(232 164 74 / 0.1);
+  --bn-color-warning-border: rgb(232 164 74 / 0.2);
+  --bn-color-warning-text: #e8a44a;
+  --bn-color-error-bg: rgb(240 113 120 / 0.1);
+  --bn-color-error-border: rgb(240 113 120 / 0.2);
+  --bn-color-error-text: #f07178;
+
+  --bn-color-success-badge-bg: rgb(195 232 141 / 0.12);
+  --bn-color-success-badge-text: #c3e88d;
+  --bn-color-warning-badge-bg: rgb(232 164 74 / 0.12);
+  --bn-color-warning-badge-text: #e8a44a;
+  --bn-color-error-badge-bg: rgb(240 113 120 / 0.12);
+  --bn-color-error-badge-text: #f07178;
+
+  /* Focus ring — golden */
+  --bn-focus-ring: 0 0 0 2px #0a0a0c, 0 0 0 4px #e8a44a;
+
+  /* Shadows — dark-optimized */
+  --bn-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --bn-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --bn-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+
+  /* === Express-specific tokens (for existing styles.css compatibility) === */
+
+  /* Surfaces */
+  --surface-0: #0a0a0c;
+  --surface-1: #131318;
+  --surface-2: #1a1a22;
+  --surface-3: #24242f;
+  --surface-inset: #08080a;
+
+  /* Borders */
+  --border: #2a2a38;
+  --border-accent: #3d3d52;
+
+  /* Text */
+  --text-0: #e8e6f0;
+  --text-1: #b0adc0;
+  --text-2: #7a7890;
+
+  /* Accent */
+  --accent: #e8a44a;
+  --accent-dim: #b07a30;
+  --accent-glow: #e8a44a33;
+  --accent-glow-strong: #e8a44a55;
+
+  /* Status */
+  --danger: #f07178;
+  --danger-glow: #f0717833;
+  --success: #c3e88d;
+  --success-glow: #c3e88d33;
+  --info: #82aaff;
+}

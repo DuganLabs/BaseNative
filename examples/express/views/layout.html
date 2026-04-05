@@ -1,16 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><!--TITLE--> — BaseNative</title>
+<link rel="stylesheet" href="/bn-css/index.css">
 <link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="stylesheet" href="/theme.css">
 <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <a href="#main-content" class="skip-link">Skip to main content</a>
   <header>
-    <nav>
+    <nav aria-label="Main navigation">
       <h1>Base<em>Native</em></h1>
       <ul>
         <li><a href="/" <!--HOME_ARIA-->>Home</a></li>
@@ -18,6 +20,7 @@
         <li><a href="/playground" <!--PLAYGROUND_ARIA-->>Playground</a></li>
         <li><a href="/docs" <!--DOCS_ARIA-->>Docs</a></li>
         <li><a href="/components" <!--COMPONENTS_ARIA-->>Components</a></li>
+        <li><a href="/showcase" <!--SHOWCASE_ARIA-->>Showcase</a></li>
       </ul>
     </nav>
   </header>
@@ -29,5 +32,6 @@
     <p>BaseNative — Semantic HTML + Signals · pilot-stage runtime and server foundation</p>
   </footer>
   <!--SCRIPTS-->
+  <script>if(!location.search.includes('nolr'))new EventSource('/__live').onmessage=e=>{if(e.data==='reload')location.reload()}</script>
 </body>
 </html>

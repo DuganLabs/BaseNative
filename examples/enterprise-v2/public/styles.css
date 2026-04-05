@@ -1,0 +1,59 @@
+/* Enterprise v2 — local overrides */
+
+/* User area in topbar */
+.user-area {
+  display: flex;
+  align-items: center;
+  gap: var(--bn-space-3);
+  font-size: var(--bn-font-size-sm);
+}
+
+/* Notification bell */
+.notification-bell {
+  position: relative;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+.notification-bell .badge-count {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  background: var(--bn-color-error-600);
+  color: var(--bn-color-white);
+  font-size: 0.6rem;
+  padding: 1px 4px;
+  border-radius: var(--bn-radius-full);
+}
+
+/* Stat value (dashboard) */
+.stat-value {
+  font-size: var(--bn-font-size-4xl);
+  font-weight: var(--bn-font-weight-bold);
+}
+.stat-label {
+  font-size: var(--bn-font-size-xs);
+  color: var(--bn-color-text-muted);
+}
+
+/* Feature flag dots */
+.flag-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--bn-radius-full);
+  margin-right: var(--bn-space-2);
+}
+.flag-dot.on { background: var(--bn-color-success-600); }
+.flag-dot.off { background: var(--bn-color-gray-400); }
+
+/* Activity list */
+.activity-list {
+  list-style: none;
+  padding: 0;
+}
+.activity-list li {
+  padding: var(--bn-space-2) 0;
+  border-bottom: var(--bn-border-width) solid var(--bn-color-border);
+  font-size: var(--bn-font-size-sm);
+}
+.activity-list li:last-child { border-bottom: none; }

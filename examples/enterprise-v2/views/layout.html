@@ -4,89 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ title }} — BaseNative Enterprise v2</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; }
-    :root {
-      --bn-color-white: #ffffff;
-      --bn-color-gray-50: #fafafa; --bn-color-gray-100: #f4f4f5;
-      --bn-color-gray-200: #e4e4e7; --bn-color-gray-300: #d4d4d8;
-      --bn-color-gray-400: #a1a1aa; --bn-color-gray-500: #71717a;
-      --bn-color-gray-600: #52525b; --bn-color-gray-700: #3f3f46;
-      --bn-color-gray-800: #27272a; --bn-color-gray-900: #18181b;
-      --bn-color-primary-50: #eff6ff; --bn-color-primary-100: #dbeafe;
-      --bn-color-primary-500: #3b82f6; --bn-color-primary-600: #2563eb;
-      --bn-color-primary-700: #1d4ed8;
-      --bn-color-surface: var(--bn-color-white);
-      --bn-color-surface-subtle: var(--bn-color-gray-50);
-      --bn-color-surface-muted: var(--bn-color-gray-100);
-      --bn-color-text: var(--bn-color-gray-900);
-      --bn-color-text-muted: var(--bn-color-gray-500);
-      --bn-color-border: var(--bn-color-gray-200);
-      --bn-color-success-600: #16a34a;
-      --bn-color-error-600: #dc2626;
-      --bn-font-family: system-ui, -apple-system, sans-serif;
-      --bn-font-size-sm: 0.875rem; --bn-font-size-base: 1rem;
-      --bn-font-size-xs: 0.75rem; --bn-font-size-lg: 1.125rem;
-      --bn-font-weight-medium: 500; --bn-font-weight-semibold: 600;
-      --bn-space-1: 0.25rem; --bn-space-2: 0.5rem; --bn-space-3: 0.75rem;
-      --bn-space-4: 1rem; --bn-space-6: 1.5rem; --bn-space-8: 2rem;
-      --bn-radius-md: 0.375rem; --bn-radius-lg: 0.5rem; --bn-radius-full: 9999px;
-      --bn-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-      --bn-focus-ring: 0 0 0 2px var(--bn-color-surface), 0 0 0 4px var(--bn-color-primary-500);
-    }
-    body { font-family: var(--bn-font-family); color: var(--bn-color-text); background: var(--bn-color-surface-subtle); min-height: 100vh; display: flex; flex-direction: column; }
-    header.topbar { display: flex; align-items: center; justify-content: space-between; padding: var(--bn-space-3) var(--bn-space-8); background: var(--bn-color-surface); border-bottom: 1px solid var(--bn-color-border); }
-    header.topbar .brand { font-size: var(--bn-font-size-lg); font-weight: var(--bn-font-weight-semibold); color: var(--bn-color-primary-700); text-decoration: none; }
-    header.topbar nav { display: flex; gap: var(--bn-space-4); }
-    header.topbar nav a { font-size: var(--bn-font-size-sm); color: var(--bn-color-text-muted); text-decoration: none; padding: var(--bn-space-1) var(--bn-space-2); border-radius: var(--bn-radius-md); }
-    header.topbar nav a:hover { color: var(--bn-color-text); background: var(--bn-color-surface-muted); }
-    header.topbar .user-area { display: flex; align-items: center; gap: var(--bn-space-3); font-size: var(--bn-font-size-sm); }
-    header.topbar .user-area .avatar { width: 28px; height: 28px; border-radius: var(--bn-radius-full); background: var(--bn-color-primary-100); display: flex; align-items: center; justify-content: center; font-weight: var(--bn-font-weight-medium); color: var(--bn-color-primary-700); font-size: var(--bn-font-size-xs); overflow: hidden; }
-    header.topbar .user-area .avatar img { width: 100%; height: 100%; object-fit: cover; }
-    header.topbar .notification-bell { position: relative; cursor: pointer; font-size: 1.1rem; }
-    header.topbar .notification-bell .badge-count { position: absolute; top: -4px; right: -6px; background: var(--bn-color-error-600); color: white; font-size: 0.6rem; padding: 1px 4px; border-radius: var(--bn-radius-full); }
-    .role-badge { display: inline-block; padding: 1px 6px; font-size: var(--bn-font-size-xs); font-weight: var(--bn-font-weight-medium); border-radius: var(--bn-radius-full); background: var(--bn-color-surface-muted); color: var(--bn-color-gray-600); }
-    main.content { flex: 1; padding: var(--bn-space-8); max-width: 1024px; width: 100%; margin: 0 auto; }
-    main.content h1 { font-size: 1.5rem; margin-bottom: var(--bn-space-6); }
-    footer.site-footer { padding: var(--bn-space-4) var(--bn-space-8); text-align: center; font-size: var(--bn-font-size-xs); color: var(--bn-color-text-muted); border-top: 1px solid var(--bn-color-border); background: var(--bn-color-surface); }
-    .card { background: var(--bn-color-surface); border: 1px solid var(--bn-color-border); border-radius: var(--bn-radius-lg); overflow: hidden; }
-    .card-header { padding: var(--bn-space-3) var(--bn-space-4); border-bottom: 1px solid var(--bn-color-border); font-weight: var(--bn-font-weight-semibold); font-size: var(--bn-font-size-sm); }
-    .card-body { padding: var(--bn-space-4); }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--bn-space-4); margin-bottom: var(--bn-space-6); }
-    .stat-value { font-size: 2rem; font-weight: 700; }
-    .stat-label { font-size: var(--bn-font-size-xs); color: var(--bn-color-text-muted); }
-    .form-grid { display: grid; gap: var(--bn-space-4); max-width: 420px; }
-    .form-actions { display: flex; gap: var(--bn-space-2); margin-top: var(--bn-space-4); }
-    .field { display: flex; flex-direction: column; gap: var(--bn-space-1); }
-    .field label { font-size: var(--bn-font-size-sm); font-weight: var(--bn-font-weight-medium); }
-    .field input { padding: var(--bn-space-2) var(--bn-space-3); border: 1px solid var(--bn-color-border); border-radius: var(--bn-radius-md); font-size: var(--bn-font-size-base); font-family: var(--bn-font-family); }
-    .field input:focus { border-color: var(--bn-color-primary-500); box-shadow: var(--bn-focus-ring); outline: none; }
-    .btn { display: inline-flex; align-items: center; gap: var(--bn-space-2); padding: var(--bn-space-2) var(--bn-space-3); font-family: var(--bn-font-family); font-size: var(--bn-font-size-sm); font-weight: var(--bn-font-weight-medium); border: 1px solid transparent; border-radius: var(--bn-radius-md); cursor: pointer; text-decoration: none; }
-    .btn-primary { background: var(--bn-color-primary-600); color: white; }
-    .btn-primary:hover { background: var(--bn-color-primary-700); }
-    .btn-secondary { background: var(--bn-color-surface); color: var(--bn-color-text); border-color: var(--bn-color-border); }
-    .btn-link { background: none; color: var(--bn-color-primary-600); border: none; padding: 0; }
-    .alert { padding: var(--bn-space-3) var(--bn-space-4); border-radius: var(--bn-radius-md); font-size: var(--bn-font-size-sm); margin-bottom: var(--bn-space-4); border: 1px solid; }
-    .alert-error { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
-    .alert-success { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
-    .data-table { width: 100%; border-collapse: collapse; font-size: var(--bn-font-size-sm); }
-    .data-table th { text-align: left; padding: var(--bn-space-3) var(--bn-space-4); font-weight: var(--bn-font-weight-medium); color: var(--bn-color-text-muted); border-bottom: 1px solid var(--bn-color-border); }
-    .data-table td { padding: var(--bn-space-3) var(--bn-space-4); border-bottom: 1px solid var(--bn-color-border); }
-    .data-table tbody tr:hover { background: var(--bn-color-surface-subtle); }
-    .flag-dot { display: inline-block; width: 8px; height: 8px; border-radius: var(--bn-radius-full); margin-right: var(--bn-space-2); }
-    .flag-dot.on { background: var(--bn-color-success-600); }
-    .flag-dot.off { background: var(--bn-color-gray-400); }
-    .activity-list { list-style: none; padding: 0; }
-    .activity-list li { padding: var(--bn-space-2) 0; border-bottom: 1px solid var(--bn-color-border); font-size: var(--bn-font-size-sm); }
-    .activity-list li:last-child { border-bottom: none; }
-    .center-card { max-width: 420px; margin: var(--bn-space-8) auto; }
-  </style>
+  <link rel="stylesheet" href="/bn-css/index.css">
+  <link rel="stylesheet" href="/styles.css">
 </head>
-<body>
-  <header class="topbar">
-    <a class="brand" href="/">BaseNative</a>
+<body data-bn="page">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header data-bn="topbar">
+    <a data-bn="brand" href="/">BaseNative</a>
     <template @if="user">
-      <nav>
+      <nav aria-label="Main navigation">
         <a href="/">Dashboard</a>
         <a href="/users">Users</a>
         <a href="/flags">Flags</a>
@@ -98,31 +24,32 @@
             <span class="badge-count">{{ notificationCount }}</span>
           </template>
         </span>
-        <div class="avatar">
+        <div data-bn="avatar" data-size="sm">
           <template @if="user.avatar_url">
-            <img src="{{ user.avatar_url }}" alt="">
+            <img data-bn="avatar-img" src="{{ user.avatar_url }}" alt="">
           </template>
           <template @if="!user.avatar_url">
-            {{ userInitial }}
+            <span data-bn="avatar-initials">{{ userInitial }}</span>
           </template>
         </div>
         <span>{{ user.username }}</span>
-        <span class="role-badge">{{ user.role }}</span>
+        <span data-bn="badge" data-variant="default">{{ user.role }}</span>
         <form method="POST" action="/logout" style="margin:0">
-          <button type="submit" class="btn btn-link">Logout</button>
+          <button data-bn="button" data-variant="ghost" type="submit">Logout</button>
         </form>
       </div>
     </template>
     <template @if="!user">
-      <nav>
+      <nav aria-label="Main navigation">
         <a href="/login">Sign In</a>
         <a href="/register">Register</a>
       </nav>
     </template>
   </header>
-  <main class="content">
+  <main data-bn="content" id="main-content">
+    <div role="status" aria-live="polite" class="visually-hidden"></div>
     {{ content }}
   </main>
-  <footer class="site-footer">BaseNative Enterprise v2 Demo</footer>
+  <footer data-bn="footer">BaseNative Enterprise v2 Demo</footer>
 </body>
 </html>

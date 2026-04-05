@@ -360,7 +360,7 @@
 
   ul[role="list"][data-stat-grid] {
     display: grid;
-    grid-template-columns: repeat(var(--stat-grid-columns), 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: var(--space-md);
     list-style: none;
     flex-direction: unset;
@@ -475,6 +475,7 @@
     padding: var(--space-xs) var(--space-sm);
     border-radius: var(--radius-pill);
     font-weight: var(--font-weight-semibold);
+    white-space: nowrap;
   }
   [data-status="active"], [data-status="done"] { background: var(--status-active-bg); color: var(--success); }
   [data-status="idle"], [data-status="dom"], [data-status="binding"] { background: var(--status-idle-bg); color: var(--accent); }
@@ -483,7 +484,7 @@
   mark[data-status="active"], mark[data-status="core"], mark[data-status="directive"] { background: var(--status-active-bg); color: var(--success); }
 
   /* -- Buttons -- */
-  button, a[role="button"] {
+  button:not([data-bn]), a[role="button"] {
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
     font-size: var(--font-size-sm);
@@ -500,24 +501,24 @@
     text-decoration: none;
     transition: background var(--duration-fast), border-color var(--duration-fast), color var(--duration-fast), box-shadow var(--duration-med);
   }
-  button:hover, a[role="button"]:hover { background: var(--accent-dim); border-color: var(--accent); color: var(--surface-0); box-shadow: var(--shadow-btn); }
-  button:focus-visible, a[role="button"]:focus-visible { outline: var(--border-inline-width) solid var(--accent); outline-offset: var(--border-inline-width); }
-  button[data-variant="danger"] { border-color: var(--danger); color: var(--danger); }
-  button[data-variant="danger"]:hover { background: var(--danger); color: var(--surface-0); }
+  button:not([data-bn]):hover, a[role="button"]:hover { background: var(--accent-dim); border-color: var(--accent); color: var(--surface-0); box-shadow: var(--shadow-btn); }
+  button:not([data-bn]):focus-visible, a[role="button"]:focus-visible { outline: var(--border-inline-width) solid var(--accent); outline-offset: var(--border-inline-width); }
+  button:not([data-bn])[data-variant="danger"] { border-color: var(--danger); color: var(--danger); }
+  button:not([data-bn])[data-variant="danger"]:hover { background: var(--danger); color: var(--surface-0); }
   [data-variant="outline"] { background: transparent; border-color: var(--border-accent); color: var(--text-1); }
   [data-variant="outline"]:hover { background: var(--surface-2); border-color: var(--accent); color: var(--accent); box-shadow: none; }
 
   /* -- Icons in buttons -- */
-  button > img[src*="/icons/"] {
+  button:not([data-bn]) > img[src*="/icons/"] {
     inline-size: 1em;
     block-size: 1em;
     vertical-align: middle;
     filter: brightness(0) invert(0.9);
   }
-  button:hover > img[src*="/icons/"] { filter: brightness(0) invert(0.03); }
+  button:not([data-bn]):hover > img[src*="/icons/"] { filter: brightness(0) invert(0.03); }
 
   /* -- Inputs -- */
-  input[type="text"] {
+  input[type="text"]:not([data-bn]) {
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
     font-size: var(--font-size-base);
@@ -529,11 +530,11 @@
     outline: none;
     transition: border-color var(--duration-med), box-shadow var(--duration-med);
   }
-  input[type="text"]:focus { border-color: var(--accent); box-shadow: var(--shadow-input), var(--shadow-btn); }
-  input[type="text"]::placeholder { color: var(--text-2); }
+  input[type="text"]:not([data-bn]):focus { border-color: var(--accent); box-shadow: var(--shadow-input), var(--shadow-btn); }
+  input[type="text"]:not([data-bn])::placeholder { color: var(--text-2); }
 
   /* -- Textarea -- */
-  textarea {
+  textarea:not([data-bn]) {
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
     font-size: var(--font-size-base);
@@ -549,11 +550,11 @@
     min-block-size: 4lh;
     transition: border-color var(--duration-med), box-shadow var(--duration-med);
   }
-  textarea:focus { border-color: var(--accent); box-shadow: var(--shadow-input), var(--shadow-btn); }
-  textarea::placeholder { color: var(--text-2); }
+  textarea:not([data-bn]):focus { border-color: var(--accent); box-shadow: var(--shadow-input), var(--shadow-btn); }
+  textarea:not([data-bn])::placeholder { color: var(--text-2); }
 
   /* -- Checkbox -- */
-  input[type="checkbox"] {
+  input[type="checkbox"]:not([data-bn]) {
     appearance: none;
     inline-size: var(--control-size);
     block-size: var(--control-size);
@@ -567,11 +568,11 @@
     flex-shrink: 0;
     transition: background var(--duration-fast), border-color var(--duration-fast), box-shadow var(--duration-fast);
   }
-  input[type="checkbox"]:checked {
+  input[type="checkbox"]:not([data-bn]):checked {
     background: var(--control-checked-bg);
     border-color: var(--control-checked-border);
   }
-  input[type="checkbox"]:checked::after {
+  input[type="checkbox"]:not([data-bn]):checked::after {
     content: '';
     position: absolute;
     inset-block-start: 0.125rem;
@@ -582,10 +583,10 @@
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
   }
-  input[type="checkbox"]:focus-visible { outline: var(--border-inline-width) solid var(--accent); outline-offset: var(--border-inline-width); }
+  input[type="checkbox"]:not([data-bn]):focus-visible { outline: var(--border-inline-width) solid var(--accent); outline-offset: var(--border-inline-width); }
 
   /* -- Radio -- */
-  input[type="radio"] {
+  input[type="radio"]:not([data-bn]) {
     appearance: none;
     inline-size: var(--control-size);
     block-size: var(--control-size);
@@ -599,10 +600,10 @@
     flex-shrink: 0;
     transition: background var(--duration-fast), border-color var(--duration-fast);
   }
-  input[type="radio"]:checked {
+  input[type="radio"]:not([data-bn]):checked {
     border-color: var(--control-checked-border);
   }
-  input[type="radio"]:checked::after {
+  input[type="radio"]:not([data-bn]):checked::after {
     content: '';
     position: absolute;
     inset-block-start: 50%;
@@ -613,7 +614,7 @@
     border-radius: 50%;
     transform: translate(-50%, -50%);
   }
-  input[type="radio"]:focus-visible { outline: var(--border-inline-width) solid var(--accent); outline-offset: var(--border-inline-width); }
+  input[type="radio"]:not([data-bn]):focus-visible { outline: var(--border-inline-width) solid var(--accent); outline-offset: var(--border-inline-width); }
 
   /* -- Range -- */
   input[type="range"] {
@@ -656,7 +657,7 @@
   input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cursor: pointer; }
 
   /* -- Select (base-select) -- */
-  select {
+  select:not([data-bn]) {
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
     font-size: var(--font-size-base);
@@ -675,15 +676,15 @@
     background-size: 0.625rem;
     transition: border-color var(--duration-med), box-shadow var(--duration-med);
   }
-  select:focus { border-color: var(--accent); box-shadow: var(--shadow-input), var(--shadow-btn); }
+  select:not([data-bn]):focus { border-color: var(--accent); box-shadow: var(--shadow-input), var(--shadow-btn); }
 
   @supports (appearance: base-select) {
-    select,
-    select::picker(select) {
+    select:not([data-bn]),
+    select:not([data-bn])::picker(select) {
       appearance: base-select;
     }
 
-    select {
+    select:not([data-bn]) {
       padding-inline-end: var(--space-md);
       background-image: none;
       display: flex;
@@ -691,16 +692,16 @@
       justify-content: space-between;
     }
 
-    select::picker-icon {
+    select:not([data-bn])::picker-icon {
       content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' width='10' height='7'%3E%3Cpath d='M1.5 1.5l4.5 4.5 4.5-4.5' stroke='%23e8a44a' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
       margin-inline-start: auto;
       transition: rotate var(--duration-fast);
     }
-    select:open::picker-icon {
+    select:not([data-bn]):open::picker-icon {
       rotate: 180deg;
     }
 
-    select::picker(select) {
+    select:not([data-bn])::picker(select) {
       background: var(--popover-bg);
       border: var(--border-width) solid var(--popover-border);
       border-radius: var(--popover-radius);
@@ -713,13 +714,13 @@
     }
 
     @starting-style {
-      select::picker(select) {
+      select:not([data-bn])::picker(select) {
         opacity: 0;
         scale: 0.96;
       }
     }
 
-    select option {
+    select:not([data-bn]) option {
       font-family: var(--font-family);
       font-stretch: var(--font-mono);
       font-size: var(--font-size-base);
@@ -728,15 +729,15 @@
       color: var(--text-0);
       transition: background var(--duration-fast);
     }
-    select option:hover { background: var(--select-option-hover); }
-    select option:checked { color: var(--accent); font-weight: var(--font-weight-semibold); }
+    select:not([data-bn]) option:hover { background: var(--select-option-hover); }
+    select:not([data-bn]) option:checked { color: var(--accent); font-weight: var(--font-weight-semibold); }
 
-    select option::checkmark {
+    select:not([data-bn]) option::checkmark {
       color: var(--accent);
       margin-inline-end: var(--space-sm);
     }
 
-    select optgroup {
+    select:not([data-bn]) optgroup {
       font-family: var(--font-family);
       font-stretch: var(--font-mono);
       font-size: var(--font-size-xs);
@@ -748,7 +749,7 @@
   }
 
   /* -- Progress -- */
-  progress {
+  progress:not([data-bn]) {
     appearance: none;
     inline-size: 100%;
     block-size: var(--track-height);
@@ -757,9 +758,9 @@
     overflow: hidden;
     background: var(--track-bg);
   }
-  progress::-webkit-progress-bar { background: var(--track-bg); border-radius: var(--radius-pill); }
-  progress::-webkit-progress-value { background: var(--track-fill); border-radius: var(--radius-pill); transition: inline-size var(--duration-med); }
-  progress::-moz-progress-bar { background: var(--track-fill); border-radius: var(--radius-pill); }
+  progress:not([data-bn])::-webkit-progress-bar { background: var(--track-bg); border-radius: var(--radius-pill); }
+  progress:not([data-bn])::-webkit-progress-value { background: var(--track-fill); border-radius: var(--radius-pill); transition: inline-size var(--duration-med); }
+  progress:not([data-bn])::-moz-progress-bar { background: var(--track-fill); border-radius: var(--radius-pill); }
 
   /* -- Meter -- */
   meter {
@@ -822,7 +823,7 @@
   .attr { color: var(--syntax-attr); }
 
   /* -- Labels -- */
-  label {
+  label:not([data-bn]) {
     display: flex;
     flex-direction: column;
     gap: var(--space-xs);
@@ -911,8 +912,8 @@
   fieldset > label + label { margin-block-start: var(--space-md); }
 
   /* -- Inline label (for checkbox/radio rows) -- */
-  label:has(input[type="checkbox"]),
-  label:has(input[type="radio"]) {
+  label:not([data-bn]):has(input[type="checkbox"]),
+  label:not([data-bn]):has(input[type="radio"]) {
     flex-direction: row;
     align-items: center;
     gap: var(--space-sm);
@@ -921,20 +922,20 @@
     color: var(--text-1);
   }
 
-  /* -- Table -- */
-  table {
+  /* -- Table (express pages only, not data-bn components) -- */
+  table:not([data-bn]) {
     inline-size: 100%;
     border-collapse: collapse;
     font-size: var(--font-size-base);
   }
 
-  thead {
+  table:not([data-bn]) thead {
     position: sticky;
     inset-block-start: 0;
     z-index: 1;
   }
 
-  th {
+  table:not([data-bn]) th {
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
     font-size: var(--font-size-xs);
@@ -948,15 +949,15 @@
     border-block-end: var(--border-width) solid var(--border-accent);
   }
 
-  td {
+  table:not([data-bn]) td {
     padding: var(--space-sm) var(--space-md);
     border-block-end: var(--border-width) solid var(--border);
     color: var(--text-1);
   }
 
-  tbody tr:nth-child(even) { background: var(--table-stripe); }
-  tbody tr { transition: background var(--duration-fast); }
-  tbody tr:hover { background: var(--surface-2); }
+  table:not([data-bn]) tbody tr:nth-child(even) { background: var(--table-stripe); }
+  table:not([data-bn]) tbody tr { transition: background var(--duration-fast); }
+  table:not([data-bn]) tbody tr:hover { background: var(--surface-2); }
 
   /* -- Blockquote -- */
   blockquote {
@@ -1012,14 +1013,14 @@
   }
 
   /* -- Details / Summary -- */
-  details {
+  details:not([data-bn]) {
     border: var(--border-width) solid var(--border);
     border-radius: var(--radius-md);
     margin-block-end: var(--space-sm);
     interpolate-size: allow-keywords;
   }
 
-  summary {
+  details:not([data-bn]) > summary {
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
     font-size: var(--font-size-sm);
@@ -1034,26 +1035,26 @@
     transition: background var(--duration-fast), color var(--duration-fast);
     border-radius: var(--radius-md);
   }
-  summary:hover { background: var(--surface-2); color: var(--accent); }
-  summary::-webkit-details-marker { display: none; }
+  details:not([data-bn]) > summary:hover { background: var(--surface-2); color: var(--accent); }
+  details:not([data-bn]) > summary::-webkit-details-marker { display: none; }
 
-  summary::before {
+  details:not([data-bn]) > summary::before {
     content: '▸';
     color: var(--details-marker);
     font-size: 0.85em;
     transition: rotate var(--duration-fast);
   }
-  details[open] > summary::before { rotate: 90deg; }
-  details[open] > summary { margin-block-end: 0; }
+  details:not([data-bn])[open] > summary::before { rotate: 90deg; }
+  details:not([data-bn])[open] > summary { margin-block-end: 0; }
 
-  details > :not(summary) {
+  details:not([data-bn]) > :not(summary) {
     padding: var(--space-sm) var(--space-md) var(--space-md);
     color: var(--text-1);
     font-size: var(--font-size-base);
   }
 
   /* -- Dialog -- */
-  dialog {
+  dialog:not([data-bn]) {
     margin: auto;
     background: var(--dialog-bg);
     color: var(--text-0);
@@ -1066,33 +1067,33 @@
     transition-behavior: allow-discrete;
   }
 
-  dialog::backdrop {
+  dialog:not([data-bn])::backdrop {
     background: var(--dialog-backdrop);
     transition: opacity var(--duration-med), overlay var(--duration-med), display var(--duration-med);
     transition-behavior: allow-discrete;
   }
 
-  dialog[open] { opacity: 1; scale: 1; }
+  dialog:not([data-bn])[open] { opacity: 1; scale: 1; }
 
   @starting-style {
-    dialog[open] { opacity: 0; scale: 0.95; }
-    dialog[open]::backdrop { opacity: 0; }
+    dialog:not([data-bn])[open] { opacity: 0; scale: 0.95; }
+    dialog:not([data-bn])[open]::backdrop { opacity: 0; }
   }
 
-  dialog > header {
+  dialog:not([data-bn]) > header {
     margin-block-end: var(--space-md);
     padding-block-end: var(--space-md);
     border-block-end: var(--border-width) solid var(--border);
   }
 
-  dialog > header h3 {
+  dialog:not([data-bn]) > header h3 {
     font-family: var(--font-family);
     font-stretch: var(--font-serif);
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-normal);
   }
 
-  dialog > footer {
+  dialog:not([data-bn]) > footer {
     margin-block-start: var(--space-lg);
     display: flex;
     justify-content: flex-end;
@@ -1103,7 +1104,7 @@
   }
 
   /* -- Popover -- */
-  [popover] {
+  [popover]:not([data-bn]) {
     margin: 0;
     padding: var(--space-md);
     background: var(--popover-bg);
@@ -1118,10 +1119,10 @@
     scale: 1;
   }
 
-  [popover]::backdrop { background: transparent; }
+  [popover]:not([data-bn])::backdrop { background: transparent; }
 
   @starting-style {
-    [popover]:popover-open { opacity: 0; scale: 0.96; }
+    [popover]:not([data-bn]):popover-open { opacity: 0; scale: 0.96; }
   }
 
   /* Tooltip variant */
@@ -1571,4 +1572,18 @@
       transition-duration: 0.01ms !important;
     }
   }
+
+  /* -- Showcase layout helpers -- */
+  [data-showcase-row] { display: flex; gap: var(--space-md); flex-wrap: wrap; align-items: center; }
+  [data-showcase-form] { display: grid; gap: var(--space-lg); max-inline-size: 32rem; }
+  [data-showcase-stack] { display: grid; gap: var(--space-sm); }
+  [data-showcase-card] { max-inline-size: 24rem; }
+
+  /* -- Component overrides for express theme -- */
+  [data-bn="button"] { min-block-size: 2.75rem; }
+  [data-bn="spinner"] > span { border-width: 3px; }
+  [data-bn="progress"] { block-size: var(--track-height, 0.375rem); }
+  [data-bn="progress"]::-webkit-progress-bar { background: var(--track-bg, var(--surface-2)); }
+  [data-bn="progress"]::-webkit-progress-value { background: var(--accent); }
+  [data-bn="progress"]::-moz-progress-bar { background: var(--accent); }
 }

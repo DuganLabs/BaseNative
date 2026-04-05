@@ -1,134 +1,186 @@
-/* BaseNative Design Tokens */
-:root {
-  /* Colors — Neutral */
-  --bn-color-white: #ffffff;
-  --bn-color-black: #09090b;
-  --bn-color-gray-50: #fafafa;
-  --bn-color-gray-100: #f4f4f5;
-  --bn-color-gray-200: #e4e4e7;
-  --bn-color-gray-300: #d4d4d8;
-  --bn-color-gray-400: #a1a1aa;
-  --bn-color-gray-500: #71717a;
-  --bn-color-gray-600: #52525b;
-  --bn-color-gray-700: #3f3f46;
-  --bn-color-gray-800: #27272a;
-  --bn-color-gray-900: #18181b;
-  --bn-color-gray-950: #09090b;
+@layer tokens {
+  :root {
+    /* Colors — Neutral */
+    --bn-color-white: #ffffff;
+    --bn-color-black: #09090b;
+    --bn-color-gray-50: #fafafa;
+    --bn-color-gray-100: #f4f4f5;
+    --bn-color-gray-200: #e4e4e7;
+    --bn-color-gray-300: #d4d4d8;
+    --bn-color-gray-400: #a1a1aa;
+    --bn-color-gray-500: #71717a;
+    --bn-color-gray-600: #52525b;
+    --bn-color-gray-700: #3f3f46;
+    --bn-color-gray-800: #27272a;
+    --bn-color-gray-900: #18181b;
+    --bn-color-gray-950: #09090b;
 
-  /* Colors — Primary */
-  --bn-color-primary-50: #eff6ff;
-  --bn-color-primary-100: #dbeafe;
-  --bn-color-primary-200: #bfdbfe;
-  --bn-color-primary-300: #93c5fd;
-  --bn-color-primary-400: #60a5fa;
-  --bn-color-primary-500: #3b82f6;
-  --bn-color-primary-600: #2563eb;
-  --bn-color-primary-700: #1d4ed8;
-  --bn-color-primary-800: #1e40af;
-  --bn-color-primary-900: #1e3a8a;
+    /* Colors — Primary */
+    --bn-color-primary-50: #eff6ff;
+    --bn-color-primary-100: #dbeafe;
+    --bn-color-primary-200: #bfdbfe;
+    --bn-color-primary-300: #93c5fd;
+    --bn-color-primary-400: #60a5fa;
+    --bn-color-primary-500: #3b82f6;
+    --bn-color-primary-600: #2563eb;
+    --bn-color-primary-700: #1d4ed8;
+    --bn-color-primary-800: #1e40af;
+    --bn-color-primary-900: #1e3a8a;
 
-  /* Colors — Semantic */
-  --bn-color-success-500: #22c55e;
-  --bn-color-success-600: #16a34a;
-  --bn-color-warning-500: #f59e0b;
-  --bn-color-warning-600: #d97706;
-  --bn-color-error-500: #ef4444;
-  --bn-color-error-600: #dc2626;
-  --bn-color-info-500: #3b82f6;
-  --bn-color-info-600: #2563eb;
+    /* Colors — Accent (themeable identity color) */
+    --bn-color-accent-50: var(--bn-color-primary-50);
+    --bn-color-accent-100: var(--bn-color-primary-100);
+    --bn-color-accent-200: var(--bn-color-primary-200);
+    --bn-color-accent-300: var(--bn-color-primary-300);
+    --bn-color-accent-400: var(--bn-color-primary-400);
+    --bn-color-accent-500: var(--bn-color-primary-500);
+    --bn-color-accent-600: var(--bn-color-primary-600);
+    --bn-color-accent-700: var(--bn-color-primary-700);
+    --bn-color-accent-800: var(--bn-color-primary-800);
+    --bn-color-accent-900: var(--bn-color-primary-900);
 
-  /* Semantic Surface */
-  --bn-color-surface: var(--bn-color-white);
-  --bn-color-surface-subtle: var(--bn-color-gray-50);
-  --bn-color-surface-muted: var(--bn-color-gray-100);
-  --bn-color-surface-inverse: var(--bn-color-gray-900);
+    /* Colors — Semantic Status */
+    --bn-color-success-500: #22c55e;
+    --bn-color-success-600: #16a34a;
+    --bn-color-warning-500: #f59e0b;
+    --bn-color-warning-600: #d97706;
+    --bn-color-error-500: #ef4444;
+    --bn-color-error-600: #dc2626;
+    --bn-color-info-500: #3b82f6;
+    --bn-color-info-600: #2563eb;
 
-  /* Semantic Text */
-  --bn-color-text: var(--bn-color-gray-900);
-  --bn-color-text-muted: var(--bn-color-gray-500);
-  --bn-color-text-subtle: var(--bn-color-gray-400);
-  --bn-color-text-inverse: var(--bn-color-white);
-  --bn-color-text-link: var(--bn-color-primary-600);
+    /* Colors — Semantic Alert/Badge Backgrounds */
+    --bn-color-info-bg: var(--bn-color-primary-50);
+    --bn-color-info-border: var(--bn-color-primary-200);
+    --bn-color-info-text: var(--bn-color-primary-800);
+    --bn-color-success-bg: #f0fdf4;
+    --bn-color-success-border: #bbf7d0;
+    --bn-color-success-text: #166534;
+    --bn-color-warning-bg: #fffbeb;
+    --bn-color-warning-border: #fde68a;
+    --bn-color-warning-text: #92400e;
+    --bn-color-error-bg: #fef2f2;
+    --bn-color-error-border: #fecaca;
+    --bn-color-error-text: #991b1b;
 
-  /* Semantic Border */
-  --bn-color-border: var(--bn-color-gray-200);
-  --bn-color-border-strong: var(--bn-color-gray-300);
-  --bn-color-border-focus: var(--bn-color-primary-500);
+    /* Colors — Semantic Badge Backgrounds (lighter variant) */
+    --bn-color-success-badge-bg: #dcfce7;
+    --bn-color-success-badge-text: #166534;
+    --bn-color-warning-badge-bg: #fef3c7;
+    --bn-color-warning-badge-text: #92400e;
+    --bn-color-error-badge-bg: #fee2e2;
+    --bn-color-error-badge-text: #991b1b;
 
-  /* Typography */
-  --bn-font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --bn-font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
-  --bn-font-size-xs: 0.75rem;
-  --bn-font-size-sm: 0.875rem;
-  --bn-font-size-base: 1rem;
-  --bn-font-size-lg: 1.125rem;
-  --bn-font-size-xl: 1.25rem;
-  --bn-font-size-2xl: 1.5rem;
-  --bn-font-size-3xl: 1.875rem;
-  --bn-font-weight-normal: 400;
-  --bn-font-weight-medium: 500;
-  --bn-font-weight-semibold: 600;
-  --bn-font-weight-bold: 700;
-  --bn-line-height-tight: 1.25;
-  --bn-line-height-normal: 1.5;
-  --bn-line-height-relaxed: 1.75;
+    /* Semantic Surface */
+    --bn-color-surface: var(--bn-color-white);
+    --bn-color-surface-subtle: var(--bn-color-gray-50);
+    --bn-color-surface-muted: var(--bn-color-gray-100);
+    --bn-color-surface-raised: var(--bn-color-white);
+    --bn-color-surface-inset: var(--bn-color-gray-50);
+    --bn-color-surface-inverse: var(--bn-color-gray-900);
 
-  /* Spacing */
-  --bn-space-0: 0;
-  --bn-space-1: 0.25rem;
-  --bn-space-2: 0.5rem;
-  --bn-space-3: 0.75rem;
-  --bn-space-4: 1rem;
-  --bn-space-5: 1.25rem;
-  --bn-space-6: 1.5rem;
-  --bn-space-8: 2rem;
-  --bn-space-10: 2.5rem;
-  --bn-space-12: 3rem;
-  --bn-space-16: 4rem;
+    /* Semantic Text */
+    --bn-color-text: var(--bn-color-gray-900);
+    --bn-color-text-muted: var(--bn-color-gray-500);
+    --bn-color-text-subtle: var(--bn-color-gray-400);
+    --bn-color-text-inverse: var(--bn-color-white);
+    --bn-color-text-link: var(--bn-color-primary-600);
 
-  /* Border Radius */
-  --bn-radius-sm: 0.25rem;
-  --bn-radius-md: 0.375rem;
-  --bn-radius-lg: 0.5rem;
-  --bn-radius-xl: 0.75rem;
-  --bn-radius-full: 9999px;
+    /* Semantic Border */
+    --bn-color-border: var(--bn-color-gray-200);
+    --bn-color-border-strong: var(--bn-color-gray-300);
+    --bn-color-border-focus: var(--bn-color-primary-500);
 
-  /* Shadows */
-  --bn-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --bn-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --bn-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    /* Typography */
+    --bn-font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --bn-font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+    --bn-font-size-xs: 0.75rem;
+    --bn-font-size-sm: 0.875rem;
+    --bn-font-size-base: 1rem;
+    --bn-font-size-lg: 1.125rem;
+    --bn-font-size-xl: 1.25rem;
+    --bn-font-size-2xl: 1.5rem;
+    --bn-font-size-3xl: 1.875rem;
+    --bn-font-size-4xl: 2.25rem;
+    --bn-font-weight-normal: 400;
+    --bn-font-weight-medium: 500;
+    --bn-font-weight-semibold: 600;
+    --bn-font-weight-bold: 700;
+    --bn-line-height-tight: 1.25;
+    --bn-line-height-normal: 1.5;
+    --bn-line-height-relaxed: 1.75;
+    --bn-letter-spacing-tight: -0.025em;
+    --bn-letter-spacing-normal: 0;
+    --bn-letter-spacing-wide: 0.025em;
 
-  /* Transitions */
-  --bn-transition-fast: 150ms ease;
-  --bn-transition-normal: 200ms ease;
-  --bn-transition-slow: 300ms ease;
+    /* Spacing */
+    --bn-space-0: 0;
+    --bn-space-1: 0.25rem;
+    --bn-space-2: 0.5rem;
+    --bn-space-3: 0.75rem;
+    --bn-space-4: 1rem;
+    --bn-space-5: 1.25rem;
+    --bn-space-6: 1.5rem;
+    --bn-space-8: 2rem;
+    --bn-space-10: 2.5rem;
+    --bn-space-12: 3rem;
+    --bn-space-16: 4rem;
 
-  /* Focus Ring */
-  --bn-focus-ring: 0 0 0 2px var(--bn-color-surface), 0 0 0 4px var(--bn-color-border-focus);
+    /* Sizing */
+    --bn-size-content-max: 64rem;
+    --bn-size-text-max: 65ch;
 
-  /* Z-index */
-  --bn-z-dropdown: 1000;
-  --bn-z-modal: 1100;
-  --bn-z-toast: 1200;
-}
+    /* Border */
+    --bn-border-width: 1px;
+    --bn-border-width-thick: 2px;
+    --bn-radius-sm: 0.25rem;
+    --bn-radius-md: 0.375rem;
+    --bn-radius-lg: 0.5rem;
+    --bn-radius-xl: 0.75rem;
+    --bn-radius-full: 9999px;
 
-/* Density: Compact */
-[data-density="compact"] {
-  --bn-space-component-x: var(--bn-space-2);
-  --bn-space-component-y: var(--bn-space-1);
-  --bn-font-size-component: var(--bn-font-size-sm);
-}
+    /* Shadows */
+    --bn-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --bn-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --bn-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
-/* Density: Default */
-:root, [data-density="default"] {
-  --bn-space-component-x: var(--bn-space-3);
-  --bn-space-component-y: var(--bn-space-2);
-  --bn-font-size-component: var(--bn-font-size-base);
-}
+    /* Transitions */
+    --bn-transition-fast: 150ms ease;
+    --bn-transition-normal: 200ms ease;
+    --bn-transition-slow: 300ms ease;
 
-/* Density: Spacious */
-[data-density="spacious"] {
-  --bn-space-component-x: var(--bn-space-4);
-  --bn-space-component-y: var(--bn-space-3);
-  --bn-font-size-component: var(--bn-font-size-base);
+    /* Easing */
+    --bn-ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --bn-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --bn-ease-out-back: cubic-bezier(0.34, 1.3, 0.64, 1);
+
+    /* Focus Ring */
+    --bn-focus-ring: 0 0 0 2px var(--bn-color-surface), 0 0 0 4px var(--bn-color-border-focus);
+
+    /* Z-index */
+    --bn-z-dropdown: 1000;
+    --bn-z-modal: 1100;
+    --bn-z-toast: 1200;
+  }
+
+  /* Density: Compact */
+  [data-density="compact"] {
+    --bn-space-component-x: var(--bn-space-2);
+    --bn-space-component-y: var(--bn-space-1);
+    --bn-font-size-component: var(--bn-font-size-sm);
+  }
+
+  /* Density: Default */
+  :root, [data-density="default"] {
+    --bn-space-component-x: var(--bn-space-3);
+    --bn-space-component-y: var(--bn-space-2);
+    --bn-font-size-component: var(--bn-font-size-base);
+  }
+
+  /* Density: Spacious */
+  [data-density="spacious"] {
+    --bn-space-component-x: var(--bn-space-4);
+    --bn-space-component-y: var(--bn-space-3);
+    --bn-font-size-component: var(--bn-font-size-base);
+  }
 }

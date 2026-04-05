@@ -1,0 +1,20 @@
+/* Enterprise example — local overrides */
+[data-bn="content"] {
+  max-inline-size: 960px;
+}
+
+[data-bn="stats-grid"] {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: var(--bn-space-4);
+  margin-bottom: var(--bn-space-6);
+}
+
+.detail-actions {
+  display: flex;
+  gap: var(--bn-space-2);
+}

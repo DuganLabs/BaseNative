@@ -46,6 +46,7 @@ import { createUploadHandler, createLocalStorage } from '@basenative/upload';
 // Setup
 // ---------------------------------------------------------------------------
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const pkgRoot = join(__dirname, '..', '..');
 const read = (file) => readFileSync(join(__dirname, file), 'utf-8');
 
 // -- Config --
@@ -158,6 +159,8 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use('/uploads', express.static(uploadDir));
+app.use('/bn-css', express.static(join(pkgRoot, 'packages', 'components', 'src')));
+app.use(express.static(join(__dirname, 'public')));
 
 // Convert BaseNative pipeline to Express middleware
 app.use(toExpressMiddleware(pipeline));
@@ -463,9 +466,9 @@ app.get('/flags', async (req, res) => {
 
   const viewHtml = `
 <h1>${i18n.t('flags.title')}</h1>
-<div class="card">
-  <div class="card-body" style="overflow-x:auto">
-    <table class="data-table">
+<div data-bn="card">
+  <div data-bn="card-body" style="overflow-x:auto">
+    <table data-bn="table">
       <thead>
         <tr>
           <th>Flag</th>

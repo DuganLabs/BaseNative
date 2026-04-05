@@ -22,6 +22,9 @@ const app = express();
 app.use(express.json());
 app.use(express.static(join(__dirname, 'public')));
 
+const pkgRoot = join(__dirname, '..', '..');
+app.use('/bn-css', express.static(join(pkgRoot, 'packages', 'components', 'src')));
+
 // -- In-memory data store --
 let nextId = 4;
 let users = [
