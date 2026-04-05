@@ -6,6 +6,8 @@ BaseNative makes the browser's own primitives the component model. A `<template>
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![npm](https://img.shields.io/npm/v/@basenative/runtime)](https://www.npmjs.com/package/@basenative/runtime)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org)
+[![Tests](https://github.com/DuganLabs/basenative/actions/workflows/ci.yml/badge.svg)](https://github.com/DuganLabs/basenative/actions/workflows/ci.yml)
 
 ---
 
@@ -171,9 +173,23 @@ npx nx run-many --target=lint --all
 
 ---
 
+## Documentation
+
+| Guide | Description |
+|-------|-------------|
+| [Getting Started](docs/getting-started.md) | Install, first component, routing, SSR |
+| [API Reference](docs/api/) | Full API docs for all 23 packages |
+| [Migration Guide](docs/migration.md) | Moving from React, Vue, Svelte, or vanilla JS |
+| [Accessibility](docs/accessibility.md) | ARIA, keyboard nav, screen reader support |
+| [Browser Support](docs/browser-support.md) | Supported browsers and polyfill guidance |
+| [Roadmap](docs/roadmap.md) | Upcoming features and milestones |
+| [Release Process](docs/releasing.md) | How versions are cut and published |
+
+---
+
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Built on conventional commits with Changesets for versioning.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Contributions welcome — open an issue first for significant changes. Built on conventional commits with Changesets for versioning.
 
 ## Security
 
