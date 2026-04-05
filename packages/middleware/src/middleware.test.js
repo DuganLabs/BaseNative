@@ -5,6 +5,7 @@ import { cors } from './builtins/cors.js';
 import { rateLimit } from './builtins/rate-limit.js';
 import { csrf } from './builtins/csrf.js';
 import { logger } from './builtins/logger.js';
+import { createExpressContext, toExpressMiddleware } from './adapters/express.js';
 
 function createCtx(overrides = {}) {
   return {
@@ -344,5 +345,273 @@ describe('csrf — additional', () => {
     const ctx = createCtx({ request: { method: 'GET', headers: {} } });
     await mw(ctx, async () => {});
     assert.ok(typeof ctx.state.csrfToken === 'string' && ctx.state.csrfToken.length > 0);
+  });
+
+  it('reuses existing token from cookie without regenerating', async () => {
+    const mw = csrf();
+    const existingToken = 'abc123existing';
+    const ctx = createCtx({
+      request: { method: 'GET', cookies: { _csrf: existingToken } },
+    });
+    await mw(ctx, async () => {});
+    assert.equal(ctx.state.csrfToken, existingToken);
+    assert.equal(ctx.state.csrfTokenGenerated, undefined);
+  });
+
+  it('accepts POST with token from request body field', async () => {
+    const mw = csrf();
+    const token = 'bodytoken123';
+    const ctx = createCtx({
+      request: {
+        method: 'POST',
+        headers: {},
+        cookies: { _csrf: token },
+        body: { _csrf: token },
+      },
+    });
+    let nextCalled = false;
+    await mw(ctx, async () => { nextCalled = true; });
+    assert.ok(nextCalled);
+  });
+
+  it('OPTIONS request passes through without token', async () => {
+    const mw = csrf();
+    const ctx = createCtx({ request: { method: 'OPTIONS', headers: {} } });
+    let nextCalled = false;
+    await mw(ctx, async () => { nextCalled = true; });
+    assert.ok(nextCalled);
+  });
+
+  it('sets response cookie when token is newly generated', async () => {
+    const mw = csrf();
+    const ctx = createCtx({ request: { method: 'GET', headers: {}, cookies: {} } });
+    await mw(ctx, async () => {});
+    assert.ok(ctx.response.cookies);
+    assert.ok(ctx.response.cookies['_csrf']);
+    assert.equal(ctx.response.cookies['_csrf'].httpOnly, false);
+  });
+});
+
+describe('cors — additional 2', () => {
+  it('echoes access-control-request-headers in preflight when no allowedHeaders set', async () => {
+    const mw = cors();
+    const ctx = createCtx({
+      request: {
+        method: 'OPTIONS',
+        headers: { 'access-control-request-headers': 'x-custom-header, content-type' },
+      },
+    });
+    await mw(ctx, async () => {});
+    assert.equal(ctx.response.headers['access-control-allow-headers'], 'x-custom-header, content-type');
+  });
+
+  it('uses allowedHeaders instead of request header when both present', async () => {
+    const mw = cors({ allowedHeaders: ['authorization'] });
+    const ctx = createCtx({
+      request: {
+        method: 'OPTIONS',
+        headers: { 'access-control-request-headers': 'x-custom-header' },
+      },
+    });
+    await mw(ctx, async () => {});
+    assert.equal(ctx.response.headers['access-control-allow-headers'], 'authorization');
+  });
+
+  it('does not call next on OPTIONS (returns early)', async () => {
+    const mw = cors();
+    const ctx = createCtx({ request: { method: 'OPTIONS', headers: {} } });
+    let nextCalled = false;
+    await mw(ctx, async () => { nextCalled = true; });
+    assert.equal(nextCalled, false);
+  });
+});
+
+describe('rateLimit — additional 2', () => {
+  it('sets x-ratelimit-reset header', async () => {
+    const mw = rateLimit({ max: 5, windowMs: 60000 });
+    const ctx = createCtx({ request: { ip: '9.9.9.9' } });
+    await mw(ctx, async () => {});
+    assert.ok(ctx.response.headers['x-ratelimit-reset']);
+    assert.match(ctx.response.headers['x-ratelimit-reset'], /^\d+$/);
+  });
+
+  it('responds with custom message on 429', async () => {
+    const mw = rateLimit({ max: 0, windowMs: 60000, message: 'Slow down!' });
+    const ctx = createCtx({ request: { ip: '10.10.10.10' } });
+    await mw(ctx, async () => {});
+    assert.equal(ctx.response.status, 429);
+    assert.equal(ctx.response.body, 'Slow down!');
+  });
+});
+
+describe('logger — additional', () => {
+  it('logs status 500 in text format', async () => {
+    const logs = [];
+    const mw = logger({ output: (msg) => logs.push(msg) });
+    const ctx = createCtx({ request: { method: 'GET', url: '/crash' } });
+    ctx.response.status = 500;
+    await mw(ctx, async () => {});
+    assert.ok(logs[0].includes('500'));
+    assert.ok(logs[0].includes('/crash'));
+  });
+
+  it('defaults to status 200 when response status is not set', async () => {
+    const logs = [];
+    const mw = logger({ output: (msg) => logs.push(msg), json: true });
+    const ctx = createCtx({ request: { method: 'GET', url: '/ok' } });
+    await mw(ctx, async () => {});
+    const parsed = JSON.parse(logs[0]);
+    assert.equal(parsed.status, 200);
+  });
+});
+
+describe('createPipeline — toHandler', () => {
+  it('toHandler returns run function', async () => {
+    const pipeline = createPipeline();
+    pipeline.use(async (ctx, next) => { ctx.state.ran = true; await next(); });
+    const handler = pipeline.toHandler();
+    const ctx = createCtx();
+    await handler(ctx);
+    assert.equal(ctx.state.ran, true);
+  });
+
+  it('use is chainable', () => {
+    const pipeline = createPipeline();
+    const result = pipeline.use(async (_ctx, next) => next());
+    assert.equal(result, pipeline);
+  });
+
+  it('stack getter returns copy of middleware array', () => {
+    const pipeline = createPipeline();
+    pipeline.use(async (_ctx, next) => next());
+    const stack = pipeline.stack;
+    assert.equal(stack.length, 1);
+    // Mutating the copy does not affect the pipeline
+    stack.push(() => {});
+    assert.equal(pipeline.stack.length, 1);
+  });
+});
+
+describe('compose — additional', () => {
+  it('single middleware still calls outer next', async () => {
+    let outerNextCalled = false;
+    const composed = compose(async (_ctx, next) => { await next(); });
+    await composed(createCtx(), async () => { outerNextCalled = true; });
+    assert.ok(outerNextCalled);
+  });
+
+  it('accepts an array of middlewares', async () => {
+    const order = [];
+    const composed = compose([
+      async (_ctx, next) => { order.push(1); await next(); },
+      async (_ctx, next) => { order.push(2); await next(); },
+    ]);
+    await composed(createCtx(), async () => { order.push(3); });
+    assert.deepEqual(order, [1, 2, 3]);
+  });
+});
+
+describe('Express adapter', () => {
+  function mockExpressReq(overrides = {}) {
+    return {
+      method: overrides.method ?? 'GET',
+      originalUrl: overrides.url ?? '/test?x=1',
+      path: overrides.path ?? '/test',
+      headers: overrides.headers ?? {},
+      cookies: overrides.cookies ?? {},
+      query: overrides.query ?? { x: '1' },
+      body: overrides.body ?? undefined,
+      ip: overrides.ip ?? '127.0.0.1',
+      params: overrides.params ?? {},
+    };
+  }
+
+  function mockExpressRes() {
+    const state = { code: 200, headers: {}, body: undefined };
+    return {
+      setHeader: (k, v) => { state.headers[k] = v; },
+      status: (code) => { state.code = code; return res; },
+      send: (body) => { state.body = body; },
+      cookie: () => {},
+      _state: state,
+      get _self() { return res; },
+    };
+    // eslint-disable-next-line no-unreachable
+    var res = { setHeader: (k, v) => { state.headers[k] = v; }, status: (code) => { state.code = code; return res; }, send: (body) => { state.body = body; }, cookie: () => {}, _state: state };
+    return res;
+  }
+
+  it('creates context from Express req', () => {
+    const req = mockExpressReq({ method: 'POST', url: '/api/data', path: '/api/data', query: {} });
+    const res = { setHeader: () => {}, status: () => ({}), send: () => {}, cookie: () => {} };
+    const ctx = createExpressContext(req, res);
+    assert.equal(ctx.request.method, 'POST');
+    assert.equal(ctx.request.path, '/api/data');
+    assert.equal(ctx.request.ip, '127.0.0.1');
+    assert.ok(ctx.response);
+    assert.ok(ctx.state);
+  });
+
+  it('parses cookies from cookie header when req.cookies is absent', () => {
+    const req = {
+      method: 'GET',
+      originalUrl: '/test',
+      path: '/test',
+      headers: { cookie: 'a=1; b=2' },
+      cookies: undefined,
+      query: {},
+      body: undefined,
+      ip: '1.1.1.1',
+      params: {},
+    };
+    const ctx = createExpressContext(req, {});
+    assert.equal(ctx.request.cookies.a, '1');
+    assert.equal(ctx.request.cookies.b, '2');
+  });
+
+  it('toExpressMiddleware calls next when no body is set', async () => {
+    const pipeline = createPipeline();
+    pipeline.use(async (ctx, next) => { ctx.state.ran = true; await next(); });
+    const mw = toExpressMiddleware(pipeline);
+
+    let nextCalled = false;
+    const req = mockExpressReq();
+    const res = { setHeader: () => {}, status: () => ({}), send: () => {}, cookie: () => {} };
+    await mw(req, res, () => { nextCalled = true; });
+    assert.ok(nextCalled);
+  });
+
+  it('toExpressMiddleware sends response when body is set', async () => {
+    const pipeline = createPipeline();
+    pipeline.use(async (ctx, next) => {
+      ctx.response.status = 201;
+      ctx.response.body = { created: true };
+      await next();
+    });
+    const mw = toExpressMiddleware(pipeline);
+
+    let sentBody;
+    let sentCode;
+    const res = {
+      setHeader: () => {},
+      status: (code) => { sentCode = code; return res; },
+      send: (body) => { sentBody = body; },
+      cookie: () => {},
+    };
+    await mw(mockExpressReq(), res, () => {});
+    assert.equal(sentCode, 201);
+    assert.deepEqual(sentBody, { created: true });
+  });
+
+  it('toExpressMiddleware calls next(err) on pipeline error', async () => {
+    const pipeline = createPipeline();
+    pipeline.use(async () => { throw new Error('pipeline failed'); });
+    const mw = toExpressMiddleware(pipeline);
+
+    let caughtErr;
+    const res = { setHeader: () => {}, status: () => res, send: () => {}, cookie: () => {} };
+    await mw(mockExpressReq(), res, (err) => { caughtErr = err; });
+    assert.ok(caughtErr instanceof Error);
+    assert.match(caughtErr.message, /pipeline failed/);
   });
 });
