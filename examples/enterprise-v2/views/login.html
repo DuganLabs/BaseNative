@@ -1,24 +1,24 @@
-<div class="center-card">
-  <div class="card">
-    <div class="card-header">Sign In</div>
-    <div class="card-body">
+<div data-bn="center-card">
+  <div data-bn="card">
+    <div data-bn="card-header">Sign In</div>
+    <div data-bn="card-body">
       <p style="font-size:var(--bn-font-size-sm);color:var(--bn-color-text-muted);margin-bottom:var(--bn-space-4)">Enter your credentials to continue.</p>
       <template @if="error">
-        <div class="alert alert-error">{{ error }}</div>
+        <div data-bn="alert" data-variant="error">{{ error }}</div>
       </template>
-      <form method="POST" action="/login" class="form-grid">
+      <form method="POST" action="/login" data-bn="form-grid">
         <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-        <div class="field">
+        <div data-bn="field">
           <label for="username">Username</label>
-          <input id="username" name="username" type="text" required autocomplete="username">
+          <input data-bn="input" id="username" name="username" type="text" required autocomplete="username">
         </div>
-        <div class="field">
+        <div data-bn="field">
           <label for="password">Password</label>
-          <input id="password" name="password" type="password" required autocomplete="current-password">
+          <input data-bn="input" id="password" name="password" type="password" required autocomplete="current-password">
         </div>
-        <div class="form-actions">
-          <button type="submit" class="btn btn-primary">Sign In</button>
-          <a href="/register" class="btn btn-secondary">Register</a>
+        <div data-bn="form-actions">
+          <button data-bn="button" data-variant="primary" type="submit">Sign In</button>
+          <a data-bn="button" data-variant="secondary" href="/register">Register</a>
         </div>
       </form>
     </div>

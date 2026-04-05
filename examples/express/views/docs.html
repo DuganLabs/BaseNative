@@ -103,7 +103,7 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
     </header>
     <p>Iterate over arrays. Supports <code>track</code> for identity. Loop variables: <code>$index</code>, <code>$first</code>, <code>$last</code>, <code>$even</code>, <code>$odd</code>.</p>
     <pre><code><span class="tag">&lt;template</span> <span class="attr">@for</span>=<span class="str">"item of items(); track item.id"</span><span class="tag">&gt;</span>
-  <span class="tag">&lt;li&gt;</span>{{ item.name }}<span class="tag">&lt;/li&gt;</span>
+  <span class="tag">&lt;li&gt;</span>&#123;&#123; item.name &#125;&#125;<span class="tag">&lt;/li&gt;</span>
 <span class="tag">&lt;/template&gt;</span>
 <span class="tag">&lt;template</span> <span class="attr">@empty</span><span class="tag">&gt;</span>
   <span class="tag">&lt;li&gt;</span>No items found<span class="tag">&lt;/li&gt;</span>
@@ -137,11 +137,11 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
 
 <span class="cmt">&lt;!-- Event handler --&gt;</span>
 <span class="tag">&lt;button</span> <span class="attr">@click</span>=<span class="str">"incrementCount()"</span><span class="tag">&gt;</span>
-  Clicked {{ count() }} times
+  Clicked &#123;&#123; count() &#125;&#125; times
 <span class="tag">&lt;/button&gt;</span>
 
 <span class="cmt">&lt;!-- Text interpolation --&gt;</span>
-<span class="tag">&lt;p&gt;</span>Hello, {{ name() }}<span class="tag">&lt;/p&gt;</span></code></pre>
+<span class="tag">&lt;p&gt;</span>Hello, &#123;&#123; name() &#125;&#125;<span class="tag">&lt;/p&gt;</span></code></pre>
   </article>
 </section>
 
@@ -159,7 +159,7 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
 
 <span class="kw">const</span> html = <span class="fn">render</span>(<span class="str">`
   &lt;template @for="item of items; track item.id"&gt;
-    &lt;li&gt;{{ item.name }}&lt;/li&gt;
+    &lt;li&gt;&#123;&#123; item.name &#125;&#125;&lt;/li&gt;
   &lt;/template&gt;
 `</span>, {
   items: [

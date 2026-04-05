@@ -1,33 +1,33 @@
 <h1>{{ welcomeMessage }}</h1>
 
-<div class="stats-grid">
-  <div class="card">
-    <div class="card-header">Users</div>
-    <div class="card-body">
+<div data-bn="stats-grid">
+  <div data-bn="card">
+    <div data-bn="card-header">Users</div>
+    <div data-bn="card-body">
       <div class="stat-value">{{ usersCount }}</div>
       <div class="stat-label">{{ usersLabel }}</div>
     </div>
   </div>
-  <div class="card">
-    <div class="card-header">Notifications</div>
-    <div class="card-body">
+  <div data-bn="card">
+    <div data-bn="card-header">Notifications</div>
+    <div data-bn="card-body">
       <div class="stat-value">{{ notificationsCount }}</div>
       <div class="stat-label">{{ notificationsLabel }}</div>
     </div>
   </div>
-  <div class="card">
-    <div class="card-header">Feature Flags</div>
-    <div class="card-body">
+  <div data-bn="card">
+    <div data-bn="card-header">Feature Flags</div>
+    <div data-bn="card-body">
       <div class="stat-value">{{ flagsCount }}</div>
       <div class="stat-label">active flags</div>
     </div>
   </div>
 </div>
 
-<div class="card" style="margin-bottom:var(--bn-space-6)">
-  <div class="card-header">Tenant Information</div>
-  <div class="card-body">
-    <table class="data-table">
+<div data-bn="card" style="margin-bottom:var(--bn-space-6)">
+  <div data-bn="card-header">Tenant Information</div>
+  <div data-bn="card-body">
+    <table data-bn="table">
       <tbody>
         <tr><td style="font-weight:500">Tenant ID</td><td>{{ tenantId }}</td></tr>
         <tr><td style="font-weight:500">Locale</td><td>{{ locale }}</td></tr>
@@ -37,9 +37,9 @@
   </div>
 </div>
 
-<div class="card" style="margin-bottom:var(--bn-space-6)">
-  <div class="card-header">Feature Flag Status</div>
-  <div class="card-body">
+<div data-bn="card" style="margin-bottom:var(--bn-space-6)">
+  <div data-bn="card-header">Feature Flag Status</div>
+  <div data-bn="card-body">
     <template @for="flag of flags">
       <div style="display:flex;align-items:center;padding:var(--bn-space-1) 0">
         <span class="flag-dot {{ flag.dotClass }}"></span>
@@ -50,9 +50,9 @@
   </div>
 </div>
 
-<div class="card">
-  <div class="card-header">Recent Activity</div>
-  <div class="card-body">
+<div data-bn="card">
+  <div data-bn="card-header">Recent Activity</div>
+  <div data-bn="card-body">
     <ul class="activity-list">
       <template @for="item of activity">
         <li>{{ item }}</li>

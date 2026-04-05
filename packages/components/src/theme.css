@@ -1,9 +1,53 @@
-/* BaseNative Theme — Dark Mode */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+@layer tokens {
+  /* Dark Mode — automatic via prefers-color-scheme */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bn-color-surface: var(--bn-color-gray-950);
+      --bn-color-surface-subtle: var(--bn-color-gray-900);
+      --bn-color-surface-muted: var(--bn-color-gray-800);
+      --bn-color-surface-raised: var(--bn-color-gray-900);
+      --bn-color-surface-inset: var(--bn-color-gray-950);
+      --bn-color-surface-inverse: var(--bn-color-gray-50);
+
+      --bn-color-text: var(--bn-color-gray-50);
+      --bn-color-text-muted: var(--bn-color-gray-400);
+      --bn-color-text-subtle: var(--bn-color-gray-500);
+      --bn-color-text-inverse: var(--bn-color-gray-900);
+      --bn-color-text-link: var(--bn-color-primary-400);
+
+      --bn-color-border: var(--bn-color-gray-800);
+      --bn-color-border-strong: var(--bn-color-gray-700);
+
+      /* Alert/Badge semantic backgrounds — dark */
+      --bn-color-info-bg: rgb(37 99 235 / 0.12);
+      --bn-color-info-border: rgb(37 99 235 / 0.25);
+      --bn-color-info-text: var(--bn-color-primary-300);
+      --bn-color-success-bg: rgb(22 163 74 / 0.12);
+      --bn-color-success-border: rgb(22 163 74 / 0.25);
+      --bn-color-success-text: #86efac;
+      --bn-color-warning-bg: rgb(217 119 6 / 0.12);
+      --bn-color-warning-border: rgb(217 119 6 / 0.25);
+      --bn-color-warning-text: #fcd34d;
+      --bn-color-error-bg: rgb(220 38 38 / 0.12);
+      --bn-color-error-border: rgb(220 38 38 / 0.25);
+      --bn-color-error-text: #fca5a5;
+
+      --bn-color-success-badge-bg: rgb(22 163 74 / 0.15);
+      --bn-color-success-badge-text: #86efac;
+      --bn-color-warning-badge-bg: rgb(217 119 6 / 0.15);
+      --bn-color-warning-badge-text: #fcd34d;
+      --bn-color-error-badge-bg: rgb(220 38 38 / 0.15);
+      --bn-color-error-badge-text: #fca5a5;
+    }
+  }
+
+  /* Explicit dark theme override */
+  [data-theme="dark"] {
     --bn-color-surface: var(--bn-color-gray-950);
     --bn-color-surface-subtle: var(--bn-color-gray-900);
     --bn-color-surface-muted: var(--bn-color-gray-800);
+    --bn-color-surface-raised: var(--bn-color-gray-900);
+    --bn-color-surface-inset: var(--bn-color-gray-950);
     --bn-color-surface-inverse: var(--bn-color-gray-50);
 
     --bn-color-text: var(--bn-color-gray-50);
@@ -14,22 +58,26 @@
 
     --bn-color-border: var(--bn-color-gray-800);
     --bn-color-border-strong: var(--bn-color-gray-700);
+
+    /* Alert/Badge semantic backgrounds — dark */
+    --bn-color-info-bg: rgb(37 99 235 / 0.12);
+    --bn-color-info-border: rgb(37 99 235 / 0.25);
+    --bn-color-info-text: var(--bn-color-primary-300);
+    --bn-color-success-bg: rgb(22 163 74 / 0.12);
+    --bn-color-success-border: rgb(22 163 74 / 0.25);
+    --bn-color-success-text: #86efac;
+    --bn-color-warning-bg: rgb(217 119 6 / 0.12);
+    --bn-color-warning-border: rgb(217 119 6 / 0.25);
+    --bn-color-warning-text: #fcd34d;
+    --bn-color-error-bg: rgb(220 38 38 / 0.12);
+    --bn-color-error-border: rgb(220 38 38 / 0.25);
+    --bn-color-error-text: #fca5a5;
+
+    --bn-color-success-badge-bg: rgb(22 163 74 / 0.15);
+    --bn-color-success-badge-text: #86efac;
+    --bn-color-warning-badge-bg: rgb(217 119 6 / 0.15);
+    --bn-color-warning-badge-text: #fcd34d;
+    --bn-color-error-badge-bg: rgb(220 38 38 / 0.15);
+    --bn-color-error-badge-text: #fca5a5;
   }
-}
-
-/* Explicit dark theme override */
-[data-theme="dark"] {
-  --bn-color-surface: var(--bn-color-gray-950);
-  --bn-color-surface-subtle: var(--bn-color-gray-900);
-  --bn-color-surface-muted: var(--bn-color-gray-800);
-  --bn-color-surface-inverse: var(--bn-color-gray-50);
-
-  --bn-color-text: var(--bn-color-gray-50);
-  --bn-color-text-muted: var(--bn-color-gray-400);
-  --bn-color-text-subtle: var(--bn-color-gray-500);
-  --bn-color-text-inverse: var(--bn-color-gray-900);
-  --bn-color-text-link: var(--bn-color-primary-400);
-
-  --bn-color-border: var(--bn-color-gray-800);
-  --bn-color-border-strong: var(--bn-color-gray-700);
 }
