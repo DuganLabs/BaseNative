@@ -509,3 +509,75 @@ describe('createWSHandler — additional', () => {
     handler.close();
   });
 });
+
+describe('createWSHandler — send and broadcast', () => {
+  it('send returns true on success', () => {
+    const sent = [];
+    const ws = mockWS();
+    ws.send = (d) => { sent.push(d); };
+    const handler = createWSHandler();
+    const conn = handler.handleConnection(ws, {});
+    const result = handler.send(conn.id, 'hello');
+    assert.equal(result, true);
+    assert.equal(sent.length, 1);
+    handler.close();
+  });
+
+  it('send returns false for unknown id', () => {
+    const handler = createWSHandler();
+    const result = handler.send('nonexistent', 'data');
+    assert.equal(result, false);
+    handler.close();
+  });
+
+  it('broadcast returns count of recipients', () => {
+    const handler = createWSHandler();
+    const ws1 = mockWS();
+    const ws2 = mockWS();
+    handler.handleConnection(ws1, {});
+    handler.handleConnection(ws2, {});
+    const count = handler.broadcast('ping');
+    assert.equal(count, 2);
+    handler.close();
+  });
+
+  it('broadcast serializes object to JSON', () => {
+    const received = [];
+    const ws = mockWS();
+    ws.send = (d) => { received.push(d); };
+    const handler = createWSHandler();
+    handler.handleConnection(ws, {});
+    handler.broadcast({ type: 'event' });
+    assert.equal(received[0], JSON.stringify({ type: 'event' }));
+    handler.close();
+  });
+
+  it('config getter returns handler configuration', () => {
+    const handler = createWSHandler({ heartbeatInterval: 5000 });
+    const cfg = handler.config;
+    assert.equal(cfg.heartbeatInterval, 5000);
+    handler.close();
+  });
+});
+
+describe('createWSHandler — message and close events', () => {
+  it('onMessage receives parsed JSON when parseJSON is true', () => {
+    const received = [];
+    const handler = createWSHandler({ onMessage: (conn, data) => received.push(data) });
+    const ws = mockWS();
+    handler.handleConnection(ws, {});
+    ws.emit('message', JSON.stringify({ action: 'ping' }));
+    assert.deepEqual(received[0], { action: 'ping' });
+    handler.close();
+  });
+
+  it('ws close event removes connection', () => {
+    const handler = createWSHandler();
+    const ws = mockWS();
+    handler.handleConnection(ws, {});
+    assert.equal(handler.getConnections().length, 1);
+    ws.emit('close');
+    assert.equal(handler.getConnections().length, 0);
+    handler.close();
+  });
+});
