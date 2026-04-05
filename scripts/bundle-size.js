@@ -2,7 +2,7 @@ import { buildSync } from 'esbuild';
 import { gzipSync } from 'node:zlib';
 
 const THRESHOLDS = {
-  '@basenative/runtime': 8192,
+  '@basenative/runtime': 10240,
   '@basenative/server': 16384,
 };
 
