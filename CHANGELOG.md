@@ -10,7 +10,7 @@ BaseNative adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ## [Unreleased] — 0.3.x (v1-Readiness)
 
 ### Added
-- Comprehensive test suites across all 23 packages (650+ test cases)
+- Comprehensive test suites across all 23 packages (682 unit tests + 15 cross-package integration tests)
 - `@basenative/date`: full date utility coverage — timezone, relative time, date ranges
 - `@basenative/fetch`: signal-based resource caching, SSR preload, abort controller, retry logic
 - `@basenative/flags`: percentage rollout bucketing, user context evaluation, `@feature` directive
