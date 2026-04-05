@@ -477,3 +477,155 @@ describe('providers (pre-configured OAuth)', () => {
     assert.ok(url.includes('mytenant'));
   });
 });
+
+describe('login / logout helpers', () => {
+  it('login creates session and sets ctx.state', async () => {
+    const mgr = createSessionManager();
+    const ctx = { request: { cookies: {}, headers: {} }, response: { headers: {} }, state: {} };
+    const user = { id: 42, name: 'Carol' };
+    const session = await login(mgr, ctx, user);
+    assert.ok(session.id);
+    assert.equal(ctx.state.user.name, 'Carol');
+    assert.ok(ctx.state.isAuthenticated);
+    assert.equal(ctx.state._newSession.id, session.id);
+  });
+
+  it('logout destroys session and clears state', async () => {
+    const mgr = createSessionManager();
+    const session = await mgr.create({ user: { id: 1 } });
+    const ctx = {
+      request: { cookies: {}, headers: {} },
+      response: { headers: {}, cookies: {} },
+      state: { session, user: { id: 1 }, isAuthenticated: true },
+    };
+    await logout(mgr, ctx);
+    assert.equal(ctx.state.user, null);
+    assert.equal(ctx.state.isAuthenticated, false);
+    assert.equal(ctx.state.session, null);
+    assert.equal(ctx.response.cookies[mgr.cookieName].maxAge, 0);
+  });
+
+  it('logout with no session does not throw', async () => {
+    const mgr = createSessionManager();
+    const ctx = {
+      request: { cookies: {}, headers: {} },
+      response: { headers: {} },
+      state: { session: null, user: null, isAuthenticated: false },
+    };
+    await assert.doesNotReject(() => logout(mgr, ctx));
+  });
+});
+
+describe('sessionMiddleware — additional', () => {
+  it('sets user to null when no session cookie', async () => {
+    const mgr = createSessionManager();
+    const ctx = {
+      request: { cookies: {}, headers: {} },
+      response: { headers: {} },
+      state: {},
+    };
+    const mw = sessionMiddleware(mgr);
+    await mw(ctx, async () => {});
+    assert.equal(ctx.state.user, null);
+    assert.equal(ctx.state.isAuthenticated, false);
+  });
+
+  it('sets response cookie when _newSession is present after next()', async () => {
+    const mgr = createSessionManager();
+    const ctx = {
+      request: { cookies: {}, headers: {} },
+      response: { headers: {} },
+      state: {},
+    };
+    const mw = sessionMiddleware(mgr);
+    await mw(ctx, async () => {
+      const session = await mgr.create({ user: { id: 1 } });
+      ctx.state._newSession = session;
+    });
+    assert.ok(ctx.response.cookies);
+    assert.ok(ctx.response.cookies[mgr.cookieName]);
+  });
+});
+
+describe('requireAuth — additional', () => {
+  it('allows authenticated requests through', async () => {
+    const mw = requireAuth();
+    const ctx = {
+      request: { headers: {} },
+      response: { headers: {} },
+      state: { isAuthenticated: true },
+    };
+    let called = false;
+    await mw(ctx, async () => { called = true; });
+    assert.ok(called);
+  });
+
+  it('returns custom message when not authenticated', async () => {
+    const mw = requireAuth({ message: 'Please log in first' });
+    const ctx = {
+      request: { headers: {} },
+      response: { headers: {} },
+      state: { isAuthenticated: false },
+    };
+    await mw(ctx, async () => {});
+    assert.equal(ctx.response.status, 401);
+    assert.equal(ctx.response.body, 'Please log in first');
+  });
+});
+
+describe('guard — custom options', () => {
+  const rbac = defineRoles({
+    admin: { permissions: ['*'] },
+    viewer: { permissions: ['read'] },
+  });
+
+  it('uses custom getRoleFromContext', async () => {
+    const guard = createGuard(rbac, {
+      getRoleFromContext: (ctx) => ctx.state.customRole,
+    });
+    const ctx = {
+      request: { headers: {} },
+      response: { headers: {} },
+      state: { customRole: 'admin' },
+    };
+    let called = false;
+    await guard.require('delete')(ctx, async () => { called = true; });
+    assert.ok(called);
+  });
+
+  it('calls custom onDenied handler', async () => {
+    let deniedCalled = false;
+    const guard = createGuard(rbac, {
+      onDenied: (ctx) => {
+        deniedCalled = true;
+        ctx.response.status = 418;
+      },
+    });
+    const ctx = {
+      request: { headers: {} },
+      response: { headers: {} },
+      state: { user: { role: 'viewer' } },
+    };
+    await guard.require('delete')(ctx, async () => {});
+    assert.ok(deniedCalled);
+    assert.equal(ctx.response.status, 418);
+  });
+});
+
+describe('RBAC — edge cases', () => {
+  it('deep inheritance chain resolves all permissions', () => {
+    const rbac = defineRoles({
+      a: { permissions: ['pa'] },
+      b: { permissions: ['pb'], inherits: ['a'] },
+      c: { permissions: ['pc'], inherits: ['b'] },
+    });
+    assert.ok(rbac.can('c', 'pa'));
+    assert.ok(rbac.can('c', 'pb'));
+    assert.ok(rbac.can('c', 'pc'));
+  });
+
+  it('getPermissions for unknown role returns empty array', () => {
+    const rbac = defineRoles({ admin: { permissions: ['*'] } });
+    assert.deepEqual(rbac.getPermissions('nobody'), []);
+  });
+});
