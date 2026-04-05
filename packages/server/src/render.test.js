@@ -485,3 +485,90 @@ describe('render — more directive edge cases', () => {
     assert.ok(html.includes('true-true'));
   });
 });
+
+describe('render — untested paths', () => {
+  it('@for emits BN_FOR_INVALID_SYNTAX for malformed expression', () => {
+    const diagnostics = [];
+    const html = render(
+      `<template @for="invalid syntax here"><span>x</span></template>`,
+      {},
+      { onDiagnostic: (d) => diagnostics.push(d) }
+    );
+    assert.ok(diagnostics.some(d => d.code === 'BN_FOR_INVALID_SYNTAX'));
+  });
+
+  it('script type="application/json" content is processed for interpolation', () => {
+    const html = render(
+      `<script type="application/json">{"name":"{{ user }}"}</script>`,
+      { user: 'Alice' }
+    );
+    assert.ok(html.includes('Alice'));
+  });
+
+  it('@for with @empty and hydratable emits bn:empty marker', () => {
+    const html = render(
+      `<template @for="x of items"><li>{{ x }}</li></template><template @empty><p>Empty</p></template>`,
+      { items: [] },
+      { hydratable: true }
+    );
+    assert.match(html, /<!--bn:empty-->/);
+    assert.match(html, /Empty/);
+  });
+
+  it('@switch emits hydration markers when hydratable', () => {
+    const html = render(
+      `<template @switch="val"><template @case="'a'"><span>A</span></template></template>`,
+      { val: 'a' },
+      { hydratable: true }
+    );
+    assert.match(html, /<!--bn:switch-->/);
+    assert.match(html, /<!--\/bn:switch-->/);
+  });
+
+  it(':attr with empty string value renders as bare attribute', () => {
+    const html = render('<input :placeholder="label">', { label: '' });
+    // value is '' — should render as just the attribute name with no ="..."
+    assert.match(html, /placeholder/);
+  });
+
+  it('renderToStream passes hydratable option to render', () => {
+    const chunks = [];
+    const stream = {
+      write(chunk) { chunks.push(chunk); return true; },
+      end() {},
+    };
+    renderToStream(`<template @if="ok"><p>Yes</p></template>`, { ok: true }, stream, { hydratable: true });
+    const output = chunks.join('');
+    assert.match(output, /<!--bn:if-->/);
+  });
+
+  it('renderToReadableStream respects chunkSize', async () => {
+    const html = '<p>' + 'z'.repeat(200) + '</p>';
+    const stream = renderToReadableStream(html, {}, { chunkSize: 50 });
+    const reader = stream.getReader();
+    const chunks = [];
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+    }
+    assert.ok(chunks.length > 1);
+  });
+
+  it('renderToReadableStream with hydratable passes markers through', async () => {
+    const stream = renderToReadableStream(
+      `<template @if="show"><p>Hi</p></template>`,
+      { show: true },
+      { hydratable: true }
+    );
+    const reader = stream.getReader();
+    const decoder = new TextDecoder();
+    let result = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      result += decoder.decode(value);
+    }
+    assert.match(result, /<!--bn:if-->/);
+  });
+});
