@@ -422,3 +422,110 @@ describe('Avatar', () => {
     assert.ok(html.includes('Jane Doe'));
   });
 });
+
+describe('Select — additional', () => {
+  it('marks selected option', () => {
+    const html = renderSelect({ name: 'country', items: ['US', 'CA', 'MX'], selected: 'CA' });
+    assert.ok(html.includes('value="CA" selected'));
+  });
+
+  it('renders required and disabled attributes', () => {
+    const html = renderSelect({ name: 'size', items: [], required: true, disabled: true });
+    assert.ok(html.includes(' required'));
+    assert.ok(html.includes(' disabled'));
+  });
+
+  it('renders error message and aria-invalid', () => {
+    const html = renderSelect({ name: 'lang', items: [], error: 'Please select a language' });
+    assert.ok(html.includes('aria-invalid="true"'));
+    assert.ok(html.includes('Please select a language'));
+  });
+
+  it('renders placeholder option when not selected', () => {
+    const html = renderSelect({ name: 'size', items: ['S', 'M'], placeholder: 'Pick a size', selected: '' });
+    assert.ok(html.includes('Pick a size'));
+    assert.ok(html.includes('disabled'));
+    assert.ok(html.includes('selected')); // placeholder should be selected
+  });
+});
+
+describe('Alert — additional', () => {
+  it('renders success variant', () => {
+    const html = renderAlert('All good!', { variant: 'success' });
+    assert.ok(html.includes('All good!'));
+    assert.ok(html.includes('data-variant="success"'));
+  });
+
+  it('renders warning variant with role="alert"', () => {
+    const html = renderAlert('Watch out', { variant: 'warning' });
+    assert.ok(html.includes('role="alert"'));
+    assert.ok(html.includes('Watch out'));
+  });
+});
+
+describe('Dialog — additional', () => {
+  it('renders with custom id', () => {
+    const html = renderDialog({ title: 'Confirm', content: 'Are you sure?', id: 'confirm-dialog' });
+    assert.ok(html.includes('confirm-dialog'));
+  });
+
+  it('renders footer content', () => {
+    const html = renderDialog({
+      title: 'Delete',
+      content: 'This is irreversible.',
+      footer: '<button>Cancel</button><button>Delete</button>',
+    });
+    assert.ok(html.includes('Cancel'));
+    assert.ok(html.includes('data-bn="dialog-footer"'));
+  });
+});
+
+describe('Breadcrumb — additional', () => {
+  it('last item is aria-current="page"', () => {
+    const html = renderBreadcrumb({
+      items: [
+        { label: 'Home', href: '/' },
+        { label: 'Docs', href: '/docs' },
+        { label: 'API' },
+      ],
+    });
+    assert.ok(html.includes('aria-current="page"'));
+    assert.ok(html.includes('API'));
+  });
+});
+
+describe('Tabs — additional', () => {
+  it('active tab panel is visible', () => {
+    const html = renderTabs({
+      tabs: [
+        { id: 'a', label: 'Alpha', content: '<p>Alpha content</p>' },
+        { id: 'b', label: 'Beta', content: '<p>Beta content</p>' },
+      ],
+      activeTab: 'a',
+    });
+    assert.ok(html.includes('Alpha content'));
+    assert.ok(html.includes('aria-selected'));
+  });
+});
+
+describe('Tooltip — additional', () => {
+  it('includes tooltip content and trigger', () => {
+    const html = renderTooltip({ trigger: 'Hover me', content: 'More info' });
+    assert.ok(html.includes('More info'));
+    assert.ok(html.includes('Hover me'));
+    assert.ok(html.includes('role="tooltip"'));
+  });
+});
+
+describe('buttonVariants — additional', () => {
+  it('generates secondary variant class', () => {
+    const cls = buttonVariants('secondary', 'sm');
+    assert.ok(cls.includes('secondary'));
+    assert.ok(cls.includes('sm'));
+  });
+
+  it('generates destructive variant class', () => {
+    const cls = buttonVariants('destructive');
+    assert.ok(cls.includes('destructive'));
+  });
+});
