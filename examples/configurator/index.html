@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Passive House ADU Configurator</title>
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/configurator.css">
+<link rel="stylesheet" href="styles/output.css">
+</head>
+<body>
+<main>
+  <header>
+    <h1>Passive House ADU Configurator</h1>
+    <p>Design your accessory dwelling unit and see real-time passive house performance analysis.</p>
+  </header>
+
+  <div data-bn="configurator-layout">
+
+    <!-- ═══════════════════════════════════════════════════════
+         LEFT COLUMN: Configuration Inputs
+         ═══════════════════════════════════════════════════════ -->
+    <section data-bn="input-panel" aria-label="Configuration inputs">
+
+      <!-- Footprint ──────────────────────────────────────── -->
+      <fieldset data-bn="footprint">
+        <legend>Footprint</legend>
+
+        <label>
+          Width
+          <output>{{ footprint().width }} ft</output>
+          <input type="range" min="10" max="40" step="1"
+                 :value="footprint().width"
+                 @input="setFootprintWidth($event.target.valueAsNumber)">
+        </label>
+
+        <label>
+          Length
+          <output>{{ footprint().length }} ft</output>
+          <input type="range" min="12" max="50" step="1"
+                 :value="footprint().length"
+                 @input="setFootprintLength($event.target.valueAsNumber)">
+        </label>
+
+        <label>
+          Ceiling Height
+          <output>{{ ceilingHeight() }}"</output>
+          <input type="range" min="84" max="120" step="1"
+                 :value="ceilingHeight()"
+                 @input="setCeilingHeight($event.target.valueAsNumber)">
+        </label>
+
+        <p data-bn="floor-area">Floor area: {{ floorArea() }} sqft</p>
+      </fieldset>
+
+      <!-- Site ────────────────────────────────────────────── -->
+      <fieldset data-bn="site">
+        <legend>Site Location</legend>
+
+        <label>
+          Latitude
+          <output>{{ latitude() }}°N</output>
+          <input type="range" min="25" max="50" step="1"
+                 :value="latitude()"
+                 @input="setLatitude($event.target.valueAsNumber)">
+        </label>
+      </fieldset>
+
+      <!-- Wall Assembly ──────────────────────────────────── -->
+      <fieldset data-bn="panels">
+        <legend>Wall Assembly</legend>
+
+        <label>
+          Exterior Panel
+          <select @change="exteriorPanel.set($event.target.value)">
+            <template @for="entry of exteriorPanelEntries(); track entry.key">
+              <option :value="entry.key" :selected="entry.key === exteriorPanel()">
+                {{ entry.panel.name }} (R-{{ entry.panel.rValue }})
+              </option>
+            </template>
+          </select>
+        </label>
+
+        <label>
+          Stud Depth
+          <select @change="studDepth.set($event.target.value)">
+            <template @for="entry of studDepthEntries(); track entry.key">
+              <option :value="entry.key" :selected="entry.key === studDepth()">
+                {{ entry.label }}
+              </option>
+            </template>
+          </select>
+        </label>
+
+        <label>
+          Cavity Insulation
+          <select @change="cavityInsulation.set($event.target.value)">
+            <template @for="entry of cavityInsulationEntries(); track entry.key">
+              <option :value="entry.key" :selected="entry.key === cavityInsulation()">
+                {{ entry.ins.name }} (R-{{ entry.ins.rPerInch }}/in)
+              </option>
+            </template>
+          </select>
+        </label>
+
+        <label>
+          Interior Panel
+          <select @change="interiorPanel.set($event.target.value)">
+            <template @for="entry of interiorPanelEntries(); track entry.key">
+              <option :value="entry.key" :selected="entry.key === interiorPanel()">
+                {{ entry.panel.name }} (R-{{ entry.panel.rValue }})
+              </option>
+            </template>
+          </select>
+        </label>
+      </fieldset>
+
+      <!-- Windows ─────────────────────────────────────────── -->
+      <fieldset data-bn="windows">
+        <legend>Windows</legend>
+
+        <template @for="w of windows(); track w.id">
+          <div data-bn="window-entry">
+            <select @change="updateWindowWall(w.id, $event.target.value)">
+              <template @for="wall of wallOptions">
+                <option :value="wall" :selected="wall === w.wall">{{ wall }}</option>
+              </template>
+            </select>
+            <label>
+              W"
+              <input type="number" min="12" max="72" step="1"
+                     :value="w.width"
+                     @input="updateWindowDim(w.id, 'width', $event.target.valueAsNumber)">
+            </label>
+            <label>
+              H"
+              <input type="number" min="12" max="72" step="1"
+                     :value="w.height"
+                     @input="updateWindowDim(w.id, 'height', $event.target.valueAsNumber)">
+            </label>
+            <label>
+              <input type="checkbox" :checked="w.operable"
+                     @change="toggleWindowOperable(w.id)">
+              Operable
+            </label>
+            <button @click="removeWindow(w.id)">Remove</button>
+          </div>
+        </template>
+        <template @empty>
+          <p data-bn="empty-hint">No windows added. Click below to add one.</p>
+        </template>
+
+        <button data-bn="add-window" @click="addWindow()">+ Add Window</button>
+      </fieldset>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         RIGHT COLUMN: Live Output
+         ═══════════════════════════════════════════════════════ -->
+    <section data-bn="output-panel" aria-label="Performance analysis">
+
+      <!-- R-Value Breakdown ──────────────────────────────── -->
+      <article data-bn="r-value">
+        <h2>Wall R-Value</h2>
+        <dl>
+          <dt>Exterior Panel</dt>
+          <dd>R-{{ wallRBreakdown().exterior }}</dd>
+          <dt>Cavity ({{ cavityDepthInches() }}" insulation)</dt>
+          <dd>R-{{ wallRBreakdown().cavity }}</dd>
+          <dt>Interior Panel</dt>
+          <dd>R-{{ wallRBreakdown().interior }}</dd>
+        </dl>
+        <p data-bn="r-total" :data-r-level="totalWallR() >= 40 ? 'high' : (totalWallR() >= 20 ? 'mid' : 'low')">
+          Total: R-{{ totalWallR() }}
+        </p>
+      </article>
+
+      <!-- Certification Status ───────────────────────────── -->
+      <article data-bn="certification">
+        <h2>Passive House Status</h2>
+        <template @if="passiveHouseCertifiable()">
+          <p data-bn="cert-pass">Certifiable</p>
+        </template>
+        <template @else>
+          <p data-bn="cert-fail">Not yet certifiable</p>
+        </template>
+      </article>
+
+      <!-- Warnings ───────────────────────────────────────── -->
+      <template @if="warnings().length > 0">
+        <article data-bn="warnings">
+          <h2>Advisories</h2>
+          <ul role="list">
+            <template @for="warn of warnings()">
+              <li :data-level="warn.level">{{ warn.message }}</li>
+            </template>
+          </ul>
+        </article>
+      </template>
+
+      <!-- Ventilation ────────────────────────────────────── -->
+      <article data-bn="ventilation">
+        <h2>Ventilation</h2>
+        <dl>
+          <dt>Cross-ventilation</dt>
+          <dd>{{ crossVentilationOpportunity() ? 'Available' : 'Not available' }}</dd>
+          <dt>ERV required</dt>
+          <dd>{{ ervRequired() ? 'Yes' : 'No' }}</dd>
+        </dl>
+      </article>
+
+      <!-- South Overhang Guidance ────────────────────────── -->
+      <template @if="overhangDepths().length > 0">
+        <article data-bn="overhangs">
+          <h2>South Overhang Depths</h2>
+          <ul role="list">
+            <template @for="oh of overhangDepths(); track oh.id">
+              <li>Window #{{ oh.id }}: {{ oh.overhangDepthFt }} ft min. overhang</li>
+            </template>
+          </ul>
+        </article>
+      </template>
+
+      <!-- West Heat Gain ─────────────────────────────────── -->
+      <template @if="westHeatGainFlags().length > 0">
+        <article data-bn="west-heat">
+          <h2>West Heat Gain</h2>
+          <ul role="list">
+            <template @for="wh of westHeatGainFlags(); track wh.id">
+              <li :data-flagged="wh.flagged ? 'true' : 'false'">
+                Window #{{ wh.id }}: {{ wh.sqft }} sqft
+                <template @if="wh.flagged"> — exceeds 4 sqft, shading recommended</template>
+              </li>
+            </template>
+          </ul>
+        </article>
+      </template>
+
+      <!-- Wall Cross-Section ─────────────────────────────── -->
+      <details data-bn="cross-section">
+        <summary>Wall Cross-Section</summary>
+        <pre>{{ wallCrossSection() }}</pre>
+      </details>
+
+      <!-- Panel Schedule ─────────────────────────────────── -->
+      <details data-bn="schedule" open>
+        <summary>Panel Schedule / Material Takeoff</summary>
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>SKU</th>
+              <th>Qty</th>
+              <th>Unit</th>
+              <th>Est. Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Exterior Panels</td>
+              <td>{{ panelSchedule().exteriorPanels.sku }}</td>
+              <td>{{ panelSchedule().exteriorPanels.count }}</td>
+              <td>4x8 sheets</td>
+              <td>{{ formatCurrency(panelSchedule().exteriorPanels.cost) }}</td>
+            </tr>
+            <tr>
+              <td>Interior Panels</td>
+              <td>{{ panelSchedule().interiorPanels.sku }}</td>
+              <td>{{ panelSchedule().interiorPanels.count }}</td>
+              <td>4x8 sheets</td>
+              <td>{{ formatCurrency(panelSchedule().interiorPanels.cost) }}</td>
+            </tr>
+            <template @for="t of panelSchedule().trim; track t.sku">
+              <tr>
+                <td>{{ t.name }}</td>
+                <td>{{ t.sku }}</td>
+                <td>{{ t.quantity }}</td>
+                <td>pcs ({{ t.totalLengthFt }} lf)</td>
+                <td>{{ formatCurrency(t.cost) }}</td>
+              </tr>
+            </template>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4">Estimated Total</td>
+              <td>{{ formatCurrency(panelSchedule().totalEstimatedCost) }}</td>
+            </tr>
+            <tr>
+              <td colspan="4">Estimated Weight</td>
+              <td>{{ formatDecimal(panelSchedule().totalEstimatedWeight, 0) }} lbs</td>
+            </tr>
+            <tr>
+              <td colspan="4">Net Wall Area</td>
+              <td>{{ panelSchedule().netWallArea }} sqft</td>
+            </tr>
+          </tfoot>
+        </table>
+      </details>
+
+    </section>
+  </div>
+</main>
+
+<script type="module">
+import { signal, computed, effect, batch, hydrate } from '../../packages/runtime/src/index.js';
+import { createState } from './configurator-state.js';
+
+const state = createState({ signal, computed, batch });
+hydrate(document.querySelector('main'), state);
+</script>
+</body>
+</html>
