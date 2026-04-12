@@ -136,3 +136,43 @@ export function renderSkeleton(options?: {
   variant?: 'text' | 'circle';
   count?: number;
 }): string;
+
+// Calendar
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  start: string;
+  end: string;
+  status?: string;
+  color?: string;
+  assignee?: string;
+}
+
+export function renderCalendar(options?: {
+  startDate: string;
+  events?: CalendarEvent[];
+  hours?: { start?: number; end?: number };
+  emptyMessage?: string;
+  id?: string;
+  attrs?: string;
+}): string;
+
+export function renderPipelineBlock(options?: {
+  id: string;
+  title: string;
+  subtitle?: string;
+  status?: string;
+  attrs?: string;
+}): string;
+
+export interface CalendarDropEvent {
+  eventId: string;
+  date: string;
+  hour: number;
+  sourceType: 'event' | 'pipeline';
+}
+
+export function initCalendarDragDrop(
+  container: HTMLElement,
+  callbacks?: { onDrop?: (event: CalendarDropEvent) => void }
+): { destroy: () => void };
