@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { signal, computed, effect } from './signals.js';
+import { signal, computed, effect, batch } from './signals.js';
 
 describe('signal', () => {
   it('reads initial value', () => {
@@ -315,5 +315,256 @@ describe('effect advanced', () => {
       if (s() > 0) throw new Error('boom');
     });
     assert.throws(() => s.set(1), /boom/);
+  });
+});
+
+describe('batch', () => {
+  it('defers effect execution until batch completes', () => {
+    const a = signal(0);
+    const b = signal(0);
+    let runs = 0;
+    effect(() => { a(); b(); runs++; });
+    assert.equal(runs, 1);
+
+    batch(() => {
+      a.set(1);
+      b.set(1);
+    });
+    assert.equal(runs, 2, 'effect should run exactly once after batch');
+  });
+
+  it('returns the value from the batch function', () => {
+    const result = batch(() => 42);
+    assert.equal(result, 42);
+  });
+
+  it('supports nested batches', () => {
+    const a = signal(0);
+    const b = signal(0);
+    let runs = 0;
+    effect(() => { a(); b(); runs++; });
+    assert.equal(runs, 1);
+
+    batch(() => {
+      a.set(1);
+      batch(() => {
+        b.set(1);
+      });
+      // inner batch should NOT flush because outer is still active
+      assert.equal(runs, 1, 'effect should not run inside nested batch');
+    });
+    assert.equal(runs, 2, 'effect should run once after outermost batch');
+  });
+
+  it('resolves diamond dependency in one pass', () => {
+    const a = signal(1);
+    const b = computed(() => a() * 2);
+    const c = computed(() => a() * 3);
+    const values = [];
+    effect(() => { values.push(b() + c()); });
+    assert.deepEqual(values, [5]);
+
+    batch(() => { a.set(2); });
+    assert.deepEqual(values, [5, 10]);
+  });
+
+  it('deduplicates effect runs within a batch', () => {
+    const s = signal(0);
+    let runs = 0;
+    effect(() => { s(); runs++; });
+    assert.equal(runs, 1);
+
+    batch(() => {
+      s.set(1);
+      s.set(2);
+      s.set(3);
+    });
+    assert.equal(runs, 2, 'effect should run once for multiple mutations in batch');
+    assert.equal(s(), 3);
+  });
+
+  it('effect sees final values after batch', () => {
+    const a = signal('x');
+    const b = signal('y');
+    let seen;
+    effect(() => { seen = a() + b(); });
+    assert.equal(seen, 'xy');
+
+    batch(() => {
+      a.set('A');
+      b.set('B');
+    });
+    assert.equal(seen, 'AB');
+  });
+
+  it('batch with no mutations does not trigger effects', () => {
+    const s = signal(0);
+    let runs = 0;
+    effect(() => { s(); runs++; });
+    assert.equal(runs, 1);
+
+    batch(() => {});
+    assert.equal(runs, 1);
+  });
+
+  it('error in batch still flushes effects', () => {
+    const s = signal(0);
+    let runs = 0;
+    effect(() => { s(); runs++; });
+
+    assert.throws(() => {
+      batch(() => {
+        s.set(1);
+        throw new Error('batch error');
+      });
+    }, /batch error/);
+
+    assert.equal(runs, 2, 'effect should still flush after batch error');
+    assert.equal(s(), 1);
+  });
+});
+
+describe('diamond dependency comprehensive', () => {
+  it('wide diamond: one source, many computeds, one consumer', () => {
+    const source = signal(1);
+    const branches = Array.from({ length: 5 }, (_, i) =>
+      computed(() => source() * (i + 1))
+    );
+    const values = [];
+    effect(() => {
+      values.push(branches.reduce((sum, b) => sum + b(), 0));
+    });
+    // 1*1 + 1*2 + 1*3 + 1*4 + 1*5 = 15
+    assert.equal(values[values.length - 1], 15);
+
+    source.set(2);
+    // 2*1 + 2*2 + 2*3 + 2*4 + 2*5 = 30
+    assert.equal(values[values.length - 1], 30);
+  });
+
+  it('wide diamond with batch runs effect once', () => {
+    const source = signal(1);
+    const branches = Array.from({ length: 5 }, (_, i) =>
+      computed(() => source() * (i + 1))
+    );
+    let runs = 0;
+    effect(() => {
+      branches.forEach(b => b());
+      runs++;
+    });
+    assert.equal(runs, 1);
+
+    batch(() => { source.set(2); });
+    assert.equal(runs, 2);
+  });
+
+  it('deep diamond: A → B → D, A → C → D', () => {
+    const a = signal(1);
+    const b = computed(() => a() + 10);
+    const c = computed(() => a() + 100);
+    const d = computed(() => b() + c());
+    const values = [];
+    effect(() => { values.push(d()); });
+
+    assert.equal(values[values.length - 1], 112); // (1+10) + (1+100)
+    a.set(5);
+    assert.equal(values[values.length - 1], 120); // (5+10) + (5+100)
+  });
+
+  it('multi-level diamond: A → B → C → E, A → D → E', () => {
+    const a = signal(1);
+    const b = computed(() => a() * 2);
+    const c = computed(() => b() * 3);
+    const d = computed(() => a() * 5);
+    const e = computed(() => c() + d());
+    const values = [];
+    effect(() => { values.push(e()); });
+
+    // c = 1*2*3 = 6, d = 1*5 = 5, e = 11
+    assert.equal(values[values.length - 1], 11);
+    a.set(3);
+    // c = 3*2*3 = 18, d = 3*5 = 15, e = 33
+    assert.equal(values[values.length - 1], 33);
+  });
+
+  it('multiple independent diamonds share no interference', () => {
+    const a1 = signal(1);
+    const b1 = computed(() => a1() * 2);
+    const c1 = computed(() => a1() * 3);
+    const d1 = computed(() => b1() + c1());
+
+    const a2 = signal(10);
+    const b2 = computed(() => a2() + 1);
+    const c2 = computed(() => a2() + 2);
+    const d2 = computed(() => b2() + c2());
+
+    let v1, v2;
+    effect(() => { v1 = d1(); });
+    effect(() => { v2 = d2(); });
+
+    assert.equal(v1, 5);
+    assert.equal(v2, 23);
+
+    a1.set(2);
+    assert.equal(v1, 10);
+    assert.equal(v2, 23); // unchanged
+
+    a2.set(20);
+    assert.equal(v1, 10); // unchanged
+    assert.equal(v2, 43);
+  });
+
+  it('batched multi-signal diamond sees consistent state', () => {
+    const x = signal(1);
+    const y = signal(2);
+    const sumXY = computed(() => x() + y());
+    const diffXY = computed(() => x() - y());
+    const result = computed(() => sumXY() * diffXY());
+
+    const snapshots = [];
+    effect(() => { snapshots.push(result()); });
+
+    // (1+2)*(1-2) = 3 * -1 = -3
+    assert.equal(snapshots[snapshots.length - 1], -3);
+
+    batch(() => {
+      x.set(5);
+      y.set(3);
+    });
+    // (5+3)*(5-3) = 8 * 2 = 16
+    assert.equal(snapshots[snapshots.length - 1], 16);
+  });
+
+  it('computed depending on another computed and a raw signal', () => {
+    const a = signal(2);
+    const b = computed(() => a() * 10);
+    const c = computed(() => a() + b());
+    const values = [];
+    effect(() => { values.push(c()); });
+
+    assert.equal(values[values.length - 1], 22); // 2 + 20
+    a.set(3);
+    assert.equal(values[values.length - 1], 33); // 3 + 30
+  });
+
+  it('diamond with conditional branch', () => {
+    const flag = signal(true);
+    const a = signal(1);
+    const left = computed(() => flag() ? a() * 2 : 0);
+    const right = computed(() => a() * 3);
+    const combined = computed(() => left() + right());
+
+    let result;
+    effect(() => { result = combined(); });
+    assert.equal(result, 5); // 2 + 3
+
+    flag.set(false);
+    assert.equal(result, 3); // 0 + 3
+
+    a.set(10);
+    assert.equal(result, 30); // 0 + 30
+
+    flag.set(true);
+    assert.equal(result, 50); // 20 + 30
   });
 });

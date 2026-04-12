@@ -1,4 +1,6 @@
 let currentEffect = null;
+let batchDepth = 0;
+const pendingEffects = new Set();
 
 function cleanupEffect(effectRef) {
   for (const subscribers of effectRef.subscriptions) {
@@ -10,6 +12,37 @@ function cleanupEffect(effectRef) {
     const cleanup = effectRef.cleanup;
     effectRef.cleanup = null;
     cleanup();
+  }
+}
+
+function scheduleEffect(effectRef) {
+  if (batchDepth > 0) {
+    pendingEffects.add(effectRef);
+  } else {
+    effectRef.run();
+  }
+}
+
+function flushEffects() {
+  batchDepth++;
+  try {
+    while (pendingEffects.size > 0) {
+      const effects = [...pendingEffects];
+      pendingEffects.clear();
+      for (const effectRef of effects) effectRef.run();
+    }
+  } finally {
+    batchDepth--;
+  }
+}
+
+export function batch(fn) {
+  batchDepth++;
+  try {
+    return fn();
+  } finally {
+    batchDepth--;
+    if (batchDepth === 0) flushEffects();
   }
 }
 
@@ -27,7 +60,7 @@ export function signal(initial) {
     const resolved = typeof next === 'function' ? next(value) : next;
     if (resolved !== value) {
       value = resolved;
-      for (const effectRef of [...subs]) effectRef.run();
+      for (const effectRef of [...subs]) scheduleEffect(effectRef);
     }
   };
   accessor.peek = () => value;
