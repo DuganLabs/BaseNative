@@ -1,6 +1,7 @@
 let currentEffect = null;
 let batchDepth = 0;
 const pendingEffects = new Set();
+const plugins = [];
 
 function cleanupEffect(effectRef) {
   for (const subscribers of effectRef.subscriptions) {
@@ -59,7 +60,12 @@ export function signal(initial) {
   accessor.set = (next) => {
     const resolved = typeof next === 'function' ? next(value) : next;
     if (resolved !== value) {
+      const prev = value;
       value = resolved;
+      // Notify plugins of signal write
+      for (const plugin of plugins) {
+        if (plugin.onSignalWrite) plugin.onSignalWrite(accessor, prev, value);
+      }
       for (const effectRef of [...subs]) scheduleEffect(effectRef);
     }
   };
@@ -71,6 +77,14 @@ export function computed(fn) {
   const s = signal(undefined);
   effect(() => s.set(fn()));
   return s;
+}
+
+export function registerPlugin(plugin) {
+  plugins.push(plugin);
+  return () => {
+    const idx = plugins.indexOf(plugin);
+    if (idx !== -1) plugins.splice(idx, 1);
+  };
 }
 
 export function effect(fn) {

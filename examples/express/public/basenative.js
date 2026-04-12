@@ -1,4 +1,4 @@
-// packages/runtime/src/signals.js
+// ../../packages/runtime/src/signals.js
 var currentEffect = null;
 function cleanupEffect(effectRef) {
   for (const subscribers of effectRef.subscriptions) {
@@ -66,7 +66,7 @@ function effect(fn) {
   return execute;
 }
 
-// src/shared/expression.js
+// ../../src/shared/expression.js
 var SCOPE_SLOT = Symbol.for("basenative.scopeSlot");
 var EXPRESSION_CACHE = /* @__PURE__ */ new Map();
 var UNSAFE_PROPERTIES = /* @__PURE__ */ new Set(["__proto__", "prototype", "constructor"]);
@@ -692,7 +692,7 @@ function evaluateExpression(source, ctx = {}, options = {}) {
   }
 }
 
-// packages/runtime/src/evaluate.js
+// ../../packages/runtime/src/evaluate.js
 function evaluate(expr, ctx, options) {
   return evaluateExpression(expr, ctx, options);
 }
@@ -703,7 +703,7 @@ function interpolate(text, ctx, options) {
   });
 }
 
-// packages/runtime/src/dom-lifecycle.js
+// ../../packages/runtime/src/dom-lifecycle.js
 var CLEANUPS = Symbol("basenative.cleanups");
 function registerCleanup(node, cleanup) {
   if (!node || typeof cleanup !== "function") return cleanup;
@@ -740,7 +740,7 @@ function removeNodeRange(start, end) {
   }
 }
 
-// packages/runtime/src/scope.js
+// ../../packages/runtime/src/scope.js
 function createScopeSlot(initial) {
   const state = signal(initial);
   return {
@@ -782,7 +782,7 @@ function updateLoopContext(slots, itemName, item, index, length) {
   slots.$odd.set(index % 2 !== 0);
 }
 
-// packages/runtime/src/bind.js
+// ../../packages/runtime/src/bind.js
 function bindNode(node, ctx, options) {
   let processed = 0;
   if (node.nodeType === Node.TEXT_NODE) {
@@ -837,7 +837,7 @@ function bindNode(node, ctx, options) {
   return processed;
 }
 
-// packages/runtime/src/diagnostics.js
+// ../../packages/runtime/src/diagnostics.js
 function logDiagnostic(diagnostic) {
   const method = diagnostic.level === "error" ? "error" : "warn";
   console[method]?.(`[BaseNative:${diagnostic.code}] ${diagnostic.message}`, diagnostic);
@@ -874,7 +874,7 @@ function reportHydrationMismatch(options, message, detail = {}) {
   }
 }
 
-// packages/runtime/src/hydrate.js
+// ../../packages/runtime/src/hydrate.js
 function insertAfterAnchor(anchor, nodes) {
   let ref = anchor;
   for (const node of nodes) {
@@ -1201,7 +1201,7 @@ function hydrate(root, ctx, options = {}) {
   return () => disposeNodeTree(root);
 }
 
-// packages/runtime/src/features.js
+// ../../packages/runtime/src/features.js
 function cssSupports(target, rule) {
   return Boolean(target?.CSS?.supports?.(rule));
 }
@@ -1220,7 +1220,7 @@ function supportsFeature(name, target = globalThis) {
 }
 var browserFeatures = detectBrowserFeatures();
 
-// packages/runtime/src/devtools.js
+// ../../packages/runtime/src/devtools.js
 var devtoolsState = {
   signals: /* @__PURE__ */ new Map(),
   effects: /* @__PURE__ */ new Map(),
@@ -1289,7 +1289,7 @@ function isDevtoolsEnabled() {
   return devtoolsState.enabled;
 }
 
-// packages/runtime/src/error-boundary.js
+// ../../packages/runtime/src/error-boundary.js
 function createErrorBoundary(options = {}) {
   let lastError = null;
   let hasError = false;
@@ -1359,7 +1359,7 @@ function escapeComment(str) {
   return String(str).replace(/--/g, "- -");
 }
 
-// packages/runtime/src/plugins.js
+// ../../packages/runtime/src/plugins.js
 var VALID_HOOKS = [
   "beforeRender",
   "afterRender",
@@ -1438,7 +1438,7 @@ function createPluginRegistry() {
   return { register, runHook, getDirective, getPlugins };
 }
 
-// packages/runtime/src/lazy.js
+// ../../packages/runtime/src/lazy.js
 function createLazyHydrator(options = {}) {
   const { rootMargin = "0px", threshold = 0 } = options;
   const pending = /* @__PURE__ */ new Map();
@@ -1550,7 +1550,7 @@ function hydrateOnMedia(hydrateFn, query) {
   return cleanup;
 }
 
-// packages/runtime/src/vitals.js
+// ../../packages/runtime/src/vitals.js
 function createObserver(type, callback) {
   if (typeof PerformanceObserver === "undefined") return null;
   try {
@@ -1655,6 +1655,115 @@ function createVitalsReporter(options = {}) {
     }
   };
 }
+
+// ../../packages/runtime/src/debug.js
+var _debugEnabled = false;
+var _label = "";
+var _logger = typeof console !== "undefined" ? console : null;
+var stats = {
+  signalsCreated: 0,
+  effectsCreated: 0,
+  signalWrites: 0,
+  signalReads: 0,
+  effectRuns: 0
+};
+function log(level, ...args) {
+  if (!_debugEnabled || !_logger) return;
+  const prefix = _label ? `[BN:debug:${_label}]` : "[BN:debug]";
+  _logger[level]?.(prefix, ...args);
+}
+function enableDebug(opts = {}) {
+  _debugEnabled = true;
+  _label = opts.label ?? "";
+  _logger = opts.logger ?? (typeof console !== "undefined" ? console : null);
+  _debugEnabled = true;
+  if (opts.trackReads !== void 0) {
+    _config.trackReads = Boolean(opts.trackReads);
+  }
+  log("info", "debug mode enabled", opts.label ? `(${opts.label})` : "");
+}
+function disableDebug() {
+  log("info", "debug mode disabled. stats:", getDebugStats());
+  _debugEnabled = false;
+  _label = "";
+  Object.assign(stats, {
+    signalsCreated: 0,
+    effectsCreated: 0,
+    signalWrites: 0,
+    signalReads: 0,
+    effectRuns: 0
+  });
+}
+function isDebugEnabled() {
+  return _debugEnabled;
+}
+function getDebugStats() {
+  return { ...stats };
+}
+var _config = {
+  trackReads: false
+};
+function debugSignal(s, name = "signal") {
+  stats.signalsCreated++;
+  log("debug", `signal:${name} created`, `(${s()})`);
+  const wrapped = () => {
+    if (_config.trackReads) {
+      stats.signalReads++;
+      log("debug", `signal:${name} read \u2192`, s());
+    }
+    return s();
+  };
+  wrapped.set = (next) => {
+    const before = s();
+    s.set(next);
+    const after = s();
+    if (_debugEnabled) {
+      stats.signalWrites++;
+      log("debug", `signal:${name} set`, before, "\u2192", after);
+    }
+  };
+  wrapped.peek = () => s.peek();
+  return wrapped;
+}
+function debugEffect(fn, name = "effect") {
+  stats.effectsCreated++;
+  let runCount = 0;
+  const handle = effect(() => {
+    runCount++;
+    stats.effectRuns++;
+    const start = typeof performance !== "undefined" ? performance.now() : Date.now();
+    log("debug", `effect:${name} run #${runCount} started`);
+    const result = fn();
+    const duration = (typeof performance !== "undefined" ? performance.now() : Date.now()) - start;
+    log("debug", `effect:${name} run #${runCount} done (${duration.toFixed(2)}ms)`);
+    return result;
+  });
+  return handle;
+}
+function debugTime(label, fn) {
+  if (!_debugEnabled) return fn();
+  const start = typeof performance !== "undefined" ? performance.now() : Date.now();
+  let result;
+  try {
+    result = fn();
+  } finally {
+    const ms = ((typeof performance !== "undefined" ? performance.now() : Date.now()) - start).toFixed(2);
+    log("info", `\u23F1 ${label}: ${ms}ms`);
+  }
+  return result;
+}
+function debugAssert(condition, message) {
+  if (!_debugEnabled) return;
+  if (!condition) {
+    log("error", `assertion failed: ${message}`);
+    throw new Error(`[BN:debug] Assertion failed: ${message}`);
+  }
+}
+function debugDeps(s, name = "signal") {
+  if (!_debugEnabled) return;
+  const value = typeof s === "function" ? s() : s;
+  log("info", `deps:${name} current value:`, value);
+}
 export {
   browserFeatures,
   computed,
@@ -1662,16 +1771,25 @@ export {
   createLazyHydrator,
   createPluginRegistry,
   createVitalsReporter,
+  debugAssert,
+  debugDeps,
+  debugEffect,
+  debugSignal,
+  debugTime,
   definePlugin,
   detectBrowserFeatures,
+  disableDebug,
   disableDevtools,
   effect,
   emitDiagnostic,
+  enableDebug,
   enableDevtools,
+  getDebugStats,
   hydrate,
   hydrateOnIdle,
   hydrateOnInteraction,
   hydrateOnMedia,
+  isDebugEnabled,
   isDevtoolsEnabled,
   lazyHydrate,
   observeCLS,
