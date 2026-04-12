@@ -271,7 +271,16 @@ for (const [route, { view, title, activePage, ctx }] of Object.entries(pages)) {
 
 // Copy static assets
 cpSync(join(express, 'public', 'styles.css'), join(dist, 'styles.css'));
+cpSync(join(express, 'public', 'theme.css'), join(dist, 'theme.css'));
 cpSync(join(express, 'public', 'basenative.js'), join(dist, 'basenative.js'));
+
+// Copy component CSS (served as /bn-css/ in Express, must exist in dist)
+const bnCssDir = join(dist, 'bn-css');
+mkdirSync(bnCssDir, { recursive: true });
+const componentSrc = join(root, 'packages', 'components', 'src');
+for (const file of ['index.css', 'layers.css', 'reset.css', 'tokens.css', 'theme.css', 'layout.css', 'components.css', 'states.css']) {
+  cpSync(join(componentSrc, file), join(bnCssDir, file));
+}
 
 // Copy fonts (preserve structure so fonts.css relative paths work)
 cpSync(join(root, 'packages', 'fonts'), join(dist, 'fonts'), { recursive: true });
