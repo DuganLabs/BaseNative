@@ -30,6 +30,7 @@ import { renderDataGrid } from './datagrid.js';
 import { renderTree, renderTreeGrid } from './tree.js';
 import { renderVirtualList } from './virtualizer.js';
 import { renderAvatar } from './avatar.js';
+import { renderCalendar, renderPipelineBlock } from './calendar.js';
 
 describe('Button', () => {
   it('renders a primary button', () => {
@@ -653,5 +654,73 @@ describe('Textarea — additional', () => {
   it('renders placeholder', () => {
     const html = renderTextarea({ name: 'note', placeholder: 'Enter note...' });
     assert.ok(html.includes('placeholder="Enter note..."'));
+  });
+});
+
+describe('Calendar', () => {
+  it('renders a weekly grid', () => {
+    const html = renderCalendar({ startDate: '2025-06-02' });
+    assert.ok(html.includes('data-bn="calendar"'));
+    assert.ok(html.includes('data-bn="calendar-grid"'));
+  });
+
+  it('renders day headers for 7 days', () => {
+    const html = renderCalendar({ startDate: '2025-06-02' });
+    assert.ok(html.includes('data-bn="calendar-day-header"'));
+    assert.ok(html.includes('data-date="2025-06-02"'));
+    assert.ok(html.includes('data-date="2025-06-08"'));
+  });
+
+  it('renders events in the correct column', () => {
+    const html = renderCalendar({
+      startDate: '2025-06-02',
+      events: [
+        { id: 'j1', title: 'Fix wiring', start: '2025-06-03T09:00', end: '2025-06-03T11:00' },
+      ],
+    });
+    assert.ok(html.includes('data-event-id="j1"'));
+    assert.ok(html.includes('Fix wiring'));
+    assert.ok(html.includes('draggable="true"'));
+  });
+
+  it('renders event status attributes', () => {
+    const html = renderCalendar({
+      startDate: '2025-06-02',
+      events: [
+        { id: 'j2', title: 'HVAC', start: '2025-06-02T14:00', end: '2025-06-02T16:00', status: 'in_progress' },
+      ],
+    });
+    assert.ok(html.includes('data-status="in_progress"'));
+  });
+
+  it('renders empty message when no events', () => {
+    const html = renderCalendar({ startDate: '2025-06-02', emptyMessage: 'Nothing scheduled' });
+    assert.ok(html.includes('Nothing scheduled'));
+  });
+
+  it('renders time gutter labels', () => {
+    const html = renderCalendar({ startDate: '2025-06-02', hours: { start: 8, end: 17 } });
+    assert.ok(html.includes('data-bn="calendar-time-label"'));
+  });
+
+  it('renders drop zone slots', () => {
+    const html = renderCalendar({ startDate: '2025-06-02' });
+    assert.ok(html.includes('data-bn="calendar-slot"'));
+  });
+});
+
+describe('PipelineBlock', () => {
+  it('renders a draggable block', () => {
+    const html = renderPipelineBlock({ id: 'opp-1', title: 'New Lead' });
+    assert.ok(html.includes('data-bn="pipeline-block"'));
+    assert.ok(html.includes('draggable="true"'));
+    assert.ok(html.includes('data-block-id="opp-1"'));
+    assert.ok(html.includes('New Lead'));
+  });
+
+  it('renders subtitle and status', () => {
+    const html = renderPipelineBlock({ id: 'opp-2', title: 'Job', subtitle: '$1,500', status: 'qualified' });
+    assert.ok(html.includes('$1,500'));
+    assert.ok(html.includes('data-status="qualified"'));
   });
 });

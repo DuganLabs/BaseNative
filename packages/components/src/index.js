@@ -84,3 +84,6 @@ export { renderDropdownMenu } from './dropdown-menu.js';
 
 // Command Palette
 export { renderCommandPalette } from './command-palette.js';
+
+// Calendar & Pipeline
+export { renderCalendar, renderPipelineBlock, initCalendarDragDrop } from './calendar.js';

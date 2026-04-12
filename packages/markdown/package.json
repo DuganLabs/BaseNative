@@ -1,0 +1,22 @@
+{
+  "name": "@basenative/markdown",
+  "version": "0.1.0",
+  "description": "Zero-dependency markdown parser for BaseNative SSR and client rendering",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "types": "./types/index.d.ts",
+  "files": ["src", "types"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/markdown"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": ["basenative", "markdown", "parser", "zero-dependency", "esm"]
+}

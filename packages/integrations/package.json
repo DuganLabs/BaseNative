@@ -1,0 +1,22 @@
+{
+  "name": "@basenative/integrations",
+  "version": "0.1.0",
+  "description": "Headless third-party integration wrappers for BaseNative apps",
+  "type": "module",
+  "exports": {
+    "./plaid": "./src/plaid.js"
+  },
+  "types": "./types/index.d.ts",
+  "files": ["src", "types"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/integrations"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": ["basenative", "integrations", "plaid", "fintech"]
+}
