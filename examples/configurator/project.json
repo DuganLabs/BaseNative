@@ -1,0 +1,12 @@
+{
+  "name": "basenative-example-configurator",
+  "targets": {
+    "serve": {
+      "cache": false,
+      "command": "npx serve ."
+    },
+    "test": {
+      "command": "node --test passive-house-engine.test.js"
+    }
+  }
+}

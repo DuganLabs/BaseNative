@@ -1,0 +1,226 @@
+@layer components {
+  [data-bn="input-panel"] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  /* ─── Fieldset groups ─────────────────────────────────────── */
+  [data-bn="input-panel"] fieldset {
+    background: var(--surface-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-sm);
+  }
+
+  [data-bn="input-panel"] legend {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    padding-inline: var(--space-2);
+  }
+
+  /* ─── Label + input layout ────────────────────────────────── */
+  [data-bn="input-panel"] label {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--space-2);
+    padding-block: var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    border-block-end: 1px solid var(--surface-muted);
+  }
+
+  [data-bn="input-panel"] label:last-of-type {
+    border-block-end: none;
+  }
+
+  /* ─── Range inputs ────────────────────────────────────────── */
+  [data-bn="input-panel"] input[type="range"] {
+    grid-column: 1 / -1;
+    inline-size: 100%;
+    margin-block-start: var(--space-1);
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  /* ─── Output readouts ─────────────────────────────────────── */
+  [data-bn="input-panel"] output {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text);
+    background: var(--surface-muted);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    min-inline-size: 3.5rem;
+    text-align: end;
+  }
+
+  /* ─── Floor area callout ──────────────────────────────────── */
+  [data-bn="floor-area"] {
+    margin-block-start: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--accent-bg);
+    border-radius: var(--radius);
+    font-size: var(--text-sm);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* ─── Select elements ─────────────────────────────────────── */
+  [data-bn="input-panel"] select {
+    grid-column: 1 / -1;
+    margin-block-start: var(--space-1);
+    padding: var(--space-2) var(--space-3);
+    background: var(--surface-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition: border-color var(--duration) var(--ease);
+  }
+
+  [data-bn="input-panel"] select:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 1px;
+    border-color: var(--border-focus);
+  }
+
+  /* ─── Number inputs ───────────────────────────────────────── */
+  [data-bn="input-panel"] input[type="number"] {
+    inline-size: 4rem;
+    padding: var(--space-1) var(--space-2);
+    background: var(--surface-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    text-align: end;
+    transition: border-color var(--duration) var(--ease);
+  }
+
+  [data-bn="input-panel"] input[type="number"]:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 1px;
+    border-color: var(--border-focus);
+  }
+
+  /* ─── Checkbox inline labels ──────────────────────────────── */
+  [data-bn="input-panel"] label:has(input[type="checkbox"]) {
+    display: inline-flex;
+    grid-column: auto;
+    gap: var(--space-1);
+    border-block-end: none;
+    padding-block: 0;
+    cursor: pointer;
+  }
+
+  [data-bn="input-panel"] input[type="checkbox"] {
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  /* ─── Window entries ──────────────────────────────────────── */
+  [data-bn="window-entry"] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background: var(--surface-muted);
+    border-radius: var(--radius);
+    margin-block-end: var(--space-2);
+  }
+
+  [data-bn="window-entry"] select {
+    padding: var(--space-1) var(--space-2);
+    background: var(--surface-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    text-transform: capitalize;
+  }
+
+  [data-bn="window-entry"] label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    color: var(--text-secondary);
+    border: none;
+    padding: 0;
+  }
+
+  [data-bn="window-entry"] input[type="number"] {
+    inline-size: 3.5rem;
+  }
+
+  /* ─── Buttons ─────────────────────────────────────────────── */
+  [data-bn="input-panel"] button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface-card);
+    color: var(--text);
+    cursor: pointer;
+    transition: all var(--duration) var(--ease);
+  }
+
+  [data-bn="input-panel"] button:hover {
+    background: var(--surface-muted);
+    border-color: var(--border-strong);
+  }
+
+  [data-bn="input-panel"] button:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 1px;
+  }
+
+  [data-bn="add-window"] {
+    margin-block-start: var(--space-3);
+    inline-size: 100%;
+    background: var(--accent-bg);
+    border-color: transparent;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  [data-bn="add-window"]:hover {
+    background: var(--accent);
+    color: var(--surface-card);
+  }
+
+  [data-bn="window-entry"] button {
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--warn-error);
+    border-color: transparent;
+    background: transparent;
+    margin-inline-start: auto;
+  }
+
+  [data-bn="window-entry"] button:hover {
+    background: var(--warn-error-bg);
+  }
+
+  /* ─── Empty hint ──────────────────────────────────────────── */
+  [data-bn="empty-hint"] {
+    padding: var(--space-4);
+    text-align: center;
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    font-style: italic;
+  }
+}

@@ -1,0 +1,269 @@
+@layer components {
+  [data-bn="output-panel"] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    position: sticky;
+    inset-block-start: var(--space-4);
+  }
+
+  [data-bn="output-panel"] > article,
+  [data-bn="output-panel"] > details {
+    background: var(--surface-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-5);
+    box-shadow: var(--shadow-sm);
+  }
+
+  [data-bn="output-panel"] h2 {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    margin-block-end: var(--space-3);
+  }
+
+  /* ─── R-value breakdown ───────────────��───────────────────── */
+  [data-bn="r-value"] dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-1) var(--space-4);
+    font-size: var(--text-sm);
+    margin-block-end: var(--space-4);
+  }
+
+  [data-bn="r-value"] dt {
+    color: var(--text-secondary);
+  }
+
+  [data-bn="r-value"] dd {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    text-align: end;
+  }
+
+  [data-bn="r-total"] {
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    text-align: center;
+    transition: all var(--duration) var(--ease);
+  }
+
+  [data-bn="r-total"][data-r-level="high"] {
+    background: var(--r-high-bg);
+    color: var(--r-high);
+    border: 1px solid var(--r-high-border);
+  }
+
+  [data-bn="r-total"][data-r-level="mid"] {
+    background: var(--r-mid-bg);
+    color: var(--r-mid);
+    border: 1px solid var(--r-mid-border);
+  }
+
+  [data-bn="r-total"][data-r-level="low"] {
+    background: var(--r-low-bg);
+    color: var(--r-low);
+    border: 1px solid var(--r-low-border);
+  }
+
+  /* ─── Certification badge ─────────────────────────────────── */
+  [data-bn="cert-pass"] {
+    display: inline-block;
+    padding: var(--space-2) var(--space-4);
+    background: var(--cert-pass-bg);
+    color: var(--cert-pass);
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: var(--text-sm);
+  }
+
+  [data-bn="cert-fail"] {
+    display: inline-block;
+    padding: var(--space-2) var(--space-4);
+    background: var(--cert-fail-bg);
+    color: var(--cert-fail);
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: var(--text-sm);
+  }
+
+  /* ─── Warnings ─────────────────────────���──────────────────── */
+  [data-bn="warnings"] ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  [data-bn="warnings"] li {
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius);
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    border-inline-start: 3px solid;
+  }
+
+  [data-bn="warnings"] li[data-level="error"] {
+    background: var(--warn-error-bg);
+    border-color: var(--warn-error);
+    color: var(--warn-error);
+  }
+
+  [data-bn="warnings"] li[data-level="warn"] {
+    background: var(--warn-warn-bg);
+    border-color: var(--warn-warn);
+    color: var(--warn-warn);
+  }
+
+  [data-bn="warnings"] li[data-level="info"] {
+    background: var(--warn-info-bg);
+    border-color: var(--warn-info);
+    color: var(--warn-info);
+  }
+
+  /* ─── Ventilation status ──────────────────────────────────── */
+  [data-bn="ventilation"] dl {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-1) var(--space-4);
+    font-size: var(--text-sm);
+  }
+
+  [data-bn="ventilation"] dt {
+    color: var(--text-secondary);
+  }
+
+  [data-bn="ventilation"] dd {
+    font-weight: 500;
+    text-align: end;
+  }
+
+  /* ─── Overhangs list ─────────────────────────────���────────── */
+  [data-bn="overhangs"] ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  [data-bn="overhangs"] li {
+    padding: var(--space-1) var(--space-3);
+    background: var(--surface-muted);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    font-family: var(--font-mono);
+  }
+
+  /* ─── Wall cross-section ──────────────────────────────────── */
+  [data-bn="cross-section"] pre {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-relaxed);
+    padding: var(--space-4);
+    background: var(--surface-muted);
+    border-radius: var(--radius);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* ─── Details/summary ──────────────────────────��──────────── */
+  [data-bn="output-panel"] summary {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding-block-end: var(--space-3);
+    list-style: none;
+  }
+
+  [data-bn="output-panel"] summary::before {
+    content: '+ ';
+  }
+
+  [data-bn="output-panel"] details[open] > summary::before {
+    content: '- ';
+  }
+
+  /* ─── Panel schedule table ───────────────────────────���────── */
+  [data-bn="schedule"] table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+  }
+
+  [data-bn="schedule"] th {
+    text-align: start;
+    font-weight: 500;
+    color: var(--text-secondary);
+    padding: var(--space-2) var(--space-3);
+    border-block-end: 2px solid var(--border);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  [data-bn="schedule"] td {
+    padding: var(--space-2) var(--space-3);
+    border-block-end: 1px solid var(--surface-muted);
+    vertical-align: top;
+  }
+
+  [data-bn="schedule"] td:nth-child(3),
+  [data-bn="schedule"] td:nth-child(5),
+  [data-bn="schedule"] th:nth-child(3),
+  [data-bn="schedule"] th:nth-child(5) {
+    text-align: end;
+    font-family: var(--font-mono);
+  }
+
+  [data-bn="schedule"] tfoot td {
+    font-weight: 600;
+    border-block-end: none;
+    border-block-start: 2px solid var(--border);
+    padding-block: var(--space-3);
+  }
+
+  /* ─── West heat gain ──────────────────────────────────────── */
+  [data-bn="west-heat"] ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  [data-bn="west-heat"] li {
+    font-size: var(--text-sm);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-sm);
+  }
+
+  [data-bn="west-heat"] li[data-flagged="true"] {
+    background: var(--warn-warn-bg);
+    color: var(--warn-warn);
+    font-weight: 500;
+  }
+}
+
+@layer states {
+  /* Conditional border when warnings include errors */
+  [data-bn="warnings"]:has([data-level="error"]) {
+    border-color: var(--warn-error);
+  }
+
+  [data-bn="warnings"]:has([data-level="warn"]:not([data-level="error"])) {
+    border-color: var(--warn-warn);
+  }
+
+  @media (max-width: 64rem) {
+    [data-bn="output-panel"] {
+      position: static;
+    }
+  }
+}
