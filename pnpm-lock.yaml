@@ -70,6 +70,12 @@ importers:
         specifier: ^3.0.0
         version: 3.114.17
 
+  examples/configurator:
+    dependencies:
+      '@basenative/runtime':
+        specifier: workspace:*
+        version: link:../../packages/runtime
+
   examples/enterprise:
     dependencies:
       '@basenative/components':
@@ -238,7 +244,11 @@ importers:
 
   packages/icons: {}
 
+  packages/integrations: {}
+
   packages/logger: {}
+
+  packages/markdown: {}
 
   packages/marketplace: {}
 
