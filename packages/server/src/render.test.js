@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { render } from './render.js';
+import { render, resolveDeferred } from './render.js';
 import { renderToStream, renderToReadableStream } from './stream.js';
 
 describe('render', () => {
@@ -570,5 +570,126 @@ describe('render — untested paths', () => {
       result += decoder.decode(value);
     }
     assert.match(result, /<!--bn:if-->/);
+  });
+});
+
+describe('@defer directive', () => {
+  it('replaces @defer template with placeholder div', () => {
+    const html = render(
+      `<div><template @defer><p>Deferred content</p></template></div>`,
+      {}
+    );
+    assert.match(html, /data-bn-defer="d0"/);
+    assert.ok(!html.includes('Deferred content'));
+  });
+
+  it('emits hydration marker when hydratable', () => {
+    const html = render(
+      `<template @defer><p>Later</p></template>`,
+      {},
+      { hydratable: true }
+    );
+    assert.match(html, /<!--bn:defer:d0-->/);
+  });
+
+  it('collects deferred content in options._deferred', () => {
+    const options = {};
+    render(
+      `<template @defer><p>{{ msg }}</p></template>`,
+      { msg: 'hello' },
+      options
+    );
+    assert.ok(Array.isArray(options._deferred));
+    assert.equal(options._deferred.length, 1);
+    assert.equal(options._deferred[0].id, 'd0');
+  });
+
+  it('resolveDeferred renders deferred content with context', () => {
+    const options = {};
+    render(
+      `<template @defer><p>{{ name }}</p></template>`,
+      { name: 'Warren' },
+      options
+    );
+    const resolved = resolveDeferred(options);
+    assert.equal(resolved.length, 1);
+    assert.match(resolved[0].html, /<p>Warren<\/p>/);
+    assert.match(resolved[0].script, /data-bn-defer-resolve="d0"/);
+  });
+
+  it('handles multiple @defer sections', () => {
+    const options = {};
+    render(
+      `<template @defer><p>First</p></template><template @defer><p>Second</p></template>`,
+      {},
+      options
+    );
+    assert.equal(options._deferred.length, 2);
+    const resolved = resolveDeferred(options);
+    assert.match(resolved[0].html, /First/);
+    assert.match(resolved[1].html, /Second/);
+  });
+
+  it('@defer works alongside @if and @for', () => {
+    const html = render(
+      `<template @if="show"><span>Visible</span></template>
+       <template @defer><p>Lazy</p></template>
+       <template @for="x of items"><li>{{ x }}</li></template>`,
+      { show: true, items: ['a', 'b'] }
+    );
+    assert.match(html, /Visible/);
+    assert.match(html, /data-bn-defer/);
+    assert.match(html, /<li>a<\/li>/);
+    assert.ok(!html.includes('Lazy'));
+  });
+
+  it('resolveDeferred returns empty array when no @defer', () => {
+    const options = {};
+    render('<p>No defer</p>', {}, options);
+    const resolved = resolveDeferred(options);
+    assert.deepEqual(resolved, []);
+  });
+
+  it('deferred script injects HTML into placeholder', () => {
+    const options = {};
+    render(`<template @defer><span>Injected</span></template>`, {}, options);
+    const resolved = resolveDeferred(options);
+    assert.match(resolved[0].script, /innerHTML/);
+    assert.match(resolved[0].script, /Injected/);
+  });
+
+  it('renderToStream includes deferred scripts after main content', () => {
+    const chunks = [];
+    const stream = {
+      write(chunk) { chunks.push(chunk); return true; },
+      end() {},
+    };
+    renderToStream(
+      `<p>Main</p><template @defer><span>Later</span></template>`,
+      {},
+      stream
+    );
+    const output = chunks.join('');
+    assert.match(output, /Main/);
+    assert.match(output, /data-bn-defer-resolve/);
+    assert.match(output, /Later/);
+  });
+
+  it('renderToReadableStream includes deferred scripts', async () => {
+    const stream = renderToReadableStream(
+      `<p>Main</p><template @defer><span>Streamed</span></template>`,
+      {}
+    );
+    const reader = stream.getReader();
+    const decoder = new TextDecoder();
+    let result = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      result += decoder.decode(value);
+    }
+    assert.match(result, /Main/);
+    assert.match(result, /Streamed/);
+    assert.match(result, /data-bn-defer-resolve/);
   });
 });
