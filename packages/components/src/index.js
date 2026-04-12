@@ -87,3 +87,6 @@ export { renderCommandPalette } from './command-palette.js';
 
 // Calendar & Pipeline
 export { renderCalendar, renderPipelineBlock, initCalendarDragDrop } from './calendar.js';
+
+// Layout Grid (Visual Builder)
+export { renderLayoutGrid, layoutGridStyles } from './layout-grid.js';

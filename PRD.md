@@ -65,6 +65,8 @@ Modern web development is buried under abstraction layers that obscure what the 
 - i18n, realtime, and notification packages
 - E2E test coverage with Playwright
 - npm publishing pipeline via Changesets
+- **Baseline Component Expansion**: Build robust native implementations for Data tables, accessible Modals with focus trapping, and layout primitives.
+- **SSR Streaming Enhancements**: Suspense-like boundaries for out-of-order template streaming and selective hydration.
 
 ### Phase 3 — Ecosystem (Next)
 - Visual builder for no-code template composition
