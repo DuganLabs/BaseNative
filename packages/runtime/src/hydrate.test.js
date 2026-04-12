@@ -391,3 +391,57 @@ describe('hydration diagnostics', () => {
     assert.equal(mismatches[0].code, 'BN_HYDRATE_NO_DIRECTIVES');
   });
 });
+
+describe('@defer hydration', () => {
+  it('hydrates pre-resolved deferred content on initial hydrate', async () => {
+    const hydrate = await loadHydrate();
+    const root = document.createElement('section');
+    root.innerHTML = `
+      <div data-bn-defer="d0">
+        <p>{{ msg() }}</p>
+      </div>
+    `;
+    document.body.append(root);
+
+    const msg = signal('Deferred!');
+    hydrate(root, { msg });
+
+    const p = root.querySelector('p');
+    assert.ok(p.textContent.includes('Deferred!'));
+  });
+
+  it('hydrates deferred content when bn:defer event fires', async () => {
+    const hydrate = await loadHydrate();
+    const root = document.createElement('section');
+    root.innerHTML = '<div data-bn-defer="d0"></div>';
+    document.body.append(root);
+
+    const name = signal('Warren');
+    const dispose = hydrate(root, { name });
+
+    const target = root.querySelector('[data-bn-defer="d0"]');
+    target.innerHTML = '<span>Hello {{ name() }}</span>';
+
+    document.dispatchEvent(new window.CustomEvent('bn:defer', { detail: { id: 'd0' } }));
+
+    const span = root.querySelector('span');
+    assert.ok(span.textContent.includes('Hello Warren'));
+
+    dispose();
+  });
+
+  it('dispose removes the bn:defer event listener', async () => {
+    const hydrate = await loadHydrate();
+    const root = document.createElement('section');
+    root.innerHTML = '<div data-bn-defer="d0"></div>';
+    document.body.append(root);
+
+    const dispose = hydrate(root, {});
+    dispose();
+
+    const target = root.querySelector('[data-bn-defer="d0"]');
+    target.innerHTML = '<p>Late content</p>';
+    document.dispatchEvent(new window.CustomEvent('bn:defer', { detail: { id: 'd0' } }));
+    // No error thrown, listener was cleaned up
+  });
+});

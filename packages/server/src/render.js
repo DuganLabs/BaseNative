@@ -43,7 +43,10 @@ function processChildren(parent, ctx, options) {
   while (index < children.length) {
     const node = children[index];
     if (node.nodeType === 1 && node.rawTagName === 'template') {
-      if (node.getAttribute('@if') != null) {
+      if (node.getAttribute('@defer') != null) {
+        processDefer(node, ctx, options);
+        index++;
+      } else if (node.getAttribute('@if') != null) {
         index = processIf(children, index, ctx, options);
       } else if (node.getAttribute('@for') != null) {
         index = processFor(children, index, ctx, options);
@@ -219,6 +222,22 @@ function processFor(children, index, ctx, options) {
   return index + 1;
 }
 
+let deferCounter = 0;
+
+function processDefer(templateNode, ctx, options) {
+  const id = `d${deferCounter++}`;
+  const innerHTML = templateNode.innerHTML;
+
+  if (!options._deferred) options._deferred = [];
+  options._deferred.push({ id, html: innerHTML, ctx: Object.assign({}, ctx) });
+
+  const placeholder = parseFragment(
+    `<div data-bn-defer="${id}"></div>` +
+    (options.hydratable ? `<!--bn:defer:${id}-->` : '')
+  );
+  templateNode.replaceWith(placeholder);
+}
+
 function processSwitch(switchNode, ctx, options) {
   const expr = switchNode.getAttribute('@switch');
   const value = evaluate(expr, ctx, options);
@@ -268,7 +287,29 @@ function parseAttrs(rawAttrs) {
 }
 
 export function render(html, ctx = {}, options = {}) {
+  deferCounter = 0;
   const root = parseFragment(html);
   processChildren(root, ctx, options);
   return root.toString();
+}
+
+export function resolveDeferred(options) {
+  const deferred = options._deferred || [];
+  return deferred.map(({ id, html, ctx }) => {
+    const content = parseFragment(html);
+    processChildren(content, ctx, options);
+    const rendered = content.toString();
+    return {
+      id,
+      html: rendered,
+      script: `<script data-bn-defer-resolve="${id}">` +
+        `(function(){` +
+        `var t=document.querySelector('[data-bn-defer="${id}"]');` +
+        `if(t){t.innerHTML=${JSON.stringify(rendered)};` +
+        `t.removeAttribute('data-bn-defer');` +
+        `var e=new CustomEvent('bn:defer',{detail:{id:'${id}'}});` +
+        `document.dispatchEvent(e)}` +
+        `})();<\/script>`,
+    };
+  });
 }

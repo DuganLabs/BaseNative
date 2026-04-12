@@ -374,9 +374,33 @@ export function hydrateChildren(parent, ctx, options = {}) {
   return processed;
 }
 
+function hydrateDeferred(root, ctx, options) {
+  const existing = root.querySelectorAll?.('[data-bn-defer]') ?? [];
+  for (const el of existing) {
+    if (el.children.length > 0) {
+      hydrateChildren(el, ctx, options);
+    }
+  }
+
+  if (typeof document === 'undefined') return () => {};
+
+  function onDefer(event) {
+    const id = event.detail?.id;
+    if (!id) return;
+    const target = root.querySelector?.(`[data-bn-defer-resolve="${id}"] ~ [data-bn-defer="${id}"]`) ??
+                   root.querySelector?.(`div[data-bn-defer="${id}"]`);
+    if (!target) return;
+    hydrateChildren(target, ctx, options);
+  }
+
+  document.addEventListener('bn:defer', onDefer);
+  return () => document.removeEventListener('bn:defer', onDefer);
+}
+
 export function hydrate(root, ctx, options = {}) {
   const runtimeOptions = createRuntimeOptions(options);
   const processed = hydrateChildren(root, ctx, runtimeOptions);
+  const cleanupDeferred = hydrateDeferred(root, ctx, runtimeOptions);
 
   if (processed === 0) {
     const markerMessage = hasHydrationMarkers(root)
@@ -390,5 +414,8 @@ export function hydrate(root, ctx, options = {}) {
     });
   }
 
-  return () => disposeNodeTree(root);
+  return () => {
+    cleanupDeferred();
+    disposeNodeTree(root);
+  };
 }
