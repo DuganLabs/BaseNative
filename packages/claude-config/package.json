@@ -1,0 +1,42 @@
+{
+  "name": "@basenative/claude-config",
+  "version": "0.1.0",
+  "description": "Bundled Claude Code subagents, skills, slash commands, hooks, and settings for DuganLabs / BaseNative projects. Drop in via `bn-claude install`.",
+  "type": "module",
+  "bin": {
+    "bn-claude": "./src/bn-claude.js"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./paths": "./src/paths.js"
+  },
+  "files": [
+    "agents",
+    "skills",
+    "commands",
+    "settings",
+    "hooks",
+    "src",
+    "CLAUDE.md.tmpl"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/claude-config"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": [
+    "basenative",
+    "claude",
+    "claude-code",
+    "subagents",
+    "skills",
+    "slash-commands",
+    "hooks",
+    "duganlabs"
+  ]
+}

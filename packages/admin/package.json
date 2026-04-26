@@ -1,0 +1,42 @@
+{
+  "name": "@basenative/admin",
+  "version": "0.1.0",
+  "description": "Pluggable admin & moderation surface — protected-route helpers, role/permission primitives, audit-log middleware, and queue-review UI components for BaseNative apps",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./roles": "./src/roles.js",
+    "./queue": "./src/queue.js",
+    "./audit": "./src/audit.js",
+    "./handlers": "./src/handlers.js",
+    "./components": "./src/components.js",
+    "./migrations/0001": "./migrations/0001_audit_and_roles.sql"
+  },
+  "types": "./types/index.d.ts",
+  "files": ["src", "types", "migrations"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/admin"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": [
+    "basenative",
+    "admin",
+    "moderation",
+    "rbac",
+    "audit-log",
+    "queue",
+    "review"
+  ],
+  "peerDependencies": {
+    "@basenative/auth": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@basenative/auth": { "optional": true }
+  }
+}

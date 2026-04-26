@@ -1,0 +1,40 @@
+{
+  "name": "@basenative/share",
+  "version": "0.1.0",
+  "description": "Native Web Share + clipboard fallback, share-card mint client+server, and OG-redirect landing page generator for BaseNative apps",
+  "type": "module",
+  "exports": {
+    ".": "./src/client.js",
+    "./client": "./src/client.js",
+    "./server": "./src/server.js",
+    "./og-redirect": "./src/og-redirect.js",
+    "./migrations/0001": "./migrations/0001_share_cards.sql"
+  },
+  "types": "./types/index.d.ts",
+  "files": ["src", "types", "migrations"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/share"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": [
+    "basenative",
+    "share",
+    "web-share",
+    "clipboard",
+    "open-graph",
+    "social-share",
+    "cloudflare-pages"
+  ],
+  "peerDependencies": {
+    "@basenative/og-image": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@basenative/og-image": { "optional": true }
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "extends": "@basenative/tsconfig/base.json",
+  "include": ["src/**/*"]
+}

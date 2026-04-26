@@ -1,0 +1,242 @@
+/* Built with BaseNative — basenative.dev */
+/*
+ * @basenative/combobox — default styles.
+ *
+ * Layout-shift-free: the listbox is `position: absolute` and only
+ * shown when expanded, so opening/closing never reflows the page.
+ *
+ * All visual properties are driven by CSS custom properties so the
+ * combobox inherits its host theme:
+ *
+ *   :root { --cb-bg: #fff; --cb-fg: #111; }
+ *
+ * Default palette is WCAG AA on the default light surface:
+ *   fg #111 on bg #fff                          → 19.5:1
+ *   create-fg #0F5132 on listbox-bg #fff        → 8.5:1
+ *   border-focus #2E5BFF on bg #fff             → 4.6:1 (AA non-text 3:1, AA text 4.5:1)
+ */
+
+@layer combobox {
+  [data-bn="combobox"] {
+    /* ── Theming tokens ─────────────────────────────────── */
+    --cb-bg: #ffffff;
+    --cb-fg: #111111;
+    --cb-muted-fg: #555555;
+    --cb-border: #c8c6bf;
+    --cb-border-focus: #2E5BFF;
+    --cb-radius: 6px;
+    --cb-input-h: 44px;
+    --cb-input-px: 12px;
+    --cb-font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --cb-font-size: 16px; /* >=16px so iOS doesn't zoom on focus */
+
+    /* Listbox */
+    --cb-listbox-bg: #ffffff;
+    --cb-listbox-border: #c8c6bf;
+    --cb-listbox-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --cb-listbox-radius: 6px;
+    --cb-listbox-max-h: 280px;
+
+    /* Options */
+    --cb-option-bg-hover: #f1efe9;
+    --cb-option-bg-active: #e6e4dc;
+    --cb-option-fg: #111111;
+    --cb-option-hint-fg: #6b6960;
+
+    /* Create-option (distinct so SR users perceive it as a different action) */
+    --cb-create-fg: #0F5132;
+    --cb-create-bg: #ECFDF3;
+
+    /* WCAG 2.5.5 AA tap target */
+    --cb-min-tap: 44px;
+
+    /* Motion */
+    --cb-transition: background-color 120ms, border-color 120ms;
+
+    /* ── Container ──────────────────────────────────────── */
+    position: relative;
+    display: block;
+    color: var(--cb-fg);
+    font-family: var(--cb-font-family);
+    font-size: var(--cb-font-size);
+  }
+
+  [data-bn="cb-label"] {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.875em;
+    color: var(--cb-muted-fg);
+    letter-spacing: 0.5px;
+  }
+
+  [data-bn="cb-field"] {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    background: var(--cb-bg);
+    border: 1px solid var(--cb-border);
+    border-radius: var(--cb-radius);
+    height: var(--cb-input-h);
+    transition: var(--cb-transition);
+  }
+
+  [data-bn="cb-field"]:focus-within {
+    border-color: var(--cb-border-focus);
+    box-shadow: 0 0 0 3px rgba(46, 91, 255, 0.20);
+  }
+
+  [data-bn="cb-input"] {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    padding: 0 var(--cb-input-px);
+    background: transparent;
+    border: 0;
+    outline: 0;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: 1;
+  }
+
+  [data-bn="cb-input"]::placeholder {
+    color: var(--cb-muted-fg);
+    opacity: 1;
+  }
+
+  [data-bn="cb-toggle"] {
+    flex: 0 0 auto;
+    width: 36px;
+    min-height: var(--cb-min-tap);
+    background: transparent;
+    border: 0;
+    border-left: 1px solid var(--cb-border);
+    color: var(--cb-muted-fg);
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  /* ── Listbox (popup) ────────────────────────────────── */
+  [data-bn="cb-listbox"] {
+    /* Layout-shift-free: absolute popup, doesn't push content. */
+    position: absolute;
+    z-index: 50;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 4px 0;
+    list-style: none;
+    background: var(--cb-listbox-bg);
+    color: var(--cb-fg);
+    border: 1px solid var(--cb-listbox-border);
+    border-radius: var(--cb-listbox-radius);
+    box-shadow: var(--cb-listbox-shadow);
+    max-height: var(--cb-listbox-max-h);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  [data-bn="cb-listbox"][hidden] {
+    display: none;
+  }
+
+  /* ── Option rows ────────────────────────────────────── */
+  [data-bn="cb-option"] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: var(--cb-min-tap);
+    padding: 8px 12px;
+    color: var(--cb-option-fg);
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: var(--cb-transition);
+  }
+
+  [data-bn="cb-option"]:hover {
+    background: var(--cb-option-bg-hover);
+  }
+
+  /* Active = aria-activedescendant target. The actual visual highlight
+   * the user sees during keyboard nav. */
+  [data-bn="cb-option"][aria-selected="true"],
+  .bn-cb-option--active {
+    background: var(--cb-option-bg-active);
+  }
+
+  [data-bn="cb-option"][aria-disabled="true"] {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .bn-cb-option-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .bn-cb-option-hint {
+    flex: 0 0 auto;
+    font-size: 0.875em;
+    color: var(--cb-option-hint-fg);
+  }
+
+  /* Create-option: distinct color + leading icon hint */
+  .bn-cb-option--create {
+    color: var(--cb-create-fg);
+    background: var(--cb-create-bg);
+    font-weight: 600;
+  }
+
+  .bn-cb-option--create:hover,
+  .bn-cb-option--create[aria-selected="true"],
+  .bn-cb-option--create.bn-cb-option--active {
+    /* Slightly darker accent — still WCAG-AA on white. */
+    background: #D1FADF;
+  }
+
+  .bn-cb-empty {
+    padding: 12px;
+    color: var(--cb-muted-fg);
+    text-align: center;
+    font-size: 0.9em;
+  }
+
+  /* Visually-hidden live region (still announced by SRs). */
+  .bn-cb-live {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0);
+    white-space: nowrap; border: 0;
+  }
+
+  /* Reduced motion: drop transitions entirely. The popup uses display:
+   * none/block so there's no enter/exit animation regardless. */
+  @media (prefers-reduced-motion: reduce) {
+    [data-bn="cb-field"],
+    [data-bn="cb-option"] {
+      transition: none;
+    }
+  }
+
+  /* High-contrast mode: ensure focus outline is visible regardless of
+   * the box-shadow (which Windows HC mode will strip). */
+  @media (forced-colors: active) {
+    [data-bn="cb-field"]:focus-within {
+      outline: 2px solid CanvasText;
+      box-shadow: none;
+    }
+    [data-bn="cb-option"][aria-selected="true"],
+    .bn-cb-option--active {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
+  }
+}

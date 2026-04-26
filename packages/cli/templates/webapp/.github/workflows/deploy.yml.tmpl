@@ -1,0 +1,14 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  deploy:
+    uses: DuganLabs/.github/.github/workflows/cf-pages-deploy.yml@main
+    with:
+      project: {{name}}
+    secrets: inherit

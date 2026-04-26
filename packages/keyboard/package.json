@@ -1,0 +1,27 @@
+{
+  "name": "@basenative/keyboard",
+  "version": "0.1.0",
+  "description": "Accessible mobile-first on-screen virtual keyboard primitive — layout-agnostic, signal-driven key state coloring, themable",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./css": "./src/styles.css",
+    "./styles.css": "./src/styles.css"
+  },
+  "types": "./types/index.d.ts",
+  "peerDependencies": {
+    "@basenative/runtime": "workspace:*"
+  },
+  "files": ["src", "types"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/keyboard"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": ["basenative", "keyboard", "virtual-keyboard", "mobile", "a11y", "wcag", "qwerty", "numpad", "signals"]
+}

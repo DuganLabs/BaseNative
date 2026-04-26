@@ -1,3 +1,4 @@
+// Built with BaseNative — basenative.dev
 /**
  * Analyze command - analyzes bundle size and dependencies.
  *
@@ -10,7 +11,7 @@
  * - Suggestions for optimization
  */
 
-import { existsSync, readdirSync, statSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, statSync } from 'node:fs';
 import { resolve, join, relative, extname } from 'node:path';
 import { parseArgs } from 'node:util';
 

@@ -1,0 +1,27 @@
+{
+  "name": "{{name}}",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "{{description}}",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "lint": "eslint src/",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@basenative/runtime": "^0.3.0"
+  },
+  "devDependencies": {
+    "@basenative/eslint-config": "^0.1.0",
+    "@basenative/tsconfig": "^0.1.0",
+    "@basenative/wrangler-preset": "^0.1.0",
+    "eslint": "^10.0.3",
+    "wrangler": "^4.74.0"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "packageManager": "pnpm@9.15.0"
+}

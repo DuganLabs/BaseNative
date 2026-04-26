@@ -1,0 +1,27 @@
+{
+  "name": "@basenative/combobox",
+  "version": "0.1.0",
+  "description": "Accessible combobox primitive — typeahead input that filters an existing list and lets the user create a new entry. WAI-ARIA combobox listbox pattern.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./css": "./src/styles.css",
+    "./styles.css": "./src/styles.css"
+  },
+  "types": "./types/index.d.ts",
+  "peerDependencies": {
+    "@basenative/runtime": "workspace:*"
+  },
+  "files": ["src", "types"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/combobox"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": ["basenative", "combobox", "typeahead", "autocomplete", "a11y", "wcag", "aria", "ssr", "signals"]
+}

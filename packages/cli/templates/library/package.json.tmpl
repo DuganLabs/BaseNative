@@ -1,0 +1,25 @@
+{
+  "name": "{{name}}",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "{{description}}",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": ["src", "types"],
+  "scripts": {
+    "lint": "eslint src/",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "@basenative/eslint-config": "^0.1.0",
+    "@basenative/tsconfig": "^0.1.0",
+    "eslint": "^10.0.3"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@9.15.0"
+}

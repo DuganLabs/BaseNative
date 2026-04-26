@@ -1,0 +1,55 @@
+# ────────────────────────────────────────────────────────────────────────────
+#  GitHub Actions snippet — wire Doppler into a deploy job.
+#  Drop into .github/workflows/deploy.yml and adjust as needed.
+#
+#  Prerequisite (one-time, per repo):
+#    bn-doppler ci-token --config prod    # copy the printed token
+#    gh secret set DOPPLER_TOKEN          # paste it
+# ────────────────────────────────────────────────────────────────────────────
+
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Install + authenticate the Doppler CLI.
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+
+      # Sanity check: every required secret is present in the prod config.
+      - name: Verify Doppler secrets
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+        run: pnpm exec bn-doppler verify --config prod
+
+      # Build, then deploy through `doppler run --` so secrets land in the
+      # process env without ever being written to disk or echoed.
+      - name: Build
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+        run: doppler run --config prod -- pnpm build
+
+      - name: Deploy (Wrangler)
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: doppler run --config prod -- pnpm exec bn-wrangler deploy

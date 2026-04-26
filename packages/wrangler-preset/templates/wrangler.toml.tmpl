@@ -1,0 +1,35 @@
+# ──────────────────────────────────────────────────────────────────────────
+#   wrangler.toml — generated from @basenative/wrangler-preset
+#   Edit the placeholders below, then run: bn-wrangler deploy
+# ──────────────────────────────────────────────────────────────────────────
+
+name = "__PROJECT_NAME__"
+main = "src/index.js"
+compatibility_date = "2025-09-23"
+compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
+pages_build_output_dir = "dist"
+workers_dev = true
+send_metrics = false
+
+# ── Bindings (uncomment + fill in) ────────────────────────────────────────
+#
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "__D1_NAME__"
+# database_id = "__D1_ID__"
+#
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = "__KV_ID__"
+#
+# [[r2_buckets]]
+# binding = "ASSETS"
+# bucket_name = "__R2_BUCKET__"
+#
+# [[durable_objects.bindings]]
+# name = "ROOM"
+# class_name = "Room"
+#
+# [vars]
+# # Public, non-secret vars only. Secrets go through Doppler.
+# APP_NAME = "__PROJECT_NAME__"

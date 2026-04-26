@@ -8,3 +8,8 @@ skills-lock.json
 examples/express/public/basenative.js
 dist/
 reports/
+
+# Local-only sandbox dirs (not part of basenative)
+/dotfiles
+/experiments
+/homelab

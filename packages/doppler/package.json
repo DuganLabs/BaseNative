@@ -1,0 +1,33 @@
+{
+  "name": "@basenative/doppler",
+  "version": "0.1.0",
+  "description": "Thin developer-experience layer around Doppler — local-dev wrapper, CI helper, project bootstrap, environment validation. BaseNative ships plumbing, never values.",
+  "type": "module",
+  "bin": {
+    "bn-doppler": "./src/cli.js"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./required": "./src/required.js"
+  },
+  "files": ["src", "templates"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/doppler"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": [
+    "basenative",
+    "doppler",
+    "secrets",
+    "env",
+    "cloudflare",
+    "wrangler",
+    "infra"
+  ]
+}

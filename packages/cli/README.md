@@ -1,62 +1,125 @@
 # @basenative/cli
 
-> The `bn` command-line tool for scaffolding, development, and deployment of BaseNative projects
+> The `bn` command — front door for every BaseNative / DuganLabs project.
 
-Part of the [BaseNative](https://github.com/DuganLabs/basenative) ecosystem — a signal-based web runtime over native HTML.
+Scaffolding, PRDs, spec-driven workflows (compatible with
+[github/spec-kit](https://github.com/github/spec-kit)), GitHub
+milestones/issues, Nx, Wrangler + Doppler deploys, and a `doctor` that calls
+out drift. Zero heavy dependencies — Node built-ins only.
 
 ## Install
 
 ```bash
 npm install -g @basenative/cli
-# or use without installing
+# or, without installing:
 npx @basenative/cli create my-app
 ```
 
-## Quick Start
+## Quick start
 
 ```bash
-# Create a new project
-bn create my-app
-bn create my-app --template enterprise
-
-# Start development server with hot reload
+bn create my-app --template t4bs
+cd my-app
 bn dev
-bn dev --port 8080
-
-# Build for production
-bn build
-
-# Generate a component, route, or page
-bn generate component MyButton
-bn generate route /users
-bn generate page dashboard
-
-# Manage environment variables
-bn env set API_KEY sk-123
-
-# Analyze bundle size and dependencies
-bn analyze
-
-# Deploy
-bn deploy --env production
+bn deploy --preview
 ```
 
 ## Commands
 
-- `bn create <name>` — Scaffolds a new BaseNative project from a template. Templates: `default`, `enterprise`, `cloudflare-workers`.
-- `bn dev` — Starts a development server with file watching and hot reload. Options: `--port`.
-- `bn build` — Bundles the project for production using ESBuild. Outputs to `dist/`.
-- `bn generate <type> <name>` — Generates boilerplate for a component, route, or page in the current project.
-- `bn deploy` — Deploys the built project. Options: `--env` (target environment).
-- `bn env <subcommand>` — Manages environment variables. Subcommands: `set`, `get`, `list`, `delete`.
-- `bn analyze` — Reports bundle size, dependency graph, and dead code.
-- `bn help` — Shows help for all commands.
+### Front door
+
+| Command | What it does |
+|---|---|
+| `bn create <name> [-t <template>]` | Scaffold a new project. Templates: `webapp` (default), `worker`, `library`, `t4bs`. Legacy: `minimal`, `enterprise`, `api`. |
+| `bn prd init`                       | Write `docs/PRD.md` from the t4bs-format scaffold. |
+| `bn prd edit`                       | Open `docs/PRD.md` in `$EDITOR`. |
+| `bn prd sync`                       | Parse the milestones section → `.bn/prd-issues.json` (consumed by `bn gh sync`). |
+| `bn speckit init`                   | Bootstrap `.specify/` (memory, specs, templates). |
+| `bn speckit spec <name>`            | Scaffold `.specify/specs/NNN-name/spec.md`. |
+| `bn speckit plan`                   | Stub `plan.md` for the active spec. |
+| `bn speckit tasks`                  | Extract `tasks.md` items → `.bn/speckit-tasks.json`. |
+| `bn speckit validate`               | Lint specs/plans/tasks for required fields. |
+| `bn gh sync`                        | Idempotently create milestones + issues from `.bn/*.json`. |
+| `bn gh board`                       | Create / verify the org Project for this repo. |
+| `bn gh automate`                    | Verify `.github/workflows/deploy.yml` references `DuganLabs/.github` reusable workflows. |
+| `bn nx [...]`                       | Passthrough to `nx` (uses your detected pm). `--task <t> [--affected]` shorthand for common runs. |
+
+### Workflow
+
+| Command | What it does |
+|---|---|
+| `bn dev`                                | Run the project's dev server (npm-script first, then `node --watch`, then `wrangler dev`). |
+| `bn deploy --prod` / `--preview`        | `wrangler pages deploy` (or `wrangler deploy`), wrapped in `doppler run --` if Doppler is installed. |
+| `bn deploy --env <preview|staging|production>` | Legacy basenative.cloud deploy. `--dry-run` prints a manifest. |
+| `bn doctor`                             | Validate Node version, `.nvmrc`, packageManager, eslint config, tsconfig, doppler-required.json, deploy.yml. |
+| `bn build`                              | Build for production. |
+| `bn generate <type> <name>`             | Generate a `component`, `route`, or `page`. |
+| `bn env <list|set|unset|pull|push>`     | Manage `.env`. |
+| `bn analyze [dir]`                      | Bundle size + dependency report. |
 
 ## Options
 
-- `--help`, `-h` — Show help for a command.
-- `--version`, `-v` — Print the installed CLI version.
+Every command supports `--help`/`-h`. Top-level flags:
+
+- `-h, --help`     Show help.
+- `-v, --version`  Print the installed CLI version.
+
+Commands that emit data accept `--json`. Commands that mutate the filesystem
+or remote state accept `--dry-run`.
+
+## End-to-end example
+
+```bash
+# 1. Scaffold and check
+bn create rocket --template webapp
+cd rocket
+bn doctor
+
+# 2. Author a PRD, sync to GitHub
+bn prd init --owner "Warren"
+$EDITOR docs/PRD.md         # fill in milestones
+bn prd sync
+bn gh sync                  # idempotent
+
+# 3. Spec a feature
+bn speckit init
+bn speckit spec onboarding
+bn speckit plan
+bn speckit tasks
+bn gh sync --input .bn/speckit-tasks.json
+
+# 4. Build and ship
+bn dev
+bn deploy --preview
+bn deploy --prod
+```
+
+## Templates
+
+All templates ship with:
+
+- `package.json` referencing `@basenative/*` packages.
+- `eslint.config.js` extending `@basenative/eslint-config`.
+- `tsconfig.json` extending `@basenative/tsconfig`.
+- `.nvmrc`, `.prettierrc`, `.gitignore`.
+- `wrangler.toml` (where applicable).
+- `.github/workflows/deploy.yml` calling reusable workflows from
+  `DuganLabs/.github`.
+
+| Template | Stack |
+|---|---|
+| `webapp`  | Cloudflare Pages SPA + Worker, BaseNative runtime/router/server. |
+| `worker`  | Cloudflare Worker (API / cron / queue). |
+| `library` | npm-publishable library, Apache-2.0. |
+| `t4bs`    | Game scaffold using `@basenative/og-image`, `keyboard`, `share`, `auth-webauthn`, `admin`, `persist`. |
+
+## Manifest
+
+`manifest.json` enumerates every command, subcommand, and flag — useful for
+shell completions and downstream tooling.
 
 ## License
 
-MIT
+Apache-2.0.
+
+<!-- Built with BaseNative — basenative.dev -->
