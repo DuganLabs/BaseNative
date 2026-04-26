@@ -1,0 +1,66 @@
+{
+  "name": "@basenative/station",
+  "version": "0.1.0",
+  "description": "Queue-driven local-inference primitive — drives a cloudflared-tunneled vLLM tower (or any OpenAI-compatible endpoint) with an SQLite-backed job queue, iteration loop runtime, fallback to Workers AI, and reusable job templates.",
+  "type": "module",
+  "bin": {
+    "bn-station": "./src/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./runner": {
+      "types": "./types/index.d.ts",
+      "default": "./src/runner.js"
+    },
+    "./queue": {
+      "types": "./types/index.d.ts",
+      "default": "./src/queue.js"
+    },
+    "./client": {
+      "types": "./types/index.d.ts",
+      "default": "./src/client.js"
+    },
+    "./templates": {
+      "types": "./types/index.d.ts",
+      "default": "./src/templates/index.js"
+    },
+    "./ops": {
+      "types": "./types/index.d.ts",
+      "default": "./src/ops.js"
+    }
+  },
+  "types": "./types/index.d.ts",
+  "files": [
+    "src",
+    "types",
+    "CHANGELOG.md"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DuganLabs/BaseNative.git",
+    "directory": "packages/station"
+  },
+  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/BaseNative/issues"
+  },
+  "keywords": [
+    "basenative",
+    "station",
+    "local-inference",
+    "vllm",
+    "openai-compatible",
+    "queue",
+    "loop-pattern",
+    "workers-ai",
+    "cloudflared"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  }
+}
