@@ -1,7 +1,7 @@
 {
   "name": "@basenative/og-image",
   "version": "0.2.0",
-  "description": "Worker-runtime OG / social share PNG renderer — satori + resvg-wasm with KV-cached fonts and themable scene presets",
+  "description": "Worker-runtime OG / social share PNG renderer \u2014 satori + resvg-wasm with KV-cached fonts and themable scene presets",
   "type": "module",
   "exports": {
     ".": {
@@ -25,12 +25,12 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/DuganLabs/basenative.git",
+    "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/og-image"
   },
-  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
   "bugs": {
-    "url": "https://github.com/DuganLabs/basenative/issues"
+    "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
   "keywords": [
     "basenative",

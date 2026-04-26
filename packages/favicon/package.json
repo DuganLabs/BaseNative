@@ -1,7 +1,7 @@
 {
   "name": "@basenative/favicon",
   "version": "1.0.0",
-  "description": "SVG-first favicon generator + design primitives — apple-touch-icon, maskable, manifest, and the right <link> tags for every DuganLabs project",
+  "description": "SVG-first favicon generator + design primitives \u2014 apple-touch-icon, maskable, manifest, and the right <link> tags for every DuganLabs project",
   "type": "module",
   "bin": {
     "bn-favicon": "./src/cli.js"
@@ -46,12 +46,12 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/DuganLabs/basenative.git",
+    "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/favicon"
   },
-  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
   "bugs": {
-    "url": "https://github.com/DuganLabs/basenative/issues"
+    "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
   "keywords": [
     "basenative",

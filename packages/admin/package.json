@@ -1,7 +1,7 @@
 {
   "name": "@basenative/admin",
   "version": "1.0.0",
-  "description": "Pluggable admin & moderation surface — protected-route helpers, role/permission primitives, audit-log middleware, and queue-review UI components for BaseNative apps",
+  "description": "Pluggable admin & moderation surface \u2014 protected-route helpers, role/permission primitives, audit-log middleware, and queue-review UI components for BaseNative apps",
   "type": "module",
   "exports": {
     ".": {
@@ -39,12 +39,12 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/DuganLabs/basenative.git",
+    "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/admin"
   },
-  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
   "bugs": {
-    "url": "https://github.com/DuganLabs/basenative/issues"
+    "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
   "keywords": [
     "basenative",

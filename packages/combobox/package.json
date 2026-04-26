@@ -1,7 +1,7 @@
 {
   "name": "@basenative/combobox",
   "version": "1.0.0",
-  "description": "Accessible combobox primitive — typeahead input that filters an existing list and lets the user create a new entry. WAI-ARIA combobox listbox pattern.",
+  "description": "Accessible combobox primitive \u2014 typeahead input that filters an existing list and lets the user create a new entry. WAI-ARIA combobox listbox pattern.",
   "type": "module",
   "exports": {
     ".": {
@@ -22,12 +22,12 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/DuganLabs/basenative.git",
+    "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/combobox"
   },
-  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
   "bugs": {
-    "url": "https://github.com/DuganLabs/basenative/issues"
+    "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
   "keywords": [
     "basenative",

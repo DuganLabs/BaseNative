@@ -1,7 +1,7 @@
 {
   "name": "@basenative/cli",
   "version": "0.4.0",
-  "description": "The bn CLI — front door for BaseNative / DuganLabs projects (create, prd, speckit, gh, nx, deploy, doctor)",
+  "description": "The bn CLI \u2014 front door for BaseNative / DuganLabs projects (create, prd, speckit, gh, nx, deploy, doctor)",
   "type": "module",
   "bin": {
     "bn": "./src/index.js",
@@ -22,12 +22,12 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/DuganLabs/basenative.git",
+    "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/cli"
   },
-  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
   "bugs": {
-    "url": "https://github.com/DuganLabs/basenative/issues"
+    "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
   "keywords": [
     "basenative",
