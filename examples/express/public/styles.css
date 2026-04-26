@@ -242,6 +242,10 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+    /* Stop the wordmark from shoving the nav off-screen on narrow viewports. */
+    min-inline-size: 0;
   }
 
   body > header h1 {
@@ -261,7 +265,18 @@
     list-style: none;
     display: flex;
     gap: var(--space-md);
+    /* Below the breakpoint, the nav links scroll horizontally with snap.
+       No fixed scrollbar; works on touch + trackpads. */
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    min-inline-size: 0;
+    max-inline-size: 100%;
   }
+  body > header ul::-webkit-scrollbar { display: none; }
+  body > header li { scroll-snap-align: start; flex: 0 0 auto; }
 
   body > header a {
     font-family: var(--font-family);
