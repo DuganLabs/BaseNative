@@ -56,7 +56,7 @@ export async function main(argv = process.argv.slice(2)) {
     case 'run':
       return cmdRun(station, rest);
     case 'ops':
-      return cmdOps(station, rest);
+      return cmdOps(station);
     case 'drain':
       return cmdDrain(station, rest);
     default:

@@ -48,14 +48,13 @@ export const fsmClassifier = Object.freeze({
 
   successCheck(response, payload) {
     if (typeof response !== 'string') return false;
+    // Bound input length defensively before any regex work.
+    if (response.length > 100_000) return false;
     let parsed;
     try {
-      // Tolerate an accidental ```json ... ``` wrap by stripping.
-      const stripped = response
-        .trim()
-        .replace(/^```(?:json)?\s*/i, '')
-        .replace(/\s*```$/i, '');
-      parsed = JSON.parse(stripped);
+      // Tolerate an accidental ```json ... ``` wrap by stripping with a
+      // simple bounded slice (avoids ReDoS-prone backtracking patterns).
+      parsed = JSON.parse(stripCodeFence(response.trim()));
     } catch {
       return false;
     }
@@ -68,3 +67,27 @@ export const fsmClassifier = Object.freeze({
     return true;
   },
 });
+
+/**
+ * Strip leading ```/```json and trailing ``` fences if present.
+ * Single linear pass — no regex, no backtracking risk.
+ */
+function stripCodeFence(s) {
+  let start = 0;
+  let end = s.length;
+  if (s.startsWith('```')) {
+    start = 3;
+    if (s.slice(start, start + 4).toLowerCase() === 'json') start += 4;
+    // Skip whitespace after the opening fence (bounded by string end).
+    while (start < end && (s[start] === ' ' || s[start] === '\t' || s[start] === '\n' || s[start] === '\r')) {
+      start += 1;
+    }
+  }
+  if (s.endsWith('```')) {
+    end -= 3;
+    while (end > start && (s[end - 1] === ' ' || s[end - 1] === '\t' || s[end - 1] === '\n' || s[end - 1] === '\r')) {
+      end -= 1;
+    }
+  }
+  return s.slice(start, end);
+}
