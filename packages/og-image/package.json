@@ -1,7 +1,7 @@
 {
   "name": "@basenative/og-image",
-  "version": "0.1.0",
-  "description": "Worker-runtime OG / social share PNG renderer \u2014 satori + resvg-wasm with KV-cached fonts and themable scene presets",
+  "version": "0.2.0",
+  "description": "Worker-runtime OG / social share PNG renderer — satori + resvg-wasm with KV-cached fonts and themable scene presets",
   "type": "module",
   "exports": {
     ".": {

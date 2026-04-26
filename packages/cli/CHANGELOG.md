@@ -1,5 +1,18 @@
 # @basenative/cli Changelog
 
+## 0.4.0
+
+### Minor Changes
+
+- 3ce5feb: `bn` CLI overhaul: new on-disk `bn create` templates (webapp / worker / library / t4bs), spec-driven `bn prd` and `bn speckit` workflows, idempotent `bn gh sync|board|automate`, smarter `bn dev` package-manager detection, Doppler-aware `bn deploy`, and a `bn doctor` health check.
+- fdfa251: v1.0 release readiness: comprehensive test coverage, complete documentation, deployment examples, and CI/CD hardening.
+  - 682 tests across all 21 packages (was ~250)
+  - Package-level READMEs for npm publishing
+  - Cloudflare Workers and Node.js deployment examples
+  - CLAUDE.md for AI assistant guidance
+  - Root README rewrite for open-source audience
+  - All package.json files have complete npm publishing metadata
+
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and
 this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
@@ -8,6 +21,7 @@ this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased] — 0.3.0 — CLI overhaul
 
 ### Added
+
 - `bn create` — new on-disk templates: `webapp`, `worker`, `library`, `t4bs`. Each
   ships with `@basenative/eslint-config`, `@basenative/tsconfig`,
   `@basenative/wrangler-preset` references, `.nvmrc`, `.prettierrc`, sample
@@ -44,6 +58,7 @@ this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `// Built with BaseNative — basenative.dev`.
 
 ### Changed
+
 - `src/index.js` — new dispatcher with banner, lazy command imports,
   per-command help, suggestion on typo. Cold-start `bn --help` measured
   <100ms locally.
@@ -54,6 +69,7 @@ this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   flow remains for back-compat.
 
 ### Notes
+
 - Zero new runtime dependencies.
 - All commands accept `--help`. Mutating commands accept `--dry-run`. Data
   commands accept `--json`.

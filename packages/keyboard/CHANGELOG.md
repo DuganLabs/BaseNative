@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.0
+
+### Minor Changes
+
+- 3ce5feb: Initial release: accessible mobile-first on-screen virtual keyboard primitive — SSR-safe render, signal-driven per-key state coloring, built-in qwerty/alphanumeric/numpad/phone layouts, WCAG AA defaults, and the mobile-Safari focus-steal fix baked in.
+
+### Patch Changes
+
+- Updated dependencies [fdfa251]
+  - @basenative/runtime@0.4.0
+
 All notable changes to `@basenative/keyboard` will be documented in this file.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and
@@ -10,6 +21,7 @@ this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [0.1.0] — 2026-04-26
 
 ### Added
+
 - Initial release. Extracted from the `t4bs` production game keyboard.
 - `Keyboard` factory returning `{ html, hydrate(rootEl) }`.
 - `renderKeyboard` — SSR-safe HTML string output (semantic `<button>` per key,

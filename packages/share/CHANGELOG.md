@@ -1,5 +1,16 @@
 # Changelog — @basenative/share
 
+## 1.0.0
+
+### Minor Changes
+
+- 3ce5feb: Initial release: Native Web Share + clipboard fallback client, share-card mint endpoint, OG-redirect landing page generator, D1-shaped store, and a ready-to-apply migration — pairs with `@basenative/og-image` for per-card preview rendering.
+
+### Patch Changes
+
+- Updated dependencies [3ce5feb]
+  - @basenative/og-image@0.2.0
+
 ## 0.1.0 — initial release
 
 - `nativeShare` — Web Share API → clipboard fallback, AbortError-aware

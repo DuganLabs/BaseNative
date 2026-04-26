@@ -1,5 +1,16 @@
 # @basenative/favicon
 
+## 1.0.0
+
+### Minor Changes
+
+- 3ce5feb: Initial release: SVG-first favicon generator + design primitives — `defineFavicon` runtime API, six shape primitives, glyph library (monogram / symbol / sigil / wordmark), Web App Manifest builder, optional PNG rasterizer (lazy resvg-wasm), eight pre-built DuganLabs presets, and a `bn-favicon` CLI.
+
+### Patch Changes
+
+- Updated dependencies [3ce5feb]
+  - @basenative/og-image@0.2.0
+
 ## 0.1.0 — initial release.
 
 - `defineFavicon(spec | preset-name)` → `{ svg, apple, maskable, htmlTags(), manifest() }` — single entry-point for the runtime API.

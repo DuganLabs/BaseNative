@@ -1,7 +1,7 @@
 {
   "name": "@basenative/favicon",
-  "version": "0.1.0",
-  "description": "SVG-first favicon generator + design primitives \u2014 apple-touch-icon, maskable, manifest, and the right <link> tags for every DuganLabs project",
+  "version": "1.0.0",
+  "description": "SVG-first favicon generator + design primitives — apple-touch-icon, maskable, manifest, and the right <link> tags for every DuganLabs project",
   "type": "module",
   "bin": {
     "bn-favicon": "./src/cli.js"

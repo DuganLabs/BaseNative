@@ -1,6 +1,6 @@
 {
   "name": "@basenative/wrangler-preset",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Pinned Wrangler version + typed wrangler.toml fragment generator. Pin once, every project moves together.",
   "type": "module",
   "bin": {

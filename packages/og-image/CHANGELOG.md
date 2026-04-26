@@ -1,5 +1,11 @@
 # @basenative/og-image
 
+## 0.2.0
+
+### Minor Changes
+
+- 3ce5feb: Initial release: Worker-runtime OG / social-share PNG renderer built on satori + resvg-wasm with KV-cached fonts/wasm and a themable scene preset DSL (default, article, score-card).
+
 ## 0.1.0 — initial extraction from t4bs.
 
 - `renderPng(scene, env, opts?)` — satori + resvg-wasm pipeline for Cloudflare Workers / Pages Functions.

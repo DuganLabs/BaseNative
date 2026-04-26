@@ -1,6 +1,6 @@
 {
   "name": "@basenative/share",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Native Web Share + clipboard fallback, share-card mint client+server, and OG-redirect landing page generator for BaseNative apps",
   "type": "module",
   "exports": {

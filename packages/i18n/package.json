@@ -1,13 +1,16 @@
 {
   "name": "@basenative/i18n",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "ICU message formatting, locale detection, and @t template directive",
   "type": "module",
   "exports": {
     ".": "./src/index.js"
   },
   "types": "./types/index.d.ts",
-  "files": ["src", "types"],
+  "files": [
+    "src",
+    "types"
+  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -18,5 +21,12 @@
   "bugs": {
     "url": "https://github.com/DuganLabs/basenative/issues"
   },
-  "keywords": ["basenative", "web-components", "signals", "i18n", "internationalization", "icu"]
+  "keywords": [
+    "basenative",
+    "web-components",
+    "signals",
+    "i18n",
+    "internationalization",
+    "icu"
+  ]
 }
