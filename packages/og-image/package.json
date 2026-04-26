@@ -42,7 +42,7 @@
     "edge"
   ],
   "dependencies": {
-    "satori": "^0.10.14",
+    "satori": "^0.26.0",
     "@resvg/resvg-wasm": "^2.6.2"
   },
   "publishConfig": {
