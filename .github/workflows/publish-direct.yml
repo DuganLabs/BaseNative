@@ -38,8 +38,17 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@basenative'
+
+      # Write .npmrc explicitly so pnpm uses GH Packages with the workflow's
+      # GITHUB_TOKEN. setup-node@v4's registry-url + scope sometimes doesn't
+      # propagate auth into pnpm's per-publish env reliably.
+      - name: Configure .npmrc for GH Packages
+        run: |
+          cat > ~/.npmrc <<EOF
+          @basenative:registry=https://npm.pkg.github.com/
+          //npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}
+          always-auth=true
+          EOF
 
       - run: pnpm install --frozen-lockfile
 
@@ -49,6 +58,7 @@ jobs:
       - name: Publish loop
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
           PUBLISHED=()
