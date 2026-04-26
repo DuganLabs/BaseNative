@@ -1,0 +1,101 @@
+name: publish-direct
+
+# Direct publish to GitHub Packages, bypassing changesets/action.
+# Use case: changesets's pre-publish `npm info` lookup 403s for older packages
+# that don't have a GH Packages installation record. This workflow loops
+# explicit packages and runs `pnpm publish` per-dir, which DOES work.
+#
+# Trigger: workflow_dispatch (manual). On each run, lists which packages it
+# would publish (dry-run) or actually publishes them (publish=true).
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        type: boolean
+        default: false
+        description: "Actually publish (false = dry-run)"
+      packages:
+        type: string
+        default: "og-image keyboard auth-webauthn admin persist share wrangler-preset doppler favicon combobox claude-config eslint-config tsconfig cli"
+        description: "Space-separated package basenames (under packages/) to publish"
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@basenative'
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build types
+        run: pnpm exec nx run-many --target=build --skip-nx-cache || true   # not all packages have build
+
+      - name: Publish loop
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          PUBLISHED=()
+          SKIPPED=()
+          FAILED=()
+          for pkg in ${{ inputs.packages }}; do
+            dir="packages/$pkg"
+            if [ ! -f "$dir/package.json" ]; then
+              echo "::warning::No package.json at $dir — skipping"
+              SKIPPED+=("$pkg (no package.json)")
+              continue
+            fi
+            name=$(jq -r '.name' "$dir/package.json")
+            version=$(jq -r '.version' "$dir/package.json")
+            private=$(jq -r '.private // false' "$dir/package.json")
+            if [ "$private" = "true" ]; then
+              SKIPPED+=("$name@$version (private:true)")
+              continue
+            fi
+            echo "::group::$name@$version"
+            if [ "${{ inputs.publish }}" = "true" ]; then
+              if (cd "$dir" && pnpm publish --no-git-checks --access=public 2>&1); then
+                PUBLISHED+=("$name@$version")
+              else
+                FAILED+=("$name@$version")
+              fi
+            else
+              echo "(dry-run) would publish $name@$version"
+              PUBLISHED+=("$name@$version (dry)")
+            fi
+            echo "::endgroup::"
+          done
+          {
+            echo "## Publish summary"
+            echo ""
+            echo "Mode: $([ "${{ inputs.publish }}" = "true" ] && echo "PUBLISH" || echo "DRY-RUN")"
+            echo ""
+            echo "### Published (${#PUBLISHED[@]})"
+            for x in "${PUBLISHED[@]}"; do echo "- $x"; done
+            echo ""
+            echo "### Skipped (${#SKIPPED[@]})"
+            for x in "${SKIPPED[@]}"; do echo "- $x"; done
+            echo ""
+            echo "### Failed (${#FAILED[@]})"
+            for x in "${FAILED[@]}"; do echo "- $x"; done
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ ${#FAILED[@]} -gt 0 ]; then
+            echo "::error::${#FAILED[@]} package(s) failed to publish"
+            exit 1
+          fi
