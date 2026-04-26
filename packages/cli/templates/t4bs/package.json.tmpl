@@ -1,0 +1,37 @@
+{
+  "name": "{{name}}",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "{{description}}",
+  "scripts": {
+    "dev": "wrangler pages dev ./public --compatibility-date={{compatDate}}",
+    "build": "node scripts/build.js",
+    "deploy": "wrangler pages deploy ./public --project-name={{name}}",
+    "lint": "eslint src/",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@basenative/runtime": "^0.3.0",
+    "@basenative/server": "^0.3.0",
+    "@basenative/router": "^0.3.0",
+    "@basenative/og-image": "^0.1.0",
+    "@basenative/keyboard": "^0.1.0",
+    "@basenative/share": "^0.1.0",
+    "@basenative/auth-webauthn": "^0.1.0",
+    "@basenative/admin": "^0.1.0",
+    "@basenative/persist": "^0.1.0"
+  },
+  "devDependencies": {
+    "@basenative/eslint-config": "^0.1.0",
+    "@basenative/tsconfig": "^0.1.0",
+    "@basenative/wrangler-preset": "^0.1.0",
+    "@basenative/doppler": "^0.1.0",
+    "eslint": "^10.0.3",
+    "wrangler": "^4.74.0"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "packageManager": "pnpm@9.15.0"
+}

@@ -1,0 +1,36 @@
+{
+  "name": "@basenative/og-image",
+  "version": "0.1.0",
+  "description": "Worker-runtime OG / social share PNG renderer — satori + resvg-wasm with KV-cached fonts and themable scene presets",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./presets": "./src/presets.js",
+    "./scene": "./src/scene.js"
+  },
+  "types": "./types/index.d.ts",
+  "files": ["src", "types"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/og-image"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": [
+    "basenative",
+    "og-image",
+    "social-share",
+    "satori",
+    "resvg",
+    "cloudflare-workers",
+    "edge"
+  ],
+  "dependencies": {
+    "satori": "^0.10.14",
+    "@resvg/resvg-wasm": "^2.6.2"
+  }
+}

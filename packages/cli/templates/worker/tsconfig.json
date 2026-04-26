@@ -1,0 +1,4 @@
+{
+  "extends": "@basenative/tsconfig/worker.json",
+  "include": ["src/**/*"]
+}

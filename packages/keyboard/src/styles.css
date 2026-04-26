@@ -1,0 +1,179 @@
+/* Built with BaseNative — basenative.dev */
+/*
+ * @basenative/keyboard — default styles.
+ *
+ * All visual properties are driven by CSS custom properties so the
+ * keyboard inherits its host theme. Override at any ancestor:
+ *
+ *   :root { --kb-key-bg: #222; --kb-key-fg: #fff; }
+ *
+ * Default palette is WCAG AA on the default dark background:
+ *   green   #2E8B5A on #0C0B09  → 4.7:1
+ *   yellow  #D4B445 on #1F1700  → 8.6:1
+ *   absent  #5A5550 on #1E1C18  → 5.0:1 (subdued, intentional)
+ */
+
+@layer keyboard {
+  [data-bn="keyboard"] {
+    /* ── Theming tokens ─────────────────────────────────── */
+    --kb-bg: #0C0B09;
+    --kb-fg: #F0EDE4;
+    --kb-key-bg: #3A3530;
+    --kb-key-fg: #F0EDE4;
+    --kb-key-border: transparent;
+    --kb-key-active: #5A5550;
+    --kb-key-hover: #4A4540;
+    --kb-key-disabled-opacity: 0.55;
+
+    /* Game / puzzle status colors */
+    --kb-key-green: #2E8B5A;
+    --kb-key-green-fg: #FFFFFF;
+    --kb-key-yellow: #D4B445;
+    --kb-key-yellow-fg: #1F1700;
+    --kb-key-absent: #1E1C18;
+    --kb-key-absent-fg: #5A5550;
+    --kb-key-staked: #FFD700;
+    --kb-key-staked-fg: #1A1500;
+
+    /* Primary action (Enter/Submit) */
+    --kb-key-primary-bg: #E8920A;
+    --kb-key-primary-fg: #111111;
+
+    /* Geometry */
+    --kb-key-radius: 6px;
+    --kb-gap: 4px;
+    --kb-row-gap: 6px;
+    --kb-min-tap: 44px;          /* WCAG 2.5.5 (AA): minimum 44pt hit target */
+    --kb-key-max-width: 42px;
+    --kb-padding-y: 8px;
+    --kb-padding-x: 6px;
+    --kb-max-width: 540px;
+
+    /* Typography */
+    --kb-font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --kb-font-size: 17px;
+    --kb-letter-spacing: 0.5px;
+
+    /* Motion */
+    --kb-transition: background-color 150ms, transform 80ms;
+
+    /* ── Container ──────────────────────────────────────── */
+    display: block;
+    background: var(--kb-bg);
+    color: var(--kb-fg);
+    padding: var(--kb-padding-y) var(--kb-padding-x);
+    padding-bottom: calc(var(--kb-padding-y) + env(safe-area-inset-bottom, 0px));
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+
+  [data-bn="kb-rows"] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--kb-row-gap);
+    max-width: var(--kb-max-width);
+    margin: 0 auto;
+  }
+
+  [data-bn="kb-row"] {
+    display: flex;
+    gap: var(--kb-gap);
+    justify-content: center;
+  }
+
+  /* ── Keys ─────────────────────────────────────────────── */
+  [data-bn="kb-key"] {
+    flex: 1;
+    min-width: 0;
+    max-width: var(--kb-key-max-width);
+    min-height: var(--kb-min-tap);
+    height: var(--kb-min-tap);
+    background: var(--kb-key-bg);
+    color: var(--kb-key-fg);
+    border: 1px solid var(--kb-key-border);
+    border-radius: var(--kb-key-radius);
+    font-family: var(--kb-font-family);
+    font-size: var(--kb-font-size);
+    letter-spacing: var(--kb-letter-spacing);
+    cursor: pointer;
+    transition: var(--kb-transition);
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
+    padding: 0;
+    line-height: 1;
+  }
+
+  [data-bn="kb-key"]:hover:not(:disabled) {
+    background: var(--kb-key-hover);
+  }
+
+  [data-bn="kb-key"]:active:not(:disabled) {
+    background: var(--kb-key-active);
+    transform: scale(0.92);
+  }
+
+  [data-bn="kb-key"]:focus-visible {
+    outline: 2px solid var(--kb-key-primary-bg);
+    outline-offset: 2px;
+  }
+
+  [data-bn="kb-key"]:disabled {
+    opacity: var(--kb-key-disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  /* Wider keys (action / span > 1) */
+  .bn-kb-key--wide,
+  .bn-kb-key--action {
+    max-width: none;
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+
+  /* Variants */
+  .bn-kb-key--enter.bn-kb-key--primary,
+  .bn-kb-key--primary {
+    background: var(--kb-key-primary-bg);
+    color: var(--kb-key-primary-fg);
+  }
+  .bn-kb-key--backspace { font-size: 18px; }
+  .bn-kb-key--space {
+    font-size: 12px;
+    text-transform: lowercase;
+  }
+
+  /* Status — driven by signals at runtime */
+  .bn-kb-key--green {
+    background: var(--kb-key-green);
+    color: var(--kb-key-green-fg);
+  }
+  .bn-kb-key--yellow {
+    background: var(--kb-key-yellow);
+    color: var(--kb-key-yellow-fg);
+  }
+  .bn-kb-key--absent {
+    background: var(--kb-key-absent);
+    color: var(--kb-key-absent-fg);
+  }
+  .bn-kb-key--staked {
+    box-shadow: inset 0 0 0 2px var(--kb-key-staked);
+  }
+
+  /* Reduced motion — strip transforms / animations */
+  @media (prefers-reduced-motion: reduce) {
+    [data-bn="kb-key"] {
+      transition: background-color 80ms;
+    }
+    [data-bn="kb-key"]:active:not(:disabled) {
+      transform: none;
+    }
+  }
+
+  /* Tighter on narrow screens */
+  @media (max-width: 380px) {
+    [data-bn="keyboard"] {
+      --kb-font-size: 15px;
+      --kb-key-max-width: 38px;
+    }
+  }
+}

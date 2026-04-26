@@ -1,3 +1,4 @@
+// Built with BaseNative — basenative.dev
 import { existsSync, mkdirSync, copyFileSync, readdirSync, statSync } from 'node:fs';
 import { resolve, join, relative } from 'node:path';
 import { parseArgs } from 'node:util';

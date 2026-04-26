@@ -1,0 +1,38 @@
+{
+  "name": "@basenative/persist",
+  "version": "0.1.0",
+  "description": "Signal-driven local persistence with TTL, conflict resolution, and a server-rehydrate hook for BaseNative apps",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./storage": "./src/storage.js",
+    "./ttl": "./src/ttl.js"
+  },
+  "types": "./types/index.d.ts",
+  "files": ["src", "types"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/persist"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": [
+    "basenative",
+    "signals",
+    "persistence",
+    "localstorage",
+    "indexeddb",
+    "ttl",
+    "session-resume"
+  ],
+  "peerDependencies": {
+    "@basenative/runtime": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@basenative/runtime": { "optional": true }
+  }
+}

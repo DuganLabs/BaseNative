@@ -1,0 +1,10 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  release:
+    uses: DuganLabs/.github/.github/workflows/npm-release.yml@main
+    secrets: inherit

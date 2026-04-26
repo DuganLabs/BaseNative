@@ -1,0 +1,100 @@
+{
+  "name": "bn",
+  "version": "0.3.0",
+  "description": "BaseNative CLI — front door for DuganLabs projects",
+  "commands": [
+    {
+      "name": "create",
+      "description": "Scaffold a new project from a template",
+      "args": ["<name>"],
+      "options": [
+        { "name": "--template", "short": "-t", "values": ["webapp", "worker", "library", "t4bs", "minimal", "enterprise", "api"] },
+        { "name": "--description" },
+        { "name": "--no-git" },
+        { "name": "--dry-run" },
+        { "name": "--json" }
+      ]
+    },
+    {
+      "name": "prd",
+      "description": "Init / edit / sync the project PRD",
+      "subcommands": ["init", "edit", "sync"],
+      "options": [
+        { "name": "--name" },
+        { "name": "--owner" },
+        { "name": "--force" },
+        { "name": "--json" },
+        { "name": "--dry-run" }
+      ]
+    },
+    {
+      "name": "speckit",
+      "description": "Spec-driven workflow (github/spec-kit compatible)",
+      "subcommands": ["init", "spec", "plan", "tasks", "validate"],
+      "options": [
+        { "name": "--spec" },
+        { "name": "--force" },
+        { "name": "--json" },
+        { "name": "--dry-run" }
+      ]
+    },
+    {
+      "name": "gh",
+      "description": "GitHub milestones, issues, and project board",
+      "subcommands": ["sync", "board", "automate"],
+      "options": [
+        { "name": "--input" },
+        { "name": "--repo" },
+        { "name": "--dry-run" },
+        { "name": "--json" }
+      ]
+    },
+    {
+      "name": "nx",
+      "description": "Passthrough to Nx with sensible defaults",
+      "options": [
+        { "name": "--task" },
+        { "name": "--affected" }
+      ]
+    },
+    {
+      "name": "dev",
+      "description": "Start the dev server",
+      "options": [
+        { "name": "--port", "short": "-p" },
+        { "name": "--host" }
+      ]
+    },
+    {
+      "name": "deploy",
+      "description": "Deploy via Wrangler + Doppler",
+      "options": [
+        { "name": "--prod" },
+        { "name": "--preview" },
+        { "name": "--no-doppler" },
+        { "name": "--env" },
+        { "name": "--project" },
+        { "name": "--token" },
+        { "name": "--dry-run" },
+        { "name": "--json" }
+      ]
+    },
+    {
+      "name": "doctor",
+      "description": "Validate local setup",
+      "options": [{ "name": "--json" }, { "name": "--fix" }]
+    },
+    { "name": "build", "description": "Build for production", "options": [{ "name": "--outdir", "short": "-o" }] },
+    { "name": "generate", "description": "Generate component, route, or page", "args": ["<type>", "<name>"] },
+    {
+      "name": "env",
+      "description": "Manage environment variables",
+      "subcommands": ["list", "set", "unset", "pull", "push"]
+    },
+    { "name": "analyze", "description": "Analyze bundle size + deps", "args": ["[dir]"] }
+  ],
+  "globalOptions": [
+    { "name": "--help", "short": "-h" },
+    { "name": "--version", "short": "-v" }
+  ]
+}

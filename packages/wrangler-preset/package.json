@@ -1,0 +1,37 @@
+{
+  "name": "@basenative/wrangler-preset",
+  "version": "0.1.0",
+  "description": "Pinned Wrangler version + typed wrangler.toml fragment generator. Pin once, every project moves together.",
+  "type": "module",
+  "bin": {
+    "bn-wrangler": "./src/cli.js"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./defaults": "./src/index.js",
+    "./toml": "./src/index.js"
+  },
+  "files": ["src", "templates"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/wrangler-preset"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": [
+    "basenative",
+    "wrangler",
+    "cloudflare",
+    "workers",
+    "pages",
+    "preset",
+    "infra"
+  ],
+  "dependencies": {
+    "wrangler": "^4.85.0"
+  }
+}

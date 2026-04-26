@@ -1,0 +1,12 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    uses: DuganLabs/.github/.github/workflows/cf-worker-deploy.yml@main
+    with:
+      worker: {{name}}
+    secrets: inherit
