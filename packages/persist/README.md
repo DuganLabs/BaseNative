@@ -121,6 +121,12 @@ const filter = signal('all');
 persisted('inbox:filter', filter); // no expiry
 ```
 
+## Links
+
+- BaseNative monorepo — https://github.com/DuganLabs/basenative
+- Issues — https://github.com/DuganLabs/basenative/issues
+- Docs — https://github.com/DuganLabs/basenative#readme
+
 ## License
 
 Apache-2.0.

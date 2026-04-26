@@ -4,7 +4,10 @@
   "description": "Accessible mobile-first on-screen virtual keyboard primitive \u2014 layout-agnostic, signal-driven key state coloring, themable",
   "type": "module",
   "exports": {
-    ".": "./src/index.js",
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
     "./css": "./src/styles.css",
     "./styles.css": "./src/styles.css"
   },

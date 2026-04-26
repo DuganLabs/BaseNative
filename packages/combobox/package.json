@@ -4,7 +4,10 @@
   "description": "Accessible combobox primitive \u2014 typeahead input that filters an existing list and lets the user create a new entry. WAI-ARIA combobox listbox pattern.",
   "type": "module",
   "exports": {
-    ".": "./src/index.js",
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
     "./css": "./src/styles.css",
     "./styles.css": "./src/styles.css"
   },

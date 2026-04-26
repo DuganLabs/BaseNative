@@ -7,12 +7,23 @@
     "bn-wrangler": "./src/cli.js"
   },
   "exports": {
-    ".": "./src/index.js",
-    "./defaults": "./src/index.js",
-    "./toml": "./src/index.js"
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./defaults": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./toml": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    }
   },
+  "types": "./types/index.d.ts",
   "files": [
     "src",
+    "types",
     "templates"
   ],
   "license": "Apache-2.0",

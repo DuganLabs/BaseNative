@@ -4,12 +4,30 @@
   "description": "Pluggable admin & moderation surface \u2014 protected-route helpers, role/permission primitives, audit-log middleware, and queue-review UI components for BaseNative apps",
   "type": "module",
   "exports": {
-    ".": "./src/index.js",
-    "./roles": "./src/roles.js",
-    "./queue": "./src/queue.js",
-    "./audit": "./src/audit.js",
-    "./handlers": "./src/handlers.js",
-    "./components": "./src/components.js",
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./roles": {
+      "types": "./types/index.d.ts",
+      "default": "./src/roles.js"
+    },
+    "./queue": {
+      "types": "./types/index.d.ts",
+      "default": "./src/queue.js"
+    },
+    "./audit": {
+      "types": "./types/index.d.ts",
+      "default": "./src/audit.js"
+    },
+    "./handlers": {
+      "types": "./types/index.d.ts",
+      "default": "./src/handlers.js"
+    },
+    "./components": {
+      "types": "./types/index.d.ts",
+      "default": "./src/components.js"
+    },
     "./migrations/0001": "./migrations/0001_audit_and_roles.sql"
   },
   "types": "./types/index.d.ts",

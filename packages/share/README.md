@@ -127,6 +127,12 @@ preview renders.
 - `idPattern` defaults to `/^[a-z0-9]{4,16}$/i`.
 - `validate` lets you reject malformed mint requests inline.
 
+## Links
+
+- BaseNative monorepo — https://github.com/DuganLabs/basenative
+- Issues — https://github.com/DuganLabs/basenative/issues
+- Docs — https://github.com/DuganLabs/basenative#readme
+
 ## License
 
 Apache-2.0.

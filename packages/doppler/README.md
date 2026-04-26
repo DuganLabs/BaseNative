@@ -147,6 +147,12 @@ await dopplerRun(['pnpm', 'build'], { config: 'prod' });
 - **Boot-time fail-fast.** `requireSecrets` turns a 3am production page into a 9am red CI run.
 - **No values in BaseNative.** This package is plumbing — every actual secret lives in Doppler, end of story.
 
+## Links
+
+- BaseNative monorepo — https://github.com/DuganLabs/basenative
+- Issues — https://github.com/DuganLabs/basenative/issues
+- Docs — https://github.com/DuganLabs/basenative#readme
+
 ## License
 
 Apache-2.0

@@ -7,13 +7,34 @@
     "bn-favicon": "./src/cli.js"
   },
   "exports": {
-    ".": "./src/index.js",
-    "./presets": "./src/presets/dl.js",
-    "./render": "./src/render.js",
-    "./glyphs": "./src/glyphs.js",
-    "./palette": "./src/palette.js",
-    "./manifest": "./src/manifest.js",
-    "./png": "./src/png.js"
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./presets": {
+      "types": "./types/index.d.ts",
+      "default": "./src/presets/dl.js"
+    },
+    "./render": {
+      "types": "./types/index.d.ts",
+      "default": "./src/render.js"
+    },
+    "./glyphs": {
+      "types": "./types/index.d.ts",
+      "default": "./src/glyphs.js"
+    },
+    "./palette": {
+      "types": "./types/index.d.ts",
+      "default": "./src/palette.js"
+    },
+    "./manifest": {
+      "types": "./types/index.d.ts",
+      "default": "./src/manifest.js"
+    },
+    "./png": {
+      "types": "./types/index.d.ts",
+      "default": "./src/png.js"
+    }
   },
   "types": "./types/index.d.ts",
   "files": [

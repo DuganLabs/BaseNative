@@ -4,9 +4,18 @@
   "description": "Worker-runtime OG / social share PNG renderer \u2014 satori + resvg-wasm with KV-cached fonts and themable scene presets",
   "type": "module",
   "exports": {
-    ".": "./src/index.js",
-    "./presets": "./src/presets.js",
-    "./scene": "./src/scene.js"
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./presets": {
+      "types": "./types/index.d.ts",
+      "default": "./src/presets.js"
+    },
+    "./scene": {
+      "types": "./types/index.d.ts",
+      "default": "./src/scene.js"
+    }
   },
   "types": "./types/index.d.ts",
   "files": [

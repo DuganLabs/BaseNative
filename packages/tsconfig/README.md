@@ -42,6 +42,12 @@ Then add your own `include` / `exclude` and any project-specific overrides.
 - `allowJs: true` (DuganLabs projects mix JS + TS)
 - `skipLibCheck: true`, `forceConsistentCasingInFileNames: true`
 
+## Links
+
+- BaseNative monorepo — https://github.com/DuganLabs/basenative
+- Issues — https://github.com/DuganLabs/basenative/issues
+- Docs — https://github.com/DuganLabs/basenative#readme
+
 ## License
 
 Apache-2.0
