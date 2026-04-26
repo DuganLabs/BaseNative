@@ -1,7 +1,7 @@
 {
   "name": "@basenative/keyboard",
   "version": "0.1.0",
-  "description": "Accessible mobile-first on-screen virtual keyboard primitive — layout-agnostic, signal-driven key state coloring, themable",
+  "description": "Accessible mobile-first on-screen virtual keyboard primitive \u2014 layout-agnostic, signal-driven key state coloring, themable",
   "type": "module",
   "exports": {
     ".": "./src/index.js",
@@ -12,7 +12,10 @@
   "peerDependencies": {
     "@basenative/runtime": "workspace:*"
   },
-  "files": ["src", "types"],
+  "files": [
+    "src",
+    "types"
+  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -23,5 +26,19 @@
   "bugs": {
     "url": "https://github.com/DuganLabs/basenative/issues"
   },
-  "keywords": ["basenative", "keyboard", "virtual-keyboard", "mobile", "a11y", "wcag", "qwerty", "numpad", "signals"]
+  "keywords": [
+    "basenative",
+    "keyboard",
+    "virtual-keyboard",
+    "mobile",
+    "a11y",
+    "wcag",
+    "qwerty",
+    "numpad",
+    "signals"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  }
 }

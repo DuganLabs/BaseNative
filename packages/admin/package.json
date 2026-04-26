@@ -1,7 +1,7 @@
 {
   "name": "@basenative/admin",
   "version": "0.1.0",
-  "description": "Pluggable admin & moderation surface — protected-route helpers, role/permission primitives, audit-log middleware, and queue-review UI components for BaseNative apps",
+  "description": "Pluggable admin & moderation surface \u2014 protected-route helpers, role/permission primitives, audit-log middleware, and queue-review UI components for BaseNative apps",
   "type": "module",
   "exports": {
     ".": "./src/index.js",
@@ -13,7 +13,11 @@
     "./migrations/0001": "./migrations/0001_audit_and_roles.sql"
   },
   "types": "./types/index.d.ts",
-  "files": ["src", "types", "migrations"],
+  "files": [
+    "src",
+    "types",
+    "migrations"
+  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -37,6 +41,12 @@
     "@basenative/auth": "workspace:*"
   },
   "peerDependenciesMeta": {
-    "@basenative/auth": { "optional": true }
+    "@basenative/auth": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
   }
 }

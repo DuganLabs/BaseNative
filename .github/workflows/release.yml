@@ -28,7 +28,10 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-          registry-url: 'https://registry.npmjs.org'
+          # GitHub Packages: open-source projects in DuganLabs publish here
+          # for free; consumers auth with a fine-grained PAT or GITHUB_TOKEN.
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@basenative'
 
       - run: pnpm install --frozen-lockfile
 
@@ -45,5 +48,7 @@ jobs:
           version: pnpm exec changeset version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Changesets reads NODE_AUTH_TOKEN for the publish step. GITHUB_TOKEN
+          # has packages:write within this repo, which is exactly what we need
+          # for @basenative/* on GitHub Packages.
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

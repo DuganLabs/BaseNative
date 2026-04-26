@@ -1,17 +1,23 @@
 {
   "name": "@basenative/tsconfig",
   "version": "0.1.0",
-  "description": "Shared base tsconfigs for DuganLabs projects — strict, modern, runtime-targeted",
+  "description": "Shared base tsconfigs for DuganLabs projects \u2014 strict, modern, runtime-targeted",
   "type": "module",
   "exports": {
-    ".":         "./base.json",
-    "./base":    "./base.json",
+    ".": "./base.json",
+    "./base": "./base.json",
     "./browser": "./browser.json",
-    "./node":    "./node.json",
-    "./worker":  "./worker.json",
-    "./react":   "./react.json"
+    "./node": "./node.json",
+    "./worker": "./worker.json",
+    "./react": "./react.json"
   },
-  "files": ["base.json", "browser.json", "node.json", "worker.json", "react.json"],
+  "files": [
+    "base.json",
+    "browser.json",
+    "node.json",
+    "worker.json",
+    "react.json"
+  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -19,5 +25,14 @@
     "directory": "packages/tsconfig"
   },
   "homepage": "https://github.com/DuganLabs/basenative/tree/main/packages/tsconfig#readme",
-  "keywords": ["basenative", "tsconfig", "typescript", "shared"]
+  "keywords": [
+    "basenative",
+    "tsconfig",
+    "typescript",
+    "shared"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  }
 }

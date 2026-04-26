@@ -11,7 +11,11 @@
     "./migrations/0001": "./migrations/0001_share_cards.sql"
   },
   "types": "./types/index.d.ts",
-  "files": ["src", "types", "migrations"],
+  "files": [
+    "src",
+    "types",
+    "migrations"
+  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -35,6 +39,12 @@
     "@basenative/og-image": "workspace:*"
   },
   "peerDependenciesMeta": {
-    "@basenative/og-image": { "optional": true }
+    "@basenative/og-image": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
   }
 }
