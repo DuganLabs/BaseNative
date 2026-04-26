@@ -1,7 +1,7 @@
 {
   "name": "@basenative/eslint-config",
   "version": "0.2.0",
-  "description": "Shared ESLint flat-config for DuganLabs projects — security, hygiene, zero-noise defaults",
+  "description": "Shared ESLint flat-config for DuganLabs projects \u2014 security, hygiene, zero-noise defaults",
   "type": "module",
   "exports": {
     ".": "./src/index.js",
@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/DuganLabs/basenative.git",
+    "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/eslint-config"
   },
   "homepage": "https://github.com/DuganLabs/basenative/tree/main/packages/eslint-config#readme",

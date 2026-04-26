@@ -1,7 +1,7 @@
 {
   "name": "@basenative/tsconfig",
   "version": "0.2.0",
-  "description": "Shared base tsconfigs for DuganLabs projects — strict, modern, runtime-targeted",
+  "description": "Shared base tsconfigs for DuganLabs projects \u2014 strict, modern, runtime-targeted",
   "type": "module",
   "exports": {
     ".": "./base.json",
@@ -21,7 +21,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/DuganLabs/basenative.git",
+    "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/tsconfig"
   },
   "homepage": "https://github.com/DuganLabs/basenative/tree/main/packages/tsconfig#readme",
