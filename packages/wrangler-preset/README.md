@@ -97,6 +97,12 @@ cp node_modules/@basenative/wrangler-preset/templates/wrangler.toml.tmpl wrangle
 4. Set `compatibility_date` from `defaults.compatibility_date` (or copy the template).
 5. Bump everyone together by upgrading this package: one PR per quarter, not eight.
 
+## Links
+
+- BaseNative monorepo — https://github.com/DuganLabs/basenative
+- Issues — https://github.com/DuganLabs/basenative/issues
+- Docs — https://github.com/DuganLabs/basenative#readme
+
 ## License
 
 Apache-2.0

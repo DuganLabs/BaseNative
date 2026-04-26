@@ -7,11 +7,19 @@
     "bn-doppler": "./src/cli.js"
   },
   "exports": {
-    ".": "./src/index.js",
-    "./required": "./src/required.js"
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./required": {
+      "types": "./types/index.d.ts",
+      "default": "./src/required.js"
+    }
   },
+  "types": "./types/index.d.ts",
   "files": [
     "src",
+    "types",
     "templates"
   ],
   "license": "Apache-2.0",

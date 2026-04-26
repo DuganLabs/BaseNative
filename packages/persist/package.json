@@ -4,9 +4,18 @@
   "description": "Signal-driven local persistence with TTL, conflict resolution, and a server-rehydrate hook for BaseNative apps",
   "type": "module",
   "exports": {
-    ".": "./src/index.js",
-    "./storage": "./src/storage.js",
-    "./ttl": "./src/ttl.js"
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./storage": {
+      "types": "./types/index.d.ts",
+      "default": "./src/storage.js"
+    },
+    "./ttl": {
+      "types": "./types/index.d.ts",
+      "default": "./src/ttl.js"
+    }
   },
   "types": "./types/index.d.ts",
   "files": [

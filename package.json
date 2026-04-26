@@ -11,7 +11,8 @@
     "audit:axe": "node scripts/audit/axe.mjs",
     "audit:observatory": "node scripts/audit/observatory.mjs",
     "audit:ux": "node scripts/audit/laws-of-ux.mjs",
-    "audit": "pnpm audit:axe && pnpm audit:ux"
+    "audit": "pnpm audit:axe && pnpm audit:ux",
+    "bundle-size": "node scripts/bundle-size.js"
   },
   "devDependencies": {
     "@changesets/cli": "^2.30.0",

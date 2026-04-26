@@ -56,6 +56,12 @@ export default [
 - Worker preset blocks Node-only globals (`process`, `Buffer`, `__dirname`, `__filename`)
 - Prettier compatibility — formatting rules disabled
 
+## Links
+
+- BaseNative monorepo — https://github.com/DuganLabs/basenative
+- Issues — https://github.com/DuganLabs/basenative/issues
+- Docs — https://github.com/DuganLabs/basenative#readme
+
 ## License
 
 Apache-2.0

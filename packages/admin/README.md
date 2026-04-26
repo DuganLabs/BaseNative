@@ -149,6 +149,12 @@ You can pull in the bits in any order:
 3. Replace your queue endpoints with `handlers` once the data shape lines up.
 4. Swap your queue UI for `components` last.
 
+## Links
+
+- BaseNative monorepo — https://github.com/DuganLabs/basenative
+- Issues — https://github.com/DuganLabs/basenative/issues
+- Docs — https://github.com/DuganLabs/basenative#readme
+
 ## License
 
 Apache-2.0.
