@@ -1,7 +1,7 @@
 {
   "name": "@basenative/combobox",
-  "version": "0.1.0",
-  "description": "Accessible combobox primitive \u2014 typeahead input that filters an existing list and lets the user create a new entry. WAI-ARIA combobox listbox pattern.",
+  "version": "1.0.0",
+  "description": "Accessible combobox primitive — typeahead input that filters an existing list and lets the user create a new entry. WAI-ARIA combobox listbox pattern.",
   "type": "module",
   "exports": {
     ".": {

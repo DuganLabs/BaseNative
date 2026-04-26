@@ -1,6 +1,6 @@
 {
   "name": "@basenative/auth",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Authentication, session management, RBAC, and OAuth2/OIDC for BaseNative apps",
   "type": "module",
   "exports": {
@@ -9,7 +9,10 @@
     "./middleware": "./src/middleware.js"
   },
   "types": "./types/index.d.ts",
-  "files": ["src", "types"],
+  "files": [
+    "src",
+    "types"
+  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -20,5 +23,12 @@
   "bugs": {
     "url": "https://github.com/DuganLabs/basenative/issues"
   },
-  "keywords": ["basenative", "web-components", "signals", "authentication", "rbac", "oauth"]
+  "keywords": [
+    "basenative",
+    "web-components",
+    "signals",
+    "authentication",
+    "rbac",
+    "oauth"
+  ]
 }

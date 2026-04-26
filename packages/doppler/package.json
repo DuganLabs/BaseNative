@@ -1,7 +1,7 @@
 {
   "name": "@basenative/doppler",
-  "version": "0.1.0",
-  "description": "Thin developer-experience layer around Doppler \u2014 local-dev wrapper, CI helper, project bootstrap, environment validation. BaseNative ships plumbing, never values.",
+  "version": "0.2.0",
+  "description": "Thin developer-experience layer around Doppler — local-dev wrapper, CI helper, project bootstrap, environment validation. BaseNative ships plumbing, never values.",
   "type": "module",
   "bin": {
     "bn-doppler": "./src/cli.js"

@@ -1,6 +1,6 @@
 {
   "name": "@basenative/notify",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Email notifications via SMTP and SendGrid with template rendering",
   "type": "module",
   "main": "src/index.js",
@@ -8,7 +8,10 @@
     ".": "./src/index.js"
   },
   "types": "./types/index.d.ts",
-  "files": ["src", "types"],
+  "files": [
+    "src",
+    "types"
+  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -19,5 +22,12 @@
   "bugs": {
     "url": "https://github.com/DuganLabs/basenative/issues"
   },
-  "keywords": ["basenative", "web-components", "signals", "email", "smtp", "sendgrid"]
+  "keywords": [
+    "basenative",
+    "web-components",
+    "signals",
+    "email",
+    "smtp",
+    "sendgrid"
+  ]
 }

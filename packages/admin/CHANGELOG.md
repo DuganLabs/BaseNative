@@ -1,5 +1,16 @@
 # Changelog — @basenative/admin
 
+## 1.0.0
+
+### Minor Changes
+
+- 3ce5feb: Initial release: pluggable admin & moderation surface — hierarchical role primitives, generic submission queue, append-only audit log middleware, drop-in CF Worker / Pages handlers, server-rendered queue/user list components, and a D1 migration.
+
+### Patch Changes
+
+- Updated dependencies [fdfa251]
+  - @basenative/auth@0.3.0
+
 ## 0.1.0 — initial release
 
 - `defineRoles` + `hasRole` + `requireRole` + `roleSeed` — hierarchical role primitives

@@ -1,6 +1,6 @@
 {
   "name": "@basenative/middleware",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Request pipeline middleware — CORS, rate limiting, CSRF, and adapters",
   "type": "module",
   "exports": {
@@ -12,7 +12,10 @@
     "./logger": "./src/builtins/logger.js"
   },
   "types": "./types/index.d.ts",
-  "files": ["src", "types"],
+  "files": [
+    "src",
+    "types"
+  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -23,5 +26,12 @@
   "bugs": {
     "url": "https://github.com/DuganLabs/basenative/issues"
   },
-  "keywords": ["basenative", "web-components", "signals", "middleware", "cors", "csrf"]
+  "keywords": [
+    "basenative",
+    "web-components",
+    "signals",
+    "middleware",
+    "cors",
+    "csrf"
+  ]
 }

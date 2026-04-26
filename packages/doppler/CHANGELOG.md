@@ -1,5 +1,11 @@
 # @basenative/doppler
 
+## 0.2.0
+
+### Minor Changes
+
+- 3ce5feb: Initial release: thin DX layer around Doppler — `dopplerRun` wrapper, `requireSecrets` boot-time validator, Wrangler vars/secrets injector, `doppler-required.json` schema, and a `bn-doppler` CLI (init / verify / ci-token / run). Plumbing only — never values.
+
 ## 0.1.0
 
 - Initial release.
