@@ -1,0 +1,15 @@
+{
+  "name": "@basenative/station",
+  "targets": {
+    "test": {
+      "cache": true,
+      "command": "node --test",
+      "inputs": ["{projectRoot}/src/**/*.js", "{projectRoot}/test/**/*.js"]
+    },
+    "lint": {
+      "cache": true,
+      "command": "pnpm exec eslint src/",
+      "inputs": ["{projectRoot}/src/**/*.js"]
+    }
+  }
+}
