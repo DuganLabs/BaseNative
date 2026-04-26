@@ -1,0 +1,30 @@
+{
+  "name": "@basenative/eslint-config",
+  "version": "0.1.0",
+  "description": "Shared ESLint flat-config for DuganLabs projects — security, hygiene, zero-noise defaults",
+  "type": "module",
+  "exports": {
+    ".":         "./src/index.js",
+    "./browser": "./src/browser.js",
+    "./node":    "./src/node.js",
+    "./worker":  "./src/worker.js",
+    "./react":   "./src/react.js"
+  },
+  "files": ["src"],
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "eslint": ">=9.0.0"
+  },
+  "dependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/eslint-config"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative/tree/main/packages/eslint-config#readme",
+  "keywords": ["basenative", "eslint", "eslint-config", "flat-config", "shared"]
+}
