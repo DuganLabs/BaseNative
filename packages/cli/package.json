@@ -1,7 +1,7 @@
 {
   "name": "@basenative/cli",
   "version": "0.3.0",
-  "description": "The bn CLI — front door for BaseNative / DuganLabs projects (create, prd, speckit, gh, nx, deploy, doctor)",
+  "description": "The bn CLI \u2014 front door for BaseNative / DuganLabs projects (create, prd, speckit, gh, nx, deploy, doctor)",
   "type": "module",
   "bin": {
     "bn": "./src/index.js",
@@ -12,7 +12,13 @@
     "./manifest": "./manifest.json"
   },
   "types": "./types/index.d.ts",
-  "files": ["src", "types", "templates", "manifest.json", "CHANGELOG.md"],
+  "files": [
+    "src",
+    "types",
+    "templates",
+    "manifest.json",
+    "CHANGELOG.md"
+  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -23,5 +29,16 @@
   "bugs": {
     "url": "https://github.com/DuganLabs/basenative/issues"
   },
-  "keywords": ["basenative", "web-components", "signals", "cli", "scaffolding", "create"]
+  "keywords": [
+    "basenative",
+    "web-components",
+    "signals",
+    "cli",
+    "scaffolding",
+    "create"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  }
 }

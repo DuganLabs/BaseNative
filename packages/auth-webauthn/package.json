@@ -1,18 +1,40 @@
 {
   "name": "@basenative/auth-webauthn",
   "version": "0.1.0",
-  "description": "WebAuthn (passkey) adapter for @basenative/auth — server, client, and Cloudflare Workers/Pages handlers",
+  "description": "WebAuthn (passkey) adapter for @basenative/auth \u2014 server, client, and Cloudflare Workers/Pages handlers",
   "type": "module",
   "exports": {
-    ".": "./src/server.js",
-    "./server": "./src/server.js",
-    "./client": "./src/client.js",
-    "./handlers": "./src/handlers.js",
-    "./d1-stores": "./src/d1-stores.js",
-    "./seed-role": "./src/seed-role.js"
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/server.js"
+    },
+    "./server": {
+      "types": "./types/index.d.ts",
+      "default": "./src/server.js"
+    },
+    "./client": {
+      "types": "./types/index.d.ts",
+      "default": "./src/client.js"
+    },
+    "./handlers": {
+      "types": "./types/index.d.ts",
+      "default": "./src/handlers.js"
+    },
+    "./d1-stores": {
+      "types": "./types/index.d.ts",
+      "default": "./src/d1-stores.js"
+    },
+    "./seed-role": {
+      "types": "./types/index.d.ts",
+      "default": "./src/seed-role.js"
+    }
   },
   "types": "./types/index.d.ts",
-  "files": ["src", "types", "migrations"],
+  "files": [
+    "src",
+    "types",
+    "migrations"
+  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -39,9 +61,15 @@
     "@simplewebauthn/server": "^11.0.0"
   },
   "peerDependenciesMeta": {
-    "@simplewebauthn/server": { "optional": false }
+    "@simplewebauthn/server": {
+      "optional": false
+    }
   },
   "optionalDependencies": {
     "@simplewebauthn/browser": "^11.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
   }
 }

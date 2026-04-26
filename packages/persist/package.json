@@ -9,7 +9,10 @@
     "./ttl": "./src/ttl.js"
   },
   "types": "./types/index.d.ts",
-  "files": ["src", "types"],
+  "files": [
+    "src",
+    "types"
+  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -33,6 +36,12 @@
     "@basenative/runtime": "workspace:*"
   },
   "peerDependenciesMeta": {
-    "@basenative/runtime": { "optional": true }
+    "@basenative/runtime": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
   }
 }
