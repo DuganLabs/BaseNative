@@ -1,22 +1,2 @@
-# BaseNative Code Owners
-# These owners will be automatically requested for review on PRs
-
-# Core runtime
-packages/runtime/ @core-team
-src/shared/ @core-team
-
-# Server
-packages/server/ @core-team
-
-# Router
-packages/router/ @core-team
-
-# Forms
-packages/forms/ @core-team
-
-# Components
-packages/components/ @core-team
-
-# Infrastructure
-.github/ @core-team
-scripts/ @core-team
+# Default owner — Warren reviews everything until the team grows.
+* @warrendugan
