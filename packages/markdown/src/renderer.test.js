@@ -102,3 +102,64 @@ test('round-trip', () => {
   assert(html.includes('<strong>'));
   assert(html.includes('<em>'));
 });
+
+test('render task list', () => {
+  const ast = parse('- [ ] todo\n- [x] done');
+  const html = render(ast);
+  assert(html.includes('class="task-list"'));
+  assert(html.includes('<input type="checkbox" disabled>'));
+  assert(html.includes('<input type="checkbox" checked disabled>'));
+  assert(html.includes('class="task-list-item"'));
+});
+
+test('render nested list', () => {
+  const ast = parse('- outer\n  - inner');
+  const html = render(ast);
+  assert(html.includes('<ul>'));
+  assert(html.match(/<li>outer.*<ul>.*<li>inner<\/li>.*<\/ul>.*<\/li>/s));
+});
+
+test('render hard line break', () => {
+  const ast = parse('one  \ntwo');
+  const html = render(ast);
+  assert(html.includes('<br>'));
+});
+
+test('render autolink', () => {
+  const ast = parse('<https://example.com>');
+  const html = render(ast);
+  assert(html.includes('href="https://example.com"'));
+  assert(html.includes('>https://example.com</a>'));
+});
+
+test('render email autolink with mailto:', () => {
+  const ast = parse('<warren@greenput.com>');
+  const html = render(ast);
+  assert(html.includes('href="mailto:warren@greenput.com"'));
+});
+
+test('render link with title', () => {
+  const ast = parse('[home](https://example.com "Home page")');
+  const html = render(ast);
+  assert(html.includes('title="Home page"'));
+});
+
+test('render strikethrough', () => {
+  const ast = parse('~~gone~~');
+  const html = render(ast);
+  assert(html.includes('<del>gone</del>'));
+});
+
+test('XSS: block javascript: in autolinks', () => {
+  const ast = parse('<javascript:alert(1)>');
+  const html = render(ast);
+  // Dangerous scheme must not produce a clickable anchor.
+  assert(!/<a [^>]*href="javascript:/i.test(html));
+  assert(!html.includes('<a href="javascript:'));
+});
+
+test('renders heading id from text only (ignores formatting)', () => {
+  const ast = parse('# Hello **world**');
+  const html = render(ast);
+  assert(html.includes('id="hello-world"'));
+});

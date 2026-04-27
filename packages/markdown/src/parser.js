@@ -18,10 +18,10 @@ const TABLE_DIVIDER_RE = /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/;
 
 export function parse(markdown) {
   const lines = markdown.replace(/\r\n?/g, '\n').split('\n');
-  return parseBlocks(lines, 0, lines.length, 0);
+  return parseBlocks(lines, 0, lines.length);
 }
 
-function parseBlocks(lines, start, end, baseIndent) {
+function parseBlocks(lines, start, end) {
   const ast = [];
   let i = start;
 
@@ -69,7 +69,7 @@ function parseBlocks(lines, start, end, baseIndent) {
         i += 2;
         continue;
       }
-      if (SETEXT_H2_RE.test(nextLine) && !UL_ITEM_RE.test(line) && !HR_RE.test(nextLine)) {
+      if (SETEXT_H2_RE.test(nextLine) && !UL_ITEM_RE.test(line)) {
         ast.push({
           type: 'heading',
           level: 2,
@@ -136,7 +136,7 @@ function parseBlocks(lines, start, end, baseIndent) {
 
     // Lists
     if (UL_ITEM_RE.test(line) || OL_ITEM_RE.test(line)) {
-      const { list, nextIndex } = parseList(lines, i, end, baseIndent);
+      const { list, nextIndex } = parseList(lines, i, end);
       ast.push(list);
       i = nextIndex;
       continue;
@@ -172,7 +172,7 @@ function isBlockStart(line) {
   return false;
 }
 
-function parseList(lines, start, end, baseIndent) {
+function parseList(lines, start, end) {
   const items = [];
   let i = start;
 
@@ -180,10 +180,6 @@ function parseList(lines, start, end, baseIndent) {
   const firstOl = lines[i].match(OL_ITEM_RE);
   const ordered = !!firstOl;
   const startIndent = (firstUl || firstOl)[1].length;
-
-  if (startIndent < baseIndent) {
-    return { list: { type: 'list', ordered, children: [] }, nextIndex: i };
-  }
 
   while (i < end) {
     const line = lines[i];
@@ -248,7 +244,7 @@ function parseList(lines, start, end, baseIndent) {
     }
 
     const itemContent = itemContentLines.join('\n');
-    items.push(buildListItem(itemContent, startIndent + 2));
+    items.push(buildListItem(itemContent));
   }
 
   return {
@@ -257,7 +253,7 @@ function parseList(lines, start, end, baseIndent) {
   };
 }
 
-function buildListItem(rawContent, childIndent) {
+function buildListItem(rawContent) {
   const lines = rawContent.split('\n');
   const firstLine = lines[0] ?? '';
 
@@ -271,15 +267,11 @@ function buildListItem(rawContent, childIndent) {
   if (rest.length === 0 || rest.every((ln) => !ln.trim())) {
     children.push(...parseInline(inlineText));
   } else {
-    // Multi-line item: parse the rest as blocks (handles nested lists, code, etc.)
     const allLines = [inlineText, ...rest];
-    const blocks = parseBlocks(allLines, 0, allLines.length, childIndent);
+    const blocks = parseBlocks(allLines, 0, allLines.length);
     if (blocks.length === 1 && blocks[0].type === 'paragraph') {
       children.push(...blocks[0].children);
-    } else if (
-      blocks.length > 0 &&
-      blocks[0].type === 'paragraph'
-    ) {
+    } else if (blocks.length > 0 && blocks[0].type === 'paragraph') {
       children.push(...blocks[0].children);
       children.push(...blocks.slice(1));
     } else {
@@ -532,12 +524,16 @@ export function parseInline(text) {
       }
     }
 
-    // Autolink: <https://...> or <foo@bar.com>
+    // Autolink: <https://...> or <foo@bar.com> — dangerous schemes fall through
+    // and are emitted as plain text rather than as a link.
     if (text[i] === '<') {
       const close = text.indexOf('>', i + 1);
       if (close !== -1) {
         const inner = text.slice(i + 1, close);
-        if (/^[a-z][a-z0-9+.-]*:\S+$/i.test(inner)) {
+        if (
+          /^[a-z][a-z0-9+.-]*:\S+$/i.test(inner) &&
+          !/^(javascript|data|vbscript):/i.test(inner)
+        ) {
           nodes.push({
             type: 'link',
             href: inner,

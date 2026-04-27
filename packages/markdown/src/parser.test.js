@@ -155,3 +155,124 @@ console.log('hello');
   assert(ast.length > 0);
   assert.equal(ast[0].type, 'heading');
 });
+
+test('parse strikethrough', () => {
+  const ast = parse('~~deleted~~');
+  assert.equal(ast[0].children[0].type, 'strikethrough');
+});
+
+test('parse bold+italic', () => {
+  const ast = parse('***both***');
+  assert.equal(ast[0].children[0].type, 'bold-italic');
+});
+
+test('parse setext h1', () => {
+  const ast = parse('Title\n=====');
+  assert.equal(ast[0].type, 'heading');
+  assert.equal(ast[0].level, 1);
+});
+
+test('parse setext h2', () => {
+  const ast = parse('Subhead\n-------');
+  assert.equal(ast[0].type, 'heading');
+  assert.equal(ast[0].level, 2);
+});
+
+test('parse task list (unchecked)', () => {
+  const ast = parse('- [ ] todo');
+  assert.equal(ast[0].type, 'list');
+  assert.equal(ast[0].children[0].checked, false);
+});
+
+test('parse task list (checked)', () => {
+  const ast = parse('- [x] done');
+  assert.equal(ast[0].children[0].checked, true);
+});
+
+test('parse task list (uppercase X)', () => {
+  const ast = parse('- [X] done');
+  assert.equal(ast[0].children[0].checked, true);
+});
+
+test('parse mixed task list', () => {
+  const ast = parse('- [ ] one\n- [x] two\n- plain');
+  assert.equal(ast[0].children[0].checked, false);
+  assert.equal(ast[0].children[1].checked, true);
+  assert.equal(ast[0].children[2].checked, undefined);
+});
+
+test('parse nested unordered list', () => {
+  const md = '- outer\n  - inner one\n  - inner two\n- outer two';
+  const ast = parse(md);
+  assert.equal(ast[0].type, 'list');
+  assert.equal(ast[0].children.length, 2);
+  const nested = ast[0].children[0].children.find((c) => c.type === 'list');
+  assert.ok(nested, 'nested list present');
+  assert.equal(nested.children.length, 2);
+});
+
+test('parse nested mixed list', () => {
+  const md = '- bullet\n  1. ordered nested\n  2. ordered two';
+  const ast = parse(md);
+  const nested = ast[0].children[0].children.find((c) => c.type === 'list');
+  assert.ok(nested);
+  assert.equal(nested.ordered, true);
+});
+
+test('parse hard line break (two spaces)', () => {
+  const ast = parse('line one  \nline two');
+  const children = ast[0].children;
+  assert.ok(children.some((c) => c.type === 'line-break'));
+});
+
+test('parse hard line break (backslash)', () => {
+  const ast = parse('line one\\\nline two');
+  const children = ast[0].children;
+  assert.ok(children.some((c) => c.type === 'line-break'));
+});
+
+test('parse autolink (URL)', () => {
+  const ast = parse('<https://example.com>');
+  const link = ast[0].children[0];
+  assert.equal(link.type, 'link');
+  assert.equal(link.href, 'https://example.com');
+  assert.equal(link.autolink, true);
+});
+
+test('parse autolink (email)', () => {
+  const ast = parse('<warren@greenput.com>');
+  const link = ast[0].children[0];
+  assert.equal(link.type, 'link');
+  assert.equal(link.href, 'mailto:warren@greenput.com');
+});
+
+test('parse link with title', () => {
+  const ast = parse('[click](https://example.com "click here")');
+  const link = ast[0].children[0];
+  assert.equal(link.title, 'click here');
+});
+
+test('parse backslash escape', () => {
+  const ast = parse('not \\*italic\\*');
+  const text = ast[0].children.map((c) => c.value || '').join('');
+  assert.ok(text.includes('*italic*'));
+});
+
+test('parse double-backtick code with single backtick inside', () => {
+  const ast = parse('``a `b` c``');
+  assert.equal(ast[0].children[0].type, 'code');
+  assert.equal(ast[0].children[0].value, 'a `b` c');
+});
+
+test('parse fenced code with tilde', () => {
+  const md = '~~~js\nconst x = 1\n~~~';
+  const ast = parse(md);
+  assert.equal(ast[0].type, 'code-block');
+  assert.equal(ast[0].language, 'js');
+});
+
+test('does not loop on lone special chars', () => {
+  const ast = parse('*');
+  assert.equal(ast[0].type, 'paragraph');
+  assert.equal(ast[0].children[0].value, '*');
+});
