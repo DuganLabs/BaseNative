@@ -373,4 +373,4 @@ function validateStores(stores) {
 
 // Re-exports so consumers don't have to import multiple sub-paths.
 export { d1WebAuthnStores } from './d1-stores.js';
-export { seedRoles } from './seed-role.js';
+export { seedRoles, parseHandleList } from './seed-role.js';
