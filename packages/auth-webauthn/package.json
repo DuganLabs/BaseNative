@@ -1,6 +1,6 @@
 {
   "name": "@basenative/auth-webauthn",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "WebAuthn (passkey) adapter for @basenative/auth \u2014 server, client, and Cloudflare Workers/Pages handlers",
   "type": "module",
   "exports": {
@@ -9,23 +9,23 @@
       "default": "./src/server.js"
     },
     "./server": {
-      "types": "./types/index.d.ts",
+      "types": "./types/server.d.ts",
       "default": "./src/server.js"
     },
     "./client": {
-      "types": "./types/index.d.ts",
+      "types": "./types/client.d.ts",
       "default": "./src/client.js"
     },
     "./handlers": {
-      "types": "./types/index.d.ts",
+      "types": "./types/handlers.d.ts",
       "default": "./src/handlers.js"
     },
     "./d1-stores": {
-      "types": "./types/index.d.ts",
+      "types": "./types/d1-stores.d.ts",
       "default": "./src/d1-stores.js"
     },
     "./seed-role": {
-      "types": "./types/index.d.ts",
+      "types": "./types/seed-role.d.ts",
       "default": "./src/seed-role.js"
     }
   },
