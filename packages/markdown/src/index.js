@@ -2,24 +2,29 @@ import { parse as parseToAST } from './parser.js';
 import { render as renderAST } from './renderer.js';
 
 /**
- * Backward-compatible parse function that returns HTML
+ * Parse markdown to an HTML string. Convenience wrapper that runs the parser
+ * and renderer back-to-back.
+ *
+ * @param {string} markdown
+ * @returns {string} HTML
  */
-export function parse(_markdown) {
-  const ast = parseToAST(_markdown);
-  return renderAST(ast);
+export function parse(markdown) {
+  return renderAST(parseToAST(markdown));
 }
 
-// Export new API as well
 export { parseToAST as parseAST, renderAST as render };
 
 /**
- * Extract YAML-style frontmatter from markdown content.
- * Returns { meta, content } where meta is key-value pairs
- * and content is the remaining markdown after the frontmatter block.
+ * Extract YAML-style frontmatter from a markdown document.
+ *
+ * Returns `{ meta, content }` where `meta` is a flat string-to-string map of
+ * key/value pairs and `content` is the markdown body with the frontmatter
+ * block removed. If no frontmatter is present, returns the original input as
+ * `content` and an empty `meta`.
  */
 export function parseFrontmatter(input) {
-  if (!input.startsWith('---')) {
-    return { meta: {}, content: input };
+  if (typeof input !== 'string' || !input.startsWith('---')) {
+    return { meta: {}, content: input ?? '' };
   }
 
   const closingIndex = input.indexOf('\n---', 3);
@@ -36,9 +41,10 @@ export function parseFrontmatter(input) {
     if (colonIndex === -1) continue;
     const key = line.slice(0, colonIndex).trim();
     let value = line.slice(colonIndex + 1).trim();
-    // Strip surrounding quotes
-    if ((value.startsWith('"') && value.endsWith('"')) ||
-        (value.startsWith("'") && value.endsWith("'"))) {
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
       value = value.slice(1, -1);
     }
     if (key) meta[key] = value;

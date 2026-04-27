@@ -17,6 +17,7 @@ export type ASTNode =
   | CodeBlockNode
   | BlockquoteNode
   | HorizontalRuleNode
+  | LineBreakNode
   | TableNode
   | TableRowNode
   | TableCellNode
@@ -63,6 +64,8 @@ export interface CodeNode {
 export interface LinkNode {
   type: 'link';
   href: string;
+  title?: string;
+  autolink?: boolean;
   children: ASTNode[];
 }
 
@@ -70,6 +73,7 @@ export interface ImageNode {
   type: 'image';
   src: string;
   alt: string;
+  title?: string;
 }
 
 export interface ListNode {
@@ -80,6 +84,8 @@ export interface ListNode {
 
 export interface ListItemNode {
   type: 'list-item';
+  /** Set when the item is a GFM task list item. */
+  checked?: boolean;
   children: ASTNode[];
 }
 
@@ -98,14 +104,18 @@ export interface HorizontalRuleNode {
   type: 'horizontal-rule';
 }
 
+export interface LineBreakNode {
+  type: 'line-break';
+}
+
 export interface TableNode {
   type: 'table';
-  align: CellAlignment[];
   children: TableRowNode[];
 }
 
 export interface TableRowNode {
   type: 'table-row';
+  header: boolean;
   children: TableCellNode[];
 }
 

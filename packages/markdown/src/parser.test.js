@@ -107,9 +107,14 @@ test('parse table', () => {
 test('parse table alignments', () => {
   const md = '| L | C | R |\n| :--- | :---: | ---: |\n| a | b | c |';
   const ast = parse(md);
-  assert.equal(ast[0].align[0], 'left');
-  assert.equal(ast[0].align[1], 'center');
-  assert.equal(ast[0].align[2], 'right');
+  const headerCells = ast[0].children[0].children;
+  assert.equal(headerCells[0].align, 'left');
+  assert.equal(headerCells[1].align, 'center');
+  assert.equal(headerCells[2].align, 'right');
+  const bodyCells = ast[0].children[1].children;
+  assert.equal(bodyCells[0].align, 'left');
+  assert.equal(bodyCells[1].align, 'center');
+  assert.equal(bodyCells[2].align, 'right');
 });
 
 test('parse table without leading/trailing pipes', () => {

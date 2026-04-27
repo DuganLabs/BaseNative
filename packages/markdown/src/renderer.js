@@ -1,9 +1,10 @@
 /**
- * HTML renderer for markdown AST - SSR-safe with XSS protection
+ * HTML renderer for the markdown AST. SSR-safe: produces a plain HTML string
+ * with no DOM access, escapes text content, and rejects dangerous URL schemes.
  */
 
 export function render(ast) {
-  return ast.map((node) => renderNode(node)).join('');
+  return ast.map(renderNode).join('');
 }
 
 function renderNode(node) {
@@ -24,16 +25,29 @@ function renderNode(node) {
       return `<del>${renderNodes(node.children)}</del>`;
     case 'code':
       return `<code>${escapeHtml(node.value)}</code>`;
-    case 'link':
-      return `<a href="${sanitizeUrl(node.href)}">${renderNodes(node.children)}</a>`;
-    case 'image':
-      return `<img src="${sanitizeUrl(node.src)}" alt="${escapeHtml(node.alt)}">`;
+    case 'link': {
+      const titleAttr = node.title ? ` title="${escapeHtml(node.title)}"` : '';
+      return `<a href="${sanitizeUrl(node.href)}"${titleAttr}>${renderNodes(node.children)}</a>`;
+    }
+    case 'image': {
+      const titleAttr = node.title ? ` title="${escapeHtml(node.title)}"` : '';
+      return `<img src="${sanitizeUrl(node.src)}" alt="${escapeHtml(node.alt)}"${titleAttr}>`;
+    }
     case 'list': {
       const tag = node.ordered ? 'ol' : 'ul';
-      return `<${tag}>${renderNodes(node.children)}</${tag}>`;
+      const hasTask = node.children.some((c) => typeof c.checked === 'boolean');
+      const cls = hasTask ? ' class="task-list"' : '';
+      return `<${tag}${cls}>${renderNodes(node.children)}</${tag}>`;
     }
-    case 'list-item':
+    case 'list-item': {
+      if (typeof node.checked === 'boolean') {
+        const checkbox = node.checked
+          ? '<input type="checkbox" checked disabled>'
+          : '<input type="checkbox" disabled>';
+        return `<li class="task-list-item">${checkbox} ${renderNodes(node.children)}</li>`;
+      }
       return `<li>${renderNodes(node.children)}</li>`;
+    }
     case 'code-block': {
       const lang = node.language ? ` class="language-${escapeHtml(node.language)}"` : '';
       return `<pre><code${lang}>${escapeHtml(node.value)}</code></pre>`;
@@ -42,22 +56,20 @@ function renderNode(node) {
       return `<blockquote>${renderNodes(node.children)}</blockquote>`;
     case 'horizontal-rule':
       return '<hr>';
+    case 'line-break':
+      return '<br>';
     case 'table': {
-      const rows = node.children;
-      if (rows.length === 0) return '<table></table>';
-      const [headerRow, ...bodyRows] = rows;
-      const thead = `<thead>${renderNode(headerRow)}</thead>`;
-      const tbody = bodyRows.length > 0
-        ? `<tbody>${bodyRows.map((r) => renderNode(r)).join('')}</tbody>`
-        : '';
+      const [header, ...body] = node.children;
+      const thead = header ? `<thead>${renderNode(header)}</thead>` : '';
+      const tbody = body.length > 0 ? `<tbody>${body.map(renderNode).join('')}</tbody>` : '';
       return `<table>${thead}${tbody}</table>`;
     }
     case 'table-row':
       return `<tr>${renderNodes(node.children)}</tr>`;
     case 'table-cell': {
       const tag = node.header ? 'th' : 'td';
-      const align = node.align ? ` style="text-align:${node.align}"` : '';
-      return `<${tag}${align}>${renderNodes(node.children)}</${tag}>`;
+      const alignAttr = node.align ? ` style="text-align:${node.align}"` : '';
+      return `<${tag}${alignAttr}>${renderNodes(node.children)}</${tag}>`;
     }
     case 'text':
       return escapeHtml(node.value);
@@ -67,13 +79,14 @@ function renderNode(node) {
 }
 
 function renderNodes(nodes) {
-  return nodes.map((node) => renderNode(node)).join('');
+  return nodes.map(renderNode).join('');
 }
 
 function getTextContent(nodes) {
   return nodes
     .map((node) => {
       if (node.type === 'text') return node.value;
+      if (node.type === 'code') return node.value;
       if (node.children) return getTextContent(node.children);
       return '';
     })
@@ -90,24 +103,22 @@ function generateSlug(text) {
     .replace(/^-|-$/g, '');
 }
 
+const ENTITIES = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+};
+
 function escapeHtml(str) {
-  if (!str) return '';
-  const map = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;',
-  };
-  return String(str).replace(/[&<>"']/g, (char) => map[char]);
+  if (str == null) return '';
+  return String(str).replace(/[&<>"']/g, (ch) => ENTITIES[ch]);
 }
 
 function sanitizeUrl(url) {
   if (!url) return '';
-  const trimmed = url.trim();
-  // Block javascript: and data: schemes
-  if (/^(javascript|data|vbscript):/i.test(trimmed)) {
-    return '';
-  }
+  const trimmed = String(url).trim();
+  if (/^(javascript|data|vbscript):/i.test(trimmed)) return '';
   return escapeHtml(trimmed);
 }
