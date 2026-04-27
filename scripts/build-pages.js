@@ -273,6 +273,7 @@ for (const [route, { view, title, activePage, ctx }] of Object.entries(pages)) {
 cpSync(join(express, 'public', 'styles.css'), join(dist, 'styles.css'));
 cpSync(join(express, 'public', 'theme.css'), join(dist, 'theme.css'));
 cpSync(join(express, 'public', 'basenative.js'), join(dist, 'basenative.js'));
+cpSync(join(express, 'public', 'favicon.svg'), join(dist, 'favicon.svg'));
 
 // Copy component CSS (served as /bn-css/ in Express, must exist in dist)
 const bnCssDir = join(dist, 'bn-css');
