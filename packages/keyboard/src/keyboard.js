@@ -150,9 +150,12 @@ export function hydrateKeyboard(rootEl, options = {}) {
   const useHaptic = options.haptic !== false;
 
   // ── Tap dispatch ─────────────────────────────────────────────
-  const clickHandler = (e) => {
-    const btn = e.target && e.target.closest && e.target.closest('[data-bn-kb-key]');
-    if (!btn || btn.disabled) return;
+  // Two paths because preventFocusSteal calls preventDefault on
+  // touchstart, which on iOS Safari suppresses the synthetic click
+  // that would otherwise reach the click handler. Without a touchend
+  // path the keyboard never registers taps on iPhone — desktop is
+  // unaffected because mousedown.preventDefault doesn't suppress click.
+  const dispatch = (btn, e) => {
     const type = btn.dataset.kbType;
     const key = btn.dataset.kbKey;
     if (useHaptic) haptic(8);
@@ -162,8 +165,25 @@ export function hydrateKeyboard(rootEl, options = {}) {
       if (onKey) onKey(key, e);
     }
   };
+
+  const clickHandler = (e) => {
+    const btn = e.target && e.target.closest && e.target.closest('[data-bn-kb-key]');
+    if (!btn || btn.disabled) return;
+    dispatch(btn, e);
+  };
   rootEl.addEventListener('click', clickHandler);
   cleanups.push(() => rootEl.removeEventListener('click', clickHandler));
+
+  const touchEndHandler = (e) => {
+    const btn = e.target && e.target.closest && e.target.closest('[data-bn-kb-key]');
+    if (!btn || btn.disabled) return;
+    // Suppress the synthetic click so the click handler doesn't double-fire
+    // on platforms where touchstart.preventDefault didn't already do it.
+    if (typeof e.preventDefault === 'function') e.preventDefault();
+    dispatch(btn, e);
+  };
+  rootEl.addEventListener('touchend', touchEndHandler, { passive: false });
+  cleanups.push(() => rootEl.removeEventListener('touchend', touchEndHandler));
 
   // ── Mobile-Safari focus fix ──────────────────────────────────
   cleanups.push(preventFocusSteal(rootEl));
