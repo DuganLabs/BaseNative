@@ -1,4 +1,4 @@
-import { SCOPE_SLOT } from '../../../src/shared/expression.js';
+import { SCOPE_SLOT } from './expression.js';
 import { signal } from './signals.js';
 
 export function createScopeSlot(initial) {

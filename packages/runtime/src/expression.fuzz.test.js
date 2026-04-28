@@ -7,7 +7,7 @@
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { evaluateExpression, clearExpressionCache } from '../../../src/shared/expression.js';
+import { evaluateExpression, clearExpressionCache } from './expression.js';
 
 function noThrow(expr, ctx = {}) {
   let threw = false;

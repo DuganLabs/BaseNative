@@ -1,5 +1,5 @@
 import { parse } from 'node-html-parser';
-import { evaluateExpression } from '../../../src/shared/expression.js';
+import { evaluateExpression } from './expression.js';
 
 function emitDiagnostic(options, diagnostic) {
   if (typeof options?.onDiagnostic === 'function') {
