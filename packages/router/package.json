@@ -1,10 +1,13 @@
 {
   "name": "@basenative/router",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "SSR-aware path routing with named params, wildcards, and history API integration",
   "type": "module",
   "exports": {
-    ".": "./src/index.js"
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    }
   },
   "types": "./types/index.d.ts",
   "dependencies": {

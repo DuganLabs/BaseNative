@@ -1,14 +1,20 @@
 {
   "name": "@basenative/server",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Server-side rendering with streaming support for BaseNative templates",
   "type": "module",
   "exports": {
-    ".": "./src/render.js",
-    "./stream": "./src/stream.js"
+    ".": {
+      "types": "./types/render.d.ts",
+      "default": "./src/render.js"
+    },
+    "./stream": {
+      "default": "./src/stream.js"
+    }
   },
   "types": "./types/render.d.ts",
   "dependencies": {
+    "@basenative/runtime": "workspace:*",
     "node-html-parser": "^7.0.1"
   },
   "files": [

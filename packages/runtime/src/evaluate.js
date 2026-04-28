@@ -1,4 +1,4 @@
-import { evaluateExpression } from '../../../src/shared/expression.js';
+import { evaluateExpression } from './shared/expression.js';
 
 export function evaluate(expr, ctx, options) {
   return evaluateExpression(expr, ctx, options);
