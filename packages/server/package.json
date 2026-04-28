@@ -17,6 +17,10 @@
     "@basenative/runtime": "workspace:*",
     "node-html-parser": "^7.0.1"
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
   "files": [
     "src",
     "types"
