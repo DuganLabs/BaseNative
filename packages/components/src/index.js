@@ -86,7 +86,10 @@ export { renderDropdownMenu } from './dropdown-menu.js';
 export { renderCommandPalette } from './command-palette.js';
 
 // Calendar & Pipeline
-export { renderCalendar, renderPipelineBlock, initCalendarDragDrop } from './calendar.js';
+export { renderCalendar, renderPipelineBlock, renderPipeline, initCalendarDragDrop, initPipelineDragDrop } from './calendar.js';
+
+// Calendar & Pipeline State Management
+export { createCalendarState, createPipelineState, eventsCollide, updateEvent, getEventDuration } from './calendar-state.js';
 
 // Layout Grid (Visual Builder)
 export { renderLayoutGrid, layoutGridStyles } from './layout-grid.js';

@@ -30,7 +30,7 @@ import { renderDataGrid } from './datagrid.js';
 import { renderTree, renderTreeGrid } from './tree.js';
 import { renderVirtualList } from './virtualizer.js';
 import { renderAvatar } from './avatar.js';
-import { renderCalendar, renderPipelineBlock } from './calendar.js';
+import { renderCalendar, renderPipelineBlock, renderPipeline } from './calendar.js';
 
 describe('Button', () => {
   it('renders a primary button', () => {
@@ -722,5 +722,101 @@ describe('PipelineBlock', () => {
     const html = renderPipelineBlock({ id: 'opp-2', title: 'Job', subtitle: '$1,500', status: 'qualified' });
     assert.ok(html.includes('$1,500'));
     assert.ok(html.includes('data-status="qualified"'));
+  });
+});
+
+describe('Pipeline', () => {
+  it('renders a pipeline container', () => {
+    const html = renderPipeline({
+      columns: [{ id: 'new', title: 'New Leads' }],
+      cards: [],
+    });
+    assert.ok(html.includes('data-bn="pipeline"'));
+  });
+
+  it('renders columns with headers', () => {
+    const html = renderPipeline({
+      columns: [
+        { id: 'new', title: 'New Leads' },
+        { id: 'qualified', title: 'Qualified' },
+      ],
+      cards: [],
+    });
+    assert.ok(html.includes('data-bn="pipeline-column"'));
+    assert.ok(html.includes('data-column-id="new"'));
+    assert.ok(html.includes('data-column-id="qualified"'));
+    assert.ok(html.includes('New Leads'));
+    assert.ok(html.includes('Qualified'));
+  });
+
+  it('renders cards in columns', () => {
+    const html = renderPipeline({
+      columns: [{ id: 'new', title: 'New' }],
+      cards: [
+        { id: 'c1', columnId: 'new', title: 'Acme Corp' },
+        { id: 'c2', columnId: 'new', title: 'Tech Startup' },
+      ],
+    });
+    assert.ok(html.includes('data-bn="pipeline-card"'));
+    assert.ok(html.includes('data-card-id="c1"'));
+    assert.ok(html.includes('data-card-id="c2"'));
+    assert.ok(html.includes('draggable="true"'));
+    assert.ok(html.includes('Acme Corp'));
+    assert.ok(html.includes('Tech Startup'));
+  });
+
+  it('renders card subtitles and descriptions', () => {
+    const html = renderPipeline({
+      columns: [{ id: 'new', title: 'New' }],
+      cards: [
+        {
+          id: 'c1',
+          columnId: 'new',
+          title: 'Acme',
+          subtitle: '$50k',
+          description: 'Enterprise customer',
+        },
+      ],
+    });
+    assert.ok(html.includes('data-bn="pipeline-card-title"'));
+    assert.ok(html.includes('data-bn="pipeline-card-subtitle"'));
+    assert.ok(html.includes('data-bn="pipeline-card-description"'));
+    assert.ok(html.includes('$50k'));
+    assert.ok(html.includes('Enterprise customer'));
+  });
+
+  it('renders empty message when no cards', () => {
+    const html = renderPipeline({
+      columns: [{ id: 'new', title: 'New' }],
+      cards: [],
+      emptyMessage: 'No leads yet',
+    });
+    assert.ok(html.includes('No leads yet'));
+  });
+
+  it('distributes cards to correct columns', () => {
+    const html = renderPipeline({
+      columns: [
+        { id: 'new', title: 'New' },
+        { id: 'qualified', title: 'Qualified' },
+      ],
+      cards: [
+        { id: 'c1', columnId: 'new', title: 'Lead 1' },
+        { id: 'c2', columnId: 'qualified', title: 'Lead 2' },
+      ],
+    });
+    // Both cards should be in the HTML, but in their respective columns
+    assert.ok(html.includes('Lead 1'));
+    assert.ok(html.includes('Lead 2'));
+    assert.ok(html.includes('data-column-id="new"'));
+    assert.ok(html.includes('data-column-id="qualified"'));
+  });
+
+  it('renders card status attribute', () => {
+    const html = renderPipeline({
+      columns: [{ id: 'new', title: 'New' }],
+      cards: [{ id: 'c1', columnId: 'new', title: 'Lead', status: 'hot' }],
+    });
+    assert.ok(html.includes('data-status="hot"'));
   });
 });

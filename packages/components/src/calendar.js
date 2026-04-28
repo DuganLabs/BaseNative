@@ -156,6 +156,50 @@ export function renderPipelineBlock(options = {}) {
 }
 
 /**
+ * Render a kanban-style pipeline view with draggable columns and cards.
+ *
+ * @param {object} options
+ * @param {Array} options.columns - Column definitions: [{ id: 'new', title: 'New Leads' }, ...]
+ * @param {Array} options.cards - Card definitions: [{ id: 'c1', columnId: 'new', title: 'Acme Corp', ... }, ...]
+ * @param {string} [options.id] - Container ID
+ * @param {string} [options.emptyMessage] - Message when no cards
+ * @param {string} [options.attrs] - Additional attributes
+ * @returns {string} HTML
+ */
+export function renderPipeline(options = {}) {
+  const {
+    columns = [],
+    cards = [],
+    id = `bn-pipeline-${Math.random().toString(36).slice(2)}`,
+    emptyMessage = 'No items',
+    attrs = '',
+  } = options;
+
+  const columnElems = columns.map(col => {
+    const colCards = cards.filter(c => c.columnId === col.id);
+    const cardsHtml = colCards.map(card => {
+      const statusAttr = card.status ? ` data-status="${card.status}"` : '';
+      return `<article data-bn="pipeline-card" data-card-id="${card.id}" draggable="true"${statusAttr}>
+  <div data-bn="pipeline-card-title">${card.title}</div>
+  ${card.subtitle ? `<div data-bn="pipeline-card-subtitle">${card.subtitle}</div>` : ''}
+  ${card.description ? `<div data-bn="pipeline-card-description">${card.description}</div>` : ''}
+</article>`;
+    }).join('');
+
+    return `<section data-bn="pipeline-column" data-column-id="${col.id}">
+  <header data-bn="pipeline-column-header">${col.title}</header>
+  <div data-bn="pipeline-column-cards">
+    ${cardsHtml || `<div data-bn="pipeline-empty">${emptyMessage}</div>`}
+  </div>
+</section>`;
+  }).join('');
+
+  return `<div data-bn="pipeline" id="${id}" ${attrs}>
+  ${columnElems}
+</div>`;
+}
+
+/**
  * Client-side: Initialize drag-and-drop on a calendar container.
  *
  * @param {HTMLElement} container  The [data-bn="calendar"] element
@@ -223,6 +267,98 @@ export function initCalendarDragDrop(container, callbacks = {}) {
   }
 
   function handleDragEnd(e) {
+    container.querySelectorAll('[data-dragging]').forEach(el =>
+      el.removeAttribute('data-dragging')
+    );
+    container.querySelectorAll('[data-drop-target]').forEach(el =>
+      el.removeAttribute('data-drop-target')
+    );
+  }
+
+  container.addEventListener('dragstart', handleDragStart);
+  container.addEventListener('dragover', handleDragOver);
+  container.addEventListener('dragleave', handleDragLeave);
+  container.addEventListener('drop', handleDrop);
+  container.addEventListener('dragend', handleDragEnd);
+
+  return {
+    destroy() {
+      container.removeEventListener('dragstart', handleDragStart);
+      container.removeEventListener('dragover', handleDragOver);
+      container.removeEventListener('dragleave', handleDragLeave);
+      container.removeEventListener('drop', handleDrop);
+      container.removeEventListener('dragend', handleDragEnd);
+    },
+  };
+}
+
+/**
+ * Client-side: Initialize drag-and-drop on a pipeline container.
+ *
+ * @param {HTMLElement} container  The [data-bn="pipeline"] element
+ * @param {object} callbacks
+ * @param {function} callbacks.onCardMove  Called with { cardId, targetColumnId, position }
+ * @returns {{ destroy: () => void }}
+ */
+export function initPipelineDragDrop(container, callbacks = {}) {
+  const { onCardMove } = callbacks;
+  let draggedCard = null;
+  let sourceColumn = null;
+
+  function handleDragStart(e) {
+    const card = e.target.closest('[data-card-id]');
+    if (!card) return;
+
+    draggedCard = card;
+    sourceColumn = card.closest('[data-column-id]');
+    e.dataTransfer.setData('text/plain', JSON.stringify({
+      type: 'pipeline-card',
+      cardId: card.dataset.cardId,
+    }));
+    e.dataTransfer.effectAllowed = 'move';
+    card.setAttribute('data-dragging', '');
+  }
+
+  function handleDragOver(e) {
+    const cardArea = e.target.closest('[data-bn="pipeline-column-cards"]');
+    if (cardArea) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      cardArea.setAttribute('data-drop-target', '');
+    }
+  }
+
+  function handleDragLeave(e) {
+    if (!e.target.closest('[data-card-id]')) {
+      container.querySelectorAll('[data-drop-target]').forEach(el =>
+        el.removeAttribute('data-drop-target')
+      );
+    }
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    const cardArea = e.target.closest('[data-bn="pipeline-column-cards"]');
+    if (!cardArea) return;
+
+    cardArea.removeAttribute('data-drop-target');
+
+    try {
+      const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+      const targetColumn = cardArea.closest('[data-column-id]');
+      if (onCardMove && targetColumn) {
+        onCardMove({
+          cardId: data.cardId,
+          targetColumnId: targetColumn.dataset.columnId,
+          position: null,
+        });
+      }
+    } catch { /* ignore malformed drag data */ }
+  }
+
+  function handleDragEnd(e) {
+    draggedCard = null;
+    sourceColumn = null;
     container.querySelectorAll('[data-dragging]').forEach(el =>
       el.removeAttribute('data-dragging')
     );
