@@ -4,7 +4,8 @@
   "description": "Headless third-party integration wrappers for BaseNative apps",
   "type": "module",
   "exports": {
-    "./plaid": "./src/plaid.js"
+    "./plaid": "./src/plaid.js",
+    "./yield": "./src/yield.js"
   },
   "types": "./types/index.d.ts",
   "files": ["src", "types"],

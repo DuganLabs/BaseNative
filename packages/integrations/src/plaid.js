@@ -1,16 +1,14 @@
 /**
  * @basenative/integrations/plaid — headless Plaid Link wrapper.
  *
- * Client-side: loadPlaidLink() injects the Plaid Link script and
- * returns a handler for opening the Link flow.
- *
- * Server-side: createLinkToken() and exchangePublicToken() wrap the
- * Plaid API for Cloudflare Worker / Node.js environments.
+ * Client-side: createPlaidLink() wraps the Plaid Link initialization with signals.
+ * Server-side: createPlaidClient() provides account/balance/transfer APIs.
+ * Yield optimization: findBestYieldAccount() computes optimal float allocation.
  */
 
 const PLAID_LINK_CDN = 'https://cdn.plaid.com/link/v2/stable/link-initialize.js';
 
-// ---------- Client-side ----------
+// ---------- Client-side: Signal-based Link initialization ----------
 
 /**
  * Load the Plaid Link drop-in script if not already present.
@@ -47,7 +45,55 @@ export function loadPlaidScript() {
 }
 
 /**
- * Open Plaid Link with the given link token.
+ * Create a signal-based Plaid Link handler.
+ * Returns signals for linkToken, linkStatus, and accounts.
+ *
+ * @param {object} config
+ * @param {string} config.token         Link token from createLinkToken()
+ * @param {function} config.onSuccess   Called with (publicToken, metadata)
+ * @param {function} [config.onExit]    Called when user exits Link
+ * @param {function} [config.onEvent]   Called on Link events
+ * @param {object} [config.signals]     Signals object with signal(), computed() functions
+ * @returns {Promise<{ linkToken: object, linkStatus: object, handler: object }>}
+ */
+export async function createPlaidLink(config) {
+  const { token, onSuccess, onExit, onEvent, signals } = config;
+
+  await loadPlaidScript();
+
+  if (!window.Plaid) {
+    throw new Error('@basenative/integrations/plaid: Plaid Link script failed to initialize');
+  }
+
+  // If signals are provided, create signal-based state
+  const linkTokenSignal = signals?.signal ? signals.signal(token) : null;
+  const linkStatusSignal = signals?.signal ? signals.signal('ready') : null;
+
+  const handler = window.Plaid.create({
+    token,
+    onSuccess: (publicToken, metadata) => {
+      if (linkStatusSignal) linkStatusSignal.set('success');
+      if (onSuccess) onSuccess(publicToken, metadata);
+    },
+    onExit: (err, metadata) => {
+      if (linkStatusSignal) linkStatusSignal.set('exit');
+      if (onExit) onExit(err, metadata);
+    },
+    onEvent: (eventName, metadata) => {
+      if (onEvent) onEvent(eventName, metadata);
+    },
+  });
+
+  return {
+    linkToken: linkTokenSignal,
+    linkStatus: linkStatusSignal,
+    open: () => handler.open(),
+    destroy: () => handler.destroy(),
+  };
+}
+
+/**
+ * Open Plaid Link with the given link token (legacy API).
  *
  * @param {object} options
  * @param {string} options.token         Link token from createLinkToken()
@@ -84,7 +130,7 @@ export async function openPlaidLink(options) {
   };
 }
 
-// ---------- Server-side ----------
+// ---------- Server-side: Plaid Client Factory ----------
 
 const PLAID_ENVS = {
   sandbox: 'https://sandbox.plaid.com',
@@ -126,6 +172,32 @@ async function plaidRequest(path, body, credentials) {
   }
 
   return data;
+}
+
+/**
+ * Create a Plaid API client factory with server methods.
+ * Works in Cloudflare Workers and Node.js environments.
+ *
+ * @param {object} config
+ * @param {string} config.clientId
+ * @param {string} config.secret
+ * @param {string} [config.environment='sandbox']
+ * @returns {object}
+ */
+export function createPlaidClient(config) {
+  const credentials = {
+    clientId: config.clientId,
+    secret: config.secret,
+    env: config.environment || 'sandbox',
+  };
+
+  return {
+    exchangePublicToken: (publicToken) => exchangePublicToken(publicToken, credentials),
+    getAccounts: (accessToken) => getAccounts(accessToken, credentials),
+    getBalance: (accessToken) => getBalance(accessToken, credentials),
+    createTransfer: (params) => createTransfer(params, credentials),
+    getTransferStatus: (transferId) => getTransferStatus(transferId, credentials),
+  };
 }
 
 /**
@@ -179,6 +251,28 @@ export async function exchangePublicToken(publicToken, credentials) {
 }
 
 /**
+ * Fetch linked accounts (without balance details).
+ *
+ * @param {string} accessToken  The access token from exchangePublicToken()
+ * @param {object} credentials
+ * @returns {Promise<{ accounts: Array<{ id: string, name: string, type: string, subtype: string }> }>}
+ */
+export async function getAccounts(accessToken, credentials) {
+  const data = await plaidRequest('/accounts/get', {
+    access_token: accessToken,
+  }, credentials);
+
+  return {
+    accounts: data.accounts.map(a => ({
+      id: a.account_id,
+      name: a.name,
+      type: a.type,
+      subtype: a.subtype,
+    })),
+  };
+}
+
+/**
  * Fetch account balances for a linked item.
  *
  * @param {string} accessToken  The access token from exchangePublicToken()
@@ -203,5 +297,107 @@ export async function getBalances(accessToken, credentials) {
         currency: a.balances.iso_currency_code,
       },
     })),
+  };
+}
+
+/**
+ * Alias for getBalances() for consistency.
+ *
+ * @param {string} accessToken
+ * @param {object} credentials
+ * @returns {Promise<object>}
+ */
+export async function getBalance(accessToken, credentials) {
+  return getBalances(accessToken, credentials);
+}
+
+/**
+ * Initiate a transfer via Plaid Transfer API.
+ * Supports FedNow instant transfers (network: "rtp") with graceful fallback to ACH.
+ *
+ * @param {object} params
+ * @param {string} params.accessToken        Access token for the source account
+ * @param {string} params.accountId          Account to transfer from
+ * @param {string} params.type               Transfer type ("debit" or "credit")
+ * @param {number} params.amount             Amount in cents
+ * @param {string} params.description        Transfer description
+ * @param {string} [params.network]          "rtp" (RTP/FedNow) or "ach" (default: auto-detect)
+ * @param {object} [params.user]             User info { name, email }
+ * @param {object} credentials
+ * @returns {Promise<{ transferId: string, status: string, network: string }>}
+ */
+export async function createTransfer(params, credentials) {
+  const {
+    accessToken,
+    accountId,
+    type,
+    amount,
+    description,
+    network,
+    user,
+  } = params;
+
+  const body = {
+    access_token: accessToken,
+    account_id: accountId,
+    type,
+    amount: amount / 100, // Convert cents to dollars
+    description: description || 'Transfer via PendingBusiness',
+  };
+
+  // If network is explicitly set to "rtp" (RTP/FedNow), use it
+  // Otherwise, let Plaid auto-detect or default to ACH
+  if (network === 'rtp') {
+    body.network = 'rtp';
+  }
+
+  if (user) {
+    body.user = {
+      name: user.name,
+      email_address: user.email,
+    };
+  }
+
+  try {
+    const data = await plaidRequest('/transfer/create', body, credentials);
+
+    return {
+      transferId: data.transfer_id,
+      status: data.status,
+      network: data.network || 'ach', // Default to ACH if not specified
+    };
+  } catch (err) {
+    // If FedNow fails, retry with ACH
+    if (network === 'rtp' && err.plaidError?.error_code === 'INVALID_REQUEST') {
+      const achBody = { ...body };
+      delete achBody.network;
+      const data = await plaidRequest('/transfer/create', achBody, credentials);
+      return {
+        transferId: data.transfer_id,
+        status: data.status,
+        network: 'ach', // Fell back to ACH
+      };
+    }
+    throw err;
+  }
+}
+
+/**
+ * Check the status of a transfer.
+ *
+ * @param {string} transferId   Transfer ID from createTransfer()
+ * @param {object} credentials
+ * @returns {Promise<{ transferId: string, status: string, amount: number, network: string }>}
+ */
+export async function getTransferStatus(transferId, credentials) {
+  const data = await plaidRequest('/transfer/get', {
+    transfer_id: transferId,
+  }, credentials);
+
+  return {
+    transferId: data.transfer_id,
+    status: data.status,
+    amount: data.amount,
+    network: data.network || 'ach',
   };
 }
