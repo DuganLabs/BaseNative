@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { evaluate, interpolate } from './evaluate.js';
-import { clearExpressionCache } from '../../../src/shared/expression.js';
+import { clearExpressionCache } from './shared/expression.js';
 
 describe('evaluate', () => {
   it('supports a safe expression subset without eval-like APIs', () => {

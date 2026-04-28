@@ -9,7 +9,7 @@ import {
   compileExpression,
   evaluateExpression,
   clearExpressionCache,
-} from '../../../src/shared/expression.js';
+} from './shared/expression.js';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 

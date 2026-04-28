@@ -1,10 +1,16 @@
 {
   "name": "@basenative/runtime",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Signal-based web runtime over native HTML — zero build step, zero production dependencies",
   "type": "module",
   "exports": {
-    ".": "./src/index.js"
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./shared/expression": {
+      "default": "./src/shared/expression.js"
+    }
   },
   "types": "./types/index.d.ts",
   "files": [
