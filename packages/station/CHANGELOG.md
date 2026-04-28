@@ -1,5 +1,11 @@
 # @basenative/station
 
+## 0.2.0
+
+### Minor Changes
+
+- 12aa2c0: Initial release of `@basenative/station` — queue-driven local-inference primitive that drives an OpenAI-compatible local tower (or any OpenAI-compat endpoint) with an SQLite-backed job queue, iteration-loop runtime, Workers AI fallback, and a registry of five pre-built job templates (`tests-from-todos`, `docstring-coverage`, `lint-bankruptcy`, `refactor-migration`, `fsm-classifier`). Ships with the `bn-station` CLI and full TypeScript declarations.
+
 All notable changes to `@basenative/station` will be documented in this file.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
