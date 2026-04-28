@@ -1,0 +1,42 @@
+{
+  "name": "@basenative/builder",
+  "version": "0.1.0",
+  "description": "Signal-backed drag-and-drop component builder that emits BaseNative source",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./state": "./src/state.js",
+    "./palette": "./src/palette.js",
+    "./code-gen": "./src/code-gen.js",
+    "./dnd": "./src/dnd.js",
+    "./inspector": "./src/inspector.js",
+    "./tree-view": "./src/tree-view.js",
+    "./canvas": "./src/canvas.js"
+  },
+  "types": "./types/index.d.ts",
+  "dependencies": {
+    "@basenative/runtime": "workspace:*"
+  },
+  "files": [
+    "src",
+    "types"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/builder"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": [
+    "basenative",
+    "builder",
+    "drag-and-drop",
+    "code-generation",
+    "signals",
+    "no-code"
+  ]
+}

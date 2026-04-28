@@ -1,0 +1,10 @@
+{
+  "name": "@basenative/builder",
+  "targets": {
+    "test": {
+      "cache": true,
+      "command": "node --test",
+      "inputs": ["{projectRoot}/src/**/*.js"]
+    }
+  }
+}

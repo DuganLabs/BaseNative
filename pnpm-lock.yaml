@@ -226,6 +226,12 @@ importers:
         specifier: ^11.0.0
         version: 11.0.0
 
+  packages/builder:
+    dependencies:
+      '@basenative/runtime':
+        specifier: workspace:*
+        version: link:../runtime
+
   packages/claude-config: {}
 
   packages/cli: {}
@@ -348,6 +354,8 @@ importers:
       '@basenative/og-image':
         specifier: workspace:*
         version: link:../og-image
+
+  packages/station: {}
 
   packages/tenant: {}
 
