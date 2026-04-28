@@ -1146,4 +1146,113 @@
   font-size: var(--bn-font-size-sm);
 }
 
+/* Pipeline / Kanban component */
+[data-bn="pipeline"] {
+  display: grid;
+  grid-auto-flow: column;
+  gap: var(--bn-space-4);
+  overflow-x: auto;
+  padding: var(--bn-space-3);
+  background: var(--bn-color-surface-muted);
+  border-radius: var(--bn-radius-md);
+  min-height: 20rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-bn="pipeline"] [data-bn="pipeline-card"] {
+    transition: none;
+  }
+}
+
+[data-bn="pipeline-column"] {
+  flex: 0 0 min(100%, 20rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--bn-space-2);
+  min-height: 0;
+}
+
+[data-bn="pipeline-column-header"] {
+  font-weight: var(--bn-font-weight-semibold);
+  font-size: var(--bn-font-size-sm);
+  color: var(--bn-color-text);
+  padding: var(--bn-space-2) 0;
+  border-bottom: 2px solid var(--bn-color-border);
+}
+
+[data-bn="pipeline-column-cards"] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bn-space-2);
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  padding: var(--bn-space-1);
+  border-radius: var(--bn-radius-md);
+  transition: background-color var(--bn-transition-fast);
+}
+
+[data-bn="pipeline-column-cards"][data-drop-target] {
+  background-color: var(--bn-color-primary-50, hsl(210 100% 95%));
+  border: 2px dashed var(--bn-color-primary-200, hsl(210 100% 85%));
+}
+
+[data-bn="pipeline-card"] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bn-space-1);
+  padding: var(--bn-space-2);
+  background: var(--bn-color-surface);
+  border: 1px solid var(--bn-color-border);
+  border-radius: var(--bn-radius-md);
+  cursor: grab;
+  transition: box-shadow var(--bn-transition-fast), transform var(--bn-transition-fast);
+  user-select: none;
+}
+
+[data-bn="pipeline-card"]:hover {
+  box-shadow: var(--bn-shadow-md);
+  transform: translateY(-2px);
+}
+
+[data-bn="pipeline-card"][data-dragging] {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+[data-bn="pipeline-card-title"] {
+  font-weight: var(--bn-font-weight-medium);
+  font-size: var(--bn-font-size-sm);
+  color: var(--bn-color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-bn="pipeline-card-subtitle"] {
+  font-size: var(--bn-font-size-xs);
+  color: var(--bn-color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-bn="pipeline-card-description"] {
+  font-size: var(--bn-font-size-xs);
+  color: var(--bn-color-text-muted);
+  line-height: var(--bn-line-height-relaxed);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+[data-bn="pipeline-empty"] {
+  padding: var(--bn-space-4);
+  text-align: center;
+  color: var(--bn-color-text-muted);
+  font-size: var(--bn-font-size-sm);
+  opacity: 0.6;
+}
+
 } /* end @layer components */
