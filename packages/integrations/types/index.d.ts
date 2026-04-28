@@ -57,8 +57,75 @@ export interface OpenPlaidLinkOptions {
   onEvent?: (eventName: string, metadata: unknown) => void;
 }
 
+// Client-side Link API
 export function loadPlaidScript(): Promise<void>;
 export function openPlaidLink(options: OpenPlaidLinkOptions): Promise<PlaidLinkHandler>;
+export function createPlaidLink(config: any): Promise<any>;
+
+// Server-side API
+export interface PlaidClient {
+  exchangePublicToken(publicToken: string): Promise<ExchangeResult>;
+  getAccounts(accessToken: string): Promise<any>;
+  getBalance(accessToken: string): Promise<BalancesResult>;
+  createTransfer(params: any): Promise<any>;
+  getTransferStatus(transferId: string): Promise<any>;
+}
+
+export function createPlaidClient(config: { clientId: string; secret: string; environment?: string }): PlaidClient;
 export function createLinkToken(options: LinkTokenOptions, credentials: PlaidCredentials): Promise<LinkTokenResult>;
 export function exchangePublicToken(publicToken: string, credentials: PlaidCredentials): Promise<ExchangeResult>;
+export function getAccounts(accessToken: string, credentials: PlaidCredentials): Promise<any>;
 export function getBalances(accessToken: string, credentials: PlaidCredentials): Promise<BalancesResult>;
+export function getBalance(accessToken: string, credentials: PlaidCredentials): Promise<BalancesResult>;
+export function createTransfer(params: any, credentials: PlaidCredentials): Promise<any>;
+export function getTransferStatus(transferId: string, credentials: PlaidCredentials): Promise<any>;
+
+// Yield optimization API
+export interface YieldAccount {
+  id: string;
+  name: string;
+  balance: number;
+  apy: number;
+  maxBalance?: number;
+}
+
+export interface BestYieldResult {
+  accountId: string;
+  accountName: string;
+  apy: number;
+  expectedMonthlyYield: number;
+}
+
+export interface FloatAllocation {
+  accountId: string;
+  accountName: string;
+  allocation: number;
+  expectedYield: number;
+}
+
+export interface TransferSchedule {
+  transferDate: Date;
+  fromAccountId: string;
+  amount: number;
+  reason: string;
+}
+
+export interface BreakEvenResult {
+  profitable: boolean;
+  yieldGain: number;
+  breakEvenDays: number;
+}
+
+export function findBestYieldAccount(accounts: YieldAccount[]): BestYieldResult;
+export function optimizeFloatAllocation(accounts: YieldAccount[], totalFloat: number): FloatAllocation[];
+export function calculateOptimalTransferTiming(
+  liabilities: Array<{ dueDate: Date; amount: number; description?: string }>,
+  accounts: YieldAccount[]
+): TransferSchedule[];
+export function calculateBreakEven(
+  amount: number,
+  fromApy: number,
+  toApy: number,
+  transferCostCents?: number,
+  daysFloat?: number
+): BreakEvenResult;
