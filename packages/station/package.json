@@ -1,6 +1,6 @@
 {
   "name": "@basenative/station",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Queue-driven local-inference primitive — drives a cloudflared-tunneled vLLM tower (or any OpenAI-compatible endpoint) with an SQLite-backed job queue, iteration loop runtime, fallback to Workers AI, and reusable job templates.",
   "type": "module",
   "bin": {
