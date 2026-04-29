@@ -41,7 +41,7 @@ export function renderDataGrid(options = {}) {
       return `<td data-bn="datagrid-td" data-key="${col.key}"${editable}>${value}</td>`;
     }).join('');
     const selectCell = selectable
-      ? `<td data-bn="datagrid-td-select"><input type="checkbox" ${selectedSet.has(rowId) ? 'checked ' : ''}aria-label="Select row ${rowId}" data-row-id="${rowId}"></td>`
+      ? `<td data-bn="datagrid-td-select"><input type="checkbox" ${selectedSet.has(rowId) ? 'checked ' : ''}aria-label="Select row ${rowId}" data-bn="datagrid-row-select" data-row-id="${rowId}"></td>`
       : '';
     return `<tr data-bn="datagrid-row" data-row-id="${rowId}">${selectCell}${cells}</tr>`;
   }).join('');

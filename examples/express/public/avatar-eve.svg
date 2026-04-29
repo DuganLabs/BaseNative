@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Eve Martinez">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" fill="url(#bg)"/>
+  <circle cx="32" cy="26" r="11" fill="#fef3c7"/>
+  <path d="M10 60c0-12 9.85-20 22-20s22 8 22 20z" fill="#fef3c7"/>
+  <path d="M21 22 q11 -14 22 0 q-3 -3 -7 -2 q-4 -7 -10 -3 q-4 0 -5 5z" fill="#1e1b4b"/>
+</svg>
