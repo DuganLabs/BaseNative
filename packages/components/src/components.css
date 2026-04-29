@@ -694,7 +694,7 @@
 
 /* === Drawer === */
 [data-bn="drawer"] {
-  display: none;
+  display: flex;
   position: fixed;
   top: 0;
   bottom: 0;
@@ -704,9 +704,15 @@
   box-shadow: var(--bn-shadow-lg);
   flex-direction: column;
   width: 20rem;
+  transform: translateX(100%);
+  transition: transform 300ms var(--bn-ease-out-expo);
 }
-[data-bn="drawer"][data-position="left"] { right: auto; left: 0; }
-[data-bn="drawer"][data-open] { display: flex; }
+[data-bn="drawer"][data-position="left"] {
+  right: auto;
+  left: 0;
+  transform: translateX(-100%);
+}
+[data-bn="drawer"][data-open] { transform: translateX(0); }
 [data-bn="drawer"][data-size="sm"] { width: 16rem; }
 [data-bn="drawer"][data-size="lg"] { width: 28rem; }
 [data-bn="drawer-overlay"] {
@@ -715,8 +721,14 @@
   z-index: calc(var(--bn-z-modal) - 1);
   background: rgb(0 0 0 / 0.4);
   backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms var(--bn-ease-out-expo);
 }
-[data-bn="drawer-overlay"][hidden] { display: none; }
+[data-bn="drawer-overlay"][data-open] {
+  opacity: 1;
+  pointer-events: auto;
+}
 [data-bn="drawer-header"] {
   display: flex;
   align-items: center;

@@ -88,12 +88,12 @@ function wireDrawer() {
 
     const open = () => {
       drawer.setAttribute('data-open', '');
-      overlay?.removeAttribute('hidden');
+      overlay?.setAttribute('data-open', '');
       drawer.querySelector('[data-bn="drawer-close"], button')?.focus();
     };
     const close = () => {
       drawer.removeAttribute('data-open');
-      overlay?.setAttribute('hidden', '');
+      overlay?.removeAttribute('data-open');
       trigger.focus();
     };
 
