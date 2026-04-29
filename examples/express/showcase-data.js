@@ -332,6 +332,7 @@ export function getShowcaseContext() {
       renderAvatar({ name: 'Bob Smith' }),
       renderAvatar({ name: 'Carol Davis', size: 'lg' }),
       renderAvatar({ name: 'Dan Lee', size: 'xl' }),
+      renderAvatar({ name: 'Eve Martinez', src: '/avatar-eve.svg', size: 'lg' }),
     ].join('\n'),
 
     inputDefault: renderInput({

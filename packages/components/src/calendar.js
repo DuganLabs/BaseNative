@@ -83,7 +83,7 @@ export function renderCalendar(options = {}) {
   for (let h = hourStart; h < hourEnd; h++) {
     const label = h <= 12 ? `${h}am` : `${h - 12}pm`;
     timeLabels.push(
-      `<div data-bn="calendar-time-label" data-hour="${h}" style="grid-row: ${h - hourStart + 2}">${h === 12 ? '12pm' : label}</div>`
+      `<div data-bn="calendar-time-label" data-hour="${h}" style="grid-row: ${h - hourStart + 1}">${h === 12 ? '12pm' : label}</div>`
     );
   }
 
@@ -99,7 +99,7 @@ export function renderCalendar(options = {}) {
       const statusAttr = ev.status ? ` data-status="${ev.status}"` : '';
       const colorStyle = ev.color ? ` --bn-calendar-event-color: ${ev.color};` : '';
 
-      return `<div data-bn="calendar-event" draggable="true" data-event-id="${ev.id}"${statusAttr} style="grid-row: ${topRow} / span ${Math.ceil(span)};${colorStyle}">
+      return `<div data-bn="calendar-event" draggable="true" data-event-id="${ev.id}"${statusAttr} title="${ev.title}" style="grid-row: ${topRow} / span ${Math.ceil(span)};${colorStyle}">
   <span data-bn="calendar-event-title">${ev.title}</span>
   ${ev.assignee ? `<span data-bn="calendar-event-assignee">${ev.assignee}</span>` : ''}
   <span data-bn="calendar-event-time">${new Date(ev.start).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} – ${new Date(ev.end).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span>
@@ -179,7 +179,7 @@ export function renderPipeline(options = {}) {
     const colCards = cards.filter(c => c.columnId === col.id);
     const cardsHtml = colCards.map(card => {
       const statusAttr = card.status ? ` data-status="${card.status}"` : '';
-      return `<article data-bn="pipeline-card" data-card-id="${card.id}" draggable="true"${statusAttr}>
+      return `<article data-bn="pipeline-card" data-card-id="${card.id}" draggable="true"${statusAttr} title="${card.title}">
   <div data-bn="pipeline-card-title">${card.title}</div>
   ${card.subtitle ? `<div data-bn="pipeline-card-subtitle">${card.subtitle}</div>` : ''}
   ${card.description ? `<div data-bn="pipeline-card-description">${card.description}</div>` : ''}

@@ -552,8 +552,8 @@
     border-inline-start-color: var(--accent);
   }
 
-  /* -- Status badges -- */
-  [data-status] {
+  /* -- Status badges (scoped to <mark> so component data-status is unaffected) -- */
+  mark[data-status] {
     display: inline-block;
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
@@ -563,23 +563,23 @@
     font-weight: var(--font-weight-semibold);
     white-space: nowrap;
   }
-  [data-status='active'],
-  [data-status='done'] {
+  mark[data-status='active'],
+  mark[data-status='done'] {
     background: var(--status-active-bg);
     color: var(--success);
   }
-  [data-status='idle'],
-  [data-status='dom'],
-  [data-status='binding'] {
+  mark[data-status='idle'],
+  mark[data-status='dom'],
+  mark[data-status='binding'] {
     background: var(--status-idle-bg);
     color: var(--accent);
   }
-  [data-status='error'] {
+  mark[data-status='error'] {
     background: var(--status-error-bg);
     color: var(--danger);
   }
-  [data-status='pending'],
-  [data-status='server'] {
+  mark[data-status='pending'],
+  mark[data-status='server'] {
     background: var(--status-pending-bg);
     color: var(--text-2);
   }
