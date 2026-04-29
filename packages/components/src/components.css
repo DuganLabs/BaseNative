@@ -478,6 +478,8 @@
   width: 90vi;
   max-height: min(24rem, 80vh);
   overflow: hidden;
+  /* Reset zeroes margin globally; restore UA centering for modal dialogs. */
+  margin: auto;
 }
 [data-bn="command-palette"][open] {
   display: flex;
@@ -647,6 +649,8 @@
   max-width: 28rem;
   width: 90vi;
   color: var(--bn-color-text);
+  /* Reset zeroes margin on every element; restore UA centering for modal dialogs. */
+  margin: auto;
 }
 [data-bn="dialog"]::backdrop {
   background: rgb(0 0 0 / 0.4);
@@ -760,7 +764,12 @@
 [data-bn="dropdown-trigger"]:hover { background: var(--bn-color-surface-muted); }
 [data-bn="dropdown-trigger"]:focus-visible { box-shadow: var(--bn-focus-ring); outline: none; }
 [data-bn="dropdown-menu"] {
-  position: absolute;
+  /* Anchored via CSS vars set by showcase.js when the popover toggles. */
+  position: fixed;
+  inset: auto;
+  top: var(--bn-dropdown-top, 0);
+  left: var(--bn-dropdown-left, 0);
+  margin: 0;
   z-index: var(--bn-z-dropdown);
   min-width: 10rem;
   padding: var(--bn-space-1);
@@ -769,9 +778,14 @@
   border-radius: var(--bn-radius-lg);
   box-shadow: var(--bn-shadow-md);
 }
-[data-bn="dropdown-menu"]:popover-open {
+[data-bn="dropdown-menu"]:popover-open,
+[data-bn="dropdown-menu"][data-open] {
   display: flex;
   flex-direction: column;
+}
+/* Fallback for browsers without the popover API */
+[data-bn="dropdown-menu"]:not([data-open]):not(:popover-open) {
+  display: none;
 }
 [data-bn="dropdown-item"] {
   display: flex;
@@ -930,7 +944,12 @@
 
 /* === Tooltip === */
 [data-bn="tooltip"] {
-  position: absolute;
+  position: fixed;
+  inset: auto;
+  top: var(--bn-tooltip-top, 0);
+  left: var(--bn-tooltip-left, 0);
+  margin: 0;
+  transform: translate(-50%, -100%);
   z-index: var(--bn-z-dropdown);
   max-width: 20rem;
   padding: var(--bn-space-2) var(--bn-space-3);

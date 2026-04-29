@@ -16,7 +16,7 @@ export function renderDialog(options = {}) {
 
   const openAttr = open ? ' open' : '';
   const closeBtn = closable
-    ? `<button data-bn="dialog-close" aria-label="Close" type="button">&times;</button>`
+    ? `<button data-bn="dialog-close" data-bn-action="close-dialog" aria-label="Close" type="button">&times;</button>`
     : '';
 
   return `<dialog data-bn="dialog" data-size="${size}" id="${id}"${openAttr} ${attrs}>

@@ -20,7 +20,7 @@ export function renderMultiselect(options = {}) {
     .map(val => {
       const item = items.find(i => (typeof i === 'string' ? i : i.value) === val);
       const text = item ? (typeof item === 'string' ? item : item.label) : val;
-      return `<span data-bn="tag" data-value="${val}">${text}<button type="button" data-bn="tag-remove" aria-label="Remove ${text}">&times;</button></span>`;
+      return `<span data-bn="tag" data-value="${val}">${text}<button type="button" data-bn="tag-remove" data-bn-action="remove-tag" aria-label="Remove ${text}">&times;</button></span>`;
     })
     .join('');
 

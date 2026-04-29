@@ -164,12 +164,12 @@
   <h2>Overlays</h2>
   <article>
     <header><h3>Dialog</h3></header>
-    <button data-bn="button" data-variant="secondary" onclick="document.getElementById('demo-dialog').showModal()">Open dialog</button>
+    <button data-bn="button" data-variant="secondary" data-bn-action="open-dialog" data-bn-target="demo-dialog">Open dialog</button>
     {{ dialog }}
   </article>
   <article>
     <header><h3>Drawer</h3></header>
-    <button data-bn="button" data-variant="secondary" onclick="openDrawer()">Open drawer</button>
+    <button data-bn="button" data-variant="secondary" data-bn-action="open-drawer" data-bn-target="demo-drawer">Open drawer</button>
     {{ drawer }}
   </article>
   <article>
@@ -182,54 +182,9 @@
   </article>
   <article>
     <header><h3>Command palette</h3></header>
-    <button data-bn="button" data-variant="secondary" onclick="document.getElementById('demo-cmd').showModal()">Open command palette</button>
+    <button data-bn="button" data-variant="secondary" data-bn-action="open-command-palette" data-bn-target="demo-cmd">Open command palette</button>
     {{ commandPalette }}
   </article>
 </section>
 
 {{ toastContainer }}
-
-<script type="module">
-// -- Tabs --
-document.querySelectorAll('[data-bn="tab"]').forEach(tab => {
-  tab.addEventListener('click', () => {
-    const tabs = tab.closest('[data-bn="tabs"]');
-    tabs.querySelectorAll('[data-bn="tab"]').forEach(t => t.setAttribute('aria-selected', 'false'));
-    tabs.querySelectorAll('[data-bn="tab-panel"]').forEach(p => p.hidden = true);
-    tab.setAttribute('aria-selected', 'true');
-    const panel = tabs.querySelector('#' + tab.getAttribute('aria-controls'));
-    if (panel) panel.hidden = false;
-  });
-});
-
-// -- Accordion (native details/summary) --
-// Already interactive via native <details> — no JS needed
-
-// -- Dialog --
-document.querySelectorAll('[data-bn="dialog-close"]').forEach(btn => {
-  btn.addEventListener('click', () => btn.closest('[data-bn="dialog"]')?.close());
-});
-
-// -- Drawer --
-const drawer = document.getElementById('demo-drawer');
-const drawerOverlay = document.querySelector('[data-bn="drawer-overlay"]');
-function openDrawer() {
-  drawer?.setAttribute('data-open', '');
-  drawerOverlay?.removeAttribute('hidden');
-}
-function closeDrawer() {
-  drawer?.removeAttribute('data-open');
-  drawerOverlay?.setAttribute('hidden', '');
-}
-document.querySelector('[data-bn="drawer-close"]')?.addEventListener('click', closeDrawer);
-drawerOverlay?.addEventListener('click', closeDrawer);
-
-// -- Alert dismiss --
-document.querySelectorAll('[data-bn="alert-dismiss"]').forEach(btn => {
-  btn.addEventListener('click', () => btn.closest('[data-bn="alert"]')?.remove());
-});
-
-// -- Toast demo --
-import { signal, effect } from '/basenative.js';
-const toastCount = signal(0);
-</script>

@@ -268,7 +268,11 @@ app.get('/showcase', (req, res) => {
 
     toastContainer: renderToastContainer('top-right'),
   };
-  const html = renderPage('showcase.html', ctx, { title: 'Showcase', activePage: 'showcase' });
+  const html = renderPage('showcase.html', ctx, {
+    title: 'Showcase',
+    activePage: 'showcase',
+    scripts: '<script type="module" src="/showcase.js"></script>',
+  });
   res.send(html);
 });
 

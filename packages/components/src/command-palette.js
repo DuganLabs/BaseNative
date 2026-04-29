@@ -23,7 +23,7 @@ export function renderCommandPalette(options = {}) {
       .map(cmd => {
         const icon = cmd.icon ? `<span data-bn="command-icon">${cmd.icon}</span>` : '';
         const shortcut = cmd.shortcut ? `<kbd data-bn="command-shortcut">${cmd.shortcut}</kbd>` : '';
-        return `<button data-bn="command-item" role="option" data-action="${cmd.action ?? cmd.id ?? ''}" type="button">${icon}<span data-bn="command-label">${cmd.label}</span>${shortcut}</button>`;
+        return `<button data-bn="command-item" role="option" data-action="${cmd.action ?? cmd.id ?? ''}" data-bn-action="run-command" type="button">${icon}<span data-bn="command-label">${cmd.label}</span>${shortcut}</button>`;
       })
       .join('');
     groupsHtml += `<div data-bn="command-group" role="group" aria-label="${groupName}">

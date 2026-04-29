@@ -15,7 +15,7 @@ export function renderDrawer(options = {}) {
   } = options;
 
   const closeBtn = closable
-    ? `<button data-bn="drawer-close" aria-label="Close" type="button">&times;</button>`
+    ? `<button data-bn="drawer-close" data-bn-action="close-drawer" aria-label="Close" type="button">&times;</button>`
     : '';
   const overlayHtml = overlay ? `<div data-bn="drawer-overlay"${open ? '' : ' hidden'}></div>` : '';
 

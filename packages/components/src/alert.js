@@ -11,7 +11,7 @@ export function renderAlert(content, options = {}) {
   let html = `<div data-bn="alert" data-variant="${variant}" role="${role}">`;
   html += `<span data-bn="alert-content">${content}</span>`;
   if (dismissible) {
-    html += `<button data-bn="alert-dismiss" type="button" aria-label="Dismiss">×</button>`;
+    html += `<button data-bn="alert-dismiss" data-bn-action="dismiss-alert" type="button" aria-label="Dismiss">×</button>`;
   }
   html += `</div>`;
   return html;
