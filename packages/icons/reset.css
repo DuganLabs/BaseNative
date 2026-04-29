@@ -1,0 +1,5 @@
+/* @basenative/icons — minimal reset to prevent icon FOUC.
+   Inline this in <head> via @basenative/server's criticalCss option,
+   or link it as a stylesheet. */
+:where(svg):not([width]):not([height]) { width: 1em; height: 1em; }
+svg[data-bn-icon], .bn-icon { width: 1em; height: 1em; }
