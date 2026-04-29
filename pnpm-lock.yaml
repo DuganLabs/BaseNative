@@ -346,8 +346,8 @@ importers:
   packages/server:
     dependencies:
       '@basenative/runtime':
-        specifier: workspace:*
-        version: link:../runtime
+        specifier: ^0.4.0
+        version: 0.4.1
       node-html-parser:
         specifier: ^7.0.1
         version: 7.1.0
@@ -406,6 +406,9 @@ packages:
   '@babel/runtime@7.29.2':
     resolution: {integrity: sha512-JiDShH45zKHWyGe4ZNVRrCjBz8Nh9TMmZG1kh4QTK8hCBTWBi8Da+i7s1fJw7/lYpM4ccepSNfqzZ/QvABBi5g==}
     engines: {node: '>=6.9.0'}
+
+  '@basenative/runtime@0.4.1':
+    resolution: {integrity: sha512-L61KyHhPt8sCg7OwsIwGK3nq+O4g/I8Xp7zOcZje1daR1iqQZnyx4de0SOpevBE5ajdPyjPsoK6ktugVLxiI6Q==, tarball: https://npm.pkg.github.com/download/@basenative/runtime/0.4.1/19e9d0d995086d338355d53742576572ab1ede3b}
 
   '@changesets/apply-release-plan@7.1.1':
     resolution: {integrity: sha512-9qPCm/rLx/xoOFXIHGB229+4GOL76S4MC+7tyOuTsR6+1jYlfFDQORdvwR5hDA6y4FL2BPt3qpbcQIS+dW85LA==}
@@ -2535,6 +2538,8 @@ packages:
 snapshots:
 
   '@babel/runtime@7.29.2': {}
+
+  '@basenative/runtime@0.4.1': {}
 
   '@changesets/apply-release-plan@7.1.1':
     dependencies:
