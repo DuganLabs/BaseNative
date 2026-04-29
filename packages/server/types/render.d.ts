@@ -13,6 +13,13 @@ export interface RenderOptions {
   hydratable?: boolean;
   /** Callback for diagnostic events during rendering. */
   onDiagnostic?: (diagnostic: RenderDiagnostic) => void;
+  /**
+   * CSS to inline as `<style data-bn-critical>` inside `<head>`, before any
+   * `<link rel="stylesheet">`. Use for size/layout rules that must apply
+   * before external stylesheets arrive (prevents FOUC). Pass a string or
+   * an array of strings (joined with newlines; falsy entries are dropped).
+   */
+  criticalCss?: string | Array<string | null | undefined | false>;
 }
 
 export interface RenderDiagnostic {

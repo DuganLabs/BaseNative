@@ -23,7 +23,10 @@ describe('icon files', () => {
   test('no unexpected files in src', () => {
     const files = readdirSync(srcDir);
     for (const file of files) {
-      assert.ok(file.endsWith('.svg'), `unexpected non-SVG file: ${file}`);
+      assert.ok(
+        file.endsWith('.svg') || file === 'index.js',
+        `unexpected file: ${file}`
+      );
     }
   });
 });
@@ -75,8 +78,32 @@ for (const name of EXPECTED_ICONS) {
     test('has stroke-linejoin', () => {
       assert.ok(content.includes('stroke-linejoin="round"'));
     });
+
+    test('has width="1em" and height="1em" to prevent FOUC', () => {
+      assert.ok(
+        content.includes('width="1em"'),
+        'icons must declare intrinsic width to size before CSS loads'
+      );
+      assert.ok(
+        content.includes('height="1em"'),
+        'icons must declare intrinsic height to size before CSS loads'
+      );
+    });
   });
 }
+
+describe('icon reset stylesheet', () => {
+  test('reset.css exists', () => {
+    assert.ok(existsSync(join(__dirname, 'reset.css')));
+  });
+
+  test('iconResetCss export is a non-empty string', async () => {
+    const mod = await import('./src/index.js');
+    assert.equal(typeof mod.iconResetCss, 'string');
+    assert.ok(mod.iconResetCss.length > 0);
+    assert.ok(mod.iconResetCss.includes('1em'));
+  });
+});
 
 describe('SVG semantic correctness', () => {
   test('check icon contains polyline (checkmark shape)', () => {

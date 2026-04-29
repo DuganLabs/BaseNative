@@ -693,3 +693,57 @@ describe('@defer directive', () => {
     assert.match(result, /data-bn-defer-resolve/);
   });
 });
+
+describe('render — criticalCss option', () => {
+  const TEMPLATE = `<!doctype html><html><head><meta charset="utf-8"><title>t</title><link rel="stylesheet" href="/app.css"></head><body><p>hi</p></body></html>`;
+
+  it('injects an inline <style data-bn-critical> when criticalCss is a string', () => {
+    const out = render(TEMPLATE, {}, { criticalCss: 'svg{width:1em;height:1em}' });
+    assert.match(out, /<style data-bn-critical>svg\{width:1em;height:1em\}<\/style>/);
+  });
+
+  it('joins an array of criticalCss entries with newlines', () => {
+    const out = render(TEMPLATE, {}, { criticalCss: ['a{}', 'b{}'] });
+    assert.match(out, /<style data-bn-critical>a\{\}\nb\{\}<\/style>/);
+  });
+
+  it('places the critical <style> before any <link rel="stylesheet">', () => {
+    const out = render(TEMPLATE, {}, { criticalCss: '/*c*/' });
+    const styleAt = out.indexOf('<style data-bn-critical>');
+    const linkAt = out.indexOf('<link rel="stylesheet"');
+    assert.ok(styleAt > -1, 'critical style should be present');
+    assert.ok(linkAt > -1, 'stylesheet link should still be present');
+    assert.ok(styleAt < linkAt, 'critical style must precede stylesheet link');
+  });
+
+  it('places the critical <style> inside <head>', () => {
+    const out = render(TEMPLATE, {}, { criticalCss: '/*c*/' });
+    const headOpen = out.indexOf('<head>');
+    const headClose = out.indexOf('</head>');
+    const styleAt = out.indexOf('<style data-bn-critical>');
+    assert.ok(headOpen < styleAt && styleAt < headClose);
+  });
+
+  it('is a no-op when criticalCss is missing', () => {
+    const out = render(TEMPLATE, {});
+    assert.ok(!out.includes('data-bn-critical'));
+  });
+
+  it('is a no-op when criticalCss is an empty string', () => {
+    const out = render(TEMPLATE, {}, { criticalCss: '' });
+    assert.ok(!out.includes('data-bn-critical'));
+  });
+
+  it('falsy array entries are filtered out', () => {
+    const out = render(TEMPLATE, {}, { criticalCss: [null, 'svg{}', undefined, false] });
+    assert.match(out, /<style data-bn-critical>svg\{\}<\/style>/);
+  });
+
+  it('places critical style after <head> open even when no stylesheet link exists', () => {
+    const tpl = `<!doctype html><html><head><title>x</title></head><body></body></html>`;
+    const out = render(tpl, {}, { criticalCss: 'svg{}' });
+    const headOpen = out.indexOf('<head>');
+    const styleAt = out.indexOf('<style data-bn-critical>');
+    assert.ok(headOpen > -1 && styleAt > headOpen);
+  });
+});
