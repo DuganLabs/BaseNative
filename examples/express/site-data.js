@@ -48,28 +48,31 @@ export function getComponentsPageContext() {
     readinessStats: [
       { label: 'Current Milestone', value: 'v0.4+' },
       { label: 'Browser Support', value: '4 engines' },
-      { label: 'Public Packages', value: '5' },
+      { label: 'Public Packages', value: '39' },
       { label: 'Advanced Widgets', value: 'Shipped' },
     ],
     releaseStages: [
       {
         milestone: 'v0.2',
         focus: 'Trust blockers',
-        outcome: 'CSP-safe expressions, keyed reconciliation, hydration diagnostics, browser feature helpers, honest docs.',
+        outcome:
+          'CSP-safe expressions, keyed reconciliation, hydration diagnostics, browser feature helpers, honest docs.',
         status: 'Implemented',
         tone: 'done',
       },
       {
         milestone: 'v0.3',
         focus: 'Pilot baseline',
-        outcome: 'Router, forms, semantic component baseline, reference business app, edge deployment example, published metrics.',
+        outcome:
+          'Router, forms, semantic component baseline, reference business app, edge deployment example, published metrics.',
         status: 'Implemented',
         tone: 'done',
       },
       {
         milestone: 'v0.4+',
         focus: 'Workflow breadth',
-        outcome: 'Dialog, drawer, menu, tabs, shell navigation, loading states, and DX hardening after pilot evidence is green.',
+        outcome:
+          'Dialog, drawer, menu, tabs, shell navigation, loading states, and DX hardening after pilot evidence is green.',
         status: 'Implemented',
         tone: 'done',
       },
@@ -79,25 +82,29 @@ export function getComponentsPageContext() {
         item: 'Template evaluation',
         state: 'Done',
         tone: 'done',
-        notes: 'Client and server now share a constrained expression parser/interpreter instead of eval-like execution.',
+        notes:
+          'Client and server now share a constrained expression parser/interpreter instead of eval-like execution.',
       },
       {
         item: '@for track identity',
         state: 'Done',
         tone: 'done',
-        notes: 'Keyed reconciliation preserves DOM segments and supports reorder behavior needed for business UIs.',
+        notes:
+          'Keyed reconciliation preserves DOM segments and supports reorder behavior needed for business UIs.',
       },
       {
         item: 'Hydration diagnostics',
         state: 'Done',
         tone: 'done',
-        notes: 'Hydration now exposes mismatch reporting hooks and deterministic markers for SSR handoff.',
+        notes:
+          'Hydration now exposes mismatch reporting hooks and deterministic markers for SSR handoff.',
       },
       {
         item: 'Browser capability policy',
         state: 'Done',
         tone: 'done',
-        notes: 'Dialog, popover, anchor positioning, and base-select are detected centrally with documented fallbacks.',
+        notes:
+          'Dialog, popover, anchor positioning, and base-select are detected centrally with documented fallbacks.',
       },
     ],
     packageSurface: [
@@ -137,31 +144,36 @@ export function getComponentsPageContext() {
         category: 'SSR and hydration',
         status: 'Ready',
         tone: 'done',
-        detail: 'Server rendering and client hydration are in place with diagnostics and keyed updates.',
+        detail:
+          'Server rendering and client hydration are in place with diagnostics and keyed updates.',
       },
       {
         category: 'Forms and validation',
         status: 'Ready',
         tone: 'done',
-        detail: 'Field system, validation primitives, form orchestration, and schema adapters are implemented.',
+        detail:
+          'Field system, validation primitives, form orchestration, and schema adapters are implemented.',
       },
       {
         category: 'Routing and layouts',
         status: 'Ready',
         tone: 'done',
-        detail: 'Client-side routing, SSR-aware resolution, pattern matching, and link interception are implemented.',
+        detail:
+          'Client-side routing, SSR-aware resolution, pattern matching, and link interception are implemented.',
       },
       {
         category: 'Async data and errors',
         status: 'Ready',
         tone: 'done',
-        detail: 'Runtime is the home for resources, diagnostics, and global error surfaces in v0.x.',
+        detail:
+          'Runtime is the home for resources, diagnostics, and global error surfaces in v0.x.',
       },
       {
         category: 'Accessibility and browser policy',
         status: 'Ready',
         tone: 'done',
-        detail: 'Browser support, fallbacks, semantic defaults, and component a11y contracts are documented and enforced.',
+        detail:
+          'Browser support, fallbacks, semantic defaults, and component a11y contracts are documented and enforced.',
       },
     ],
     p0Components: [
@@ -251,15 +263,18 @@ export function getComponentsPageContext() {
     deferredWork: [
       {
         item: 'Combobox, multiselect, date and time inputs',
-        reason: 'Implemented — combobox and multiselect shipped; date and time inputs planned for next cycle.',
+        reason:
+          'Implemented — combobox and multiselect shipped; date and time inputs planned for next cycle.',
       },
       {
         item: 'Tree, data grid, treegrid, virtualizer',
-        reason: 'Implemented — all four components shipped with keyboard support and virtual scroll.',
+        reason:
+          'Implemented — all four components shipped with keyboard support and virtual scroll.',
       },
       {
         item: 'Broad workflow widgets',
-        reason: 'Implemented — dialog, drawer, tabs, accordion, breadcrumb, tooltip, dropdown menu, and command palette shipped.',
+        reason:
+          'Implemented — dialog, drawer, tabs, accordion, breadcrumb, tooltip, dropdown menu, and command palette shipped.',
       },
     ],
   };
