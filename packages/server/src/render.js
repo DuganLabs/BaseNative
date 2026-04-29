@@ -290,7 +290,25 @@ export function render(html, ctx = {}, options = {}) {
   deferCounter = 0;
   const root = parseFragment(html);
   processChildren(root, ctx, options);
-  return root.toString();
+  let output = root.toString();
+  if (options.criticalCss != null) {
+    output = injectCriticalCss(output, options.criticalCss);
+  }
+  return output;
+}
+
+function injectCriticalCss(html, criticalCss) {
+  const css = Array.isArray(criticalCss)
+    ? criticalCss.filter(Boolean).join('\n')
+    : String(criticalCss);
+  if (!css.trim()) return html;
+  const styleTag = `<style data-bn-critical>${css}</style>`;
+  const headOpen = html.match(/<head\b[^>]*>/i);
+  if (!headOpen) return html;
+  const headStart = headOpen.index + headOpen[0].length;
+  const linkMatch = html.slice(headStart).match(/<link\b[^>]*\brel\s*=\s*["']?(?:stylesheet|preload)["']?[^>]*>/i);
+  const insertAt = linkMatch ? headStart + linkMatch.index : headStart;
+  return html.slice(0, insertAt) + styleTag + html.slice(insertAt);
 }
 
 export function resolveDeferred(options) {
