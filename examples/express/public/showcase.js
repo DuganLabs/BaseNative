@@ -23,16 +23,17 @@ const actions = {
     if (!drawer) return;
     drawer.setAttribute('data-open', '');
     const overlay = drawer.previousElementSibling;
-    if (overlay?.matches('[data-bn="drawer-overlay"]')) overlay.removeAttribute('hidden');
+    if (overlay?.matches('[data-bn="drawer-overlay"]')) overlay.setAttribute('data-open', '');
   },
 
   'close-drawer': (target) => {
-    const drawer = target.closest('[data-bn="drawer"]')
-      ?? document.querySelector('[data-bn="drawer"][data-open]');
+    const drawer =
+      target.closest('[data-bn="drawer"]') ??
+      document.querySelector('[data-bn="drawer"][data-open]');
     if (!drawer) return;
     drawer.removeAttribute('data-open');
     const overlay = drawer.previousElementSibling;
-    if (overlay?.matches('[data-bn="drawer-overlay"]')) overlay.setAttribute('hidden', '');
+    if (overlay?.matches('[data-bn="drawer-overlay"]')) overlay.removeAttribute('data-open');
   },
 
   'dismiss-alert': (target) => {
@@ -76,11 +77,11 @@ document.addEventListener('click', (event) => {
 // Drawer: clicking the overlay closes the drawer
 document.addEventListener('click', (event) => {
   const overlay = event.target.closest('[data-bn="drawer-overlay"]');
-  if (!overlay || overlay.hasAttribute('hidden')) return;
+  if (!overlay || !overlay.hasAttribute('data-open')) return;
   const drawer = overlay.nextElementSibling;
   if (drawer?.matches('[data-bn="drawer"]')) {
     drawer.removeAttribute('data-open');
-    overlay.setAttribute('hidden', '');
+    overlay.removeAttribute('data-open');
   }
 });
 
@@ -90,7 +91,9 @@ document.querySelectorAll('[data-bn="tab"]').forEach((tab) => {
   tab.addEventListener('click', () => {
     const tabs = tab.closest('[data-bn="tabs"]');
     if (!tabs) return;
-    tabs.querySelectorAll('[data-bn="tab"]').forEach((t) => t.setAttribute('aria-selected', 'false'));
+    tabs
+      .querySelectorAll('[data-bn="tab"]')
+      .forEach((t) => t.setAttribute('aria-selected', 'false'));
     tabs.querySelectorAll('[data-bn="tab-panel"]').forEach((p) => (p.hidden = true));
     tab.setAttribute('aria-selected', 'true');
     const panel = tabs.querySelector('#' + tab.getAttribute('aria-controls'));
