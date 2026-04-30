@@ -22,7 +22,6 @@ test('effect() re-render overhead at scale — benchmarking tests', async (t) =>
   await t.test('should create 1000 signal→effect pairs efficiently', () => {
     const nodeCount = 1000;
     const result = measureEffect('create 1000 signal→effect pairs', () => {
-      const nodes = [];
       const effects = [];
       for (let i = 0; i < nodeCount; i++) {
         const s = signal(i);

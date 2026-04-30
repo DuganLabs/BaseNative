@@ -4,11 +4,13 @@
     "test": {
       "cache": true,
       "command": "node --test",
+      "options": { "cwd": "{projectRoot}" },
       "inputs": ["{projectRoot}/src/**/*.js"]
     },
     "lint": {
       "cache": true,
       "command": "pnpm exec eslint src/",
+      "options": { "cwd": "{projectRoot}" },
       "inputs": ["{projectRoot}/src/**/*.js"]
     }
   }

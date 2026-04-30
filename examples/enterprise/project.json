@@ -2,7 +2,10 @@
   "name": "basenative-enterprise-example",
   "targets": {
     "serve": {
-      "command": "node server.js"
+      "command": "node server.js",
+      "options": {
+        "cwd": "{projectRoot}"
+      }
     }
   }
 }

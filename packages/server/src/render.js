@@ -327,7 +327,7 @@ export function resolveDeferred(options) {
         `t.removeAttribute('data-bn-defer');` +
         `var e=new CustomEvent('bn:defer',{detail:{id:'${id}'}});` +
         `document.dispatchEvent(e)}` +
-        `})();<\/script>`,
+        `})();</script>`,
     };
   });
 }

@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseEnvFile, loadEnv } from './env.js';
+import { parseEnvFile } from './env.js';
 import { string, number, boolean, oneOf, optional, validateConfig, zodAdapter } from './schema.js';
 import { defineConfig } from './index.js';
 

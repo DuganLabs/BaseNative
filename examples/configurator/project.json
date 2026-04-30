@@ -3,11 +3,16 @@
   "targets": {
     "serve": {
       "cache": false,
-      "command": "npx serve ."
+      "command": "npx serve .",
+      "options": {
+        "cwd": "{projectRoot}"
+      }
     },
     "test": {
       "command": "node --test passive-house-engine.test.js",
-      "options": { "cwd": "{projectRoot}" }
+      "options": {
+        "cwd": "{projectRoot}"
+      }
     }
   }
 }

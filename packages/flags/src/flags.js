@@ -39,7 +39,7 @@ export function createFlagManager(provider, options = {}) {
     async getAll(context = {}) {
       const allFlags = await provider.getAllFlags();
       const result = {};
-      for (const [name, flag] of Object.entries(allFlags)) {
+      for (const [name, _flag] of Object.entries(allFlags)) {
         result[name] = await this.isEnabled(name, context);
       }
       return result;

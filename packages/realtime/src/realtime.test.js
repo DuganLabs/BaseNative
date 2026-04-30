@@ -365,7 +365,7 @@ describe('createSSEServer — edge cases', () => {
   it('formats multi-line data as multiple data: lines', () => {
     const sse = createSSEServer({ heartbeatInterval: 0 });
     const res = mockResponse();
-    const id = sse.addClient(res, { id: 'ml' });
+    sse.addClient(res, { id: 'ml' });
     sse.send('ml', 'note', 'line1\nline2');
     const allChunks = res.chunks.join('');
     assert.ok(allChunks.includes('data: line1'));

@@ -56,9 +56,7 @@ export function getEventDuration(start, end) {
  * @returns {object} Calendar state with signal methods
  */
 export function createCalendarState(options = {}) {
-  const { startDate, initialEvents = [], hours = {} } = options;
-  const hourStart = hours.start ?? 7;
-  const hourEnd = hours.end ?? 19;
+  const { startDate, initialEvents = [] } = options;
 
   // State signals would be injected by @basenative/runtime,
   // but for testability, we expose as a mock
@@ -284,7 +282,6 @@ export function createPipelineState(options = {}) {
      * @param {Array<string>} cardOrder - Array of card IDs in desired order
      */
     reorderCards: (columnId, cardOrder) => {
-      const columnCards = cardsData.filter(c => c.columnId === columnId);
       const orderMap = new Map(cardOrder.map((id, idx) => [id, idx]));
 
       cardsData = cardsData.sort((a, b) => {

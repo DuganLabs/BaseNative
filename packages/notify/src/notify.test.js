@@ -1,4 +1,4 @@
-import { describe, it, beforeEach, mock } from 'node:test';
+import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { renderEmail, createEmailSender } from './email.js';
 import { createNotificationCenter } from './inapp.js';

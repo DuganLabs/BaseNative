@@ -416,7 +416,7 @@ describe('Provider compatibility layer', () => {
   });
 
   it('works with provider that has getAllFlags but no individual get', async () => {
-    const allProvider = {
+    const _allProvider = {
       async getAllFlags() {
         return {
           flag1: { enabled: true },

@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { createLogger, consoleTransport, streamTransport, multiTransport, requestLogger, LEVELS, LEVEL_NAMES } from './index.js';
+import { createLogger, streamTransport, multiTransport, requestLogger, LEVELS, LEVEL_NAMES } from './index.js';
 
 function captureTransport() {
   const entries = [];

@@ -4,7 +4,12 @@
     "test": {
       "cache": true,
       "command": "node --test",
-      "inputs": ["{projectRoot}/src/**/*.js"]
+      "inputs": [
+        "{projectRoot}/src/**/*.js"
+      ],
+      "options": {
+        "cwd": "{projectRoot}"
+      }
     }
   }
 }

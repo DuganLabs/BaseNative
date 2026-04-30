@@ -46,7 +46,7 @@ export function createUploadHandler(storage, options = {}) {
   const {
     maxFileSize = 10 * 1024 * 1024, // 10MB
     allowedTypes = [],
-    fieldName = 'file',
+    fieldName: _fieldName = 'file',
     generateFilename = (original) => `${randomBytes(16).toString('hex')}-${original}`,
   } = options;
 

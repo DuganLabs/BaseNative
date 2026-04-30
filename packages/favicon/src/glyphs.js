@@ -180,7 +180,6 @@ export const symbols = {
   asterisk: (p) => {
     const spokes = [];
     for (let i = 0; i < 6; i++) {
-      const a = (i * Math.PI) / 3;
       spokes.push(
         `<rect x="${C - 44}" y="${C - 340}" width="88" height="680" rx="44" fill="${p.accent}" transform="rotate(${(i * 60).toFixed(2)} ${C} ${C})"/>`,
       );

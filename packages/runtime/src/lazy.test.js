@@ -34,7 +34,7 @@ function makeElement(tag = 'div') {
   const listeners = {};
   return {
     tagName: tag.toUpperCase(),
-    addEventListener(evt, fn, opts) {
+    addEventListener(evt, fn, _opts) {
       listeners[evt] = listeners[evt] || [];
       listeners[evt].push(fn);
     },
@@ -145,7 +145,7 @@ describe('lazyHydrate', () => {
   it('hydrates element via convenience wrapper', () => {
     const el = makeElement();
     let called = false;
-    const h = lazyHydrate(el, () => { called = true; });
+    lazyHydrate(el, () => { called = true; });
     const io = MockIntersectionObserver._instances[0];
     io._trigger([{ target: el, isIntersecting: true }]);
     assert.equal(called, true);
@@ -176,8 +176,8 @@ describe('hydrateOnIdle', () => {
 describe('hydrateOnInteraction', () => {
   it('sets up event listeners on the element', () => {
     const el = makeElement();
-    let called = false;
-    hydrateOnInteraction(el, () => { called = true; });
+    let _called = false;
+    hydrateOnInteraction(el, () => { _called = true; });
     assert.ok(el._listeners['click']?.length > 0);
     assert.ok(el._listeners['focus']?.length > 0);
     assert.ok(el._listeners['mouseenter']?.length > 0);

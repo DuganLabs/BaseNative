@@ -112,7 +112,7 @@ async function fetchDopplerSecrets(project, config) {
   try {
     return JSON.parse(result.stdout);
   } catch (err) {
-    throw new Error(`Could not parse doppler output as JSON: ${err.message}`);
+    throw new Error(`Could not parse doppler output as JSON: ${err.message}`, { cause: err });
   }
 }
 

@@ -39,7 +39,7 @@ export function loadRequired(filePath) {
   try {
     raw = JSON.parse(readFileSync(full, 'utf-8'));
   } catch (err) {
-    throw new Error(`doppler-required.json is not valid JSON: ${err.message}`);
+    throw new Error(`doppler-required.json is not valid JSON: ${err.message}`, { cause: err });
   }
   return validateRequired(raw);
 }

@@ -3,7 +3,10 @@
   "targets": {
     "serve": {
       "cache": false,
-      "command": "npx serve ."
+      "command": "npx serve .",
+      "options": {
+        "cwd": "{projectRoot}"
+      }
     }
   }
 }

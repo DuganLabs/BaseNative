@@ -50,7 +50,7 @@ export function toExpressMiddleware(pipeline) {
 /**
  * Create a BaseNative context from Express req/res.
  */
-function createExpressContext(req, res) {
+function createExpressContext(req, _res) {
   return {
     request: {
       method: req.method,

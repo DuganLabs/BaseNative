@@ -133,7 +133,7 @@ describe('@defer directive — script injection logic', () => {
     const options = {};
     render(`<template @defer><span>Test</span></template>`, {}, options);
     const resolved = resolveDeferred(options);
-    assert.match(resolved[0].script, /querySelector\('[^\)]+data-bn-defer="d0"[^\)]*'\)/);
+    assert.match(resolved[0].script, /querySelector\('[^)]+data-bn-defer="d0"[^)]*'\)/);
   });
 
   it('deferred script injects rendered HTML into placeholder', () => {
@@ -847,7 +847,7 @@ describe('@defer — diagnostic handling', () => {
       {},
       options
     );
-    const resolved = resolveDeferred(options);
+    resolveDeferred(options);
     assert.ok(diagnostics.some(d => d.code === 'BN_FOR_INVALID_SYNTAX'));
   });
 

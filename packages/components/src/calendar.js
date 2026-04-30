@@ -266,7 +266,7 @@ export function initCalendarDragDrop(container, callbacks = {}) {
     } catch { /* ignore malformed drag data */ }
   }
 
-  function handleDragEnd(e) {
+  function handleDragEnd(_e) {
     container.querySelectorAll('[data-dragging]').forEach(el =>
       el.removeAttribute('data-dragging')
     );
@@ -302,15 +302,11 @@ export function initCalendarDragDrop(container, callbacks = {}) {
  */
 export function initPipelineDragDrop(container, callbacks = {}) {
   const { onCardMove } = callbacks;
-  let draggedCard = null;
-  let sourceColumn = null;
 
   function handleDragStart(e) {
     const card = e.target.closest('[data-card-id]');
     if (!card) return;
 
-    draggedCard = card;
-    sourceColumn = card.closest('[data-column-id]');
     e.dataTransfer.setData('text/plain', JSON.stringify({
       type: 'pipeline-card',
       cardId: card.dataset.cardId,
@@ -356,9 +352,7 @@ export function initPipelineDragDrop(container, callbacks = {}) {
     } catch { /* ignore malformed drag data */ }
   }
 
-  function handleDragEnd(e) {
-    draggedCard = null;
-    sourceColumn = null;
+  function handleDragEnd(_e) {
     container.querySelectorAll('[data-dragging]').forEach(el =>
       el.removeAttribute('data-dragging')
     );
