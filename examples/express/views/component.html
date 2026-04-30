@@ -23,10 +23,40 @@
       </figure>
 
       <details data-bn-component-source>
-        <summary>View source</summary>
+        <summary>
+          <span aria-hidden="true">⌄</span>
+          <span>View source</span>
+        </summary>
         <pre><code>{{ example.code }}</code></pre>
+        <button
+          type="button"
+          data-bn-action="copy-code"
+          data-bn-cta="secondary"
+          aria-label="Copy code to clipboard"
+        >
+          Copy code
+        </button>
       </details>
     </section>
+  </template>
+
+  <template @if="related.length">
+    <aside data-bn-component-related aria-label="Related components">
+      <h3>More in <em>{{ component.categoryTitle }}</em></h3>
+      <ul role="list" data-bn-component-grid>
+        <template @for="r of related; track r.slug">
+          <li>
+            <a href="/components/{{ r.slug }}" data-bn-component-card>
+              <header>
+                <h3>{{ r.title }}</h3>
+                <code data-bn-component-tag>&lt;{{ r.tag }}&gt;</code>
+              </header>
+              <p>{{ r.summary }}</p>
+            </a>
+          </li>
+        </template>
+      </ul>
+    </aside>
   </template>
 
   <nav data-bn-component-pager aria-label="Component pagination">
@@ -49,3 +79,21 @@
     </template>
   </nav>
 </article>
+
+<script type="module">
+  for (const btn of document.querySelectorAll('[data-bn-action="copy-code"]')) {
+    btn.addEventListener('click', async () => {
+      const pre = btn.parentElement?.querySelector('pre code');
+      if (!pre) return;
+      try {
+        await navigator.clipboard.writeText(pre.textContent || '');
+        const prev = btn.textContent;
+        btn.textContent = 'Copied ✓';
+        btn.setAttribute('data-bn-copied', '');
+        setTimeout(() => { btn.textContent = prev; btn.removeAttribute('data-bn-copied'); }, 1400);
+      } catch {
+        btn.textContent = 'Copy failed';
+      }
+    });
+  }
+</script>

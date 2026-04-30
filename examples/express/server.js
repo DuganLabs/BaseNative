@@ -158,12 +158,16 @@ app.get('/components/:slug', (req, res) => {
   const idx = flatComponents.findIndex((c) => c.slug === component.slug);
   const prev = idx > 0 ? flatComponents[idx - 1] : null;
   const next = idx < flatComponents.length - 1 ? flatComponents[idx + 1] : null;
+  const related = flatComponents
+    .filter((c) => c.categoryId === component.categoryId && c.slug !== component.slug)
+    .slice(0, 6);
 
   const ctx = {
     component,
     examples: demo?.examples ?? [],
     prev,
     next,
+    related,
     breadcrumb: renderBreadcrumb({
       items: [
         { label: 'Home', href: '/' },
