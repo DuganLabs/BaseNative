@@ -1,4 +1,4 @@
-import { describe, it, beforeEach, mock } from 'node:test';
+import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { renderEmail, createEmailSender } from './email.js';
 import { createNotificationCenter } from './inapp.js';
@@ -148,10 +148,7 @@ describe('createSendGridTransport', () => {
 
       assert.equal(capturedUrl, 'https://api.sendgrid.com/v3/mail/send');
       assert.equal(capturedInit.method, 'POST');
-      assert.equal(
-        capturedInit.headers.Authorization,
-        'Bearer sg-test-key',
-      );
+      assert.equal(capturedInit.headers.Authorization, 'Bearer sg-test-key');
       assert.equal(capturedInit.headers['Content-Type'], 'application/json');
 
       const body = JSON.parse(capturedInit.body);
@@ -430,7 +427,7 @@ describe('createSmtpTransport', () => {
         subject: 'Test',
         html: '<p>test</p>',
         text: 'test',
-      })
+      }),
     );
   });
 });

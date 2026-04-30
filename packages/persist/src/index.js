@@ -33,9 +33,16 @@ const adapter = () => (_adapter ??= defaultAdapter());
  *
  * @param {ReturnType<typeof defaultAdapter>|null} a
  */
-export function setStorageAdapter(a) { _adapter = a; }
+export function setStorageAdapter(a) {
+  _adapter = a;
+}
 
-const isLegacyShape = (parsed) => parsed && typeof parsed === 'object' && !('v' in parsed) && !('t' in parsed) && 'savedAt' in parsed;
+const isLegacyShape = (parsed) =>
+  parsed &&
+  typeof parsed === 'object' &&
+  !('v' in parsed) &&
+  !('t' in parsed) &&
+  'savedAt' in parsed;
 
 /**
  * Read a key. Honors the TTL envelope; returns null if expired or absent.
@@ -79,12 +86,16 @@ export async function savePersisted(key, value, ttlSeconds) {
   try {
     const env = wrap(value, ttlSeconds);
     await adapter().setItem(key, JSON.stringify(env));
-  } catch { /* QuotaExceeded etc — caller should treat persistence as best-effort */ }
+  } catch {
+    /* QuotaExceeded etc — caller should treat persistence as best-effort */
+  }
 }
 
 /** @param {string} key */
 export async function clearPersisted(key) {
-  try { await adapter().removeItem(key); } catch {}
+  try {
+    await adapter().removeItem(key);
+  } catch {}
 }
 
 /**
@@ -97,7 +108,9 @@ export async function persistedSavedAt(key) {
     const raw = await adapter().getItem(key);
     if (!raw) return 0;
     return readSavedAt(JSON.parse(raw));
-  } catch { return 0; }
+  } catch {
+    return 0;
+  }
 }
 
 /**
@@ -182,19 +195,25 @@ export function persisted(key, signal, opts = {}) {
 export async function hydrateFromServer(args) {
   const local = await loadPersisted(args.key);
   if (local !== null) {
-    try { args.onResolve(local, { source: 'local', local }); } catch (e) { args.onError?.(e); }
+    try {
+      args.onResolve(local, { source: 'local', local });
+    } catch (e) {
+      args.onError?.(e);
+    }
   }
-  let server = null;
+  let server;
   try {
     server = await args.fetch();
   } catch (e) {
     args.onError?.(e);
     return local;
   }
-  const reconciled = args.reconcile
-    ? args.reconcile(local, server)
-    : (server ?? local);
-  try { args.onResolve(reconciled, { source: 'server', local }); } catch (e) { args.onError?.(e); }
+  const reconciled = args.reconcile ? args.reconcile(local, server) : (server ?? local);
+  try {
+    args.onResolve(reconciled, { source: 'server', local });
+  } catch (e) {
+    args.onError?.(e);
+  }
   if (reconciled !== null && reconciled !== undefined) {
     await savePersisted(args.key, reconciled, args.ttlSeconds);
   }
@@ -214,7 +233,10 @@ function readSignal(s) {
 function writeSignal(s, v) {
   if (s == null) return;
   if (typeof s.set === 'function') return s.set(v);
-  if ('value' in s) { s.value = v; return; }
+  if ('value' in s) {
+    s.value = v;
+    return;
+  }
 }
 
 function subscribeSignal(s, cb) {

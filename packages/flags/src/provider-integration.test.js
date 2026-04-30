@@ -66,7 +66,7 @@ describe('Provider integration – custom providers', () => {
     provider._store.f2 = { enabled: false };
     const fm = createFlagManager(provider);
     await fm.getAll();
-    const getAllCall = provider._callLog.find(c => c.method === 'getAllFlags');
+    const getAllCall = provider._callLog.find((c) => c.method === 'getAllFlags');
     assert.ok(getAllCall);
   });
 
@@ -74,7 +74,7 @@ describe('Provider integration – custom providers', () => {
     const provider = createTrackedProvider();
     const fm = createFlagManager(provider);
     await fm.setFlag('new', { enabled: true });
-    const setCall = provider._callLog.find(c => c.method === 'setFlag');
+    const setCall = provider._callLog.find((c) => c.method === 'setFlag');
     assert.ok(setCall);
     assert.deepEqual(setCall.args[1], { enabled: true });
   });
@@ -113,10 +113,7 @@ describe('Provider switching scenarios', () => {
     const fm2 = createFlagManager(provider);
 
     // Both managers use same provider, so results should be same
-    assert.equal(
-      await fm1.isEnabled('flag'),
-      await fm2.isEnabled('flag')
-    );
+    assert.equal(await fm1.isEnabled('flag'), await fm2.isEnabled('flag'));
   });
 
   it('multiple flag managers with same provider share state', async () => {
@@ -221,7 +218,7 @@ describe('Concurrent provider operations', () => {
       f3: { enabled: true },
     });
     const fm = createFlagManager(provider);
-    const promises = ['f1', 'f2', 'f3'].map(name => fm.isEnabled(name));
+    const promises = ['f1', 'f2', 'f3'].map((name) => fm.isEnabled(name));
     const results = await Promise.all(promises);
     assert.deepEqual(results, [true, false, true]);
   });
@@ -235,7 +232,7 @@ describe('Concurrent provider operations', () => {
     const promises = [fm.getAll(), fm.getAll(), fm.getAll()];
     const results = await Promise.all(promises);
     // All should return same flag states
-    results.forEach(all => {
+    results.forEach((all) => {
       assert.equal(all.f1, true);
       assert.equal(all.f2, false);
     });
@@ -254,7 +251,7 @@ describe('Concurrent provider operations', () => {
     await Promise.all(setPromises);
 
     // Get them all concurrently
-    const getPromises = ['a', 'b', 'c'].map(name => fm.isEnabled(name));
+    const getPromises = ['a', 'b', 'c'].map((name) => fm.isEnabled(name));
     const results = await Promise.all(getPromises);
     assert.deepEqual(results, [true, false, true]);
   });
@@ -416,7 +413,7 @@ describe('Provider compatibility layer', () => {
   });
 
   it('works with provider that has getAllFlags but no individual get', async () => {
-    const allProvider = {
+    const _allProvider = {
       async getAllFlags() {
         return {
           flag1: { enabled: true },

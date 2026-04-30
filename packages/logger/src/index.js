@@ -51,7 +51,9 @@ export function createLogger(options = {}) {
       });
     },
 
-    get level() { return level; },
+    get level() {
+      return level;
+    },
   };
 
   return logger;
@@ -66,7 +68,7 @@ export function consoleTransport() {
       if (pretty) {
         const levelName = LEVEL_NAMES[entry.level] ?? 'info';
         const color = entry.level >= 50 ? '\x1b[31m' : entry.level >= 40 ? '\x1b[33m' : '\x1b[36m';
-        const { level, time, msg, name, ...rest } = entry;
+        const { level: _level, time: _time, msg, name, ...rest } = entry;
         const prefix = name ? `[${name}] ` : '';
         const extra = Object.keys(rest).length > 0 ? ' ' + JSON.stringify(rest) : '';
         console.log(`${color}${levelName.toUpperCase()}\x1b[0m ${prefix}${msg}${extra}`);

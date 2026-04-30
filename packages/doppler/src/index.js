@@ -70,9 +70,7 @@ export async function requireSecrets(names, opts = {}) {
   }
   const source = opts.source ?? 'env';
   const values =
-    source === 'doppler'
-      ? await fetchDopplerSecrets(opts.project, opts.config)
-      : process.env;
+    source === 'doppler' ? await fetchDopplerSecrets(opts.project, opts.config) : process.env;
 
   const missing = names.filter((n) => !values[n] || String(values[n]).length === 0);
   if (missing.length > 0) {
@@ -112,7 +110,7 @@ async function fetchDopplerSecrets(project, config) {
   try {
     return JSON.parse(result.stdout);
   } catch (err) {
-    throw new Error(`Could not parse doppler output as JSON: ${err.message}`);
+    throw new Error(`Could not parse doppler output as JSON: ${err.message}`, { cause: err });
   }
 }
 

@@ -344,7 +344,6 @@ describe('render — additional edge cases', () => {
 
   // --- Arithmetic in interpolation ---
   it('renders arithmetic expression', () => {
-    const html = render('<p>{{ a * b + c }}</p>', { a: 3, b: 4, c: 2 });
     assert.equal(render('<p>{{ a * b + c }}</p>', { a: 3, b: 4, c: 2 }).trim(), '<p>14</p>');
   });
 
@@ -489,7 +488,7 @@ describe('render — more directive edge cases', () => {
 describe('render — untested paths', () => {
   it('@for emits BN_FOR_INVALID_SYNTAX for malformed expression', () => {
     const diagnostics = [];
-    const html = render(
+    render(
       `<template @for="invalid syntax here"><span>x</span></template>`,
       {},
       { onDiagnostic: (d) => diagnostics.push(d) }

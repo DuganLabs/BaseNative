@@ -1,4 +1,4 @@
-import { randomBytes, createHash } from 'node:crypto';
+import { randomBytes } from 'node:crypto';
 
 /**
  * Session manager with pluggable storage.
@@ -81,11 +81,21 @@ export function createSessionManager(options = {}) {
 export function createMemoryStore() {
   const sessions = new Map();
   return {
-    async get(id) { return sessions.get(id) ?? null; },
-    async set(id, session) { sessions.set(id, session); },
-    async delete(id) { sessions.delete(id); },
-    async clear() { sessions.clear(); },
-    get size() { return sessions.size; },
+    async get(id) {
+      return sessions.get(id) ?? null;
+    },
+    async set(id, session) {
+      sessions.set(id, session);
+    },
+    async delete(id) {
+      sessions.delete(id);
+    },
+    async clear() {
+      sessions.clear();
+    },
+    get size() {
+      return sessions.size;
+    },
   };
 }
 
@@ -97,9 +107,9 @@ export function createDbStore(adapter, options = {}) {
 
   return {
     async get(id) {
-      const row = await adapter.queryOne(
-        `SELECT data, expires_at FROM ${tableName} WHERE id = ?`, [id]
-      );
+      const row = await adapter.queryOne(`SELECT data, expires_at FROM ${tableName} WHERE id = ?`, [
+        id,
+      ]);
       if (!row) return null;
       return {
         id,
@@ -113,7 +123,7 @@ export function createDbStore(adapter, options = {}) {
       const expiresAt = new Date(session.expiresAt).toISOString();
       await adapter.execute(
         `INSERT OR REPLACE INTO ${tableName} (id, data, expires_at) VALUES (?, ?, ?)`,
-        [id, data, expiresAt]
+        [id, data, expiresAt],
       );
     },
 

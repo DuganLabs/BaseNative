@@ -1,12 +1,21 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { createLogger, consoleTransport, streamTransport, multiTransport, requestLogger, LEVELS, LEVEL_NAMES } from './index.js';
+import {
+  createLogger,
+  streamTransport,
+  multiTransport,
+  requestLogger,
+  LEVELS,
+  LEVEL_NAMES,
+} from './index.js';
 
 function captureTransport() {
   const entries = [];
   return {
     entries,
-    write(entry) { entries.push(entry); },
+    write(entry) {
+      entries.push(entry);
+    },
   };
 }
 
@@ -144,7 +153,11 @@ describe('LEVELS and LEVEL_NAMES', () => {
 describe('streamTransport', () => {
   it('writes JSON lines to a stream', () => {
     const chunks = [];
-    const fakeStream = { write(chunk) { chunks.push(chunk); } };
+    const fakeStream = {
+      write(chunk) {
+        chunks.push(chunk);
+      },
+    };
     const t = streamTransport(fakeStream);
     t.write({ level: 30, msg: 'hello', time: 1000 });
     assert.equal(chunks.length, 1);
@@ -156,7 +169,11 @@ describe('streamTransport', () => {
 
   it('writes multiple entries as separate lines', () => {
     const chunks = [];
-    const fakeStream = { write(chunk) { chunks.push(chunk); } };
+    const fakeStream = {
+      write(chunk) {
+        chunks.push(chunk);
+      },
+    };
     const t = streamTransport(fakeStream);
     t.write({ level: 30, msg: 'first' });
     t.write({ level: 40, msg: 'second' });
@@ -180,12 +197,14 @@ describe('multiTransport', () => {
   it('passes pretty flag to each transport', () => {
     const prettyFlags = [];
     const spyTransport = {
-      write(_entry, pretty) { prettyFlags.push(pretty); },
+      write(_entry, pretty) {
+        prettyFlags.push(pretty);
+      },
     };
     const multi = multiTransport([spyTransport, spyTransport]);
     multi.write({ level: 30, msg: 'x' }, true);
     assert.equal(prettyFlags.length, 2);
-    assert.ok(prettyFlags.every(f => f === true));
+    assert.ok(prettyFlags.every((f) => f === true));
   });
 
   it('works with an empty transport list', () => {
@@ -248,7 +267,9 @@ describe('requestLogger', () => {
     const ids = [];
     for (let i = 0; i < 3; i++) {
       const ctx = { request: { method: 'GET', url: '/', headers: {} }, state: {} };
-      await mw(ctx, async () => { ids.push(ctx.state.requestId); });
+      await mw(ctx, async () => {
+        ids.push(ctx.state.requestId);
+      });
     }
     assert.equal(ids[0], 'req-1');
     assert.equal(ids[1], 'req-2');
@@ -288,9 +309,13 @@ describe('createLogger — additional', () => {
   it('all level methods produce entries with correct level numbers', () => {
     const t = captureTransport();
     const log = createLogger({ level: 'trace', transport: t });
-    log.trace('t'); log.debug('d'); log.info('i');
-    log.warn('w'); log.error('e'); log.fatal('f');
-    const levels = t.entries.map(e => e.level);
+    log.trace('t');
+    log.debug('d');
+    log.info('i');
+    log.warn('w');
+    log.error('e');
+    log.fatal('f');
+    const levels = t.entries.map((e) => e.level);
     assert.deepEqual(levels, [10, 20, 30, 40, 50, 60]);
   });
 
@@ -305,7 +330,11 @@ describe('createLogger — additional', () => {
 describe('streamTransport — additional', () => {
   it('serializes all entry fields', () => {
     const chunks = [];
-    const t = streamTransport({ write(c) { chunks.push(c); } });
+    const t = streamTransport({
+      write(c) {
+        chunks.push(c);
+      },
+    });
     t.write({ level: 40, msg: 'warn', requestId: 'abc', time: 9999 });
     const parsed = JSON.parse(chunks[0]);
     assert.equal(parsed.level, 40);
@@ -318,9 +347,21 @@ describe('streamTransport — additional', () => {
 describe('multiTransport — additional', () => {
   it('order of transports is preserved', () => {
     const order = [];
-    const t1 = { write() { order.push(1); } };
-    const t2 = { write() { order.push(2); } };
-    const t3 = { write() { order.push(3); } };
+    const t1 = {
+      write() {
+        order.push(1);
+      },
+    };
+    const t2 = {
+      write() {
+        order.push(2);
+      },
+    };
+    const t3 = {
+      write() {
+        order.push(3);
+      },
+    };
     const multi = multiTransport([t1, t2, t3]);
     multi.write({ level: 30, msg: 'hi' });
     assert.deepEqual(order, [1, 2, 3]);

@@ -32,8 +32,15 @@ describe('createPipeline', () => {
   it('runs middleware in order', async () => {
     const order = [];
     const pipeline = createPipeline();
-    pipeline.use(async (_ctx, next) => { order.push(1); await next(); order.push(3); });
-    pipeline.use(async (_ctx, next) => { order.push(2); await next(); });
+    pipeline.use(async (_ctx, next) => {
+      order.push(1);
+      await next();
+      order.push(3);
+    });
+    pipeline.use(async (_ctx, next) => {
+      order.push(2);
+      await next();
+    });
     await pipeline.run(createCtx());
     assert.deepEqual(order, [1, 2, 3]);
   });
@@ -46,16 +53,26 @@ describe('createPipeline', () => {
   it('stops chain when next is not called', async () => {
     const order = [];
     const pipeline = createPipeline();
-    pipeline.use(async () => { order.push(1); });
-    pipeline.use(async () => { order.push(2); });
+    pipeline.use(async () => {
+      order.push(1);
+    });
+    pipeline.use(async () => {
+      order.push(2);
+    });
     await pipeline.run(createCtx());
     assert.deepEqual(order, [1]);
   });
 
   it('passes context through middleware chain', async () => {
     const pipeline = createPipeline();
-    pipeline.use(async (ctx, next) => { ctx.state.user = 'alice'; await next(); });
-    pipeline.use(async (ctx, next) => { ctx.state.greeting = `hello ${ctx.state.user}`; await next(); });
+    pipeline.use(async (ctx, next) => {
+      ctx.state.user = 'alice';
+      await next();
+    });
+    pipeline.use(async (ctx, next) => {
+      ctx.state.greeting = `hello ${ctx.state.user}`;
+      await next();
+    });
     const ctx = createCtx();
     await pipeline.run(ctx);
     assert.equal(ctx.state.greeting, 'hello alice');
@@ -66,11 +83,19 @@ describe('compose', () => {
   it('composes multiple middleware into one', async () => {
     const order = [];
     const composed = compose(
-      async (_ctx, next) => { order.push('a'); await next(); },
-      async (_ctx, next) => { order.push('b'); await next(); },
+      async (_ctx, next) => {
+        order.push('a');
+        await next();
+      },
+      async (_ctx, next) => {
+        order.push('b');
+        await next();
+      },
     );
     const ctx = createCtx();
-    await composed(ctx, async () => { order.push('c'); });
+    await composed(ctx, async () => {
+      order.push('c');
+    });
     assert.deepEqual(order, ['a', 'b', 'c']);
   });
 });
@@ -134,7 +159,9 @@ describe('csrf', () => {
     const mw = csrf();
     const ctx = createCtx({ request: { method: 'GET' } });
     let nextCalled = false;
-    await mw(ctx, async () => { nextCalled = true; });
+    await mw(ctx, async () => {
+      nextCalled = true;
+    });
     assert.ok(ctx.state.csrfToken);
     assert.ok(nextCalled);
   });
@@ -162,7 +189,9 @@ describe('csrf', () => {
       },
     });
     let nextCalled = false;
-    await mw(postCtx, async () => { nextCalled = true; });
+    await mw(postCtx, async () => {
+      nextCalled = true;
+    });
     assert.ok(nextCalled);
   });
 });
@@ -193,7 +222,10 @@ describe('logger', () => {
 
   it('skips logging when skip function returns true', async () => {
     const logs = [];
-    const mw = logger({ output: (msg) => logs.push(msg), skip: (ctx) => ctx.request.url === '/health' });
+    const mw = logger({
+      output: (msg) => logs.push(msg),
+      skip: (ctx) => ctx.request.url === '/health',
+    });
     const ctx = createCtx({ request: { url: '/health' } });
     await mw(ctx, async () => {});
     assert.equal(logs.length, 0);
@@ -208,7 +240,9 @@ describe('createPipeline — additional', () => {
 
   it('error thrown inside middleware propagates', async () => {
     const pipeline = createPipeline();
-    pipeline.use(async () => { throw new Error('boom'); });
+    pipeline.use(async () => {
+      throw new Error('boom');
+    });
     await assert.rejects(() => pipeline.run(createCtx()), /boom/);
   });
 
@@ -335,7 +369,9 @@ describe('csrf — additional', () => {
     const mw = csrf();
     const ctx = createCtx({ request: { method: 'HEAD', headers: {} } });
     let nextCalled = false;
-    await mw(ctx, async () => { nextCalled = true; });
+    await mw(ctx, async () => {
+      nextCalled = true;
+    });
     // HEAD is safe method — should call next
     assert.ok(nextCalled);
   });
@@ -370,7 +406,9 @@ describe('csrf — additional', () => {
       },
     });
     let nextCalled = false;
-    await mw(ctx, async () => { nextCalled = true; });
+    await mw(ctx, async () => {
+      nextCalled = true;
+    });
     assert.ok(nextCalled);
   });
 
@@ -378,7 +416,9 @@ describe('csrf — additional', () => {
     const mw = csrf();
     const ctx = createCtx({ request: { method: 'OPTIONS', headers: {} } });
     let nextCalled = false;
-    await mw(ctx, async () => { nextCalled = true; });
+    await mw(ctx, async () => {
+      nextCalled = true;
+    });
     assert.ok(nextCalled);
   });
 
@@ -402,7 +442,10 @@ describe('cors — additional 2', () => {
       },
     });
     await mw(ctx, async () => {});
-    assert.equal(ctx.response.headers['access-control-allow-headers'], 'x-custom-header, content-type');
+    assert.equal(
+      ctx.response.headers['access-control-allow-headers'],
+      'x-custom-header, content-type',
+    );
   });
 
   it('uses allowedHeaders instead of request header when both present', async () => {
@@ -421,7 +464,9 @@ describe('cors — additional 2', () => {
     const mw = cors();
     const ctx = createCtx({ request: { method: 'OPTIONS', headers: {} } });
     let nextCalled = false;
-    await mw(ctx, async () => { nextCalled = true; });
+    await mw(ctx, async () => {
+      nextCalled = true;
+    });
     assert.equal(nextCalled, false);
   });
 });
@@ -468,7 +513,10 @@ describe('logger — additional', () => {
 describe('createPipeline — toHandler', () => {
   it('toHandler returns run function', async () => {
     const pipeline = createPipeline();
-    pipeline.use(async (ctx, next) => { ctx.state.ran = true; await next(); });
+    pipeline.use(async (ctx, next) => {
+      ctx.state.ran = true;
+      await next();
+    });
     const handler = pipeline.toHandler();
     const ctx = createCtx();
     await handler(ctx);
@@ -495,18 +543,30 @@ describe('createPipeline — toHandler', () => {
 describe('compose — additional', () => {
   it('single middleware still calls outer next', async () => {
     let outerNextCalled = false;
-    const composed = compose(async (_ctx, next) => { await next(); });
-    await composed(createCtx(), async () => { outerNextCalled = true; });
+    const composed = compose(async (_ctx, next) => {
+      await next();
+    });
+    await composed(createCtx(), async () => {
+      outerNextCalled = true;
+    });
     assert.ok(outerNextCalled);
   });
 
   it('accepts an array of middlewares', async () => {
     const order = [];
     const composed = compose([
-      async (_ctx, next) => { order.push(1); await next(); },
-      async (_ctx, next) => { order.push(2); await next(); },
+      async (_ctx, next) => {
+        order.push(1);
+        await next();
+      },
+      async (_ctx, next) => {
+        order.push(2);
+        await next();
+      },
     ]);
-    await composed(createCtx(), async () => { order.push(3); });
+    await composed(createCtx(), async () => {
+      order.push(3);
+    });
     assert.deepEqual(order, [1, 2, 3]);
   });
 });
@@ -524,21 +584,6 @@ describe('Express adapter', () => {
       ip: overrides.ip ?? '127.0.0.1',
       params: overrides.params ?? {},
     };
-  }
-
-  function mockExpressRes() {
-    const state = { code: 200, headers: {}, body: undefined };
-    return {
-      setHeader: (k, v) => { state.headers[k] = v; },
-      status: (code) => { state.code = code; return res; },
-      send: (body) => { state.body = body; },
-      cookie: () => {},
-      _state: state,
-      get _self() { return res; },
-    };
-    // eslint-disable-next-line no-unreachable
-    var res = { setHeader: (k, v) => { state.headers[k] = v; }, status: (code) => { state.code = code; return res; }, send: (body) => { state.body = body; }, cookie: () => {}, _state: state };
-    return res;
   }
 
   it('creates context from Express req', () => {
@@ -571,13 +616,18 @@ describe('Express adapter', () => {
 
   it('toExpressMiddleware calls next when no body is set', async () => {
     const pipeline = createPipeline();
-    pipeline.use(async (ctx, next) => { ctx.state.ran = true; await next(); });
+    pipeline.use(async (ctx, next) => {
+      ctx.state.ran = true;
+      await next();
+    });
     const mw = toExpressMiddleware(pipeline);
 
     let nextCalled = false;
     const req = mockExpressReq();
     const res = { setHeader: () => {}, status: () => ({}), send: () => {}, cookie: () => {} };
-    await mw(req, res, () => { nextCalled = true; });
+    await mw(req, res, () => {
+      nextCalled = true;
+    });
     assert.ok(nextCalled);
   });
 
@@ -594,8 +644,13 @@ describe('Express adapter', () => {
     let sentCode;
     const res = {
       setHeader: () => {},
-      status: (code) => { sentCode = code; return res; },
-      send: (body) => { sentBody = body; },
+      status: (code) => {
+        sentCode = code;
+        return res;
+      },
+      send: (body) => {
+        sentBody = body;
+      },
       cookie: () => {},
     };
     await mw(mockExpressReq(), res, () => {});
@@ -605,12 +660,16 @@ describe('Express adapter', () => {
 
   it('toExpressMiddleware calls next(err) on pipeline error', async () => {
     const pipeline = createPipeline();
-    pipeline.use(async () => { throw new Error('pipeline failed'); });
+    pipeline.use(async () => {
+      throw new Error('pipeline failed');
+    });
     const mw = toExpressMiddleware(pipeline);
 
     let caughtErr;
     const res = { setHeader: () => {}, status: () => res, send: () => {}, cookie: () => {} };
-    await mw(mockExpressReq(), res, (err) => { caughtErr = err; });
+    await mw(mockExpressReq(), res, (err) => {
+      caughtErr = err;
+    });
     assert.ok(caughtErr instanceof Error);
     assert.match(caughtErr.message, /pipeline failed/);
   });

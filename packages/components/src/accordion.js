@@ -12,7 +12,7 @@ export function renderAccordion(options = {}) {
   const exclusiveName = multiple ? '' : ` name="${id}"`;
 
   const sectionsHtml = items
-    .map((item, i) => {
+    .map((item) => {
       const open = item.open ? ' open' : '';
       return `<details data-bn="accordion-item"${exclusiveName}${open}>
   <summary data-bn="accordion-header">${item.title}</summary>

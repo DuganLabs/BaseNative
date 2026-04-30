@@ -20,7 +20,7 @@ export function createFlagManager(provider, options = {}) {
       // Percentage rollout
       if (flag.percentage !== undefined) {
         const hash = simpleHash(context.userId ?? context.sessionId ?? 'anonymous');
-        return (hash % 100) < flag.percentage;
+        return hash % 100 < flag.percentage;
       }
 
       // Rule-based targeting
@@ -39,7 +39,7 @@ export function createFlagManager(provider, options = {}) {
     async getAll(context = {}) {
       const allFlags = await provider.getAllFlags();
       const result = {};
-      for (const [name, flag] of Object.entries(allFlags)) {
+      for (const name of Object.keys(allFlags)) {
         result[name] = await this.isEnabled(name, context);
       }
       return result;
@@ -86,7 +86,7 @@ function simpleHash(str) {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash; // Convert to 32-bit integer
   }
   return Math.abs(hash);

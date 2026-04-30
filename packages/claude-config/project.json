@@ -9,6 +9,7 @@
     "lint": {
       "cache": true,
       "command": "pnpm exec eslint src",
+      "options": { "cwd": "{projectRoot}" },
       "inputs": ["{projectRoot}/src/**/*.js", "{projectRoot}/bin/**/*.js"]
     }
   }

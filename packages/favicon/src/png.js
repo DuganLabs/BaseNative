@@ -26,30 +26,32 @@ async function loadResvg() {
   _resvgInit = (async () => {
     let mod;
     try {
-      mod = await import("@resvg/resvg-wasm");
+      mod = await import('@resvg/resvg-wasm');
     } catch (err) {
       throw new Error(
-        "@basenative/favicon: PNG conversion requires `@resvg/resvg-wasm`, " +
-          "shipped transitively via the optional peer `@basenative/og-image`. " +
-          "Install with: pnpm add @basenative/og-image\n" +
+        '@basenative/favicon: PNG conversion requires `@resvg/resvg-wasm`, ' +
+          'shipped transitively via the optional peer `@basenative/og-image`. ' +
+          'Install with: pnpm add @basenative/og-image\n' +
           `Underlying error: ${err && /** @type {any} */ (err).message}`,
+        { cause: err },
       );
     }
     // resvg-wasm needs initWasm() called once per isolate. The `@basenative/
     // og-image` package handles this via its own helper; if that's available
     // we reuse it so we don't re-fetch the wasm bytes.
     try {
-      const og = await import("@basenative/og-image");
-      if (typeof (/** @type {any} */ (og).ensureResvg) === "function") {
-        await (/** @type {any} */ (og).ensureResvg)();
+      const og = await import('@basenative/og-image');
+      if (typeof (/** @type {any} */ (og).ensureResvg) === 'function') {
+        await (og)
+          /** @type {any} */ .ensureResvg();
         return { Resvg: mod.Resvg };
       }
     } catch {
       // og-image isn't installed — fall through to direct init.
     }
-    if (typeof mod.initWasm === "function") {
+    if (typeof mod.initWasm === 'function') {
       // Direct init: pull bytes from the package's bundled wasm.
-      const wasm = await import("@resvg/resvg-wasm/index_bg.wasm").catch(() => null);
+      const wasm = await import('@resvg/resvg-wasm/index_bg.wasm').catch(() => null);
       if (wasm && wasm.default) {
         await mod.initWasm(wasm.default);
       }
@@ -73,7 +75,7 @@ async function loadResvg() {
  */
 export async function toPng(svg, size = 512) {
   const { Resvg } = await loadResvg();
-  const resvg = new Resvg(svg, { fitTo: { mode: "width", value: size } });
+  const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: size } });
   return resvg.render().asPng();
 }
 
@@ -86,9 +88,9 @@ export async function toPng(svg, size = 512) {
  */
 export async function toIconSet({ favicon, maskable }) {
   const out = {};
-  out["apple-touch-icon.png"] = await toPng(favicon, 180);
-  out["icon-192.png"] = await toPng(favicon, 192);
-  out["icon-512.png"] = await toPng(favicon, 512);
-  out["maskable.png"] = await toPng(maskable, 512);
+  out['apple-touch-icon.png'] = await toPng(favicon, 180);
+  out['icon-192.png'] = await toPng(favicon, 192);
+  out['icon-512.png'] = await toPng(favicon, 512);
+  out['maskable.png'] = await toPng(maskable, 512);
   return out;
 }

@@ -1,4 +1,4 @@
-import { describe, it, beforeEach } from 'node:test';
+import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { writeFile, mkdir, rm } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -32,10 +32,7 @@ describe('createI18n', () => {
     const i18n = createI18n({
       messages: { en: { intro: '{name} is {age} years old' } },
     });
-    assert.equal(
-      i18n.t('intro', { name: 'Alice', age: 30 }),
-      'Alice is 30 years old'
-    );
+    assert.equal(i18n.t('intro', { name: 'Alice', age: 30 }), 'Alice is 30 years old');
   });
 
   it('handles plural with one and other', () => {
@@ -55,8 +52,7 @@ describe('createI18n', () => {
     const i18n = createI18n({
       messages: {
         en: {
-          items:
-            '{count, plural, zero {no items} one {# item} other {# items}}',
+          items: '{count, plural, zero {no items} one {# item} other {# items}}',
         },
       },
     });
@@ -196,30 +192,24 @@ describe('i18nMiddleware', () => {
 });
 
 describe('loader', () => {
-  const tmpDir = join(tmpdir(), `i18n-test-${Date.now()}`);
+  function uniqueTmp(prefix) {
+    return join(tmpdir(), `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  }
 
   it('loadMessages reads a JSON translation file', async () => {
+    const tmpDir = uniqueTmp('i18n-test');
     await mkdir(tmpDir, { recursive: true });
-    await writeFile(
-      join(tmpDir, 'en.json'),
-      JSON.stringify({ hello: 'Hello' })
-    );
+    await writeFile(join(tmpDir, 'en.json'), JSON.stringify({ hello: 'Hello' }));
     const msgs = await loadMessages('en', tmpDir);
     assert.deepEqual(msgs, { hello: 'Hello' });
     await rm(tmpDir, { recursive: true, force: true });
   });
 
   it('createLoader loads and registers messages', async () => {
-    const dir = join(tmpdir(), `i18n-loader-${Date.now()}`);
+    const dir = uniqueTmp('i18n-loader');
     await mkdir(dir, { recursive: true });
-    await writeFile(
-      join(dir, 'en.json'),
-      JSON.stringify({ greet: 'Hi' })
-    );
-    await writeFile(
-      join(dir, 'fr.json'),
-      JSON.stringify({ greet: 'Salut' })
-    );
+    await writeFile(join(dir, 'en.json'), JSON.stringify({ greet: 'Hi' }));
+    await writeFile(join(dir, 'fr.json'), JSON.stringify({ greet: 'Salut' }));
 
     const i18n = createI18n({ defaultLocale: 'en' });
     const loader = createLoader({ directory: dir, i18n });
@@ -241,7 +231,7 @@ describe('createI18n — additional edge cases', () => {
   it('does not call listeners when setting same locale', () => {
     const i18n = createI18n({ defaultLocale: 'en' });
     const changes = [];
-    i18n.onLocaleChange(l => changes.push(l));
+    i18n.onLocaleChange((l) => changes.push(l));
     i18n.setLocale('en');
     assert.equal(changes.length, 0);
   });
@@ -249,7 +239,7 @@ describe('createI18n — additional edge cases', () => {
   it('unsubscribes locale change listener', () => {
     const i18n = createI18n();
     const calls = [];
-    const unsubscribe = i18n.onLocaleChange(l => calls.push(l));
+    const unsubscribe = i18n.onLocaleChange((l) => calls.push(l));
     i18n.setLocale('fr');
     unsubscribe();
     i18n.setLocale('de');
@@ -431,7 +421,9 @@ describe('createI18n — locale fallback', () => {
       messages: { en: {}, de: {} },
     });
     let fired = null;
-    i18n.onLocaleChange((l) => { fired = l; });
+    i18n.onLocaleChange((l) => {
+      fired = l;
+    });
     i18n.setLocale('de');
     assert.equal(fired, 'de');
     assert.equal(i18n.locale, 'de');

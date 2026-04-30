@@ -11,7 +11,7 @@
  */
 export function toExpressMiddleware(pipeline) {
   return async (req, res, next) => {
-    const ctx = createExpressContext(req, res);
+    const ctx = createExpressContext(req);
 
     try {
       await pipeline.run(ctx);
@@ -50,7 +50,7 @@ export function toExpressMiddleware(pipeline) {
 /**
  * Create a BaseNative context from Express req/res.
  */
-function createExpressContext(req, res) {
+function createExpressContext(req) {
   return {
     request: {
       method: req.method,

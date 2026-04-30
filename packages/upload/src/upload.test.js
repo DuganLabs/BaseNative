@@ -29,7 +29,6 @@ function buildMultipartBody(boundary, parts) {
 
 describe('parseMultipart', () => {
   it('parses simple multipart body', () => {
-    const boundary = '----boundary';
     const body = `------boundary\r\nContent-Disposition: form-data; name="field1"\r\n\r\nvalue1\r\n------boundary\r\nContent-Disposition: form-data; name="file"; filename="test.txt"\r\nContent-Type: text/plain\r\n\r\nhello world\r\n------boundary--`;
     const parts = parseMultipart(body, `multipart/form-data; boundary=----boundary`);
     assert.equal(parts.length, 2);
@@ -73,7 +72,6 @@ describe('parseMultipart', () => {
 
   it('filters parts with no name', () => {
     // manually build a body with a nameless part
-    const boundary = 'nb';
     const body = `--nb\r\nContent-Disposition: form-data\r\n\r\norphan\r\n--nb--`;
     const parts = parseMultipart(body, `multipart/form-data; boundary=nb`);
     assert.equal(parts.length, 0);
@@ -91,9 +89,7 @@ describe('parseMultipart', () => {
 
   it('handles quoted boundary in content-type', () => {
     const boundary = 'quoted-bound';
-    const body = buildMultipartBody(boundary, [
-      { name: 'field', value: 'data' },
-    ]);
+    const body = buildMultipartBody(boundary, [{ name: 'field', value: 'data' }]);
     const parts = parseMultipart(body, `multipart/form-data; boundary="${boundary}"`);
     assert.equal(parts.length, 1);
     assert.equal(parts[0].name, 'field');
@@ -113,7 +109,9 @@ describe('createLocalStorage', () => {
     tempDir = mkdtempSync(join(tmpdir(), 'bn-upload-'));
     const storage = createLocalStorage({ directory: tempDir, baseUrl: '/files' });
 
-    const result = await storage.put('test.txt', Buffer.from('hello'), { contentType: 'text/plain' });
+    const result = await storage.put('test.txt', Buffer.from('hello'), {
+      contentType: 'text/plain',
+    });
     assert.equal(result.key, 'test.txt');
     assert.equal(result.url, '/files/test.txt');
 
@@ -174,10 +172,19 @@ describe('createS3Storage', () => {
   it('put calls client.putObject with correct params', async () => {
     const calls = [];
     const client = {
-      putObject(params) { calls.push(params); return Promise.resolve(); },
+      putObject(params) {
+        calls.push(params);
+        return Promise.resolve();
+      },
     };
-    const storage = createS3Storage({ client, bucket: 'test-bucket', baseUrl: 'https://cdn.example.com' });
-    const result = await storage.put('photo.jpg', Buffer.from('img'), { contentType: 'image/jpeg' });
+    const storage = createS3Storage({
+      client,
+      bucket: 'test-bucket',
+      baseUrl: 'https://cdn.example.com',
+    });
+    const result = await storage.put('photo.jpg', Buffer.from('img'), {
+      contentType: 'image/jpeg',
+    });
     assert.equal(calls.length, 1);
     assert.equal(calls[0].Bucket, 'test-bucket');
     assert.equal(calls[0].Key, 'photo.jpg');
@@ -189,7 +196,10 @@ describe('createS3Storage', () => {
   it('put uses prefix in key when prefix is set', async () => {
     const calls = [];
     const client = {
-      putObject(params) { calls.push(params); return Promise.resolve(); },
+      putObject(params) {
+        calls.push(params);
+        return Promise.resolve();
+      },
     };
     const storage = createS3Storage({ client, bucket: 'b', prefix: 'uploads' });
     await storage.put('file.txt', Buffer.from('x'), {});
@@ -198,7 +208,9 @@ describe('createS3Storage', () => {
 
   it('exists returns true when headObject resolves', async () => {
     const client = {
-      headObject() { return Promise.resolve({}); },
+      headObject() {
+        return Promise.resolve({});
+      },
     };
     const storage = createS3Storage({ client, bucket: 'b' });
     assert.equal(await storage.exists('file.txt'), true);
@@ -206,7 +218,9 @@ describe('createS3Storage', () => {
 
   it('exists returns false when headObject throws', async () => {
     const client = {
-      headObject() { return Promise.reject(new Error('NotFound')); },
+      headObject() {
+        return Promise.reject(new Error('NotFound'));
+      },
     };
     const storage = createS3Storage({ client, bucket: 'b' });
     assert.equal(await storage.exists('file.txt'), false);
@@ -215,7 +229,9 @@ describe('createS3Storage', () => {
   it('get returns response.Body from client.getObject', async () => {
     const fakeBody = Buffer.from('s3-content');
     const client = {
-      getObject() { return Promise.resolve({ Body: fakeBody }); },
+      getObject() {
+        return Promise.resolve({ Body: fakeBody });
+      },
     };
     const storage = createS3Storage({ client, bucket: 'b' });
     const result = await storage.get('doc.txt');
@@ -225,7 +241,10 @@ describe('createS3Storage', () => {
   it('delete calls client.deleteObject', async () => {
     const calls = [];
     const client = {
-      deleteObject(params) { calls.push(params); return Promise.resolve(); },
+      deleteObject(params) {
+        calls.push(params);
+        return Promise.resolve();
+      },
     };
     const storage = createS3Storage({ client, bucket: 'b' });
     await storage.delete('old.txt');
@@ -248,10 +267,16 @@ describe('createR2Storage', () => {
   it('put calls bucket.put and returns correct result', async () => {
     const calls = [];
     const bucket = {
-      put(key, data, opts) { calls.push({ key, data, opts }); return Promise.resolve(); },
+      put(key, data, opts) {
+        calls.push({ key, data, opts });
+        return Promise.resolve();
+      },
     };
     const storage = createR2Storage({ bucket, baseUrl: 'https://r2.example.com' });
-    const result = await storage.put('image.png', Buffer.from('px'), { contentType: 'image/png', originalName: 'image.png' });
+    const result = await storage.put('image.png', Buffer.from('px'), {
+      contentType: 'image/png',
+      originalName: 'image.png',
+    });
     assert.equal(calls.length, 1);
     assert.equal(calls[0].key, 'image.png');
     assert.equal(result.url, 'https://r2.example.com/image.png');
@@ -262,8 +287,12 @@ describe('createR2Storage', () => {
   it('get returns arrayBuffer from bucket.get result', async () => {
     const fakeBuffer = Buffer.from('r2-data');
     const bucket = {
-      put() { return Promise.resolve(); },
-      get() { return Promise.resolve({ arrayBuffer: () => Promise.resolve(fakeBuffer) }); },
+      put() {
+        return Promise.resolve();
+      },
+      get() {
+        return Promise.resolve({ arrayBuffer: () => Promise.resolve(fakeBuffer) });
+      },
     };
     const storage = createR2Storage({ bucket });
     const result = await storage.get('data.bin');
@@ -272,8 +301,12 @@ describe('createR2Storage', () => {
 
   it('get returns null when bucket.get returns null', async () => {
     const bucket = {
-      put() { return Promise.resolve(); },
-      get() { return Promise.resolve(null); },
+      put() {
+        return Promise.resolve();
+      },
+      get() {
+        return Promise.resolve(null);
+      },
     };
     const storage = createR2Storage({ bucket });
     const result = await storage.get('missing.bin');
@@ -282,8 +315,12 @@ describe('createR2Storage', () => {
 
   it('exists returns true when bucket.head returns non-null', async () => {
     const bucket = {
-      put() { return Promise.resolve(); },
-      head() { return Promise.resolve({ size: 100 }); },
+      put() {
+        return Promise.resolve();
+      },
+      head() {
+        return Promise.resolve({ size: 100 });
+      },
     };
     const storage = createR2Storage({ bucket });
     assert.equal(await storage.exists('file.txt'), true);
@@ -291,8 +328,12 @@ describe('createR2Storage', () => {
 
   it('exists returns false when bucket.head returns null', async () => {
     const bucket = {
-      put() { return Promise.resolve(); },
-      head() { return Promise.resolve(null); },
+      put() {
+        return Promise.resolve();
+      },
+      head() {
+        return Promise.resolve(null);
+      },
     };
     const storage = createR2Storage({ bucket });
     assert.equal(await storage.exists('file.txt'), false);
@@ -318,7 +359,9 @@ describe('createUploadHandler', () => {
       state: {},
     };
     let nextCalled = false;
-    await handler(ctx, async () => { nextCalled = true; });
+    await handler(ctx, async () => {
+      nextCalled = true;
+    });
     assert.ok(nextCalled);
     assert.equal(ctx.state.files, undefined);
   });
@@ -332,7 +375,9 @@ describe('createUploadHandler', () => {
       state: {},
     };
     let nextCalled = false;
-    await handler(ctx, async () => { nextCalled = true; });
+    await handler(ctx, async () => {
+      nextCalled = true;
+    });
     assert.ok(nextCalled);
     assert.equal(ctx.state.files, undefined);
   });
@@ -341,10 +386,13 @@ describe('createUploadHandler', () => {
     tempDir = mkdtempSync(join(tmpdir(), 'bn-upload-'));
     const storage = createLocalStorage({ directory: tempDir });
     const handler = createUploadHandler(storage, { maxFileSize: 5 });
-    const boundary = '----boundary';
     const body = `------boundary\r\nContent-Disposition: form-data; name="file"; filename="big.txt"\r\nContent-Type: text/plain\r\n\r\nhello world too large\r\n------boundary--`;
     const ctx = {
-      request: { method: 'POST', headers: { 'content-type': `multipart/form-data; boundary=----boundary` }, body },
+      request: {
+        method: 'POST',
+        headers: { 'content-type': `multipart/form-data; boundary=----boundary` },
+        body,
+      },
       response: { headers: {} },
       state: {},
     };
@@ -362,7 +410,11 @@ describe('createUploadHandler', () => {
       { name: 'file', filename: 'doc.pdf', contentType: 'application/pdf', value: 'pdf-content' },
     ]);
     const ctx = {
-      request: { method: 'POST', headers: { 'content-type': `multipart/form-data; boundary=${boundary}` }, body },
+      request: {
+        method: 'POST',
+        headers: { 'content-type': `multipart/form-data; boundary=${boundary}` },
+        body,
+      },
       state: {},
     };
     await handler(ctx, async () => {});
@@ -383,7 +435,11 @@ describe('createUploadHandler', () => {
       { name: 'file', filename: 'photo.png', contentType: 'image/png', value: 'PNG' },
     ]);
     const ctx = {
-      request: { method: 'POST', headers: { 'content-type': `multipart/form-data; boundary=${boundary}` }, body },
+      request: {
+        method: 'POST',
+        headers: { 'content-type': `multipart/form-data; boundary=${boundary}` },
+        body,
+      },
       state: {},
     };
     await handler(ctx, async () => {});
@@ -404,7 +460,11 @@ describe('createUploadHandler', () => {
       { name: 'file', filename: 'a.txt', contentType: 'text/plain', value: 'data' },
     ]);
     const ctx = {
-      request: { method: 'POST', headers: { 'content-type': `multipart/form-data; boundary=${boundary}` }, body },
+      request: {
+        method: 'POST',
+        headers: { 'content-type': `multipart/form-data; boundary=${boundary}` },
+        body,
+      },
       state: {},
     };
     await handler(ctx, async () => {});
@@ -421,7 +481,11 @@ describe('createUploadHandler', () => {
       { name: 'file', filename: 'update.txt', contentType: 'text/plain', value: 'updated' },
     ]);
     const ctx = {
-      request: { method: 'PUT', headers: { 'content-type': `multipart/form-data; boundary=${boundary}` }, body },
+      request: {
+        method: 'PUT',
+        headers: { 'content-type': `multipart/form-data; boundary=${boundary}` },
+        body,
+      },
       state: {},
     };
     await handler(ctx, async () => {});
@@ -438,13 +502,17 @@ describe('createUploadHandler', () => {
       { name: 'file2', filename: 'b.txt', contentType: 'text/plain', value: 'bbb' },
     ]);
     const ctx = {
-      request: { method: 'POST', headers: { 'content-type': `multipart/form-data; boundary=${boundary}` }, body },
+      request: {
+        method: 'POST',
+        headers: { 'content-type': `multipart/form-data; boundary=${boundary}` },
+        body,
+      },
       state: {},
     };
     await handler(ctx, async () => {});
     assert.equal(ctx.state.files.length, 2);
     assert.equal(ctx.state.uploadErrors.length, 0);
-    const names = ctx.state.files.map(f => f.originalName);
+    const names = ctx.state.files.map((f) => f.originalName);
     assert.ok(names.includes('a.txt'));
     assert.ok(names.includes('b.txt'));
   });
@@ -459,7 +527,11 @@ describe('createUploadHandler', () => {
       { name: 'f2', filename: 'big2.txt', contentType: 'text/plain', value: 'also too long' },
     ]);
     const ctx = {
-      request: { method: 'POST', headers: { 'content-type': `multipart/form-data; boundary=${boundary}` }, body },
+      request: {
+        method: 'POST',
+        headers: { 'content-type': `multipart/form-data; boundary=${boundary}` },
+        body,
+      },
       state: {},
     };
     await handler(ctx, async () => {});
@@ -476,11 +548,17 @@ describe('createUploadHandler', () => {
       { name: 'file', filename: 'item.txt', contentType: 'text/plain', value: 'data' },
     ]);
     const ctx = {
-      request: { method: 'POST', headers: { 'content-type': `multipart/form-data; boundary=${boundary}` }, body },
+      request: {
+        method: 'POST',
+        headers: { 'content-type': `multipart/form-data; boundary=${boundary}` },
+        body,
+      },
       state: {},
     };
     let nextCalled = false;
-    await handler(ctx, async () => { nextCalled = true; });
+    await handler(ctx, async () => {
+      nextCalled = true;
+    });
     assert.ok(nextCalled);
   });
 
@@ -491,7 +569,11 @@ describe('createUploadHandler', () => {
     const boundary = 'empty-bnd';
     const body = `--${boundary}--`;
     const ctx = {
-      request: { method: 'POST', headers: { 'content-type': `multipart/form-data; boundary=${boundary}` }, body },
+      request: {
+        method: 'POST',
+        headers: { 'content-type': `multipart/form-data; boundary=${boundary}` },
+        body,
+      },
       state: {},
     };
     await handler(ctx, async () => {});
@@ -507,8 +589,13 @@ describe('createR2Storage — additional', () => {
   it('delete calls bucket.delete with correct key', async () => {
     const deleteCalls = [];
     const bucket = {
-      put() { return Promise.resolve(); },
-      delete(key) { deleteCalls.push(key); return Promise.resolve(); },
+      put() {
+        return Promise.resolve();
+      },
+      delete(key) {
+        deleteCalls.push(key);
+        return Promise.resolve();
+      },
     };
     const storage = createR2Storage({ bucket });
     await storage.delete('old-file.bin');
@@ -517,7 +604,9 @@ describe('createR2Storage — additional', () => {
 
   it('put without baseUrl returns filename as url', async () => {
     const bucket = {
-      put() { return Promise.resolve(); },
+      put() {
+        return Promise.resolve();
+      },
     };
     const storage = createR2Storage({ bucket });
     const result = await storage.put('file.txt', Buffer.from('x'), {});
@@ -553,10 +642,11 @@ describe('createLocalStorage — additional', () => {
 describe('parseMultipart — additional', () => {
   it('accepts Buffer body', () => {
     const boundary = 'bufbound';
-    const body = buildMultipartBody(boundary, [
-      { name: 'field', value: 'from-buffer' },
-    ]);
-    const parts = parseMultipart(Buffer.from(body, 'utf-8'), `multipart/form-data; boundary=${boundary}`);
+    const body = buildMultipartBody(boundary, [{ name: 'field', value: 'from-buffer' }]);
+    const parts = parseMultipart(
+      Buffer.from(body, 'utf-8'),
+      `multipart/form-data; boundary=${boundary}`,
+    );
     assert.equal(parts.length, 1);
     assert.equal(parts[0].name, 'field');
   });
@@ -577,10 +667,14 @@ describe('parseMultipart — additional', () => {
 describe('createS3Storage — additional', () => {
   it('put generates default S3 URL when no baseUrl', async () => {
     const client = {
-      putObject() { return Promise.resolve(); },
+      putObject() {
+        return Promise.resolve();
+      },
     };
     const storage = createS3Storage({ client, bucket: 'my-bucket' });
-    const result = await storage.put('photo.jpg', Buffer.from('data'), { contentType: 'image/jpeg' });
+    const result = await storage.put('photo.jpg', Buffer.from('data'), {
+      contentType: 'image/jpeg',
+    });
     assert.ok(result.url.includes('my-bucket.s3.amazonaws.com'));
     assert.ok(result.url.includes('photo.jpg'));
   });
@@ -588,7 +682,10 @@ describe('createS3Storage — additional', () => {
   it('delete uses prefix in key', async () => {
     const calls = [];
     const client = {
-      deleteObject(params) { calls.push(params); return Promise.resolve(); },
+      deleteObject(params) {
+        calls.push(params);
+        return Promise.resolve();
+      },
     };
     const storage = createS3Storage({ client, bucket: 'b', prefix: 'uploads' });
     await storage.delete('old.txt');
@@ -598,7 +695,10 @@ describe('createS3Storage — additional', () => {
   it('get uses prefix in key', async () => {
     const calls = [];
     const client = {
-      getObject(params) { calls.push(params); return Promise.resolve({ Body: Buffer.from('data') }); },
+      getObject(params) {
+        calls.push(params);
+        return Promise.resolve({ Body: Buffer.from('data') });
+      },
     };
     const storage = createS3Storage({ client, bucket: 'b', prefix: 'docs' });
     await storage.get('file.txt');
@@ -607,7 +707,9 @@ describe('createS3Storage — additional', () => {
 
   it('returns size in put result', async () => {
     const client = {
-      putObject() { return Promise.resolve(); },
+      putObject() {
+        return Promise.resolve();
+      },
     };
     const storage = createS3Storage({ client, bucket: 'b' });
     const buf = Buffer.from('hello world');

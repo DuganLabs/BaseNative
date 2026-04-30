@@ -39,7 +39,7 @@ export function loadRequired(filePath) {
   try {
     raw = JSON.parse(readFileSync(full, 'utf-8'));
   } catch (err) {
-    throw new Error(`doppler-required.json is not valid JSON: ${err.message}`);
+    throw new Error(`doppler-required.json is not valid JSON: ${err.message}`, { cause: err });
   }
   return validateRequired(raw);
 }
@@ -78,9 +78,7 @@ export function validateRequired(input) {
       continue;
     }
     if (!/^[A-Z][A-Z0-9_]*$/.test(sec.name)) {
-      errors.push(
-        `secrets[${i}].name (${sec.name}): must be SCREAMING_SNAKE_CASE`,
-      );
+      errors.push(`secrets[${i}].name (${sec.name}): must be SCREAMING_SNAKE_CASE`);
     }
     if (seen.has(sec.name)) {
       errors.push(`secrets[${i}].name (${sec.name}): duplicate`);
@@ -110,9 +108,7 @@ export function validateRequired(input) {
       continue;
     }
     if (!VALID_CONFIGS.includes(c)) {
-      errors.push(
-        `configs[${i}] (${c}): expected one of ${VALID_CONFIGS.join(', ')}`,
-      );
+      errors.push(`configs[${i}] (${c}): expected one of ${VALID_CONFIGS.join(', ')}`);
     }
     if (cseen.has(c)) {
       errors.push(`configs[${i}] (${c}): duplicate`);

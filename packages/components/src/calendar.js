@@ -74,51 +74,55 @@ export function renderCalendar(options = {}) {
   const dates = weekDates(startDate);
 
   // Header row: time gutter + 7 day columns
-  const headerCells = dates.map(d =>
-    `<div data-bn="calendar-day-header" data-date="${d}">${formatDay(d)}</div>`
-  ).join('');
+  const headerCells = dates
+    .map((d) => `<div data-bn="calendar-day-header" data-date="${d}">${formatDay(d)}</div>`)
+    .join('');
 
   // Time gutter labels
   const timeLabels = [];
   for (let h = hourStart; h < hourEnd; h++) {
     const label = h <= 12 ? `${h}am` : `${h - 12}pm`;
     timeLabels.push(
-      `<div data-bn="calendar-time-label" data-hour="${h}" style="grid-row: ${h - hourStart + 2}">${h === 12 ? '12pm' : label}</div>`
+      `<div data-bn="calendar-time-label" data-hour="${h}" style="grid-row: ${h - hourStart + 2}">${h === 12 ? '12pm' : label}</div>`,
     );
   }
 
   // Day columns with drop zones
-  const dayColumns = dates.map((date, colIndex) => {
-    const dayEvents = events.filter(e => e.start && e.start.startsWith(date));
+  const dayColumns = dates
+    .map((date, colIndex) => {
+      const dayEvents = events.filter((e) => e.start && e.start.startsWith(date));
 
-    const eventBlocks = dayEvents.map(ev => {
-      const startHour = new Date(ev.start).getHours() + new Date(ev.start).getMinutes() / 60;
-      const endHour = new Date(ev.end).getHours() + new Date(ev.end).getMinutes() / 60;
-      const topRow = Math.max(startHour - hourStart + 2, 2);
-      const span = Math.max(endHour - startHour, 0.5);
-      const statusAttr = ev.status ? ` data-status="${ev.status}"` : '';
-      const colorStyle = ev.color ? ` --bn-calendar-event-color: ${ev.color};` : '';
+      const eventBlocks = dayEvents
+        .map((ev) => {
+          const startHour = new Date(ev.start).getHours() + new Date(ev.start).getMinutes() / 60;
+          const endHour = new Date(ev.end).getHours() + new Date(ev.end).getMinutes() / 60;
+          const topRow = Math.max(startHour - hourStart + 2, 2);
+          const span = Math.max(endHour - startHour, 0.5);
+          const statusAttr = ev.status ? ` data-status="${ev.status}"` : '';
+          const colorStyle = ev.color ? ` --bn-calendar-event-color: ${ev.color};` : '';
 
-      return `<div data-bn="calendar-event" draggable="true" data-event-id="${ev.id}"${statusAttr} style="grid-row: ${topRow} / span ${Math.ceil(span)};${colorStyle}">
+          return `<div data-bn="calendar-event" draggable="true" data-event-id="${ev.id}"${statusAttr} style="grid-row: ${topRow} / span ${Math.ceil(span)};${colorStyle}">
   <span data-bn="calendar-event-title">${ev.title}</span>
   ${ev.assignee ? `<span data-bn="calendar-event-assignee">${ev.assignee}</span>` : ''}
   <span data-bn="calendar-event-time">${new Date(ev.start).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} – ${new Date(ev.end).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span>
 </div>`;
-    }).join('');
+        })
+        .join('');
 
-    // Drop zone cells for each hour
-    const hourSlots = [];
-    for (let h = hourStart; h < hourEnd; h++) {
-      hourSlots.push(
-        `<div data-bn="calendar-slot" data-date="${date}" data-hour="${h}" style="grid-row: ${h - hourStart + 2}"></div>`
-      );
-    }
+      // Drop zone cells for each hour
+      const hourSlots = [];
+      for (let h = hourStart; h < hourEnd; h++) {
+        hourSlots.push(
+          `<div data-bn="calendar-slot" data-date="${date}" data-hour="${h}" style="grid-row: ${h - hourStart + 2}"></div>`,
+        );
+      }
 
-    return `<div data-bn="calendar-day-column" data-date="${date}" style="grid-column: ${colIndex + 2}">
+      return `<div data-bn="calendar-day-column" data-date="${date}" style="grid-column: ${colIndex + 2}">
   ${hourSlots.join('')}
   ${eventBlocks}
 </div>`;
-  }).join('');
+    })
+    .join('');
 
   return `<div data-bn="calendar" id="${id}" ${attrs}>
   <div data-bn="calendar-grid" style="--bn-calendar-hours: ${totalHours}; --bn-calendar-cols: 7;">
@@ -175,24 +179,28 @@ export function renderPipeline(options = {}) {
     attrs = '',
   } = options;
 
-  const columnElems = columns.map(col => {
-    const colCards = cards.filter(c => c.columnId === col.id);
-    const cardsHtml = colCards.map(card => {
-      const statusAttr = card.status ? ` data-status="${card.status}"` : '';
-      return `<article data-bn="pipeline-card" data-card-id="${card.id}" draggable="true"${statusAttr}>
+  const columnElems = columns
+    .map((col) => {
+      const colCards = cards.filter((c) => c.columnId === col.id);
+      const cardsHtml = colCards
+        .map((card) => {
+          const statusAttr = card.status ? ` data-status="${card.status}"` : '';
+          return `<article data-bn="pipeline-card" data-card-id="${card.id}" draggable="true"${statusAttr}>
   <div data-bn="pipeline-card-title">${card.title}</div>
   ${card.subtitle ? `<div data-bn="pipeline-card-subtitle">${card.subtitle}</div>` : ''}
   ${card.description ? `<div data-bn="pipeline-card-description">${card.description}</div>` : ''}
 </article>`;
-    }).join('');
+        })
+        .join('');
 
-    return `<section data-bn="pipeline-column" data-column-id="${col.id}">
+      return `<section data-bn="pipeline-column" data-column-id="${col.id}">
   <header data-bn="pipeline-column-header">${col.title}</header>
   <div data-bn="pipeline-column-cards">
     ${cardsHtml || `<div data-bn="pipeline-empty">${emptyMessage}</div>`}
   </div>
 </section>`;
-  }).join('');
+    })
+    .join('');
 
   return `<div data-bn="pipeline" id="${id}" ${attrs}>
   ${columnElems}
@@ -214,17 +222,23 @@ export function initCalendarDragDrop(container, callbacks = {}) {
     const event = e.target.closest('[data-event-id]');
     const block = e.target.closest('[data-block-id]');
     if (event) {
-      e.dataTransfer.setData('text/plain', JSON.stringify({
-        type: 'event',
-        id: event.dataset.eventId,
-      }));
+      e.dataTransfer.setData(
+        'text/plain',
+        JSON.stringify({
+          type: 'event',
+          id: event.dataset.eventId,
+        }),
+      );
       e.dataTransfer.effectAllowed = 'move';
       event.setAttribute('data-dragging', '');
     } else if (block) {
-      e.dataTransfer.setData('text/plain', JSON.stringify({
-        type: 'pipeline',
-        id: block.dataset.blockId,
-      }));
+      e.dataTransfer.setData(
+        'text/plain',
+        JSON.stringify({
+          type: 'pipeline',
+          id: block.dataset.blockId,
+        }),
+      );
       e.dataTransfer.effectAllowed = 'copy';
       block.setAttribute('data-dragging', '');
     }
@@ -263,16 +277,18 @@ export function initCalendarDragDrop(container, callbacks = {}) {
           sourceType: data.type,
         });
       }
-    } catch { /* ignore malformed drag data */ }
+    } catch {
+      /* ignore malformed drag data */
+    }
   }
 
-  function handleDragEnd(e) {
-    container.querySelectorAll('[data-dragging]').forEach(el =>
-      el.removeAttribute('data-dragging')
-    );
-    container.querySelectorAll('[data-drop-target]').forEach(el =>
-      el.removeAttribute('data-drop-target')
-    );
+  function handleDragEnd() {
+    container
+      .querySelectorAll('[data-dragging]')
+      .forEach((el) => el.removeAttribute('data-dragging'));
+    container
+      .querySelectorAll('[data-drop-target]')
+      .forEach((el) => el.removeAttribute('data-drop-target'));
   }
 
   container.addEventListener('dragstart', handleDragStart);
@@ -302,19 +318,18 @@ export function initCalendarDragDrop(container, callbacks = {}) {
  */
 export function initPipelineDragDrop(container, callbacks = {}) {
   const { onCardMove } = callbacks;
-  let draggedCard = null;
-  let sourceColumn = null;
 
   function handleDragStart(e) {
     const card = e.target.closest('[data-card-id]');
     if (!card) return;
 
-    draggedCard = card;
-    sourceColumn = card.closest('[data-column-id]');
-    e.dataTransfer.setData('text/plain', JSON.stringify({
-      type: 'pipeline-card',
-      cardId: card.dataset.cardId,
-    }));
+    e.dataTransfer.setData(
+      'text/plain',
+      JSON.stringify({
+        type: 'pipeline-card',
+        cardId: card.dataset.cardId,
+      }),
+    );
     e.dataTransfer.effectAllowed = 'move';
     card.setAttribute('data-dragging', '');
   }
@@ -330,9 +345,9 @@ export function initPipelineDragDrop(container, callbacks = {}) {
 
   function handleDragLeave(e) {
     if (!e.target.closest('[data-card-id]')) {
-      container.querySelectorAll('[data-drop-target]').forEach(el =>
-        el.removeAttribute('data-drop-target')
-      );
+      container
+        .querySelectorAll('[data-drop-target]')
+        .forEach((el) => el.removeAttribute('data-drop-target'));
     }
   }
 
@@ -353,18 +368,18 @@ export function initPipelineDragDrop(container, callbacks = {}) {
           position: null,
         });
       }
-    } catch { /* ignore malformed drag data */ }
+    } catch {
+      /* ignore malformed drag data */
+    }
   }
 
-  function handleDragEnd(e) {
-    draggedCard = null;
-    sourceColumn = null;
-    container.querySelectorAll('[data-dragging]').forEach(el =>
-      el.removeAttribute('data-dragging')
-    );
-    container.querySelectorAll('[data-drop-target]').forEach(el =>
-      el.removeAttribute('data-drop-target')
-    );
+  function handleDragEnd() {
+    container
+      .querySelectorAll('[data-dragging]')
+      .forEach((el) => el.removeAttribute('data-dragging'));
+    container
+      .querySelectorAll('[data-drop-target]')
+      .forEach((el) => el.removeAttribute('data-drop-target'));
   }
 
   container.addEventListener('dragstart', handleDragStart);

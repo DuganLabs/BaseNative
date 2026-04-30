@@ -56,9 +56,7 @@ export function getEventDuration(start, end) {
  * @returns {object} Calendar state with signal methods
  */
 export function createCalendarState(options = {}) {
-  const { startDate, initialEvents = [], hours = {} } = options;
-  const hourStart = hours.start ?? 7;
-  const hourEnd = hours.end ?? 19;
+  const { startDate, initialEvents = [] } = options;
 
   // State signals would be injected by @basenative/runtime,
   // but for testability, we expose as a mock
@@ -71,7 +69,7 @@ export function createCalendarState(options = {}) {
     selectedDate: () => selectedDateData,
     dragState: () => dragStateData,
 
-    getEvent: (id) => eventsData.find(e => e.id === id),
+    getEvent: (id) => eventsData.find((e) => e.id === id),
 
     addEvent: (event) => {
       const normalized = {
@@ -90,7 +88,7 @@ export function createCalendarState(options = {}) {
     removeEvent: (id) => {
       const event = state.getEvent(id);
       if (!event) return false;
-      eventsData = eventsData.filter(e => e.id !== id);
+      eventsData = eventsData.filter((e) => e.id !== id);
       state.onEventChange?.({ type: 'remove', event });
       return true;
     },
@@ -118,9 +116,7 @@ export function createCalendarState(options = {}) {
       };
 
       // Check for collisions with other events
-      const collision = eventsData.some(
-        e => e.id !== id && eventsCollide(e, proposed)
-      );
+      const collision = eventsData.some((e) => e.id !== id && eventsCollide(e, proposed));
 
       if (collision) {
         state.onError?.({
@@ -132,7 +128,7 @@ export function createCalendarState(options = {}) {
         return null;
       }
 
-      eventsData = eventsData.map(e => (e.id === id ? proposed : e));
+      eventsData = eventsData.map((e) => (e.id === id ? proposed : e));
       state.onEventChange?.({ type: 'move', event: proposed });
       state.onEventMove?.({ eventId: id, date, hour });
       return proposed;
@@ -148,7 +144,7 @@ export function createCalendarState(options = {}) {
       const event = state.getEvent(id);
       if (!event) return null;
       const updated = updateEvent(event, overrides);
-      eventsData = eventsData.map(e => (e.id === id ? updated : e));
+      eventsData = eventsData.map((e) => (e.id === id ? updated : e));
       state.onEventChange?.({ type: 'update', event: updated });
       return updated;
     },
@@ -179,7 +175,7 @@ export function createCalendarState(options = {}) {
     getEventsInRange: (startDate, endDate = startDate) => {
       const sd = new Date(`${startDate}T00:00:00`).getTime();
       const ed = new Date(`${endDate}T23:59:59`).getTime();
-      return eventsData.filter(e => {
+      return eventsData.filter((e) => {
         const es = new Date(e.start).getTime();
         const ee = new Date(e.end).getTime();
         return es <= ed && ee >= sd;
@@ -223,8 +219,8 @@ export function createPipelineState(options = {}) {
     cards: () => [...cardsData],
     dragState: () => dragStateData,
 
-    getCard: (id) => cardsData.find(c => c.id === id),
-    getColumn: (id) => columnsData.find(c => c.id === id),
+    getCard: (id) => cardsData.find((c) => c.id === id),
+    getColumn: (id) => columnsData.find((c) => c.id === id),
 
     /**
      * Add a new card to a column.
@@ -251,7 +247,7 @@ export function createPipelineState(options = {}) {
     removeCard: (id) => {
       const card = state.getCard(id);
       if (!card) return false;
-      cardsData = cardsData.filter(c => c.id !== id);
+      cardsData = cardsData.filter((c) => c.id !== id);
       state.onCardChange?.({ type: 'remove', card });
       return true;
     },
@@ -271,7 +267,7 @@ export function createPipelineState(options = {}) {
       if (!column) return null;
 
       const updated = { ...card, columnId: targetColumnId };
-      cardsData = cardsData.map(c => (c.id === id ? updated : c));
+      cardsData = cardsData.map((c) => (c.id === id ? updated : c));
 
       state.onCardChange?.({ type: 'move', card: updated });
       state.onCardMove?.({ cardId: id, targetColumnId, position });
@@ -284,7 +280,6 @@ export function createPipelineState(options = {}) {
      * @param {Array<string>} cardOrder - Array of card IDs in desired order
      */
     reorderCards: (columnId, cardOrder) => {
-      const columnCards = cardsData.filter(c => c.columnId === columnId);
       const orderMap = new Map(cardOrder.map((id, idx) => [id, idx]));
 
       cardsData = cardsData.sort((a, b) => {
@@ -307,7 +302,7 @@ export function createPipelineState(options = {}) {
       const card = state.getCard(id);
       if (!card) return null;
       const updated = { ...card, ...overrides };
-      cardsData = cardsData.map(c => (c.id === id ? updated : c));
+      cardsData = cardsData.map((c) => (c.id === id ? updated : c));
       state.onCardChange?.({ type: 'update', card: updated });
       return updated;
     },
@@ -317,7 +312,7 @@ export function createPipelineState(options = {}) {
      * @param {string} columnId
      * @returns {Array}
      */
-    getCardsInColumn: (columnId) => cardsData.filter(c => c.columnId === columnId),
+    getCardsInColumn: (columnId) => cardsData.filter((c) => c.columnId === columnId),
 
     /**
      * Set drag state for UI feedback.

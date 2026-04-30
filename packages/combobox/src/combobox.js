@@ -51,10 +51,18 @@ export function normalizeOption(raw) {
 function readValue(v) {
   if (v == null) return '';
   if (typeof v === 'function') {
-    try { return String(v() ?? ''); } catch { return ''; }
+    try {
+      return String(v() ?? '');
+    } catch {
+      return '';
+    }
   }
   if (typeof v === 'object' && typeof v.get === 'function') {
-    try { return String(v.get() ?? ''); } catch { return ''; }
+    try {
+      return String(v.get() ?? '');
+    } catch {
+      return '';
+    }
   }
   return String(v);
 }
@@ -108,15 +116,12 @@ export function renderCombobox(options = {}) {
     : ` aria-describedby="${liveId}"`;
   const opts = (options.options || []).map(normalizeOption).filter(Boolean);
   const allowCreate = options.allowCreate === true;
-  const createLabelText = options.createLabel
-    ? options.createLabel(value)
-    : defaultCreateLabel(value);
 
   // Pre-render the option list so that JS-disabled clients still see
   // selectable choices via a fallback <datalist>. The visible listbox
   // (the ARIA one) is hidden until hydrate() unhides it.
   const datalistOptions = opts
-    .map(o => `<option value="${escapeHtml(o.value)}">${escapeHtml(o.label)}</option>`)
+    .map((o) => `<option value="${escapeHtml(o.value)}">${escapeHtml(o.label)}</option>`)
     .join('');
 
   const labelHtml = label
@@ -127,34 +132,34 @@ export function renderCombobox(options = {}) {
   // it here (with hidden) keeps DOM identity stable so hydration is
   // strictly additive (no client-side rebuild).
   return (
-    `<div data-bn="combobox" id="${id}" class="bn-cb"${themeAttr}`
-    + ` role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-owns="${listId}"`
-    + ` data-allow-create="${allowCreate ? 'true' : 'false'}">`
-    + labelHtml
-    + `<div data-bn="cb-field" class="bn-cb-field">`
-    + `<input data-bn="cb-input" id="${id}-input" class="bn-cb-input"`
-    + ` type="text" inputmode="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"`
-    + (name ? ` name="${escapeHtml(name)}"` : '')
-    + ` value="${escapeHtml(value)}"`
-    + (placeholder ? ` placeholder="${escapeHtml(placeholder)}"` : '')
-    + ` role="combobox" aria-autocomplete="list" aria-expanded="false"`
-    + ` aria-controls="${listId}"`
-    + describedBy
-    + `>`
-    + `<button type="button" data-bn="cb-toggle" class="bn-cb-toggle"`
-    + ` tabindex="-1" aria-label="Show suggestions" aria-hidden="true">`
-    + `<span aria-hidden="true">▾</span>`
-    + `</button>`
-    + `</div>`
-    + `<ul data-bn="cb-listbox" id="${listId}" class="bn-cb-listbox" role="listbox" hidden`
-    + (label ? ` aria-label="${escapeHtml(label)}"` : '')
-    + `></ul>`
+    `<div data-bn="combobox" id="${id}" class="bn-cb"${themeAttr}` +
+    ` role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-owns="${listId}"` +
+    ` data-allow-create="${allowCreate ? 'true' : 'false'}">` +
+    labelHtml +
+    `<div data-bn="cb-field" class="bn-cb-field">` +
+    `<input data-bn="cb-input" id="${id}-input" class="bn-cb-input"` +
+    ` type="text" inputmode="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"` +
+    (name ? ` name="${escapeHtml(name)}"` : '') +
+    ` value="${escapeHtml(value)}"` +
+    (placeholder ? ` placeholder="${escapeHtml(placeholder)}"` : '') +
+    ` role="combobox" aria-autocomplete="list" aria-expanded="false"` +
+    ` aria-controls="${listId}"` +
+    describedBy +
+    `>` +
+    `<button type="button" data-bn="cb-toggle" class="bn-cb-toggle"` +
+    ` tabindex="-1" aria-label="Show suggestions" aria-hidden="true">` +
+    `<span aria-hidden="true">▾</span>` +
+    `</button>` +
+    `</div>` +
+    `<ul data-bn="cb-listbox" id="${listId}" class="bn-cb-listbox" role="listbox" hidden` +
+    (label ? ` aria-label="${escapeHtml(label)}"` : '') +
+    `></ul>` +
     // Hidden datalist as no-JS fallback so the bare <input> typeahead
     // still works without our JS.
-    + `<datalist id="${id}-datalist">${datalistOptions}</datalist>`
+    `<datalist id="${id}-datalist">${datalistOptions}</datalist>` +
     // Visually-hidden live region for SR announcements.
-    + `<span data-bn="cb-live" id="${liveId}" class="bn-cb-live" aria-live="polite" aria-atomic="true"></span>`
-    + `</div>`
+    `<span data-bn="cb-live" id="${liveId}" class="bn-cb-live" aria-live="polite" aria-atomic="true"></span>` +
+    `</div>`
   );
 }
 
@@ -196,9 +201,8 @@ export function hydrateCombobox(rootEl, options = {}) {
   const onChange = typeof options.onChange === 'function' ? options.onChange : null;
   const onCreate = typeof options.onCreate === 'function' ? options.onCreate : null;
   const allowCreate = options.allowCreate === true;
-  const createLabel = typeof options.createLabel === 'function'
-    ? options.createLabel
-    : defaultCreateLabel;
+  const createLabel =
+    typeof options.createLabel === 'function' ? options.createLabel : defaultCreateLabel;
 
   let isOpen = false;
   let activeIndex = -1;
@@ -210,7 +214,7 @@ export function hydrateCombobox(rootEl, options = {}) {
   // ── Render the listbox contents based on the current query ──
   function renderList(query) {
     lastQuery = query;
-    const matches = allOptions.filter(o => filterFn(o, query));
+    const matches = allOptions.filter((o) => filterFn(o, query));
     const exact = exactLabelMatch(allOptions, query);
     const showCreate = allowCreate && query.trim().length > 0 && !exact;
 
@@ -230,33 +234,32 @@ export function hydrateCombobox(rootEl, options = {}) {
     // Build option DOM. Direct innerHTML write is fine here — content is
     // escaped, this is the same root we own, and re-rendering the small
     // popup is faster than diff-walking it.
-    const html = visibleOptions.map((entry, i) => {
-      if (entry.kind === 'create') {
+    const html = visibleOptions
+      .map((entry, i) => {
+        if (entry.kind === 'create') {
+          return (
+            `<li role="option" data-bn="cb-option" data-bn-cb-create="true"` +
+            ` id="${entry.id}" data-index="${i}"` +
+            ` aria-selected="false" class="bn-cb-option bn-cb-option--create">` +
+            `<span class="bn-cb-option-label">${escapeHtml(createLabel(entry.query))}</span>` +
+            `</li>`
+          );
+        }
+        const o = entry.option;
+        const cls = 'bn-cb-option' + (o.disabled ? ' bn-cb-option--disabled' : '');
+        const hint = o.hint ? `<span class="bn-cb-option-hint">${escapeHtml(o.hint)}</span>` : '';
         return (
-          `<li role="option" data-bn="cb-option" data-bn-cb-create="true"`
-          + ` id="${entry.id}" data-index="${i}"`
-          + ` aria-selected="false" class="bn-cb-option bn-cb-option--create">`
-          + `<span class="bn-cb-option-label">${escapeHtml(createLabel(entry.query))}</span>`
-          + `</li>`
+          `<li role="option" data-bn="cb-option" id="${entry.id}" data-index="${i}"` +
+          ` data-value="${escapeHtml(o.value)}"` +
+          (o.disabled ? ' aria-disabled="true"' : '') +
+          ` aria-selected="false" class="${cls}">` +
+          `<span class="bn-cb-option-label">${escapeHtml(o.label)}</span>${hint}` +
+          `</li>`
         );
-      }
-      const o = entry.option;
-      const cls = 'bn-cb-option' + (o.disabled ? ' bn-cb-option--disabled' : '');
-      const hint = o.hint
-        ? `<span class="bn-cb-option-hint">${escapeHtml(o.hint)}</span>`
-        : '';
-      return (
-        `<li role="option" data-bn="cb-option" id="${entry.id}" data-index="${i}"`
-        + ` data-value="${escapeHtml(o.value)}"`
-        + (o.disabled ? ' aria-disabled="true"' : '')
-        + ` aria-selected="false" class="${cls}">`
-        + `<span class="bn-cb-option-label">${escapeHtml(o.label)}</span>${hint}`
-        + `</li>`
-      );
-    }).join('');
+      })
+      .join('');
 
-    listbox.innerHTML = html
-      || `<li class="bn-cb-empty" role="presentation">No matches</li>`;
+    listbox.innerHTML = html || `<li class="bn-cb-empty" role="presentation">No matches</li>`;
 
     // Reset active index. APG: don't auto-activate on type — wait for arrow.
     activeIndex = -1;
@@ -267,7 +270,7 @@ export function hydrateCombobox(rootEl, options = {}) {
     if (visibleOptions.length === 0) {
       parts.push('No matches');
     } else {
-      const optCount = visibleOptions.filter(e => e.kind === 'opt').length;
+      const optCount = visibleOptions.filter((e) => e.kind === 'opt').length;
       parts.push(`${optCount} option${optCount === 1 ? '' : 's'} available`);
       if (showCreate) parts.push(`Press Enter to create "${query}"`);
     }
@@ -300,7 +303,11 @@ export function hydrateCombobox(rootEl, options = {}) {
     if (index >= visibleOptions.length) index = 0;
     // Skip disabled rows
     const start = index;
-    while (visibleOptions[index] && visibleOptions[index].option && visibleOptions[index].option.disabled) {
+    while (
+      visibleOptions[index] &&
+      visibleOptions[index].option &&
+      visibleOptions[index].option.disabled
+    ) {
       index = (index + 1) % visibleOptions.length;
       if (index === start) break;
     }
@@ -317,7 +324,11 @@ export function hydrateCombobox(rootEl, options = {}) {
       if (selected) {
         item.classList.add('bn-cb-option--active');
         if (typeof item.scrollIntoView === 'function') {
-          try { item.scrollIntoView({ block: 'nearest' }); } catch { /* ignore */ }
+          try {
+            item.scrollIntoView({ block: 'nearest' });
+          } catch {
+            /* ignore */
+          }
         }
       } else {
         item.classList.remove('bn-cb-option--active');
@@ -370,13 +381,21 @@ export function hydrateCombobox(rootEl, options = {}) {
     switch (e.key) {
       case 'ArrowDown': {
         e.preventDefault();
-        if (!isOpen) { setOpen(true); setActive(0); return; }
+        if (!isOpen) {
+          setOpen(true);
+          setActive(0);
+          return;
+        }
         setActive(activeIndex + 1);
         return;
       }
       case 'ArrowUp': {
         e.preventDefault();
-        if (!isOpen) { setOpen(true); setActive(visibleOptions.length - 1); return; }
+        if (!isOpen) {
+          setOpen(true);
+          setActive(visibleOptions.length - 1);
+          return;
+        }
         setActive(activeIndex - 1);
         return;
       }
@@ -504,21 +523,33 @@ export function hydrateCombobox(rootEl, options = {}) {
   return {
     destroy() {
       for (const fn of cleanups) {
-        try { fn(); } catch { /* ignore */ }
+        try {
+          fn();
+        } catch {
+          /* ignore */
+        }
       }
     },
     refresh() {
       if (isOpen) renderList(input.value);
     },
-    open() { setOpen(true); },
-    close() { setOpen(false); },
+    open() {
+      setOpen(true);
+    },
+    close() {
+      setOpen(false);
+    },
     setOptions(next) {
       allOptions = (next || []).map(normalizeOption).filter(Boolean);
       if (isOpen) renderList(input.value);
     },
     /** Test/inspection hook — current visible option entries. */
-    _getVisible() { return visibleOptions.slice(); },
-    _getQuery() { return lastQuery; },
+    _getVisible() {
+      return visibleOptions.slice();
+    },
+    _getQuery() {
+      return lastQuery;
+    },
   };
 }
 

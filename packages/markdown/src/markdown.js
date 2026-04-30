@@ -61,7 +61,11 @@ function parseInline(text) {
     }
 
     // Bold + italic ***text*** or ___text___
-    if ((text[i] === '*' || text[i] === '_') && text[i + 1] === text[i] && text[i + 2] === text[i]) {
+    if (
+      (text[i] === '*' || text[i] === '_') &&
+      text[i + 1] === text[i] &&
+      text[i + 2] === text[i]
+    ) {
       const marker = text[i];
       const end = text.indexOf(marker + marker + marker, i + 3);
       if (end !== -1) {
@@ -130,7 +134,7 @@ function parseInline(text) {
  * @param {boolean} [options.sanitize=true]  Escape HTML entities in source
  * @returns {string} HTML output
  */
-export function parse(source, options = {}) {
+export function parse(source, _options = {}) {
   const lines = source.replace(/\r\n/g, '\n').split('\n');
   const blocks = [];
   let i = 0;
@@ -146,7 +150,6 @@ export function parse(source, options = {}) {
 
     // Fenced code block
     if (line.trimStart().startsWith('```')) {
-      const indent = line.length - line.trimStart().length;
       const lang = line.trimStart().slice(3).trim();
       const codeLines = [];
       i++;
@@ -170,7 +173,10 @@ export function parse(source, options = {}) {
     if (headingMatch) {
       const level = headingMatch[1].length;
       const text = parseInline(headingMatch[2].replace(/\s+#+\s*$/, ''));
-      const slug = headingMatch[2].toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+      const slug = headingMatch[2]
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/\s+/g, '-');
       blocks.push(`<h${level} id="${slug}">${text}</h${level}>`);
       i++;
       continue;
@@ -186,7 +192,13 @@ export function parse(source, options = {}) {
     // Blockquote
     if (line.trimStart().startsWith('>')) {
       const quoteLines = [];
-      while (i < lines.length && (lines[i].trimStart().startsWith('>') || (lines[i].trim() !== '' && quoteLines.length > 0 && !lines[i].trimStart().startsWith('#')))) {
+      while (
+        i < lines.length &&
+        (lines[i].trimStart().startsWith('>') ||
+          (lines[i].trim() !== '' &&
+            quoteLines.length > 0 &&
+            !lines[i].trimStart().startsWith('#')))
+      ) {
         const ql = lines[i].replace(/^>\s?/, '');
         quoteLines.push(ql);
         i++;
@@ -223,7 +235,16 @@ export function parse(source, options = {}) {
 
     // Paragraph (collect contiguous non-blank, non-block lines)
     const paraLines = [];
-    while (i < lines.length && lines[i].trim() !== '' && !lines[i].trimStart().startsWith('#') && !lines[i].trimStart().startsWith('```') && !/^(\*{3,}|-{3,}|_{3,})\s*$/.test(lines[i].trim()) && !lines[i].trimStart().startsWith('>') && !/^[\s]*[-*+]\s/.test(lines[i]) && !/^[\s]*\d+\.\s/.test(lines[i])) {
+    while (
+      i < lines.length &&
+      lines[i].trim() !== '' &&
+      !lines[i].trimStart().startsWith('#') &&
+      !lines[i].trimStart().startsWith('```') &&
+      !/^(\*{3,}|-{3,}|_{3,})\s*$/.test(lines[i].trim()) &&
+      !lines[i].trimStart().startsWith('>') &&
+      !/^[\s]*[-*+]\s/.test(lines[i]) &&
+      !/^[\s]*\d+\.\s/.test(lines[i])
+    ) {
       paraLines.push(lines[i]);
       i++;
     }
@@ -260,7 +281,10 @@ export function parseFrontmatter(source) {
     const colonIndex = line.indexOf(':');
     if (colonIndex !== -1) {
       const key = line.slice(0, colonIndex).trim();
-      const value = line.slice(colonIndex + 1).trim().replace(/^["']|["']$/g, '');
+      const value = line
+        .slice(colonIndex + 1)
+        .trim()
+        .replace(/^["']|["']$/g, '');
       meta[key] = value;
     }
   }

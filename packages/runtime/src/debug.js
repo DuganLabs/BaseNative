@@ -14,7 +14,7 @@
  *   // → [BN:debug] signal:count set (1)
  */
 
-import { signal, effect } from './signals.js';
+import { effect } from './signals.js';
 
 let _debugEnabled = false;
 let _label = '';
@@ -162,7 +162,9 @@ export function debugTime(label, fn) {
   try {
     result = fn();
   } finally {
-    const ms = ((typeof performance !== 'undefined' ? performance.now() : Date.now()) - start).toFixed(2);
+    const ms = (
+      (typeof performance !== 'undefined' ? performance.now() : Date.now()) - start
+    ).toFixed(2);
     log('info', `⏱ ${label}: ${ms}ms`);
   }
   return result;

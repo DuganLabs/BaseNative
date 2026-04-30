@@ -89,7 +89,7 @@ describe('createPluginRegistry', () => {
 
   it('custom directives can be registered and retrieved', () => {
     const registry = createPluginRegistry();
-    const handler = (el, value) => {};
+    const handler = (_el, _value) => {};
 
     registry.register(
       definePlugin({

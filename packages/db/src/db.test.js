@@ -25,11 +25,7 @@ describe('query builder', () => {
   });
 
   it('builds select with order, limit, offset', () => {
-    const q = select('users')
-      .orderBy('name', 'ASC')
-      .limit(10)
-      .offset(20)
-      .build();
+    const q = select('users').orderBy('name', 'ASC').limit(10).offset(20).build();
     assert.equal(q.sql, 'SELECT * FROM users ORDER BY name ASC LIMIT 10 OFFSET 20');
   });
 
@@ -38,13 +34,14 @@ describe('query builder', () => {
       .columns('users.name', 'orders.total')
       .join('orders', 'orders.user_id = users.id')
       .build();
-    assert.equal(q.sql, 'SELECT users.name, orders.total FROM users JOIN orders ON orders.user_id = users.id');
+    assert.equal(
+      q.sql,
+      'SELECT users.name, orders.total FROM users JOIN orders ON orders.user_id = users.id',
+    );
   });
 
   it('builds select with left join', () => {
-    const q = select('users')
-      .leftJoin('profiles', 'profiles.user_id = users.id')
-      .build();
+    const q = select('users').leftJoin('profiles', 'profiles.user_id = users.id').build();
     assert.equal(q.sql, 'SELECT * FROM users LEFT JOIN profiles ON profiles.user_id = users.id');
   });
 
@@ -57,26 +54,18 @@ describe('query builder', () => {
   });
 
   it('builds insert with returning', () => {
-    const q = insert('users')
-      .values({ name: 'Alice' })
-      .returning('id', 'name')
-      .build();
+    const q = insert('users').values({ name: 'Alice' }).returning('id', 'name').build();
     assert.equal(q.sql, 'INSERT INTO users (name) VALUES (?) RETURNING id, name');
   });
 
   it('builds update', () => {
-    const q = update('users')
-      .set({ name: 'Bob', status: 'inactive' })
-      .where('id = ?', 1)
-      .build();
+    const q = update('users').set({ name: 'Bob', status: 'inactive' }).where('id = ?', 1).build();
     assert.equal(q.sql, 'UPDATE users SET name = ?, status = ? WHERE id = ?');
     assert.deepEqual(q.params, ['Bob', 'inactive', 1]);
   });
 
   it('builds delete', () => {
-    const q = deleteFrom('users')
-      .where('id = ?', 42)
-      .build();
+    const q = deleteFrom('users').where('id = ?', 42).build();
     assert.equal(q.sql, 'DELETE FROM users WHERE id = ?');
     assert.deepEqual(q.params, [42]);
   });
@@ -99,10 +88,7 @@ describe('query builder', () => {
   });
 
   it('select with multiple orderBy columns', () => {
-    const q = select('posts')
-      .orderBy('created_at', 'DESC')
-      .orderBy('title', 'ASC')
-      .build();
+    const q = select('posts').orderBy('created_at', 'DESC').orderBy('title', 'ASC').build();
     assert.match(q.sql, /ORDER BY created_at DESC, title ASC/);
   });
 
@@ -279,11 +265,7 @@ describe('migrate', () => {
   });
 
   function makeAdapter() {
-    // In-memory SQLite-like adapter using maps
-    const tables = new Map();
-    const migTable = '_migrations';
-
-    async function execute(sql, params = []) {
+    async function execute() {
       // Minimal in-memory adapter
     }
 
@@ -294,7 +276,7 @@ describe('migrate', () => {
       return { rows: [] };
     }
 
-    async function queryOne(sql) {
+    async function queryOne() {
       return null;
     }
 
@@ -342,9 +324,15 @@ describe('rollback', () => {
   it('returns rolled_back:null when no migrations applied', async () => {
     const adapter = {
       async execute() {},
-      async query() { return { rows: [] }; },
-      async queryOne() { return null; },
-      async transaction(fn) { await fn({ execute: async () => {}, query: async () => ({ rows: [] }) }); },
+      async query() {
+        return { rows: [] };
+      },
+      async queryOne() {
+        return null;
+      },
+      async transaction(fn) {
+        await fn({ execute: async () => {}, query: async () => ({ rows: [] }) });
+      },
     };
     const tmpDir = mkdtempSync(join(tmpdir(), 'bn-rb-'));
     try {

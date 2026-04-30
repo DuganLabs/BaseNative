@@ -17,9 +17,15 @@ class MockIntersectionObserver {
     this._elements = new Set();
     MockIntersectionObserver._instances.push(this);
   }
-  observe(el) { this._elements.add(el); }
-  unobserve(el) { this._elements.delete(el); }
-  disconnect() { this._elements.clear(); }
+  observe(el) {
+    this._elements.add(el);
+  }
+  unobserve(el) {
+    this._elements.delete(el);
+  }
+  disconnect() {
+    this._elements.clear();
+  }
 
   /** Simulate entries becoming visible. */
   _trigger(entries) {
@@ -34,7 +40,7 @@ function makeElement(tag = 'div') {
   const listeners = {};
   return {
     tagName: tag.toUpperCase(),
-    addEventListener(evt, fn, opts) {
+    addEventListener(evt, fn) {
       listeners[evt] = listeners[evt] || [];
       listeners[evt].push(fn);
     },
@@ -91,7 +97,9 @@ describe('createLazyHydrator', () => {
     const h = createLazyHydrator();
     const el = makeElement();
     let called = false;
-    h.observe(el, () => { called = true; });
+    h.observe(el, () => {
+      called = true;
+    });
 
     const io = MockIntersectionObserver._instances[0];
     io._trigger([{ target: el, isIntersecting: true }]);
@@ -103,7 +111,9 @@ describe('createLazyHydrator', () => {
     const h = createLazyHydrator();
     const el = makeElement();
     let count = 0;
-    h.observe(el, () => { count++; });
+    h.observe(el, () => {
+      count++;
+    });
 
     const io = MockIntersectionObserver._instances[0];
     io._trigger([{ target: el, isIntersecting: true }]);
@@ -115,7 +125,9 @@ describe('createLazyHydrator', () => {
     const h = createLazyHydrator();
     const el = makeElement();
     let called = false;
-    h.observe(el, () => { called = true; });
+    h.observe(el, () => {
+      called = true;
+    });
     h.hydrateNow(el);
     assert.equal(called, true);
     assert.equal(h.getPending(), 0);
@@ -135,7 +147,9 @@ describe('createLazyHydrator', () => {
     const h = createLazyHydrator();
     const el = makeElement();
     let called = false;
-    h.observe(el, () => { called = true; });
+    h.observe(el, () => {
+      called = true;
+    });
     assert.equal(called, true);
     assert.equal(h.getPending(), 0);
   });
@@ -145,7 +159,9 @@ describe('lazyHydrate', () => {
   it('hydrates element via convenience wrapper', () => {
     const el = makeElement();
     let called = false;
-    const h = lazyHydrate(el, () => { called = true; });
+    lazyHydrate(el, () => {
+      called = true;
+    });
     const io = MockIntersectionObserver._instances[0];
     io._trigger([{ target: el, isIntersecting: true }]);
     assert.equal(called, true);
@@ -155,10 +171,15 @@ describe('lazyHydrate', () => {
 describe('hydrateOnIdle', () => {
   it('schedules callback via requestIdleCallback', () => {
     let captured = null;
-    globalThis.requestIdleCallback = (fn) => { captured = fn; return 42; };
+    globalThis.requestIdleCallback = (fn) => {
+      captured = fn;
+      return 42;
+    };
     globalThis.cancelIdleCallback = () => {};
     let called = false;
-    hydrateOnIdle(() => { called = true; });
+    hydrateOnIdle(() => {
+      called = true;
+    });
     assert.equal(typeof captured, 'function');
     captured();
     assert.equal(called, true);
@@ -176,8 +197,7 @@ describe('hydrateOnIdle', () => {
 describe('hydrateOnInteraction', () => {
   it('sets up event listeners on the element', () => {
     const el = makeElement();
-    let called = false;
-    hydrateOnInteraction(el, () => { called = true; });
+    hydrateOnInteraction(el, () => {});
     assert.ok(el._listeners['click']?.length > 0);
     assert.ok(el._listeners['focus']?.length > 0);
     assert.ok(el._listeners['mouseenter']?.length > 0);
@@ -186,7 +206,9 @@ describe('hydrateOnInteraction', () => {
   it('hydrates on first interaction and cleans up', () => {
     const el = makeElement();
     let count = 0;
-    hydrateOnInteraction(el, () => { count++; });
+    hydrateOnInteraction(el, () => {
+      count++;
+    });
     el._fire('click');
     assert.equal(count, 1);
     // Second fire should not call again
@@ -211,7 +233,9 @@ describe('hydrateOnMedia', () => {
       removeEventListener() {},
     });
     let called = false;
-    hydrateOnMedia(() => { called = true; }, '(min-width: 768px)');
+    hydrateOnMedia(() => {
+      called = true;
+    }, '(min-width: 768px)');
     assert.equal(called, true);
     globalThis.matchMedia = origMatchMedia;
   });
@@ -221,12 +245,16 @@ describe('hydrateOnMedia', () => {
     let changeHandler;
     const mql = {
       matches: false,
-      addEventListener(evt, fn) { changeHandler = fn; },
+      addEventListener(evt, fn) {
+        changeHandler = fn;
+      },
       removeEventListener() {},
     };
     globalThis.matchMedia = () => mql;
     let called = false;
-    hydrateOnMedia(() => { called = true; }, '(min-width: 768px)');
+    hydrateOnMedia(() => {
+      called = true;
+    }, '(min-width: 768px)');
     assert.equal(called, false);
     mql.matches = true;
     changeHandler();
@@ -255,7 +283,9 @@ describe('hydrateOnInteraction — additional', () => {
   it('hydrates on focus event', () => {
     const el = makeElement();
     let called = false;
-    hydrateOnInteraction(el, () => { called = true; });
+    hydrateOnInteraction(el, () => {
+      called = true;
+    });
     el._fire('focus');
     assert.equal(called, true);
   });
@@ -263,7 +293,9 @@ describe('hydrateOnInteraction — additional', () => {
   it('hydrates on mouseenter event', () => {
     const el = makeElement();
     let called = false;
-    hydrateOnInteraction(el, () => { called = true; });
+    hydrateOnInteraction(el, () => {
+      called = true;
+    });
     el._fire('mouseenter');
     assert.equal(called, true);
   });
@@ -278,7 +310,9 @@ describe('hydrateOnMedia — additional', () => {
       removeEventListener() {},
     });
     let count = 0;
-    hydrateOnMedia(() => { count++; }, '(prefers-color-scheme: dark)');
+    hydrateOnMedia(() => {
+      count++;
+    }, '(prefers-color-scheme: dark)');
     assert.equal(count, 1);
     globalThis.matchMedia = origMatchMedia;
   });

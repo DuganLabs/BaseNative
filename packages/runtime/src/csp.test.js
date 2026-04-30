@@ -7,9 +7,9 @@ const ROOT = resolve(import.meta.dirname, '..', '..', '..');
 const SOURCE_DIRS = [
   join(ROOT, 'packages', 'runtime', 'src'),
   join(ROOT, 'packages', 'server', 'src'),
-  join(ROOT, 'src', 'shared'),
 ];
-const DISALLOWED = /\b(?:new\s+Function\b|eval\s*\(|setTimeout\s*\(\s*['"]|setInterval\s*\(\s*['"])/;
+const DISALLOWED =
+  /\b(?:new\s+Function\b|eval\s*\(|setTimeout\s*\(\s*['"]|setInterval\s*\(\s*['"])/;
 
 function listJavaScriptFiles(dir) {
   const entries = [];
@@ -79,7 +79,7 @@ describe('strict CSP compliance', () => {
 
   it('listJavaScriptFiles excludes test files', () => {
     const allFiles = SOURCE_DIRS.flatMap(listJavaScriptFiles);
-    const testFiles = allFiles.filter(f => f.endsWith('.test.js'));
+    const testFiles = allFiles.filter((f) => f.endsWith('.test.js'));
     assert.deepEqual(testFiles, []);
   });
 

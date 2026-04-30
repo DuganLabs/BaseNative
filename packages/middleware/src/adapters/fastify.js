@@ -13,7 +13,7 @@
 export function toFastifyPlugin(pipeline) {
   return function baseNativePlugin(fastify, opts, done) {
     fastify.addHook('preHandler', async (request, reply) => {
-      const ctx = createFastifyContext(request, reply);
+      const ctx = createFastifyContext(request);
 
       await pipeline.run(ctx);
 
@@ -53,7 +53,7 @@ export function toFastifyPlugin(pipeline) {
  * @param {object} reply - Fastify Reply
  * @returns {object} Common middleware context
  */
-function createFastifyContext(request, reply) {
+function createFastifyContext(request) {
   return {
     request: {
       method: request.method,

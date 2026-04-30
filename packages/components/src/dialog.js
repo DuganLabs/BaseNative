@@ -6,7 +6,6 @@ export function renderDialog(options = {}) {
     title,
     content = '',
     open = false,
-    modal = true,
     closable = true,
     size = 'default',
     footer = '',

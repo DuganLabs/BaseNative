@@ -108,7 +108,9 @@ describe('sseMiddleware', () => {
     const req = { headers: { accept: 'application/json' }, url: '/api' };
     const res = mockResponse();
     let nextCalled = false;
-    mw(req, res, () => { nextCalled = true; });
+    mw(req, res, () => {
+      nextCalled = true;
+    });
     assert.ok(nextCalled);
     assert.equal(sse.getClients().length, 0);
     sse.close();
@@ -180,7 +182,9 @@ describe('createWSHandler', () => {
   it('handles a connection and calls onConnect', () => {
     let connected = null;
     const handler = createWSHandler({
-      onConnect: (conn) => { connected = conn; },
+      onConnect: (conn) => {
+        connected = conn;
+      },
     });
     const ws = mockWS();
     const conn = handler.handleConnection(ws, { url: '/ws' });
@@ -193,7 +197,9 @@ describe('createWSHandler', () => {
   it('handles messages with JSON parsing', () => {
     const messages = [];
     const handler = createWSHandler({
-      onMessage: (conn, data) => { messages.push(data); },
+      onMessage: (conn, data) => {
+        messages.push(data);
+      },
     });
     const ws = mockWS();
     handler.handleConnection(ws, {});
@@ -237,7 +243,9 @@ describe('createWSHandler', () => {
   it('calls onClose when connection closes', () => {
     let closed = null;
     const handler = createWSHandler({
-      onClose: (conn) => { closed = conn; },
+      onClose: (conn) => {
+        closed = conn;
+      },
     });
     const ws = mockWS();
     const conn = handler.handleConnection(ws, {});
@@ -259,7 +267,9 @@ describe('createWSHandler', () => {
   it('calls onError with error object', () => {
     let errorInfo = null;
     const handler = createWSHandler({
-      onError: (conn, err) => { errorInfo = { conn, err }; },
+      onError: (conn, err) => {
+        errorInfo = { conn, err };
+      },
     });
     const ws = mockWS();
     handler.handleConnection(ws, {});
@@ -274,7 +284,9 @@ describe('createWSHandler', () => {
     const messages = [];
     const handler = createWSHandler({
       parseJSON: false,
-      onMessage: (conn, data) => { messages.push(data); },
+      onMessage: (conn, data) => {
+        messages.push(data);
+      },
     });
     const ws = mockWS();
     handler.handleConnection(ws, {});
@@ -286,7 +298,9 @@ describe('createWSHandler', () => {
   it('falls back to raw string on invalid JSON when parseJSON is true', () => {
     const messages = [];
     const handler = createWSHandler({
-      onMessage: (conn, data) => { messages.push(data); },
+      onMessage: (conn, data) => {
+        messages.push(data);
+      },
     });
     const ws = mockWS();
     handler.handleConnection(ws, {});
@@ -365,7 +379,7 @@ describe('createSSEServer — edge cases', () => {
   it('formats multi-line data as multiple data: lines', () => {
     const sse = createSSEServer({ heartbeatInterval: 0 });
     const res = mockResponse();
-    const id = sse.addClient(res, { id: 'ml' });
+    sse.addClient(res, { id: 'ml' });
     sse.send('ml', 'note', 'line1\nline2');
     const allChunks = res.chunks.join('');
     assert.ok(allChunks.includes('data: line1'));
@@ -473,7 +487,7 @@ describe('createWSHandler — additional', () => {
     const ws2 = mockWS();
     const c1 = handler.handleConnection(ws1, {});
     const c2 = handler.handleConnection(ws2, {});
-    const ids = handler.getConnections().map(c => c.id);
+    const ids = handler.getConnections().map((c) => c.id);
     assert.ok(ids.includes(c1.id));
     assert.ok(ids.includes(c2.id));
     handler.close();
@@ -490,7 +504,9 @@ describe('createWSHandler — additional', () => {
 
   it('onConnect error is swallowed and connection still added', () => {
     const handler = createWSHandler({
-      onConnect: () => { throw new Error('connect error'); },
+      onConnect: () => {
+        throw new Error('connect error');
+      },
     });
     const ws = mockWS();
     const conn = handler.handleConnection(ws, {});
@@ -514,7 +530,9 @@ describe('createWSHandler — send and broadcast', () => {
   it('send returns true on success', () => {
     const sent = [];
     const ws = mockWS();
-    ws.send = (d) => { sent.push(d); };
+    ws.send = (d) => {
+      sent.push(d);
+    };
     const handler = createWSHandler();
     const conn = handler.handleConnection(ws, {});
     const result = handler.send(conn.id, 'hello');
@@ -544,7 +562,9 @@ describe('createWSHandler — send and broadcast', () => {
   it('broadcast serializes object to JSON', () => {
     const received = [];
     const ws = mockWS();
-    ws.send = (d) => { received.push(d); };
+    ws.send = (d) => {
+      received.push(d);
+    };
     const handler = createWSHandler();
     handler.handleConnection(ws, {});
     handler.broadcast({ type: 'event' });
