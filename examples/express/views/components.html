@@ -12,6 +12,27 @@
   </nav>
 </section>
 
+<search data-bn-component-search role="search" aria-label="Filter components">
+  <label for="components-q" data-bn-visually-hidden>Search components</label>
+  <input
+    id="components-q"
+    type="search"
+    data-bn-component-q
+    placeholder="Search components (e.g. button, dialog, tree…)"
+    autocomplete="off"
+    spellcheck="false"
+  />
+  <nav data-bn-component-filters aria-label="Filter by category">
+    <button type="button" data-bn-component-filter="all" aria-pressed="true">All</button>
+    <template @for="cat of categories; track cat.id">
+      <button type="button" data-bn-component-filter="{{ cat.id }}" aria-pressed="false">{{ cat.title }}</button>
+    </template>
+  </nav>
+  <p data-bn-component-empty role="status" aria-live="polite">
+    No components match. <button type="button" data-bn-component-reset>Reset filters</button>
+  </p>
+</search>
+
 <nav data-bn-component-toc aria-label="Component categories">
   <template @for="cat of categories; track cat.id">
     <a href="#cat-{{ cat.id }}">{{ cat.title }}</a>
@@ -19,7 +40,7 @@
 </nav>
 
 <template @for="cat of categories; track cat.id">
-  <section data-bn-component-category id="cat-{{ cat.id }}">
+  <section data-bn-component-category id="cat-{{ cat.id }}" data-bn-category="{{ cat.id }}">
     <header data-bn-component-category-head>
       <h2>{{ cat.title }}</h2>
       <p>{{ cat.summary }}</p>
@@ -27,7 +48,11 @@
 
     <ul role="list" data-bn-component-grid>
       <template @for="comp of cat.components; track comp.slug">
-        <li>
+        <li
+          data-bn-component-card-host
+          data-bn-slug="{{ comp.slug }}"
+          data-bn-search="{{ comp.slug }} {{ comp.title }} {{ comp.tag }} {{ comp.summary }}"
+        >
           <a href="/components/{{ comp.slug }}" data-bn-component-card>
             <header>
               <h3>{{ comp.title }}</h3>
@@ -66,3 +91,51 @@
     </li>
   </ol>
 </section>
+
+<script type="module">
+  const ROOT = document.documentElement;
+  const input = document.querySelector('[data-bn-component-q]');
+  const cards = document.querySelectorAll('[data-bn-component-card-host]');
+  const cats = document.querySelectorAll('[data-bn-component-category]');
+  const filterBtns = document.querySelectorAll('[data-bn-component-filter]');
+  const reset = document.querySelector('[data-bn-component-reset]');
+
+  let activeCat = 'all';
+  let activeQ = '';
+
+  const apply = () => {
+    const q = activeQ.trim().toLowerCase();
+    let visibleTotal = 0;
+    for (const card of cards) {
+      const haystack = (card.getAttribute('data-bn-search') || '').toLowerCase();
+      const inCat = activeCat === 'all' || card.closest('[data-bn-category]')?.dataset.bnCategory === activeCat;
+      const matchQ = !q || haystack.includes(q);
+      const visible = inCat && matchQ;
+      card.toggleAttribute('hidden', !visible);
+      if (visible) visibleTotal++;
+    }
+    for (const cat of cats) {
+      const visible = cat.querySelectorAll('[data-bn-component-card-host]:not([hidden])').length > 0;
+      cat.toggleAttribute('hidden', !visible);
+    }
+    ROOT.toggleAttribute('data-bn-no-results', visibleTotal === 0);
+  };
+
+  input?.addEventListener('input', () => { activeQ = input.value; apply(); });
+  for (const btn of filterBtns) {
+    btn.addEventListener('click', () => {
+      for (const b of filterBtns) b.setAttribute('aria-pressed', 'false');
+      btn.setAttribute('aria-pressed', 'true');
+      activeCat = btn.getAttribute('data-bn-component-filter') || 'all';
+      apply();
+    });
+  }
+  reset?.addEventListener('click', () => {
+    if (input) input.value = '';
+    activeQ = '';
+    activeCat = 'all';
+    for (const b of filterBtns) b.setAttribute('aria-pressed', String(b.getAttribute('data-bn-component-filter') === 'all'));
+    apply();
+    input?.focus();
+  });
+</script>

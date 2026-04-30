@@ -19,6 +19,13 @@ ready(() => {
   wireVirtualList();
   wireCounter();
   wireClock();
+  wireLiveCounter();
+  wireLiveValidate();
+  wireLiveProgress();
+  wireThemePicker();
+  wireSourceCopy();
+  wireShowcaseFilter();
+  wireShowcaseToc();
 });
 
 function wireTabs() {
@@ -332,7 +339,7 @@ function wireToastButtons(toaster) {
 }
 
 function wireCounter() {
-  const root = document.querySelector('[data-showcase-counter]');
+  const root = document.querySelector('[data-bn-counter-readout]');
   if (!root) return;
 
   const count = signal(0);
@@ -343,18 +350,19 @@ function wireCounter() {
   effect(() => {
     const n = count();
     if (valueEl) valueEl.textContent = String(n);
-    if (doubledEl) doubledEl.textContent = `doubled: ${n * 2}`;
+    if (doubledEl) doubledEl.textContent = String(n * 2);
     if (parityEl) {
-      parityEl.textContent = n % 2 === 0 ? 'even' : 'odd';
-      parityEl.dataset.parity = n % 2 === 0 ? 'even' : 'odd';
+      const p = n % 2 === 0 ? 'even' : 'odd';
+      parityEl.textContent = p;
+      parityEl.dataset.parity = p;
     }
   });
 
-  root
-    .querySelector('[data-bn-action="counter-inc"]')
+  document
+    .querySelector('[data-bn-action="cc-inc"]')
     ?.addEventListener('click', () => count.set((c) => c + 1));
-  root
-    .querySelector('[data-bn-action="counter-dec"]')
+  document
+    .querySelector('[data-bn-action="cc-dec"]')
     ?.addEventListener('click', () => count.set((c) => c - 1));
 }
 
@@ -366,6 +374,182 @@ function wireClock() {
     el.textContent = time().toLocaleTimeString();
   });
   setInterval(() => time.set(new Date()), 1000);
+}
+
+function wireLiveCounter() {
+  const out = document.querySelector('[data-bn-live-counter]');
+  if (!out) return;
+  const count = signal(0);
+  effect(() => {
+    out.textContent = String(count());
+  });
+  document
+    .querySelector('[data-bn-action="counter-inc"]')
+    ?.addEventListener('click', () => count.set((c) => c + 1));
+  document
+    .querySelector('[data-bn-action="counter-dec"]')
+    ?.addEventListener('click', () => count.set((c) => c - 1));
+  document
+    .querySelector('[data-bn-action="counter-reset"]')
+    ?.addEventListener('click', () => count.set(0));
+}
+
+function wireLiveValidate() {
+  const feedback = document.querySelector('[data-bn-live-validate-feedback]');
+  if (!feedback) return;
+  const input = document.querySelector('input[name="live-username"]');
+  if (!input) return;
+  input.setAttribute('minlength', '3');
+  input.setAttribute('maxlength', '20');
+  const min = 3;
+  const max = 20;
+  const value = signal(input.value);
+  effect(() => {
+    const v = value();
+    if (v.length === 0) {
+      feedback.textContent = '';
+      input.removeAttribute('aria-invalid');
+      feedback.removeAttribute('data-bn-state');
+      return;
+    }
+    if (v.length < min) {
+      feedback.textContent = `Need at least ${min} characters (have ${v.length}).`;
+      input.setAttribute('aria-invalid', 'true');
+      feedback.setAttribute('data-bn-state', 'error');
+    } else if (v.length > max) {
+      feedback.textContent = `Too long — max ${max}.`;
+      input.setAttribute('aria-invalid', 'true');
+      feedback.setAttribute('data-bn-state', 'error');
+    } else {
+      feedback.textContent = `Looks good (${v.length}/${max}).`;
+      input.setAttribute('aria-invalid', 'false');
+      feedback.setAttribute('data-bn-state', 'ok');
+    }
+  });
+  input.addEventListener('input', () => value.set(input.value));
+}
+
+function wireLiveProgress() {
+  const toggle = document.querySelector('[data-bn-action="progress-toggle"]');
+  const bar = toggle
+    ?.closest('[data-bn-showcase-demo]')
+    ?.querySelector('progress[data-bn="progress"]');
+  if (!bar) return;
+  const v = signal(0);
+  const running = signal(true);
+  effect(() => {
+    bar.value = v();
+  });
+  let id = null;
+  const start = () => {
+    if (id) return;
+    id = setInterval(() => v.set((p) => (p + 5) % 105), 200);
+  };
+  const stop = () => {
+    if (!id) return;
+    clearInterval(id);
+    id = null;
+  };
+  effect(() => {
+    if (running()) start();
+    else stop();
+  });
+  document.querySelector('[data-bn-action="progress-toggle"]')?.addEventListener('click', () => {
+    running.set((r) => !r);
+  });
+  document.querySelector('[data-bn-action="progress-reset"]')?.addEventListener('click', () => {
+    v.set(0);
+  });
+}
+
+function wireThemePicker() {
+  const root = document.documentElement;
+  const original = getComputedStyle(root).getPropertyValue('--accent').trim();
+  for (const btn of document.querySelectorAll('[data-bn-action="theme"]')) {
+    btn.addEventListener('click', () => {
+      const accent = btn.getAttribute('data-bn-accent');
+      if (accent) root.style.setProperty('--accent', accent);
+      else root.style.setProperty('--accent', original);
+    });
+  }
+}
+
+function wireSourceCopy() {
+  for (const btn of document.querySelectorAll('[data-bn-action="copy-code"]')) {
+    btn.addEventListener('click', async () => {
+      const pre = btn.parentElement?.querySelector('pre code');
+      if (!pre) return;
+      try {
+        await navigator.clipboard.writeText(pre.textContent || '');
+        const prev = btn.textContent;
+        btn.textContent = 'Copied ✓';
+        btn.setAttribute('data-bn-copied', '');
+        setTimeout(() => {
+          btn.textContent = prev;
+          btn.removeAttribute('data-bn-copied');
+        }, 1400);
+      } catch {
+        btn.textContent = 'Copy failed';
+      }
+    });
+  }
+}
+
+function wireShowcaseFilter() {
+  const input = document.querySelector('[data-bn-showcase-q]');
+  const clear = document.querySelector('[data-bn-showcase-clear]');
+  if (!input) return;
+  const sections = [...document.querySelectorAll('[data-bn-showcase-section]')];
+  const tocLinks = [...document.querySelectorAll('[data-bn-showcase-toc-link]')];
+  const root = document.documentElement;
+  const apply = () => {
+    const q = input.value.trim().toLowerCase();
+    let visible = 0;
+    for (const sec of sections) {
+      const title = (sec.getAttribute('data-bn-title') || '').toLowerCase();
+      const cat = (sec.getAttribute('data-bn-category') || '').toLowerCase();
+      const captions = [...sec.querySelectorAll('figcaption')]
+        .map((f) => f.textContent.toLowerCase())
+        .join(' ');
+      const match = !q || title.includes(q) || cat.includes(q) || captions.includes(q);
+      sec.toggleAttribute('hidden', !match);
+      if (match) visible++;
+    }
+    for (const link of tocLinks) {
+      const id = link.getAttribute('data-bn-target');
+      const target = id && document.getElementById(id);
+      link.toggleAttribute('hidden', !target || target.hasAttribute('hidden'));
+    }
+    root.toggleAttribute('data-bn-showcase-empty', visible === 0);
+  };
+  input.addEventListener('input', apply);
+  clear?.addEventListener('click', () => {
+    input.value = '';
+    apply();
+    input.focus();
+  });
+}
+
+function wireShowcaseToc() {
+  const links = document.querySelectorAll('[data-bn-showcase-toc-link]');
+  if (links.length === 0) return;
+  const sections = [...document.querySelectorAll('[data-bn-showcase-section]')];
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          for (const link of links) {
+            if (link.getAttribute('data-bn-target') === id)
+              link.setAttribute('aria-current', 'true');
+            else link.removeAttribute('aria-current');
+          }
+        }
+      }
+    },
+    { rootMargin: '-30% 0px -60% 0px' },
+  );
+  for (const sec of sections) observer.observe(sec);
 }
 
 function wireVirtualList() {
