@@ -1,296 +1,329 @@
-<section>
-  <hgroup data-showcase-hero>
-    <h2>Component <em>Showcase</em></h2>
-    <p>
-      Every component in the BaseNative design system, server-rendered and signal-hydrated. Every
-      section is a live render call &mdash; no mockups, no screenshots, no separate framework.
+<article data-bn-showcase>
+  <header data-bn-showcase-header>
+    <p data-bn-eyebrow>Live gallery</p>
+    <h2>Component <em>showcase</em></h2>
+    <p data-bn-lede>
+      Every component, server-rendered and interactive. Each section below is a real
+      <code>render*()</code> call from <code>@basenative/components</code> — there are no mockups,
+      no static screenshots, and no virtual DOM.
     </p>
-  </hgroup>
-  <nav data-showcase-toc aria-label="Showcase sections">
-    <a href="#buttons">Buttons</a>
-    <a href="#badges">Badges</a>
-    <a href="#avatars">Avatars</a>
-    <a href="#forms">Forms</a>
-    <a href="#feedback">Feedback</a>
-    <a href="#layout">Layout</a>
-    <a href="#navigation">Navigation</a>
-    <a href="#data">Data</a>
-    <a href="#overlays">Overlays</a>
-    <a href="#runtime">Runtime</a>
-    <a href="#packages">Packages</a>
-  </nav>
-</section>
-
-<section id="buttons">
-  <h2>Buttons</h2>
-  <article>
-    <header><h3>Variants</h3></header>
-    <nav data-showcase-row>{{ buttons }}</nav>
-  </article>
-</section>
-
-<section id="badges">
-  <h2>Badges</h2>
-  <article>
-    <header><h3>Variants</h3></header>
-    <nav data-showcase-row>{{ badges }}</nav>
-  </article>
-</section>
-
-<section id="avatars">
-  <h2>Avatars</h2>
-  <article>
-    <header><h3>Sizes and fallbacks</h3></header>
-    <nav data-showcase-row>{{ avatars }}</nav>
-  </article>
-</section>
-
-<section id="forms">
-  <h2>Form <em>Controls</em></h2>
-  <article>
-    <header><h3>Inputs</h3></header>
-    <div data-showcase-form>{{ inputDefault }} {{ inputError }}</div>
-  </article>
-  <article>
-    <header><h3>Textarea</h3></header>
-    <div data-showcase-form>{{ textarea }}</div>
-  </article>
-  <article>
-    <header><h3>Select</h3></header>
-    <div data-showcase-form>{{ select }}</div>
-  </article>
-  <article>
-    <header><h3>Combobox</h3></header>
-    <div data-showcase-form>{{ combobox }}</div>
-  </article>
-  <article>
-    <header><h3>Multiselect</h3></header>
-    <div data-showcase-form>{{ multiselect }}</div>
-  </article>
-  <article>
-    <header><h3>Checkbox, radio, toggle</h3></header>
-    <div data-showcase-form>{{ checkbox }} {{ radioGroup }} {{ toggle }}</div>
-  </article>
-</section>
-
-<section id="feedback">
-  <h2>Feedback</h2>
-  <article>
-    <header><h3>Alerts</h3></header>
-    <div data-showcase-stack>
-      {{ alertInfo }} {{ alertSuccess }} {{ alertWarning }} {{ alertError }}
-    </div>
-  </article>
-  <article>
-    <header><h3>Progress</h3></header>
-    {{ progress }}
-  </article>
-  <article>
-    <header><h3>Spinner</h3></header>
-    <nav data-showcase-row>{{ spinner }} {{ spinnerLg }}</nav>
-  </article>
-  <article>
-    <header><h3>Skeleton</h3></header>
-    {{ skeleton }}
-  </article>
-  <article>
-    <header><h3>Toast</h3></header>
-    <p>Trigger a live toast notification from a signal-driven container.</p>
-    <nav data-showcase-row>
-      <button
-        data-bn="button"
-        data-variant="primary"
-        data-bn-action="toast"
-        data-bn-variant="success"
-        data-bn-message="Saved successfully"
-      >
-        Show success
-      </button>
-      <button
-        data-bn="button"
-        data-variant="secondary"
-        data-bn-action="toast"
-        data-bn-variant="info"
-        data-bn-message="New build available"
-      >
-        Show info
-      </button>
-      <button
-        data-bn="button"
-        data-variant="destructive"
-        data-bn-action="toast"
-        data-bn-variant="error"
-        data-bn-message="Failed to publish"
-      >
-        Show error
-      </button>
+    <nav data-bn-showcase-actions aria-label="Quick links">
+      <a href="/components" data-bn-cta="primary">Browse the catalog →</a>
+      <a href="/playground" data-bn-cta="secondary">Open the playground</a>
     </nav>
-  </article>
-</section>
+  </header>
 
-<section id="layout">
-  <h2>Cards <em>&amp; Layout</em></h2>
-  <article>
-    <header><h3>Card</h3></header>
-    <div data-showcase-card>{{ card }}</div>
-  </article>
-  <article>
-    <header><h3>Accordion</h3></header>
-    <div data-showcase-form>{{ accordion }}</div>
-  </article>
-  <article>
-    <header><h3>Tabs</h3></header>
-    {{ tabs }}
-  </article>
-  <article>
-    <header><h3>Layout grid</h3></header>
-    <p>
-      From <code>@basenative/components</code>, a flex grid that wraps to a column on small
-      viewports.
-    </p>
-    {{ layoutGrid }}
-  </article>
-</section>
+  <aside data-bn-showcase-toc aria-label="Showcase sections">
+    <h3>Sections</h3>
+    <nav>
+      <ol>
+        <li><a href="#sec-buttons">Buttons</a></li>
+        <li><a href="#sec-badges">Badges &amp; avatars</a></li>
+        <li><a href="#sec-form">Form controls</a></li>
+        <li><a href="#sec-feedback">Feedback</a></li>
+        <li><a href="#sec-layout">Cards &amp; layout</a></li>
+        <li><a href="#sec-nav">Navigation</a></li>
+        <li><a href="#sec-data">Data display</a></li>
+        <li><a href="#sec-overlays">Overlays</a></li>
+      </ol>
+    </nav>
+  </aside>
 
-<section id="navigation">
-  <h2>Navigation</h2>
-  <article>
-    <header><h3>Breadcrumb</h3></header>
-    {{ breadcrumb }}
-  </article>
-  <article>
-    <header><h3>Pagination</h3></header>
-    {{ pagination }}
-  </article>
-</section>
+  <section id="sec-buttons" data-bn-showcase-section>
+    <header>
+      <h2>Buttons</h2>
+      <p>
+        Primary, secondary, destructive, ghost, and disabled — all on a real
+        <code>&lt;button&gt;</code>.
+      </p>
+    </header>
+    <figure data-bn-showcase-demo>
+      <figcaption>Variants</figcaption>
+      <output data-bn-showcase-row>{{ buttons }}</output>
+    </figure>
+  </section>
 
-<section id="data">
-  <h2>Data</h2>
-  <article>
-    <header><h3>Table</h3></header>
-    {{ table }}
-  </article>
-  <article>
-    <header><h3>Data grid</h3></header>
-    {{ datagrid }}
-  </article>
-  <article>
-    <header><h3>Tree</h3></header>
-    <div data-showcase-card>{{ tree }}</div>
-  </article>
-  <article>
-    <header><h3>Virtual list</h3></header>
-    <p>50 rows server-rendered as a windowed slice; the rest hydrate on scroll.</p>
-    <div data-showcase-form>{{ virtualList }}</div>
-  </article>
-  <article>
-    <header><h3>Calendar</h3></header>
-    <p><code>@basenative/components/calendar</code> &mdash; week view with draggable events.</p>
-    {{ calendar }}
-  </article>
-  <article>
-    <header><h3>Pipeline (kanban)</h3></header>
-    <p><code>renderPipeline()</code> &mdash; status columns with draggable cards.</p>
-    {{ pipeline }}
-  </article>
-</section>
+  <section id="sec-badges" data-bn-showcase-section>
+    <header>
+      <h2>Badges &amp; avatars</h2>
+      <p>Compact status pills and initials-fallback avatars.</p>
+    </header>
+    <figure data-bn-showcase-demo>
+      <figcaption>Badge variants</figcaption>
+      <output data-bn-showcase-row>{{ badges }}</output>
+    </figure>
+    <figure data-bn-showcase-demo>
+      <figcaption>Avatar sizes</figcaption>
+      <output data-bn-showcase-row>{{ avatars }}</output>
+    </figure>
+  </section>
 
-<section id="overlays">
-  <h2>Overlays</h2>
-  <article>
-    <header><h3>Dialog</h3></header>
-    <button
-      data-bn="button"
-      data-variant="secondary"
-      data-bn-action="open-dialog"
-      data-bn-target="demo-dialog"
-    >
-      Open dialog
-    </button>
-    {{ dialog }}
-  </article>
-  <article>
-    <header><h3>Drawer</h3></header>
-    <button
-      data-bn="button"
-      data-variant="secondary"
-      data-bn-action="open-drawer"
-      data-bn-target="demo-drawer"
-    >
-      Open drawer
-    </button>
-    {{ drawer }}
-  </article>
-  <article>
-    <header><h3>Dropdown menu</h3></header>
-    {{ dropdown }}
-  </article>
-  <article>
-    <header><h3>Tooltip</h3></header>
-    {{ tooltip }}
-  </article>
-  <article>
-    <header><h3>Command palette</h3></header>
-    <button
-      data-bn="button"
-      data-variant="secondary"
-      data-bn-action="open-command-palette"
-      data-bn-target="demo-cmd"
-    >
-      Open command palette
-    </button>
-    {{ commandPalette }}
-  </article>
-</section>
+  <section id="sec-form" data-bn-showcase-section>
+    <header>
+      <h2>Form controls</h2>
+      <p>Field semantics, label/help/error wiring, native validation hooks.</p>
+    </header>
+    <figure data-bn-showcase-demo>
+      <figcaption>Inputs</figcaption>
+      <output data-bn-showcase-form> {{ inputDefault }} {{ inputError }} </output>
+    </figure>
+    <figure data-bn-showcase-demo>
+      <figcaption>Textarea, select, combobox, multiselect</figcaption>
+      <output data-bn-showcase-form>
+        {{ textarea }} {{ select }} {{ combobox }} {{ multiselect }}
+      </output>
+    </figure>
+    <figure data-bn-showcase-demo>
+      <figcaption>Checkbox, radio group, toggle</figcaption>
+      <output data-bn-showcase-form> {{ checkbox }} {{ radioGroup }} {{ toggle }} </output>
+    </figure>
+  </section>
 
-<section id="runtime">
-  <h2>Runtime <em>Primitives</em></h2>
-  <article>
-    <header><h3>Counter (signal + effect)</h3></header>
-    <p>Live signal hydration. Increment and watch every dependent expression update.</p>
-    <div data-showcase-counter>
-      <button
-        data-bn="button"
-        data-variant="secondary"
-        data-bn-action="counter-dec"
-        aria-label="Decrement"
-      >
-        &minus;
-      </button>
-      <output data-bn-counter-value aria-live="polite">0</output>
-      <button
-        data-bn="button"
-        data-variant="primary"
-        data-bn-action="counter-inc"
-        aria-label="Increment"
-      >
-        +
-      </button>
-      <span data-bn-counter-doubled>doubled: 0</span>
-      <span data-bn-counter-parity>even</span>
-    </div>
-  </article>
-  <article>
-    <header><h3>Live clock (effect cleanup)</h3></header>
-    <p>
-      An <code>effect()</code> with a return cleanup runs on every tick and unsubscribes on
-      navigation.
-    </p>
-    <output data-bn-clock>&mdash;</output>
-  </article>
-</section>
+  <section id="sec-feedback" data-bn-showcase-section>
+    <header>
+      <h2>Feedback</h2>
+      <p>Inline alerts, progress, spinners, skeletons, and toasts.</p>
+    </header>
+    <figure data-bn-showcase-demo>
+      <figcaption>Alerts</figcaption>
+      <output data-bn-showcase-stack>
+        {{ alertInfo }} {{ alertSuccess }} {{ alertWarning }} {{ alertError }}
+      </output>
+    </figure>
+    <figure data-bn-showcase-demo>
+      <figcaption>Progress</figcaption>
+      <output>{{ progress }}</output>
+    </figure>
+    <figure data-bn-showcase-demo>
+      <figcaption>Spinners</figcaption>
+      <output data-bn-showcase-row> {{ spinner }} {{ spinnerLg }} </output>
+    </figure>
+    <figure data-bn-showcase-demo>
+      <figcaption>Skeleton</figcaption>
+      <output>{{ skeleton }}</output>
+    </figure>
+  </section>
 
-<section id="packages">
-  <h2>Packages <em>at a glance</em></h2>
-  <p>
-    BaseNative ships {{ packageCount }} <code>@basenative/*</code> packages. The runtime is the
-    heart, but the ecosystem covers servers, data, auth, realtime, observability, and tooling.
-  </p>
-  <ul data-showcase-package-grid>
-    {{ packageCards }}
-  </ul>
-</section>
+  <section id="sec-layout" data-bn-showcase-section>
+    <header>
+      <h2>Cards &amp; layout</h2>
+      <p>Article-shaped cards, native disclosure for accordions, ARIA tablists.</p>
+    </header>
+    <figure data-bn-showcase-demo>
+      <figcaption>Card</figcaption>
+      <output data-bn-showcase-card>{{ card }}</output>
+    </figure>
+    <figure data-bn-showcase-demo>
+      <figcaption>Accordion (native &lt;details&gt;)</figcaption>
+      <output data-bn-showcase-form>{{ accordion }}</output>
+    </figure>
+    <figure data-bn-showcase-demo>
+      <figcaption>Tabs</figcaption>
+      <output>{{ tabs }}</output>
+    </figure>
+  </section>
+
+  <section id="sec-nav" data-bn-showcase-section>
+    <header>
+      <h2>Navigation</h2>
+      <p>
+        Breadcrumbs and pagination — both wrapped in a <code>&lt;nav&gt;</code> with proper ARIA
+        labels.
+      </p>
+    </header>
+    <figure data-bn-showcase-demo>
+      <figcaption>Breadcrumb</figcaption>
+      <output>{{ breadcrumb }}</output>
+    </figure>
+    <figure data-bn-showcase-demo>
+      <figcaption>Pagination</figcaption>
+      <output>{{ pagination }}</output>
+    </figure>
+  </section>
+
+  <section id="sec-data" data-bn-showcase-section>
+    <header>
+      <h2>Data display</h2>
+      <p>From a basic table to a sortable data grid, a tree, and a virtualized list.</p>
+    </header>
+    <figure data-bn-showcase-demo>
+      <figcaption>Table</figcaption>
+      <output>{{ table }}</output>
+    </figure>
+    <figure data-bn-showcase-demo>
+      <figcaption>Data grid</figcaption>
+      <output>{{ datagrid }}</output>
+    </figure>
+    <figure data-bn-showcase-demo>
+      <figcaption>Tree</figcaption>
+      <output data-bn-showcase-card>{{ tree }}</output>
+    </figure>
+    <figure data-bn-showcase-demo>
+      <figcaption>Virtual list</figcaption>
+      <output data-bn-showcase-form>{{ virtualList }}</output>
+    </figure>
+  </section>
+
+  <section id="sec-overlays" data-bn-showcase-section>
+    <header>
+      <h2>Overlays</h2>
+      <p>Native <code>&lt;dialog&gt;</code>, side drawers, popover-anchored menus and tooltips.</p>
+    </header>
+    <figure data-bn-showcase-demo>
+      <figcaption>Dialog</figcaption>
+      <output>
+        <button
+          type="button"
+          data-bn="button"
+          data-variant="secondary"
+          onclick="document.getElementById('demo-dialog').showModal()"
+        >
+          Open dialog
+        </button>
+        {{ dialog }}
+      </output>
+    </figure>
+    <figure data-bn-showcase-demo>
+      <figcaption>Drawer</figcaption>
+      <output>
+        <button
+          type="button"
+          data-bn="button"
+          data-variant="secondary"
+          data-bn-showcase-open-drawer
+        >
+          Open drawer
+        </button>
+        {{ drawer }}
+      </output>
+    </figure>
+    <figure data-bn-showcase-demo>
+      <figcaption>Dropdown menu</figcaption>
+      <output>{{ dropdown }}</output>
+    </figure>
+    <figure data-bn-showcase-demo>
+      <figcaption>Tooltip</figcaption>
+      <output>{{ tooltip }}</output>
+    </figure>
+    <figure data-bn-showcase-demo>
+      <figcaption>Command palette</figcaption>
+      <output>
+        <button
+          type="button"
+          data-bn="button"
+          data-variant="secondary"
+          onclick="document.getElementById('demo-cmd').showModal()"
+        >
+          Open command palette
+        </button>
+        <kbd>Ctrl</kbd> + <kbd>K</kbd>
+        {{ commandPalette }}
+      </output>
+    </figure>
+  </section>
+</article>
 
 {{ toastContainer }}
 
-<script type="module" src="/showcase.js"></script>
+<script type="module">
+  // Tabs interactivity
+  document.querySelectorAll('[data-bn="tab"]').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const tabs = tab.closest('[data-bn="tabs"]');
+      tabs
+        .querySelectorAll('[data-bn="tab"]')
+        .forEach((t) => t.setAttribute('aria-selected', 'false'));
+      tabs.querySelectorAll('[data-bn="tab-panel"]').forEach((p) => (p.hidden = true));
+      tab.setAttribute('aria-selected', 'true');
+      const panel = tabs.querySelector('#' + tab.getAttribute('aria-controls'));
+      if (panel) panel.hidden = false;
+    });
+  });
+
+  // Dialog close buttons
+  document.querySelectorAll('[data-bn="dialog-close"]').forEach((btn) => {
+    btn.addEventListener('click', () => btn.closest('[data-bn="dialog"]')?.close());
+  });
+
+  // Drawer
+  const drawer = document.getElementById('demo-drawer');
+  const drawerOverlay = document.querySelector('[data-bn="drawer-overlay"]');
+  document.querySelector('[data-bn-showcase-open-drawer]')?.addEventListener('click', () => {
+    drawer?.setAttribute('data-open', '');
+    drawerOverlay?.removeAttribute('hidden');
+  });
+  const closeDrawer = () => {
+    drawer?.removeAttribute('data-open');
+    drawerOverlay?.setAttribute('hidden', '');
+  };
+  document.querySelector('[data-bn="drawer-close"]')?.addEventListener('click', closeDrawer);
+  drawerOverlay?.addEventListener('click', closeDrawer);
+
+  // Alert dismiss
+  document.querySelectorAll('[data-bn="alert-dismiss"]').forEach((btn) => {
+    btn.addEventListener('click', () => btn.closest('[data-bn="alert"]')?.remove());
+  });
+
+  // Tooltip — popovertarget only fires on <button>/<input>, so wire span triggers manually
+  document.querySelectorAll('[data-bn="tooltip-trigger"]').forEach((trigger) => {
+    const id = trigger.getAttribute('popovertarget');
+    const tip = id && document.getElementById(id);
+    if (!tip) return;
+    trigger.tabIndex = 0;
+    const place = () => {
+      const t = trigger.getBoundingClientRect();
+      const tw = tip.offsetWidth || 200;
+      const th = tip.offsetHeight || 40;
+      tip.style.left = Math.max(8, t.left + t.width / 2 - tw / 2) + 'px';
+      tip.style.top = Math.max(8, t.top - th - 8) + 'px';
+    };
+    const show = () => {
+      try {
+        tip.showPopover();
+        place();
+        requestAnimationFrame(place);
+      } catch {}
+    };
+    const hide = () => {
+      try {
+        tip.hidePopover();
+      } catch {}
+    };
+    trigger.addEventListener('pointerenter', show);
+    trigger.addEventListener('pointerleave', hide);
+    trigger.addEventListener('focus', show);
+    trigger.addEventListener('blur', hide);
+  });
+
+  // Dropdown menu — anchor the popover to its trigger after open
+  document.querySelectorAll('[data-bn="dropdown-trigger"]').forEach((trigger) => {
+    const id = trigger.getAttribute('popovertarget');
+    const menu = id && document.getElementById(id);
+    if (!menu) return;
+    menu.addEventListener('toggle', (e) => {
+      if (e.newState !== 'open') return;
+      const t = trigger.getBoundingClientRect();
+      menu.style.left = t.left + 'px';
+      menu.style.top = t.bottom + 4 + 'px';
+    });
+  });
+
+  // Highlight current section in TOC as user scrolls
+  const tocLinks = document.querySelectorAll('[data-bn-showcase-toc] a');
+  const sections = Array.from(document.querySelectorAll('[data-bn-showcase-section]'));
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          tocLinks.forEach((a) => {
+            if (a.getAttribute('href') === '#' + id) a.setAttribute('aria-current', 'true');
+            else a.removeAttribute('aria-current');
+          });
+        }
+      });
+    },
+    { rootMargin: '-30% 0px -60% 0px' },
+  );
+  sections.forEach((s) => observer.observe(s));
+</script>

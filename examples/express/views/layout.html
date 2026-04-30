@@ -9,6 +9,18 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="BaseNative">
 <title><!--TITLE--> — BaseNative</title>
+<meta name="description" content="<!--DESCRIPTION-->">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BaseNative">
+<meta property="og:title" content="<!--OG_TITLE-->">
+<meta property="og:description" content="<!--DESCRIPTION-->">
+<meta property="og:url" content="<!--OG_URL-->">
+<meta property="og:image" content="/og-default.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="<!--OG_TITLE-->">
+<meta name="twitter:description" content="<!--DESCRIPTION-->">
+<meta name="twitter:image" content="/og-default.svg">
+<link rel="canonical" href="<!--OG_URL-->">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="/bn-css/index.css">
 <link rel="stylesheet" href="/bn-builder-css/builder.css">
@@ -17,27 +29,33 @@
 <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <a href="#main-content" class="skip-link">Skip to main content</a>
-  <header>
+  <a href="#main-content" data-bn-skip-link>Skip to main content</a>
+  <header data-bn-site-header>
     <nav aria-label="Main navigation">
-      <h1>Base<em>Native</em></h1>
-      <ul>
+      <h1><a href="/" data-bn-wordmark>Base<em>Native</em></a></h1>
+      <menu>
         <li><a href="/" <!--HOME_ARIA-->>Home</a></li>
-        <li><a href="/tasks" <!--TASKS_ARIA-->>Tasks</a></li>
-        <li><a href="/playground" <!--PLAYGROUND_ARIA-->>Playground</a></li>
-        <li><a href="/docs" <!--DOCS_ARIA-->>Docs</a></li>
         <li><a href="/components" <!--COMPONENTS_ARIA-->>Components</a></li>
         <li><a href="/showcase" <!--SHOWCASE_ARIA-->>Showcase</a></li>
         <li><a href="/builder" <!--BUILDER_ARIA-->>Builder</a></li>
-      </ul>
+        <li><a href="/playground" <!--PLAYGROUND_ARIA-->>Playground</a></li>
+        <li><a href="/tasks" <!--TASKS_ARIA-->>Tasks</a></li>
+        <li><a href="/docs" <!--DOCS_ARIA-->>Docs</a></li>
+        <li><a href="/roadmap" <!--ROADMAP_ARIA-->>Roadmap</a></li>
+      </menu>
     </nav>
   </header>
   <main id="main-content">
-    <div role="status" aria-live="polite" class="visually-hidden"></div>
+    <div role="status" aria-live="polite" data-bn-visually-hidden></div>
     <!--CONTENT-->
   </main>
-  <footer>
+  <footer data-bn-site-footer>
     <p>BaseNative — Semantic HTML + Signals · pilot-stage runtime and server foundation</p>
+    <nav aria-label="Resources">
+      <a href="https://github.com/DuganLabs/basenative" rel="noopener">GitHub</a>
+      <a href="/docs">Docs</a>
+      <a href="/components">Components</a>
+    </nav>
   </footer>
   <!--SCRIPTS-->
   <script>if(!location.search.includes('nolr'))new EventSource('/__live').onmessage=e=>{if(e.data==='reload')location.reload()}</script>

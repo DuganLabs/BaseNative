@@ -4,11 +4,16 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { render } from '@basenative/server';
 import {
-  getComponentsPageContext,
+  renderBreadcrumb,
+} from '../../packages/components/src/index.js';
+import {
+  getRoadmapPageContext,
   getHomePageContext,
   getTasksPageContext,
   navPages,
 } from './site-data.js';
+import { componentCategories, flatComponents, findComponent } from './component-catalog.js';
+import { getDemo } from './component-demos.js';
 import { getShowcaseContext } from './showcase-data.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -32,13 +37,32 @@ let tasks = [
   { id: 4, title: 'Client hydration', status: 'pending' },
 ];
 
-// -- Layout helper --
-function renderPage(viewFile, ctx, { title, scripts = '', activePage = '' }) {
+const SITE_URL = 'https://basenative.com';
+const DEFAULT_DESCRIPTION =
+  'BaseNative — a signal-based runtime over native HTML. Zero build step. Zero deps in core. Semantic by construction.';
+
+function escapeAttr(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+function renderPage(viewFile, ctx, opts) {
+  const {
+    title,
+    description = DEFAULT_DESCRIPTION,
+    ogTitle = `${title} — BaseNative`,
+    path = '/',
+    scripts = '',
+    activePage = '',
+  } = opts;
+
   const layout = read('views/layout.html');
   const view = read(`views/${viewFile}`);
   const content = render(view, ctx);
   let html = layout
-    .replace('<!--TITLE-->', title)
+    .replace(/<!--TITLE-->/g, escapeAttr(title))
+    .replace(/<!--DESCRIPTION-->/g, escapeAttr(description))
+    .replace(/<!--OG_TITLE-->/g, escapeAttr(ogTitle))
+    .replace(/<!--OG_URL-->/g, escapeAttr(SITE_URL + path))
     .replace('<!--CONTENT-->', content)
     .replace('<!--SCRIPTS-->', scripts);
   for (const page of navPages) {
@@ -54,33 +78,124 @@ function renderPage(viewFile, ctx, { title, scripts = '', activePage = '' }) {
 
 app.get('/', (req, res) => {
   const ctx = getHomePageContext();
-  const html = renderPage('home.html', ctx, { title: 'Home', activePage: 'home' });
-  res.send(html);
+  res.send(
+    renderPage('home.html', ctx, {
+      title: 'Home',
+      description: DEFAULT_DESCRIPTION,
+      ogTitle: 'BaseNative — Semantic HTML + Signals',
+      path: '/',
+      activePage: 'home',
+    }),
+  );
 });
 
 app.get('/tasks', (req, res) => {
   const ctx = getTasksPageContext(tasks);
-  const html = renderPage('tasks.html', ctx, { title: 'Tasks', activePage: 'tasks' });
-  res.send(html);
+  res.send(
+    renderPage('tasks.html', ctx, {
+      title: 'Tasks',
+      description: 'Live task list demonstrating signal-based hydration over server-rendered HTML.',
+      path: '/tasks',
+      activePage: 'tasks',
+    }),
+  );
 });
 
 app.get('/playground', (req, res) => {
-  const html = renderPage('playground.html', {}, { title: 'Playground', activePage: 'playground' });
-  res.send(html);
+  res.send(
+    renderPage(
+      'playground.html',
+      {},
+      {
+        title: 'Playground',
+        description:
+          'Interactive sandbox for signals, computed values, effects, and template directives.',
+        path: '/playground',
+        activePage: 'playground',
+      },
+    ),
+  );
 });
 
 app.get('/docs', (req, res) => {
-  const html = renderPage('docs.html', {}, { title: 'API Docs', activePage: 'docs' });
-  res.send(html);
+  res.send(
+    renderPage(
+      'docs.html',
+      {},
+      {
+        title: 'API Docs',
+        description:
+          'API reference for @basenative/runtime, @basenative/server, @basenative/router, @basenative/forms, and @basenative/components.',
+        path: '/docs',
+        activePage: 'docs',
+      },
+    ),
+  );
 });
 
 app.get('/components', (req, res) => {
-  const ctx = getComponentsPageContext();
-  const html = renderPage('components.html', ctx, {
-    title: 'Components',
-    activePage: 'components',
-  });
-  res.send(html);
+  const ctx = {
+    categories: componentCategories,
+    totalCount: flatComponents.length,
+    categoryCount: componentCategories.length,
+  };
+  res.send(
+    renderPage('components.html', ctx, {
+      title: 'Components',
+      description: `${flatComponents.length} semantic, server-rendered components built on native HTML primitives. No virtual DOM.`,
+      ogTitle: 'BaseNative Components — Semantic by Construction',
+      path: '/components',
+      activePage: 'components',
+    }),
+  );
+});
+
+app.get('/components/:slug', (req, res) => {
+  const component = findComponent(req.params.slug);
+  if (!component) return res.status(404).send('Component not found');
+
+  const demo = getDemo(component.slug);
+  const idx = flatComponents.findIndex((c) => c.slug === component.slug);
+  const prev = idx > 0 ? flatComponents[idx - 1] : null;
+  const next = idx < flatComponents.length - 1 ? flatComponents[idx + 1] : null;
+
+  const ctx = {
+    component,
+    examples: demo?.examples ?? [],
+    prev,
+    next,
+    breadcrumb: renderBreadcrumb({
+      items: [
+        { label: 'Home', href: '/' },
+        { label: 'Components', href: '/components' },
+        { label: component.title },
+      ],
+    }),
+  };
+
+  res.send(
+    renderPage('component.html', ctx, {
+      title: component.title,
+      description: component.summary,
+      ogTitle: `${component.title} — BaseNative`,
+      path: `/components/${component.slug}`,
+      activePage: 'components',
+      scripts: getDemoScripts(component.slug),
+    }),
+  );
+});
+
+app.get('/roadmap', (req, res) => {
+  const ctx = getRoadmapPageContext();
+  res.send(
+    renderPage('roadmap.html', ctx, {
+      title: 'Roadmap',
+      description:
+        'BaseNative release plan, trust blockers, browser policy, and workflow parity tracking.',
+      path: '/roadmap',
+      activePage: 'roadmap',
+    }),
+  );
 });
 
 app.get('/test-signals', (req, res) => {
@@ -90,15 +205,31 @@ app.get('/test-signals', (req, res) => {
     { id: 3, name: 'Server-rendered item C', status: 'pending' },
   ];
   const ctx = { items, itemsJson: JSON.stringify(items) };
-  const html = renderPage('test-signals.html', ctx, { title: 'Signal Verification' });
-  res.send(html);
+  res.send(
+    renderPage('test-signals.html', ctx, {
+      title: 'Signal Verification',
+      path: '/test-signals',
+    }),
+  );
 });
 
 app.get('/showcase', (req, res) => {
-  const ctx = getShowcaseContext();
-  const html = renderPage('showcase.html', ctx, { title: 'Showcase', activePage: 'showcase' });
-  res.send(html);
+  const baseCtx = getShowcaseContext();
+  const ctx = {
+    ...baseCtx,
+    categories: componentCategories,
+  };
+  res.send(
+    renderPage('showcase.html', ctx, {
+      title: 'Showcase',
+      description: `Live gallery of all ${flatComponents.length} BaseNative components — every section is a real server render, not a mockup.`,
+      ogTitle: 'BaseNative Showcase — Live Component Gallery',
+      path: '/showcase',
+      activePage: 'showcase',
+    }),
+  );
 });
+
 
 app.get('/builder', (req, res) => {
   const html = renderPage('builder.html', {}, { title: 'Builder', activePage: 'builder' });
@@ -126,6 +257,102 @@ app.delete('/api/tasks/:id', (req, res) => {
   res.status(204).end();
 });
 
+// -- Per-component demo client scripts --
+
+function getDemoScripts(slug) {
+  const map = {
+    button: `
+      <script type="module">
+        import { signal, effect } from '/basenative.js';
+        const out = document.querySelector('[data-bn-demo-counter]');
+        if (out) {
+          const count = signal(0);
+          effect(() => { out.textContent = count(); });
+          document.querySelector('[data-bn-demo-inc]').onclick = () => count.set(count() + 1);
+          document.querySelector('[data-bn-demo-dec]').onclick = () => count.set(count() - 1);
+          document.querySelector('[data-bn-demo-reset]').onclick = () => count.set(0);
+        }
+      </script>
+    `,
+    input: `
+      <script type="module">
+        import { signal, effect } from '/basenative.js';
+        const input = document.querySelector('[data-bn-demo-bio]');
+        const out = document.querySelector('[data-bn-demo-bio-count]');
+        if (input && out) {
+          const text = signal('');
+          effect(() => { out.textContent = text().length + ' / 120'; });
+          input.addEventListener('input', e => text.set(e.target.value));
+        }
+      </script>
+    `,
+    progress: `
+      <script type="module">
+        import { signal, effect } from '/basenative.js';
+        const bar = document.querySelector('[data-bn-demo-progress]');
+        const reset = document.querySelector('[data-bn-demo-progress-reset]');
+        if (bar) {
+          const v = signal(0);
+          effect(() => { bar.value = v(); });
+          const tick = () => v.set((v() + 5) % 105);
+          let id = setInterval(tick, 200);
+          reset?.addEventListener('click', () => v.set(0));
+        }
+      </script>
+    `,
+    drawer: `
+      <script type="module">
+        const drawer = document.getElementById('demo-drawer-page');
+        const opener = document.querySelector('[data-bn-demo-drawer-open]');
+        const overlay = document.querySelector('[data-bn="drawer-overlay"]');
+        const close = document.querySelector('[data-bn="drawer-close"]');
+        opener?.addEventListener('click', () => { drawer?.setAttribute('data-open',''); overlay?.removeAttribute('hidden'); });
+        const dismiss = () => { drawer?.removeAttribute('data-open'); overlay?.setAttribute('hidden',''); };
+        overlay?.addEventListener('click', dismiss);
+        close?.addEventListener('click', dismiss);
+      </script>
+    `,
+    toast: `
+      <script type="module">
+        const container = document.querySelector('[data-bn="toast-container"]');
+        const messages = { info: 'For your information.', success: 'All good — saved.', error: 'Something went sideways.' };
+        document.querySelectorAll('[data-bn-demo-toast]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const variant = btn.getAttribute('data-bn-demo-toast');
+            const toast = document.createElement('output');
+            toast.setAttribute('data-bn', 'toast');
+            toast.setAttribute('data-variant', variant);
+            toast.setAttribute('role', 'status');
+            toast.textContent = messages[variant];
+            container?.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; }, 3500);
+            setTimeout(() => toast.remove(), 4000);
+          });
+        });
+      </script>
+    `,
+  };
+  const base = `
+    <script type="module">
+      // Tabs interaction (used by some demos)
+      document.querySelectorAll('[data-bn="tab"]').forEach(tab => {
+        tab.addEventListener('click', () => {
+          const tabs = tab.closest('[data-bn="tabs"]');
+          tabs.querySelectorAll('[data-bn="tab"]').forEach(t => t.setAttribute('aria-selected', 'false'));
+          tabs.querySelectorAll('[data-bn="tab-panel"]').forEach(p => p.hidden = true);
+          tab.setAttribute('aria-selected', 'true');
+          const panel = tabs.querySelector('#' + tab.getAttribute('aria-controls'));
+          if (panel) panel.hidden = false;
+        });
+      });
+      document.querySelectorAll('[data-bn="alert-dismiss"]').forEach(btn => {
+        btn.addEventListener('click', () => btn.closest('[data-bn="alert"]')?.remove());
+      });
+    </script>
+  `;
+  return base + (map[slug] ?? '');
+}
+
 // -- Live reload (dev only) --
 const liveClients = new Set();
 
@@ -151,6 +378,7 @@ function notifyReload() {
 const watchDirs = [
   join(__dirname, 'views'),
   join(__dirname, 'public'),
+  join(__dirname),
   join(pkgRoot, 'packages', 'components', 'src'),
 ];
 for (const dir of watchDirs) {

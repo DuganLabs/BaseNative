@@ -1,0 +1,51 @@
+<article data-bn-component-page>
+  {{ breadcrumb }}
+
+  <header data-bn-component-header>
+    <p data-bn-eyebrow>{{ component.categoryTitle }}</p>
+    <h2>{{ component.title }}</h2>
+    <p data-bn-lede>{{ component.summary }}</p>
+    <p data-bn-component-tag-line>
+      Built on <code>&lt;{{ component.tag }}&gt;</code>
+    </p>
+  </header>
+
+  <template @for="example of examples; track example.title">
+    <section data-bn-component-example>
+      <header>
+        <h3>{{ example.title }}</h3>
+        <p>{{ example.description }}</p>
+      </header>
+
+      <figure data-bn-component-demo>
+        <figcaption>Live render</figcaption>
+        <output>{{ example.html }}</output>
+      </figure>
+
+      <details data-bn-component-source>
+        <summary>View source</summary>
+        <pre><code>{{ example.code }}</code></pre>
+      </details>
+    </section>
+  </template>
+
+  <nav data-bn-component-pager aria-label="Component pagination">
+    <template @if="prev">
+      <a href="/components/{{ prev.slug }}" rel="prev">
+        <span aria-hidden="true">←</span> {{ prev.title }}
+      </a>
+    </template>
+    <template @if="!prev">
+      <span></span>
+    </template>
+    <a href="/components" data-bn-component-pager-index>All components</a>
+    <template @if="next">
+      <a href="/components/{{ next.slug }}" rel="next">
+        {{ next.title }} <span aria-hidden="true">→</span>
+      </a>
+    </template>
+    <template @if="!next">
+      <span></span>
+    </template>
+  </nav>
+</article>

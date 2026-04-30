@@ -1,257 +1,68 @@
-<section data-hero>
-  <h2>Enterprise <em>Readiness</em></h2>
-  <p>
-    BaseNative is a semantic SSR application foundation for evergreen browsers. Every milestone from
-    trust blockers through workflow breadth is now implemented, with all packages, components, and
-    advanced widgets shipped.
+<section data-bn-page-hero>
+  <p data-bn-eyebrow>Component library</p>
+  <h2>Semantic <em>by construction</em></h2>
+  <p data-bn-lede>
+    {{ totalCount }} components across {{ categoryCount }} categories.
+    Every one is built on a real HTML element — <code>&lt;button&gt;</code>, <code>&lt;dialog&gt;</code>,
+    <code>&lt;details&gt;</code>, <code>&lt;table&gt;</code> — with <code>data-bn-*</code> attributes for variants and zero CSS classes.
   </p>
+  <nav data-bn-page-hero-actions aria-label="Quick links">
+    <a href="/showcase" data-bn-cta="primary">View live showcase →</a>
+    <a href="/docs" data-bn-cta="secondary">Read the API docs</a>
+  </nav>
 </section>
 
-<section data-stats>
-  <ul role="list" data-stat-grid>
-    <template @for="stat of readinessStats; track stat.label">
-      <li>
-        <strong>{{ stat.value }}</strong>
-        <span>{{ stat.label }}</span>
-      </li>
-    </template>
-  </ul>
-</section>
+<nav data-bn-component-toc aria-label="Component categories">
+  <template @for="cat of categories; track cat.id">
+    <a href="#cat-{{ cat.id }}">{{ cat.title }}</a>
+  </template>
+</nav>
 
-<section>
-  <h2>Release <em>Gates</em></h2>
-  <p>
-    The roadmap is split into trust, pilot, and breadth milestones so enterprise workflows expand
-    only after the core runtime proves it can hold up under SSR, hydration, and browser-policy
-    constraints.
-  </p>
+<template @for="cat of categories; track cat.id">
+  <section data-bn-component-category id="cat-{{ cat.id }}">
+    <header data-bn-component-category-head>
+      <h2>{{ cat.title }}</h2>
+      <p>{{ cat.summary }}</p>
+    </header>
 
-  <article>
-    <header><h3>Milestone plan</h3></header>
-    <table>
-      <thead>
-        <tr>
-          <th>Milestone</th>
-          <th>Focus</th>
-          <th>Status</th>
-          <th>Outcome</th>
-        </tr>
-      </thead>
-      <tbody>
-        <template @for="stage of releaseStages; track stage.milestone">
-          <tr>
-            <td>{{ stage.milestone }}</td>
-            <td>{{ stage.focus }}</td>
-            <td><mark data-status="{{ stage.tone }}">{{ stage.status }}</mark></td>
-            <td>{{ stage.outcome }}</td>
-          </tr>
-        </template>
-      </tbody>
-    </table>
-  </article>
-</section>
+    <ul role="list" data-bn-component-grid>
+      <template @for="comp of cat.components; track comp.slug">
+        <li>
+          <a href="/components/{{ comp.slug }}" data-bn-component-card>
+            <header>
+              <h3>{{ comp.title }}</h3>
+              <code data-bn-component-tag>&lt;{{ comp.tag }}&gt;</code>
+            </header>
+            <p>{{ comp.summary }}</p>
+            <footer>
+              <span aria-hidden="true">→</span>
+              <span data-bn-visually-hidden>View {{ comp.title }} demo</span>
+            </footer>
+          </a>
+        </li>
+      </template>
+    </ul>
+  </section>
+</template>
 
-<section>
-  <h2>Trust <em>Blockers</em></h2>
-  <p>
-    The first visible requirement for enterprise use was removing the unsafe and ambiguous parts of
-    the runtime story. These are the core items that were addressed before broader package work.
-  </p>
-
-  <article>
-    <header><h3>v0.2 trust release scope</h3></header>
-    <table>
-      <thead>
-        <tr>
-          <th>Area</th>
-          <th>State</th>
-          <th>Notes</th>
-        </tr>
-      </thead>
-      <tbody>
-        <template @for="item of trustBlockers; track item.item">
-          <tr>
-            <td>{{ item.item }}</td>
-            <td><mark data-status="{{ item.tone }}">{{ item.state }}</mark></td>
-            <td>{{ item.notes }}</td>
-          </tr>
-        </template>
-      </tbody>
-    </table>
-  </article>
-</section>
-
-<section>
-  <h2>Package <em>Surface</em></h2>
-  <p>
-    The public API is layered. Runtime, server, components, router, and forms are the headline core
-    — each with a clear responsibility. A wider
-    <a href="/showcase#packages">@basenative ecosystem</a> covers data, auth, realtime,
-    observability, and tooling.
-  </p>
-
-  <article>
-    <header><h3>Public packages</h3></header>
-    <table>
-      <thead>
-        <tr>
-          <th>Package</th>
-          <th>Status</th>
-          <th>Responsibility</th>
-        </tr>
-      </thead>
-      <tbody>
-        <template @for="pkg of packageSurface; track pkg.pkg">
-          <tr>
-            <td><code>{{ pkg.pkg }}</code></td>
-            <td><mark data-status="{{ pkg.tone }}">{{ pkg.status }}</mark></td>
-            <td>{{ pkg.scope }}</td>
-          </tr>
-        </template>
-      </tbody>
-    </table>
-  </article>
-</section>
-
-<section>
-  <h2>Workflow <em>Parity</em></h2>
-  <p>
-    The target is not React or Angular component interop. The target is parity across the enterprise
-    workflow categories teams actually rely on when shipping SSR business applications.
-  </p>
-
-  <article>
-    <header><h3>Enterprise workflow coverage</h3></header>
-    <table>
-      <thead>
-        <tr>
-          <th>Category</th>
-          <th>Status</th>
-          <th>Detail</th>
-        </tr>
-      </thead>
-      <tbody>
-        <template @for="workflow of workflowParity; track workflow.category">
-          <tr>
-            <td>{{ workflow.category }}</td>
-            <td><mark data-status="{{ workflow.tone }}">{{ workflow.status }}</mark></td>
-            <td>{{ workflow.detail }}</td>
-          </tr>
-        </template>
-      </tbody>
-    </table>
-  </article>
-</section>
-
-<section>
-  <h2>P0 Component <em>Baseline</em></h2>
-  <p>
-    The first semantic component set is intentionally boring and business-focused: form foundations,
-    feedback surfaces, and table-list primitives that cover the common full-stack app path before
-    advanced widgets.
-  </p>
-
-  <article>
-    <header><h3>Pilot component order</h3></header>
-    <table>
-      <thead>
-        <tr>
-          <th>Component</th>
-          <th>Target release</th>
-          <th>Status</th>
-          <th>Notes</th>
-        </tr>
-      </thead>
-      <tbody>
-        <template @for="component of p0Components; track component.component">
-          <tr>
-            <td>{{ component.component }}</td>
-            <td>{{ component.release }}</td>
-            <td><mark data-status="{{ component.tone }}">{{ component.status }}</mark></td>
-            <td>{{ component.notes }}</td>
-          </tr>
-        </template>
-      </tbody>
-    </table>
-  </article>
-</section>
-
-<section>
-  <h2>Browser <em>Policy</em></h2>
-  <p>
-    BaseNative is targeting current Chrome, Edge, Firefox, and Safari in <code>v0.x</code>. Newer
-    platform APIs are used only when a documented fallback keeps the workflow intact.
-  </p>
-
-  <article>
-    <header><h3>Capability and fallback matrix</h3></header>
-    <table>
-      <thead>
-        <tr>
-          <th>Feature</th>
-          <th>Status</th>
-          <th>Fallback</th>
-        </tr>
-      </thead>
-      <tbody>
-        <template @for="browser of browserSupport; track browser.feature">
-          <tr>
-            <td>{{ browser.feature }}</td>
-            <td><mark data-status="{{ browser.tone }}">{{ browser.status }}</mark></td>
-            <td>{{ browser.fallback }}</td>
-          </tr>
-        </template>
-      </tbody>
-    </table>
-  </article>
-</section>
-
-<section>
-  <h2>Advanced <em>Widgets</em></h2>
-  <p>
-    High-complexity widgets that were previously deferred are now implemented with CSP safety,
-    accessibility contracts, keyboard support, and virtual scroll where applicable.
-  </p>
-
-  <article>
-    <header><h3>Explicitly deferred</h3></header>
-    <table>
-      <thead>
-        <tr>
-          <th>Scope</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <template @for="item of deferredWork; track item.item">
-          <tr>
-            <td>{{ item.item }}</td>
-            <td>{{ item.reason }}</td>
-          </tr>
-        </template>
-      </tbody>
-    </table>
-  </article>
-</section>
-
-<section>
-  <h2>What This <em>Means</em></h2>
-  <article>
-    <header><h3>Current position</h3></header>
-    <p>
-      BaseNative is a CSP-safe, SSR-first application foundation with a complete component library,
-      forms system, client-side router, and full browser policy coverage. All trust, pilot, and
-      breadth milestones are implemented.
-    </p>
-  </article>
-
-  <article>
-    <header><h3>What shipped</h3></header>
-    <p>
-      Five core packages plus 30+ ecosystem packages, eight pilot components, advanced widgets
-      (dialog, drawer, tabs, tree, data grid, virtualizer, command palette), field system with
-      validation, client-side routing with SSR resolution, and design tokens with density and
-      theming support.
-    </p>
-  </article>
+<section data-bn-component-philosophy>
+  <h2>Design <em>axioms</em></h2>
+  <ol role="list" data-bn-axioms>
+    <li>
+      <h3>No namespace theater</h3>
+      <p>Components are built on W3C primitives. No <code>app-button</code>, no <code>my-dialog</code>. A button is a <code>&lt;button&gt;</code>.</p>
+    </li>
+    <li>
+      <h3>Zero inline styles</h3>
+      <p>All CSS lives in cascade layers. No <code>style=""</code>, no CSS-in-JS. Variants are addressed with <code>data-variant=""</code>.</p>
+    </li>
+    <li>
+      <h3><code>display: contents</code> on hosts</h3>
+      <p>Wrappers don't affect layout. The component you ask for is the box you get.</p>
+    </li>
+    <li>
+      <h3>Trinity standard</h3>
+      <p>State, logic, and template fuse in one file. No splitting across three.</p>
+    </li>
+  </ol>
 </section>

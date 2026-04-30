@@ -1,4 +1,13 @@
-export const navPages = ['home', 'tasks', 'playground', 'docs', 'components', 'showcase', 'builder'];
+export const navPages = [
+  'home',
+  'tasks',
+  'playground',
+  'docs',
+  'components',
+  'showcase',
+  'roadmap',
+  'builder',
+];
 
 export const staticTasks = [
   { id: 1, title: 'Design token system', status: 'done' },
@@ -43,7 +52,7 @@ export function getTasksPageContext(tasks) {
   };
 }
 
-export function getComponentsPageContext() {
+export function getRoadmapPageContext() {
   return {
     readinessStats: [
       { label: 'Current Milestone', value: 'v0.4+' },
