@@ -66,6 +66,12 @@ const pages = {
     activePage: 'playground',
     ctx: {},
   },
+  builder: {
+    view: 'builder.html',
+    title: 'Builder',
+    activePage: 'builder',
+    ctx: {},
+  },
   docs: {
     view: 'docs.html',
     title: 'API Docs',

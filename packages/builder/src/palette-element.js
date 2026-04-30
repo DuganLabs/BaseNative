@@ -10,10 +10,10 @@ function renderPaletteHTML(palette) {
   return categories.map((cat) => {
     const items = palette.byCategory(cat).map((def) =>
       `<li class="bn-palette__item">`
-        + `<button type="button" draggable="true" data-bn-palette-type="${escapeHtml(def.type)}" class="bn-palette__btn">`
+        + `<div role="button" tabindex="0" draggable="true" data-bn-palette-type="${escapeHtml(def.type)}" class="bn-palette__btn" aria-label="Add ${escapeHtml(def.label)}">`
         + `<span class="bn-palette__label">${escapeHtml(def.label)}</span>`
         + `<span class="bn-palette__type">${escapeHtml(def.type)}</span>`
-        + `</button>`
+        + `</div>`
         + `</li>`
     ).join('');
     return `<section class="bn-palette__group" aria-label="${escapeHtml(cat)} components">`
@@ -50,21 +50,37 @@ export class BnBuilderPalette extends HTMLElement {
   _wire() {
     if (this._wired) return;
     this._wired = true;
+
     this.addEventListener('dragstart', (e) => {
       const btn = e.target.closest('[data-bn-palette-type]');
       if (!btn) return;
       e.dataTransfer.setData('application/x-bn-component-type', btn.dataset.bnPaletteType);
       e.dataTransfer.effectAllowed = 'copy';
     });
+
     this.addEventListener('click', (e) => {
       const btn = e.target.closest('[data-bn-palette-type]');
       if (!btn) return;
-      e.preventDefault();
-      this.dispatchEvent(new CustomEvent('bn-palette-add', {
-        detail: { type: btn.dataset.bnPaletteType },
-        bubbles: true,
-      }));
+      this._dispatchAdd(btn.dataset.bnPaletteType);
     });
+
+    this.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const btn = e.target.closest('[data-bn-palette-type]');
+      if (!btn) return;
+      e.preventDefault();
+      this._dispatchAdd(btn.dataset.bnPaletteType);
+    });
+  }
+
+  _dispatchAdd(type) {
+    if (!type || !this.palette) return;
+    const def = this.palette.get(type);
+    if (!def) return;
+    this.dispatchEvent(new CustomEvent('bn-palette-add', {
+      detail: { type, def },
+      bubbles: true,
+    }));
   }
 }
 

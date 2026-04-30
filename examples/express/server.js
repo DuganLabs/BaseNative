@@ -117,6 +117,11 @@ app.get('/playground', (req, res) => {
   );
 });
 
+app.get('/builder', (req, res) => {
+  const html = renderPage('builder.html', {}, { title: 'Builder', activePage: 'builder' });
+  res.send(html);
+});
+
 app.get('/docs', (req, res) => {
   res.send(
     renderPage(
