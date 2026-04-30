@@ -1,6 +1,6 @@
 {
   "name": "@basenative/persist",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Signal-driven local persistence with TTL, conflict resolution, and a server-rehydrate hook for BaseNative apps",
   "type": "module",
   "exports": {

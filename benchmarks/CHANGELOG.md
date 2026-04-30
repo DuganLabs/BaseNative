@@ -1,5 +1,14 @@
 # basenative-benchmarks
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [ce9ff49]
+  - @basenative/runtime@0.4.2
+  - @basenative/server@0.4.3
+  - @basenative/router@0.4.2
+
 ## 0.2.1
 
 ### Patch Changes
