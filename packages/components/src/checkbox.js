@@ -3,13 +3,14 @@
  */
 
 export function renderCheckbox(options = {}) {
-  const { name, label, checked = false, disabled = false, value = '' } = options;
+  const { name, label, checked = false, disabled = false, value = '', attrs = '' } = options;
   const id = options.id || name;
   const checkedAttr = checked ? ' checked' : '';
   const disabledAttr = disabled ? ' disabled' : '';
   const valueAttr = value ? ` value="${escapeAttr(value)}"` : '';
+  const extra = attrs ? ' ' + attrs : '';
 
-  return `<label data-bn="checkbox-label"><input data-bn="checkbox" type="checkbox" id="${id}" name="${name}"${valueAttr}${checkedAttr}${disabledAttr} /><span>${label || ''}</span></label>`;
+  return `<label data-bn="checkbox-label"${extra}><input data-bn="checkbox" type="checkbox" id="${id}" name="${name}"${valueAttr}${checkedAttr}${disabledAttr} /><span>${label || ''}</span></label>`;
 }
 
 function escapeAttr(str) {

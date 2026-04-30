@@ -23,6 +23,7 @@ export function renderInput(options = {}) {
     disabled = false,
     helpText = '',
     error = '',
+    attrs = '',
   } = options;
 
   const id = options.id || name;
@@ -30,12 +31,13 @@ export function renderInput(options = {}) {
   const disabledAttr = disabled ? ' disabled' : '';
   const ariaDescribed = helpText || error ? ` aria-describedby="${id}-help"` : '';
   const ariaInvalid = error ? ' aria-invalid="true"' : '';
+  const extra = attrs ? ' ' + attrs : '';
 
   let html = `<div data-bn="field">`;
   if (label) {
     html += `<label for="${id}">${label}</label>`;
   }
-  html += `<input data-bn="input" type="${type}" id="${id}" name="${name}" value="${escapeAttr(value)}" placeholder="${escapeAttr(placeholder)}"${requiredAttr}${disabledAttr}${ariaDescribed}${ariaInvalid} />`;
+  html += `<input data-bn="input" type="${type}" id="${id}" name="${name}" value="${escapeAttr(value)}" placeholder="${escapeAttr(placeholder)}"${requiredAttr}${disabledAttr}${ariaDescribed}${ariaInvalid}${extra} />`;
   if (helpText) {
     html += `<span data-bn="field-help" id="${id}-help">${helpText}</span>`;
   }

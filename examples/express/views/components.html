@@ -2,9 +2,10 @@
   <p data-bn-eyebrow>Component library</p>
   <h2>Semantic <em>by construction</em></h2>
   <p data-bn-lede>
-    {{ totalCount }} components across {{ categoryCount }} categories.
-    Every one is built on a real HTML element — <code>&lt;button&gt;</code>, <code>&lt;dialog&gt;</code>,
-    <code>&lt;details&gt;</code>, <code>&lt;table&gt;</code> — with <code>data-bn-*</code> attributes for variants and zero CSS classes.
+    {{ totalCount }} components across {{ categoryCount }} categories. Every one is built on a real
+    HTML element — <code>&lt;button&gt;</code>, <code>&lt;dialog&gt;</code>,
+    <code>&lt;details&gt;</code>, <code>&lt;table&gt;</code> — with <code>data-bn-*</code>
+    attributes for variants and zero CSS classes.
   </p>
   <nav data-bn-page-hero-actions aria-label="Quick links">
     <a href="/showcase" data-bn-cta="primary">View live showcase →</a>
@@ -60,6 +61,7 @@
             </header>
             <p>{{ comp.summary }}</p>
             <footer>
+              <code data-bn-component-fn>{{ comp.fn }}</code>
               <span aria-hidden="true">→</span>
               <span data-bn-visually-hidden>View {{ comp.title }} demo</span>
             </footer>
@@ -75,11 +77,17 @@
   <ol role="list" data-bn-axioms>
     <li>
       <h3>No namespace theater</h3>
-      <p>Components are built on W3C primitives. No <code>app-button</code>, no <code>my-dialog</code>. A button is a <code>&lt;button&gt;</code>.</p>
+      <p>
+        Components are built on W3C primitives. No <code>app-button</code>, no
+        <code>my-dialog</code>. A button is a <code>&lt;button&gt;</code>.
+      </p>
     </li>
     <li>
       <h3>Zero inline styles</h3>
-      <p>All CSS lives in cascade layers. No <code>style=""</code>, no CSS-in-JS. Variants are addressed with <code>data-variant=""</code>.</p>
+      <p>
+        All CSS lives in cascade layers. No <code>style=""</code>, no CSS-in-JS. Variants are
+        addressed with <code>data-variant=""</code>.
+      </p>
     </li>
     <li>
       <h3><code>display: contents</code> on hosts</h3>
