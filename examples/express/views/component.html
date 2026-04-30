@@ -1,44 +1,91 @@
 <article data-bn-component-page>
   {{ breadcrumb }}
 
-  <header data-bn-component-header>
+  <header data-bn-component-hero>
     <p data-bn-eyebrow>{{ component.categoryTitle }}</p>
     <h2>{{ component.title }}</h2>
     <p data-bn-lede>{{ component.summary }}</p>
-    <p data-bn-component-tag-line>
-      Built on <code>&lt;{{ component.tag }}&gt;</code>
-    </p>
+    <dl data-bn-component-meta>
+      <div>
+        <dt>Element</dt>
+        <dd><code>&lt;{{ component.tag }}&gt;</code></dd>
+      </div>
+      <div>
+        <dt>Module</dt>
+        <dd><code>@basenative/components</code></dd>
+      </div>
+      <div>
+        <dt>Function</dt>
+        <dd><code>{{ component.fn }}</code></dd>
+      </div>
+    </dl>
   </header>
 
-  <template @for="example of examples; track example.title">
-    <section data-bn-component-example>
-      <header>
-        <h3>{{ example.title }}</h3>
-        <p>{{ example.description }}</p>
-      </header>
+  <section data-bn-component-quickstart>
+    <header>
+      <h3>Quick start</h3>
+      <p>Import the render function and call it from your server template.</p>
+    </header>
+    <pre><code>{{ quickstart }}</code></pre>
+  </section>
 
-      <figure data-bn-component-demo>
-        <figcaption>Live render</figcaption>
-        <output>{{ example.html }}</output>
-      </figure>
+  <section data-bn-component-examples>
+    <header>
+      <h3>Examples</h3>
+      <p>Each block is a real server render — no mockups, no virtual DOM.</p>
+    </header>
 
-      <details data-bn-component-source>
-        <summary>
-          <span aria-hidden="true">⌄</span>
-          <span>View source</span>
-        </summary>
-        <pre><code>{{ example.code }}</code></pre>
-        <button
-          type="button"
-          data-bn-action="copy-code"
-          data-bn-cta="secondary"
-          aria-label="Copy code to clipboard"
-        >
-          Copy code
-        </button>
-      </details>
-    </section>
-  </template>
+    <template @for="example of examples; track example.title">
+      <section data-bn-component-example>
+        <header>
+          <h4>{{ example.title }}</h4>
+          <p>{{ example.description }}</p>
+        </header>
+
+        <div data-bn-component-split>
+          <figure data-bn-component-preview>
+            <figcaption>Live render</figcaption>
+            <output>{{ example.html }}</output>
+          </figure>
+
+          <figure data-bn-component-source>
+            <figcaption>Source</figcaption>
+            <pre><code>{{ example.code }}</code></pre>
+          </figure>
+        </div>
+      </section>
+    </template>
+  </section>
+
+  <section data-bn-component-api>
+    <header>
+      <h3>Options</h3>
+      <p>Arguments accepted by <code>{{ component.fn }}()</code>.</p>
+    </header>
+    <table>
+      <caption data-bn-visually-hidden>
+        {{ component.fn }} option reference
+      </caption>
+      <thead>
+        <tr>
+          <th scope="col">Option</th>
+          <th scope="col">Type</th>
+          <th scope="col">Default</th>
+          <th scope="col">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template @for="row of component.api; track row.name">
+          <tr>
+            <th scope="row"><code>{{ row.name }}</code></th>
+            <td><code>{{ row.type }}</code></td>
+            <td><code>{{ row.default }}</code></td>
+            <td>{{ row.description }}</td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </section>
 
   <template @if="related.length">
     <aside data-bn-component-related aria-label="Related components">

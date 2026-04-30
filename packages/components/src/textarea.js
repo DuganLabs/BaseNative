@@ -13,18 +13,20 @@ export function renderTextarea(options = {}) {
     disabled = false,
     helpText = '',
     error = '',
+    attrs = '',
   } = options;
 
   const id = options.id || name;
   const requiredAttr = required ? ' required' : '';
   const disabledAttr = disabled ? ' disabled' : '';
   const ariaInvalid = error ? ' aria-invalid="true"' : '';
+  const extra = attrs ? ' ' + attrs : '';
 
   let html = `<div data-bn="field">`;
   if (label) {
     html += `<label for="${id}">${label}</label>`;
   }
-  html += `<textarea data-bn="textarea" id="${id}" name="${name}" rows="${rows}" placeholder="${escapeAttr(placeholder)}"${requiredAttr}${disabledAttr}${ariaInvalid}>${escapeHtml(value)}</textarea>`;
+  html += `<textarea data-bn="textarea" id="${id}" name="${name}" rows="${rows}" placeholder="${escapeAttr(placeholder)}"${requiredAttr}${disabledAttr}${ariaInvalid}${extra}>${escapeHtml(value)}</textarea>`;
   if (helpText) {
     html += `<span data-bn="field-help" id="${id}-help">${helpText}</span>`;
   }

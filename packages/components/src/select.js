@@ -13,18 +13,20 @@ export function renderSelect(options = {}) {
     required = false,
     disabled = false,
     error = '',
+    attrs = '',
   } = options;
 
   const id = options.id || name;
   const requiredAttr = required ? ' required' : '';
   const disabledAttr = disabled ? ' disabled' : '';
   const ariaInvalid = error ? ' aria-invalid="true"' : '';
+  const extra = attrs ? ' ' + attrs : '';
 
   let html = `<div data-bn="field">`;
   if (label) {
     html += `<label for="${id}">${label}</label>`;
   }
-  html += `<select data-bn="select" id="${id}" name="${name}"${requiredAttr}${disabledAttr}${ariaInvalid}>`;
+  html += `<select data-bn="select" id="${id}" name="${name}"${requiredAttr}${disabledAttr}${ariaInvalid}${extra}>`;
   if (placeholder) {
     html += `<option value="" disabled${!selected ? ' selected' : ''}>${escapeHtml(placeholder)}</option>`;
   }

@@ -6,9 +6,10 @@
  * Renders a determinate progress bar using native <progress>.
  */
 export function renderProgress(options = {}) {
-  const { value = 0, max = 100, label = '' } = options;
+  const { value = 0, max = 100, label = '', attrs = '' } = options;
   const ariaLabel = label ? ` aria-label="${escapeAttr(label)}"` : '';
-  return `<progress data-bn="progress" value="${value}" max="${max}"${ariaLabel}>${Math.round((value / max) * 100)}%</progress>`;
+  const extra = attrs ? ' ' + attrs : '';
+  return `<progress data-bn="progress" value="${value}" max="${max}"${ariaLabel}${extra}>${Math.round((value / max) * 100)}%</progress>`;
 }
 
 /**

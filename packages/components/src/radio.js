@@ -3,9 +3,10 @@
  */
 
 export function renderRadioGroup(options = {}) {
-  const { name, label, items = [], selected = '', disabled = false } = options;
+  const { name, label, items = [], selected = '', disabled = false, attrs = '' } = options;
+  const extra = attrs ? ' ' + attrs : '';
 
-  let html = `<fieldset data-bn="radio-group">`;
+  let html = `<fieldset data-bn="radio-group"${extra}>`;
   if (label) {
     html += `<legend>${label}</legend>`;
   }
