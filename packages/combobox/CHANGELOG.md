@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies [ce9ff49]
+  - @basenative/runtime@0.4.2
+
 ## 1.0.0
 
 ### Minor Changes
