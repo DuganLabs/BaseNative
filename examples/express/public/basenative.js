@@ -1,5 +1,8 @@
 // ../../packages/runtime/src/signals.js
 var currentEffect = null;
+var batchDepth = 0;
+var pendingEffects = /* @__PURE__ */ new Set();
+var plugins = [];
 function cleanupEffect(effectRef) {
   for (const subscribers of effectRef.subscriptions) {
     subscribers.delete(effectRef);
@@ -9,6 +12,34 @@ function cleanupEffect(effectRef) {
     const cleanup = effectRef.cleanup;
     effectRef.cleanup = null;
     cleanup();
+  }
+}
+function scheduleEffect(effectRef) {
+  if (batchDepth > 0) {
+    pendingEffects.add(effectRef);
+  } else {
+    effectRef.run();
+  }
+}
+function flushEffects() {
+  batchDepth++;
+  try {
+    while (pendingEffects.size > 0) {
+      const effects = [...pendingEffects];
+      pendingEffects.clear();
+      for (const effectRef of effects) effectRef.run();
+    }
+  } finally {
+    batchDepth--;
+  }
+}
+function batch(fn) {
+  batchDepth++;
+  try {
+    return fn();
+  } finally {
+    batchDepth--;
+    if (batchDepth === 0) flushEffects();
   }
 }
 function signal(initial) {
@@ -24,8 +55,12 @@ function signal(initial) {
   accessor.set = (next) => {
     const resolved = typeof next === "function" ? next(value) : next;
     if (resolved !== value) {
+      const prev = value;
       value = resolved;
-      for (const effectRef of [...subs]) effectRef.run();
+      for (const plugin of plugins) {
+        if (plugin.onSignalWrite) plugin.onSignalWrite(accessor, prev, value);
+      }
+      for (const effectRef of [...subs]) scheduleEffect(effectRef);
     }
   };
   accessor.peek = () => value;
@@ -35,6 +70,13 @@ function computed(fn) {
   const s = signal(void 0);
   effect(() => s.set(fn()));
   return s;
+}
+function registerPlugin(plugin) {
+  plugins.push(plugin);
+  return () => {
+    const idx = plugins.indexOf(plugin);
+    if (idx !== -1) plugins.splice(idx, 1);
+  };
 }
 function effect(fn) {
   const effectRef = {
@@ -66,8 +108,8 @@ function effect(fn) {
   return execute;
 }
 
-// ../../src/shared/expression.js
-var SCOPE_SLOT = Symbol.for("basenative.scopeSlot");
+// ../../packages/runtime/src/shared/expression.js
+var SCOPE_SLOT = /* @__PURE__ */ Symbol.for("basenative.scopeSlot");
 var EXPRESSION_CACHE = /* @__PURE__ */ new Map();
 var UNSAFE_PROPERTIES = /* @__PURE__ */ new Set(["__proto__", "prototype", "constructor"]);
 function createExpressionError(code, message, source, index = 0) {
@@ -704,7 +746,7 @@ function interpolate(text, ctx, options) {
 }
 
 // ../../packages/runtime/src/dom-lifecycle.js
-var CLEANUPS = Symbol("basenative.cleanups");
+var CLEANUPS = /* @__PURE__ */ Symbol("basenative.cleanups");
 function registerCleanup(node, cleanup) {
   if (!node || typeof cleanup !== "function") return cleanup;
   if (!node[CLEANUPS]) node[CLEANUPS] = [];
@@ -1189,16 +1231,39 @@ function hydrateChildren(parent, ctx, options = {}) {
   }
   return processed;
 }
+function hydrateDeferred(root, ctx, options) {
+  const existing = root.querySelectorAll?.("[data-bn-defer]") ?? [];
+  for (const el of existing) {
+    if (el.children.length > 0) {
+      hydrateChildren(el, ctx, options);
+    }
+  }
+  if (typeof document === "undefined") return () => {
+  };
+  function onDefer(event) {
+    const id = event.detail?.id;
+    if (!id) return;
+    const target = root.querySelector?.(`[data-bn-defer-resolve="${id}"] ~ [data-bn-defer="${id}"]`) ?? root.querySelector?.(`div[data-bn-defer="${id}"]`);
+    if (!target) return;
+    hydrateChildren(target, ctx, options);
+  }
+  document.addEventListener("bn:defer", onDefer);
+  return () => document.removeEventListener("bn:defer", onDefer);
+}
 function hydrate(root, ctx, options = {}) {
   const runtimeOptions = createRuntimeOptions(options);
   const processed = hydrateChildren(root, ctx, runtimeOptions);
+  const cleanupDeferred = hydrateDeferred(root, ctx, runtimeOptions);
   if (processed === 0) {
     const markerMessage = hasHydrationMarkers(root) ? "hydrate() found server render markers but no template source; this build can diagnose SSR boundaries, but it still recovers by client-side template hydration only" : "hydrate() found no BaseNative template directives in the target root";
     reportHydrationMismatch(runtimeOptions, markerMessage, {
       code: hasHydrationMarkers(root) ? "BN_HYDRATE_MARKERS_WITHOUT_TEMPLATE" : "BN_HYDRATE_NO_DIRECTIVES"
     });
   }
-  return () => disposeNodeTree(root);
+  return () => {
+    cleanupDeferred();
+    disposeNodeTree(root);
+  };
 }
 
 // ../../packages/runtime/src/features.js
@@ -1378,7 +1443,7 @@ function definePlugin(config) {
   };
 }
 function createPluginRegistry() {
-  const plugins = /* @__PURE__ */ new Map();
+  const plugins2 = /* @__PURE__ */ new Map();
   const hooks = /* @__PURE__ */ new Map();
   const directives = /* @__PURE__ */ new Map();
   function addDirective(name, handler) {
@@ -1408,10 +1473,10 @@ function createPluginRegistry() {
     if (!plugin || typeof plugin.name !== "string") {
       throw new Error('Invalid plugin: must have a "name" property.');
     }
-    if (plugins.has(plugin.name)) {
+    if (plugins2.has(plugin.name)) {
       throw new Error(`Plugin "${plugin.name}" is already registered.`);
     }
-    plugins.set(plugin.name, plugin);
+    plugins2.set(plugin.name, plugin);
     const api = {
       addDirective,
       onBeforeRender: (fn) => addHook("beforeRender", fn),
@@ -1433,7 +1498,7 @@ function createPluginRegistry() {
     return directives.get(name);
   }
   function getPlugins() {
-    return [...plugins.keys()];
+    return [...plugins2.keys()];
   }
   return { register, runHook, getDirective, getPlugins };
 }
@@ -1765,6 +1830,7 @@ function debugDeps(s, name = "signal") {
   log("info", `deps:${name} current value:`, value);
 }
 export {
+  batch,
   browserFeatures,
   computed,
   createErrorBoundary,
@@ -1799,6 +1865,7 @@ export {
   observeLCP,
   observeTTFB,
   recordHydration,
+  registerPlugin,
   renderWithBoundary,
   reportHydrationMismatch,
   signal,

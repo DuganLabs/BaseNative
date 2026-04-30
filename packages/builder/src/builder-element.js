@@ -61,6 +61,7 @@ export class BnBuilder extends HTMLElement {
     if (inspector && inspector.attach) inspector.attach(this.state, this.palette);
 
     this._wireToolbar();
+    this._wirePaletteAdd();
   }
 
   attach({ state, palette }) {
@@ -95,6 +96,23 @@ export class BnBuilder extends HTMLElement {
       const def = this.palette.get(type);
       if (!def) return;
       this.state.addNode(null, { type, props: { ...def.defaults } });
+    });
+  }
+
+  _wirePaletteAdd() {
+    if (this._paletteAddWired) return;
+    this._paletteAddWired = true;
+    this.addEventListener('bn-palette-add', (e) => {
+      if (!this.state || !this.palette) return;
+      const { type, def } = e.detail || {};
+      if (!type) return;
+      const resolved = def || this.palette.get(type);
+      if (!resolved) return;
+      const selectedId = this.state.selection();
+      const selectedNode = selectedId ? this.state.getNode(selectedId) : null;
+      const selectedDef = selectedNode ? this.palette.get(selectedNode.type) : null;
+      const parentId = selectedDef && selectedDef.container ? selectedId : null;
+      this.state.addNode(parentId, { type, props: { ...resolved.defaults } });
     });
   }
 }
