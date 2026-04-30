@@ -48,11 +48,22 @@ export class BnBuilderPalette extends HTMLElement {
   }
 
   _wire() {
+    if (this._wired) return;
+    this._wired = true;
     this.addEventListener('dragstart', (e) => {
       const btn = e.target.closest('[data-bn-palette-type]');
       if (!btn) return;
       e.dataTransfer.setData('application/x-bn-component-type', btn.dataset.bnPaletteType);
       e.dataTransfer.effectAllowed = 'copy';
+    });
+    this.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-bn-palette-type]');
+      if (!btn) return;
+      e.preventDefault();
+      this.dispatchEvent(new CustomEvent('bn-palette-add', {
+        detail: { type: btn.dataset.bnPaletteType },
+        bubbles: true,
+      }));
     });
   }
 }
