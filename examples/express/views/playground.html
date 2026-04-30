@@ -10,7 +10,7 @@
     </header>
     <p>A reactive counter driven by <code>signal()</code> — click to increment or decrement and watch the DOM update instantly.</p>
     <output data-counter-output>0</output>
-    <nav data-controls>
+    <nav data-controls aria-label="Counter controls">
       <button data-action="decrement"><img src="/icons/minus.svg" alt="Decrement" width="16" height="16"></button>
       <button data-action="increment"><img src="/icons/plus.svg" alt="Increment" width="16" height="16"></button>
       <button data-action="reset">Reset</button>
@@ -22,7 +22,7 @@
       <h3>Computed &amp; Effects</h3>
     </header>
     <p>Type your name below. A <code>computed()</code> signal derives a greeting, and an <code>effect()</code> logs each change.</p>
-    <nav data-controls>
+    <nav data-controls aria-label="Greeting controls">
       <input type="text" placeholder="Your name..." data-name-input aria-label="Your name">
     </nav>
     <output data-greeting-output>Hello, stranger</output>
@@ -37,7 +37,7 @@
       <h3>Temperature Converter</h3>
     </header>
     <p>Two-way binding via signals. Change one and the other updates reactively.</p>
-    <nav data-controls>
+    <nav data-controls aria-label="Temperature inputs">
       <label>
         <input type="text" placeholder="°C" data-celsius-input>
         <abbr>Celsius</abbr>
@@ -55,7 +55,7 @@
       <h3>Dynamic List</h3>
     </header>
     <p>Add and remove items to see <code>@for</code> re-render reactively. Uses <code>@empty</code> for the empty state.</p>
-    <nav data-controls>
+    <nav data-controls aria-label="Dynamic list controls">
       <input type="text" placeholder="Add an item..." data-list-input aria-label="Add an item">
       <button data-action="add-item">Add</button>
     </nav>

@@ -63,7 +63,7 @@
     /* Text */
     --text-0: #e8e6f0;
     --text-1: #b0adc0;
-    --text-2: #7a7890;
+    --text-2: #9491a8;
 
     /* Accent */
     --accent: #e8a44a;
@@ -166,7 +166,7 @@
     --syntax-string: #c3e88d;
     --syntax-function: #82aaff;
     --syntax-number: #f78c6c;
-    --syntax-comment: #546e7a;
+    --syntax-comment: #7a98a5;
     --syntax-tag: #f07178;
     --syntax-attr: #ffcb6b;
 

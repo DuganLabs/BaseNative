@@ -85,12 +85,12 @@ async function deleteTask(id) {
 const hydrateRoot = document.querySelector('[data-hydrate]');
 hydrateRoot.innerHTML = `
   <h3>Interactive Controls</h3>
-  <nav data-controls>
+  <nav data-controls aria-label="Add task">
     <input type="text" placeholder="New task..." aria-label="New task title">
     <button type="button">Add Task</button>
   </nav>
   <output></output>
-  <nav data-controls>
+  <nav data-controls aria-label="Filter tasks">
     <template @for="f of filterOptions">
       <button type="button" :aria-pressed="String(currentFilter() === f)" @click="currentFilter.set(f)">{{ f }}</button>
     </template>

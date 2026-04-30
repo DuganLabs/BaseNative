@@ -81,6 +81,18 @@ const laws = [
           const isDecorative = el.getAttribute('aria-hidden') === 'true';
           if (isDecorative) continue;
 
+          // WCAG 2.5.5 "Inline" exception: anchors flowing inside a sentence
+          // (e.g. <p>… <a href="…">link</a> …</p>) are exempted from minimum
+          // target size. Detect by looking for a block ancestor whose layout
+          // is inline-text (<p>, <li>, <dd>, headings) where the link itself
+          // reports `display: inline` or `inline-block`.
+          if (el.tagName === 'A') {
+            const cs = getComputedStyle(el);
+            const isInline = cs.display === 'inline' || cs.display === 'inline-block';
+            const inFlowText = !!el.closest('p, li, dd, h1, h2, h3, h4, h5, h6');
+            if (isInline && inFlowText && el.getAttribute('role') !== 'button') continue;
+          }
+
           const minSize = 44;
           if (rect.width < minSize || rect.height < minSize) {
             violations.push({
@@ -387,12 +399,17 @@ async function runLawsAudit() {
   await page2.setViewportSize({ width: 1440, height: 900 });
 
   console.log('\n  Re-running Fitts\'s Law on desktop viewport...');
+  const desktopFittsResults = [];
   for (const route of ROUTES_TO_AUDIT) {
     await page2.goto(`${baseUrl}${route}`, { waitUntil: 'networkidle' });
     await page2.waitForTimeout(800);
     const fittsViolations = await laws[0].audit(page2);
+    desktopFittsResults.push({ route, violations: fittsViolations });
     if (fittsViolations.length > 0) {
       console.log(`    ✗ ${route} desktop Fitts violations: ${fittsViolations.length}`);
+      for (const v of fittsViolations) {
+        console.log(`      → ${v.element}${v.text ? ` "${v.text}"` : ''} — ${v.issue}`);
+      }
       totalViolations += fittsViolations.length;
     }
   }
@@ -406,6 +423,7 @@ async function runLawsAudit() {
     routes: ROUTES_TO_AUDIT,
     laws: laws.map((l) => ({ id: l.id, name: l.name, description: l.description })),
     results: allResults,
+    desktopFitts: desktopFittsResults,
   };
 
   const reportPath = join(REPORTS_DIR, `laws-of-ux-${Date.now()}.json`);
