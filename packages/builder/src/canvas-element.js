@@ -127,8 +127,20 @@ export class BnBuilderCanvas extends HTMLElement {
     });
 
     this._root.addEventListener('dragover', (e) => {
+      const types = e.dataTransfer.types;
+      const isPaletteDrag =
+        types && (types.contains
+          ? types.contains('application/x-bn-component-type')
+          : Array.from(types).includes('application/x-bn-component-type'));
+      if (!isPaletteDrag) {
+        const isNodeDrag =
+          types && (types.contains
+            ? types.contains('application/x-bn-node-id')
+            : Array.from(types).includes('application/x-bn-node-id'));
+        if (!isNodeDrag) return;
+      }
       e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
+      e.dataTransfer.dropEffect = isPaletteDrag ? 'copy' : 'move';
     });
 
     this._root.addEventListener('drop', (e) => {

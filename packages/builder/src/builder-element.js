@@ -89,6 +89,13 @@ export class BnBuilder extends HTMLElement {
         this.dispatchEvent(new CustomEvent('bn-builder-export', { detail: { code }, bubbles: true }));
       }
     });
+    this.addEventListener('bn-palette-add', (e) => {
+      const type = e.detail?.type;
+      if (!type || !this.state || !this.palette) return;
+      const def = this.palette.get(type);
+      if (!def) return;
+      this.state.addNode(null, { type, props: { ...def.defaults } });
+    });
   }
 }
 
