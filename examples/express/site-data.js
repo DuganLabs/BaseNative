@@ -1,3 +1,5 @@
+import { componentCategories, flatComponents } from './component-catalog.js';
+
 export const navPages = [
   'home',
   'tasks',
@@ -49,6 +51,14 @@ export function getTasksPageContext(tasks) {
   return {
     tasks,
     tasksJson: JSON.stringify(tasks),
+  };
+}
+
+export function getComponentsPageContext() {
+  return {
+    categories: componentCategories,
+    totalCount: flatComponents.length,
+    categoryCount: componentCategories.length,
   };
 }
 
