@@ -108,9 +108,6 @@ export function renderCombobox(options = {}) {
     : ` aria-describedby="${liveId}"`;
   const opts = (options.options || []).map(normalizeOption).filter(Boolean);
   const allowCreate = options.allowCreate === true;
-  const createLabelText = options.createLabel
-    ? options.createLabel(value)
-    : defaultCreateLabel(value);
 
   // Pre-render the option list so that JS-disabled clients still see
   // selectable choices via a fallback <datalist>. The visible listbox

@@ -280,10 +280,8 @@ describe('migrate', () => {
 
   function makeAdapter() {
     // In-memory SQLite-like adapter using maps
-    const tables = new Map();
-    const migTable = '_migrations';
 
-    async function execute(sql, params = []) {
+    async function execute(_sql, _params = []) {
       // Minimal in-memory adapter
     }
 
@@ -294,7 +292,7 @@ describe('migrate', () => {
       return { rows: [] };
     }
 
-    async function queryOne(sql) {
+    async function queryOne(_sql) {
       return null;
     }
 

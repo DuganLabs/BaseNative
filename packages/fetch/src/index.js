@@ -1,4 +1,4 @@
-import { signal, computed, effect } from '@basenative/runtime';
+import { signal, computed } from '@basenative/runtime';
 
 /**
  * Create a signal-based async resource.
@@ -9,7 +9,7 @@ import { signal, computed, effect } from '@basenative/runtime';
  * @returns {object} Resource with data, loading, error signals
  */
 export function createResource(fetcher, options = {}) {
-  const { initialData, immediate = true, key } = options;
+  const { initialData, immediate = true, key: _key } = options;
 
   const data = signal(initialData ?? null);
   const loading = signal(false);

@@ -27,7 +27,7 @@ export function credentialsProvider(options) {
       if (!valid) return { success: false, error: 'Invalid credentials' };
 
       // Return user without password hash
-      const { passwordHash, password_hash, ...safeUser } = user;
+      const { passwordHash: _passwordHash, password_hash: _password_hash, ...safeUser } = user;
       return { success: true, user: safeUser };
     },
 

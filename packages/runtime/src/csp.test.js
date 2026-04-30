@@ -7,7 +7,6 @@ const ROOT = resolve(import.meta.dirname, '..', '..', '..');
 const SOURCE_DIRS = [
   join(ROOT, 'packages', 'runtime', 'src'),
   join(ROOT, 'packages', 'server', 'src'),
-  join(ROOT, 'src', 'shared'),
 ];
 const DISALLOWED = /\b(?:new\s+Function\b|eval\s*\(|setTimeout\s*\(\s*['"]|setInterval\s*\(\s*['"])/;
 

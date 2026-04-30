@@ -184,7 +184,7 @@ export async function hydrateFromServer(args) {
   if (local !== null) {
     try { args.onResolve(local, { source: 'local', local }); } catch (e) { args.onError?.(e); }
   }
-  let server = null;
+  let server;
   try {
     server = await args.fetch();
   } catch (e) {

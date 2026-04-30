@@ -311,7 +311,7 @@ describe('effect advanced', () => {
 
   it('error in effect body propagates synchronously', () => {
     const s = signal(0);
-    const fx = effect(() => {
+    effect(() => {
       if (s() > 0) throw new Error('boom');
     });
     assert.throws(() => s.set(1), /boom/);

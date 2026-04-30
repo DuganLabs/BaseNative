@@ -53,7 +53,7 @@ export function toFastifyPlugin(pipeline) {
  * @param {object} reply - Fastify Reply
  * @returns {object} Common middleware context
  */
-function createFastifyContext(request, reply) {
+function createFastifyContext(request, _reply) {
   return {
     request: {
       method: request.method,

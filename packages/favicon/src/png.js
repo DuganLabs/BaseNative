@@ -33,6 +33,7 @@ async function loadResvg() {
           "shipped transitively via the optional peer `@basenative/og-image`. " +
           "Install with: pnpm add @basenative/og-image\n" +
           `Underlying error: ${err && /** @type {any} */ (err).message}`,
+        { cause: err },
       );
     }
     // resvg-wasm needs initWasm() called once per isolate. The `@basenative/

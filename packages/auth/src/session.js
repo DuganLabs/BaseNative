@@ -1,4 +1,4 @@
-import { randomBytes, createHash } from 'node:crypto';
+import { randomBytes } from 'node:crypto';
 
 /**
  * Session manager with pluggable storage.

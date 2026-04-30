@@ -4,12 +4,24 @@
     "test": {
       "cache": true,
       "command": "node --test",
-      "inputs": ["{projectRoot}/src/**/*.js", "{projectRoot}/test/**/*.js"]
+      "inputs": [
+        "{projectRoot}/src/**/*.js",
+        "{projectRoot}/test/**/*.js"
+      ],
+      "options": {
+        "cwd": "{projectRoot}"
+      }
     },
     "lint": {
       "cache": true,
       "command": "pnpm exec eslint src",
-      "inputs": ["{projectRoot}/src/**/*.js", "{projectRoot}/bin/**/*.js"]
+      "inputs": [
+        "{projectRoot}/src/**/*.js",
+        "{projectRoot}/bin/**/*.js"
+      ],
+      "options": {
+        "cwd": "{projectRoot}"
+      }
     }
   }
 }

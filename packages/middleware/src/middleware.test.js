@@ -526,21 +526,6 @@ describe('Express adapter', () => {
     };
   }
 
-  function mockExpressRes() {
-    const state = { code: 200, headers: {}, body: undefined };
-    return {
-      setHeader: (k, v) => { state.headers[k] = v; },
-      status: (code) => { state.code = code; return res; },
-      send: (body) => { state.body = body; },
-      cookie: () => {},
-      _state: state,
-      get _self() { return res; },
-    };
-    // eslint-disable-next-line no-unreachable
-    var res = { setHeader: (k, v) => { state.headers[k] = v; }, status: (code) => { state.code = code; return res; }, send: (body) => { state.body = body; }, cookie: () => {}, _state: state };
-    return res;
-  }
-
   it('creates context from Express req', () => {
     const req = mockExpressReq({ method: 'POST', url: '/api/data', path: '/api/data', query: {} });
     const res = { setHeader: () => {}, status: () => ({}), send: () => {}, cookie: () => {} };

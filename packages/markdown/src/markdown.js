@@ -130,7 +130,7 @@ function parseInline(text) {
  * @param {boolean} [options.sanitize=true]  Escape HTML entities in source
  * @returns {string} HTML output
  */
-export function parse(source, options = {}) {
+export function parse(source, _options = {}) {
   const lines = source.replace(/\r\n/g, '\n').split('\n');
   const blocks = [];
   let i = 0;
@@ -146,7 +146,6 @@ export function parse(source, options = {}) {
 
     // Fenced code block
     if (line.trimStart().startsWith('```')) {
-      const indent = line.length - line.trimStart().length;
       const lang = line.trimStart().slice(3).trim();
       const codeLines = [];
       i++;

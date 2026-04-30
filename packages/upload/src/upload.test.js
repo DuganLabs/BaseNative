@@ -29,7 +29,6 @@ function buildMultipartBody(boundary, parts) {
 
 describe('parseMultipart', () => {
   it('parses simple multipart body', () => {
-    const boundary = '----boundary';
     const body = `------boundary\r\nContent-Disposition: form-data; name="field1"\r\n\r\nvalue1\r\n------boundary\r\nContent-Disposition: form-data; name="file"; filename="test.txt"\r\nContent-Type: text/plain\r\n\r\nhello world\r\n------boundary--`;
     const parts = parseMultipart(body, `multipart/form-data; boundary=----boundary`);
     assert.equal(parts.length, 2);
@@ -73,7 +72,6 @@ describe('parseMultipart', () => {
 
   it('filters parts with no name', () => {
     // manually build a body with a nameless part
-    const boundary = 'nb';
     const body = `--nb\r\nContent-Disposition: form-data\r\n\r\norphan\r\n--nb--`;
     const parts = parseMultipart(body, `multipart/form-data; boundary=nb`);
     assert.equal(parts.length, 0);
@@ -341,7 +339,6 @@ describe('createUploadHandler', () => {
     tempDir = mkdtempSync(join(tmpdir(), 'bn-upload-'));
     const storage = createLocalStorage({ directory: tempDir });
     const handler = createUploadHandler(storage, { maxFileSize: 5 });
-    const boundary = '----boundary';
     const body = `------boundary\r\nContent-Disposition: form-data; name="file"; filename="big.txt"\r\nContent-Type: text/plain\r\n\r\nhello world too large\r\n------boundary--`;
     const ctx = {
       request: { method: 'POST', headers: { 'content-type': `multipart/form-data; boundary=----boundary` }, body },

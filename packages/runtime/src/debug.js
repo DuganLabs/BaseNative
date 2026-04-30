@@ -14,7 +14,7 @@
  *   // → [BN:debug] signal:count set (1)
  */
 
-import { signal, effect } from './signals.js';
+import { effect } from './signals.js';
 
 let _debugEnabled = false;
 let _label = '';
