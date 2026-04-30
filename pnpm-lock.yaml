@@ -159,6 +159,9 @@ importers:
 
   examples/express:
     dependencies:
+      '@basenative/builder':
+        specifier: workspace:*
+        version: link:../../packages/builder
       '@basenative/fonts':
         specifier: workspace:*
         version: link:../../packages/fonts

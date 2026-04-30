@@ -4,7 +4,8 @@
   "description": "Signal-based drag-and-drop component builder for BaseNative — composes layouts, generates clean BaseNative code",
   "type": "module",
   "exports": {
-    ".": "./src/index.js"
+    ".": "./src/index.js",
+    "./builder.css": "./src/builder.css"
   },
   "types": "./types/index.d.ts",
   "dependencies": {

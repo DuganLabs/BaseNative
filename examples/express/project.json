@@ -3,10 +3,17 @@
   "targets": {
     "bundle": {
       "cache": true,
-      "command": "npx esbuild ../../packages/runtime/src/index.js --bundle --format=esm --outfile=public/basenative.js",
+      "command": "npx esbuild ../../packages/runtime/src/index.js --bundle --format=esm --outfile=public/basenative.js && npx esbuild builder-entry.js --bundle --format=esm --outfile=public/builder.js",
       "options": { "cwd": "{projectRoot}" },
-      "inputs": ["{workspaceRoot}/packages/runtime/src/**/*.js"],
-      "outputs": ["{projectRoot}/public/basenative.js"]
+      "inputs": [
+        "{workspaceRoot}/packages/runtime/src/**/*.js",
+        "{workspaceRoot}/packages/builder/src/**/*.js",
+        "{projectRoot}/builder-entry.js"
+      ],
+      "outputs": [
+        "{projectRoot}/public/basenative.js",
+        "{projectRoot}/public/builder.js"
+      ]
     },
     "serve": {
       "cache": false,

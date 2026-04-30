@@ -6,6 +6,7 @@ node_modules/
 .claude/worktrees/
 skills-lock.json
 examples/express/public/basenative.js
+examples/express/public/builder.js
 dist/
 reports/
 

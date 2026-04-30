@@ -99,6 +99,12 @@ const pages = {
     activePage: 'showcase',
     ctx: getShowcaseContext(),
   },
+  builder: {
+    view: 'builder.html',
+    title: 'Builder',
+    activePage: 'builder',
+    ctx: {},
+  },
 };
 
 // -- Build --
@@ -116,6 +122,7 @@ cpSync(join(express, 'public', 'styles.css'), join(dist, 'styles.css'));
 cpSync(join(express, 'public', 'theme.css'), join(dist, 'theme.css'));
 cpSync(join(express, 'public', 'basenative.js'), join(dist, 'basenative.js'));
 cpSync(join(express, 'public', 'showcase.js'), join(dist, 'showcase.js'));
+cpSync(join(express, 'public', 'builder.js'), join(dist, 'builder.js'));
 cpSync(join(express, 'public', 'favicon.svg'), join(dist, 'favicon.svg'));
 cpSync(join(express, 'public', 'avatar-eve.svg'), join(dist, 'avatar-eve.svg'));
 
@@ -135,6 +142,14 @@ for (const file of [
 ]) {
   cpSync(join(componentSrc, file), join(bnCssDir, file));
 }
+
+// Copy builder CSS (served as /bn-builder-css/ in Express, must exist in dist)
+const bnBuilderCssDir = join(dist, 'bn-builder-css');
+mkdirSync(bnBuilderCssDir, { recursive: true });
+cpSync(
+  join(root, 'packages', 'builder', 'src', 'builder.css'),
+  join(bnBuilderCssDir, 'builder.css'),
+);
 
 // Copy fonts (preserve structure so fonts.css relative paths work)
 cpSync(join(root, 'packages', 'fonts'), join(dist, 'fonts'), { recursive: true });
