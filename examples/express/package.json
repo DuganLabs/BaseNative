@@ -8,6 +8,7 @@
     "@basenative/server": "workspace:*",
     "@basenative/fonts": "workspace:*",
     "@basenative/icons": "workspace:*",
+    "@basenative/builder": "workspace:*",
     "express": "^5.1.0"
   }
 }

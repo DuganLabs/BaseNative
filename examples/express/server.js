@@ -21,6 +21,7 @@ app.use(express.static(join(__dirname, 'public')));
 app.use('/bn-css', express.static(join(pkgRoot, 'packages', 'components', 'src')));
 app.use('/fonts', express.static(join(pkgRoot, 'packages', 'fonts')));
 app.use('/icons', express.static(join(pkgRoot, 'packages', 'icons', 'src')));
+app.use('/bn-builder-css', express.static(join(pkgRoot, 'packages', 'builder', 'src')));
 
 // -- In-memory task store --
 let nextId = 5;
@@ -96,6 +97,11 @@ app.get('/test-signals', (req, res) => {
 app.get('/showcase', (req, res) => {
   const ctx = getShowcaseContext();
   const html = renderPage('showcase.html', ctx, { title: 'Showcase', activePage: 'showcase' });
+  res.send(html);
+});
+
+app.get('/builder', (req, res) => {
+  const html = renderPage('builder.html', {}, { title: 'Builder', activePage: 'builder' });
   res.send(html);
 });
 

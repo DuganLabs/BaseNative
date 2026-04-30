@@ -1,4 +1,4 @@
-export const navPages = ['home', 'tasks', 'playground', 'docs', 'components', 'showcase'];
+export const navPages = ['home', 'tasks', 'playground', 'docs', 'components', 'showcase', 'builder'];
 
 export const staticTasks = [
   { id: 1, title: 'Design token system', status: 'done' },
