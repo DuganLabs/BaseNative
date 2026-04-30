@@ -9,6 +9,7 @@ import { render } from '../packages/server/src/render.js';
 import {
   getComponentsPageContext,
   getHomePageContext,
+  getRoadmapPageContext,
   getTasksPageContext,
   navPages,
   staticTasks,
@@ -84,6 +85,12 @@ const pages = {
     activePage: 'components',
     ctx: getComponentsPageContext(),
   },
+  roadmap: {
+    view: 'roadmap.html',
+    title: 'Roadmap',
+    activePage: 'roadmap',
+    ctx: getRoadmapPageContext(),
+  },
   'test-signals': {
     view: 'test-signals.html',
     title: 'Signal Verification',
@@ -104,12 +111,6 @@ const pages = {
     title: 'Showcase',
     activePage: 'showcase',
     ctx: getShowcaseContext(),
-  },
-  builder: {
-    view: 'builder.html',
-    title: 'Builder',
-    activePage: 'builder',
-    ctx: {},
   },
 };
 
