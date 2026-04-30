@@ -24,7 +24,7 @@
     <header><h3>Reactive Updates</h3></header>
     <p>Mutate signals below and watch the DOM update instantly — no markForCheck, no detectChanges.</p>
     <output data-test-output>Ready</output>
-    <nav data-controls>
+    <nav data-controls aria-label="Item list controls">
       <button data-test-action="add">Add Item</button>
       <button data-test-action="remove">Remove Last</button>
       <button data-test-action="toggle">Toggle Visibility</button>
@@ -34,7 +34,7 @@
   <article data-test-counter>
     <header><h3>Signal Counter</h3></header>
     <output data-counter-value>0</output>
-    <nav data-controls>
+    <nav data-controls aria-label="Counter controls">
       <button data-test-action="decrement"><img src="/icons/minus.svg" alt="Decrement" width="16" height="16"></button>
       <button data-test-action="increment"><img src="/icons/plus.svg" alt="Increment" width="16" height="16"></button>
     </nav>
