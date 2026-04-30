@@ -27,6 +27,151 @@
 <link rel="stylesheet" href="/fonts/fonts.css">
 <link rel="stylesheet" href="/theme.css">
 <link rel="stylesheet" href="/styles.css">
+<style data-bn-critical>
+  /* Critical layout — unlayered, plain selectors, no nesting.
+     Wins over external @layer rules so first paint is correct
+     even if a later stylesheet fails to parse modern features. */
+  [data-bn-skip-link] {
+    position: absolute;
+    inset-inline-start: -9999px;
+    inset-block-start: -9999px;
+    z-index: 10000;
+    padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
+    background: var(--accent, #e8a44a);
+    color: var(--surface-0, #0a0a0c);
+    font-weight: var(--font-weight-semibold, 600);
+    text-decoration: none;
+    border-radius: 0 0 var(--radius-sm, 0.25rem) 0;
+  }
+  [data-bn-skip-link]:focus {
+    inset-inline-start: 0;
+    inset-block-start: 0;
+  }
+  [data-bn-visually-hidden] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+  body > [data-bn-site-header] {
+    border-block-end: var(--border-width, 1px) solid var(--border, #2a2a38);
+    background: var(--surface-1, #131318);
+  }
+  body > [data-bn-site-header] > nav {
+    max-inline-size: var(--size-inline-max, 52rem);
+    margin-inline: auto;
+    padding: var(--space-md, 1rem) var(--space-lg, 1.5rem);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md, 1rem);
+    flex-wrap: wrap;
+    min-inline-size: 0;
+  }
+  body > [data-bn-site-header] h1 {
+    font-family: var(--font-family);
+    font-stretch: var(--font-serif, expanded);
+    font-size: var(--font-size-xl, 1.25rem);
+    font-weight: var(--font-weight-normal, 400);
+    letter-spacing: var(--letter-spacing-tight, -0.02em);
+  }
+  body > [data-bn-site-header] h1 em {
+    font-style: normal;
+    color: var(--accent, #e8a44a);
+  }
+  body > [data-bn-site-header] [data-bn-wordmark] {
+    color: inherit;
+    text-decoration: none;
+  }
+  body > [data-bn-site-header] menu {
+    list-style: none;
+    display: flex;
+    gap: var(--space-md, 1rem);
+    margin: 0;
+    padding: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    min-inline-size: 0;
+    max-inline-size: 100%;
+  }
+  body > [data-bn-site-header] menu::-webkit-scrollbar { display: none; }
+  body > [data-bn-site-header] menu li {
+    list-style: none;
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+  }
+  body > [data-bn-site-header] menu a {
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono, ultra-condensed);
+    font-size: var(--font-size-sm, 0.8rem);
+    color: var(--text-1, #b0adc0);
+    text-decoration: none;
+    padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
+    min-block-size: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    border-radius: var(--radius-sm, 0.25rem);
+    transition: color var(--duration-fast, 0.15s), background var(--duration-fast, 0.15s);
+  }
+  body > [data-bn-site-header] menu a:hover {
+    color: var(--accent, #e8a44a);
+    background: var(--surface-2, #1a1a22);
+  }
+  body > [data-bn-site-header] menu a[aria-current="page"] {
+    color: var(--accent, #e8a44a);
+  }
+  body > [data-bn-site-footer] {
+    border-block-start: var(--border-width, 1px) solid var(--border, #2a2a38);
+    padding: var(--space-lg, 1.5rem);
+    text-align: center;
+    display: grid;
+    gap: var(--space-sm, 0.5rem);
+  }
+  body > [data-bn-site-footer] nav {
+    display: flex;
+    gap: var(--space-md, 1rem);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  body > [data-bn-site-footer] nav a {
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono, ultra-condensed);
+    font-size: var(--font-size-xs, 0.75rem);
+    color: var(--text-2, #7a7890);
+    text-decoration: none;
+  }
+  body > [data-bn-site-footer] nav a:hover { color: var(--accent, #e8a44a); }
+  /* Showcase header visual hierarchy — override article > header { display:flex } */
+  [data-bn-showcase-header] {
+    display: block;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0 0 var(--space-2xl, 3rem);
+  }
+  [data-bn-showcase-header] [data-bn-eyebrow] {
+    display: block;
+    margin: 0 0 var(--space-sm, 0.5rem);
+  }
+  [data-bn-showcase-header] > h2 { margin: 0 0 var(--space-md, 1rem); }
+  [data-bn-showcase-header] [data-bn-lede] { margin: 0 0 var(--space-lg, 1.5rem); }
+  [data-bn-showcase-header] [data-bn-showcase-actions] {
+    display: flex;
+    gap: var(--space-sm, 0.5rem);
+    flex-wrap: wrap;
+  }
+  /* Empty state hidden until query toggles attribute on :root */
+  [data-bn-showcase-empty] { display: none; }
+  :root[data-bn-showcase-empty] [data-bn-showcase-empty] { display: block; }
+</style>
 </head>
 <body>
   <a href="#main-content" data-bn-skip-link>Skip to main content</a>
