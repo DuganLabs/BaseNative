@@ -15,7 +15,7 @@
   "types": "./types/render.d.ts",
   "dependencies": {
     "@basenative/runtime": "workspace:^0.4.0",
-    "node-html-parser": "^7.0.1"
+    "node-html-parser": "^8.0.2"
   },
   "files": [
     "src",
