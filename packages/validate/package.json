@@ -1,0 +1,33 @@
+{
+  "name": "@basenative/validate",
+  "version": "0.1.0",
+  "description": "Structured validation for BaseNative templates \u2014 machine-actionable errors a model can repair from the error object alone",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/validate"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": [
+    "basenative",
+    "template",
+    "validation",
+    "diagnostics",
+    "llm",
+    "generative-ui"
+  ],
+  "dependencies": {
+    "@basenative/runtime": "workspace:^0.4.0"
+  }
+}
