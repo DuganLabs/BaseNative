@@ -9,12 +9,15 @@
       "default": "./src/index.js"
     },
     "./shared/expression": {
+      "types": "./types/shared/expression.d.ts",
       "default": "./src/shared/expression.js"
     },
     "./shared/escape": {
+      "types": "./types/shared/escape.d.ts",
       "default": "./src/shared/escape.js"
     },
     "./shared/directives": {
+      "types": "./types/shared/directives.d.ts",
       "default": "./src/shared/directives.js"
     }
   },
