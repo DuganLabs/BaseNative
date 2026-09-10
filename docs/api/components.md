@@ -32,7 +32,7 @@ The individual layers are also exported. `./layers.css` contains only the `@laye
 Every renderer uses the runtime's shared `escapeText` / `escapeAttr` (`@basenative/runtime/shared/escape`):
 
 - **Escaped** — every attribute interpolation (`id`, `name`, `value`, `placeholder`, `alt`, `src`, `href`, `aria-*`, `data-*`, variant/size/position fragments) and every text-semantic field (`label`, `helpText`, `error`, `caption`, `emptyMessage`, item labels, tooltip content, breadcrumb labels, avatar name, tree/table cell values, calendar and pipeline titles).
-- **Not escaped (HTML slots)** — designated composition points documented on each parameter as "HTML slot: not escaped; pass trusted markup only": button content, card header/body/footer, alert content, badge content, dialog/drawer body and footer, accordion and tab panel content, dropdown/tooltip trigger, menu/command/tree icons, breadcrumb separator, pipeline card `actions`/`footer`, a DataGrid column's `render()` result, a custom `renderItem`, and every `attrs` option.
+- **Not escaped (HTML slots)** — designated composition points documented on each parameter as "HTML slot: not escaped; pass trusted markup only": button content, card header/body/footer, alert content, badge content, dialog/drawer body and footer, accordion and tab panel content, dropdown/tooltip trigger, menu/command/tree icons, breadcrumb separator, pipeline card `actions`/`footer`, a Table or DataGrid column's `render()` result, a custom `renderItem`, and every `attrs` option.
 
 ```js
 renderInput({ name: 'q', label: '<b>Not bold</b>' })   // label is escaped
@@ -349,22 +349,30 @@ dismissToast(toaster, id);
 `renderTable(options)` → `string`
 
 ```js
+import { escapeAttr, escapeText } from '@basenative/runtime/shared/escape';
+
 renderTable({
-  columns: [{ key: 'name', label: 'Name', sortable: true }],
-  rows: [{ name: 'Alice' }],
+  columns: [
+    { key: 'name', label: 'Name', sortable: true },
+    { key: 'status', label: 'Status', render: (value, row) => renderBadge(escapeText(value), { variant: row.status === 'paid' ? 'success' : 'default' }) },
+    { key: 'start', label: 'Start', render: value => `<time datetime="${escapeAttr(value)}">${escapeText(formatDate(value))}</time>` },
+  ],
+  rows: [{ name: 'Alice', status: 'paid', start: '2025-06-02' }],
   emptyMessage: 'No data',
   caption: 'Users',
+  attrs: 'data-testid="users"',
 })
 ```
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `columns` | `Array<{ key, label, sortable? }>` | `[]` | `sortable` adds `data-sortable` to the `<th>` |
-| `rows` | `Array<Record<string, unknown>>` | `[]` | Cell values are stringified and escaped |
-| `emptyMessage` | `string` | `'No data'` | Single full-width row when `rows` is empty |
+| `columns` | `Array<{ key, label, sortable?, render? }>` | `[]` | `sortable` adds `data-sortable` to the `<th>`; `render(value, row)` is an HTML slot: not escaped; escape any data you interpolate — a nullish result renders an empty cell |
+| `rows` | `Array<Record<string, unknown>>` | `[]` | Without `render`, cell values are stringified and escaped |
+| `emptyMessage` | `string` | `'No data'` | Single full-width row when `rows` is empty (`render` is not consulted) |
 | `caption` | `string` | `''` | `<caption>` |
+| `attrs` | `string` | `''` | Spliced onto the `[data-bn="table-container"]` wrapper |
 
-Renders `<div data-bn="table-container"><table data-bn="table"><caption>…</caption><thead><tr><th scope="col" data-sortable>Name</th></tr></thead><tbody>…</tbody></table></div>`. Header cells carry `scope="col"`; `attrs` is not supported.
+Renders `<div data-bn="table-container"><table data-bn="table"><caption>…</caption><thead><tr><th scope="col" data-sortable>Name</th></tr></thead><tbody>…</tbody></table></div>`. Header cells carry `scope="col"`. Composite cells (a two-line name, a `<time>`, a badge, row-action buttons) belong in `render`; `renderDataGrid` offers the same hook when you also want sorting indicators, selection and a footer.
 
 ## Data Grid
 
