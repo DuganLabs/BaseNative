@@ -15,9 +15,9 @@ the next changeset bump would collide and be skipped — realign the local versi
 
 | Package | Local | GitHub Packages | npmjs | State |
 |---|---|---|---|---|
-| `@basenative/admin` | 1.0.0 | 1.0.0 | — | in sync |
+| `@basenative/admin` | 1.0.1 | 1.0.0 | — | unreleased bump |
 | `@basenative/auth` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
-| `@basenative/auth-webauthn` | 1.0.3 | 1.0.3 | — | in sync |
+| `@basenative/auth-webauthn` | 1.1.0 | 1.0.3 | — | unreleased bump |
 | `@basenative/builder` | 0.1.4 | 0.1.4 | — | in sync |
 | `@basenative/claude-config` | 0.2.1 | 0.2.1 | — | in sync |
 | `@basenative/cli` | 0.4.1 | 0.4.1 | 0.2.0 | in sync |
@@ -30,7 +30,7 @@ the next changeset bump would collide and be skipped — realign the local versi
 | `@basenative/eslint-config` | 0.2.0 | 0.2.0 | — | in sync |
 | `@basenative/evals` | 0.1.0 | — | — | private |
 | `@basenative/favicon` | 1.0.2 | 1.0.2 | — | in sync |
-| `@basenative/fetch` | 0.3.4 | 0.3.4 | 0.2.0 | in sync |
+| `@basenative/fetch` | 0.4.0 | 0.3.4 | 0.2.0 | unreleased bump |
 | `@basenative/flags` | 0.4.0 | 0.4.0 | 0.2.0 | in sync |
 | `@basenative/fonts` | 0.1.0 | — | — | private |
 | `@basenative/forms` | 1.0.3 | 1.0.3 | 0.3.0 | in sync |

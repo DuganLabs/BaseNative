@@ -81,7 +81,7 @@ All template directives (`@if`, `@for`, `@switch`, `:attr`, `{{ }}`) are evaluat
 
 ## Packages
 
-### `@basenative/admin` (v1.0.0)
+### `@basenative/admin` (v1.0.1)
 
 Pluggable admin & moderation surface — protected-route helpers, role/permission primitives, audit-log middleware, and queue-review UI components for BaseNative apps
 
@@ -245,7 +245,7 @@ Email/password authentication provider. **Parameters:** - `options.findUser(emai
 #### oauthProvider(providerName, options)
 OAuth 2.0 provider adapter. Built-in provider configs available via `providers`. **Parameters:** - `providerName` — key from the `providers` map (e.g. `'github'`, `'google'`) - `options.clientId` — OAuth app client ID - `options.clientSecr…
 
-### `@basenative/auth-webauthn` (v1.0.3)
+### `@basenative/auth-webauthn` (v1.1.0)
 
 WebAuthn (passkey) adapter for @basenative/auth — server, client, and Cloudflare Workers/Pages handlers
 
@@ -1302,7 +1302,7 @@ const pngs = await toIconSet({ favicon: favicon.svg, maskable: favicon.maskable 
 // pngs['apple-touch-icon.png'], pngs['icon-192.png'], pngs['icon-512.png'], pngs['maskable.png']
 ```
 
-### `@basenative/fetch` (v0.3.4)
+### `@basenative/fetch` (v0.4.0)
 
 Signal-based resource fetching with caching and SSR preload support
 

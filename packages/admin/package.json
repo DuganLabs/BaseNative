@@ -1,6 +1,6 @@
 {
   "name": "@basenative/admin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Pluggable admin & moderation surface \u2014 protected-route helpers, role/permission primitives, audit-log middleware, and queue-review UI components for BaseNative apps",
   "type": "module",
   "exports": {
