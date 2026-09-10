@@ -26,9 +26,18 @@ Assertion *types* are infrastructure and live in `src/assertions.js`. Assertion
 prompts/ (hand-authored) → model runner → generated template
     → @basenative/validate   does it parse?
     → @basenative/server     does it render?
+    → @basenative/runtime    (stateful cases only) does it hydrate and react?
     → behavioural assertions does it do the thing?
     → score
 ```
+
+The hydrate stage only runs for a case that declares `state` or a hydrate-family
+assertion (`hydrated_contains`/`hydrated_excludes`/`after_set` — see
+`prompts/README.md`) — most cases are fully scored by SSR output alone. When it
+does run, it mounts the generated template — directives intact — into the same DOM
+shim `@basenative/runtime`'s own tests use, and runs the real client `hydrate()`
+against a context of real signals, which is the only way to score a signal,
+computed, or effect rather than just a template's static shape.
 
 Stages short-circuit: a template that does not parse cannot be meaningfully
 rendered, so `failedAt` tells you *where* a model went wrong, not just that it did.
