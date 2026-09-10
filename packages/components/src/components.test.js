@@ -390,7 +390,25 @@ describe('DataGrid', () => {
     });
     assert.ok(html.includes('role="grid"'));
     assert.ok(html.includes('data-sorted="asc"'));
+    assert.ok(html.includes('aria-sort="ascending"'));
     assert.ok(html.includes('Alice'));
+  });
+
+  it('sortable headers are a real <button> inside the <th> — focusable and activatable with no client JS', () => {
+    const html = renderDataGrid({
+      columns: [{ key: 'name', label: 'Name', sortable: true }],
+      rows: [],
+    });
+    assert.ok(html.includes('<th data-bn="datagrid-th" data-key="name" data-sortable scope="col"><button type="button" data-bn="datagrid-th-button">Name</button></th>'));
+  });
+
+  it('non-sortable headers stay plain text — no button wrapper', () => {
+    const html = renderDataGrid({
+      columns: [{ key: 'name', label: 'Name' }],
+      rows: [],
+    });
+    assert.ok(html.includes('<th data-bn="datagrid-th" data-key="name" scope="col">Name</th>'));
+    assert.ok(!html.includes('datagrid-th-button'));
   });
 
   it('renders selectable rows', () => {
@@ -1520,13 +1538,13 @@ describe('Breadcrumb — hardening', () => {
 describe('Tooltip — hardening', () => {
   it('renders with minimal options', () => {
     const html = renderTooltip({ id: 'tt' });
-    assert.ok(html.includes('popovertarget="tt" popovertargetaction="toggle"></span>'));
+    assert.ok(html.includes('<button type="button" data-bn="tooltip-trigger" popovertarget="tt" popovertargetaction="toggle" aria-describedby="tt"></button>'));
     assert.ok(html.includes('<span data-bn="tooltip" id="tt" popover data-position="top" role="tooltip"></span>'));
   });
 
   it('renders with all options', () => {
     const html = renderTooltip({ id: 'tt', content: 'C', trigger: 'T', position: 'bottom', attrs: 'data-x="1"' });
-    assert.ok(html.includes('popovertargetaction="toggle" data-x="1">T</span>'));
+    assert.ok(html.includes('<button type="button" data-bn="tooltip-trigger" popovertarget="tt" popovertargetaction="toggle" aria-describedby="tt" data-x="1">T</button>'));
     assert.ok(html.includes('data-position="bottom" role="tooltip">C</span>'));
   });
 
@@ -1534,8 +1552,20 @@ describe('Tooltip — hardening', () => {
     assertEscaped(renderTooltip({ content: XSS, id: XSS, position: XSS, trigger: '' }));
   });
 
-  it('trigger is an HTML slot', () => {
-    assert.ok(renderTooltip({ content: 'c', trigger: '<button>?</button>' }).includes('<button>?</button>'));
+  it('a plain-text trigger is wrapped in a real <button>, a valid popover invoker', () => {
+    const html = renderTooltip({ id: 'tt', content: 'c', trigger: 'Hover me' });
+    assert.ok(html.includes('<button type="button" data-bn="tooltip-trigger" popovertarget="tt" popovertargetaction="toggle" aria-describedby="tt">Hover me</button>'));
+  });
+
+  it('a trigger HTML slot that already starts with <button> is used as the invoker in place, not double-wrapped', () => {
+    const html = renderTooltip({ id: 'tt', content: 'c', trigger: '<button>?</button>' });
+    assert.ok(html.includes('<button data-bn="tooltip-trigger" popovertarget="tt" popovertargetaction="toggle" aria-describedby="tt">?</button>'));
+    assert.ok(!html.includes('<button type="button"><button'));
+  });
+
+  it('a trigger HTML slot that already starts with <input> is used as the invoker in place', () => {
+    const html = renderTooltip({ id: 'tt', content: 'c', trigger: '<input type="button" value="?">' });
+    assert.ok(html.includes('<input data-bn="tooltip-trigger" popovertarget="tt" popovertargetaction="toggle" aria-describedby="tt" type="button" value="?">'));
   });
 });
 
@@ -1685,7 +1715,7 @@ describe('DataGrid — hardening', () => {
     assert.ok(html.includes('<div data-bn="datagrid" id="g" data-x="1">'));
     assert.ok(html.includes('aria-label="People"'));
     assert.ok(html.includes('<caption>People</caption>'));
-    assert.ok(html.includes('data-key="n" data-sortable data-sorted="desc" style="width:10rem" data-resizable scope="col">N ↓</th>'));
+    assert.ok(html.includes('data-key="n" data-sortable data-sorted="desc" aria-sort="descending" style="width:10rem" data-resizable scope="col"><button type="button" data-bn="datagrid-th-button">N ↓</button></th>'));
     assert.ok(html.includes('<input type="checkbox" checked aria-label="Select row 7"'));
     assert.ok(html.includes('contenteditable="true" data-editable>Ann</td>'));
     assert.ok(html.includes('Showing 2–2 of 5'));
@@ -1721,7 +1751,20 @@ describe('Tree — hardening', () => {
     assert.ok(html.includes('<ul data-bn="tree" id="t" role="tree" data-x="1">'));
     assert.ok(html.includes('role="treeitem" aria-expanded="true" aria-selected="false" data-node-id="p" data-level="0"'));
     assert.ok(html.includes('aria-label="Collapse" type="button">▾</button><span data-bn="tree-icon"><svg></svg></span>'));
-    assert.ok(html.includes('<ul data-bn="tree-children" role="group"><li data-bn="tree-item" role="treeitem" aria-selected="true" data-node-id="c" data-level="1"><div data-bn="tree-item-content" data-selected>'));
+    assert.ok(html.includes('<ul data-bn="tree-children" role="group"><li data-bn="tree-item" role="treeitem" aria-selected="true" data-node-id="c" data-level="1"><div data-bn="tree-item-content" tabindex="-1" data-selected>'));
+  });
+
+  it('the first item in document order is tabindex="0"; every other item is tabindex="-1" (roving tabindex)', () => {
+    const html = renderTree({
+      expanded: new Set(['p']),
+      items: [
+        { id: 'p', label: 'P', children: [{ id: 'c', label: 'C' }] },
+        { id: 'q', label: 'Q' },
+      ],
+    });
+    assert.ok(html.includes('<div data-bn="tree-item-content" tabindex="0">'));
+    assert.equal((html.match(/tabindex="0"/g) || []).length, 1);
+    assert.equal((html.match(/tabindex="-1"/g) || []).length, 2);
   });
 
   it('escapes labels, node ids and tree id', () => {
@@ -1756,8 +1799,8 @@ describe('TreeGrid — hardening', () => {
     });
     assert.ok(html.includes('role="treegrid" data-x="1">'));
     assert.ok(html.includes('<th scope="col">Name</th><th scope="col">Size</th>'));
-    assert.ok(html.includes('data-node-id="p" aria-level="1" aria-expanded="true" role="row"><td><span data-level="0">▾ </span>Parent</td><td>1</td></tr>'));
-    assert.ok(html.includes('data-node-id="c" aria-level="2" role="row"><td><span data-level="1">    </span>Child</td><td>2</td></tr>'));
+    assert.ok(html.includes('data-node-id="p" aria-level="1" aria-expanded="true" role="row" tabindex="0"><td><span data-level="0">▾ </span>Parent</td><td>1</td></tr>'));
+    assert.ok(html.includes('data-node-id="c" aria-level="2" role="row" tabindex="-1"><td><span data-level="1">    </span>Child</td><td>2</td></tr>'));
   });
 
   it('escapes column labels, cell values and ids', () => {
@@ -1768,6 +1811,20 @@ describe('TreeGrid — hardening', () => {
     const html = renderTreeGrid({ columns: [{ key: 'n', label: 'N' }], items: [{ n: 'leaf' }] });
     assert.ok(!html.includes('aria-expanded'));
     assert.ok(html.includes('aria-level="1"'));
+  });
+
+  it('the first row is tabindex="0"; every other row is tabindex="-1" (roving tabindex)', () => {
+    const html = renderTreeGrid({
+      expanded: new Set(['p']),
+      columns: [{ key: 'n', label: 'N' }],
+      items: [
+        { id: 'p', n: 'Parent', children: [{ id: 'c', n: 'Child' }] },
+        { id: 'q', n: 'Q' },
+      ],
+    });
+    assert.ok(html.includes('data-node-id="p" aria-level="1" aria-expanded="true" role="row" tabindex="0">'));
+    assert.equal((html.match(/tabindex="0"/g) || []).length, 1);
+    assert.equal((html.match(/tabindex="-1"/g) || []).length, 2);
   });
 });
 

@@ -4,13 +4,22 @@
 import { escapeAttr, escapeText } from '@basenative/runtime/shared/escape';
 import { nextId } from './ids.js';
 import { attrsSuffix } from './internal/attrs.js';
-import { ariaExpanded, renderNodes } from './internal/tree.js';
+import { ariaExpanded, renderNodes, rovingTabIndex } from './internal/tree.js';
 
 /**
  * Tree view — expandable hierarchical tree.
  *
  * Node labels are escaped text; a node's `icon` is an HTML slot: not escaped;
  * pass trusted markup only. Leaf nodes carry no aria-expanded attribute.
+ *
+ * Keyboard reachability: the tree ships a static roving `tabindex` — the
+ * first item (in document order) gets `tabindex="0"`, every other item gets
+ * `tabindex="-1"`. This package renders markup only and ships no client-side
+ * `initTree()`, so nothing moves that `tabindex` between items on arrow-key
+ * presses; a caller that wants full arrow-key roving must add its own keydown
+ * handler that updates `tabindex` and calls `.focus()` as it moves. Without
+ * one, keyboard users can Tab into the tree (reaching the first item) but not
+ * arrow between items.
  *
  * @param {object} [options]
  * @param {Array<{id?: string, label: string, icon?: string, children?: Array<object>}>} [options.items]
@@ -32,12 +41,13 @@ export function renderTree(options = {}) {
   const itemsHtml = renderNodes(items, {
     getId: node => node.id ?? node.label,
     expanded,
-    render({ node, nodeId, hasChildren, isExpanded, level, children }) {
+    render({ node, nodeId, hasChildren, isExpanded, level, children, index }) {
       const isSelected = selected === nodeId;
       const icon = node.icon ?? '';
+      const tabIndex = rovingTabIndex(level, index);
 
       let html = `<li data-bn="tree-item" role="treeitem"${ariaExpanded(hasChildren, isExpanded)} aria-selected="${isSelected}" data-node-id="${escapeAttr(nodeId)}" data-level="${level}">`;
-      html += `<div data-bn="tree-item-content"${isSelected ? ' data-selected' : ''}>`;
+      html += `<div data-bn="tree-item-content" tabindex="${tabIndex}"${isSelected ? ' data-selected' : ''}>`;
       if (hasChildren) {
         html += `<button data-bn="tree-toggle" aria-label="${isExpanded ? 'Collapse' : 'Expand'}" type="button">${isExpanded ? '▾' : '▸'}</button>`;
       } else {
@@ -65,6 +75,11 @@ export function renderTree(options = {}) {
  * Column labels and cell values are escaped text. Leaf rows carry no
  * aria-expanded attribute.
  *
+ * Keyboard reachability: like Tree, rows carry a static roving `tabindex`
+ * (first row `0`, the rest `-1`) with no client-side `initTreeGrid()` to move
+ * it — see the Tree doc comment above for what that means for arrow-key
+ * navigation.
+ *
  * @param {object} [options]
  * @param {Array<{key: string, label: string}>} [options.columns]
  * @param {Array<object>} [options.items]   Rows keyed by column key, with optional `id` and `children`
@@ -87,9 +102,10 @@ export function renderTreeGrid(options = {}) {
   const bodyHtml = renderNodes(items, {
     getId: node => node.id ?? node[columns[0]?.key],
     expanded,
-    render({ node, nodeId, hasChildren, isExpanded, level, children }) {
+    render({ node, nodeId, hasChildren, isExpanded, level, children, index }) {
       const indent = '  '.repeat(level);
       const toggle = hasChildren ? (isExpanded ? '▾ ' : '▸ ') : '  ';
+      const tabIndex = rovingTabIndex(level, index);
 
       const cells = columns.map((col, i) => {
         const value = escapeText(node[col.key] ?? '');
@@ -97,7 +113,7 @@ export function renderTreeGrid(options = {}) {
         return `<td>${prefix}${value}</td>`;
       }).join('');
 
-      return `<tr data-bn="treegrid-row" data-node-id="${escapeAttr(nodeId)}" aria-level="${level + 1}"${ariaExpanded(hasChildren, isExpanded)} role="row">${cells}</tr>${children}`;
+      return `<tr data-bn="treegrid-row" data-node-id="${escapeAttr(nodeId)}" aria-level="${level + 1}"${ariaExpanded(hasChildren, isExpanded)} role="row" tabindex="${tabIndex}">${cells}</tr>${children}`;
     },
   });
 
