@@ -1,5 +1,11 @@
 # @basenative/middleware
 
+## 0.3.3
+
+### Patch Changes
+
+- bc2e466: The Express adapter's cookie parser now only accepts RFC 6265 token characters in cookie names; names containing separators, spaces or control characters are dropped instead of becoming properties.
+
 ## 0.3.2
 
 ### Patch Changes

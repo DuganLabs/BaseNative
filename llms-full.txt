@@ -1873,7 +1873,7 @@ Reactivity primitives, exported from `@basenative/runtime`. Reference entries �
 #### FORBIDDEN
 Syntax from other frameworks that BaseNative does NOT accept. A lookup table from foreign syntax (Vue, Angular, Angular 17 block syntax, Svelte, Svelte 5 runes, React, Alpine) to the BaseNative equivalent, each shaped `{ foreign, framework…
 
-### `@basenative/middleware` (v0.3.2)
+### `@basenative/middleware` (v0.3.3)
 
 Request pipeline middleware — CORS, rate limiting, CSRF, and adapters
 

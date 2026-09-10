@@ -34,7 +34,7 @@ Full API surface: [llms-full.txt](./llms-full.txt). Each package's dedicated doc
 - `@basenative/markdown` v0.1.0 — Zero-dependency ES module markdown parser and SSR-safe HTML renderer → docs/api/markdown.md
 - `@basenative/marketplace` v0.2.1 — Component registry for BaseNative — publishing and discovery infrastructure → docs/api/marketplace.md
 - `@basenative/mcp` v0.2.0 — MCP server exposing BaseNative validation, SSR preview, and directive reference to any agent → docs/api/mcp.md
-- `@basenative/middleware` v0.3.2 — Request pipeline middleware — CORS, rate limiting, CSRF, and adapters → docs/api/middleware.md
+- `@basenative/middleware` v0.3.3 — Request pipeline middleware — CORS, rate limiting, CSRF, and adapters → docs/api/middleware.md
 - `@basenative/notify` v0.3.1 — Email notifications via SMTP and SendGrid with template rendering → docs/api/notify.md
 - `@basenative/og-image` v0.2.1 — Worker-runtime OG / social share PNG renderer — satori + resvg-wasm with KV-cached fonts and themab… → docs/api/og-image.md
 - `@basenative/persist` v1.0.4 — Signal-driven local persistence with TTL, conflict resolution, and a server-rehydrate hook for Base… → docs/api/persist.md
