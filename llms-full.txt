@@ -2714,4 +2714,4 @@ Everything below is a real, mechanically-detected gap between source/package.jso
 - `@basenative/visual-builder`: `BnCanvas` is exported (packages/visual-builder/src/bn-canvas.js) but not mentioned in docs/api/visual-builder.md.
 - `@basenative/wrangler-preset` — no docs/api/wrangler-preset.md; API below is extracted directly from source signatures/JSDoc only (4 exports).
 
-_Private packages excluded from this reference: `@basenative/fonts`, `@basenative/icons`._
+_Private packages excluded from this reference: `@basenative/evals`, `@basenative/fonts`, `@basenative/icons`._

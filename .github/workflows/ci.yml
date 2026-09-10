@@ -47,6 +47,10 @@ jobs:
         if: matrix.node-version == 22
         run: node scripts/package-inventory.js --check
 
+      - name: LLM docs up to date
+        if: matrix.node-version == 22
+        run: node scripts/llms-txt.js --check
+
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
