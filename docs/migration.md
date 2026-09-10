@@ -104,7 +104,7 @@ const html = render(`
 |-------|------------|
 | JSX requires transpilation | Native HTML, no build step |
 | Virtual DOM diffs | Direct DOM mutation via signals |
-| 45KB+ runtime | 8.8KB gzipped runtime |
+| 45KB+ runtime | 9.2KB gzipped runtime |
 | Component = function | Component = HTML template |
 | useState + useEffect | signal + effect |
 
