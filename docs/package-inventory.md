@@ -5,59 +5,65 @@
 Generated 2026-09-10 · 43 packages.
 
 **Publish target for `@basenative/*` is https://npm.pkg.github.com** (set in `.npmrc`), not npmjs.org.
-Installing any package therefore requires a GitHub PAT with `read:packages` — see
-[CONSUMING-FROM-GH-PACKAGES.md](CONSUMING-FROM-GH-PACKAGES.md). The npmjs column below is a
-stale public mirror from before the move; it is what an external `npm install` resolves to.
+Installing any package therefore requires a GitHub token with `read:packages` — see
+[CONSUMING-FROM-GH-PACKAGES.md](CONSUMING-FROM-GH-PACKAGES.md). The GitHub Packages column is
+the highest version published there; the npmjs column is a stale public mirror from before
+the move and is what an unauthenticated `npm install` resolves to.
 
-| Package | Local | npmjs | State |
-|---|---|---|---|
-| `@basenative/admin` | 1.0.0 | — | never on npmjs |
-| `@basenative/auth` | 0.3.0 | 0.2.0 | behind (0.2.0) |
-| `@basenative/auth-webauthn` | 1.0.2 | — | never on npmjs |
-| `@basenative/builder` | 0.1.0 | — | never on npmjs |
-| `@basenative/claude-config` | 0.2.0 | — | never on npmjs |
-| `@basenative/cli` | 0.4.0 | 0.2.0 | behind (0.2.0) |
-| `@basenative/combobox` | 1.0.0 | — | never on npmjs |
-| `@basenative/components` | 0.4.0 | 0.3.0 | behind (0.3.0) |
-| `@basenative/config` | 0.3.0 | 0.2.0 | behind (0.2.0) |
-| `@basenative/date` | 0.3.0 | 0.2.0 | behind (0.2.0) |
-| `@basenative/db` | 0.3.0 | 0.2.0 | behind (0.2.0) |
-| `@basenative/doppler` | 0.2.0 | — | never on npmjs |
-| `@basenative/eslint-config` | 0.2.0 | — | never on npmjs |
-| `@basenative/evals` | 0.1.0 | — | private |
-| `@basenative/favicon` | 1.0.0 | — | never on npmjs |
-| `@basenative/fetch` | 0.3.0 | 0.2.0 | behind (0.2.0) |
-| `@basenative/flags` | 0.3.0 | 0.2.0 | behind (0.2.0) |
-| `@basenative/fonts` | 0.1.0 | — | private |
-| `@basenative/forms` | 0.4.0 | 0.3.0 | behind (0.3.0) |
-| `@basenative/i18n` | 0.3.0 | 0.2.0 | behind (0.2.0) |
-| `@basenative/icons` | 0.1.0 | — | private |
-| `@basenative/integrations` | 0.1.0 | — | never on npmjs |
-| `@basenative/keyboard` | 1.0.1 | — | never on npmjs |
-| `@basenative/logger` | 0.3.0 | 0.2.0 | behind (0.2.0) |
-| `@basenative/markdown` | 0.1.0 | — | never on npmjs |
-| `@basenative/marketplace` | 0.2.0 | 0.2.0 | in sync |
-| `@basenative/mcp` | 0.1.0 | — | never on npmjs |
-| `@basenative/middleware` | 0.3.0 | 0.2.0 | behind (0.2.0) |
-| `@basenative/notify` | 0.3.0 | 0.2.0 | behind (0.2.0) |
-| `@basenative/og-image` | 0.2.0 | — | never on npmjs |
-| `@basenative/persist` | 1.0.0 | — | never on npmjs |
-| `@basenative/realtime` | 0.3.0 | 0.2.0 | behind (0.2.0) |
-| `@basenative/router` | 0.4.1 | 0.3.0 | behind (0.3.0) |
-| `@basenative/runtime` | 0.4.1 | 0.3.0 | behind (0.3.0) |
-| `@basenative/server` | 0.4.2 | 0.3.0 | behind (0.3.0) |
-| `@basenative/share` | 1.0.0 | — | never on npmjs |
-| `@basenative/station` | 0.2.0 | — | never on npmjs |
-| `@basenative/tenant` | 0.3.0 | 0.2.0 | behind (0.2.0) |
-| `@basenative/tsconfig` | 0.2.0 | — | never on npmjs |
-| `@basenative/upload` | 0.3.0 | 0.2.0 | behind (0.2.0) |
-| `@basenative/validate` | 0.1.0 | — | never on npmjs |
-| `@basenative/visual-builder` | 0.2.0 | 0.2.0 | in sync |
-| `@basenative/wrangler-preset` | 0.2.0 | — | never on npmjs |
+State: **registry ahead** means a version higher than this tree's is already published, so
+the next changeset bump would collide and be skipped — realign the local version first.
+
+| Package | Local | GitHub Packages | npmjs | State |
+|---|---|---|---|---|
+| `@basenative/admin` | 1.0.0 | 1.0.0 | — | in sync |
+| `@basenative/auth` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
+| `@basenative/auth-webauthn` | 1.0.2 | 1.0.2 | — | in sync |
+| `@basenative/builder` | 0.1.0 | — | — | never published |
+| `@basenative/claude-config` | 0.2.0 | 0.2.0 | — | in sync |
+| `@basenative/cli` | 0.4.0 | 0.4.0 | 0.2.0 | in sync |
+| `@basenative/combobox` | 1.0.0 | 1.0.0 | — | in sync |
+| `@basenative/components` | 0.4.0 | 0.4.0 | 0.3.0 | in sync |
+| `@basenative/config` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
+| `@basenative/date` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
+| `@basenative/db` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
+| `@basenative/doppler` | 0.2.0 | 0.2.0 | — | in sync |
+| `@basenative/eslint-config` | 0.2.0 | 0.2.0 | — | in sync |
+| `@basenative/evals` | 0.1.0 | — | — | private |
+| `@basenative/favicon` | 1.0.0 | 1.0.0 | — | in sync |
+| `@basenative/fetch` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
+| `@basenative/flags` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
+| `@basenative/fonts` | 0.1.0 | — | — | private |
+| `@basenative/forms` | 0.4.0 | 0.13.0 | 0.3.0 | **registry ahead** (0.13.0) |
+| `@basenative/i18n` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
+| `@basenative/icons` | 0.1.0 | — | — | private |
+| `@basenative/integrations` | 0.1.0 | 0.1.0 | — | in sync |
+| `@basenative/keyboard` | 1.0.1 | 1.0.0 | — | unreleased bump |
+| `@basenative/logger` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
+| `@basenative/markdown` | 0.1.0 | 0.1.0 | — | in sync |
+| `@basenative/marketplace` | 0.2.0 | 0.2.0 | 0.2.0 | in sync |
+| `@basenative/mcp` | 0.1.0 | — | — | never published |
+| `@basenative/middleware` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
+| `@basenative/notify` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
+| `@basenative/og-image` | 0.2.0 | 0.2.0 | — | in sync |
+| `@basenative/persist` | 1.0.0 | 1.0.0 | — | in sync |
+| `@basenative/realtime` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
+| `@basenative/router` | 0.4.1 | 0.4.0 | 0.3.0 | unreleased bump |
+| `@basenative/runtime` | 0.4.1 | 0.4.1 | 0.3.0 | in sync |
+| `@basenative/server` | 0.4.2 | 0.4.2 | 0.3.0 | in sync |
+| `@basenative/share` | 1.0.0 | 1.0.0 | — | in sync |
+| `@basenative/station` | 0.2.0 | 0.1.0 | — | unreleased bump |
+| `@basenative/tenant` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
+| `@basenative/tsconfig` | 0.2.0 | 0.2.0 | — | in sync |
+| `@basenative/upload` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
+| `@basenative/validate` | 0.1.0 | — | — | never published |
+| `@basenative/visual-builder` | 0.2.0 | 0.2.0 | 0.2.0 | in sync |
+| `@basenative/wrangler-preset` | 0.2.0 | 0.2.0 | — | in sync |
 
 ## Summary
 
 - **40** publishable, **3** private (`@basenative/evals`, `@basenative/fonts`, `@basenative/icons`)
+- **1** have a higher version on GitHub Packages than in this tree (`@basenative/forms` 0.4.0 vs 0.13.0)
+- **3** have never been published to GitHub Packages (`@basenative/builder`, `@basenative/mcp`, `@basenative/validate`)
 - **19** have a stale npmjs copy that external installs resolve to
 - **19** have never appeared on npmjs
 - **0** are at 1.0 on npmjs, despite 7 being at 1.x locally
