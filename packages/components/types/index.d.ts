@@ -394,9 +394,11 @@ export function renderVirtualList<T = unknown>(options?: {
 // ---------------------------------------------------------------- Dialog
 
 export function renderDialog(options?: {
-  /** Rendered as an `<h2>` in the header. */
+  /** Rendered as `<h2 id="{id}-title">` in the header; the `<dialog>` gets `aria-labelledby` pointing at it. Escaped. */
   title?: string;
-  /** Body HTML. */
+  /** Rendered as `<p data-bn="dialog-description" id="{id}-description">` at the top of the body; the `<dialog>` gets `aria-describedby`. Escaped. */
+  description?: string;
+  /** Body HTML. HTML slot: not escaped; pass trusted markup only. */
   content?: string;
   /** Adds the `open` attribute. */
   open?: boolean;

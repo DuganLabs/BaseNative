@@ -1419,8 +1419,8 @@ describe('Dialog — hardening', () => {
 
   it('renders with all options', () => {
     const html = renderDialog({ title: 'T', content: 'C', open: true, modal: false, closable: false, size: 'lg', footer: 'F', id: 'd', attrs: 'data-x="1"' });
-    assert.ok(html.includes('data-size="lg" id="d" open data-modal="false" data-x="1">'));
-    assert.ok(html.includes('<h2 data-bn="dialog-title">T</h2>'));
+    assert.ok(html.includes('data-size="lg" id="d" open data-modal="false" aria-labelledby="d-title" data-x="1">'));
+    assert.ok(html.includes('<h2 data-bn="dialog-title" id="d-title">T</h2>'));
     assert.ok(!html.includes('dialog-close'));
     assert.ok(html.includes('<div data-bn="dialog-footer">F</div>'));
   });
@@ -1444,6 +1444,33 @@ describe('Dialog — hardening', () => {
 
   it('close button is labelled', () => {
     assert.ok(renderDialog().includes('aria-label="Close" type="button"'));
+  });
+
+  it('is labelled by its title through a generated id', () => {
+    resetIds();
+    const html = renderDialog({ title: 'Delete project?' });
+    assert.ok(html.startsWith('<dialog data-bn="dialog" data-size="default" id="bn-dialog-1" aria-modal="true" data-modal="true" aria-labelledby="bn-dialog-1-title">'));
+    assert.ok(html.includes('<h2 data-bn="dialog-title" id="bn-dialog-1-title">Delete project?</h2>'));
+    assert.ok(!html.includes('aria-describedby') && !html.includes('dialog-description'));
+  });
+
+  it('has no aria-labelledby without a title', () => {
+    const html = renderDialog({ id: 'd', content: 'C' });
+    assert.ok(!html.includes('aria-labelledby') && !html.includes('d-title'));
+  });
+
+  it('description renders an escaped paragraph before the content and sets aria-describedby', () => {
+    const html = renderDialog({ id: 'd', title: 'T', description: 'This cannot be undone.', content: '<form></form>' });
+    assert.ok(html.includes('aria-labelledby="d-title" aria-describedby="d-description">'));
+    assert.ok(html.includes('<div data-bn="dialog-body"><p data-bn="dialog-description" id="d-description">This cannot be undone.</p><form></form></div>'));
+    assertEscaped(renderDialog({ id: 'd', description: XSS }));
+    assert.ok(renderDialog({ id: 'd', description: 'only' }).includes('aria-describedby="d-description"'));
+  });
+
+  it('escapes the generated label ids', () => {
+    const html = renderDialog({ id: 'a"b', title: 'T', description: 'D' });
+    assert.ok(html.includes('aria-labelledby="a&quot;b-title"') && html.includes('id="a&quot;b-title"'));
+    assert.ok(html.includes('aria-describedby="a&quot;b-description"') && html.includes('id="a&quot;b-description"'));
   });
 });
 
