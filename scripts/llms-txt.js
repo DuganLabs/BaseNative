@@ -1,5 +1,5 @@
-import { readdirSync, readFileSync, writeFileSync, existsSync, statSync } from 'node:fs';
-import { join, dirname, relative, extname, posix } from 'node:path';
+import { readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { join, dirname, relative, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // Generates llms.txt (package index) and llms-full.txt (complete public API
@@ -442,11 +442,6 @@ function renderSourceExport(pkgName, exp, indent = '') {
 function loadDirectiveSection() {
   const runtimeDoc = readFileSync(join(DOCS_API_DIR, 'runtime.md'), 'utf8');
   const serverDoc = readFileSync(join(DOCS_API_DIR, 'server.md'), 'utf8');
-  const entries = [
-    ...parseDocEntries(runtimeDoc).filter((e) => docHeadingKey(e.heading) === 'template directives' || e.level >= 3),
-    ...parseDocEntries(serverDoc).filter((e) => ['server-side directives', 'hydratable mode'].includes(docHeadingKey(e.heading))),
-  ];
-
   // Keep only the directive sub-entries themselves (level 3+ under "Template
   // Directives" in runtime.md) plus the two server.md sections — this is the
   // verbatim, source-verified directive reference (packages/runtime/src/
@@ -487,7 +482,6 @@ function loadDirectiveSection() {
   const attrNames = new Set();
   for (const m of src.matchAll(/(?:getAttribute|hasAttribute)\('(@[a-zA-Z]+)'\)/g)) attrNames.add(m[1]);
   const covered = out.toLowerCase();
-  const directiveGaps = [...attrNames].filter((a) => !covered.includes('`' + a) && !covered.includes(' ' + a + '`') && !covered.includes(a.slice(1) + '`') && !covered.includes(a));
 
   return { text: out, directiveGaps: [...attrNames].filter((a) => !covered.includes(a)) };
 }
@@ -496,7 +490,6 @@ function buildPackageData(entry) {
   const { dir, dirPath, pkg } = entry;
   const shortName = pkg.name.replace(/^@basenative\//, '');
   const docPath = join(DOCS_API_DIR, `${shortName}.md`);
-  const hasDoc = existsSync(docPath) && shortName !== 'runtime' && shortName !== 'server';
   // runtime/server get their function APIs listed normally too (signal/computed/
   // effect/hydrate; render/renderToStream) — only the directive prose is hoisted.
   const hasDocForFns = existsSync(docPath);
