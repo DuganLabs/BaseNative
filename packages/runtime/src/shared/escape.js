@@ -45,7 +45,7 @@ export function escapeText(value) {
 
 /** Escape for a double-quoted attribute value. */
 export function escapeAttr(value) {
-  return escapeText(value).replace(/"/g, '&quot;');
+  return escapeText(value).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
 /**
@@ -86,4 +86,34 @@ export function sanitizeUrl(value) {
   // eslint-disable-next-line no-control-regex -- the control range is the point
   const stripped = String(value).replace(/[\u0000-\u0020\u007F-\u00A0]/g, '');
   return DANGEROUS_SCHEME.test(stripped) ? null : String(value);
+}
+
+/**
+ * Locate every `{{ expression }}` in `text`, linearly.
+ *
+ * Replaces /\{\{\s*(.+?)\s*\}\}/g, which is polynomial: `\s*(.+?)\s*` backtracks
+ * across whitespace runs, so `{{` followed by a long run of spaces and no closing
+ * `}}` is quadratic. This scans with indexOf and never revisits input. The
+ * interpolation reader is on the untrusted-input path (model-generated templates),
+ * so it must be linear by construction, not by luck.
+ *
+ * Matches the old regex's contract: the expression runs to the FIRST `}}`, is
+ * trimmed, and `{{}}` / `{{   }}` is not an interpolation. Unlike the regex it also
+ * matches across newlines, which the expression tokenizer already tolerates.
+ */
+export function findInterpolations(text) {
+  const out = [];
+  let from = 0;
+  for (;;) {
+    const start = text.indexOf('{{', from);
+    if (start === -1) break;
+    const end = text.indexOf('}}', start + 2);
+    if (end === -1) break;
+    const expression = text.slice(start + 2, end).trim();
+    if (expression.length > 0) {
+      out.push({ start, end: end + 2, expression });
+    }
+    from = end + 2;
+  }
+  return out;
 }

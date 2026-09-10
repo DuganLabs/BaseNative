@@ -7,6 +7,7 @@ import {
   unwrapRaw,
   isUrlAttribute,
   sanitizeUrl,
+  findInterpolations,
 } from '@basenative/runtime/shared/escape';
 
 function emitDiagnostic(options, diagnostic) {
@@ -24,12 +25,16 @@ function evaluate(expr, ctx, options) {
 // SSR payload is injectable while the hydrated DOM is not. Both sides share
 // @basenative/runtime/shared/escape so they cannot drift apart again.
 function interpolate(text, ctx, options, escape = escapeText) {
-  return text.replace(/\{\{\s*(.+?)\s*\}\}/g, (_, expr) => {
-    const value = evaluate(expr, ctx, options);
-    if (value == null) return '';
+  let out = '';
+  let last = 0;
+  for (const { start, end, expression } of findInterpolations(text)) {
+    out += text.slice(last, start);
+    const value = evaluate(expression, ctx, options);
     // raw() is an explicit trust assertion about this one value.
-    return isRaw(value) ? unwrapRaw(value) : escape(value);
-  });
+    if (value != null) out += isRaw(value) ? unwrapRaw(value) : escape(value);
+    last = end;
+  }
+  return out + text.slice(last);
 }
 
 function createChildContext(parent, bindings) {

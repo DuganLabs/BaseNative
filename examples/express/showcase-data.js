@@ -38,7 +38,7 @@ export const PACKAGES = [
   {
     name: '@basenative/runtime',
     tag: 'core',
-    summary: 'Signal-based web runtime over native HTML — zero build step, ~5KB gzipped.',
+    summary: 'Signal-based web runtime over native HTML — zero build step, 8.8KB gzipped (10KB budget).',
   },
   {
     name: '@basenative/server',
@@ -193,12 +193,27 @@ export const PACKAGES = [
   {
     name: '@basenative/marketplace',
     tag: 'data',
-    summary: 'Community component marketplace runtime and registry helpers.',
+    summary: 'First-party component registry runtime and helpers — no third-party packages published yet.',
   },
   {
     name: '@basenative/station',
     tag: 'data',
     summary: 'Queue-driven local-inference primitive with vLLM + Workers AI fallback.',
+  },
+  {
+    name: '@basenative/validate',
+    tag: 'tools',
+    summary: 'Structured template diagnostics — every error carries the corrected syntax, not just a description.',
+  },
+  {
+    name: '@basenative/mcp',
+    tag: 'tools',
+    summary: 'MCP server exposing validate, render, and directive reference to any agent.',
+  },
+  {
+    name: '@basenative/evals',
+    tag: 'tools',
+    summary: 'Eval harness measuring model output correctness, with and without the validation loop.',
   },
   {
     name: '@basenative/cli',

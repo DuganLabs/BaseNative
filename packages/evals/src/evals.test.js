@@ -8,6 +8,7 @@ import {
   loadCorpus, tierCoverage,
   scoreTemplate, summarise, computeDeltas, buildPrompt,
   resolveCredentials, extractTemplate, toMarkdown, runSuite,
+  PROVIDERS,
 } from './index.js';
 
 /** A deliberately simple renderer, so scoring is tested without the SSR stack. */
@@ -198,6 +199,89 @@ describe('providers', () => {
   it('strips markdown fences from model output', () => {
     assert.equal(extractTemplate('```html\n<p>x</p>\n```'), '<p>x</p>');
     assert.equal(extractTemplate('<p>x</p>'), '<p>x</p>');
+  });
+
+  it('strips an xml fence and a bare fence, and trims surrounding whitespace', () => {
+    assert.equal(extractTemplate('```xml\n<p>x</p>\n```'), '<p>x</p>');
+    assert.equal(extractTemplate('```\n<p>x</p>\n```'), '<p>x</p>');
+    assert.equal(extractTemplate('  \n<p>x</p>\n  '), '<p>x</p>');
+    assert.equal(extractTemplate('```html\n\n  <p>x</p>\n\n```'), '<p>x</p>');
+  });
+
+  it('falls back to trimming the raw text when a fence never closes', () => {
+    const unclosed = '```html\n<p>x</p>';
+    assert.equal(extractTemplate(unclosed), unclosed.trim());
+  });
+
+  // Regression test for the CodeQL js/polynomial-redos finding on the old
+  // /```(?:html|xml)?\s*\n([\s\S]*?)```/ regex: an opened-but-never-closed
+  // fence, or a long run of bare backticks, used to be able to force
+  // catastrophic backtracking. The linear indexOf-based scan must stay fast.
+  it('handles pathological input in linear time', () => {
+    const openNoClose = '```html' + 'a'.repeat(50_000);
+    const start1 = performance.now();
+    extractTemplate(openNoClose);
+    assert.ok(performance.now() - start1 < 200, 'unclosed fence with 50,000 chars took too long');
+
+    const manyBackticks = '`'.repeat(50_000);
+    const start2 = performance.now();
+    extractTemplate(manyBackticks);
+    assert.ok(performance.now() - start2 < 200, '50,000 backticks took too long');
+  });
+});
+
+describe('local providers — no key required', () => {
+  it('ollama needs no environment variable', () => {
+    const resolved = resolveCredentials([{ provider: 'ollama', model: 'llama3.2' }], {});
+    assert.equal(resolved.length, 1);
+    assert.equal(resolved[0].provider.id, 'ollama');
+    assert.equal(resolved[0].apiKey, undefined);
+  });
+
+  it('openaiCompatible waives its key requirement for a localhost baseUrl', () => {
+    const resolved = resolveCredentials(
+      [{ provider: 'openaiCompatible', model: 'foo', baseUrl: 'http://localhost:11434/v1' }],
+      {}
+    );
+    assert.equal(resolved.length, 1);
+    assert.equal(resolved[0].apiKey, undefined);
+  });
+
+  it('openaiCompatible still requires a key for a non-local baseUrl', () => {
+    assert.throws(
+      () => resolveCredentials([{ provider: 'openaiCompatible', model: 'foo', baseUrl: 'https://example.com/v1' }], {}),
+      /OPENWEIGHT_API_KEY/
+    );
+  });
+
+  it('mixing a local model with a cloud model still refuses on the missing cloud key', () => {
+    assert.throws(
+      () => resolveCredentials([{ provider: 'ollama', model: 'llama3.2' }, { provider: 'anthropic' }], {}),
+      /ANTHROPIC_API_KEY/
+    );
+  });
+
+  it('ollama.generate posts to /api/generate and returns response text', async () => {
+    const calls = [];
+    const fakeFetch = async (url, init) => {
+      calls.push({ url, init });
+      return {
+        ok: true,
+        json: async () => ({ response: 'hello from ollama' }),
+      };
+    };
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = fakeFetch;
+    try {
+      const text = await PROVIDERS.ollama.generate('hi', { model: 'llama3.2' });
+      assert.equal(text, 'hello from ollama');
+      assert.equal(calls.length, 1);
+      assert.equal(calls[0].url, 'http://localhost:11434/api/generate');
+      const body = JSON.parse(calls[0].init.body);
+      assert.deepEqual(body, { model: 'llama3.2', prompt: 'hi', stream: false });
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
   });
 });
 

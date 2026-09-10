@@ -9,7 +9,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  escapeText, escapeAttr, raw, isRaw, unwrapRaw, isUrlAttribute, sanitizeUrl,
+  escapeText, escapeAttr, raw, isRaw, unwrapRaw, isUrlAttribute, sanitizeUrl, findInterpolations,
 } from './shared/escape.js';
 import { interpolate } from './evaluate.js';
 
@@ -32,8 +32,9 @@ describe('escapeText', () => {
 });
 
 describe('escapeAttr', () => {
-  it('additionally escapes the double quote', () => {
+  it('additionally escapes both quote characters', () => {
     assert.equal(escapeAttr('" onx="'), '&quot; onx=&quot;');
+    assert.equal(escapeAttr("it's"), 'it&#39;s');
   });
 });
 
@@ -108,5 +109,41 @@ describe('interpolate', () => {
   it('renders null and undefined as empty', () => {
     assert.equal(interpolate('[{{ v }}]', { v: null }), '[]');
     assert.equal(interpolate('[{{ v }}]', {}), '[]');
+  });
+});
+
+describe('findInterpolations', () => {
+  it('finds each expression with its span', () => {
+    const [a, b] = findInterpolations('x {{ one }} y {{two}} z');
+    assert.deepEqual(a, { start: 2, end: 11, expression: 'one' });
+    assert.deepEqual(b, { start: 14, end: 21, expression: 'two' });
+  });
+
+  it('runs to the first closing braces, like the regex it replaces', () => {
+    assert.deepEqual(findInterpolations('{{ a }} }}').map((m) => m.expression), ['a']);
+  });
+
+  it('ignores empty and whitespace-only interpolations', () => {
+    assert.deepEqual(findInterpolations('{{}} {{   }} {{ok}}').map((m) => m.expression), ['ok']);
+  });
+
+  it('ignores an unclosed interpolation', () => {
+    assert.deepEqual(findInterpolations('{{ never closed'), []);
+  });
+
+  // The regex /\{\{\s*(.+?)\s*\}\}/ was polynomial on whitespace runs. This is on
+  // the untrusted-input path (model-generated templates), so it must be linear.
+  it('is linear on pathological whitespace', () => {
+    const input = '{{' + ' '.repeat(50_000);
+    const t0 = performance.now();
+    assert.deepEqual(findInterpolations(input), []);
+    assert.ok(performance.now() - t0 < 200, 'took too long — not linear');
+  });
+
+  it('is linear on many unclosed openers', () => {
+    const input = '{{ '.repeat(20_000);
+    const t0 = performance.now();
+    findInterpolations(input);
+    assert.ok(performance.now() - t0 < 200, 'took too long — not linear');
   });
 });
