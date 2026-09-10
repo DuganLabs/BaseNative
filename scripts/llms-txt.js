@@ -194,6 +194,19 @@ function resolveModule(fromAbsFile, spec) {
 const fileExportCache = new Map();
 
 /**
+ * Blank out `/* … *\/` blocks and whole-line `//` comments, preserving length
+ * and newlines so every index still maps onto the original text. Strings are
+ * left alone (a `//` inside a URL string is not a comment) — only line
+ * comments that start a line are masked, which is where usage examples live.
+ */
+function maskComments(source) {
+  const blank = (m) => m.replace(/[^\n]/g, ' ');
+  return source
+    .replace(/\/\*[\s\S]*?\*\//g, blank)
+    .replace(/^[ \t]*\/\/[^\n]*/gm, blank);
+}
+
+/**
  * Extract exported symbols from a JS source file, following `export { x }
  * from './y.js'` and `export * as ns from './y.js'` one or more levels deep.
  * Returns [{ name, kind, params, doc, file }] — `file` cites the file where
@@ -205,6 +218,11 @@ function getFileExports(absFile, visiting = new Set()) {
   visiting.add(absFile);
 
   const content = readFileSync(absFile, 'utf8');
+  // Export patterns are matched against a copy with comment bodies blanked
+  // out (same length, so indices still address `content`): otherwise an
+  // `export const onRequestPost = …` inside a JSDoc usage example is reported
+  // as a real export and shows up as an undocumented gap.
+  const code = maskComments(content);
   const results = [];
   const consumedSpans = [];
 
@@ -212,7 +230,7 @@ function getFileExports(absFile, visiting = new Set()) {
   const isConsumed = (index) => consumedSpans.some(([s, e]) => index >= s && index < e);
 
   // export function / export async function
-  for (const m of content.matchAll(/export\s+(async\s+function|function)\s+([A-Za-z0-9_$]+)\s*\(/g)) {
+  for (const m of code.matchAll(/export\s+(async\s+function|function)\s+([A-Za-z0-9_$]+)\s*\(/g)) {
     const openIdx = m.index + m[0].length - 1;
     const params = balancedParams(content, openIdx);
     results.push({
@@ -226,7 +244,7 @@ function getFileExports(absFile, visiting = new Set()) {
   }
 
   // export class
-  for (const m of content.matchAll(/export\s+class\s+([A-Za-z0-9_$]+)/g)) {
+  for (const m of code.matchAll(/export\s+class\s+([A-Za-z0-9_$]+)/g)) {
     markConsumed(m);
     results.push({
       name: m[1],
@@ -238,7 +256,7 @@ function getFileExports(absFile, visiting = new Set()) {
   }
 
   // export const NAME = ...  (captures arrow-fn params, balanced, when present)
-  for (const m of content.matchAll(/export\s+const\s+([A-Za-z0-9_$]+)\s*=\s*/g)) {
+  for (const m of code.matchAll(/export\s+const\s+([A-Za-z0-9_$]+)\s*=\s*/g)) {
     markConsumed(m);
     const valueStart = m.index + m[0].length;
     let kind = 'const';
@@ -264,7 +282,7 @@ function getFileExports(absFile, visiting = new Set()) {
 
   // export default ...
   {
-    const m = content.match(/export\s+default\s+/);
+    const m = code.match(/export\s+default\s+/);
     if (m) {
       results.push({
         name: 'default',
@@ -277,7 +295,7 @@ function getFileExports(absFile, visiting = new Set()) {
   }
 
   // export * as ns from './x.js' — namespace re-export
-  for (const m of content.matchAll(/export\s*\*\s*as\s+([A-Za-z0-9_$]+)\s+from\s*['"]([^'"]+)['"]/g)) {
+  for (const m of code.matchAll(/export\s*\*\s*as\s+([A-Za-z0-9_$]+)\s+from\s*['"]([^'"]+)['"]/g)) {
     markConsumed(m);
     const target = resolveModule(absFile, m[2]);
     const inner = target ? getFileExports(target, visiting) : [];
@@ -292,14 +310,14 @@ function getFileExports(absFile, visiting = new Set()) {
   }
 
   // export * from './x.js' — flatten target's exports into this file
-  for (const m of content.matchAll(/export\s*\*\s*from\s*['"]([^'"]+)['"]/g)) {
+  for (const m of code.matchAll(/export\s*\*\s*from\s*['"]([^'"]+)['"]/g)) {
     markConsumed(m);
     const target = resolveModule(absFile, m[1]);
     if (target) results.push(...getFileExports(target, visiting));
   }
 
   // export { a, b as c } from './x.js'
-  for (const m of content.matchAll(/export\s*\{([\s\S]*?)\}\s*from\s*['"]([^'"]+)['"]/g)) {
+  for (const m of code.matchAll(/export\s*\{([\s\S]*?)\}\s*from\s*['"]([^'"]+)['"]/g)) {
     markConsumed(m);
     const target = resolveModule(absFile, m[2]);
     const inner = target ? getFileExports(target, visiting) : [];
@@ -315,7 +333,7 @@ function getFileExports(absFile, visiting = new Set()) {
 
   // local imports, used to resolve bare `export { a as b };` (no `from`)
   const imports = new Map(); // localName -> { file, originalName }
-  for (const m of content.matchAll(/import\s*\{([^}]*)\}\s*from\s*['"]([^'"]+)['"]/g)) {
+  for (const m of code.matchAll(/import\s*\{([^}]*)\}\s*from\s*['"]([^'"]+)['"]/g)) {
     const target = resolveModule(absFile, m[2]);
     for (const part of m[1].split(',').map((s) => s.trim()).filter(Boolean)) {
       const asMatch = part.match(/^([A-Za-z0-9_$]+)\s+as\s+([A-Za-z0-9_$]+)$/);
@@ -326,7 +344,7 @@ function getFileExports(absFile, visiting = new Set()) {
   }
 
   // bare export { a, b as c }; (no `from`) — only over content not already consumed above
-  for (const m of content.matchAll(/export\s*\{([\s\S]*?)\}\s*;/g)) {
+  for (const m of code.matchAll(/export\s*\{([\s\S]*?)\}\s*;/g)) {
     if (isConsumed(m.index)) continue;
     for (const part of m[1].split(',').map((s) => s.trim()).filter(Boolean)) {
       const asMatch = part.match(/^([A-Za-z0-9_$]+)\s+as\s+([A-Za-z0-9_$]+)$/);
