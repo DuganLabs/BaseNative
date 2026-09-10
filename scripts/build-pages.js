@@ -2,127 +2,60 @@
  * Pre-renders all Express routes to static HTML for Cloudflare Pages deployment.
  * Run after `nx bundle basenative-example-express` so basenative.js exists.
  */
-import { readFileSync, mkdirSync, writeFileSync, cpSync } from 'node:fs';
+import { mkdirSync, writeFileSync, cpSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { render } from '../packages/server/src/render.js';
 import {
-  getComponentsPageContext,
-  getHomePageContext,
-  getRoadmapPageContext,
-  getTasksPageContext,
-  navPages,
-  staticTasks,
-} from '../examples/express/site-data.js';
-import { getShowcaseContext } from '../examples/express/showcase-data.js';
+  renderComponentPage,
+  renderNotFoundPage,
+  renderRoute,
+  siteRoutes,
+} from '../examples/express/page.js';
+import { flatComponents } from '../examples/express/component-catalog.js';
+import { staticTasks } from '../examples/express/site-data.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 const express = join(root, 'examples', 'express');
 const dist = join(root, 'dist');
-const read = (file) => readFileSync(join(express, file), 'utf-8');
 
-// -- Layout helper (mirrors server.js) --
-function renderPage(viewFile, ctx, { title, scripts = '', activePage = '' }) {
-  const layout = read('views/layout.html');
-  const view = read(`views/${viewFile}`);
-  const content = render(view, ctx);
-  let html = layout
-    .replace('<!--TITLE-->', title)
-    .replace('<!--CONTENT-->', content)
-    .replace('<!--SCRIPTS-->', scripts);
-  for (const page of navPages) {
-    html = html.replace(
-      `<!--${page.toUpperCase()}_ARIA-->`,
-      activePage === page ? 'aria-current="page"' : '',
-    );
-  }
-  return html;
+// The dev-only live-reload snippet (an EventSource against /__live, which
+// only server.js serves) has no route on the static host, so it should
+// never ship — Pages returns HTML for that request, which the browser then
+// rejects and logs as a console error on every page load.
+const LIVE_RELOAD_SCRIPT = /\s*<script>if\(!location\.search\.includes\('nolr'\)\)new EventSource\('\/__live'\)[^<]*<\/script>/;
+
+function stripDevScripts(html) {
+  return html.replace(LIVE_RELOAD_SCRIPT, '');
 }
 
-function writePage(route, html) {
-  const dir = route === '/' ? dist : join(dist, route);
+function writePage(path, html) {
+  const route = path.replace(/^\/+/, '');
+  const dir = route ? join(dist, route) : dist;
   mkdirSync(dir, { recursive: true });
-  writeFileSync(join(dir, 'index.html'), html);
-  console.log(`  ${route === '/' ? '/' : `/${route}/`}`);
+  writeFileSync(join(dir, 'index.html'), stripDevScripts(html));
+  console.log(`  /${route ? `${route}/` : ''}`);
 }
-
-// -- Page contexts (mirrors server.js) --
-const pages = {
-  '/': {
-    view: 'home.html',
-    title: 'Home',
-    activePage: 'home',
-    ctx: getHomePageContext(),
-  },
-  tasks: {
-    view: 'tasks.html',
-    title: 'Tasks',
-    activePage: 'tasks',
-    ctx: getTasksPageContext(staticTasks),
-  },
-  playground: {
-    view: 'playground.html',
-    title: 'Playground',
-    activePage: 'playground',
-    ctx: {},
-  },
-  builder: {
-    view: 'builder.html',
-    title: 'Builder',
-    activePage: 'builder',
-    ctx: {},
-  },
-  docs: {
-    view: 'docs.html',
-    title: 'API Docs',
-    activePage: 'docs',
-    ctx: {},
-  },
-  components: {
-    view: 'components.html',
-    title: 'Components',
-    activePage: 'components',
-    ctx: getComponentsPageContext(),
-  },
-  roadmap: {
-    view: 'roadmap.html',
-    title: 'Roadmap',
-    activePage: 'roadmap',
-    ctx: getRoadmapPageContext(),
-  },
-  'test-signals': {
-    view: 'test-signals.html',
-    title: 'Signal Verification',
-    activePage: '',
-    ctx: {
-      items: [
-        { id: 1, name: 'Server-rendered item A', status: 'done' },
-        { id: 2, name: 'Server-rendered item B', status: 'active' },
-        { id: 3, name: 'Server-rendered item C', status: 'pending' },
-      ],
-      get itemsJson() {
-        return JSON.stringify(this.items);
-      },
-    },
-  },
-  showcase: {
-    view: 'showcase.html',
-    title: 'Showcase',
-    activePage: 'showcase',
-    ctx: getShowcaseContext(),
-  },
-};
 
 // -- Build --
 console.log('Building static site...');
 mkdirSync(dist, { recursive: true });
 
-// Render pages
-for (const [route, { view, title, activePage, ctx }] of Object.entries(pages)) {
-  const html = renderPage(view, ctx, { title, activePage });
-  writePage(route, html);
+// Top-level routes: the same table server.js serves, with the fixed task snapshot.
+for (const route of siteRoutes) {
+  writePage(route.path, renderRoute(route, { tasks: staticTasks, hasApi: false }));
 }
+
+// One page per catalog entry — the catalog links to every slug in flatComponents,
+// so anything missing here is a soft 404 on Cloudflare Pages.
+for (const component of flatComponents) {
+  writePage(`components/${component.slug}`, renderComponentPage(component.slug));
+}
+
+// Cloudflare Pages serves dist/404.html with a 404 status for any unknown path
+// (and stops falling back to index.html once the file exists).
+writeFileSync(join(dist, '404.html'), stripDevScripts(renderNotFoundPage()));
+console.log('  404.html');
 
 // Copy static assets
 cpSync(join(express, 'public', 'styles.css'), join(dist, 'styles.css'));
