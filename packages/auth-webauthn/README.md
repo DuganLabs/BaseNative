@@ -1,6 +1,6 @@
 # @basenative/auth-webauthn
 
-> WebAuthn (passkey) adapter for `@basenative/auth`. Drop-in passkey login for Cloudflare Workers / Pages, with pluggable storage and a tiny browser client.
+> WebAuthn (passkey) provider for Cloudflare Workers / Pages. Follows the same `{ type, ... }` provider shape as `@basenative/auth`, but has no dependency on it. Drop-in passkey login, with pluggable storage and a tiny browser client.
 
 Part of the [BaseNative](https://basenative.dev) ecosystem. Lifted from the production-tested passkey implementation in [t4bs](https://github.com/DuganLabs/t4bs).
 
@@ -11,7 +11,7 @@ Modern passkey auth is a small amount of code with a lot of papercuts. This pack
 ## Install
 
 ```bash
-pnpm add @basenative/auth-webauthn @basenative/auth @simplewebauthn/server
+pnpm add @basenative/auth-webauthn @simplewebauthn/server
 # Browser-side (only on the client):
 pnpm add @simplewebauthn/browser
 ```
@@ -218,10 +218,37 @@ webauthnAdapter({
   },
   cookieName:    'bn_auth',           // default
   secureCookie:  true,                // default; set false for localhost http://
+  userVerification: 'preferred',      // default; also 'required' | 'discouraged'
 });
 ```
 
 The session cookie is always `HttpOnly; SameSite=Lax`. `Secure` is on by default.
+
+### `userVerification`
+
+Controls how strongly the ceremony asks for (and checks for) user verification —
+PIN, biometric, or device passcode — as opposed to mere user *presence* (a touch
+or tap). One option drives both sides so they can't disagree:
+
+- Registration: `authenticatorSelection.userVerification`
+- Authentication: `userVerification`
+- Verification: `requireUserVerification: userVerification === 'required'`
+
+| Value | Ceremony asks for UV | Verification enforces UV |
+| --- | --- | --- |
+| `'preferred'` (default) | yes, if the authenticator supports it | no |
+| `'required'` | yes | **yes** — assertions without UV are rejected |
+| `'discouraged'` | no | no |
+
+**Security note:** `'preferred'` is the default because it matches existing
+behaviour and keeps every previously-registered passkey working — some
+authenticators (particularly older security keys) never perform UV, only user
+presence. Set `'required'` when your threat model needs a second factor baked
+into the passkey itself (e.g. shared devices, high-value accounts): it's
+strictly stronger, but it will reject authentication from any authenticator
+that can't perform UV, including credentials registered before you turned it
+on. Roll it out only after confirming your users' authenticators support UV,
+or pair it with a re-registration prompt.
 
 ## Migrating an existing project
 
@@ -279,6 +306,7 @@ Those libraries already speak provider plugins; this package fits the same model
 - Cookies are `HttpOnly; Secure; SameSite=Lax`. Disable `Secure` only for local-HTTP development.
 - Errors come back as `{ error: 'reason' }` with a numeric status. The reason strings are stable and safe to log; no PII or PII-derivable values are included.
 - `seedRoles` only ever upgrades. It will never remove `admin` from a user, even if they're missing from the seed list — handle role removal manually.
+- `userVerification` defaults to `'preferred'` (UV requested, not enforced) — see the "Configuration" section above for the `'required'` tradeoff.
 
 ## Testing
 

@@ -164,6 +164,109 @@ describe('webauthnAdapter — construction', () => {
     const a = webauthnAdapter({ lib: FAKE_LIB, rp: RP, stores: makeStores() });
     assert.equal(a.type, 'webauthn');
   });
+
+  it('rejects an invalid userVerification value', () => {
+    assert.throws(() => webauthnAdapter({
+      lib: FAKE_LIB, rp: RP, stores: makeStores(), userVerification: 'nope',
+    }));
+  });
+});
+
+/* Captures the exact input each WebAuthn primitive was called with, so tests
+   can assert on option-generation and verification args without caring about
+   the (unrelated) return shape — reuses FAKE_LIB's return values. */
+function makeCapturingLib() {
+  const calls = {};
+  const lib = {
+    generateRegistrationOptions: async (input) => {
+      calls.generateRegistrationOptions = input;
+      return FAKE_LIB.generateRegistrationOptions(input);
+    },
+    generateAuthenticationOptions: async (input) => {
+      calls.generateAuthenticationOptions = input;
+      return FAKE_LIB.generateAuthenticationOptions(input);
+    },
+    verifyRegistrationResponse: async (input) => {
+      calls.verifyRegistrationResponse = input;
+      return FAKE_LIB.verifyRegistrationResponse(input);
+    },
+    verifyAuthenticationResponse: async (input) => {
+      calls.verifyAuthenticationResponse = input;
+      return FAKE_LIB.verifyAuthenticationResponse(input);
+    },
+  };
+  return { lib, calls };
+}
+
+describe('webauthnAdapter — userVerification option', () => {
+  it('defaults to "preferred" in _config', () => {
+    const a = webauthnAdapter({ lib: FAKE_LIB, rp: RP, stores: makeStores() });
+    assert.equal(a._config.userVerification, 'preferred');
+  });
+
+  it('default: requests "preferred" on both ceremonies and does not require it at verification', async () => {
+    const { lib, calls } = makeCapturingLib();
+    const stores = makeStores();
+    const adapter = webauthnAdapter({ lib, rp: RP, stores });
+
+    const regOpts = await adapter.getRegistrationOptions('alice');
+    assert.equal(calls.generateRegistrationOptions.authenticatorSelection.userVerification, 'preferred');
+
+    await adapter.verifyRegistration({
+      response: { clientDataJSON: makeClientDataJSON(regOpts.options.challenge) },
+    });
+    assert.equal(calls.verifyRegistrationResponse.requireUserVerification, false);
+
+    const authOpts = await adapter.getAuthenticationOptions('alice');
+    assert.equal(calls.generateAuthenticationOptions.userVerification, 'preferred');
+
+    await adapter.verifyAuthentication({
+      id: 'CRED_ID_1',
+      response: { clientDataJSON: makeClientDataJSON(authOpts.options.challenge) },
+    });
+    assert.equal(calls.verifyAuthenticationResponse.requireUserVerification, false);
+  });
+
+  it('"required": requests "required" on both ceremonies and enforces it at verification', async () => {
+    const { lib, calls } = makeCapturingLib();
+    const stores = makeStores();
+    const adapter = webauthnAdapter({ lib, rp: RP, stores, userVerification: 'required' });
+    assert.equal(adapter._config.userVerification, 'required');
+
+    const regOpts = await adapter.getRegistrationOptions('alice');
+    assert.equal(calls.generateRegistrationOptions.authenticatorSelection.userVerification, 'required');
+
+    await adapter.verifyRegistration({
+      response: { clientDataJSON: makeClientDataJSON(regOpts.options.challenge) },
+    });
+    assert.equal(calls.verifyRegistrationResponse.requireUserVerification, true);
+
+    const authOpts = await adapter.getAuthenticationOptions('alice');
+    assert.equal(calls.generateAuthenticationOptions.userVerification, 'required');
+
+    await adapter.verifyAuthentication({
+      id: 'CRED_ID_1',
+      response: { clientDataJSON: makeClientDataJSON(authOpts.options.challenge) },
+    });
+    assert.equal(calls.verifyAuthenticationResponse.requireUserVerification, true);
+  });
+
+  it('"discouraged": passes through to both option-generation calls, and does not require UV at verification', async () => {
+    const { lib, calls } = makeCapturingLib();
+    const stores = makeStores();
+    const adapter = webauthnAdapter({ lib, rp: RP, stores, userVerification: 'discouraged' });
+
+    const regOpts = await adapter.getRegistrationOptions('alice');
+    assert.equal(calls.generateRegistrationOptions.authenticatorSelection.userVerification, 'discouraged');
+
+    await adapter.verifyRegistration({
+      response: { clientDataJSON: makeClientDataJSON(regOpts.options.challenge) },
+    });
+    assert.equal(calls.verifyRegistrationResponse.requireUserVerification, false);
+
+    await adapter.getAuthenticationOptions('alice');
+    assert.equal(calls.generateAuthenticationOptions.userVerification, 'discouraged');
+  });
 });
 
 describe('webauthnAdapter — registration flow', () => {
