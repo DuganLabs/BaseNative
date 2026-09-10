@@ -2194,6 +2194,10 @@ packages/runtime/src/debug.js · `import { debugAssert } from '@basenative/runti
 Logs a signal's current dependency graph (immediate subscribers only). Useful for diagnosing why a computed is or isn't re-evaluating.
 packages/runtime/src/debug.js · `import { debugDeps } from '@basenative/runtime';`
 
+#### `raw(value)` (function)
+Mark a string as trusted markup, exempt from HTML escaping.
+packages/runtime/src/shared/escape.js · `import { raw } from '@basenative/runtime';`
+
 #### `isScopeSlot(value)` (function)
 packages/runtime/src/shared/expression.js · `import { isScopeSlot } from '@basenative/runtime';`
 
@@ -2208,6 +2212,28 @@ packages/runtime/src/shared/expression.js · `import { clearExpressionCache } fr
 
 #### `SCOPE_SLOT` (const)
 packages/runtime/src/shared/expression.js · `import { SCOPE_SLOT } from '@basenative/runtime';`
+
+#### `isRaw(value)` (function)
+packages/runtime/src/shared/escape.js · `import { isRaw } from '@basenative/runtime';`
+
+#### `unwrapRaw(value)` (function)
+The underlying string of a raw value, or the value unchanged.
+packages/runtime/src/shared/escape.js · `import { unwrapRaw } from '@basenative/runtime';`
+
+#### `escapeText(value)` (function)
+Escape for a text node: `&` first, or the later replacements double-encode.
+packages/runtime/src/shared/escape.js · `import { escapeText } from '@basenative/runtime';`
+
+#### `escapeAttr(value)` (function)
+Escape for a double-quoted attribute value.
+packages/runtime/src/shared/escape.js · `import { escapeAttr } from '@basenative/runtime';`
+
+#### `isUrlAttribute(name)` (function)
+packages/runtime/src/shared/escape.js · `import { isUrlAttribute } from '@basenative/runtime';`
+
+#### `sanitizeUrl(value)` (function)
+Neutralise a URL-bearing attribute value, or return it unchanged.
+packages/runtime/src/shared/escape.js · `import { sanitizeUrl } from '@basenative/runtime';`
 
 ### `@basenative/server` (v0.4.2)
 
@@ -2700,11 +2726,18 @@ Everything below is a real, mechanically-detected gap between source/package.jso
 - `@basenative/runtime`: `debugTime` is exported (packages/runtime/src/debug.js) but not mentioned in docs/api/runtime.md.
 - `@basenative/runtime`: `debugAssert` is exported (packages/runtime/src/debug.js) but not mentioned in docs/api/runtime.md.
 - `@basenative/runtime`: `debugDeps` is exported (packages/runtime/src/debug.js) but not mentioned in docs/api/runtime.md.
+- `@basenative/runtime`: `raw` is exported (packages/runtime/src/shared/escape.js) but not mentioned in docs/api/runtime.md.
 - `@basenative/runtime`: `isScopeSlot` is exported (packages/runtime/src/shared/expression.js) but not mentioned in docs/api/runtime.md.
 - `@basenative/runtime`: `compileExpression` is exported (packages/runtime/src/shared/expression.js) but not mentioned in docs/api/runtime.md.
 - `@basenative/runtime`: `evaluateExpression` is exported (packages/runtime/src/shared/expression.js) but not mentioned in docs/api/runtime.md.
 - `@basenative/runtime`: `clearExpressionCache` is exported (packages/runtime/src/shared/expression.js) but not mentioned in docs/api/runtime.md.
 - `@basenative/runtime`: `SCOPE_SLOT` is exported (packages/runtime/src/shared/expression.js) but not mentioned in docs/api/runtime.md.
+- `@basenative/runtime`: `isRaw` is exported (packages/runtime/src/shared/escape.js) but not mentioned in docs/api/runtime.md.
+- `@basenative/runtime`: `unwrapRaw` is exported (packages/runtime/src/shared/escape.js) but not mentioned in docs/api/runtime.md.
+- `@basenative/runtime`: `escapeText` is exported (packages/runtime/src/shared/escape.js) but not mentioned in docs/api/runtime.md.
+- `@basenative/runtime`: `escapeAttr` is exported (packages/runtime/src/shared/escape.js) but not mentioned in docs/api/runtime.md.
+- `@basenative/runtime`: `isUrlAttribute` is exported (packages/runtime/src/shared/escape.js) but not mentioned in docs/api/runtime.md.
+- `@basenative/runtime`: `sanitizeUrl` is exported (packages/runtime/src/shared/escape.js) but not mentioned in docs/api/runtime.md.
 - `@basenative/server`: `resolveDeferred` is exported (packages/server/src/render.js) but not mentioned in docs/api/server.md.
 - `@basenative/server`: `renderToStream` is exported (packages/server/src/stream.js) but not mentioned in docs/api/server.md.
 - `@basenative/server`: `renderToReadableStream` is exported (packages/server/src/stream.js) but not mentioned in docs/api/server.md.

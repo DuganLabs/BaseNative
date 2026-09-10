@@ -49,9 +49,48 @@ BaseNative's expression engine (`src/shared/expression.js`) is designed to be Co
 | Risk | Mitigation |
 |------|-----------|
 | Injection (A03) | Expression interpreter blocks arbitrary code execution; safe member access prevents prototype pollution |
-| XSS | Component render helpers escape HTML content and attributes; templates use {{ }} interpolation which is text-only |
+| XSS | `{{ }}` interpolation and `:attr` bindings are HTML-escaped on both the server and the client; URL-bearing attributes additionally reject executable schemes. Opt out per value with `raw()` |
 | Insecure Dependencies | Runtime has zero dependencies; server depends only on `node-html-parser`; CI runs `pnpm audit` |
 | Security Misconfiguration | CSP-compatible by design; no inline script generation |
+
+## Output Escaping
+
+`@basenative/server`'s `render()` and the client's attribute/text binding both escape
+interpolated **values**. Static template markup is never escaped — only substituted data.
+
+- Text position: `&`, `<`, `>`
+- Attribute position: additionally `"`
+- URL-bearing attributes (`href`, `src`, `action`, `formaction`, `poster`, …): values
+  whose scheme is `javascript:`, `vbscript:`, `data:`, `blob:` or `file:` are dropped and
+  reported as the `BN_UNSAFE_URL` diagnostic. Whitespace and control characters are
+  stripped before that test, because browsers ignore them when resolving a URL.
+
+Both sides share `@basenative/runtime/shared/escape`. That is deliberate: escaping used
+to exist on neither side, and the client's use of `textContent` meant hydration silently
+rewrote an injected payload as text *after* it had executed — the server and client
+disagreeing is the failure mode this module exists to prevent.
+
+### Opting out
+
+```js
+import { raw } from '@basenative/runtime';
+
+render('<div>{{ body }}</div>', { body: raw('<em>trusted</em>') });
+```
+
+`raw()` is a trust assertion about one specific value. It is a function call rather than
+a template directive or a config flag so that every exemption is greppable:
+
+```bash
+grep -rn "raw(" src/
+```
+
+Marking one value raw does not affect its neighbours — other substitutions in the same
+text node are still escaped. `raw()` does **not** exempt a value from the URL scheme
+guard: a `javascript:` URL is never emitted, because an author asking for trusted markup
+is not asking for script execution.
+
+Never pass unvalidated user input to `raw()`.
 
 ## Dependency Audit
 
