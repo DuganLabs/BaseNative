@@ -4,7 +4,10 @@
   "description": "15 semantic HTML UI components rendered as strings (forms, data grids, dialogs, calendar and kanban) with cascade-layer CSS, design tokens, light/dark themes and density scales",
   "type": "module",
   "exports": {
-    ".": "./src/index.js",
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
     "./css": "./src/index.css",
     "./layers.css": "./src/layers.css",
     "./tokens.css": "./src/tokens.css",
