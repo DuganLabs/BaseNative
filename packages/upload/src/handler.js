@@ -15,7 +15,10 @@ export function parseMultipart(body, contentType) {
   return parts.map(part => {
     const [headerSection, ...bodyParts] = part.split('\r\n\r\n');
     const bodyContent = bodyParts.join('\r\n\r\n').replace(/\r\n$/, '');
-    const headers = {};
+    // Header names come straight from the request body. A null-prototype
+    // object means a crafted name like `__proto__` becomes an inert own
+    // property instead of reaching Object.prototype.
+    const headers = Object.create(null);
 
     for (const line of headerSection.split('\r\n')) {
       const match = line.match(/^([^:]+):\s*(.+)$/);

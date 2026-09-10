@@ -51,7 +51,10 @@ export function createI18n(options = {}) {
   const { defaultLocale = 'en', messages: initialMessages = {} } = options;
 
   let currentLocale = defaultLocale;
-  const messages = {};
+  // `locale` reaches `addMessages` from library input; a null-prototype
+  // object means a crafted locale like `__proto__` becomes an inert own
+  // property instead of the `Object.assign` below reaching Object.prototype.
+  const messages = Object.create(null);
   const listeners = [];
 
   // Load initial messages
