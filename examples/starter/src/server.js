@@ -1,12 +1,13 @@
 import { createServer } from 'node:http';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname, join, extname } from 'node:path';
+import { dirname, join, extname, resolve, sep } from 'node:path';
 import { render } from '@basenative/server';
 import { resolveRoute } from '@basenative/router';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
+const PUBLIC_DIR = join(ROOT, 'public');
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -14,8 +15,18 @@ function readPage(name) {
   return readFileSync(join(__dirname, 'pages', name), 'utf8');
 }
 
-function readFile(path) {
-  return readFileSync(join(ROOT, path));
+/**
+ * Read a file under PUBLIC_DIR, rejecting any request path that would
+ * resolve outside it. `relPath` comes from the request URL, so `resolve()`
+ * + a prefix check on the result — rather than trusting `join()` and the
+ * caller's own `../` stripping — is what actually stops traversal.
+ */
+function readPublicFile(relPath) {
+  const resolved = resolve(PUBLIC_DIR, `.${sep}${relPath}`);
+  if (resolved !== PUBLIC_DIR && !resolved.startsWith(PUBLIC_DIR + sep)) {
+    throw new Error('Refusing to read outside the public directory');
+  }
+  return readFileSync(resolved);
 }
 
 const MIME = {
@@ -149,7 +160,7 @@ function handleDeleteTodo(req, res, params) {
 function handleStaticFile(req, res) {
   try {
     const filePath = req.url.replace('/public/', '');
-    const data = readFile(`public/${filePath}`);
+    const data = readPublicFile(filePath);
     const ext = extname(filePath);
     res.writeHead(200, {
       'Content-Type': MIME[ext] ?? 'application/octet-stream',

@@ -7,7 +7,7 @@
 import { chromium } from '@playwright/test';
 import { createServer } from 'http';
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
-import { join, extname } from 'path';
+import { join, extname, resolve, sep } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
@@ -40,18 +40,39 @@ const MIME_TYPES = {
   '.woff2': 'font/woff2',
 };
 
+/**
+ * Resolve a request path against DIST_DIR and verify it doesn't escape that
+ * root. `req.url` is attacker-controllable input (`../../etc/passwd` etc.);
+ * `resolve()` collapses the `..` segments and the `startsWith` check rejects
+ * anything that lands outside DIST_DIR instead of trusting the join result.
+ */
+function safeDistPath(urlPath) {
+  const withoutQuery = urlPath.split(/[?#]/, 1)[0];
+  const candidate = resolve(DIST_DIR, `.${withoutQuery}`);
+  if (candidate !== DIST_DIR && !candidate.startsWith(DIST_DIR + sep)) return null;
+  return candidate;
+}
+
 function serve() {
   return createServer((req, res) => {
-    let filePath = join(DIST_DIR, req.url === '/' ? 'index.html' : req.url);
+    const filePath = safeDistPath(req.url === '/' ? '/index.html' : req.url);
+    if (!filePath) {
+      res.writeHead(403);
+      res.end();
+      return;
+    }
     try {
       const ext = extname(filePath);
       const content = readFileSync(filePath);
       res.writeHead(200, { 'Content-Type': MIME_TYPES[ext] ?? 'text/plain' });
       res.end(content);
     } catch {
-      // SPA fallback — try serving index.html from the requested directory
+      // SPA fallback — try serving index.html from the requested directory.
+      // `filePath` was already confirmed to stay under DIST_DIR above, and
+      // appending a fixed literal segment to a confined path can't escape
+      // it, so this does not need a second traversal check.
       try {
-        const indexPath = filePath.endsWith('/') ? join(filePath, 'index.html') : join(filePath, 'index.html');
+        const indexPath = join(filePath, 'index.html');
         const content = readFileSync(indexPath);
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(content);
