@@ -821,6 +821,11 @@
 [data-bn="dialog-close"]:hover { background: var(--bn-color-surface-muted); color: var(--bn-color-text); }
 [data-bn="dialog-close"]:focus-visible { box-shadow: var(--bn-focus-ring); outline: none; }
 [data-bn="dialog-body"] { padding: var(--bn-space-4) var(--bn-space-6); }
+[data-bn="dialog-description"] {
+  margin: 0 0 var(--bn-space-3);
+  font-size: var(--bn-font-size-sm);
+  color: var(--bn-color-text-muted);
+}
 [data-bn="dialog-footer"] {
   display: flex;
   justify-content: flex-end;

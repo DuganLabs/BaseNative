@@ -614,7 +614,8 @@ Options: `width` (default `'100%'`), `height` (default `'1rem'`), `variant` (`'t
 ```js
 renderDialog({
   title: 'Delete project?',
-  content: '<p>This cannot be undone.</p>',
+  description: 'This cannot be undone.',
+  content: '<p>All 12 files will be removed.</p>',
   footer: renderButton('Delete', { variant: 'destructive' }),
   size: 'sm',
 })
@@ -622,8 +623,9 @@ renderDialog({
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `title` | `string` | — | `<h2 data-bn="dialog-title">` |
-| `content` | `string` | `''` | Body HTML |
+| `title` | `string` | — | `<h2 data-bn="dialog-title" id="{id}-title">`; the `<dialog>` gets `aria-labelledby` |
+| `description` | `string` | — | Escaped `<p data-bn="dialog-description" id="{id}-description">` at the top of the body; the `<dialog>` gets `aria-describedby` |
+| `content` | `string` | `''` | Body HTML (slot) |
 | `open` | `boolean` | `false` | Adds `open` |
 | `modal` | `boolean` | `true` | `true` adds `aria-modal="true" data-modal="true"`; `false` adds `data-modal="false"` |
 | `closable` | `boolean` | `true` | Renders the close button |
@@ -635,14 +637,14 @@ renderDialog({
 Renders:
 
 ```html
-<dialog data-bn="dialog" data-size="sm" id="bn-dialog-x" aria-modal="true" data-modal="true">
-  <div data-bn="dialog-header"><h2 data-bn="dialog-title">Delete project?</h2><button data-bn="dialog-close" aria-label="Close" type="button">×</button></div>
-  <div data-bn="dialog-body"><p>This cannot be undone.</p></div>
+<dialog data-bn="dialog" data-size="sm" id="bn-dialog-x" aria-modal="true" data-modal="true" aria-labelledby="bn-dialog-x-title" aria-describedby="bn-dialog-x-description">
+  <div data-bn="dialog-header"><h2 data-bn="dialog-title" id="bn-dialog-x-title">Delete project?</h2><button data-bn="dialog-close" aria-label="Close" type="button">×</button></div>
+  <div data-bn="dialog-body"><p data-bn="dialog-description" id="bn-dialog-x-description">This cannot be undone.</p><p>All 12 files will be removed.</p></div>
   <div data-bn="dialog-footer">…</div>
 </dialog>
 ```
 
-Accessibility: the native `<dialog>` handles focus trapping and Escape when opened with `showModal()`; the close button is labelled.
+Accessibility: the native `<dialog>` handles focus trapping and Escape when opened with `showModal()`; the dialog is named by its title (`aria-labelledby`) and, when `description` is given, described by it (`aria-describedby`); the close button is labelled.
 
 ## Drawer
 

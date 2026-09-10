@@ -106,7 +106,7 @@ All components are pure functions that return an HTML string. See [docs/api/comp
 
 ### Layout & Navigation
 - `renderCard(options)` — Content card with optional header/footer.
-- `renderDialog(options)` — Native `<dialog>`.
+- `renderDialog(options)` — Native `<dialog>`, named by its title (`aria-labelledby`) and described by an optional `description` (`aria-describedby`).
 - `renderDrawer(options)` — Side drawer panel with overlay.
 - `renderTabs(options)` — Tabbed content panels.
 - `renderAccordion(options)` — `<details>`/`<summary>` accordion.
