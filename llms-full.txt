@@ -673,14 +673,19 @@ dismissToast(toaster, id);
 ```
 
 ### Table
-`renderTable(options)` → `string` | Option | Type | Default | Description | |--------|------|---------|-------------| | `columns` | `Array<{ key, label, sortable? }>` | `[]` | `sortable` adds `data-sortable` to the `<th>` | | `rows` | `Arr…
+`renderTable(options)` → `string` | Option | Type | Default | Description | |--------|------|---------|-------------| | `columns` | `Array<{ key, label, sortable?, render? }>` | `[]` | `sortable` adds `data-sortable` to the `<th>`; `render…
 ```js
+import { escapeAttr, escapeText } from '@basenative/runtime/shared/escape';
+
 renderTable({
-  columns: [{ key: 'name', label: 'Name', sortable: true }],
-  rows: [{ name: 'Alice' }],
+  columns: [
+    { key: 'name', label: 'Name', sortable: true },
+    { key: 'status', label: 'Status', render: (value, row) => renderBadge(escapeText(value), { variant: row.status === 'paid' ? 'success' : 'default' }) },
+    { key: 'start', label: 'Start', render: value => `<time datetime="${escapeAttr(value)}">${escapeText(formatDate(value))}</time>` },
+  ],
+  rows: [{ name: 'Alice', status: 'paid', start: '2025-06-02' }],
   emptyMessage: 'No data',
-  caption: 'Users',
-})
+…
 ```
 
 ### Data Grid
@@ -735,9 +740,12 @@ renderPagination({ currentPage: 2, totalPages: 10, baseUrl: '/users' })
 ```
 
 ### Badge
-`renderBadge(content, options?)` → `string`. `content` is escaped. `variant`: `'default' | 'primary' | 'success' | 'warning' | 'error'` (default `'default'`). Renders `<span data-bn="badge" data-variant="success">Active</span>`. `attrs` is…
+`renderBadge(content, options?)` → `string`. `content` is an HTML slot: not escaped; pass trusted markup only (see [Escaping Policy](#escaping-policy)) — escape data you interpolate, or set the label with `textContent` after mount. `varian…
 ```js
-renderBadge('Active', { variant: 'success' })
+import { escapeText } from '@basenative/runtime/shared/escape';
+
+renderBadge('Active', { variant: 'success' })            // literal markup/text
+renderBadge(escapeText(job.status), { variant: 'warning' }) // data
 ```
 
 ### Card
@@ -776,7 +784,8 @@ renderSkeleton({ width: '200px', height: '1rem', count: 3 })
 ```js
 renderDialog({
   title: 'Delete project?',
-  content: '<p>This cannot be undone.</p>',
+  description: 'This cannot be undone.',
+  content: '<p>All 12 files will be removed.</p>',
   footer: renderButton('Delete', { variant: 'destructive' }),
   size: 'sm',
 })
@@ -798,6 +807,20 @@ renderTabs({
   ],
   activeTab: 'overview',
 })
+```
+
+#### initTabs
+`initTabs(root, options?)` → `{ select(id), active(), destroy() }`. Client-side switching for a rendered `[data-bn="tabs"]` element, implementing the WAI-ARIA APG tabs pattern so consumers stop re-implementing it: - Click and ArrowLeft / A…
+```js
+import { initTabs } from '@basenative/components';
+
+const tabs = initTabs(document.querySelector('#t'), {
+  onChange: (id, tab) => router.navigate(`?view=${id}`), // user-driven changes only
+  activation: 'automatic',                                 // or 'manual'
+});
+tabs.select('settings'); // reflect app state; silent (no onChange)
+tabs.active();           // 'settings'
+tabs.destroy();
 ```
 
 ### Accordion
@@ -863,26 +886,32 @@ renderPipelineBlock({ id: 'job-7', title: 'Install boiler', subtitle: 'Acme Corp
 ```
 
 ### Pipeline
-`renderPipeline(options)` → `string`. Kanban board: columns of draggable cards. | Option | Type | Default | Description | |--------|------|---------|-------------| | `columns` | `Array<{ id, title }>` | `[]` | | | `cards` | `Array<{ id, co…
+`renderPipeline(options)` → `string`. Kanban board: columns of draggable cards. | Option | Type | Default | Description | |--------|------|---------|-------------| | `columns` | `Array<{ id, title, count? }>` | `[]` | `count` overrides the…
 ```js
 renderPipeline({
   columns: [{ id: 'new', title: 'New leads' }, { id: 'won', title: 'Won' }],
-  cards: [{ id: 'c1', columnId: 'new', title: 'Acme Corp', subtitle: '$12k', description: 'Boiler replacement' }],
+  cards: [{
+    id: 'c1', columnId: 'new', title: 'Acme Corp', subtitle: '$12k', description: 'Boiler replacement',
+    status: 'qualified', badge: 'Qualified', badgeVariant: 'success',
+    actions: renderButton('Convert', { size: 'sm', attrs: 'data-action="convert" data-id="c1"' }),
+  }],
 })
 ```
 
 ### Drag and Drop
-`initCalendarDragDrop(container, { onDrop })` and `initPipelineDragDrop(container, { onCardMove })` attach native HTML5 drag-and-drop listeners to a rendered `[data-bn="calendar"]` or `[data-bn="pipeline"]` element. Both return `{ destroy(…
+`initCalendarDragDrop(container, { onDrop, dragSource?, snapMinutes? })` and `initPipelineDragDrop(container, { onCardMove })` attach native HTML5 drag-and-drop listeners to a rendered `[data-bn="calendar"]` or `[data-bn="pipeline"]` eleme…
 ```js
 import { initCalendarDragDrop, initPipelineDragDrop } from '@basenative/components';
 
 const cal = initCalendarDragDrop(document.querySelector('[data-bn="calendar"]'), {
-  onDrop: ({ eventId, date, hour, sourceType }) => { /* sourceType: 'event' | 'pipeline' */ },
+  onDrop: ({ eventId, date, hour, minute, datetime, sourceType }) => {
+    // sourceType: 'event' | 'pipeline'; datetime: 'YYYY-MM-DDTHH:MM' → new Date(datetime)
+  },
+  dragSource: document.querySelector('[data-bn-sidebar]'), // optional palette of renderPipelineBlock cards
+  snapMinutes: 15,
 });
 const board = initPipelineDragDrop(document.querySelector('[data-bn="pipeline"]'), {
-  onCardMove: ({ cardId, targetColumnId, position }) => { /* position is always null */ },
-});
-cal.destroy(); board.destroy();
+…
 ```
 
 ### Calendar State
@@ -905,8 +934,8 @@ const board = createPipelineState({
   columns: [{ id: 'new', title: 'New' }, { id: 'won', title: 'Won' }],
   initialCards: [{ id: 'c1', columnId: 'new', title: 'Acme' }],
 });
-board.onCardMove = ({ cardId, targetColumnId }) => save(cardId, targetColumnId);
-board.moveCard('c1', 'won');
+board.onCardMove = ({ cardId, targetColumnId, position }) => save(cardId, targetColumnId, position);
+board.moveCard('c1', 'won', 0); // first in the column
 ```
 
 ### Layout Grid
