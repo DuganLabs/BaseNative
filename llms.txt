@@ -9,7 +9,7 @@ Full API surface: [llms-full.txt](./llms-full.txt). Each package's dedicated doc
 
 - `@basenative/admin` v1.0.0 — Pluggable admin & moderation surface — protected-route helpers, role/permission primitives, audit-l… → packages/admin/src
 - `@basenative/auth` v0.3.0 — Authentication, session management, RBAC, and OAuth2/OIDC for BaseNative apps → docs/api/auth.md
-- `@basenative/auth-webauthn` v1.0.2 — WebAuthn (passkey) adapter for @basenative/auth — server, client, and Cloudflare Workers/Pages hand… → packages/auth-webauthn/src
+- `@basenative/auth-webauthn` v1.0.3 — WebAuthn (passkey) adapter for @basenative/auth — server, client, and Cloudflare Workers/Pages hand… → packages/auth-webauthn/src
 - `@basenative/builder` v0.1.1 — Signal-based drag-and-drop component builder for BaseNative — composes layouts, generates clean Bas… → packages/builder/src
 - `@basenative/claude-config` v0.2.0 — Bundled Claude Code subagents, skills, slash commands, hooks, and settings for DuganLabs / BaseNati… → packages/claude-config/src
 - `@basenative/cli` v0.4.0 — The bn CLI — front door for BaseNative / DuganLabs projects (create, prd, speckit, gh, nx, deploy,… → docs/api/cli.md

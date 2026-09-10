@@ -199,7 +199,7 @@ Email/password authentication provider. **Parameters:** - `options.findUser(emai
 #### oauthProvider(providerName, options)
 OAuth 2.0 provider adapter. Built-in provider configs available via `providers`. **Parameters:** - `providerName` — key from the `providers` map (e.g. `'github'`, `'google'`) - `options.clientId` — OAuth app client ID - `options.clientSecr…
 
-### `@basenative/auth-webauthn` (v1.0.2)
+### `@basenative/auth-webauthn` (v1.0.3)
 
 WebAuthn (passkey) server adapter for @basenative/auth.
 
