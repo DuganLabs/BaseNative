@@ -76,6 +76,18 @@
   </template>
 </article>
 
+<section data-bn-showcase-packages>
+  <header>
+    <h2>The <em>package family</em></h2>
+    <p data-bn-lede>
+      {{ packageCount }} <code>@basenative/*</code> packages ship from this monorepo —
+      the components above are one of them. Runtime core, UI layer, data &amp; infra,
+      and tooling, all built on the same primitives.
+    </p>
+  </header>
+  <ul data-showcase-package-grid>{{ packageCards }}</ul>
+</section>
+
 {{ toastContainer }}
 
 <script type="module" src="/showcase.js"></script>
