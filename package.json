@@ -12,7 +12,7 @@
     "audit:ux": "node scripts/audit/laws-of-ux.mjs",
     "audit": "pnpm audit:axe && pnpm audit:ux",
     "bundle-size": "node scripts/bundle-size.js",
-    "version": "changeset version && pnpm install --lockfile-only --ignore-scripts"
+    "version": "changeset version && pnpm install --lockfile-only --ignore-scripts && node scripts/package-inventory.js && node scripts/llms-txt.js"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.2",
