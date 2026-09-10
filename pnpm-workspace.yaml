@@ -3,8 +3,3 @@ packages:
   - 'examples/*'
   - 'benchmarks'
   - 'tests/integration'
-allowBuilds:
-  esbuild: set this to true or false
-  nx: set this to true or false
-  sharp: set this to true or false
-  workerd: set this to true or false
