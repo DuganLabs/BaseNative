@@ -35,7 +35,9 @@ const SHARED_EXTERNAL = [
 const packages = [
   { name: '@basenative/runtime', entry: 'packages/runtime/src/index.js', platform: 'browser' },
   { name: '@basenative/server', entry: 'packages/server/src/render.js', platform: 'node', external: ['node-html-parser'] },
-  { name: '@basenative/og-image', entry: 'packages/og-image/src/index.js', platform: 'neutral' },
+  // og-image ships a Workers build (static .wasm import, selected via the
+  // `#wasm-init` imports map) and a Node fallback; measure the Workers variant.
+  { name: '@basenative/og-image', entry: 'packages/og-image/src/index.js', platform: 'neutral', conditions: ['workerd', 'worker', 'browser'] },
   { name: '@basenative/keyboard', entry: 'packages/keyboard/src/index.js', platform: 'browser' },
   { name: '@basenative/auth-webauthn', entry: 'packages/auth-webauthn/src/server.js', platform: 'neutral' },
   { name: '@basenative/admin', entry: 'packages/admin/src/index.js', platform: 'neutral' },
@@ -61,6 +63,7 @@ for (const pkg of packages) {
       write: false,
       minify: true,
       external: [...SHARED_EXTERNAL, ...(pkg.external || [])],
+      ...(pkg.conditions ? { conditions: pkg.conditions } : {}),
     });
   } catch (err) {
     console.error(`${pkg.name}: build failed — ${err.message}`);
