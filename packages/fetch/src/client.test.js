@@ -160,8 +160,8 @@ describe('createApiClient', () => {
     await api.get('/api/x');
     host = 'https://b.example.com';
     await api.get('/api/x');
-    assert.ok(fetchImpl.calls[0].url.startsWith('https://a.example.com'));
-    assert.ok(fetchImpl.calls[1].url.startsWith('https://b.example.com'));
+    assert.equal(fetchImpl.calls[0].url, 'https://a.example.com/api/x');
+    assert.equal(fetchImpl.calls[1].url, 'https://b.example.com/api/x');
   });
 
   it('exposes resolveUrl for tooling', () => {
