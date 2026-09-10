@@ -13,7 +13,16 @@
 
 /* The @simplewebauthn/server library is a peer dep — we resolve it lazily
    so this module loads cleanly when peers aren't installed (e.g. when a
-   monorepo runs unit tests that inject a stub via opts.lib). */
+   monorepo runs unit tests that inject a stub via opts.lib).
+
+   Verified compatible with @simplewebauthn/server v11–v14: the option
+   shapes this adapter passes (`attestationType: 'none'`, the `credential`
+   argument to verifyAuthenticationResponse, and the nested
+   `registrationInfo.credential.{id,publicKey,counter}` result) are stable
+   across that whole range — see PR description for the release-note
+   citations. The `ri.credentialID`/`ri.credentialPublicKey`/`ri.counter`
+   fallbacks below predate that stable shape and are kept only for
+   defense-in-depth against very old or nonstandard lib injections. */
 let _libPromise = null;
 async function loadLib() {
   if (!_libPromise) _libPromise = import('@simplewebauthn/server');
