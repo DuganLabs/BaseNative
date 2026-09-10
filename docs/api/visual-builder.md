@@ -136,6 +136,46 @@ Creates a component palette for a drag-and-drop UI.
 - `getComponent(type)` — get a specific component definition
 - `addComponent(def)` — register a custom component
 
+### BnCanvas (`<bn-canvas>` custom element)
+
+Client-side Web Component wrapping `createCanvas`/`renderNode` in a drag-and-drop editing surface. Registers itself as `<bn-canvas>` on import (a no-op if already registered). Uses `display: contents` on the host so it never affects page layout, per the BaseNative axioms.
+
+```html
+<script type="module">
+  import '@basenative/visual-builder'; // registers <bn-canvas>
+</script>
+
+<bn-canvas width="1200" height="800" grid-size="8" mode="edit"></bn-canvas>
+
+<script type="module">
+  const el = document.querySelector('bn-canvas');
+  el.registerComponents({
+    heading: (node) => `<h1>${node.props.text}</h1>`,
+    button: (node) => `<button class="btn btn--${node.props.variant}">${node.props.label}</button>`,
+  });
+  el.addEventListener('bn-canvas-change', (e) => console.log(e.detail));
+</script>
+```
+
+**Attributes:**
+- `width` — canvas width in pixels; default `1024`
+- `height` — canvas height in pixels; default `768`
+- `grid-size` — snap grid size in pixels; default `8`
+- `mode` — `'edit'` (shows the selection outline and enables drag/drop) or `'preview'`; default `'edit'`
+
+**Properties/methods:**
+- `.canvas` — the underlying `Canvas` instance (same object `createCanvas` returns)
+- `.selectedId` — currently selected node's id, or `null`
+- `.registerComponents(componentMap)` — merges `{ [nodeType]: (node) => htmlString }` render functions used to draw nodes on the canvas, then re-renders
+
+**Events** (all `CustomEvent`, `bubbles: true`):
+- `bn-canvas-add` / `bn-canvas-remove` / `bn-canvas-move` / `bn-canvas-select` — mirror the underlying canvas's `subscribe()` events plus selection; `detail` shape matches the corresponding `Canvas` event
+- `bn-canvas-change` — fired after every one of the above, with `detail: { event, data }`
+
+**Keyboard shortcuts** (when the element has focus): `Delete`/`Backspace` removes the selected node; `Ctrl/Cmd+Z` undoes; `Ctrl/Cmd+Shift+Z` or `Ctrl/Cmd+Y` redoes.
+
+Components dropped from an external palette are read via the `text/bn-component-type` and `text/bn-component-props` (JSON) drag-and-drop data transfer types — pair with a palette built from `createComponentPalette` that sets those on `dragstart`.
+
 ## Integration
 
 Use with `@basenative/marketplace` to load community components into the palette:

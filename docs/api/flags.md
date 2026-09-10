@@ -208,6 +208,33 @@ Fetches flags from an HTTP endpoint. Supports polling for updates.
 
 **Returns:** Provider object with `getFlag`, `getAllFlags`.
 
+---
+
+### createKVProvider(options)
+
+Cloudflare KV-backed flag provider with edge caching. Reads and writes flag configs as JSON values in a KV namespace.
+
+**Parameters:**
+- `options.kv` — Cloudflare KV namespace binding (e.g. `env.FLAGS`); required, throws if omitted
+- `options.prefix` — key prefix used for all flag keys in KV; default `'flags:'`
+- `options.cacheTtl` — edge cache TTL in seconds, passed through to `kv.get(key, { cacheTtl })`; default `60`
+
+**Returns:** Provider object with `getFlag`, `getAllFlags`, `setFlag`, `deleteFlag` — same shape as `createMemoryProvider`.
+
+**Example:**
+```js
+import { createFlagManager, createKVProvider } from '@basenative/flags';
+
+export default {
+  async fetch(request, env) {
+    const provider = createKVProvider({ kv: env.FLAGS, cacheTtl: 30 });
+    const flags = createFlagManager(provider);
+    const isOn = await flags.isEnabled('new_dashboard');
+    // ...
+  },
+};
+```
+
 ## Integration
 
 Register `flagMiddleware` after `sessionMiddleware` in the `@basenative/middleware` pipeline so that `ctx.state.isEnabled` has access to the current user and session. Use `createMemoryProvider` in tests and switch to `createRemoteProvider` in production for runtime flag updates without redeployment.
