@@ -42,9 +42,11 @@ export function isResvgAvailable() {
   // `import()`, and CommonJS `require.resolve` can disagree with it (global
   // NODE_PATH folders, `exports` conditions), which would report the package
   // as present and then fail at import time with Node's raw two-line error.
+  // (Assigned rather than used as a bare statement: an `import.meta` expression
+  // at statement start trips CodeQL's JavaScript parser.)
   try {
-    import.meta.resolve("@resvg/resvg-wasm");
-    return true;
+    const resolved = import.meta.resolve("@resvg/resvg-wasm");
+    return typeof resolved === "string";
   } catch {
     return false;
   }
