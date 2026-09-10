@@ -1,4 +1,120 @@
 @layer components {
+/* ==========================================================================
+   Shared — cross-component design-system rules. Component-specific rules
+   begin below at "BaseNative Component Styles". New component rules belong
+   at the END of this file (see the last section), never here.
+   ========================================================================== */
+
+/* --- Reduced motion ------------------------------------------------------
+   Duplicated from states.css: components.css is also exported standalone
+   (@basenative/components/components.css) so a consumer who imports only
+   this file must still get the clamp. Keep both copies in sync. --- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- Focus -----------------------------------------------------------------
+   One rule for every focusable [data-bn] element. Components below that
+   already pair a matching box-shadow ring with `outline: none` on their own
+   :focus-visible rule take precedence (real selector specificity beats this
+   :where()-wrapped one) and are unaffected; this exists so nothing is ever
+   left with no focus indicator at all (e.g. command-input previously reset
+   outline unconditionally with nothing to replace it). --- */
+:where([data-bn]):focus-visible {
+  outline: 2px solid var(--bn-focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* --- Control primitive -----------------------------------------------------
+   One height, line-height and radius for every inline control. Previously
+   button/input/select/pagination-item/tab each derived their height from a
+   different padding+border+line-height recipe (measured: button 38px,
+   input 42px, select 39px, pagination 32px, tab 42px) even though they sit
+   side by side in forms and toolbars. --- */
+[data-bn="button"],
+[data-bn="input"],
+[data-bn="select"],
+[data-bn="combobox-input"],
+[data-bn="dropdown-trigger"],
+[data-bn="pagination"] a,
+[data-bn="pagination"] span,
+[data-bn="tab"] {
+  block-size: var(--bn-control-height);
+  line-height: var(--bn-line-height-tight);
+  border-radius: var(--bn-radius-control);
+}
+[data-bn="button"][data-size="sm"] { block-size: var(--bn-control-height-sm); }
+[data-bn="button"][data-size="lg"] { block-size: var(--bn-control-height-lg); }
+/* Growable controls: same starting height as a floor, never a hard cap. */
+[data-bn="textarea"],
+[data-bn="multiselect-container"] {
+  min-block-size: var(--bn-control-height);
+  line-height: var(--bn-line-height-tight);
+  border-radius: var(--bn-radius-control);
+}
+
+/* --- Button reset ------------------------------------------------------
+   Every element used as a plain, borderless, clickable [data-bn] control
+   gets this for free, so a UA `outset` button border/background can never
+   leak through just because one component's own rule forgot to reset it
+   (e.g. command-item had no border/background declaration of its own). --- */
+:where(
+  [data-bn="command-item"],
+  [data-bn="dropdown-item"],
+  [data-bn="tag-remove"],
+  [data-bn="tree-toggle"],
+  [data-bn="dialog-close"],
+  [data-bn="drawer-close"],
+  [data-bn="alert-dismiss"]
+) {
+  appearance: none;
+  border: none;
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* --- Minimum target size (WCAG 2.5.8, 24×24 CSS px) -------------------------
+   Grows the hit area only, never the visible glyph.
+   tree-toggle sits in a roomy tree row with vertical space to spare, so its
+   own box can just grow directly (its glyph is text sized by font-size, so
+   the glyph itself does not change). tag-remove sits inside a compact pill
+   and checkbox/radio paint their entire box as the visible glyph — for both,
+   growing the real box would visibly change the control, so instead an
+   invisible ::before hit region is centered on top of the unchanged control. --- */
+[data-bn="tree-toggle"] {
+  min-inline-size: var(--bn-target-size-min);
+  min-block-size: var(--bn-target-size-min);
+}
+:where(
+  [data-bn="tag-remove"],
+  [data-bn="checkbox"],
+  [data-bn="radio"],
+  [data-bn="datagrid"] input[type="checkbox"]
+) {
+  position: relative;
+}
+:where(
+  [data-bn="tag-remove"],
+  [data-bn="checkbox"],
+  [data-bn="radio"],
+  [data-bn="datagrid"] input[type="checkbox"]
+)::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  translate: -50% -50%;
+  min-inline-size: var(--bn-target-size-min);
+  min-block-size: var(--bn-target-size-min);
+}
+
 /* BaseNative Component Styles */
 
 /* === Button === */
@@ -58,7 +174,7 @@
 }
 [data-bn="field-error"] {
   font-size: var(--bn-font-size-xs);
-  color: var(--bn-color-error-600);
+  color: var(--bn-color-error-fg);
 }
 
 /* === Input & Textarea === */
@@ -68,7 +184,7 @@
   font-size: var(--bn-font-size-component);
   color: var(--bn-color-text);
   background: var(--bn-color-surface);
-  border: 1px solid var(--bn-color-border);
+  border: 1px solid var(--bn-color-border-control);
   border-radius: var(--bn-radius-md);
   transition: border-color var(--bn-transition-fast);
 }
@@ -99,7 +215,7 @@
   width: 1.125rem;
   height: 1.125rem;
   background: var(--bn-color-surface);
-  border: var(--bn-border-width) solid var(--bn-color-border-strong);
+  border: var(--bn-border-width) solid var(--bn-color-border-control);
   cursor: pointer;
   flex-shrink: 0;
   position: relative;
@@ -154,7 +270,7 @@
   appearance: none;
   width: 2.5rem;
   height: 1.375rem;
-  background: var(--bn-color-gray-300);
+  background: var(--bn-color-toggle-track-off);
   border-radius: var(--bn-radius-full);
   position: relative;
   cursor: pointer;
@@ -241,7 +357,7 @@
   border-bottom: 1px solid var(--bn-color-border);
   color: var(--bn-color-text);
 }
-[data-bn="table"] tbody tr:nth-child(even) { background: rgb(255 255 255 / 0.02); }
+[data-bn="table"] tbody tr:nth-child(even) { background: var(--bn-color-zebra); }
 [data-bn="table"] tbody tr:hover { background: var(--bn-color-surface-subtle); }
 [data-bn="table-empty"] {
   text-align: center;
@@ -261,11 +377,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 2rem;
-  height: 2rem;
+  min-width: var(--bn-control-height);
   padding: 0 var(--bn-space-2);
   font-size: var(--bn-font-size-sm);
-  border-radius: var(--bn-radius-md);
   text-decoration: none;
   color: var(--bn-color-text);
 }
@@ -297,7 +411,7 @@
 [data-bn="card"] {
   background: var(--bn-color-surface);
   border: 1px solid var(--bn-color-border);
-  border-radius: var(--bn-radius-lg);
+  border-radius: var(--bn-radius-container);
   overflow: hidden;
 }
 [data-bn="card-header"] {
@@ -334,7 +448,7 @@
 [data-bn="spinner"] > span {
   width: 1.25rem;
   height: 1.25rem;
-  border: 2px solid var(--bn-color-border);
+  border: 2px solid var(--bn-color-border-control);
   border-top-color: var(--bn-color-accent-600);
   border-radius: var(--bn-radius-full);
   animation: bn-spin 0.6s linear infinite;
@@ -345,7 +459,7 @@
 
 /* === Skeleton === */
 [data-bn="skeleton"] {
-  background: linear-gradient(90deg, var(--bn-color-surface-muted) 25%, var(--bn-color-border) 50%, var(--bn-color-surface-muted) 75%);
+  background: linear-gradient(90deg, var(--bn-color-surface-muted) 25%, var(--bn-color-border-control) 50%, var(--bn-color-surface-muted) 75%);
   background-size: 200% 100%;
   animation: bn-shimmer 1.5s infinite;
   border-radius: var(--bn-radius-md);
@@ -360,12 +474,12 @@
 }
 [data-bn="accordion-item"] {
   border: var(--bn-border-width) solid var(--bn-color-border);
-  border-radius: var(--bn-radius-lg);
+  border-radius: var(--bn-radius-container);
   overflow: hidden;
 }
 [data-bn="accordion-item"] + [data-bn="accordion-item"] { margin-top: calc(-1 * var(--bn-border-width)); border-top-left-radius: 0; border-top-right-radius: 0; }
 [data-bn="accordion-item"]:first-child { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
-[data-bn="accordion-item"]:only-child { border-radius: var(--bn-radius-lg); }
+[data-bn="accordion-item"]:only-child { border-radius: var(--bn-radius-container); }
 [data-bn="accordion-header"] {
   display: flex;
   align-items: center;
@@ -454,8 +568,7 @@
   font-size: var(--bn-font-size-component);
   color: var(--bn-color-text);
   background: var(--bn-color-surface);
-  border: var(--bn-border-width) solid var(--bn-color-border);
-  border-radius: var(--bn-radius-md);
+  border: var(--bn-border-width) solid var(--bn-color-border-control);
   width: 100%;
   transition: border-color var(--bn-transition-fast);
 }
@@ -471,9 +584,10 @@
 [data-bn="command-palette"] {
   border: none;
   padding: 0;
-  border-radius: var(--bn-radius-xl);
+  margin: auto;
+  border-radius: var(--bn-radius-modal);
   background: var(--bn-color-surface);
-  box-shadow: var(--bn-shadow-lg);
+  box-shadow: var(--bn-shadow-modal);
   max-width: 32rem;
   width: 90vi;
   max-height: min(24rem, 80vh);
@@ -484,7 +598,7 @@
   flex-direction: column;
 }
 [data-bn="command-palette"]::backdrop {
-  background: rgb(0 0 0 / 0.4);
+  background: var(--bn-scrim);
   backdrop-filter: blur(4px);
 }
 [data-bn="command-header"] {
@@ -498,7 +612,6 @@
   background: transparent;
   font-size: var(--bn-font-size-base);
   color: var(--bn-color-text);
-  outline: none;
 }
 [data-bn="command-input"]::placeholder { color: var(--bn-color-text-subtle); }
 [data-bn="command-list"] {
@@ -524,6 +637,9 @@
   cursor: pointer;
   color: var(--bn-color-text);
   font-size: var(--bn-font-size-sm);
+  width: 100%;
+  border: none;
+  background: transparent;
 }
 [data-bn="command-item"]:hover, [data-bn="command-item"][aria-selected="true"] { background: var(--bn-color-surface-muted); }
 [data-bn="command-item"]:focus-visible { box-shadow: var(--bn-focus-ring); outline: none; }
@@ -544,7 +660,7 @@
 /* === Data Grid === */
 [data-bn="datagrid"] {
   border: var(--bn-border-width) solid var(--bn-color-border);
-  border-radius: var(--bn-radius-lg);
+  border-radius: var(--bn-radius-container);
   overflow: hidden;
 }
 [data-bn="datagrid-scroll"] { overflow-x: auto; }
@@ -592,7 +708,7 @@
   min-block-size: 1rem;
   flex: none;
   background: var(--bn-color-surface);
-  border: var(--bn-border-width) solid var(--bn-color-border-strong);
+  border: var(--bn-border-width) solid var(--bn-color-border-control);
   border-radius: var(--bn-radius-sm);
   cursor: pointer;
   position: relative;
@@ -644,15 +760,16 @@
 [data-bn="dialog"] {
   border: none;
   padding: 0;
-  border-radius: var(--bn-radius-xl);
+  margin: auto;
+  border-radius: var(--bn-radius-modal);
   background: var(--bn-color-surface);
-  box-shadow: var(--bn-shadow-lg);
+  box-shadow: var(--bn-shadow-modal);
   max-width: 28rem;
   width: 90vi;
   color: var(--bn-color-text);
 }
 [data-bn="dialog"]::backdrop {
-  background: rgb(0 0 0 / 0.4);
+  background: var(--bn-scrim);
   backdrop-filter: blur(4px);
 }
 [data-bn="dialog"][data-size="sm"] { max-width: 20rem; }
@@ -701,7 +818,7 @@
   right: 0;
   z-index: var(--bn-z-modal);
   background: var(--bn-color-surface);
-  box-shadow: var(--bn-shadow-lg);
+  box-shadow: var(--bn-shadow-modal);
   flex-direction: column;
   width: 20rem;
   transform: translateX(100%);
@@ -719,7 +836,7 @@
   position: fixed;
   inset: 0;
   z-index: calc(var(--bn-z-modal) - 1);
-  background: rgb(0 0 0 / 0.4);
+  background: var(--bn-scrim);
   backdrop-filter: blur(2px);
   opacity: 0;
   pointer-events: none;
@@ -781,8 +898,70 @@
   padding: var(--bn-space-1);
   background: var(--bn-color-surface);
   border: var(--bn-border-width) solid var(--bn-color-border);
-  border-radius: var(--bn-radius-lg);
+  border-radius: var(--bn-radius-container);
   box-shadow: var(--bn-shadow-md);
+  /* Fallback anchoring: [data-bn="dropdown"] is `position: relative` (above), so
+     this absolutely-positioned popover resolves its containing block to the
+     trigger wrapper. Without this, a bare [popover] promotes to the top layer
+     and defaults to `position: fixed` pinned to the viewport's 0,0. */
+  inset-block-start: 100%;
+  inset-inline-start: 0;
+  margin-block-start: var(--bn-space-1);
+}
+[data-bn="dropdown-menu"][data-position^="top"] {
+  inset-block-start: auto;
+  inset-block-end: 100%;
+  margin-block-start: 0;
+  margin-block-end: var(--bn-space-1);
+}
+[data-bn="dropdown-menu"][data-position$="end"] {
+  inset-inline-start: auto;
+  inset-inline-end: 0;
+}
+[data-bn="dropdown-menu"][data-position="left"] {
+  inset-block-start: 0;
+  inset-inline-start: auto;
+  inset-inline-end: 100%;
+  margin-block-start: 0;
+  margin-inline-end: var(--bn-space-1);
+}
+[data-bn="dropdown-menu"][data-position="right"] {
+  inset-block-start: 0;
+  inset-inline-start: 100%;
+  margin-block-start: 0;
+  margin-inline-start: var(--bn-space-1);
+}
+/* Progressive enhancement: real CSS anchor positioning where supported, so the
+   menu can escape the trigger wrapper's overflow/stacking context. Popovers
+   default to only one open at a time (popover="auto" light-dismiss), so a
+   single shared anchor-name is safe in practice. */
+@supports (anchor-name: --bn-anchor) {
+  [data-bn="dropdown-trigger"] { anchor-name: --bn-dropdown-trigger; }
+  [data-bn="dropdown-menu"] {
+    position: fixed;
+    position-anchor: --bn-dropdown-trigger;
+    inset-block-start: anchor(--bn-dropdown-trigger end);
+    inset-inline-start: anchor(--bn-dropdown-trigger start);
+    inset-inline-end: auto;
+    inset-block-end: auto;
+  }
+  [data-bn="dropdown-menu"][data-position^="top"] {
+    inset-block-start: auto;
+    inset-block-end: anchor(--bn-dropdown-trigger start);
+  }
+  [data-bn="dropdown-menu"][data-position$="end"] {
+    inset-inline-start: auto;
+    inset-inline-end: anchor(--bn-dropdown-trigger end);
+  }
+  [data-bn="dropdown-menu"][data-position="left"] {
+    inset-inline-start: auto;
+    inset-inline-end: anchor(--bn-dropdown-trigger start);
+    inset-block-start: anchor(--bn-dropdown-trigger start);
+  }
+  [data-bn="dropdown-menu"][data-position="right"] {
+    inset-inline-start: anchor(--bn-dropdown-trigger end);
+    inset-block-start: anchor(--bn-dropdown-trigger start);
+  }
 }
 [data-bn="dropdown-menu"]:popover-open {
   display: flex;
@@ -828,10 +1007,8 @@
   align-items: center;
   gap: var(--bn-space-1);
   padding: var(--bn-space-1) var(--bn-space-2);
-  min-height: 2.5rem;
   background: var(--bn-color-surface);
-  border: var(--bn-border-width) solid var(--bn-color-border);
-  border-radius: var(--bn-radius-md);
+  border: var(--bn-border-width) solid var(--bn-color-border-control);
   cursor: text;
   transition: border-color var(--bn-transition-fast);
 }
@@ -932,18 +1109,32 @@
   padding: var(--bn-space-3) var(--bn-space-4);
   background: var(--bn-color-surface);
   border: var(--bn-border-width) solid var(--bn-color-border);
-  border-radius: var(--bn-radius-lg);
+  border-left-width: 4px;
+  border-left-color: var(--bn-color-border-strong);
+  border-radius: var(--bn-radius-container);
   box-shadow: var(--bn-shadow-md);
   font-size: var(--bn-font-size-sm);
   color: var(--bn-color-text);
   max-width: 24rem;
 }
-[data-bn="toast"][data-variant="success"] { border-color: var(--bn-color-success-border); }
-[data-bn="toast"][data-variant="error"] { border-color: var(--bn-color-error-border); }
-[data-bn="toast"][data-variant="warning"] { border-color: var(--bn-color-warning-border); }
-[data-bn="toast"][data-variant="info"] { border-color: var(--bn-color-info-border); }
+/* Each variant gets a visible left accent bar (not just a 20% border tint) and a
+   matching icon-slot color, so variants read as distinct at a glance. */
+[data-bn="toast"][data-variant="success"] { border-color: var(--bn-color-success-border); border-left-color: var(--bn-color-success-600); }
+[data-bn="toast"][data-variant="error"] { border-color: var(--bn-color-error-border); border-left-color: var(--bn-color-error-600); }
+[data-bn="toast"][data-variant="warning"] { border-color: var(--bn-color-warning-border); border-left-color: var(--bn-color-warning-600); }
+[data-bn="toast"][data-variant="info"] { border-color: var(--bn-color-info-border); border-left-color: var(--bn-color-info-600); }
+[data-bn="toast"] [data-bn="toast-icon"] { flex-shrink: 0; color: var(--bn-color-text-muted); }
+[data-bn="toast"][data-variant="success"] [data-bn="toast-icon"] { color: var(--bn-color-success-text); }
+[data-bn="toast"][data-variant="error"] [data-bn="toast-icon"] { color: var(--bn-color-error-text); }
+[data-bn="toast"][data-variant="warning"] [data-bn="toast-icon"] { color: var(--bn-color-warning-text); }
+[data-bn="toast"][data-variant="info"] [data-bn="toast-icon"] { color: var(--bn-color-info-text); }
 
 /* === Tooltip === */
+[data-bn="tooltip-trigger"] {
+  position: relative;
+  display: inline-block;
+  cursor: default;
+}
 [data-bn="tooltip"] {
   position: absolute;
   z-index: var(--bn-z-dropdown);
@@ -956,8 +1147,66 @@
   pointer-events: none;
   white-space: normal;
   line-height: var(--bn-line-height-normal);
+  /* Fallback anchoring: [data-bn="tooltip-trigger"] is `position: relative`
+     (above); default position="top" places the tooltip just above the trigger,
+     centered. See dropdown-menu for why an absolutely-positioned popover needs
+     explicit insets at all. */
+  inset-block-end: 100%;
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  margin-block-end: var(--bn-space-2);
 }
-[data-bn="tooltip-trigger"] { cursor: default; }
+[data-bn="tooltip"][data-position="bottom"] {
+  inset-block-end: auto;
+  inset-block-start: 100%;
+  margin-block-end: 0;
+  margin-block-start: var(--bn-space-2);
+}
+[data-bn="tooltip"][data-position="left"] {
+  inset-block-end: auto;
+  inset-block-start: 50%;
+  inset-inline-start: auto;
+  inset-inline-end: 100%;
+  translate: 0 -50%;
+  margin-inline-end: var(--bn-space-2);
+}
+[data-bn="tooltip"][data-position="right"] {
+  inset-block-end: auto;
+  inset-block-start: 50%;
+  inset-inline-start: 100%;
+  translate: 0 -50%;
+  margin-inline-start: var(--bn-space-2);
+}
+@supports (anchor-name: --bn-anchor) {
+  [data-bn="tooltip-trigger"] { anchor-name: --bn-tooltip-trigger; }
+  [data-bn="tooltip"] {
+    position: fixed;
+    position-anchor: --bn-tooltip-trigger;
+    /* [popover]'s UA stylesheet sets inset: 0 (all four sides). Only two sides
+       are meant to be anchored here — the other two must be released to auto,
+       or the box is over-constrained and the browser silently keeps the UA
+       default (0) for one of them instead of the anchored value. */
+    inset-block-start: auto;
+    inset-inline-end: auto;
+    inset-block-end: anchor(--bn-tooltip-trigger start);
+    inset-inline-start: anchor(--bn-tooltip-trigger center);
+  }
+  [data-bn="tooltip"][data-position="bottom"] {
+    inset-block-end: auto;
+    inset-block-start: anchor(--bn-tooltip-trigger end);
+  }
+  [data-bn="tooltip"][data-position="left"] {
+    inset-block-end: auto;
+    inset-block-start: anchor(--bn-tooltip-trigger center);
+    inset-inline-start: auto;
+    inset-inline-end: anchor(--bn-tooltip-trigger start);
+  }
+  [data-bn="tooltip"][data-position="right"] {
+    inset-block-end: auto;
+    inset-block-start: anchor(--bn-tooltip-trigger center);
+    inset-inline-start: anchor(--bn-tooltip-trigger end);
+  }
+}
 
 /* === Tree === */
 [data-bn="tree"] {
@@ -977,7 +1226,7 @@
   color: var(--bn-color-text);
 }
 [data-bn="tree-item-content"]:hover { background: var(--bn-color-surface-subtle); }
-[data-bn="tree-item-content"][data-selected] { background: var(--bn-color-primary-50); color: var(--bn-color-primary-700); }
+[data-bn="tree-item-content"][data-selected] { background: var(--bn-color-selected-bg); color: var(--bn-color-selected-text); }
 [data-bn="tree-item-content"]:focus-visible { box-shadow: var(--bn-focus-ring); outline: none; position: relative; z-index: 1; }
 [data-bn="tree-indent"] { flex-shrink: 0; }
 [data-bn="tree-toggle"] {
@@ -1031,7 +1280,7 @@
   position: relative;
   overflow: auto;
   border: var(--bn-border-width) solid var(--bn-color-border);
-  border-radius: var(--bn-radius-md);
+  border-radius: var(--bn-radius-container);
   background: var(--bn-color-surface);
 }
 [data-bn="calendar-grid"] {
@@ -1082,24 +1331,24 @@
 }
 [data-bn="calendar-day-column"]:last-of-type { border-right: none; }
 [data-bn="calendar-slot"] {
-  border-bottom: var(--bn-border-width) solid var(--bn-color-border-light, var(--bn-color-border));
+  border-bottom: var(--bn-border-width) solid var(--bn-color-border-light);
   transition: background-color var(--bn-transition-fast);
 }
 [data-bn="calendar-slot"][data-drop-target] {
-  background: var(--bn-color-primary-50, hsl(210 100% 95%));
+  background: var(--bn-color-info-bg);
 }
 [data-bn="calendar-event"] {
   position: absolute;
   inset-inline: var(--bn-space-1);
   display: flex;
   flex-direction: column;
-  gap: var(--bn-space-half, 0.125rem);
+  gap: var(--bn-space-half);
   padding: var(--bn-space-1) var(--bn-space-2);
-  background: var(--bn-calendar-event-color, var(--bn-color-primary-100));
+  background: var(--bn-calendar-event-bg, var(--bn-color-info-bg));
   border-left: 3px solid var(--bn-calendar-event-color, var(--bn-color-primary-600));
   border-radius: var(--bn-radius-sm);
   font-size: var(--bn-font-size-xs);
-  color: var(--bn-color-gray-900);
+  color: var(--bn-color-text);
   cursor: grab;
   overflow: hidden;
   z-index: 1;
@@ -1107,15 +1356,15 @@
 [data-bn="calendar-event"][data-dragging] { opacity: 0.5; cursor: grabbing; }
 [data-bn="calendar-event"][data-status="scheduled"] {
   --bn-calendar-event-color: var(--bn-color-primary-600);
-  background: var(--bn-color-primary-50);
+  --bn-calendar-event-bg: var(--bn-color-info-bg);
 }
 [data-bn="calendar-event"][data-status="in_progress"] {
-  --bn-calendar-event-color: var(--bn-color-warning-500, hsl(38 90% 50%));
-  background: var(--bn-color-warning-50, hsl(38 90% 95%));
+  --bn-calendar-event-color: var(--bn-color-warning-600);
+  --bn-calendar-event-bg: var(--bn-color-warning-bg);
 }
 [data-bn="calendar-event"][data-status="completed"] {
-  --bn-calendar-event-color: var(--bn-color-success-500, hsl(145 55% 40%));
-  background: var(--bn-color-success-50, hsl(145 55% 95%));
+  --bn-calendar-event-color: var(--bn-color-success-600);
+  --bn-calendar-event-bg: var(--bn-color-success-bg);
 }
 [data-bn="calendar-event-title"] {
   font-weight: var(--bn-font-weight-semibold);
@@ -1125,7 +1374,7 @@
 }
 [data-bn="calendar-event-assignee"],
 [data-bn="calendar-event-time"] {
-  color: var(--bn-color-gray-700, hsl(220 10% 30%));
+  color: var(--bn-color-text-muted);
 }
 
 /* Pipeline block (draggable card for sidebar dispatch) */
@@ -1208,8 +1457,8 @@
 }
 
 [data-bn="pipeline-column-cards"][data-drop-target] {
-  background-color: var(--bn-color-primary-50, hsl(210 100% 95%));
-  border: 2px dashed var(--bn-color-primary-200, hsl(210 100% 85%));
+  background-color: var(--bn-color-info-bg);
+  border: 2px dashed var(--bn-color-info-border);
 }
 
 [data-bn="pipeline-card"] {
