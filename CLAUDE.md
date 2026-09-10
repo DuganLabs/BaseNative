@@ -379,22 +379,22 @@ The five epics that used to live here are done. Where each landed:
 | Feature flags on KV, `registerPlugin()` | `packages/flags/src/providers/kv.js`, `packages/runtime/src/signals.js` |
 | `@t` / `@feature` template directives | `packages/runtime/src/shared/directives.js` (`registerDirective` hook, consulted by `render.js`/`hydrate.js`), `packages/flags/src/directive.js`, `packages/i18n/src/directive.js` |
 | Eval harness hydrate stage (T3 stateful scoring) | `packages/evals/src/hydrate.js`, `after_set`/`hydrated_*` assertions in `packages/evals/src/assertions.js` (PR #155) |
+| CodeQL backlog (79 alerts → 0) + notify on the shared escaper | PRs #164/#165/#168/#172; `packages/notify/src/email.js` uses `@basenative/runtime/shared/escape` with `raw()` |
+| Documentation gaps (llms-full Gaps 77 → 0) | `docs/api/*.md` for every package; `scripts/llms-txt.js` masks comments before scanning exports |
+| Components design-system + a11y pass | `packages/components/src/{tokens,theme,components}.css`, tooltip `<button>` invoker, roving tabindex, calendar row fix |
+| Router navigation guards; complete runtime types | `packages/router/src/guards.js` (`withGuards`/`redirect`), `packages/runtime/types/**` + `types/exports.test.js` |
 
 An abandoned parallel builder implementation is preserved at tag `archive/feat-visual-builder-2026-04`; it is not a backlog item.
 
 ### Open — specified well enough to start without asking
 
-1. **Documentation drift**, recorded mechanically in the Gaps section of `llms-full.txt` (regenerate with `scripts/llms-txt.js`): ~30 undocumented `@basenative/components` exports; `createKVProvider` missing from `docs/api/flags.md`. (The runtime part of this item — `devtools`/`debug`/`lazy`/`vitals`/`plugins`/`error-boundary`/`batch`/`registerPlugin`/`shared/escape`/`shared/expression` exports missing from `docs/api/runtime.md` — shipped; see `docs/api/runtime.md` and `packages/runtime/README.md`.)
-2. **CodeQL backlog on `main`** (79 pre-existing alerts; a PR from `fix/codeql-backlog` is in flight — check it first): `packages/notify/src/email.js` interpolates `{{ }}` into HTML email with no escaping (same class as the SSR fix in `@basenative/server`); `packages/notify/src/transports/smtp.js` sets `rejectUnauthorized: false`; `packages/share/src/server.js` `shortId` has modulo bias; eleven file-system races in `cli`, `claude-config`, `doppler`; path injection in `examples/starter` and `scripts/audit`.
-3. **Escaping parity**: `packages/notify` should use `@basenative/runtime/shared/escape` rather than its own regex templating, once item 2 lands.
-4. **`.tabnine/agent/skills/`** is a committed third copy of the seven Nx skills now supplied by the `nx@nx-claude-plugins` plugin. Remove once the owner confirms nothing consumes it.
-
+1. **`.tabnine/agent/skills/`** is a committed third copy of the seven Nx skills now supplied by the `nx@nx-claude-plugins` plugin. Remove once the owner confirms nothing consumes it.
 
 ### Needs owner direction — do not guess
 
 - The eval corpus (`packages/evals/prompts/`, `fixtures/`) — PRD W2. Human-authored only.
 - The launch essay (PRD W5.4) — blocked on eval results that do not exist yet.
-- The registry question: 17 packages have never been published anywhere and none is at 1.0 (`docs/package-inventory.md`). Publish, or mark private, is a per-package product call.
+- The registry question: every non-private package is now published to GitHub Packages under the `basenative` org (37 in sync, 3 private on 2026-09-10 — `docs/package-inventory.md`). What remains is a product call: whether to mirror to npmjs, and which packages graduate to 1.0.
 
 ## General Guidelines for working with Nx
 
