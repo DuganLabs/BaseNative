@@ -15,3 +15,6 @@ reports/
 /dotfiles
 /experiments
 /homelab
+
+.claude/worktrees
+.claude/settings.local.json

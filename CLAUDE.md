@@ -90,10 +90,12 @@ All packages use **Node.js built-in test runner** (`node:test`). No Jest, no Vit
 ## Architecture Decisions
 
 ### Template Processing Pipeline
+
 1. **Server**: Parse HTML → interpolate `{{ }}` → evaluate `@if`/`@for`/`@switch` → emit with `<!--bn:*-->` hydration markers
 2. **Client**: Parse markers → attach signal dependencies → re-render on mutation
 
 ### CSP-Safe Expression Evaluator
+
 Located at `src/shared/expression.js`. Used by both `@basenative/server` (SSR) and `@basenative/runtime` (client hydration).
 
 - **No `eval`**, **no `new Function`**
@@ -101,16 +103,18 @@ Located at `src/shared/expression.js`. Used by both `@basenative/server` (SSR) a
 - Explicit allowlist of operations — no arbitrary code execution
 
 ### Signal Reactivity
+
 ```js
 // signals.js — ~60 lines, zero deps
-signal(initial)     // readable/writable reactive value
-computed(fn)        // derived signal, lazy with dependency tracking
-effect(fn)          // auto-tracks reads, re-runs on change, returns cleanup
+signal(initial); // readable/writable reactive value
+computed(fn); // derived signal, lazy with dependency tracking
+effect(fn); // auto-tracks reads, re-runs on change, returns cleanup
 ```
 
 `computed()` is implemented as `effect(() => s.set(fn()))` — elegant composition.
 
 ### Package Exports
+
 All packages use `"type": "module"` and `"exports": { ".": "./src/index.js" }`. No build step required for development. ESBuild used for production bundles only.
 
 ---
@@ -167,7 +171,7 @@ chore(ci): add bundle size check to PR workflow
 ## Contribution Guidelines for AI Assistants
 
 - **Read source before testing**: Never write tests for guessed APIs
-- **Run tests before committing**: `cd packages/{name} && node --test`  
+- **Run tests before committing**: `cd packages/{name} && node --test`
 - **Fix broken tests before writing new code**
 - **Commit frequently**: Every 2-3 logical changes, push after each phase
 - **Branch protection**: All changes via PRs — create a branch, push, open PR
@@ -190,8 +194,8 @@ decision is not re-litigated every quarter:
 
 - **`superpowers-dev`** — best value density available (14 skills, ~538 startup tokens),
   but it is all-or-nothing, and two of its skills rewrite baseline behavior:
-  `using-superpowers` demands skill invocation *before any response including clarifying
-  questions*, and `brainstorming` declares "You MUST use this before any creative work."
+  `using-superpowers` demands skill invocation _before any response including clarifying
+  questions_, and `brainstorming` declares "You MUST use this before any creative work."
   In a repo where the human hand-authors the eval corpus, a skill that auto-hijacks every
   creative turn is a liability, not a feature.
 - **`mattpocock`** — 37 skill descriptions (~1,461 startup tokens) to obtain roughly two
@@ -211,22 +215,22 @@ For each request below, exactly one owner acts. Anything in "must not fire" is w
 that request even if its description seems to match. "Use the appropriate skill" is not a
 rule and does not resolve anything.
 
-| When the request is… | Owner | Must NOT fire |
-|---|---|---|
-| "review my changes / this PR" | built-in `/code-review` | any third-party code-review skill; `/simplify` |
-| "clean this up", "simplify", "DRY this" | built-in `/simplify` | `/code-review` — it hunts bugs, this is quality-only |
-| "is this safe", "security review" | built-in `/security-review` | `/code-review` |
-| "run it", "start the app", "screenshot it" | built-in `/run` | `bn-deploy` — running locally is not deploying |
-| "deploy", "ship to Cloudflare" | `.claude/commands/bn-deploy.md` | `/run`; never auto-fire — deploys are `ask`-gated in `.claude/settings.json` |
-| "write a PRD" | `.claude/agents/prd-author.md` → writes `docs/PRD.md` | `speckit-spec-author`; do not touch `PRD.md` or `docs/prd-ai-native.md` |
-| "turn the PRD into issues" | `packages/claude-config/skills/prd-driven-issue.md` | `prd-author` — the PRD already exists |
-| "write a spec" | `.claude/commands/bn-spec.md` / `speckit-spec-author` | `prd-author` |
-| "add a BaseNative package" | `.claude/agents/basenative-package-author.md` | generic scaffolding; see "No new packages" above |
-| "set up hooks / permissions / settings" | built-in `update-config` → edit `packages/claude-config/settings/settings.template.json` **first** | editing `.claude/settings.json` alone — it is generated from that template and your change will be lost |
-| "write or edit a skill" | this section + `packages/claude-config/README.md` | any external skill-authoring skill |
-| "update llms.txt / API docs" | `scripts/llms-txt.js` (regenerate) | hand-editing `llms.txt` or `llms-full.txt` — both are generated and CI fails on drift |
-| "update the package inventory" | `scripts/package-inventory.js` | hand-editing `docs/package-inventory.md` — same reason |
-| anything touching the eval corpus | **the human owner. No skill, no agent.** | everything — see below |
+| When the request is…                       | Owner                                                                                              | Must NOT fire                                                                                           |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| "review my changes / this PR"              | built-in `/code-review`                                                                            | any third-party code-review skill; `/simplify`                                                          |
+| "clean this up", "simplify", "DRY this"    | built-in `/simplify`                                                                               | `/code-review` — it hunts bugs, this is quality-only                                                    |
+| "is this safe", "security review"          | built-in `/security-review`                                                                        | `/code-review`                                                                                          |
+| "run it", "start the app", "screenshot it" | built-in `/run`                                                                                    | `bn-deploy` — running locally is not deploying                                                          |
+| "deploy", "ship to Cloudflare"             | `.claude/commands/bn-deploy.md`                                                                    | `/run`; never auto-fire — deploys are `ask`-gated in `.claude/settings.json`                            |
+| "write a PRD"                              | `.claude/agents/prd-author.md` → writes `docs/PRD.md`                                              | `speckit-spec-author`; do not touch `PRD.md` or `docs/prd-ai-native.md`                                 |
+| "turn the PRD into issues"                 | `packages/claude-config/skills/prd-driven-issue.md`                                                | `prd-author` — the PRD already exists                                                                   |
+| "write a spec"                             | `.claude/commands/bn-spec.md` / `speckit-spec-author`                                              | `prd-author`                                                                                            |
+| "add a BaseNative package"                 | `.claude/agents/basenative-package-author.md`                                                      | generic scaffolding; see "No new packages" above                                                        |
+| "set up hooks / permissions / settings"    | built-in `update-config` → edit `packages/claude-config/settings/settings.template.json` **first** | editing `.claude/settings.json` alone — it is generated from that template and your change will be lost |
+| "write or edit a skill"                    | this section + `packages/claude-config/README.md`                                                  | any external skill-authoring skill                                                                      |
+| "update llms.txt / API docs"               | `scripts/llms-txt.js` (regenerate)                                                                 | hand-editing `llms.txt` or `llms-full.txt` — both are generated and CI fails on drift                   |
+| "update the package inventory"             | `scripts/package-inventory.js`                                                                     | hand-editing `docs/package-inventory.md` — same reason                                                  |
+| anything touching the eval corpus          | **the human owner. No skill, no agent.**                                                           | everything — see below                                                                                  |
 
 ### Never delegate — hand-authored artifacts
 
@@ -240,7 +244,7 @@ like.
 
 Cheap delegation does not create an exception. A `haiku` subagent deciding what a correct
 assertion is commits the same self-consistency failure as an `opus` one, just for less
-money: if the model writes the prompt, the reference output, *and* the assertion, the
+money: if the model writes the prompt, the reference output, _and_ the assertion, the
 eval measures the model against itself and returns a high, meaningless number.
 
 This applies to `packages/evals/prompts/` and `packages/evals/fixtures/` absolutely. If
@@ -259,12 +263,12 @@ Subagents must never edit these. Report the needed change upward instead:
 
 Two agents must never hold the same directory at once.
 
-| Module | Owner |
-|---|---|
-| `packages/validate/` | validator agent |
-| `packages/evals/` | eval-harness agent (infrastructure only — never `prompts/` or `fixtures/`) |
-| `packages/mcp/` | mcp agent |
-| `docs/`, `llms*.txt` | docs agent |
+| Module               | Owner                                                                      |
+| -------------------- | -------------------------------------------------------------------------- |
+| `packages/validate/` | validator agent                                                            |
+| `packages/evals/`    | eval-harness agent (infrastructure only — never `prompts/` or `fixtures/`) |
+| `packages/mcp/`      | mcp agent                                                                  |
+| `docs/`, `llms*.txt` | docs agent                                                                 |
 
 ### Delegation policy
 
@@ -313,36 +317,65 @@ was not. Say plainly that the skill is unavailable and why, then stop.
 ## Related Projects
 
 - **PendingBusiness** — Business management app built on BaseNative
-- **Greenput** — Input/workflow platform built on BaseNative  
+- **Greenput** — Input/workflow platform built on BaseNative
 - **Greenput OS** — Long-term: BaseNative as hardware runtime substrate
 
 ---
 
 ## Next Steps / AI Backlog
 
-**UPSTREAM DOGFOODING DIRECTIVE**: You are the foundational framework builder. If a downstream consumer app (Greenput, PendingBusiness, DuganLabs) requires a generically useful primitive (like a specialized UI component, an auth flow wrapper, or parsing string utility), YOU must build it here as an open-source package first. 
+**UPSTREAM DOGFOODING DIRECTIVE**: You are the foundational framework builder. If a downstream consumer app (Greenput, PendingBusiness, DuganLabs) requires a generically useful primitive (like a specialized UI component, an auth flow wrapper, or parsing string utility), YOU must build it here as an open-source package first.
 
 You will pull from this task list when executing autonomously.
 
 ### Epic 1: Dogfooding Primitives (`@basenative/markdown` & `@basenative/components`)
+
 - **Task A**: Build `@basenative/markdown`, a pure ES module zero-dependency markdown parser. This is a hard blocker for DuganLabs' Dynamic Blog Epic.
 - **Task B**: Expand `@basenative/components` with a Drag-and-Drop Calendar/Pipeline block component utilizing CSS grid and native drag-and-drop APIs. This is a hard blocker for Greenput's Schedule-Aware Lead Routing Epic.
 - **Task C**: Build `@basenative/integrations/plaid`, a headless wrapper module that wraps the Plaid Link client-side initialization script and the server-side OAuth exchange logic. This is a hard blocker for PendingBusiness's FedNow auto-pay engine.
 
 ### Epic 2: Reactivity Optimization (`@basenative/runtime`)
+
 - **Task A**: Write benchmarking tests in `benchmarks/` to measure `effect()` re-render overhead with 10,000 DOM nodes.
 - **Task B**: Implement a `batch()` API to allow synchronous grouping of signal mutations without triggering immediate re-renders, solving the diamond problem.
 - **Task C**: Implement comprehensive unit testing (`node:test`) for diamond-dependency cases.
 
 ### Epic 3: SSR Advanced Streaming (`@basenative/server`)
+
 - **Task A**: Introduce `@defer` directive parser logic, splitting the document stream parsing to allow "Suspense-like" partial HTML streaming.
 - **Task B**: Link `@defer` chunks to `hydrate()` so that delayed script injection re-evaluates the signal tree automatically.
 
 ### Epic 4: No-Code Visual Builder Engine [Phase 3]
+
 - **Task A**: Initialize `@basenative/visual-builder` package. Build an AST-to-DOM parser that can translate JSON schema representations back into BaseNative primitives safely.
 - **Task B**: Expose a drag-and-drop layout grid component inside `@basenative/components` that hooks directly into the visual builder state machine.
 - **Task C**: Implement a specialized `<bn-canvas>` web component to orchestrate the drag-and-drop interface, strictly respecting `display: contents` constraints on hosts.
 
 ### Epic 5: Plugin Infrastructure & Feature Flags [Phase 3]
+
 - **Task A**: Build `@basenative/flags`, enabling edge-cached feature flag evaluations utilizing Cloudflare KV.
 - **Task B**: Overhaul `@basenative/runtime` to expose an internal `registerPlugin()` API hooked into the reactivity lifecycle. Ensure external plugins can intercept signal writes without breaking the diamond-problem resolutions.
+
+<!-- nx configuration start-->
+<!-- Leave the start & end comments to automatically receive updates. -->
+
+## General Guidelines for working with Nx
+
+- For navigating/exploring the workspace, invoke the `nx-workspace` skill first - it has patterns for querying projects, targets, and dependencies
+- When running tasks (for example build, lint, test, e2e, etc.), always prefer running the task through `nx` (i.e. `nx run`, `nx run-many`, `nx affected`) instead of using the underlying tooling directly
+- Prefix nx commands with the workspace's package manager (e.g., `pnpm nx build`, `npm exec nx test`) - avoids using globally installed CLI
+- You have access to the Nx MCP server and its tools, use them to help the user
+- For Nx plugin best practices, check `node_modules/@nx/<plugin>/PLUGIN.md`. Not all plugins have this file - proceed without it if unavailable.
+- NEVER guess CLI flags - always check nx_docs or `--help` first when unsure
+
+## Scaffolding & Generators
+
+- For scaffolding tasks (creating apps, libs, project structure, setup), ALWAYS invoke the `nx-generate` skill FIRST before exploring or calling MCP tools
+
+## When to use nx_docs
+
+- USE for: advanced config options, unfamiliar flags, migration guides, plugin configuration, edge cases
+- DON'T USE for: basic generator syntax (`nx g @nx/react:app`), standard commands, things you already know
+- The `nx-generate` skill handles generator discovery internally - don't call nx_docs just to look up generator syntax
+
+<!-- nx configuration end-->
