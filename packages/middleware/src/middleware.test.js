@@ -554,6 +554,24 @@ describe('Express adapter', () => {
     assert.equal(ctx.request.cookies.b, '2');
   });
 
+  it('ignores __proto__/constructor/prototype cookie names but still parses normal ones', () => {
+    const req = {
+      method: 'GET',
+      originalUrl: '/test',
+      path: '/test',
+      headers: { cookie: '__proto__=polluted; constructor=polluted; prototype=polluted; a=1' },
+      cookies: undefined,
+      query: {},
+      body: undefined,
+      ip: '1.1.1.1',
+      params: {},
+    };
+    const ctx = createExpressContext(req, {});
+    assert.equal(ctx.request.cookies.a, '1');
+    assert.equal({}.polluted, undefined);
+    assert.equal(Object.prototype.polluted, undefined);
+  });
+
   it('toExpressMiddleware calls next when no body is set', async () => {
     const pipeline = createPipeline();
     pipeline.use(async (ctx, next) => { ctx.state.ran = true; await next(); });

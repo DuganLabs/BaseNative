@@ -84,6 +84,10 @@ function parseCookieHeader(header) {
     if (eqIndex === -1) continue;
     const key = pair.slice(0, eqIndex).trim();
     const value = pair.slice(eqIndex + 1).trim();
+    // Explicit prototype-pollution guard on the exact key being written, in
+    // addition to the null-prototype object above: CodeQL's remote-property-
+    // injection check requires this guard shape immediately before the write.
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
     result[key] = decodeURIComponent(value);
   }
   return result;
