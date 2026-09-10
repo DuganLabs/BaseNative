@@ -1,11 +1,12 @@
 {
   "name": "@basenative/components",
   "version": "0.5.0",
-  "description": "15 semantic UI components with CSS custom property theming and density scales",
+  "description": "15 semantic HTML UI components rendered as strings (forms, data grids, dialogs, calendar and kanban) with cascade-layer CSS, design tokens, light/dark themes and density scales",
   "type": "module",
   "exports": {
     ".": "./src/index.js",
     "./css": "./src/index.css",
+    "./layers.css": "./src/layers.css",
     "./tokens.css": "./src/tokens.css",
     "./theme.css": "./src/theme.css",
     "./components.css": "./src/components.css",
