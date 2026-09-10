@@ -6,22 +6,13 @@ import { fileURLToPath } from 'node:url';
 // -- BaseNative packages --
 import { render } from '@basenative/server';
 import {
-  renderButton,
-  renderInput,
-  renderTable,
-  renderBadge,
-  renderCard,
-  renderAlert,
-} from '@basenative/components';
-import {
   createPipeline,
   cors,
   rateLimit,
-  csrf,
   logger as loggerMiddleware,
   toExpressMiddleware,
 } from '@basenative/middleware';
-import { loadEnv, defineConfig, string, number, boolean, optional } from '@basenative/config';
+import { loadEnv, defineConfig, string, number, optional } from '@basenative/config';
 import { createLogger, requestLogger } from '@basenative/logger';
 import {
   createSessionManager,
@@ -29,18 +20,13 @@ import {
   hashPassword,
   verifyPassword,
   sessionMiddleware,
-  requireAuth,
-  login,
-  logout,
-  defineRoles,
-  createGuard,
 } from '@basenative/auth';
 import { createHeaderResolver, tenantMiddleware } from '@basenative/tenant';
 import { createI18n, i18nMiddleware } from '@basenative/i18n';
 import { createSSEServer } from '@basenative/realtime';
 import { createFlagManager, flagMiddleware, createMemoryProvider } from '@basenative/flags';
 import { createNotificationCenter } from '@basenative/notify';
-import { createUploadHandler, createLocalStorage } from '@basenative/upload';
+import { createLocalStorage } from '@basenative/upload';
 
 // ---------------------------------------------------------------------------
 // Setup
@@ -72,14 +58,6 @@ const i18n = createI18n({
   defaultLocale: config.DEFAULT_LOCALE ?? 'en',
   messages: { en: translations },
 });
-
-// -- RBAC --
-const rbac = defineRoles({
-  admin: { permissions: ['*'] },
-  editor: { permissions: ['read', 'write'], inherits: ['viewer'] },
-  viewer: { permissions: ['read'] },
-});
-const guard = createGuard(rbac);
 
 // -- Sessions --
 const sessionManager = createSessionManager({
@@ -151,6 +129,13 @@ pipeline
   .use(i18nMiddleware(i18n))
   .use(flagMiddleware(flagManager))
   .use(requestLogger(log));
+
+// The global 200/min limit above is sized for normal API traffic, not for a
+// credential-guessing endpoint. Login gets its own, much tighter limit so a
+// password-spraying attempt is throttled long before it hits the global cap.
+const loginRateLimit = toExpressMiddleware(
+  createPipeline().use(rateLimit({ windowMs: 60_000, max: 10 }))
+);
 
 // ---------------------------------------------------------------------------
 // Express app
@@ -255,7 +240,7 @@ app.get('/login', async (req, res) => {
   res.send(renderPage('login.html', ctx, i18n.t('login.title')));
 });
 
-app.post('/login', async (req, res) => {
+app.post('/login', loginRateLimit, async (req, res) => {
   const { username, password } = req.body ?? {};
   const dbUser = findUserByUsername(username);
 
