@@ -17,6 +17,7 @@
 
 /** @typedef {import("../render.js").FaviconSpec & {
  *   name: string,
+ *   displayName: string,
  *   description: string,
  *   themeColor: string,
  * }} Preset */
@@ -24,6 +25,7 @@
 /** @type {Preset} */
 export const tabs = {
   name: "tabs",
+  displayName: "T4BS",
   description: "T4BS — '5 Things in 4 Tabs' word game",
   glyph: { kind: "monogram", text: "T", weight: 900, accentDot: true },
   palette: { bg: "#0C0B09", fg: "#FFF3E0", accent: "#E8920A" },
@@ -34,6 +36,7 @@ export const tabs = {
 /** @type {Preset} */
 export const basenative = {
   name: "basenative",
+  displayName: "BaseNative",
   description: "BaseNative — the org's foundation framework",
   glyph: { kind: "sigil", sigil: "signal-stack" },
   palette: { bg: "#0C0B09", fg: "#F0EDE4", accent: "#E8920A" },
@@ -44,6 +47,7 @@ export const basenative = {
 /** @type {Preset} */
 export const duganlabs = {
   name: "duganlabs",
+  displayName: "DuganLabs",
   description: "DuganLabs — the org mark",
   glyph: { kind: "monogram", text: "DL", weight: 900, letterSpacing: -36 },
   palette: { bg: "#0C0B09", fg: "#F0EDE4", accent: "#E8920A" },
@@ -54,6 +58,7 @@ export const duganlabs = {
 /** @type {Preset} */
 export const pendingbusiness = {
   name: "pendingbusiness",
+  displayName: "PendingBusiness",
   description: "PendingBusiness — task / pending-action tracker",
   glyph: { kind: "symbol", symbol: "clock" },
   palette: { bg: "#0F0E0C", fg: "#F0EDE4", accent: "#4EAF7C" },
@@ -64,6 +69,7 @@ export const pendingbusiness = {
 /** @type {Preset} */
 export const greenput = {
   name: "greenput",
+  displayName: "Greenput",
   description: "Greenput — sustainability + green-tech home",
   glyph: { kind: "symbol", symbol: "leaf" },
   palette: { bg: "#0F0E0C", fg: "#F0EDE4", accent: "#4EAF7C" },
@@ -74,6 +80,7 @@ export const greenput = {
 /** @type {Preset} */
 export const warrendugan = {
   name: "warrendugan",
+  displayName: "warrendugan.com",
   description: "warrendugan.com — personal site",
   glyph: { kind: "monogram", text: "WD", weight: 900, stack: true },
   palette: { bg: "#0C0B09", fg: "#F0EDE4", accent: "#E8920A" },
@@ -84,6 +91,7 @@ export const warrendugan = {
 /** @type {Preset} */
 export const ralphStation = {
   name: "ralph-station",
+  displayName: "Ralph Station",
   description: "Ralph Station — fixed point / signal station",
   glyph: { kind: "sigil", sigil: "station-mark" },
   palette: { bg: "#0C0B09", fg: "#F0EDE4", accent: "#5EA0E8" },
@@ -94,6 +102,7 @@ export const ralphStation = {
 /** @type {Preset} */
 export const warrenSys = {
   name: "warren-sys",
+  displayName: "warren.sys",
   description: "warren.sys — terminal-flavored personal system",
   glyph: { kind: "symbol", symbol: "terminal-prompt" },
   palette: { bg: "#0C0B09", fg: "#F0EDE4", accent: "#66E0A0" },

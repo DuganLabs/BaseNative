@@ -6,8 +6,9 @@
  * Subcommands:
  *   - `bn-favicon init [preset]` — interactive (or non-interactive with
  *     `--preset`) generation. Writes `public/favicon.svg`,
- *     `public/manifest.json`, and (if `@basenative/og-image` is installed)
- *     a full PNG icon set. Idempotent — asks before overwriting.
+ *     `public/manifest.json`, and (if the optional `@resvg/resvg-wasm`
+ *     dependency is installed) a full PNG icon set. Idempotent — asks
+ *     before overwriting.
  *   - `bn-favicon render <preset>` — render a preset to stdout (SVG).
  *   - `bn-favicon html [--theme-color <hex>]` — print the recommended
  *     `<head>` tags.
@@ -30,7 +31,7 @@ import { defineFavicon, htmlTags, presets, presetList } from "./index.js";
 const HELP = `bn-favicon — SVG-first favicon generator
 
 Usage:
-  bn-favicon init [--preset <name>] [--out <dir>] [--force]
+  bn-favicon init [--preset <name>] [--out <dir>] [--force] [--name <name>]
   bn-favicon render <preset>
   bn-favicon html [--theme-color <hex>] [--svg-href <path>]
   bn-favicon list
@@ -38,6 +39,7 @@ Usage:
 Examples:
   bn-favicon init                  # interactive
   bn-favicon init --preset tabs    # one-shot, default output dir is ./public
+  bn-favicon init --preset tabs --name "T4BS"   # override manifest name/short_name
   bn-favicon render basenative     # SVG to stdout
   bn-favicon html --theme-color "#0C0B09"
 
@@ -78,6 +80,7 @@ async function cmdInit(argv) {
       preset: { type: "string" },
       out: { type: "string", default: "public" },
       force: { type: "boolean", default: false },
+      name: { type: "string" },
     },
     allowPositionals: false,
   });
@@ -102,16 +105,23 @@ async function cmdInit(argv) {
   const outDir = resolve(process.cwd(), values.out);
   await mkdir(outDir, { recursive: true });
 
+  // Manifest `name`/`short_name`: prefer an explicit `--name`, then the
+  // preset's display name (e.g. "BaseNative" for the `basenative` preset),
+  // falling back to the preset's lowercase id for presets/specs that don't
+  // carry a display name.
+  const manifestName = values.name || preset.displayName || preset.name;
+
   // Always-on writes.
   await writeIfAllowed(resolve(outDir, "favicon.svg"), fav.svg, values.force);
   await writeIfAllowed(
     resolve(outDir, "manifest.json"),
-    fav.manifest({ name: preset.name, themeColor: preset.themeColor }),
+    fav.manifest({ name: manifestName, themeColor: preset.themeColor }),
     values.force,
   );
 
-  // PNG fallbacks — best-effort. If the optional peer is missing we surface
-  // a clear note and keep going.
+  // PNG fallbacks — best-effort. If the optional `@resvg/resvg-wasm`
+  // dependency is missing, `png.js` throws one clear, actionable message —
+  // relay exactly that line and keep going rather than silently skipping.
   let pngsWritten = 0;
   try {
     const { toIconSet } = await import("./png.js");
@@ -122,8 +132,7 @@ async function cmdInit(argv) {
     }
   } catch (err) {
     process.stderr.write(
-      `\nbn-favicon: skipped PNG generation — install @basenative/og-image to enable.\n` +
-        `  ${err && /** @type {any} */ (err).message}\n\n`,
+      `\nbn-favicon: ${err && /** @type {any} */ (err).message ? /** @type {any} */ (err).message : err}\n\n`,
     );
   }
 
