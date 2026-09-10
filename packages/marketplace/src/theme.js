@@ -1,4 +1,4 @@
-import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const THEMES_CONFIG = 'themes.json';

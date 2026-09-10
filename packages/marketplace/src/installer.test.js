@@ -1,7 +1,7 @@
 import { describe, it, beforeEach, afterEach, mock } from 'node:test';
 import assert from 'node:assert/strict';
 import { createInstaller } from './installer.js';
-import { mkdtemp, rm, readFile, writeFile, mkdir } from 'node:fs/promises';
+import { mkdtemp, rm, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
@@ -186,10 +186,6 @@ describe('createInstaller — comprehensive', () => {
     });
 
     it('uses npm install by default', async () => {
-      let capturedArgs;
-      let capturedCwd;
-
-      // Mock process-like behavior by checking that install is called
       const installer = createInstaller({
         targetDir: tmpDir,
         packageManager: 'echo',

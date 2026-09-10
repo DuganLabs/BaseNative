@@ -88,7 +88,7 @@ describe('createCanvas', () => {
 describe('getTree', () => {
   test('builds parent-child hierarchy', () => {
     const canvas = createCanvas();
-    const parent = canvas.addNode({ type: 'container', id: 'parent' });
+    canvas.addNode({ type: 'container', id: 'parent' });
     canvas.addNode({ type: 'button', id: 'child1', parentId: 'parent' });
     canvas.addNode({ type: 'text', id: 'child2', parentId: 'parent' });
 

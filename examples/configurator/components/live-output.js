@@ -35,7 +35,7 @@ import {
  */
 export function createOutputComputed(computed, signals) {
   const {
-    footprint, ceilingHeight, latitude, windows,
+    footprint, latitude, windows,
     exteriorPanel, interiorPanel, studDepth, cavityInsulation,
   } = signals;
 

@@ -27,7 +27,6 @@ function createDOMNode(id) {
 console.log('\n--- 10,000 DOM nodes, 1 signal each ---');
 
 bench('create 10k signal→effect pairs', () => {
-  const nodes = [];
   const effects = [];
   for (let i = 0; i < 10000; i++) {
     const s = signal(i);

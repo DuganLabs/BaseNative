@@ -6,10 +6,11 @@
  * - Client-side hydration script reference
  * - Routing with @basenative/router
  * - A simple form example
- * - ReadableStream response for streaming SSR
+ *
+ * For streaming SSR, see `@basenative/server`'s `renderToReadableStream`.
  */
 
-import { render, renderToReadableStream } from '@basenative/server';
+import { render } from '@basenative/server';
 import { resolveRoute } from '@basenative/router';
 
 // ── Route definitions ──────────────────────────────────────────────────────
@@ -116,7 +117,7 @@ const notFoundPage = (path) => render(`
 // ── Worker entry point ──────────────────────────────────────────────────────
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, _env) {
     const url = new URL(request.url);
     const match = resolveRoute(routes, url.pathname);
 
