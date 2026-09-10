@@ -488,7 +488,7 @@ packages/combobox/src/a11y.js · `import { escapeOnKeydown } from '@basenative/c
 Announce a transient message to screen readers via the widget's aria-live region. Used for "N options available" / "Press Enter to create '...'" style hints. Idempotent — safe to call repeatedly.
 packages/combobox/src/a11y.js · `import { announce } from '@basenative/combobox';`
 
-### `@basenative/components` (v0.4.1)
+### `@basenative/components` (v0.5.0)
 
 15 semantic HTML UI components rendered as strings (forms, data grids, dialogs, calendar and kanban) with cascade-layer CSS, design tokens, light/dark themes and density scales
 
