@@ -73,6 +73,9 @@ function createExpressContext(req, _res) {
   };
 }
 
+// RFC 6265 cookie-name = token (RFC 7230 tchar): no CTLs, separators or spaces.
+const COOKIE_NAME = /^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$/;
+
 function parseCookieHeader(header) {
   if (!header) return {};
   // Cookie names come straight from the request header. A null-prototype
@@ -84,10 +87,11 @@ function parseCookieHeader(header) {
     if (eqIndex === -1) continue;
     const key = pair.slice(0, eqIndex).trim();
     const value = pair.slice(eqIndex + 1).trim();
-    // Explicit prototype-pollution guard on the exact key being written, in
-    // addition to the null-prototype object above: CodeQL's remote-property-
-    // injection check requires this guard shape immediately before the write.
-    if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
+    // Only RFC 6265 cookie-name tokens are accepted as property names; anything
+    // else (separators, control characters, `__proto__`-style names) is dropped
+    // rather than written. This is the allow-list check the property write
+    // depends on, in addition to the null-prototype object above.
+    if (!COOKIE_NAME.test(key) || key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
     result[key] = decodeURIComponent(value);
   }
   return result;

@@ -572,6 +572,23 @@ describe('Express adapter', () => {
     assert.equal(Object.prototype.polluted, undefined);
   });
 
+  it('drops cookie names outside the RFC 6265 token charset and keeps valid ones', () => {
+    const req = {
+      method: 'GET',
+      originalUrl: '/test',
+      path: '/test',
+      headers: { cookie: 'bad name=1; bad;semi=2; "quoted"=3; ok_name-1.x=4; __proto__=5' },
+      cookies: undefined,
+      query: {},
+      body: undefined,
+      ip: '1.1.1.1',
+      params: {},
+    };
+    const ctx = createExpressContext(req, {});
+    assert.deepEqual(Object.keys(ctx.request.cookies), ['semi', 'ok_name-1.x']);
+    assert.equal(ctx.request.cookies['ok_name-1.x'], '4');
+  });
+
   it('toExpressMiddleware calls next when no body is set', async () => {
     const pipeline = createPipeline();
     pipeline.use(async (ctx, next) => { ctx.state.ran = true; await next(); });
