@@ -255,7 +255,7 @@ export function renderCombobox(options?: {
   required?: boolean;
   disabled?: boolean;
   value?: string;
-  /** Default `bn-combobox-${name}` (random suffix when `name` is absent). */
+  /** Default `bn-combobox-${name}`, or `bn-combobox-<n>` when `name` is absent. */
   id?: string;
   /** Spliced onto the `<input>`. */
   attrs?: string;
@@ -272,7 +272,7 @@ export function renderMultiselect(options?: {
   /** Default `'Select items...'`. */
   placeholder?: string;
   disabled?: boolean;
-  /** Default `bn-multiselect-${name}` (random suffix when `name` is absent). */
+  /** Default `bn-multiselect-${name}`, or `bn-multiselect-<n>` when `name` is absent. */
   id?: string;
   /** Spliced onto the search `<input>`. */
   attrs?: string;
@@ -314,7 +314,7 @@ export function renderDataGrid<Row extends Record<string, unknown> = Record<stri
   emptyMessage?: string;
   /** `<caption>` text; also used as the scroll region's `aria-label`. */
   caption?: string;
-  /** Default `bn-datagrid-<random>`. */
+  /** Default `bn-datagrid-<n>`. */
   id?: string;
   attrs?: string;
 }): string;
@@ -336,7 +336,7 @@ export function renderTree(options?: {
   expanded?: ReadonlySet<string>;
   /** Id of the selected node. */
   selected?: string;
-  /** Default `bn-tree-<random>`. */
+  /** Default `bn-tree-<n>`. */
   id?: string;
   attrs?: string;
 }): string;
@@ -357,7 +357,7 @@ export function renderTreeGrid(options?: {
   columns?: TreeGridColumn[];
   items?: TreeGridNode[];
   expanded?: ReadonlySet<string>;
-  /** Default `bn-treegrid-<random>`. */
+  /** Default `bn-treegrid-<n>`. */
   id?: string;
   attrs?: string;
 }): string;
@@ -378,7 +378,7 @@ export function renderVirtualList<T = unknown>(options?: {
   renderItem?: (item: T, index: number) => string;
   /** Extra items rendered beyond the visible window, default 5. */
   overscan?: number;
-  /** Default `bn-virtual-<random>`. */
+  /** Default `bn-virtual-<n>`. */
   id?: string;
   attrs?: string;
 }): string;
@@ -392,14 +392,14 @@ export function renderDialog(options?: {
   content?: string;
   /** Adds the `open` attribute. */
   open?: boolean;
-  /** Accepted for forward compatibility; currently has no effect on the markup. */
+  /** `true` (default) adds `aria-modal="true" data-modal="true"`, open with `showModal()`; `false` adds `data-modal="false"`, open with `show()`. */
   modal?: boolean;
   /** Renders a close button, default true. */
   closable?: boolean;
   size?: 'sm' | 'default' | 'lg' | (string & {});
   /** Footer HTML. */
   footer?: string;
-  /** Default `bn-dialog-<random>`. */
+  /** Default `bn-dialog-<n>`. */
   id?: string;
   attrs?: string;
 }): string;
@@ -417,7 +417,7 @@ export function renderDrawer(options?: {
   closable?: boolean;
   /** Renders a preceding `[data-bn="drawer-overlay"]`, default true. */
   overlay?: boolean;
-  /** Default `bn-drawer-<random>`. */
+  /** Default `bn-drawer-<n>`. */
   id?: string;
   attrs?: string;
 }): string;
@@ -437,7 +437,7 @@ export function renderTabs(options?: {
   /** Id of the active tab; defaults to the first tab. */
   activeTab?: string;
   variant?: 'default' | 'pills' | (string & {});
-  /** Default `bn-tabs-<random>`; prefixes every tab/panel id. */
+  /** Default `bn-tabs-<n>`; prefixes every tab/panel id. */
   id?: string;
   attrs?: string;
 }): string;
@@ -445,8 +445,9 @@ export function renderTabs(options?: {
 // ---------------------------------------------------------------- Accordion
 
 export interface AccordionItem {
-  /** `<summary>` HTML. */
+  /** `<summary>` text; escaped. */
   title: string;
+  /** HTML slot: not escaped; pass trusted markup only. */
   content: string;
   open?: boolean;
 }
@@ -455,7 +456,7 @@ export function renderAccordion(options?: {
   items?: AccordionItem[];
   /** When false (default), all `<details>` share a `name` so only one stays open. */
   multiple?: boolean;
-  /** Default `bn-accordion-<random>`. */
+  /** Default `bn-accordion-<n>`. */
   id?: string;
   attrs?: string;
 }): string;
@@ -490,13 +491,13 @@ export function renderAvatar(options?: {
 // ---------------------------------------------------------------- Tooltip
 
 export function renderTooltip(options?: {
-  /** Tooltip HTML. */
+  /** Tooltip text; escaped (not an HTML slot). */
   content?: string;
-  /** Trigger HTML (wrapped in a `popovertarget` span). */
+  /** HTML slot: not escaped; pass trusted markup only. Wrapped in a `popovertarget` span. */
   trigger?: string;
   /** Emitted as `data-position`, default `'top'`. */
   position?: 'top' | 'bottom' | 'left' | 'right' | (string & {});
-  /** Default `bn-tooltip-<random>`. */
+  /** Default `bn-tooltip-<n>`. */
   id?: string;
   /** Spliced onto the trigger span. */
   attrs?: string;
@@ -511,6 +512,7 @@ export type DropdownMenuItem =
       label: string;
       /** Emitted as `data-action`. */
       action?: string;
+      /** HTML slot: not escaped; pass trusted markup only. */
       icon?: string;
       shortcut?: string;
       disabled?: boolean;
@@ -522,7 +524,7 @@ export function renderDropdownMenu(options?: {
   items?: DropdownMenuItem[];
   /** Emitted as `data-position`, default `'bottom-start'`. */
   position?: string;
-  /** Popover id, default `bn-dropdown-<random>`. */
+  /** Popover id, default `bn-dropdown-<n>`. */
   id?: string;
   attrs?: string;
 }): string;
@@ -536,6 +538,7 @@ export interface CommandPaletteCommand {
   action?: string;
   /** Group heading, default `'Commands'`. */
   group?: string;
+  /** HTML slot: not escaped; pass trusted markup only. */
   icon?: string;
   shortcut?: string;
 }
@@ -545,7 +548,7 @@ export function renderCommandPalette(options?: {
   /** Default `'Type a command...'`. */
   placeholder?: string;
   open?: boolean;
-  /** Default `bn-command-<random>`. */
+  /** Default `bn-command-<n>`. */
   id?: string;
   attrs?: string;
 }): string;
@@ -574,7 +577,7 @@ export function renderCalendar(options?: {
   hours?: { start?: number; end?: number };
   /** Default `'No events'`. */
   emptyMessage?: string;
-  /** Default `bn-calendar-<random>`. */
+  /** Default `bn-calendar-<n>`. */
   id?: string;
   attrs?: string;
 }): string;
@@ -605,7 +608,7 @@ export interface PipelineCard {
 export function renderPipeline(options?: {
   columns?: PipelineColumn[];
   cards?: PipelineCard[];
-  /** Default `bn-pipeline-<random>`. */
+  /** Default `bn-pipeline-<n>`. */
   id?: string;
   /** Shown in a column with no cards, default `'No items'`. */
   emptyMessage?: string;

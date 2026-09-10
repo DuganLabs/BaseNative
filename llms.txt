@@ -14,7 +14,7 @@ Full API surface: [llms-full.txt](./llms-full.txt). Each package's dedicated doc
 - `@basenative/claude-config` v0.2.0 — Bundled Claude Code subagents, skills, slash commands, hooks, and settings for DuganLabs / BaseNati… → packages/claude-config/src
 - `@basenative/cli` v0.4.0 — The bn CLI — front door for BaseNative / DuganLabs projects (create, prd, speckit, gh, nx, deploy,… → docs/api/cli.md
 - `@basenative/combobox` v1.0.1 — Accessible combobox primitive — typeahead input that filters an existing list and lets the user cre… → packages/combobox/src
-- `@basenative/components` v0.4.1 — 15 semantic UI components with CSS custom property theming and density scales → docs/api/components.md
+- `@basenative/components` v0.4.1 — 15 semantic HTML UI components rendered as strings (forms, data grids, dialogs, calendar and kanban… → docs/api/components.md
 - `@basenative/config` v0.3.0 — Type-safe environment configuration loading and validation → docs/api/config.md
 - `@basenative/date` v0.3.0 — Date utilities, timezone handling, relative time formatting, and date ranges → docs/api/date.md
 - `@basenative/db` v0.3.0 — Query builder with SQLite, PostgreSQL, and Cloudflare D1 adapters → docs/api/db.md
