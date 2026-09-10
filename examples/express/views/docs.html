@@ -11,7 +11,7 @@
       <mark data-status="active">core</mark>
     </header>
     <p>Creates a reactive value. Call the accessor to read (and track); call <code>.set()</code> to write. Subscribers re-run automatically.</p>
-    <pre><code><span class="kw">import</span> { signal } <span class="kw">from</span> <span class="str">'basenative'</span>;
+    <pre tabindex="0" aria-label="Code example: signal(initialValue)"><code><span class="kw">import</span> { signal } <span class="kw">from</span> <span class="str">'basenative'</span>;
 
 <span class="kw">const</span> count = <span class="fn">signal</span>(<span class="num">0</span>);
 
@@ -32,7 +32,7 @@ count.<span class="fn">peek</span>();     <span class="cmt">// → 6</span></cod
       <mark data-status="active">core</mark>
     </header>
     <p>Derives a new signal from others. Re-evaluates only when its dependencies change.</p>
-    <pre><code><span class="kw">import</span> { signal, computed } <span class="kw">from</span> <span class="str">'basenative'</span>;
+    <pre tabindex="0" aria-label="Code example: computed(fn)"><code><span class="kw">import</span> { signal, computed } <span class="kw">from</span> <span class="str">'basenative'</span>;
 
 <span class="kw">const</span> width = <span class="fn">signal</span>(<span class="num">10</span>);
 <span class="kw">const</span> height = <span class="fn">signal</span>(<span class="num">5</span>);
@@ -49,7 +49,7 @@ width.<span class="fn">set</span>(<span class="num">20</span>);
       <mark data-status="active">core</mark>
     </header>
     <p>Runs a function immediately and re-runs it whenever any signal read inside changes. The returned runner also exposes <code>.dispose()</code>.</p>
-    <pre><code><span class="kw">import</span> { signal, effect } <span class="kw">from</span> <span class="str">'basenative'</span>;
+    <pre tabindex="0" aria-label="Code example: effect(fn)"><code><span class="kw">import</span> { signal, effect } <span class="kw">from</span> <span class="str">'basenative'</span>;
 
 <span class="kw">const</span> name = <span class="fn">signal</span>(<span class="str">'world'</span>);
 
@@ -67,7 +67,7 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
       <mark data-status="idle">dom</mark>
     </header>
     <p>Walks a DOM subtree, binding template directives (<code>@if</code>, <code>@for</code>, <code>@switch</code>) and expression interpolation (<code>{{ }}</code>) to the given context. Hydration diagnostics are available through optional callbacks.</p>
-    <pre><code><span class="kw">import</span> { signal, hydrate } <span class="kw">from</span> <span class="str">'basenative'</span>;
+    <pre tabindex="0" aria-label="Code example: hydrate(root, context)"><code><span class="kw">import</span> { signal, hydrate } <span class="kw">from</span> <span class="str">'basenative'</span>;
 
 <span class="kw">const</span> items = <span class="fn">signal</span>([<span class="str">'one'</span>, <span class="str">'two'</span>]);
 
@@ -89,7 +89,7 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
       <mark data-status="active">directive</mark>
     </header>
     <p>Conditionally render content. The expression is re-evaluated reactively.</p>
-    <pre><code><span class="tag">&lt;template</span> <span class="attr">@if</span>=<span class="str">"isLoggedIn()"</span><span class="tag">&gt;</span>
+    <pre tabindex="0" aria-label="Code example: @if / @else"><code><span class="tag">&lt;template</span> <span class="attr">@if</span>=<span class="str">"isLoggedIn()"</span><span class="tag">&gt;</span>
   <span class="tag">&lt;p&gt;</span>Welcome back!<span class="tag">&lt;/p&gt;</span>
 <span class="tag">&lt;/template&gt;</span>
 <span class="tag">&lt;template</span> <span class="attr">@else</span><span class="tag">&gt;</span>
@@ -103,7 +103,7 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
       <mark data-status="active">directive</mark>
     </header>
     <p>Iterate over arrays. Supports <code>track</code> for identity. Loop variables: <code>$index</code>, <code>$first</code>, <code>$last</code>, <code>$even</code>, <code>$odd</code>.</p>
-    <pre><code><span class="tag">&lt;template</span> <span class="attr">@for</span>=<span class="str">"item of items(); track item.id"</span><span class="tag">&gt;</span>
+    <pre tabindex="0" aria-label="Code example: @for / @empty"><code><span class="tag">&lt;template</span> <span class="attr">@for</span>=<span class="str">"item of items(); track item.id"</span><span class="tag">&gt;</span>
   <span class="tag">&lt;li&gt;</span>&#123;&#123; item.name &#125;&#125;<span class="tag">&lt;/li&gt;</span>
 <span class="tag">&lt;/template&gt;</span>
 <span class="tag">&lt;template</span> <span class="attr">@empty</span><span class="tag">&gt;</span>
@@ -117,7 +117,7 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
       <mark data-status="active">directive</mark>
     </header>
     <p>Pattern matching for template rendering. Renders the first matching <code>@case</code> or falls through to <code>@default</code>.</p>
-    <pre><code><span class="tag">&lt;template</span> <span class="attr">@switch</span>=<span class="str">"status()"</span><span class="tag">&gt;</span>
+    <pre tabindex="0" aria-label="Code example: @switch / @case / @default"><code><span class="tag">&lt;template</span> <span class="attr">@switch</span>=<span class="str">"status()"</span><span class="tag">&gt;</span>
   <span class="tag">&lt;template</span> <span class="attr">@case</span>=<span class="str">"'active'"</span><span class="tag">&gt;</span>
     <span class="tag">&lt;mark</span> <span class="attr">data-status</span>=<span class="str">"active"</span><span class="tag">&gt;</span>Running<span class="tag">&lt;/mark&gt;</span>
   <span class="tag">&lt;/template&gt;</span>
@@ -133,7 +133,7 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
       <mark data-status="idle">binding</mark>
     </header>
     <p>Bind attributes reactively with <code>:</code> prefix. Attach events with <code>@</code> prefix. Interpolate text with <code>{{ }}</code>. For complex event logic, call a named function from the template instead of embedding control flow in the attribute string.</p>
-    <pre><code><span class="cmt">&lt;!-- Reactive attribute --&gt;</span>
+    <pre tabindex="0" aria-label="Code example: Expression binding"><code><span class="cmt">&lt;!-- Reactive attribute --&gt;</span>
 <span class="tag">&lt;img</span> <span class="attr">:src</span>=<span class="str">"imageUrl()"</span> <span class="tag">/&gt;</span>
 
 <span class="cmt">&lt;!-- Event handler --&gt;</span>
@@ -156,7 +156,7 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
       <mark data-status="idle">server</mark>
     </header>
     <p>Parses an HTML string containing BaseNative directives and returns resolved HTML. Optional render diagnostics and hydratable markers are available through the third argument.</p>
-    <pre><code><span class="kw">import</span> { render } <span class="kw">from</span> <span class="str">'basenative/server'</span>;
+    <pre tabindex="0" aria-label="Code example: render(html, context, options?)"><code><span class="kw">import</span> { render } <span class="kw">from</span> <span class="str">'basenative/server'</span>;
 
 <span class="kw">const</span> html = <span class="fn">render</span>(<span class="str">`
   &lt;template @for="item of items; track item.id"&gt;

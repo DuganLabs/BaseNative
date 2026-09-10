@@ -429,7 +429,7 @@
 
   ul[role='list'][data-stat-grid] {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--space-md);
     list-style: none;
     flex-direction: unset;
@@ -446,6 +446,7 @@
     flex-direction: column;
     justify-content: center;
     gap: var(--space-xs);
+    overflow-wrap: anywhere;
     transition:
       border-color var(--duration-med),
       box-shadow var(--duration-med);
@@ -1168,6 +1169,18 @@
     color: var(--text-1);
   }
 
+  /* -- Table scroll wrapper: tables can be wider than the viewport (many
+     columns of prose); scroll the wrapper instead of the whole page, and
+     keep it keyboard-reachable since it has no other focusable content
+     when nothing inside needs a tab stop. -- */
+  [data-bn-table-scroll] {
+    overflow-x: auto;
+  }
+  [data-bn-table-scroll]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+
   /* -- Table (express pages only, not data-bn components) -- */
   table:not([data-bn]) {
     inline-size: 100%;
@@ -1785,7 +1798,7 @@
   /* Stat grid: adapt columns to container width, not viewport */
   @container stats (max-width: 36rem) {
     ul[role='list'][data-stat-grid] {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
