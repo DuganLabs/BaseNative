@@ -18,6 +18,13 @@
     }
   },
   "types": "./types/index.d.ts",
+  "imports": {
+    "#wasm-init": {
+      "workerd": "./src/wasm.workerd.js",
+      "browser": "./src/wasm.workerd.js",
+      "default": "./src/wasm.node.js"
+    }
+  },
   "files": [
     "src",
     "types"

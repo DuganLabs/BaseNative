@@ -6,7 +6,7 @@
  * (Chrome, Edge, Firefox, Safari ≥16) renders `<link rel="icon"
  * type="image/svg+xml">` natively, including in browser tabs. PNG is only
  * needed for iOS home-screen and Android adaptive icons — and we generate
- * those on demand via the optional `@basenative/og-image` peer.
+ * those on demand via the optional `@resvg/resvg-wasm` dependency.
  *
  * Public API:
  *   - {@link defineFavicon} — turn a glyph + palette + shape spec into a
@@ -19,7 +19,7 @@
  *   - `./glyphs`   — glyph library (`monogram`, `symbol`, `sigil`).
  *   - `./palette`  — color helpers.
  *   - `./manifest` — Web App Manifest builder.
- *   - `./png`      — optional PNG rasterizer (peer: `@basenative/og-image`).
+ *   - `./png`      — optional PNG rasterizer (optional dep: `@resvg/resvg-wasm`).
  *   - `./presets`  — DuganLabs project presets.
  *
  * @module

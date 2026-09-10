@@ -17,7 +17,7 @@
 import satori from "satori";
 import { Resvg } from "@resvg/resvg-wasm";
 
-import { ensureResvg } from "./wasm.js";
+import { ensureResvg } from "#wasm-init";
 import { defineFonts, loadFonts } from "./fonts.js";
 
 export { defineFonts } from "./fonts.js";
@@ -55,7 +55,8 @@ const _defaultFontCfg = defineFonts();
  * Render a satori-compatible scene to PNG bytes.
  *
  * Concurrency model: font + wasm init are deduped via module-scoped guards
- * in `./fonts.js` and `./wasm.js`. Warm isolates skip both entirely.
+ * in `./fonts.js` and the `#wasm-init` variant (`./wasm.workerd.js` under
+ * Workers, `./wasm.node.js` under Node). Warm isolates skip both entirely.
  *
  * @param {import("./scene.js").VNode} scene
  *   The scene tree (e.g. output of `defaultPreset(...)` or hand-built via

@@ -15,7 +15,14 @@
 
 /** @typedef {{ name: string, data: ArrayBuffer, weight: number, style: "normal" | "italic" }} SatoriFont */
 
-/** @typedef {{ family?: string, weights?: number[], cdnVersion?: string, cacheBinding?: string, cacheKeyPrefix?: string }} FontConfig */
+/** @typedef {{
+ *   family?: string,
+ *   weights?: number[],
+ *   cdnVersion?: string,
+ *   cacheBinding?: string,
+ *   cacheKeyPrefix?: string,
+ *   buffers?: Record<number, ArrayBuffer | Uint8Array>,
+ * }} FontConfig */
 
 const DEFAULT_FAMILY = "Inter";
 const DEFAULT_WEIGHTS = [600, 700, 800];
@@ -54,6 +61,7 @@ export function defineFonts(cfg = {}) {
     cdnVersion: cfg.cdnVersion ?? DEFAULT_CDN_VERSION,
     cacheBinding: cfg.cacheBinding ?? DEFAULT_CACHE_BINDING,
     cacheKeyPrefix: cfg.cacheKeyPrefix ?? DEFAULT_CACHE_KEY_PREFIX,
+    buffers: cfg.buffers ?? undefined,
   };
 }
 
@@ -100,14 +108,22 @@ async function fetchAndCache(env, cacheBinding, cacheKey, url) {
 /**
  * Load the configured fonts and return them in satori's expected shape.
  *
+ * If `cfg.buffers[weight]` is supplied, that weight is served straight from
+ * the buffer — no KV lookup, no network fetch. This is the escape hatch for
+ * environments without `fetch` to `cdn.jsdelivr.net` (offline dev, sandboxed
+ * CI, tests): pre-load a `.ttf`/`.woff` yourself and hand the bytes in.
+ *
  * @param {Record<string, any>} env Worker env (must contain the KV binding).
  * @param {Required<FontConfig>} cfg Resolved font config from `defineFonts`.
  * @returns {Promise<SatoriFont[]>}
  */
 export async function loadFonts(env, cfg) {
-  const { family, weights, cdnVersion, cacheBinding, cacheKeyPrefix } = cfg;
+  const { family, weights, cdnVersion, cacheBinding, cacheKeyPrefix, buffers } = cfg;
   const out = await Promise.all(
     weights.map(async (weight) => {
+      if (buffers && buffers[weight] != null) {
+        return /** @type {SatoriFont} */ ({ name: family, data: buffers[weight], weight, style: "normal" });
+      }
       const key = `${cacheKeyPrefix}${family.toLowerCase().replace(/\s+/g, "-")}-${weight}`;
       const data = await fetchAndCache(env, cacheBinding, key, fontUrl(family, weight, cdnVersion));
       return /** @type {SatoriFont} */ ({ name: family, data, weight, style: "normal" });

@@ -290,10 +290,10 @@ importers:
         version: link:../validate
 
   packages/favicon:
-    dependencies:
-      '@basenative/og-image':
-        specifier: workspace:*
-        version: link:../og-image
+    optionalDependencies:
+      '@resvg/resvg-wasm':
+        specifier: ^2.6.2
+        version: 2.6.2
 
   packages/fetch:
     dependencies:

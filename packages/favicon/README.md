@@ -6,8 +6,12 @@
 
 ```bash
 pnpm add -D @basenative/favicon
-# Optional — only needed for PNG fallbacks (apple-touch-icon, maskable):
-pnpm add -D @basenative/og-image
+```
+
+PNG fallbacks (`apple-touch-icon.png`, `maskable.png`, etc.) need `@resvg/resvg-wasm`, declared as an `optionalDependency` — most installs get it for free. If your install skips optional dependencies (`--no-optional` or similar) and you want PNGs, add it explicitly:
+
+```bash
+pnpm add -D @resvg/resvg-wasm
 ```
 
 ## The brand rule: SVG primary, raster only when iOS demands it
@@ -52,7 +56,9 @@ bn-favicon html --theme-color "#0C0B09"
 bn-favicon list
 ```
 
-If you have `@basenative/og-image` installed, `init` also writes `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, and `maskable.png`. Without it, you get the SVG-only set — which is fine for most sites until you decide you care about iOS home-screen icons.
+If `@resvg/resvg-wasm` is installed, `init` also writes `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, and `maskable.png`. Without it, you get the SVG-only set — which is fine for most sites until you decide you care about iOS home-screen icons — and the CLI prints one line telling you what's missing and how to install it.
+
+By default the manifest's `name`/`short_name` use the preset's display name (e.g. `basenative` → "BaseNative"). Pass `--name` to override, or use `defineFavicon(...).manifest({ name: ... })` programmatically.
 
 ## Programmatic API
 
@@ -139,7 +145,7 @@ The whole point is to look great as a browser tab favicon. Render the SVG into a
 | `@basenative/favicon/glyphs`      | Glyph library — `monogram`, `symbol`, `sigil`, `wordmark`. |
 | `@basenative/favicon/palette`     | Color helpers — `resolvePalette`, `mix`, `luminance`. |
 | `@basenative/favicon/manifest`    | Web App Manifest builder.                            |
-| `@basenative/favicon/png`         | Optional PNG rasterizer (peer: `@basenative/og-image`). |
+| `@basenative/favicon/png`         | Optional PNG rasterizer (optional dep: `@resvg/resvg-wasm`). |
 | `@basenative/favicon/presets`     | DuganLabs preset map.                                |
 
 ## License

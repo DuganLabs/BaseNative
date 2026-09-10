@@ -5,56 +5,37 @@
  * maskable / Android adaptive icons (`maskable.png`, 512×512).
  *
  * This module deliberately defers loading `@resvg/resvg-wasm` until call
- * time so the SVG-only happy path stays dependency-free. We pull resvg in
- * via the optional peer `@basenative/og-image`, which already ships and
- * caches the wasm module; if that peer is not installed we fall back to a
- * direct `@resvg/resvg-wasm` import. If neither is available, the call
- * throws a clear error pointing the user at the install command.
+ * time so the SVG-only happy path stays dependency-free. `@resvg/resvg-wasm`
+ * is declared as an `optionalDependency` of this package (same version
+ * `@basenative/og-image` uses) — not pulled in transitively through
+ * og-image, which this package must not depend on. If it's genuinely not
+ * installed, the call throws one clear error naming it and how to install
+ * it, instead of silently skipping.
  *
  * @module
  */
 
+import { isResvgAvailable, ensureResvg } from "./wasm-node.js";
+
 let _resvgInit = null;
 
 /**
- * Resolve the Resvg constructor + wasm-init promise. Memoized per isolate.
+ * Resolve the Resvg constructor, initializing the WASM module on first
+ * call. Memoized for the life of the process.
  *
  * @returns {Promise<{ Resvg: any }>}
  */
 async function loadResvg() {
   if (_resvgInit) return _resvgInit;
   _resvgInit = (async () => {
-    let mod;
-    try {
-      mod = await import("@resvg/resvg-wasm");
-    } catch (err) {
+    if (!isResvgAvailable()) {
       throw new Error(
-        "@basenative/favicon: PNG conversion requires `@resvg/resvg-wasm`, " +
-          "shipped transitively via the optional peer `@basenative/og-image`. " +
-          "Install with: pnpm add @basenative/og-image\n" +
-          `Underlying error: ${err && /** @type {any} */ (err).message}`,
-        { cause: err },
+        'PNG generation skipped — optional dependency "@resvg/resvg-wasm" is not installed. ' +
+          "Install it with: pnpm add -D @resvg/resvg-wasm",
       );
     }
-    // resvg-wasm needs initWasm() called once per isolate. The `@basenative/
-    // og-image` package handles this via its own helper; if that's available
-    // we reuse it so we don't re-fetch the wasm bytes.
-    try {
-      const og = await import("@basenative/og-image");
-      if (typeof (/** @type {any} */ (og).ensureResvg) === "function") {
-        await (/** @type {any} */ (og).ensureResvg)();
-        return { Resvg: mod.Resvg };
-      }
-    } catch {
-      // og-image isn't installed — fall through to direct init.
-    }
-    if (typeof mod.initWasm === "function") {
-      // Direct init: pull bytes from the package's bundled wasm.
-      const wasm = await import("@resvg/resvg-wasm/index_bg.wasm").catch(() => null);
-      if (wasm && wasm.default) {
-        await mod.initWasm(wasm.default);
-      }
-    }
+    const mod = await import("@resvg/resvg-wasm");
+    await ensureResvg(mod);
     return { Resvg: mod.Resvg };
   })();
   return _resvgInit;
