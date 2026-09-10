@@ -1007,7 +1007,7 @@ setInterval(() => time.set(new Date()), 1000);`),
           layout: 'stack',
           html: `
 <nav data-bn-demo-row aria-label="Pick an accent">
-  ${renderButton('Amber', { variant: 'secondary', attrs: 'data-bn-action="theme" data-bn-accent="#e8a44a"' })}
+  ${renderButton('Amber', { variant: 'secondary', attrs: 'data-bn-action="theme" data-bn-accent="#e8920a"' })}
   ${renderButton('Mint', { variant: 'secondary', attrs: 'data-bn-action="theme" data-bn-accent="#7fd1a8"' })}
   ${renderButton('Sky', { variant: 'secondary', attrs: 'data-bn-action="theme" data-bn-accent="#82aaff"' })}
   ${renderButton('Rose', { variant: 'secondary', attrs: 'data-bn-action="theme" data-bn-accent="#f07178"' })}

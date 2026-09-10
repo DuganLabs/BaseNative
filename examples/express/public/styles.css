@@ -51,25 +51,25 @@
 @layer tokens {
   :root {
     /* Surfaces */
-    --surface-0: #0a0a0c;
-    --surface-1: #131318;
-    --surface-2: #1a1a22;
-    --surface-3: #24242f;
+    --surface-0: #0c0b09;
+    --surface-1: #151310;
+    --surface-2: #1c1916;
+    --surface-3: #26221c;
 
     /* Borders */
-    --border: #2a2a38;
-    --border-accent: #3d3d52;
+    --border: #2c2822;
+    --border-accent: #3f3930;
 
     /* Text */
-    --text-0: #e8e6f0;
-    --text-1: #b0adc0;
-    --text-2: #9491a8;
+    --text-0: #f0ede4;
+    --text-1: #b5ae9e;
+    --text-2: #9a917f;
 
     /* Accent */
-    --accent: #e8a44a;
-    --accent-dim: #b07a30;
-    --accent-glow: #e8a44a33;
-    --accent-glow-strong: #e8a44a55;
+    --accent: #e8920a;
+    --accent-dim: #b06f08;
+    --accent-glow: #e8920a33;
+    --accent-glow-strong: #e8920a55;
 
     /* Status */
     --danger: #f07178;
@@ -152,9 +152,9 @@
 
     /* Status backgrounds */
     --status-active-bg: #c3e88d18;
-    --status-idle-bg: #e8a44a18;
+    --status-idle-bg: #e8920a18;
     --status-error-bg: #f0717818;
-    --status-pending-bg: #7a789018;
+    --status-pending-bg: #857c6b18;
 
     /* Noise overlay */
     --noise-opacity: 0.025;
@@ -184,10 +184,10 @@
     --cq-medium: 30rem;
 
     /* Inset surfaces */
-    --surface-inset: #08080a;
+    --surface-inset: #080706;
 
     /* Track (range, progress) */
-    --track-bg: #2a2a38;
+    --track-bg: #2c2822;
     --track-fill: var(--accent);
     --track-height: 0.375rem;
     --thumb-size: 1.125rem;
@@ -198,7 +198,7 @@
     --meter-high: var(--success);
 
     /* Mark */
-    --mark-bg: #e8a44a22;
+    --mark-bg: #e8920a22;
     --mark-text: var(--accent);
 
     /* Kbd */
@@ -219,7 +219,7 @@
     /* Dialog */
     --dialog-bg: var(--surface-1);
     --dialog-border: var(--border-accent);
-    --dialog-backdrop: #0a0a0ccc;
+    --dialog-backdrop: #0c0b09cc;
     --dialog-shadow: 0 16px 64px -16px #000a;
 
     /* Popover */

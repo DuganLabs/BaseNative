@@ -1,5 +1,5 @@
 /*
- * Express Example Theme — Dark / Golden Amber
+ * Express Example Theme — Dark / Signal Orange (basenative preset)
  *
  * Overrides core --bn-* semantic tokens to produce the distinctive
  * dark background + golden accent look. The express-specific tokens
@@ -12,39 +12,39 @@
   /* === Core token overrides === */
 
   /* Surfaces — dark */
-  --bn-color-surface: #0a0a0c;
-  --bn-color-surface-subtle: #131318;
-  --bn-color-surface-muted: #1a1a22;
-  --bn-color-surface-raised: #131318;
-  --bn-color-surface-inset: #08080a;
-  --bn-color-surface-inverse: #e8e6f0;
+  --bn-color-surface: #0c0b09;
+  --bn-color-surface-subtle: #151310;
+  --bn-color-surface-muted: #1c1916;
+  --bn-color-surface-raised: #151310;
+  --bn-color-surface-inset: #080706;
+  --bn-color-surface-inverse: #f0ede4;
 
   /* Text — light on dark */
-  --bn-color-text: #e8e6f0;
-  --bn-color-text-muted: #b0adc0;
-  --bn-color-text-subtle: #7a7890;
-  --bn-color-text-inverse: #0a0a0c;
-  --bn-color-text-link: #e8a44a;
+  --bn-color-text: #f0ede4;
+  --bn-color-text-muted: #b5ae9e;
+  --bn-color-text-subtle: #857c6b;
+  --bn-color-text-inverse: #0c0b09;
+  --bn-color-text-link: #e8920a;
 
   /* Borders — dark */
-  --bn-color-border: #2a2a38;
-  --bn-color-border-strong: #3d3d52;
-  --bn-color-border-focus: #e8a44a;
+  --bn-color-border: #2c2822;
+  --bn-color-border-strong: #3f3930;
+  --bn-color-border-focus: #e8920a;
 
   /* Font — BaseNative with font-stretch */
   --bn-font-family: 'BaseNative', system-ui, sans-serif;
 
   /* Primary — remap to golden for buttons/links */
-  --bn-color-primary-50: #fdf4e7;
-  --bn-color-primary-100: #fbe5c4;
-  --bn-color-primary-200: #f5cc8a;
-  --bn-color-primary-300: #efb35e;
-  --bn-color-primary-400: #e8a44a;
-  --bn-color-primary-500: #d4913a;
-  --bn-color-primary-600: #b07a30;
-  --bn-color-primary-700: #8c6126;
-  --bn-color-primary-800: #68491c;
-  --bn-color-primary-900: #4a3414;
+  --bn-color-primary-50: #fdf6ea;
+  --bn-color-primary-100: #fbecd4;
+  --bn-color-primary-200: #f5d094;
+  --bn-color-primary-300: #efb355;
+  --bn-color-primary-400: #e8920a;
+  --bn-color-primary-500: #d48509;
+  --bn-color-primary-600: #b06f08;
+  --bn-color-primary-700: #8c5806;
+  --bn-color-primary-800: #684104;
+  --bn-color-primary-900: #4a2f03;
 
   /* Radius — tighter for BaseNative aesthetic */
   --bn-radius-sm: 0.15rem;
@@ -53,16 +53,16 @@
   --bn-radius-xl: 0.75rem;
 
   /* Accent — golden amber (overrides primary-as-accent) */
-  --bn-color-accent-50: #fdf4e7;
-  --bn-color-accent-100: #fbe5c4;
-  --bn-color-accent-200: #f5cc8a;
-  --bn-color-accent-300: #efb35e;
-  --bn-color-accent-400: #e8a44a;
-  --bn-color-accent-500: #d4913a;
-  --bn-color-accent-600: #b07a30;
-  --bn-color-accent-700: #8c6126;
-  --bn-color-accent-800: #68491c;
-  --bn-color-accent-900: #4a3414;
+  --bn-color-accent-50: #fdf6ea;
+  --bn-color-accent-100: #fbecd4;
+  --bn-color-accent-200: #f5d094;
+  --bn-color-accent-300: #efb355;
+  --bn-color-accent-400: #e8920a;
+  --bn-color-accent-500: #d48509;
+  --bn-color-accent-600: #b06f08;
+  --bn-color-accent-700: #8c5806;
+  --bn-color-accent-800: #684104;
+  --bn-color-accent-900: #4a2f03;
 
   /* Alert/badge semantic — dark theme */
   --bn-color-info-bg: rgb(130 170 255 / 0.1);
@@ -71,22 +71,22 @@
   --bn-color-success-bg: rgb(195 232 141 / 0.1);
   --bn-color-success-border: rgb(195 232 141 / 0.2);
   --bn-color-success-text: #c3e88d;
-  --bn-color-warning-bg: rgb(232 164 74 / 0.1);
-  --bn-color-warning-border: rgb(232 164 74 / 0.2);
-  --bn-color-warning-text: #e8a44a;
+  --bn-color-warning-bg: rgb(232 146 10 / 0.1);
+  --bn-color-warning-border: rgb(232 146 10 / 0.2);
+  --bn-color-warning-text: #e8920a;
   --bn-color-error-bg: rgb(240 113 120 / 0.1);
   --bn-color-error-border: rgb(240 113 120 / 0.2);
   --bn-color-error-text: #f07178;
 
   --bn-color-success-badge-bg: rgb(195 232 141 / 0.12);
   --bn-color-success-badge-text: #c3e88d;
-  --bn-color-warning-badge-bg: rgb(232 164 74 / 0.12);
-  --bn-color-warning-badge-text: #e8a44a;
+  --bn-color-warning-badge-bg: rgb(232 146 10 / 0.12);
+  --bn-color-warning-badge-text: #e8920a;
   --bn-color-error-badge-bg: rgb(240 113 120 / 0.12);
   --bn-color-error-badge-text: #f07178;
 
   /* Focus ring — golden */
-  --bn-focus-ring: 0 0 0 2px #0a0a0c, 0 0 0 4px #e8a44a;
+  --bn-focus-ring: 0 0 0 2px #0c0b09, 0 0 0 4px #e8920a;
 
   /* Shadows — dark-optimized */
   --bn-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
@@ -96,26 +96,26 @@
   /* === Express-specific tokens (for existing styles.css compatibility) === */
 
   /* Surfaces */
-  --surface-0: #0a0a0c;
-  --surface-1: #131318;
-  --surface-2: #1a1a22;
-  --surface-3: #24242f;
-  --surface-inset: #08080a;
+  --surface-0: #0c0b09;
+  --surface-1: #151310;
+  --surface-2: #1c1916;
+  --surface-3: #26221c;
+  --surface-inset: #080706;
 
   /* Borders */
-  --border: #2a2a38;
-  --border-accent: #3d3d52;
+  --border: #2c2822;
+  --border-accent: #3f3930;
 
   /* Text */
-  --text-0: #e8e6f0;
-  --text-1: #b0adc0;
-  --text-2: #9491a8;
+  --text-0: #f0ede4;
+  --text-1: #b5ae9e;
+  --text-2: #9a917f;
 
   /* Accent */
-  --accent: #e8a44a;
-  --accent-dim: #b07a30;
-  --accent-glow: #e8a44a33;
-  --accent-glow-strong: #e8a44a55;
+  --accent: #e8920a;
+  --accent-dim: #b06f08;
+  --accent-glow: #e8920a33;
+  --accent-glow-strong: #e8920a55;
 
   /* Status */
   --danger: #f07178;
