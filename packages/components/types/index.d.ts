@@ -584,12 +584,37 @@ export interface CalendarEvent {
   [extra: string]: unknown;
 }
 
+/**
+ * Events are bucketed into day columns by the local calendar date of their
+ * parsed `start`/`end` (in `timeZone` when given), never by string prefix,
+ * so UTC ISO timestamps land on the right day. An event whose end date is
+ * later than its start date is repeated in every day it covers, clipped to
+ * each day, with `data-continues="after" | "both" | "before"` on the segments.
+ */
 export function renderCalendar(options?: {
   /** ISO date (YYYY-MM-DD) of the first of the 7 rendered days. */
   startDate: string;
   events?: CalendarEvent[];
-  /** Working-hours range, default `{ start: 7, end: 19 }`. */
+  /**
+   * Rendered hour range. Whichever bound is omitted is derived from the
+   * events: 7 (or 19) widened to cover the earliest start / latest end of
+   * every rendered day segment, clamped to 0–24.
+   */
   hours?: { start?: number; end?: number };
+  /** IANA zone used to bucket, position and time-format events; defaults to the runtime's local zone. */
+  timeZone?: string;
+  /**
+   * Returns the `YYYY-MM-DD` day an event datetime belongs to. Overrides day
+   * bucketing (and the `now` → today mapping) only; hour rows still come
+   * from `timeZone` / local getters.
+   */
+  toLocalDate?: (value: string) => string;
+  /**
+   * Instant marked as today: `data-today` on its day header and column, plus
+   * `aria-current="date"` on the header. Default `new Date()`; `null` renders
+   * no marker.
+   */
+  now?: Date | string | number | null;
   /** Default `'No events'`. */
   emptyMessage?: string;
   /** Default `bn-calendar-<n>`. */
@@ -633,14 +658,31 @@ export function renderPipeline(options?: {
 export interface CalendarDropEvent {
   /** `data-event-id` of a calendar event, or `data-block-id` of a pipeline block. */
   eventId: string;
+  /** The slot's `YYYY-MM-DD`. */
   date: string;
+  /** The slot's integer hour. */
   hour: number;
+  /** Pointer offset within the slot, snapped down to `snapMinutes`; 0 when no geometry is available. */
+  minute: number;
+  /** `${date}T${HH}:${MM}` — a local datetime string ready for `new Date()`. */
+  datetime: string;
   sourceType: 'event' | 'pipeline';
 }
 
 export function initCalendarDragDrop(
   container: HTMLElement,
-  callbacks?: { onDrop?: (event: CalendarDropEvent) => void }
+  callbacks?: {
+    onDrop?: (event: CalendarDropEvent) => void;
+    /**
+     * Element whose `dragstart` events also supply payloads — a palette or
+     * sidebar of `renderPipelineBlock` cards outside the calendar. May be any
+     * element, including an ancestor of `container`; the container always
+     * hears its own events.
+     */
+    dragSource?: HTMLElement;
+    /** Minute granularity of `minute`, default 15; 1 (or less) reports exact minutes. */
+    snapMinutes?: number;
+  }
 ): { destroy: () => void };
 
 export interface PipelineCardMoveEvent {

@@ -117,10 +117,10 @@ All components are pure functions that return an HTML string. See [docs/api/comp
 - `renderLayoutGrid(options)` / `layoutGridStyles()` — Drag-and-drop CSS grid canvas for the visual builder, plus its CSS.
 
 ### Scheduling
-- `renderCalendar(options)` — Week view with hourly drop zones and draggable events.
+- `renderCalendar(options)` — Week view with hourly drop zones and draggable events. Buckets by the local calendar date of each parsed timestamp (or `timeZone`), marks today (`now`), derives the hour range from the events, and repeats multi-day events per day.
 - `renderPipelineBlock(options)` — Draggable card that can be dropped onto the calendar.
 - `renderPipeline(options)` — Kanban board of columns and cards.
-- `initCalendarDragDrop(container, { onDrop })` / `initPipelineDragDrop(container, { onCardMove })` — Client-side HTML5 drag-and-drop; return `{ destroy() }`.
+- `initCalendarDragDrop(container, { onDrop, dragSource?, snapMinutes? })` / `initPipelineDragDrop(container, { onCardMove })` — Client-side HTML5 drag-and-drop; return `{ destroy() }`. Calendar drops report `minute`/`datetime` as well as the slot, and `dragSource` lets a sidebar outside the calendar supply payloads.
 - `createCalendarState(options)` / `createPipelineState(options)` — DOM-free stores with collision detection and change callbacks.
 - `eventsCollide(a, b)` / `updateEvent(event, overrides)` / `getEventDuration(start, end)` — Calendar helpers.
 

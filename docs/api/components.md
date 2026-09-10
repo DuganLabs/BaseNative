@@ -894,7 +894,10 @@ renderCalendar({
 |--------|------|---------|-------------|
 | `startDate` | `string` (YYYY-MM-DD) | — | First rendered day |
 | `events` | `CalendarEvent[]` | `[]` | `{ id, title, start, end, status?, color?, assignee? }` |
-| `hours` | `{ start?, end? }` | `{ start: 7, end: 19 }` | Rendered hour range |
+| `hours` | `{ start?, end? }` | derived | Rendered hour range. Whichever bound is omitted is derived from the events: 7 (or 19) widened to cover the earliest start / latest end of every rendered day segment, clamped to 0–24 |
+| `timeZone` | `string` | runtime zone | IANA zone used to bucket, position and time-format events |
+| `toLocalDate` | `(value) => 'YYYY-MM-DD'` | — | Overrides only the day an event datetime is bucketed into (and the `now` → today mapping); hour rows still come from `timeZone` / local getters |
+| `now` | `Date \| string \| number \| null` | `new Date()` | Instant marked as today; `null` renders no marker |
 | `emptyMessage` | `string` | `'No events'` | Shown when `events` is empty |
 | `id` | `string` | `bn-calendar-{n}` | |
 | `attrs` | `string` | `''` | |
@@ -906,18 +909,26 @@ Renders:
   <div data-bn="calendar-grid" style="--bn-calendar-hours: 12; --bn-calendar-cols: 7;">
     <div data-bn="calendar-corner"></div>
     <div data-bn="calendar-day-header" data-date="2025-06-02">Mon 6/2</div>…
-    <div data-bn="calendar-time-gutter"><div data-bn="calendar-time-label" data-hour="7" style="grid-row: 1">7am</div>…</div>
+    <div data-bn="calendar-day-header" data-date="2025-06-04" data-today aria-current="date">Wed 6/4</div>…
+    <div data-bn="calendar-time-gutter"><div data-bn="calendar-time-label" data-hour="7" style="grid-row: 2">7am</div>…</div>
     <div data-bn="calendar-day-column" data-date="2025-06-02" style="grid-column: 2">
       <div data-bn="calendar-slot" data-date="2025-06-02" data-hour="7" style="grid-row: 2"></div>…
       <div data-bn="calendar-event" draggable="true" data-event-id="1" title="Site visit" style="grid-row: 4 / span 2;">
         <span data-bn="calendar-event-title">Site visit</span><span data-bn="calendar-event-assignee">Ana</span><span data-bn="calendar-event-time">9:00 AM – 11:00 AM</span>
       </div>
     </div>
+    <div data-bn="calendar-day-column" data-date="2025-06-04" data-today style="grid-column: 4">…</div>
   </div>
 </div>
 ```
 
-Event times are formatted with `toLocaleTimeString` in the server's locale/time zone. `status` becomes `data-status`; `color` sets `--bn-calendar-event-color`.
+**Day bucketing.** Events are placed by the local calendar date and hour of their parsed `start`/`end` — never by string prefix — so the UTC ISO timestamps APIs return (`2025-06-03T03:00:00Z`) land on the day they fall on in the runtime's zone (or in `timeZone`), and the local-time strings `createCalendarState().moveEvent()` produces round-trip correctly. Events whose `start` cannot be parsed are skipped.
+
+**Multi-day events.** An event whose end date is later than its start date is repeated in every day column it covers, clipped to each day (`start → 24:00`, `0:00 → 24:00`, …, `0:00 → end`); each segment carries the same `data-event-id` plus `data-continues="after" | "both" | "before"`, and `components.css` squares off the continuing edge. An event ending exactly at midnight gets no segment on the following day.
+
+**Today.** The header and column whose date matches `now` get `data-today` (the header also gets `aria-current="date"`), styled through `--bn-calendar-today-header-bg`, `--bn-calendar-today-text` and `--bn-calendar-today-bg`. Pass `now` explicitly for deterministic SSR output (`null` disables the marker).
+
+Event times are formatted with `toLocaleTimeString` in the server's locale, in `timeZone` when given. `status` becomes `data-status` — `scheduled`, `in_progress`, `completed`, `invoiced`, `paid` and `cancelled`/`canceled` are styled through the semantic status tokens (`--bn-calendar-event-color` / `--bn-calendar-event-bg`), and `color` overrides `--bn-calendar-event-color`.
 
 ## Pipeline Block
 
@@ -965,13 +976,17 @@ Renders:
 
 ## Drag and Drop
 
-`initCalendarDragDrop(container, { onDrop })` and `initPipelineDragDrop(container, { onCardMove })` attach native HTML5 drag-and-drop listeners to a rendered `[data-bn="calendar"]` or `[data-bn="pipeline"]` element. Both return `{ destroy() }`.
+`initCalendarDragDrop(container, { onDrop, dragSource?, snapMinutes? })` and `initPipelineDragDrop(container, { onCardMove })` attach native HTML5 drag-and-drop listeners to a rendered `[data-bn="calendar"]` or `[data-bn="pipeline"]` element. Both return `{ destroy() }`.
 
 ```js
 import { initCalendarDragDrop, initPipelineDragDrop } from '@basenative/components';
 
 const cal = initCalendarDragDrop(document.querySelector('[data-bn="calendar"]'), {
-  onDrop: ({ eventId, date, hour, sourceType }) => { /* sourceType: 'event' | 'pipeline' */ },
+  onDrop: ({ eventId, date, hour, minute, datetime, sourceType }) => {
+    // sourceType: 'event' | 'pipeline'; datetime: 'YYYY-MM-DDTHH:MM' → new Date(datetime)
+  },
+  dragSource: document.querySelector('[data-bn-sidebar]'), // optional palette of renderPipelineBlock cards
+  snapMinutes: 15,
 });
 const board = initPipelineDragDrop(document.querySelector('[data-bn="pipeline"]'), {
   onCardMove: ({ cardId, targetColumnId, position }) => { /* position is always null */ },
@@ -980,6 +995,10 @@ cal.destroy(); board.destroy();
 ```
 
 While dragging, the dragged element gets `data-dragging` and the hovered slot/column gets `data-drop-target`; both are cleared on `dragend`. `eventId` is the `data-event-id` of a calendar event or the `data-block-id` of a pipeline block.
+
+**Calendar drops.** `date` and `hour` identify the slot; `minute` is the pointer's offset within the slot, snapped down to `snapMinutes` (default 15; `1` reports exact minutes; `0` when no geometry is available), and `datetime` is `${date}T${HH}:${MM}`, a local datetime string ready for `new Date()`.
+
+**External drag sources.** `dragSource` is an element whose `dragstart` events also supply payloads — the documented sidebar of `renderPipelineBlock` cards, which lives outside the calendar and would otherwise never be heard. It defaults to the container, may be any element (including an ancestor of the container — its own events are not handled twice), and is unbound by `destroy()`.
 
 ## Calendar State
 
