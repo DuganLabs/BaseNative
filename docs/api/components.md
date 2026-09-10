@@ -537,13 +537,16 @@ Renders `<nav data-bn="pagination" aria-label="Pagination"><ul>…</ul></nav>` w
 
 ## Badge
 
-`renderBadge(content, options?)` → `string`. `content` is escaped.
+`renderBadge(content, options?)` → `string`. `content` is an HTML slot: not escaped; pass trusted markup only (see [Escaping Policy](#escaping-policy)) — escape data you interpolate, or set the label with `textContent` after mount.
 
 ```js
-renderBadge('Active', { variant: 'success' })
+import { escapeText } from '@basenative/runtime/shared/escape';
+
+renderBadge('Active', { variant: 'success' })            // literal markup/text
+renderBadge(escapeText(job.status), { variant: 'warning' }) // data
 ```
 
-`variant`: `'default' | 'primary' | 'success' | 'warning' | 'error'` (default `'default'`). Renders `<span data-bn="badge" data-variant="success">Active</span>`. `attrs` is not supported.
+`variant`: `'default' | 'primary' | 'success' | 'warning' | 'error'` (default `'default'`; escaped). Renders `<span data-bn="badge" data-variant="success">Active</span>`. `attrs` is not supported.
 
 ## Card
 
