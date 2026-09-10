@@ -76,67 +76,100 @@ const html = render(template, ctx, { hydratable: true });
 ```
 
 ### Server-Side Directives (server)
-All template directives (`@if`, `@for`, `@switch`, `:attr`, `{{ }}`) are evaluated at render time. Event handlers (`@click`, `@input`) are stripped from the output (they activate on client hydration).
+All template directives (`@if`, `@for`, `@switch`, `:attr`, `{{ }}`) are evaluated at render time. Event handlers (`@click`, `@input`) are stripped from the output (they activate on client hydration). Directives contributed by other packag…
 
 
 ## Packages
 
 ### `@basenative/admin` (v1.0.0)
 
-@basenative/admin — moderation & admin surface.
+Pluggable admin & moderation surface — protected-route helpers, role/permission primitives, audit-log middleware, and queue-review UI components for BaseNative apps
 
-Source: `packages/admin/src`
+Source: `packages/admin/src` · Docs: `docs/api/admin.md`
 
 - `./migrations/0001` → `./migrations/0001_audit_and_roles.sql` (non-JS resource export)
 
-#### `defineRoles(opts = {})` (function)
-Build a role checker from a hierarchy.
-packages/admin/src/roles.js · `import { defineRoles } from '@basenative/admin';`
+### API Reference
 
-#### `hasRole(user, role, hierarchy = ['user', 'moderator', 'admin'])` (function)
-Pure helper — check role against any hierarchy without instantiating.
-packages/admin/src/roles.js · `import { hasRole } from '@basenative/admin';`
+### Roles (./roles)
+Generic, hierarchical, zero-dependency role primitives. A higher-tier role implicitly has every permission of the tiers below it. For verb-style permissions (`posts.write`) reach for `@basenative/auth`'s RBAC instead — this module is purpo…
 
-#### `requireRole(role, opts = {})` (function)
-Build a guard that throws (or returns a 403-shaped object) when the supplied user does not satisfy the required role.
-packages/admin/src/roles.js · `import { requireRole } from '@basenative/admin';`
+#### defineRoles(opts = {})
+Build a role checker from a hierarchy. **Parameters:** - `opts.hierarchy` — roles ordered least → most privileged; default `['user', 'moderator', 'admin']` - `opts.adminRole` — top-tier role name; default: last entry in `hierarchy` - `opts…
 
-#### `roleSeed({ env, envKey = 'ADMIN_HANDLES', user, seedMap, identifier = (u) => u?.handle, targetRole = 'admin', setRole, })` (async function)
-Seed an elevated role for a user when a deployment-time allowlist matches.
-packages/admin/src/roles.js · `import { roleSeed } from '@basenative/admin';`
+#### hasRole(user, role, hierarchy = ['user', 'moderator', 'admin'])
+Pure helper — check a role against any hierarchy without building a checker via `defineRoles`. **Returns:** `boolean`
 
-#### `defineQueue({ db, tables, now = () => Date.now(), onApprove } = {})` (function)
-Build a queue store bound to a DB and a pair of tables.
-packages/admin/src/queue.js · `import { defineQueue } from '@basenative/admin';`
+#### requireRole(role, opts = {})
+Build a guard that throws (or returns a 403-shaped object) when the supplied user does not satisfy the required role. Matches the t4bs / CF-Pages convention: handlers return `{ user }` on success or `{ error: Response }` on failure. **Para…
 
-#### `auditAction(env, entry)` (async function)
-Record an audit entry. All fields except `action` are optional.
-packages/admin/src/audit.js · `import { auditAction } from '@basenative/admin';`
+#### roleSeed({ env, envKey = 'ADMIN_HANDLES', user, seedMap, identifier = (u) => u?.handle, targetRole = 'admin', setRole })
+Seed an elevated role for a user when a deployment-time allowlist matches. Mirrors `seedAdminRole` in t4bs: when a user's identifier (by default `user.handle`) appears in `seedMap` or in the comma-separated `env[envKey]` list, their role i…
 
-#### `AUDIT_MIGRATION` (const)
-SQL migration text for the audit_log table. Re-exported from `migrations/0001_audit_and_roles.sql` for convenience when you want to apply it programmatically (e.g. in a worker startup hook).
-packages/admin/src/audit.js · `import { AUDIT_MIGRATION } from '@basenative/admin';`
+### Queue (./queue)
+A generic implementation of a submit → pending → decide → promote-to-target flow. The queue lives in a `submissions` table (or whatever you point it at); on approval the row is copied into a `target` table, on rejection it's left in place…
 
-#### `defineAdminHandlers(cfg)` (function)
-packages/admin/src/handlers.js · `import { defineAdminHandlers } from '@basenative/admin';`
+#### defineQueue({ db, tables, now = () => Date.now(), onApprove } = {})
+Build a queue store bound to a DB and a pair of tables. **Parameters:** - `db` — object exposing `prepare()`; throws `TypeError` otherwise - `tables.submissions` — submissions table name (required) - `tables.target` — approved-row destinat…
 
-#### `renderAdminQueueList({ items, approveLabel = 'APPROVE', rejectLabel = 'REJECT', emptyLabel = 'queue empty.', actionHandler = 'bn-admin-decid…)` (function)
-Render the moderation queue list.
-packages/admin/src/components.js · `import { renderAdminQueueList } from '@basenative/admin';`
+##### queue.listPending(limit = 50)
+Lists rows with `status = 'pending'`, oldest first. `limit` is clamped to `1..500`.
 
-#### `renderAdminUserList({ users, results = null, query = '', currentHandle = '', roles = ['user', 'moderator', 'admin'], labels = {}, actionHan…)` (function)
-Render the admin user-management list with search and per-row role controls.
-packages/admin/src/components.js · `import { renderAdminUserList } from '@basenative/admin';`
+##### queue.submit(payload)
+Inserts a new pending submission. `payload.submittedBy` is required (trimmed, throws `TypeError` if empty); `payload` must also supply each column named in `tables.columns`. Returns `{ id, status: 'pending', submittedBy, createdAt }`.
 
-#### `withAudit(cfg)` (function)
-Wrap a request handler so every successful invocation records an audit. The wrapper resolves `user`, `action`, `target`, and `meta` from the supplied callbacks at call-time so they can read from the request.
-packages/admin/src/audit.js · `import { withAudit } from '@basenative/admin';`
+##### queue.decide(id, status, decidedBy)
+Decides a pending submission — `status` must be `'approved'` or `'rejected'` (throws `TypeError` otherwise). On approval, copies the row's `tables.columns` into `tables.target` (or calls `onApprove(row, { db })` if supplied) inside the sam…
 
-#### `onRequestGet` (const)
-packages/admin/src/handlers.js · `import { onRequestGet } from '@basenative/admin';`
+##### queue.get(id)
+Reads a single submission row by id.
 
-#### `onRequestPost` (const)
-packages/admin/src/handlers.js · `import { onRequestPost } from '@basenative/admin';`
+### Audit (./audit)
+Records every protected action against an `audit_log` table so admin decisions, role changes, and queue moves are reconstructible after the fact. Designed to wrap a handler or be invoked imperatively.
+
+#### auditAction(env, entry)
+Record an audit entry. Never throws into the caller — a DB failure is caught and logged via `console.warn` so audit logging can't break the main request flow. **Parameters:** - `env` — worker env (read via `env.DB`), or the DB binding itse…
+
+#### withAudit(cfg)
+Wrap a request handler so every successful invocation records an audit entry. The wrapper resolves `user`, `action`, `target`, and `meta` from the supplied callbacks at call time so they can read from the request/response. **Parameters:**…
+
+#### AUDIT_MIGRATION
+SQL migration text (string) for just the `audit_log` table and its four indexes — the same statements as the `audit_log` portion of `migrations/0001_audit_and_roles.sql`, re-exported here for convenience when you want to apply it programma…
+
+### Handlers (./handlers)
+Drop-in CF Worker / Pages Function handlers for the admin & moderation surface. The handlers are generic over a role checker (`./roles`), a queue store (`./queue`), a "current user" resolver (e.g. from `@basenative/auth`), and a users-tabl…
+
+#### defineAdminHandlers(cfg)
+**Parameters:** - `cfg.queue` — a store from `defineQueue` (required) - `cfg.getCurrentUser(request, env)` — resolves the current user, or `null` (required) - `cfg.users` — `{ getById, setRole, search, listByRoles }` port; `users`/`promote…
+
+##### admin.listPending
+`GET /api/moderate/pending` — requires moderator tier. Returns `queue.listPending()` as JSON.
+
+##### admin.decide
+`POST /api/moderate/decide` — body `{ id, status }`, requires moderator tier. Calls `queue.decide(id, status, user.handle ?? user.id)`, records an audit entry (`submission.<status>`), and returns the decision, or `404` if nothing pending m…
+
+##### admin.users
+`GET /api/moderate/users?q=&roles=` — requires admin tier. With `q`, delegates to `cfg.users.search(q, 25)`; otherwise to `cfg.users.listByRoles(roles, 100)`, defaulting to every non-lowest role in the hierarchy.
+
+##### admin.promote
+`POST /api/moderate/promote` — body `{ userId, role }`, requires admin tier. Validates `role` against `validateRoles`, no-ops with `changed: false` if the user is already at that role, otherwise calls `cfg.users.setRole` and records a `use…
+
+##### onRequestGet / onRequestPost
+These two names are **not exports of `@basenative/admin`.** They appear only in the usage example in `handlers.js`'s module docstring, showing the conventional way to wire the bag returned by `defineAdminHandlers()` into a Cloudflare Pages…
+```js
+const admin = defineAdminHandlers({ /* ... */ });
+export const onRequestGet = admin.listPending;
+export const onRequestPost = admin.decide;
+```
+
+### Components (./components)
+Server-rendered (or hydratable) HTML-string building blocks. Compatible with `@basenative/components` — theming flows through CSS custom properties on the wrapping element (`--bn-admin-bg`, `--bn-admin-fg`, `--bn-admin-muted`, `--bn-admin-…
+
+#### renderAdminQueueList({ items, approveLabel = 'APPROVE', rejectLabel = 'REJECT', emptyLabel = 'queue empty.', actionHandler = 'bn-admin-decide' } = {})
+Render the moderation queue as a `role="list"` of `role="listitem"`s, each with labelled approve/reject buttons carrying `data-action`, `data-decision`, and `data-id` attributes for delegated event handling. **Parameters:** - `items` — arr…
+
+#### renderAdminUserList({ users, results = null, query = '', currentHandle = '', roles = ['user', 'moderator', 'admin'], labels = {}, actionHandler = 'bn-admin-set-role', searchHandler = 'bn-admin-search' } = {})
+Render the admin user-management list: a labelled `type="search"` input plus one section per user, each with a role badge and per-row buttons to set every other role (the lowest-tier button is flagged as a `bn-admin-btn--danger` "REMOVE" a…
 
 ### `@basenative/auth` (v0.3.0)
 
@@ -214,200 +247,234 @@ OAuth 2.0 provider adapter. Built-in provider configs available via `providers`.
 
 ### `@basenative/auth-webauthn` (v1.0.3)
 
-WebAuthn (passkey) server adapter for @basenative/auth.
+WebAuthn (passkey) adapter for @basenative/auth — server, client, and Cloudflare Workers/Pages handlers
 
-Source: `packages/auth-webauthn/src`
+Source: `packages/auth-webauthn/src` · Docs: `docs/api/auth-webauthn.md`
 
-#### `normHandle(h)` (function)
-packages/auth-webauthn/src/server.js · `import { normHandle } from '@basenative/auth-webauthn';`
+### API Reference
 
-#### `validHandle(h)` (function)
-packages/auth-webauthn/src/server.js · `import { validHandle } from '@basenative/auth-webauthn';`
+### Server (./server)
+Also importable from the package root (`.`) — both spellings resolve to the same file.
 
-#### `b64uToBytes(s)` (function)
-packages/auth-webauthn/src/server.js · `import { b64uToBytes } from '@basenative/auth-webauthn';`
+#### normHandle(h)
+Normalizes a handle: coerces to string, trims whitespace, lowercases. Used internally before every handle lookup/validation so callers don't have to pre-normalize. **Returns:** `string`
 
-#### `bytesToB64u(bytes)` (function)
-packages/auth-webauthn/src/server.js · `import { bytesToB64u } from '@basenative/auth-webauthn';`
+#### validHandle(h)
+Tests a (already-normalized) handle against `/^[a-z0-9_-]{2,24}$/`. **Returns:** `boolean`
 
-#### `userIdBytes(uuid)` (function)
-Pack a UUID (with dashes) into 16 raw bytes for WebAuthn userID.
-packages/auth-webauthn/src/server.js · `import { userIdBytes } from '@basenative/auth-webauthn';`
+#### b64uToBytes(s)
+Decodes a base64url string into a `Uint8Array`, using `atob` (pads and swaps `-`/`_` back to standard base64 first). Used to turn a stored base64url public key back into raw bytes before handing it to `@simplewebauthn/server`. **Returns:**…
 
-#### `getCookie(request, name)` (function)
-packages/auth-webauthn/src/server.js · `import { getCookie } from '@basenative/auth-webauthn';`
+#### bytesToB64u(bytes)
+Encodes a byte array (or any iterable of byte values) to a base64url string via `btoa`, stripping padding. The inverse of `b64uToBytes`. **Returns:** `string`
 
-#### `setCookieHeader(name, value, opts = {})` (function)
-packages/auth-webauthn/src/server.js · `import { setCookieHeader } from '@basenative/auth-webauthn';`
+#### userIdBytes(uuid)
+Packs a UUID string (with dashes) into 16 raw bytes, for use as the WebAuthn `userID` handed to `generateRegistrationOptions`. **Returns:** `Uint8Array` (16 bytes)
 
-#### `clearCookieHeader(name)` (function)
-packages/auth-webauthn/src/server.js · `import { clearCookieHeader } from '@basenative/auth-webauthn';`
+#### getCookie(request, name)
+Reads a single cookie value from a `Request`'s `Cookie` header via regex match; returns the URI-decoded value or `null` if absent. Same helper is duplicated privately inside `handlers.js` for `logoutHandler`. **Returns:** `string | null`
 
-#### `webauthnAdapter(opts)` (function)
-Build a WebAuthn provider/adapter usable with @basenative/auth.
-packages/auth-webauthn/src/server.js · `import { webauthnAdapter } from '@basenative/auth-webauthn';`
+#### setCookieHeader(name, value, opts = {})
+Builds a `Set-Cookie` header value. Always includes `Path=/`, `HttpOnly`, and `SameSite=Lax`. **Parameters:** - `opts.secure` — omit `Secure` only when explicitly `false`; otherwise `Secure` is always added (default-on) - `opts.maxAgeSecon…
 
-#### `d1WebAuthnStores(DB)` (function)
-Build the four-store object from a Cloudflare D1 binding.
-packages/auth-webauthn/src/d1-stores.js · `import { d1WebAuthnStores } from '@basenative/auth-webauthn';`
+#### clearCookieHeader(name)
+Builds a `Set-Cookie` header value that expires the named cookie immediately (`Max-Age=0`), with the same `HttpOnly; SameSite=Lax; Secure` flags. **Returns:** `string`
 
-#### `seedRoles({ stores, user, seedMap, changedBy = 'seed' })` (async function)
-Generic role-seed-on-login helper.
-packages/auth-webauthn/src/seed-role.js · `import { seedRoles } from '@basenative/auth-webauthn';`
+#### webauthnAdapter(opts)
+Builds the WebAuthn provider/adapter. This is the main entry point of the package. **Parameters:** - `opts.rp.rpName` — relying-party display name; defaults to `rp.rpID` if omitted - `opts.rp.rpID` — relying-party domain (e.g. `'acme.com'`…
 
-#### `parseHandleList(csv, role)` (function)
-Convenience: parse a comma-separated env var list ("alice,bob,charlie") into a `seedMap` for a single role.
-packages/auth-webauthn/src/seed-role.js · `import { parseHandleList } from '@basenative/auth-webauthn';`
+### Client (./client)
+Browser-only helpers. Thin wrappers around `@simplewebauthn/browser` (loaded lazily via dynamic `import()`) plus `fetch` calls to a configurable set of JSON endpoints. Default endpoint paths: `/api/auth/register-options`, `/api/auth/regist…
 
-#### `isPasskeySupported()` (function)
-True iff the browser exposes the WebAuthn API.
-packages/auth-webauthn/src/client.js · `import { isPasskeySupported } from '@basenative/auth-webauthn';`
+#### isPasskeySupported()
+True iff `window.PublicKeyCredential` exists as a function (i.e. the browser exposes the WebAuthn API at all). **Returns:** `boolean`
 
-#### `isPlatformPasskeySupported()` (async function)
-Some browsers (Safari, Firefox-no-PRF) report yes for one path but not platform-bound passkeys. Returns true if a platform authenticator is available and resident-key creation is plausible.
-packages/auth-webauthn/src/client.js · `import { isPlatformPasskeySupported } from '@basenative/auth-webauthn';`
+#### isPlatformPasskeySupported()
+Some browsers report `isPasskeySupported()` true without actually supporting platform-bound (resident-key) passkeys. This checks `PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()` and returns `false` (rather than throwin…
 
-#### `registerPasskey(handle, opts = {})` (async function)
-Register a new passkey for `handle`.
-packages/auth-webauthn/src/client.js · `import { registerPasskey } from '@basenative/auth-webauthn';`
+#### registerPasskey(handle, opts = {})
+Runs the full registration ceremony: fetches options from `paths.registerOptions`, calls `@simplewebauthn/browser`'s `startRegistration({ optionsJSON: options })` to prompt the platform authenticator, posts the resulting attestation to `pa…
 
-#### `loginPasskey(handle, opts = {})` (async function)
-Log in via passkey. `handle` may be empty for usernameless flows (the user picks a passkey from the OS prompt).
-packages/auth-webauthn/src/client.js · `import { loginPasskey } from '@basenative/auth-webauthn';`
+#### loginPasskey(handle, opts = {})
+Runs the authentication ceremony via `startAuthentication`. `handle` may be `''`/omitted for a usernameless flow, where the OS/browser prompts the user to pick from available passkeys. **Returns:** `Promise<object>` — the `/me` response bo…
 
-#### `me(opts = {})` (async function)
-Get the current user (or `{ user: null }`).
-packages/auth-webauthn/src/client.js · `import { me } from '@basenative/auth-webauthn';`
+#### me(opts = {})
+Fetches `paths.me`. **Returns:** `Promise<object>` — typically `{ user }` or `{ user: null }`, per whatever `meHandler`'s shape function produces server-side
 
-#### `logout(opts = {})` (async function)
-Log out and clear the session cookie.
-packages/auth-webauthn/src/client.js · `import { logout } from '@basenative/auth-webauthn';`
+#### logout(opts = {})
+Posts to `paths.logout` to destroy the session and clear the cookie. **Returns:** `Promise<object>` All four request helpers throw on a non-OK response: the thrown `Error`'s `message` is the response body's `error` field (or `request-faile…
 
-#### `registerOptionsHandler(getAdapter)` (function)
-packages/auth-webauthn/src/handlers.js · `import { registerOptionsHandler } from '@basenative/auth-webauthn';`
+### Handlers (./handlers)
+Cloudflare Pages Functions / Workers handler factories for the six canonical passkey endpoints. Each factory takes `getAdapter(env)` — a function consumers supply to build a `webauthnAdapter` per-request from their environment bindings — s…
 
-#### `registerVerifyHandler(getAdapter, hooks = {})` (function)
-packages/auth-webauthn/src/handlers.js · `import { registerVerifyHandler } from '@basenative/auth-webauthn';`
+#### registerOptionsHandler(getAdapter)
+Reads `{ handle }` from the JSON body, calls `adapter.getRegistrationOptions(handle)`, and returns the options JSON (or the forwarded error). **Returns:** `(ctx: { request, env }) => Promise<Response>`
 
-#### `loginOptionsHandler(getAdapter)` (function)
-packages/auth-webauthn/src/handlers.js · `import { loginOptionsHandler } from '@basenative/auth-webauthn';`
+#### registerVerifyHandler(getAdapter, hooks = {})
+Reads `{ attestation }` from the JSON body, calls `adapter.verifyRegistration(attestation)`. On success, sets the session cookie (`adapter.cookie.set(token)`) and returns `{ ok: true }`. If `hooks.onLogin({ env, userId, adapter })` is prov…
 
-#### `loginVerifyHandler(getAdapter, hooks = {})` (function)
-packages/auth-webauthn/src/handlers.js · `import { loginVerifyHandler } from '@basenative/auth-webauthn';`
+#### loginOptionsHandler(getAdapter)
+Reads `{ handle }` from the JSON body, calls `adapter.getAuthenticationOptions(handle)`, returns the options JSON. **Returns:** `(ctx) => Promise<Response>`
 
-#### `meHandler(getAdapter, options = {})` (function)
-packages/auth-webauthn/src/handlers.js · `import { meHandler } from '@basenative/auth-webauthn';`
+#### loginVerifyHandler(getAdapter, hooks = {})
+Reads `{ assertion }` from the JSON body, calls `adapter.verifyAuthentication(assertion)`. On success, sets the session cookie and returns `{ ok: true }`; `hooks.onLogin({ env, userId, user, adapter })` runs the same way as in `registerVer…
 
-#### `logoutHandler(getAdapter)` (function)
-packages/auth-webauthn/src/handlers.js · `import { logoutHandler } from '@basenative/auth-webauthn';`
+#### meHandler(getAdapter, options = {})
+Resolves `adapter.currentUser(request)` and returns `{ user: null }` if there's no session, else `{ user: shape(u) }`. **Parameters:** - `options.shape` — function `(user) => object`; defaults to `{ id, handle, role, isAdmin, isModerator }…
 
-#### `onRequestPost` (const)
-packages/auth-webauthn/src/handlers.js · `import { onRequestPost } from '@basenative/auth-webauthn';`
+#### logoutHandler(getAdapter)
+Reads the adapter's cookie from the request, calls `adapter.destroySession(cookieValue)` if present, and returns `{ ok: true }` with the cookie cleared. **Returns:** `(ctx) => Promise<Response>`
 
-#### `d1Users(DB)` (function)
-packages/auth-webauthn/src/d1-stores.js · `import { d1Users } from '@basenative/auth-webauthn';`
+#### onRequestPost
+Not itself exported by this package. It's the Cloudflare Pages Functions convention name that consumers bind the return value of a handler factory to, e.g.: (shown in the JSDoc block at the top of `handlers.js`). `me`/`logout` routes are t…
+```js
+export const onRequestPost = registerOptionsHandler(getAdapter);
+```
 
-#### `d1Credentials(DB)` (function)
-packages/auth-webauthn/src/d1-stores.js · `import { d1Credentials } from '@basenative/auth-webauthn';`
+### D1 Stores (./d1-stores)
+Cloudflare D1 reference implementation of the `stores` contract `webauthnAdapter` requires. Field mappings match the schema in `packages/auth-webauthn/migrations/0001_webauthn_schema.sql`.
 
-#### `d1Challenges(DB)` (function)
-packages/auth-webauthn/src/d1-stores.js · `import { d1Challenges } from '@basenative/auth-webauthn';`
+#### d1WebAuthnStores(DB)
+Builds all four stores at once from a D1 binding. **Parameters:** - `DB` — a `D1Database` binding; throws synchronously if it doesn't look like one (`typeof DB.prepare !== 'function'`) **Returns:** `{ users, credentials, challenges, userSe…
 
-#### `d1UserSessions(DB)` (function)
-packages/auth-webauthn/src/d1-stores.js · `import { d1UserSessions } from '@basenative/auth-webauthn';`
+#### d1Users(DB)
+**Returns:** object with: - `getByHandle(handle)` — `SELECT id, handle, role ... WHERE handle=?1` - `getById(id)` — same columns, by id - `create({ id, handle })` — inserts a row; returns `{ id, handle, role: 'user' }` (the DB default) - `…
 
-#### `migration` (const)
-Cloudflare D1 store factory for @basenative/auth-webauthn.
-packages/auth-webauthn/src/d1-stores.js · `import { migration } from '@basenative/auth-webauthn';`
+#### d1Credentials(DB)
+**Returns:** object with: - `listByUser(userId)` — all credentials for a user (id, publicKey, counter, transports — `transports` JSON-parsed back to an array, or `undefined` if null) - `getById(credId)` — a single credential, including `us…
+
+#### d1Challenges(DB)
+**Returns:** object with: - `create({ challenge, userId, purpose, ttlSeconds = 300 })` — inserts a row with `expires_at = now + ttlSeconds`; `userId` may be `null` (usernameless flows) - `consume(challenge, purpose)` — looks up the row by…
+
+#### d1UserSessions(DB)
+**Returns:** object with: - `create({ id, userId, ttlSeconds })` — inserts a row with `expires_at = now + ttlSeconds` - `getUser(token)` — joins `user_sessions` to `users`; returns `null` if the token doesn't exist **or** has expired (expi…
+
+#### migration
+A template-string constant containing the full D1 schema (`users`, `credentials`, `challenges`, `user_sessions` tables and their indexes) — byte-for-byte the same SQL as `migrations/0001_webauthn_schema.sql`, exported so it can be applied…
+
+### Seed Role (./seed-role)
+Optional helper for bootstrapping privileged accounts without a manual SQL step, independent of the WebAuthn ceremonies themselves — it only touches `stores.users.setRole`.
+
+#### seedRoles({ stores, user, seedMap, changedBy = 'seed' })
+If `user.handle` (lowercased) is a key in `seedMap`, and the user's current role isn't already that value, calls `stores.users.setRole(user.id, desired, changedBy)`. Guards against downgrading: a user already at `'admin'` is never moved to…
+
+#### parseHandleList(csv, role)
+Parses a comma-separated string (e.g. an env var like `"alice,bob,charlie"`) into a `seedMap` object mapping every trimmed, lowercased handle to the given `role`. **Returns:** `object` — `{ [handle]: role }`
 
 ### `@basenative/builder` (v0.1.4)
 
 Signal-based drag-and-drop component builder for BaseNative — composes layouts, generates clean BaseNative code
 
-Source: `packages/builder/src`
+Source: `packages/builder/src` · Docs: `docs/api/builder.md`
 
 - `./builder.css` → `./src/builder.css` (non-JS resource export)
 
-#### `createBuilderState(options = {})` (function)
-packages/builder/src/state.js · `import { createBuilderState } from '@basenative/builder';`
+### API Reference
 
-#### `createPalette()` (function)
-packages/builder/src/palette.js · `import { createPalette } from '@basenative/builder';`
+#### State
 
-#### `defaultPalette()` (function)
-packages/builder/src/palette.js · `import { defaultPalette } from '@basenative/builder';`
+##### createBuilderState(options = {})
+Creates a signal-backed component tree with undo/redo history. **Parameters:** - `options.initial` — a node spec (`{ type, id?, props?, bindings?, children? }`) or array of node specs used to seed the tree; omit for an empty builder - `opt…
 
-#### `generateBaseNative(state, options = {})` (function)
-packages/builder/src/codegen.js · `import { generateBaseNative } from '@basenative/builder';`
+#### Palette
 
-#### `renderTreeView(state)` (function)
-packages/builder/src/tree-view.js · `import { renderTreeView } from '@basenative/builder';`
+##### createPalette()
+Creates an empty, mutable registry of component definitions. **Parameters:** none **Returns:** a palette object: - `register(spec)` — adds a definition; `spec.type` is required, `label`/`category`/`tag` default to `type`, `container` defau…
 
-#### `renderInspector(state, palette)` (function)
-packages/builder/src/inspector.js · `import { renderInspector } from '@basenative/builder';`
+##### defaultPalette()
+Builds a `createPalette()` instance pre-registered with BaseNative's standard component set: `section`, `stack`, `grid`, `heading`, `text`, `button`, `input`, `textarea`, `checkbox`, `label`, `form`, `link`, `image`, and `signal-text`, gro…
 
-#### `renderPaletteHTML(palette)` (function)
-packages/builder/src/palette-element.js · `import { renderPaletteHTML } from '@basenative/builder';`
+#### Code Generation
 
-#### `escapeHtml(value)` (function)
-packages/builder/src/escape.js · `import { escapeHtml } from '@basenative/builder';`
+##### generateBaseNative(state, options = {})
+Renders a builder state's tree to a BaseNative HTML string. **Parameters:** - `state` — a builder state from `createBuilderState` - `options.indent` — indent string per depth level; default `' '` - `options.document` — when `true`, wraps t…
 
-#### `escapeAttr(value)` (function)
-packages/builder/src/escape.js · `import { escapeAttr } from '@basenative/builder';`
+#### Rendering Helpers
+These render server-side HTML strings for the builder's panels; they back `renderTreeView`, `renderInspector`, and `renderPaletteHTML`'s counterpart custom elements but can be called directly for custom SSR.
 
-#### `isValidIdentifier(name)` (function)
-packages/builder/src/escape.js · `import { isValidIdentifier } from '@basenative/builder';`
+##### renderTreeView(state)
+Renders an accessible `<ul role="tree">` layer list for the current tree, marking the selected and hovered rows. **Parameters:** - `state` — a builder state from `createBuilderState` **Returns:** HTML string (an empty-state message when th…
 
-#### `renderNodeToElement(doc, node, palette)` (function)
-packages/builder/src/dom-render.js · `import { renderNodeToElement } from '@basenative/builder';`
+##### renderInspector(state, palette)
+Renders a property-editing form (`<aside class="bn-inspector">`) for the currently selected node, based on its palette definition's `props`. **Parameters:** - `state` — a builder state - `palette` — a palette used to look up the selected n…
 
-#### `BnBuilder` (class)
-packages/builder/src/builder-element.js
+##### renderPaletteHTML(palette)
+Renders the draggable/clickable component palette panel, grouped by category. **Parameters:** - `palette` — a palette from `createPalette`/`defaultPalette` **Returns:** HTML string.
 
-#### `BnBuilderCanvas` (class)
-packages/builder/src/canvas-element.js
+##### renderNodeToElement(doc, node, palette)
+Builds a live DOM element (not a string) for a single node, recursing into its children. Used internally by `BnBuilderCanvas` to render the editable canvas. **Parameters:** - `doc` — a `Document` to create elements with (e.g. the global `d…
 
-#### `BnBuilderPalette` (class)
-packages/builder/src/palette-element.js
+#### Escaping Utilities
 
-#### `BnBuilderTree` (class)
-packages/builder/src/tree-element.js
+##### escapeHtml(value)
+Escapes `&`, `<`, `>`, `"`, and `'` for safe inclusion in HTML text or attribute content. `null`/`undefined` render as an empty string. **Parameters:** - `value` — any value; coerced with `String()` **Returns:** the escaped string.
 
-#### `BnBuilderInspector` (class)
-packages/builder/src/inspector-element.js
+##### escapeAttr(value)
+Alias for `escapeHtml`, used at attribute-value call sites for readability. **Parameters:** - `value` — any value **Returns:** the escaped string.
+
+##### isValidIdentifier(name)
+Tests whether `name` is a valid JavaScript identifier (`/^[A-Za-z_$][A-Za-z0-9_$]*$/`). Used before emitting a signal `ref` into generated code or a bound attribute, so a malformed ref throws early instead of producing broken output. **Par…
+
+#### Custom Elements
+Registering any of these (or importing `@basenative/builder`'s entry point, which imports all of them) defines the corresponding custom element if it isn't already defined.
+
+##### BnBuilder
+`<bn-builder>` — the top-level editor. On connect it creates a default `createBuilderState()`/`defaultPalette()` (unless `attach()` was called first), mounts the palette/canvas/inspector/tree layout, and wires the toolbar (Undo, Redo, Clea…
+
+##### BnBuilderCanvas
+`<bn-builder-canvas>` — the live, editable drop surface. Re-renders reactively (via `effect()`) whenever the attached state's tree, selection, or hover signal changes. - `attach(state, palette)` - Click to select, hover to preview; drag co…
+
+##### BnBuilderPalette
+`<bn-builder-palette>` — the draggable component picker, rendered with `renderPaletteHTML`. - `attach(palette)` - Dragging or clicking/pressing Enter/Space on an item dispatches `bn-palette-add` (`CustomEvent<{ type: string, def: object }>…
+
+##### BnBuilderTree
+`<bn-builder-tree>` — the accessible layer list, rendered with `renderTreeView`. - `attach(state)` - Click a row to select it, hover to preview it on the canvas
+
+##### BnBuilderInspector
+`<bn-builder-inspector>` — the property editor, rendered with `renderInspector`. - `attach(state, palette)` - Editing a field calls `state.updateProps` (coercing the raw input value per the prop's `kind`) or `state.setBinding` for signal-b…
 
 ### `@basenative/claude-config` (v0.2.1)
 
 Bundled Claude Code subagents, skills, slash commands, hooks, and settings for DuganLabs / BaseNative projects. Drop in via `bn-claude install`.
 
-Source: `packages/claude-config/src`
+Source: `packages/claude-config/src` · Docs: `docs/api/claude-config.md`
 
-#### `PACKAGE_ROOT` (const)
-Absolute path to the package root (one above src/).
-packages/claude-config/src/paths.js · `import { PACKAGE_ROOT } from '@basenative/claude-config';`
+### API Reference
 
-#### `TEMPLATE_KINDS` (const)
-Each template kind we ship — directory under PACKAGE_ROOT, target under .claude/.
-packages/claude-config/src/paths.js · `import { TEMPLATE_KINDS } from '@basenative/claude-config';`
+#### Root (`@basenative/claude-config`)
+Re-exports `PACKAGE_ROOT`, `TEMPLATE_KINDS`, `SETTINGS_TEMPLATE`, `CLAUDE_MD_TEMPLATE` from `./paths`, and `install`, `verify`, `listInstalled` (aliased from `install.js`'s `list`) from `./install`.
 
-#### `SETTINGS_TEMPLATE` (const)
-The settings template ships separately from the kinds above.
-packages/claude-config/src/paths.js · `import { SETTINGS_TEMPLATE } from '@basenative/claude-config';`
+##### install({ projectRoot, force = false, dryRun = false, quiet = false } = {})
+Installs the bundled templates into `<projectRoot>/.claude/`. For each entry in `TEMPLATE_KINDS`, copies every matching file from the package's source directory into the corresponding `.claude/` subdirectory. A destination file that alread…
 
-#### `CLAUDE_MD_TEMPLATE` (const)
-packages/claude-config/src/paths.js · `import { CLAUDE_MD_TEMPLATE } from '@basenative/claude-config';`
+##### verify({ projectRoot } = {})
+Checks that every file the bundle ships (per `TEMPLATE_KINDS`) is present under `<projectRoot>/.claude/`, and that `.claude/settings.json` exists. **Parameters:** - `projectRoot` — target project root. **Required**; throws if omitted. **Re…
 
-#### `install({ projectRoot, force = false, dryRun = false, quiet = false } = {})` (async function)
-Install templates into <projectRoot>/.claude/.
-packages/claude-config/src/install.js · `import { install } from '@basenative/claude-config';`
+##### listInstalled({ projectRoot } = {})
+Lists installed files under each `.claude/` subdirectory covered by `TEMPLATE_KINDS` (agents, skills, commands, hooks) for a project. Exported from `./install.js` as `list` and re-exported at the package root as `listInstalled`. **Paramete…
 
-#### `verify({ projectRoot } = {})` (function)
-Verify the project has all expected files. Returns { ok, missing, extras }.
-packages/claude-config/src/install.js · `import { verify } from '@basenative/claude-config';`
+#### Paths (`./paths`)
+Path constants used by the CLI and installer to locate the bundled templates on disk, resolved relative to the package's own `src/` directory via `import.meta.url`.
 
-#### `listInstalled({ projectRoot } = {})` (function)
-List installed agents/skills/commands/hooks for a project.
-packages/claude-config/src/install.js · `import { listInstalled } from '@basenative/claude-config';`
+##### PACKAGE_ROOT
+Absolute path to the package root — one directory above `src/` (i.e. the directory containing `agents/`, `skills/`, `commands/`, `hooks/`, `settings/`, `CLAUDE.md.tmpl`, and `src/`).
+
+##### TEMPLATE_KINDS
+Array describing each template category the bundle ships, used to drive `install`/`verify`/`listInstalled`: `src`/`dest` are directory names relative to `PACKAGE_ROOT` and `<projectRoot>/.claude/` respectively; `glob` is a simple suffix fi…
+```js
+[
+  { name: 'agents',   src: 'agents',   dest: 'agents',   glob: '*.md' },
+  { name: 'skills',   src: 'skills',   dest: 'skills',   glob: '*.md' },
+  { name: 'commands', src: 'commands', dest: 'commands', glob: '*.md' },
+  { name: 'hooks',    src: 'hooks',    dest: 'hooks',    glob: '*.sh', mode: 0o755 },
+]
+```
+
+##### SETTINGS_TEMPLATE
+Absolute path to `settings/settings.template.json` under `PACKAGE_ROOT`. Installed to `.claude/settings.json` only if that file doesn't already exist — this is the file's team-wide settings template, never overwritten by `install`.
+
+##### CLAUDE_MD_TEMPLATE
+Absolute path to `CLAUDE.md.tmpl` under `PACKAGE_ROOT`. Installed to `<projectRoot>/CLAUDE.md` only if that file doesn't already exist.
 
 ### `@basenative/cli` (v0.4.1)
 
@@ -454,52 +521,44 @@ Prints the installed CLI version.
 
 ### `@basenative/combobox` (v1.0.4)
 
-@basenative/combobox — accessible typeahead combobox primitive.
+Accessible combobox primitive — typeahead input that filters an existing list and lets the user create a new entry. WAI-ARIA combobox listbox pattern.
 
-Source: `packages/combobox/src`
+Source: `packages/combobox/src` · Docs: `docs/api/combobox.md`
 
 - `./css` → `./src/styles.css` (non-JS resource export)
 - `./styles.css` → `./src/styles.css` (non-JS resource export)
 
-#### `Combobox(options = {})` (function)
-One-shot convenience. Returns `{ html, hydrate }` so callers can embed the markup in SSR output and wire reactivity later.
-packages/combobox/src/combobox.js · `import { Combobox } from '@basenative/combobox';`
+### API Reference
 
-#### `renderCombobox(options = {})` (function)
-Render the combobox as an HTML string — pre-paint friendly. The static markup includes: - root <div role="combobox" aria-expanded="false"> - <label> (only when `label` provided) - <input role="combobox" aria-autocomplete="list"> - <ul role…
-packages/combobox/src/combobox.js · `import { renderCombobox } from '@basenative/combobox';`
+#### Combobox(options = {})
+One-shot convenience over `renderCombobox` and `hydrateCombobox`. Returns `{ html, hydrate }` so callers can embed the markup in SSR output and wire reactivity later — `hydrate(rootEl)` calls `hydrateCombobox(rootEl, options)` with the sam…
 
-#### `hydrateCombobox(rootEl, options = {})` (function)
-Hydrate a rendered combobox. `rootEl` is the element produced by `renderCombobox` (or any DOM that follows the data-bn contract).
-packages/combobox/src/combobox.js · `import { hydrateCombobox } from '@basenative/combobox';`
+#### renderCombobox(options = {})
+Render the combobox as an HTML string — pre-paint friendly and usable with no JavaScript (the `<input>` still submits its value as a normal form field). The static markup includes: - root `<div data-bn="combobox" role="combobox" aria-haspo…
 
-#### `normalizeOption(raw)` (function)
-Lift a raw option (string OR `{ value, label, hint? }`) into a normalized shape. Strings become `{ value: s, label: s }`.
-packages/combobox/src/combobox.js · `import { normalizeOption } from '@basenative/combobox';`
+#### hydrateCombobox(rootEl, options = {})
+Hydrate a rendered combobox. `rootEl` is the element produced by `renderCombobox` (or any DOM that follows the same `data-bn` contract: a `[data-bn="cb-input"]` input and a `[data-bn="cb-listbox"]` list are required; a `[data-bn="cb-toggle…
 
-#### `defaultFilter(option, query)` (function)
-Case-insensitive substring match against label + value + hint. Empty queries match everything (so the listbox shows all options on focus).
-packages/combobox/src/filter.js · `import { defaultFilter } from '@basenative/combobox';`
+#### normalizeOption(raw)
+Lift a raw option (a string, or `{ value, label, hint? }`) into a normalized shape. Strings become `{ value: s, label: s }`. Non-string, non-object, or `null`/`undefined` input returns `null` (dropped by callers that `.filter(Boolean)`). *…
 
-#### `prefixFilter(option, query)` (function)
-Case-insensitive prefix match against label only. Best for short option lists where you want predictable typeahead ordering.
-packages/combobox/src/filter.js · `import { prefixFilter } from '@basenative/combobox';`
+#### defaultFilter(option, query)
+Case-insensitive substring match against the option's label, value, and hint concatenated together. Empty (or whitespace-only) queries match every option, which is why the listbox shows the full option list on focus. **Parameters:** - `opt…
 
-#### `fuzzyFilter(option, query)` (function)
-Lightweight in-order subsequence matcher — every query character must appear (in order, case-insensitive) somewhere in the label. No scoring; preserves caller-provided ordering.
-packages/combobox/src/filter.js · `import { fuzzyFilter } from '@basenative/combobox';`
+#### prefixFilter(option, query)
+Case-insensitive prefix match against the option's label only (value and hint are not considered). Best for short option lists where predictable typeahead ordering matters more than matching on value/hint. **Parameters:** - `option` — a no…
 
-#### `applyAriaAttributes(rootEl, options = {})` (function)
-Idempotently apply ARIA wiring to a combobox root + input + listbox. Safe to call after re-render or on hydrate.
-packages/combobox/src/a11y.js · `import { applyAriaAttributes } from '@basenative/combobox';`
+#### fuzzyFilter(option, query)
+Lightweight in-order subsequence matcher: every character of `query` must appear, in order and case-insensitively, somewhere in the option's label. There is no relevance scoring — matching options keep the order they were passed in. **Para…
 
-#### `escapeOnKeydown(rootEl, onEscape)` (function)
-Bind Escape to a handler at the document level scoped to this root — closes the popup from anywhere inside the widget. Returns an unbind fn.
-packages/combobox/src/a11y.js · `import { escapeOnKeydown } from '@basenative/combobox';`
+#### applyAriaAttributes(rootEl, options = {})
+Idempotently apply the widget's ARIA wiring to a combobox root, its input, and its listbox — safe to call again after a re-render or during hydration. No-ops if `rootEl` isn't an element or the expected `[data-bn="cb-input"]`/`[data-bn="cb…
 
-#### `announce(rootEl, message)` (function)
-Announce a transient message to screen readers via the widget's aria-live region. Used for "N options available" / "Press Enter to create '...'" style hints. Idempotent — safe to call repeatedly.
-packages/combobox/src/a11y.js · `import { announce } from '@basenative/combobox';`
+#### escapeOnKeydown(rootEl, onEscape)
+Bind an `Escape` keydown handler at the given root, scoped to that widget, so `Escape` can close the popup from anywhere inside it. Returns an unbind function. **Parameters:** - `rootEl` — element to attach the `keydown` listener to - `onE…
+
+#### announce(rootEl, message)
+Announce a transient message to screen readers via the widget's `aria-live="polite"` region (`[data-bn="cb-live"]`). Used internally by `hydrateCombobox` for "N options available" / `Press Enter to create "…"` / "Selected …" hints. Idempot…
 
 ### `@basenative/components` (v0.6.2)
 
@@ -1025,36 +1084,33 @@ Throws if the adapter does not implement the required interface (`query`, `query
 
 Thin developer-experience layer around Doppler — local-dev wrapper, CI helper, project bootstrap, environment validation. BaseNative ships plumbing, never values.
 
-Source: `packages/doppler/src`
+Source: `packages/doppler/src` · Docs: `docs/api/doppler.md`
 
-#### `dopplerRun(args, opts = {})` (function)
-Wraps `doppler run -- <args...>` so callers don't have to remember the incantation. Returns a Promise that resolves with the child's exit code.
-packages/doppler/src/index.js · `import { dopplerRun } from '@basenative/doppler';`
+### API Reference
 
-#### `requireSecrets(names, opts = {})` (async function)
-Validates that the named secrets exist and are non-empty in the current Doppler context. Throws a `MissingSecretsError` listing the missing names.
-packages/doppler/src/index.js · `import { requireSecrets } from '@basenative/doppler';`
+#### dopplerRun(args, opts = {})
+Wraps `doppler run -- <args...>` so callers don't have to remember the incantation. Spawns the `doppler` CLI as a child process (`shell: false`) and resolves once it exits. **Parameters:** - `args` — argv array for the wrapped command, e.g…
 
-#### `injectIntoWrangler({ env = process.env, names, secretNames })` (function)
-Move Doppler-resolved values out of an arbitrary env object and into the shape Wrangler expects. Returns `{ vars, secrets }`: - `vars` — non-secret name/value pairs, suitable for `[vars]` in toml. - `secrets` — secret names paired with the…
-packages/doppler/src/index.js · `import { injectIntoWrangler } from '@basenative/doppler';`
+#### requireSecrets(names, opts = {})
+Validates that the named secrets exist and are non-empty. By default, checks `process.env` — the intended use is at app boot, after `doppler run` has already injected env vars. Pass `{ source: 'doppler' }` to instead fetch current values v…
 
-#### `MissingSecretsError` (class)
-packages/doppler/src/index.js
+#### injectIntoWrangler({ env = process.env, names, secretNames })
+Moves Doppler-resolved values out of an arbitrary env object and into the shape Wrangler expects for a deploy. Names whose value looks like a secret — by name pattern (`*_TOKEN`, `*_KEY`, `*_SECRET`, `*_PASSWORD`, `*_PASS`, `*_PWD`, `*_API…
 
-#### `loadRequired(filePath)` (function)
-Parse and validate a `doppler-required.json` file from disk.
-packages/doppler/src/required.js · `import { loadRequired } from '@basenative/doppler';`
+#### MissingSecretsError
+Error class thrown by `requireSecrets` and `injectIntoWrangler` when one or more requested secret names are missing or empty. Carries `.missing` (the array of missing names) and `.code = 'E_MISSING_SECRETS'`; its message points the user at…
 
-#### `validateRequired(input)` (function)
-packages/doppler/src/required.js · `import { validateRequired } from '@basenative/doppler';`
+#### loadRequired(filePath)
+Parse and validate a `doppler-required.json` file from disk (via the `./required` subpath export). Throws if the file doesn't exist, isn't valid JSON, or fails `validateRequired`'s shape checks. **Parameters:** - `filePath` — absolute or c…
 
-#### `findMissing(schema, env)` (function)
-Returns the names of secrets in the schema that are missing from `env`. Optional secrets (required: false) are ignored.
-packages/doppler/src/required.js · `import { findMissing } from '@basenative/doppler';`
+#### validateRequired(input)
+Validates the shape of an already-parsed `doppler-required.json` object: `secrets` must be an array of `{ name, description?, required? }` objects, where `name` is a non-empty, unique, `SCREAMING_SNAKE_CASE` string; `configs` must be an ar…
 
-#### `ValidationError` (class)
-packages/doppler/src/required.js
+#### findMissing(schema, env)
+Returns the names of secrets declared in `schema` that are missing (undefined or empty string) from `env`. Secrets marked `required: false` are ignored. **Parameters:** - `schema` — a `RequiredSchema`, as returned by `loadRequired`/`valida…
+
+#### ValidationError
+Error class thrown by `validateRequired` (and, transitively, `loadRequired`) when a `doppler-required.json` manifest fails validation. Carries `.errors` (array of individual violation strings) and `.code = 'E_INVALID_REQUIRED'`; its messag…
 
 ### `@basenative/eslint-config` (v0.2.0)
 
@@ -1079,135 +1135,143 @@ packages/eslint-config/src/react.js
 
 ### `@basenative/favicon` (v1.0.2)
 
-`@basenative/favicon` — SVG-first favicon generator + design primitives.
+SVG-first favicon generator + design primitives — apple-touch-icon, maskable, manifest, and the right <link> tags for every DuganLabs project
 
-Source: `packages/favicon/src`
+Source: `packages/favicon/src` · Docs: `docs/api/favicon.md`
 
-#### `htmlTags(opts = {})` (function)
-Build the recommended `<link>` / `<meta>` tags for a favicon. The output is an array of strings — one tag per line — so consumers can join with `\n` and inject into a server-rendered `<head>`, or call `.join('')` in a Worker template.
-packages/favicon/src/index.js · `import { htmlTags } from '@basenative/favicon';`
+### API Reference
 
-#### `defineFavicon(input)` (function)
-Turn a favicon spec (or a preset name) into a ready-to-ship bundle.
-packages/favicon/src/index.js · `import { defineFavicon } from '@basenative/favicon';`
+#### Core — `@basenative/favicon`
 
-#### `default` (default export)
-packages/favicon/src/index.js
+##### defineFavicon(input)
+Turn a favicon spec (or the string name of a registered DuganLabs preset) into a ready-to-ship bundle: rendered SVGs plus a preconfigured `htmlTags` and `manifest` helper. **Parameters:** - `input` — a full `FaviconSpec` object (`{ glyph,…
+```js
+{
+  spec,                              // the resolved input spec
+  svg,                                // renderFaviconSvg(spec) output
+  apple,                              // renderAppleSvg(spec) output
+  maskable,                           // renderMaskableSvg(spec) output
+  htmlTags: (opts) => string[],       // htmlTags() pre-seeded with this spec's themeColor
+  manifest: (opts) => string,         // manifestJson() pre-seeded with themeColor + backgroundColor
+}
+```
 
-#### `renderFaviconSvg(spec)` (function)
-Render a complete favicon SVG document.
-packages/favicon/src/render.js · `import { renderFaviconSvg } from '@basenative/favicon';`
+##### htmlTags(opts = {})
+Build the recommended `<link>` / `<meta>` tags for a favicon. The output is an array of strings — one tag per line — so consumers can `.join('\n')` for a server-rendered `<head>` or `.join('')` in a Worker template. **Parameters:** - `opts…
+```js
+import { htmlTags } from '@basenative/favicon';
 
-#### `renderMaskableSvg(spec)` (function)
-Render a maskable variant — adds the 80% safe zone Android requires by scaling the glyph down (the body fills the full canvas as the maskable "icon background"). Output SVG stays 1024×1024.
-packages/favicon/src/render.js · `import { renderMaskableSvg } from '@basenative/favicon';`
+const tags = htmlTags({ themeColor: '#0F0E0C' }).join('\n');
+```
 
-#### `renderAppleSvg(spec)` (function)
-Render an apple-touch-icon SVG — Apple wants a non-transparent square, no rounded corners (iOS rounds them itself). 180×180 is the canonical size; we still emit 1024×1024 viewBox so the consumer can rasterize.
-packages/favicon/src/render.js · `import { renderAppleSvg } from '@basenative/favicon';`
+##### Default export
+`src/index.js` also has a default export bundling the most-reached-for functions, for consumers who prefer a single namespace import: It is a plain object — `{ defineFavicon, htmlTags, presets, presetList, renderFaviconSvg, buildManifest }…
+```js
+import favicon from '@basenative/favicon';
 
-#### `shape(name, palette)` (function)
-Draw the background "shape" — a clipped colored body sized to the viewBox.
-packages/favicon/src/render.js · `import { shape } from '@basenative/favicon';`
+favicon.defineFavicon('basenative');
+favicon.htmlTags();
+favicon.presets.basenative;
+favicon.presetList;
+favicon.renderFaviconSvg(spec);
+favicon.buildManifest(opts);
+```
 
-#### `monogram(spec, palette)` (function)
-Monogram glyph. Draws 1-3 letters in a tight, geometric face.
-packages/favicon/src/glyphs.js · `import { monogram } from '@basenative/favicon';`
+#### Rendering — `@basenative/favicon/render`
+All renderers are synchronous and return plain strings — no DOM, no canvas.
 
-#### `symbol(spec, palette)` (function)
-Symbol glyph entry point.
-packages/favicon/src/glyphs.js · `import { symbol } from '@basenative/favicon';`
+##### renderFaviconSvg(spec)
+Render a complete favicon SVG document: viewBox `0 0 1024 1024`, the resolved `shape` as the background body, and the `glyph` clipped to that body. **Parameters:** - `spec.glyph` — `{ kind: 'monogram'|'symbol'|'wordmark'|'sigil', ...glyphO…
 
-#### `sigil(spec, palette)` (function)
-Sigil glyph entry point.
-packages/favicon/src/glyphs.js · `import { sigil } from '@basenative/favicon';`
+##### renderMaskableSvg(spec)
+Render the Android maskable/adaptive-icon variant. The shape is forced to `square` (maskable icons must fill the entire canvas — Android applies its own mask), and the glyph is scaled to 80% and centered, satisfying Android's required safe…
 
-#### `wordmark(spec, palette)` (function)
-Wordmark glyph. Short word in a single line. Sized to fit 1024 wide.
-packages/favicon/src/glyphs.js · `import { wordmark } from '@basenative/favicon';`
+##### renderAppleSvg(spec)
+Render the apple-touch-icon variant: a plain, non-transparent `square` (no rounded corners — iOS rounds them itself), at the same glyph scale as the normal favicon (unlike `renderMaskableSvg`, it does *not* apply the 80% safe-zone scaling)…
 
-#### `symbols` (const)
-Hand-tuned vector symbols. Each path is drawn inside a 1024×1024 viewBox with the shape's body sitting in roughly the central 640×640 — leaves enough margin for `shape` primitives like `rounded` / `circle` to crop comfortably at 16×16.
-packages/favicon/src/glyphs.js · `import { symbols } from '@basenative/favicon';`
+##### shape(name, palette)
+Draw the background "shape" — a clipped colored body sized to the viewBox, engineered to look correct when the browser downsamples it to 16×16 in a tab. **Parameters:** - `name` — one of `square`, `rounded`, `circle`, `squircle`, `shield`,…
 
-#### `sigils` (const)
-Hand-tuned abstract sigils. Each one is a recognizable signal mark.
-packages/favicon/src/glyphs.js · `import { sigils } from '@basenative/favicon';`
+#### Glyphs — `@basenative/favicon/glyphs`
+Every glyph function returns a string of inner SVG markup (no `<svg>` wrapper), sized to the 1024×1024 viewBox and centered so it composes with any `shape`. Glyphs use `palette.fg` for lettering/strokes and `palette.accent` for the mark it…
 
-#### `renderGlyph(kind, spec, palette)` (function)
-Dispatch a glyph by `kind`.
-packages/favicon/src/glyphs.js · `import { renderGlyph } from '@basenative/favicon';`
+##### renderGlyph(kind, spec, palette)
+Dispatch a glyph by `kind`. This is what `renderFaviconSvg` calls internally; most consumers won't need to call it directly. **Parameters:** - `kind` — one of `monogram`, `symbol`, `wordmark`, `sigil` - `spec` — glyph options (see below, s…
 
-#### `resolvePalette(input)` (function)
-Resolve a palette input to a fully-populated `{ bg, fg, accent }`.
-packages/favicon/src/palette.js · `import { resolvePalette } from '@basenative/favicon';`
+##### monogram(spec, palette)
+Draws 1-3 letters in a tight, geometric face, sized automatically for legibility at 16px (1 letter renders largest, 3 letters smallest). **Parameters:** - `spec.text` — the letters to draw; truncated to 3 characters - `spec.weight` — font…
 
-#### `hexToRgb(hex)` (function)
-Parse `#rgb` / `#rrggbb` to `[r, g, b]` (0-255). Returns null on bad input.
-packages/favicon/src/palette.js · `import { hexToRgb } from '@basenative/favicon';`
+##### symbol(spec, palette)
+Symbol glyph entry point — looks up `spec.symbol` in the `symbols` table and draws it. **Parameters:** - `spec.symbol` — a key of `symbols`; default `'asterisk'` **Returns:** `string`. Throws if `spec.symbol` isn't a known key.
 
-#### `rgbToHex([r, g, b])` (function)
-Encode `[r, g, b]` back to lowercase `#rrggbb`.
-packages/favicon/src/palette.js · `import { rgbToHex } from '@basenative/favicon';`
+##### sigil(spec, palette)
+Sigil glyph entry point — looks up `spec.sigil` in the `sigils` table and draws it. **Parameters:** - `spec.sigil` — a key of `sigils`; default `'concentric-square'` **Returns:** `string`. Throws if `spec.sigil` isn't a known key.
 
-#### `luminance(hex)` (function)
-Relative luminance per WCAG. 0 = black, 1 = white.
-packages/favicon/src/palette.js · `import { luminance } from '@basenative/favicon';`
+##### wordmark(spec, palette)
+Draws a short word (`spec.word` or `spec.text`, truncated to 8 characters) in a single line, with the font size estimated to fit within the 1024-wide canvas. **Parameters:** - `spec.word` (or `spec.text` as a fallback) **Returns:** `string…
 
-#### `mix(a, b, t)` (function)
-Mix two hex colors at `t` (0 → a, 1 → b).
-packages/favicon/src/palette.js · `import { mix } from '@basenative/favicon';`
+##### symbols
+`Record<SymbolName, (palette) => string>` — the hand-tuned vector symbol library backing `symbol()`. Available names: `lightbulb`, `leaf`, `bolt`, `key`, `eye`, `asterisk`, `gear`, `terminal-prompt`, `calendar`, `beaker`, `clock`, `anchor`.
 
-#### `housePalette` (const)
-The default DuganLabs palette.
-packages/favicon/src/palette.js · `import { housePalette } from '@basenative/favicon';`
+##### sigils
+`Record<SigilName, (palette) => string>` — the hand-tuned abstract sigil library backing `sigil()`. Available names: `concentric-square`, `intersecting-circles`, `hex-grid`, `signal-stack`, `station-mark`.
 
-#### `buildManifest(opts)` (function)
-Build a Web App Manifest object.
-packages/favicon/src/manifest.js · `import { buildManifest } from '@basenative/favicon';`
+#### Palette — `@basenative/favicon/palette`
 
-#### `manifestJson(opts)` (function)
-Stringify a manifest into pretty-printed JSON, with a trailing newline.
-packages/favicon/src/manifest.js · `import { manifestJson } from '@basenative/favicon';`
+##### resolvePalette(input)
+Resolve a palette input to a fully-populated `{ bg, fg, accent }`, used internally by every renderer. **Parameters:** - `input` — either a hex string (treated as the `accent`, paired with the DuganLabs house `bg` and an auto-contrasted `fg…
 
-#### `presets` (const)
-packages/favicon/src/presets/dl.js · `import { presets } from '@basenative/favicon';`
+##### hexToRgb(hex)
+Parse a `#rgb` or `#rrggbb` hex string to `[r, g, b]` (0-255 each). **Returns:** `[number, number, number] | null` — `null` on malformed input.
 
-#### `presetList` (const)
-Ordered preset list — handy for help output.
-packages/favicon/src/presets/dl.js · `import { presetList } from '@basenative/favicon';`
+##### rgbToHex([r, g, b])
+Encode an `[r, g, b]` triple back to a lowercase `#rrggbb` string. Component values are clamped to `0-255` and rounded. **Returns:** `string`.
 
-#### `tabs` (const)
-packages/favicon/src/presets/dl.js · `import { tabs } from '@basenative/favicon';`
+##### luminance(hex)
+Relative luminance per WCAG (0 = black, 1 = white). Used internally to pick a contrasting `fg` when only `bg` is supplied. **Returns:** `number`.
 
-#### `basenative` (const)
-packages/favicon/src/presets/dl.js · `import { basenative } from '@basenative/favicon';`
+##### mix(a, b, t)
+Linearly mix two hex colors. **Parameters:** - `a`, `b` — hex color strings - `t` — mix factor, clamped to `0-1`; `0` returns `a`, `1` returns `b` **Returns:** `string` (hex).
 
-#### `duganlabs` (const)
-packages/favicon/src/presets/dl.js · `import { duganlabs } from '@basenative/favicon';`
+##### housePalette
+The default DuganLabs palette constant: `{ bg: '#0C0B09', fg: '#F0EDE4', accent: '#E8920A' }` (charcoal / bone / amber). This is the fallback `resolvePalette` fills gaps from when no preset or custom palette overrides it.
 
-#### `pendingbusiness` (const)
-packages/favicon/src/presets/dl.js · `import { pendingbusiness } from '@basenative/favicon';`
+#### Manifest — `@basenative/favicon/manifest`
 
-#### `greenput` (const)
-packages/favicon/src/presets/dl.js · `import { greenput } from '@basenative/favicon';`
+##### buildManifest(opts)
+Build a Web App Manifest object referencing the icon files this package's CLI/consumers emit (`favicon.svg`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `maskable.png`). **Parameters:** - `opts.name` — app name (required) - `op…
 
-#### `warrendugan` (const)
-packages/favicon/src/presets/dl.js · `import { warrendugan } from '@basenative/favicon';`
+##### manifestJson(opts)
+`buildManifest(opts)`, stringified as pretty-printed JSON with a trailing newline — ready to write to `public/manifest.json`. **Parameters:** same as `buildManifest`. **Returns:** `string`.
 
-#### `ralphStation` (const)
-packages/favicon/src/presets/dl.js · `import { ralphStation } from '@basenative/favicon';`
+#### Presets — `@basenative/favicon/presets`
+Pre-built favicon definitions for every DuganLabs project, each a `{ name, displayName, description, glyph, palette, shape, themeColor }` record. Pass the preset object (or its string name) to `defineFavicon`.
 
-#### `warrenSys` (const)
-packages/favicon/src/presets/dl.js · `import { warrenSys } from '@basenative/favicon';`
+##### presets
+`Record<string, Preset>` map keyed by preset name — use `presets[name]` for table-driven dispatch. This is also re-exported from the root `.` entry point. Keys: `tabs`, `basenative`, `duganlabs`, `pendingbusiness`, `greenput`, `warrendugan…
 
-#### `toPng(svg, size = 512)` (async function)
-Rasterize an SVG string to PNG bytes at the requested square size.
-packages/favicon/src/png.js · `import { toPng } from '@basenative/favicon';`
+##### presetList
+`Preset[]` — the same presets as an ordered array, handy for building help/CLI output. Also re-exported from the root `.` entry point.
 
-#### `toIconSet({ favicon, maskable })` (async function)
-Convenience: rasterize the canonical icon set in one call. Returns a map of filename → PNG bytes ready to write under `public/`.
-packages/favicon/src/png.js · `import { toIconSet } from '@basenative/favicon';`
+##### Individual presets
+Each of the following is an individually named `Preset` export, importable only from `@basenative/favicon/presets` (not re-exported from the root): - `tabs` — T4BS, "5 Things in 4 Tabs" word game (monogram "T", rounded) - `basenative` — th…
+
+#### PNG — `@basenative/favicon/png` (optional)
+Requires the optional dependency `@resvg/resvg-wasm`, loaded lazily on first call so the SVG-only path stays dependency-free. If it isn't installed, both functions reject with a single clear error naming the package and the install command…
+
+##### toPng(svg, size = 512)
+Rasterize an SVG string to PNG bytes at the requested square size. **Parameters:** - `svg` — an SVG string (e.g. from `renderFaviconSvg`) - `size` — output edge length in pixels; default `512`. Common sizes: `180` for `apple-touch-icon.png…
+
+##### toIconSet({ favicon, maskable })
+Convenience wrapper that rasterizes the canonical icon set in one call. **Parameters:** - `favicon` — SVG string from `renderFaviconSvg` (or `renderAppleSvg`) - `maskable` — SVG string from `renderMaskableSvg` **Returns:** `Promise<Record<…
+```js
+import { defineFavicon } from '@basenative/favicon';
+import { toIconSet } from '@basenative/favicon/png';
+
+const favicon = defineFavicon('greenput');
+const pngs = await toIconSet({ favicon: favicon.svg, maskable: favicon.maskable });
+// pngs['apple-touch-icon.png'], pngs['icon-192.png'], pngs['icon-512.png'], pngs['maskable.png']
+```
 
 ### `@basenative/fetch` (v0.3.4)
 
@@ -1354,11 +1418,20 @@ In-memory flag provider. Flag values can be updated at runtime via `setFlag`. **
 #### createRemoteProvider(options)
 Fetches flags from an HTTP endpoint. Supports polling for updates. **Parameters:** - `options.url` — endpoint URL that returns `Record<string, FlagConfig>` as JSON - `options.headers` — additional request headers (e.g. for auth tokens) - `…
 
-#### Undocumented exports (source-only — not in docs/api/flags.md)
+#### createKVProvider(options)
+Cloudflare KV-backed flag provider with edge caching. Reads and writes flag configs as JSON values in a KV namespace. **Parameters:** - `options.kv` — Cloudflare KV namespace binding (e.g. `env.FLAGS`); required, throws if omitted - `optio…
+```js
+import { createFlagManager, createKVProvider } from '@basenative/flags';
 
-#### `createKVProvider(options)` (function)
-Cloudflare KV-backed feature flag provider with edge caching.
-packages/flags/src/providers/kv.js · `import { createKVProvider } from '@basenative/flags';`
+export default {
+  async fetch(request, env) {
+    const provider = createKVProvider({ kv: env.FLAGS, cacheTtl: 30 });
+    const flags = createFlagManager(provider);
+    const isOn = await flags.isEnabled('new_dashboard');
+    // ...
+  },
+};
+```
 
 ### `@basenative/forms` (v1.0.3)
 
@@ -1407,6 +1480,28 @@ const form = createForm({
 ### Built-in Validators
 | Validator | Description | |-----------|-------------| | `required(msg?)` | Value must not be empty | | `minLength(n, msg?)` | String must be at least n characters | | `maxLength(n, msg?)` | String must be at most n characters | | `patter…
 
+### `createWizard(steps, options?)`
+Coordinates multiple pre-built `Form` instances as a linear multi-step wizard.
+```js
+import { createForm, createWizard } from '@basenative/forms';
+
+const wizard = createWizard([
+  { name: 'account', form: accountForm, title: 'Account' },
+  { name: 'profile', form: profileForm, title: 'Profile' },
+], {
+  validateBeforeNext: true, // default
+  async onComplete(values) {
+    // values = { account: {...}, profile: {...} }
+    return fetch('/api/signup', { method: 'POST', body: JSON.stringify(values) });
+…
+```
+
+#### Wizard Properties
+| Property | Type | Description | |----------|------|-------------| | `currentIndex` | `Signal<number>` | Index of the active step | | `stepCount` | `number` | Total number of steps | | `steps` | `Array` | The `steps` array passed in | | `…
+
+#### Wizard Methods
+| Method | Description | |--------|-------------| | `next()` | Validates the current step (unless `validateBeforeNext: false`) and advances; returns `false` if invalid or already on the last step | | `prev()` | Goes back one step; returns…
+
 ### `zodAdapter(schema)`
 Adapter for Zod schemas.
 ```js
@@ -1420,12 +1515,6 @@ const schema = zodAdapter(z.object({
 
 const form = createForm(fields, { schema });
 ```
-
-#### Undocumented exports (source-only — not in docs/api/forms.md)
-
-#### `createWizard(steps, options = {})` (function)
-Creates a multi-step form wizard that coordinates pre-built form instances.
-packages/forms/src/wizard.js · `import { createWizard } from '@basenative/forms';`
 
 ### `@basenative/i18n` (v0.4.1)
 
@@ -1486,124 +1575,121 @@ Loads messages from a JSON file. **Parameters:** - `locale` — locale code stri
 
 Headless third-party integration wrappers for BaseNative apps
 
-Source: `packages/integrations/src`
+Source: `packages/integrations/src` · Docs: `docs/api/integrations.md`
 
-#### `loadPlaidScript()` (function)
-Load the Plaid Link drop-in script if not already present. Returns a promise that resolves when the script is ready.
-packages/integrations/src/plaid.js · `import { loadPlaidScript } from '@basenative/integrations';`
+### Plaid (./plaid)
+Client-side Link initialization is signal-optional — pass a `signals` object (e.g. from `@basenative/runtime`) to get reactive `linkToken`/`linkStatus` state, or omit it and just use the returned `open()`/`destroy()` handles. Server-side f…
 
-#### `createPlaidLink(config)` (async function)
-Create a signal-based Plaid Link handler. Returns signals for linkToken, linkStatus, and accounts.
-packages/integrations/src/plaid.js · `import { createPlaidLink } from '@basenative/integrations';`
+#### loadPlaidScript()
+Loads the Plaid Link drop-in script (`link-initialize.js` from Plaid's CDN) into the page if it isn't already present. Safe to call multiple times — an in-flight or already-loaded script is detected and reused. **Parameters:** none. **Retu…
 
-#### `openPlaidLink(options)` (async function)
-Open Plaid Link with the given link token (legacy API).
-packages/integrations/src/plaid.js · `import { openPlaidLink } from '@basenative/integrations';`
+#### createPlaidLink(config)
+Creates a signal-based Plaid Link handler. This is the primary client-side entry point — it loads the Link script, calls `window.Plaid.create(...)`, and (optionally) wires the resulting state into signals. **Parameters:** - `config.token`…
 
-#### `createPlaidClient(config)` (function)
-Create a Plaid API client factory with server methods. Works in Cloudflare Workers and Node.js environments.
-packages/integrations/src/plaid.js · `import { createPlaidClient } from '@basenative/integrations';`
+#### openPlaidLink(options)
+Opens Plaid Link with a given link token. This is the legacy, non-signal API — prefer `createPlaidLink()` for new code; `openPlaidLink()` is kept for callers that don't need signal-based state. **Parameters:** - `options.token` — Link toke…
 
-#### `createLinkToken(options, credentials)` (async function)
-Create a Plaid Link token for client-side initialization.
-packages/integrations/src/plaid.js · `import { createLinkToken } from '@basenative/integrations';`
+#### createPlaidClient(config)
+Creates a bound Plaid API client — a small factory over the module's standalone request functions so you don't have to thread `credentials` through every call. Works in Cloudflare Workers and Node.js. **Parameters:** - `config.clientId` -…
 
-#### `exchangePublicToken(publicToken, credentials)` (async function)
-Exchange a public token (from Link onSuccess) for an access token.
-packages/integrations/src/plaid.js · `import { exchangePublicToken } from '@basenative/integrations';`
+#### createLinkToken(options, credentials)
+Creates a Plaid Link token for client-side Link initialization. Call this from a server route; hand the returned `linkToken` to `createPlaidLink()`/`openPlaidLink()`. **Parameters:** - `options.userId` — your app's user ID (mapped to `clie…
 
-#### `getAccounts(accessToken, credentials)` (async function)
-Fetch linked accounts (without balance details).
-packages/integrations/src/plaid.js · `import { getAccounts } from '@basenative/integrations';`
+#### exchangePublicToken(publicToken, credentials)
+Exchanges a public token (received in Link's `onSuccess`) for a long-lived access token. **Parameters:** - `publicToken` — the public token from Plaid Link - `credentials` — `{ clientId, secret, env }` **Returns:** `Promise<{ accessToken:…
 
-#### `getBalances(accessToken, credentials)` (async function)
-Fetch account balances for a linked item.
-packages/integrations/src/plaid.js · `import { getBalances } from '@basenative/integrations';`
+#### getAccounts(accessToken, credentials)
+Fetches linked accounts without balance details. **Parameters:** - `accessToken` — from `exchangePublicToken()` - `credentials` — `{ clientId, secret, env }` **Returns:** `Promise<{ accounts: Array<{ id, name, type, subtype }> }>`
 
-#### `getBalance(accessToken, credentials)` (async function)
-Alias for getBalances() for consistency.
-packages/integrations/src/plaid.js · `import { getBalance } from '@basenative/integrations';`
+#### getBalances(accessToken, credentials)
+Fetches account balances for a linked item. **Parameters:** same as `getAccounts`. **Returns:** `Promise<{ accounts: Array<{ id, name, type, subtype, balances: { available, current, limit, currency } }> }>`
 
-#### `createTransfer(params, credentials)` (async function)
-Initiate a transfer via Plaid Transfer API. Supports FedNow instant transfers (network: "rtp") with graceful fallback to ACH.
-packages/integrations/src/plaid.js · `import { createTransfer } from '@basenative/integrations';`
+#### getBalance(accessToken, credentials)
+Alias for `getBalances()`, kept for naming consistency with `getAccounts` (singular vs. the plural REST resource). Identical signature and return shape.
 
-#### `getTransferStatus(transferId, credentials)` (async function)
-Check the status of a transfer.
-packages/integrations/src/plaid.js · `import { getTransferStatus } from '@basenative/integrations';`
+#### createTransfer(params, credentials)
+Initiates a transfer via the Plaid Transfer API. Supports RTP/FedNow instant transfers (`network: 'rtp'`) with automatic fallback to ACH: if Plaid rejects the RTP request with `INVALID_REQUEST`, the call is retried without the `network` fi…
 
-#### `findBestYieldAccount(accounts)` (function)
-Find the best yield account from a list of linked accounts with balances and APYs.
-packages/integrations/src/yield.js · `import { findBestYieldAccount } from '@basenative/integrations';`
+#### getTransferStatus(transferId, credentials)
+Checks the status of a transfer created with `createTransfer()`. **Parameters:** - `transferId` — transfer ID from `createTransfer()` - `credentials` — `{ clientId, secret, env }` **Returns:** `Promise<{ transferId: string, status: string,…
 
-#### `optimizeFloatAllocation(accounts, totalFloat)` (function)
-Determine optimal float allocation across multiple accounts.
-packages/integrations/src/yield.js · `import { optimizeFloatAllocation } from '@basenative/integrations';`
+### Yield (./yield)
+Pure, synchronous math for idle-float management — no network calls, no dependency on the Plaid module. Accounts are plain objects you supply (typically populated from `getAccounts`/`getBalances`).
 
-#### `calculateOptimalTransferTiming(liabilities, accounts)` (function)
-Calculate optimal timing for float transfers based on liability due dates and yield.
-packages/integrations/src/yield.js · `import { calculateOptimalTransferTiming } from '@basenative/integrations';`
+#### findBestYieldAccount(accounts)
+Finds the account with the highest APY and estimates its monthly yield at the current balance. **Parameters:** - `accounts` — `Array<{ id, name, balance, apy }>`; throws if empty/absent **Returns:** `{ accountId, accountName, apy, expected…
 
-#### `calculateBreakEven(amount, fromApy, toApy, transferCostCents = 0, daysFloat = 30)` (function)
-Calculate the break-even point for a transfer based on yield difference.
-packages/integrations/src/yield.js · `import { calculateBreakEven } from '@basenative/integrations';`
+#### optimizeFloatAllocation(accounts, totalFloat)
+Greedily allocates `totalFloat` across accounts, filling the highest-APY accounts first up to each account's `maxBalance` (default unlimited). **Parameters:** - `accounts` — `Array<{ id, name, balance, apy, maxBalance? }>`; throws if empty…
+
+#### calculateOptimalTransferTiming(liabilities, accounts)
+Builds a transfer schedule that keeps float in the best-yield account (per `findBestYieldAccount`) until shortly before it's needed. Each liability is scheduled 2 days before its due date. **Parameters:** - `liabilities` — `Array<{ dueDate…
+
+#### calculateBreakEven(amount, fromApy, toApy, transferCostCents = 0, daysFloat = 30)
+Determines whether moving `amount` from a lower-APY account to a higher-APY one is worth a given transfer cost, given how long the money will sit in the destination account. **Parameters:** - `amount` — amount to transfer, in cents - `from…
 
 ### `@basenative/keyboard` (v1.0.5)
 
-@basenative/keyboard — accessible mobile-first virtual keyboard primitive.
+Accessible mobile-first on-screen virtual keyboard primitive — layout-agnostic, signal-driven key state coloring, themable
 
-Source: `packages/keyboard/src`
+Source: `packages/keyboard/src` · Docs: `docs/api/keyboard.md`
 
 - `./css` → `./src/styles.css` (non-JS resource export)
 - `./styles.css` → `./src/styles.css` (non-JS resource export)
 
-#### `Keyboard(options = {})` (function)
-One-shot convenience. Returns `{ html, hydrate }` so callers can embed the markup in SSR output and wire up reactivity later.
-packages/keyboard/src/keyboard.js · `import { Keyboard } from '@basenative/keyboard';`
+### API Reference
 
-#### `renderKeyboard(options = {})` (function)
-Render the keyboard as an HTML string. Pre-paint friendly — works in SSR, hydrates cleanly client-side.
-packages/keyboard/src/keyboard.js · `import { renderKeyboard } from '@basenative/keyboard';`
+#### Keyboard(options = {})
+One-shot convenience. Returns `{ html, hydrate }` so callers can embed the markup in SSR output and wire up reactivity later — `html` is the result of `renderKeyboard(options)`, and calling `hydrate(rootEl)` calls `hydrateKeyboard(rootEl,…
 
-#### `hydrateKeyboard(rootEl, options = {})` (function)
-Hydrate a rendered keyboard. `rootEl` is the element produced by `renderKeyboard` (or any equivalent DOM that follows the `data-bn="kb-key"` contract).
-packages/keyboard/src/keyboard.js · `import { hydrateKeyboard } from '@basenative/keyboard';`
+#### renderKeyboard(options = {})
+Render the keyboard as an HTML string. Pre-paint friendly — works in SSR, hydrates cleanly client-side. **Parameters:** - `options.layout` — a layout object, a built-in name (`'qwerty'` default, `'alphanumeric'`, `'numpad'`, `'phone'`), or…
+```html
+<div data-bn="keyboard" id="..." class="bn-kb" role="region" aria-label="..." aria-roledescription="virtual keyboard">
+  <div data-bn="kb-rows" class="bn-kb-rows">
+    <div data-bn="kb-row" class="bn-kb-row" data-row="0">
+      <button type="button" data-bn="kb-key" data-kb-type="char|action" data-kb-key="A" class="bn-kb-key ...">
+        <span aria-hidden="true">A</span>
+      </button>
+      <!-- ... -->
+    </div>
+  </div>
+</div>
+```
 
-#### `keyState(stateOrGetter, letter)` (function)
-Lift a single letter's status out of a state-map signal/getter. Useful when you want to drive a *different* UI element off the same key-status source (e.g. a tile in a Wordle-style grid).
-packages/keyboard/src/keyboard.js · `import { keyState } from '@basenative/keyboard';`
+#### hydrateKeyboard(rootEl, options = {})
+Hydrate a rendered keyboard. `rootEl` is the element produced by `renderKeyboard` (or any equivalent DOM that follows the `data-bn="kb-key"` contract). Throws `TypeError` if `rootEl` isn't a DOM element. **Parameters:** - `options.onKey(ch…
 
-#### `LAYOUTS` (const)
-Built-in layouts. All values are pre-normalized.
-packages/keyboard/src/layouts.js · `import { LAYOUTS } from '@basenative/keyboard';`
+#### keyState(stateOrGetter, letter)
+Lift a single letter's status out of a state-map signal/getter. Useful when you want to drive a *different* UI element off the same key-status source (e.g. a tile in a Wordle-style grid). **Parameters:** - `stateOrGetter` — either a functi…
+```js
+const greenA = keyState(stateGetter, 'A');
+if (greenA() === 'green') { /* ... */ }
+```
 
-#### `defineLayout(rows, meta = {})` (function)
-Define a custom layout. Validates row shape and returns a layout object usable in `Keyboard({ layout })`.
-packages/keyboard/src/layouts.js · `import { defineLayout } from '@basenative/keyboard';`
+#### LAYOUTS
+Built-in layouts, pre-normalized via `defineLayout`: `qwerty`, `alphanumeric`, `numpad`, `phone`. Each is `{ rows: Key[][], name }`.
 
-#### `validateLayout(layout)` (function)
-Shape-validate a layout object. Returns true or throws with a clear message — handy in tests and dev builds.
-packages/keyboard/src/layouts.js · `import { validateLayout } from '@basenative/keyboard';`
+#### defineLayout(rows, meta = {})
+Define a custom layout. Validates row shape and returns a layout object usable in `Keyboard({ layout })`. **Parameters:** - `rows` — non-empty array of rows, each a non-empty array of `Key`-shapes or strings; strings and partial objects ar…
 
-#### `normalizeKey(raw)` (function)
-Normalize any user-supplied key shape into a canonical Key object. Strings become char keys; partial objects get sensible defaults.
-packages/keyboard/src/layouts.js · `import { normalizeKey } from '@basenative/keyboard';`
+#### validateLayout(layout)
+Shape-validate a layout object. Returns `true` or throws with a clear message — handy in tests and dev builds. Checks that `layout.rows` is a non-empty array of non-empty rows, and that every key has `type` of `'char'` or `'action'` with s…
 
-#### `applyAriaAttributes(rootEl, options = {})` (function)
-Apply accessible attributes to the root keyboard element. Idempotent — safe to call after re-render or on hydrate.
-packages/keyboard/src/a11y.js · `import { applyAriaAttributes } from '@basenative/keyboard';`
+#### normalizeKey(raw)
+Normalize any user-supplied key shape into a canonical `Key` object. Strings become char keys; partial objects get sensible defaults. **Parameters:** `raw` — a string, a partial `{ type?, label?, key?, span?, variant? }` object, or anythin…
 
-#### `preventFocusSteal(rootEl)` (function)
-Mobile-Safari focus fix. Without this, tapping a key briefly blurs the active text input, which makes iOS think the user dismissed the field — and on the next focus it re-raises the native keyboard. We swallow the mousedown so focus never…
-packages/keyboard/src/a11y.js · `import { preventFocusSteal } from '@basenative/keyboard';`
+#### applyAriaAttributes(rootEl, options = {})
+Apply accessible attributes to the root keyboard element: `role="region"`, `aria-label` (default `'On-screen keyboard'`), and `aria-roledescription="virtual keyboard"`. Idempotent — safe to call after re-render or on hydrate. No-ops if `ro…
 
-#### `bindHardwareKeys(target, handlers, options = {})` (function)
-Bind a hardware keyboard listener that mirrors physical keys onto the same dispatch pipeline as the on-screen keyboard.
-packages/keyboard/src/a11y.js · `import { bindHardwareKeys } from '@basenative/keyboard';`
+#### preventFocusSteal(rootEl)
+Mobile-Safari focus fix. Without this, tapping a key briefly blurs the active text input, which makes iOS think the user dismissed the field — and on the next focus it re-raises the native keyboard. Swallows `mousedown` and `touchstart` on…
 
-#### `haptic(ms = 8)` (function)
-Optional haptic feedback. No-ops where unsupported.
-packages/keyboard/src/a11y.js · `import { haptic } from '@basenative/keyboard';`
+#### bindHardwareKeys(target, handlers, options = {})
+Bind a hardware keyboard listener that mirrors physical keys onto the same dispatch pipeline as the on-screen keyboard. **Parameters:** - `target` — an event target, e.g. `document` - `handlers.onKey(char, event)` — fired for single printa…
+
+#### haptic(ms = 8)
+Optional haptic feedback via `navigator.vibrate(ms)`. No-ops where unsupported, and swallows any error.
 
 ### `@basenative/logger` (v0.3.0)
 
@@ -1664,41 +1750,47 @@ pipeline.use(requestLogger(logger));
 ctx.state.logger.info('User fetched', { userId: 42 });
 ```
 
+#### LEVELS
+Plain object mapping level names to their Pino-convention numbers: `{ trace: 10, debug: 20, info: 30, warn: 40, error: 50, fatal: 60 }`. Useful for comparing a stored/configured level name against a log entry's numeric `level`.
+```js
+import { LEVELS } from '@basenative/logger';
+
+if (entry.level >= LEVELS.warn) alertOncall(entry);
+```
+
+#### LEVEL_NAMES
+The inverse of `LEVELS` — maps each numeric level back to its name (`{ 10: 'trace', 20: 'debug', ... }`). Used internally by `consoleTransport()`'s pretty-print mode to render `entry.level` as `INFO`/`WARN`/etc.
+```js
+import { LEVEL_NAMES } from '@basenative/logger';
+
+console.log(LEVEL_NAMES[entry.level]); // 'warn'
+```
+
 ### Log Entry Format
 In production (JSON mode): In development (pretty mode): Level numbers follow the Pino convention (10–60), making logs compatible with Pino transports and log aggregation tools.
 ```json
 {"level":30,"time":1712345678901,"name":"app","msg":"Server started","port":3000}
 ```
 
-#### Undocumented exports (source-only — not in docs/api/logger.md)
-
-#### `LEVELS` (const)
-Structured logging with Pino-compatible JSON output.
-packages/logger/src/index.js · `import { LEVELS } from '@basenative/logger';`
-
-#### `LEVEL_NAMES` (const)
-packages/logger/src/index.js · `import { LEVEL_NAMES } from '@basenative/logger';`
-
 ### `@basenative/markdown` (v0.1.0)
 
 Zero-dependency ES module markdown parser and SSR-safe HTML renderer
 
-Source: `packages/markdown/src`
+Source: `packages/markdown/src` · Docs: `docs/api/markdown.md`
 
-#### `parse(markdown)` (function)
-Parse markdown to an HTML string. Convenience wrapper that runs the parser and renderer back-to-back.
-packages/markdown/src/index.js · `import { parse } from '@basenative/markdown';`
+### API Reference
 
-#### `parseFrontmatter(input)` (function)
-Extract YAML-style frontmatter from a markdown document.
-packages/markdown/src/index.js · `import { parseFrontmatter } from '@basenative/markdown';`
+#### parse(markdown)
+Parse markdown to an HTML string. Convenience wrapper that runs `parseAST` and `render` back-to-back — equivalent to `render(parseAST(markdown))`. **Parameters:** - `markdown` — raw Markdown source string **Returns:** HTML string.
 
-#### `parseAST(markdown)` (function)
-packages/markdown/src/parser.js · `import { parseAST } from '@basenative/markdown';`
+#### parseFrontmatter(input)
+Extract YAML-style frontmatter from a Markdown document. Recognizes a leading `---` block terminated by a line starting with `---`; each `key: value` line inside becomes a flat string entry (quoted values have their surrounding quotes stri…
 
-#### `render(ast)` (function)
-HTML renderer for the markdown AST. SSR-safe: produces a plain HTML string with no DOM access, escapes text content, and rejects dangerous URL schemes.
-packages/markdown/src/renderer.js · `import { render } from '@basenative/markdown';`
+#### parseAST(markdown)
+Parse a Markdown string into an AST — an array of block-level nodes (`heading`, `paragraph`, `list`, `list-item`, `table`, `table-row`, `table-cell`, `code-block`, `blockquote`, `horizontal-rule`, `line-break`) whose inline content (`text`…
+
+#### render(ast)
+HTML renderer for the Markdown AST produced by `parseAST`. Imported from the `./renderer` subpath export. SSR-safe: produces a plain HTML string with no DOM access, escapes all text content (`&`, `<`, `>`, `"`, `'`), generates a slugged `i…
 
 ### `@basenative/marketplace` (v0.2.1)
 
@@ -1717,56 +1809,69 @@ Installs components from the registry into your project. **Options:** - `outputD
 #### createThemeManager(options)
 Manages theme discovery and application from the registry. **Options:** - `registry` — `Registry` instance **Returns:** `ThemeManager` with: - `list()` — list available themes - `apply(themeId)` — download theme CSS and return the styleshe…
 
+#### renderPackageCard(pkg)
+Renders a marketplace package as an HTML `<article data-bn="pkg-card">` string — works on both server (SSR) and client, following the `@basenative/components` render-function convention. **Parameters:** `pkg` object — - `name` — package na…
+```js
+import { renderPackageCard } from '@basenative/marketplace';
+
+const html = renderPackageCard({
+  name: '@basenative/runtime',
+  description: 'Signal-based reactive runtime',
+  version: '1.4.0',
+  downloads: 128000,
+  tags: ['core', 'signals'],
+  repo: 'https://github.com/DuganLabs/basenative',
+});
+```
+
+#### packageCardStyles()
+Returns the CSS for `renderPackageCard()`'s markup, scoped to `[data-bn="pkg-card"]` and its children. Include it once per page (e.g. in a `<style>` tag) alongside any cards rendered with `renderPackageCard`. **Returns:** `string` — CSS. U…
+```js
+import { renderPackageCard, packageCardStyles } from '@basenative/marketplace';
+
+const page = `
+<style>${packageCardStyles()}</style>
+${components.map(renderPackageCard).join('')}
+`;
+```
+
 ### Registry API
 The registry backend accepts: - `GET /search?q=<query>&page=<n>&limit=<n>` — search components - `GET /packages/<name>` — get package metadata - `GET /packages/<name>/<version>` — get specific version - `POST /publish` — publish (requires…
-
-#### Undocumented exports (source-only — not in docs/api/marketplace.md)
-
-#### `renderPackageCard(pkg)` (function)
-Renders a marketplace package card as an HTML string. Works on both server (SSR) and client via @basenative/components convention.
-packages/marketplace/src/card.js · `import { renderPackageCard } from '@basenative/marketplace';`
-
-#### `packageCardStyles()` (function)
-CSS for package cards. Include once on the page.
-packages/marketplace/src/card.js · `import { packageCardStyles } from '@basenative/marketplace';`
 
 ### `@basenative/mcp` (v0.2.0)
 
 MCP server exposing BaseNative validation, SSR preview, and directive reference to any agent
 
-Source: `packages/mcp/src`
+Source: `packages/mcp/src` · Docs: `docs/api/mcp.md`
 
-#### `TOOLS` (const)
-packages/mcp/src/tools.js · `import { TOOLS } from '@basenative/mcp';`
+### API Reference
 
-#### `TOOL_MAP` (const)
-packages/mcp/src/tools.js · `import { TOOL_MAP } from '@basenative/mcp';`
+#### serve({ input = process.stdin, output = process.stdout } = {})
+Run the stdio loop. Messages are newline-delimited JSON, which is what the Claude Code / MCP stdio transport emits. **Parameters:** - `input` — a readable stream in `utf8` mode; default `process.stdin` - `output` — a writable stream; defau…
 
-#### `handleMessage(msg)` (function)
-Handle one JSON-RPC message and return the response, or null for a notification.
-packages/mcp/src/server.js · `import { handleMessage } from '@basenative/mcp';`
+#### handleMessage(msg)
+Handle one JSON-RPC message and return the response, or `null` for a notification. **Parameters:** `msg` — a parsed JSON-RPC request, `{ jsonrpc: '2.0', id?, method, params? }` **Returns:** a JSON-RPC response object, or `null` when no rep…
 
-#### `serve({ input = process.stdin, output = process.stdout } = {})` (function)
-Run the stdio loop. Messages are newline-delimited JSON, which is what the Claude Code / MCP stdio transport emits.
-packages/mcp/src/server.js · `import { serve } from '@basenative/mcp';`
+#### PROTOCOL_VERSION
+The MCP protocol version string this server implements and reports from `initialize` — currently `'2024-11-05'`.
 
-#### `PROTOCOL_VERSION` (const)
-packages/mcp/src/server.js · `import { PROTOCOL_VERSION } from '@basenative/mcp';`
+#### SERVER_INFO
+`{ name: 'basenative', version: '0.1.0' }` — the `serverInfo` object reported from `initialize`. This tracks the protocol/server implementation version and is maintained independently of the `@basenative/mcp` npm package version.
 
-#### `SERVER_INFO` (const)
-packages/mcp/src/server.js · `import { SERVER_INFO } from '@basenative/mcp';`
+#### TOOLS
+The array of tool definitions served over `tools/list` and dispatched by `tools/call`, each shaped `{ name, description, inputSchema, handler(args) }`: - **`validate_template`** — `{ template, context? }`. Runs `validateTemplate` from `@ba…
 
-#### `DIRECTIVES` (const)
-The BaseNative directive reference, in one place.
-packages/mcp/src/directives.js · `import { DIRECTIVES } from '@basenative/mcp';`
+#### TOOL_MAP
+`Map<string, ToolDefinition>` — `TOOLS` indexed by `name`. Used internally by `handleMessage`'s `tools/call` handling to look up the requested tool; also convenient for testing a single tool's handler directly (`TOOL_MAP.get('validate_temp…
 
-#### `PRIMITIVES` (const)
-Reactivity primitives, exported from @basenative/runtime.
-packages/mcp/src/directives.js · `import { PRIMITIVES } from '@basenative/mcp';`
+#### DIRECTIVES
+The BaseNative directive reference, in one place — the data behind the `list_directives` tool. One entry per directive (`@if`, `@else`, `@for`, `@empty`, `@switch`, `@case`, `@default`, `@defer`, `@catch`, `@feature`, `@t`, `@<event>`, `:<…
 
-#### `FORBIDDEN` (const)
-Syntax from other frameworks that BaseNative does NOT accept.
-packages/mcp/src/directives.js · `import { FORBIDDEN } from '@basenative/mcp';`
+#### PRIMITIVES
+Reactivity primitives, exported from `@basenative/runtime`. Reference entries — `signal`, `computed`, `effect`, `batch` — each shaped `{ name, signature, summary }`, served by `list_directives({ filter: 'primitives' })`.
+
+#### FORBIDDEN
+Syntax from other frameworks that BaseNative does NOT accept. A lookup table from foreign syntax (Vue, Angular, Angular 17 block syntax, Svelte, Svelte 5 runes, React, Alpine) to the BaseNative equivalent, each shaped `{ foreign, framework…
 
 ### `@basenative/middleware` (v0.3.2)
 
@@ -1820,6 +1925,9 @@ Adapts a pipeline as a Fastify plugin. **Returns:** Fastify plugin function.
 #### toCloudflareHandler(pipeline)
 Adapts a pipeline for Cloudflare Workers `fetch` handler. **Returns:** `(request: Request, env, ctx) => Promise<Response>` function.
 
+#### createExpressContext(req, res)
+Converts a raw Express `req`/`res` pair into the common `ctx` shape (`{ request, response, state }`) described below. `toExpressMiddleware` calls this internally for every request — you don't need to call it yourself unless you're building…
+
 ### Context Shape
 All middleware receives a `ctx` object with this structure:
 ```js
@@ -1835,12 +1943,6 @@ All middleware receives a `ctx` object with this structure:
   response: {
 …
 ```
-
-#### Undocumented exports (source-only — not in docs/api/middleware.md)
-
-#### `createExpressContext(req, _res)` (function)
-Create a BaseNative context from Express req/res.
-packages/middleware/src/adapters/express.js · `import { createExpressContext } from '@basenative/middleware';`
 
 ### `@basenative/notify` (v0.3.1)
 
@@ -1885,138 +1987,127 @@ Creates an in-app notification center for managing per-user notification queues.
 
 ### `@basenative/og-image` (v0.2.1)
 
-`@basenative/og-image` — runtime OG / social share PNG renderer for Cloudflare Workers and Pages Functions.
+Worker-runtime OG / social share PNG renderer — satori + resvg-wasm with KV-cached fonts and themable scene presets
 
-Source: `packages/og-image/src`
+Source: `packages/og-image/src` · Docs: `docs/api/og-image.md`
 
-#### `renderPng(scene, env, opts = {})` (async function)
-Render a satori-compatible scene to PNG bytes.
-packages/og-image/src/index.js · `import { renderPng } from '@basenative/og-image';`
+### API Reference
 
-#### `pngHeaders(opts = {})` (function)
-Standard headers for an OG PNG response. By default the response is marked immutable (one-year cache) — flip `immutable: false` for short- lived previews.
-packages/og-image/src/index.js · `import { pngHeaders } from '@basenative/og-image';`
+#### Root (`.`)
 
-#### `defineFonts(cfg = {})` (function)
-Define a font configuration. Returned object is consumed by `loadFonts`.
-packages/og-image/src/fonts.js · `import { defineFonts } from '@basenative/og-image';`
+##### renderPng(scene, env, opts = {})
+Renders a satori-compatible scene to PNG bytes. Loads fonts (via `defineFonts`'s config against the given `env`) and lazily initializes the resvg WASM module, then runs satori to produce SVG and resvg to rasterize it. **Parameters:** - `sc…
 
-#### `box(style, children = [])` (function)
-A flexbox `<div>`. Satori requires `display: flex` on every container, so this helper enforces it.
-packages/og-image/src/scene.js · `import { box } from '@basenative/og-image';`
+##### pngHeaders(opts = {})
+Standard headers for a PNG response. By default the response is marked immutable with a one-year cache lifetime — pass `immutable: false` for short-lived previews. **Parameters:** - `opts.immutable` — default `true` **Returns:** `Record<st…
 
-#### `text(style, content)` (function)
-A text node. Satori treats text-bearing divs the same as any flex container; we keep the helper distinct for readability.
-packages/og-image/src/scene.js · `import { text } from '@basenative/og-image';`
+##### defineFonts(cfg = {})
+Defines a font configuration. The returned object is what `renderPng` (via the internal `loadFonts`) uses to fetch and cache font files — you don't normally call `loadFonts` yourself. **Parameters:** - `cfg.family` — font family name; defa…
 
-#### `tile(state, opts = {})` (function)
-Render a single mini-tile (used by `tileGrid` and decorative rows).
-packages/og-image/src/scene.js · `import { tile } from '@basenative/og-image';`
+#### Scene Helpers (./scene)
+Tiny object-literal builders that produce satori-compatible vh-trees without JSX or a virtual DOM library.
 
-#### `tileGrid(rows, opts = {})` (function)
-Lay out a grid of tiles.
-packages/og-image/src/scene.js · `import { tileGrid } from '@basenative/og-image';`
+##### box(style, children = [])
+A flexbox `<div>`. Satori requires `display: flex` on every container; this helper adds it automatically so callers don't have to remember. **Parameters:** `style` — a style object; `children` — array (or single child) of vnodes. **Returns…
 
-#### `parseGrid(gridString)` (function)
-Parse the emoji grid that share-strings use back into tile states. Glyph map: 🟩 green, 🟨 yellow, ⬛ absent, ⬜ empty.
-packages/og-image/src/scene.js · `import { parseGrid } from '@basenative/og-image';`
+##### text(style, content)
+A text node. Implemented identically to `box` (satori treats text-bearing divs the same as any flex container) — kept as a separate helper purely for readability at call sites. **Parameters:** `style` — a style object; `content` — `string…
 
-#### `theme(tokens = {})` (function)
-Pre-bind the scene helpers to a theme. Returns helpers that automatically thread the theme through to anything that consumes tokens (`tile`, `tileGrid`).
-packages/og-image/src/scene.js · `import { theme } from '@basenative/og-image';`
+##### tile(state, opts = {})
+Renders a single mini-tile — the colored square used by `tileGrid` and decorative rows (e.g. `defaultPreset`'s tile strip). **Parameters:** - `state` — `"green" | "yellow" | "absent" | "empty"` - `opts.size` — px; default `44` - `opts.them…
 
-#### `defaultTheme` (const)
-Default theme tokens — match the t4bs palette as a sensible starting point. Override per-call via `theme()` or by passing a `theme` arg to a preset.
-packages/og-image/src/scene.js · `import { defaultTheme } from '@basenative/og-image';`
+##### tileGrid(rows, opts = {})
+Lays out a grid of tiles, one row of `tile()` calls per input row. **Parameters:** - `rows` — `TileState[][]` (e.g. from `parseGrid`) - `opts.tileSize` — px; default `44` - `opts.gap` — px; default `7` - `opts.theme` — partial theme tokens…
 
-#### `el(type, style, children)` (function)
-Create a vh-tree element. Low-level — most callers want `box` or `text`.
-packages/og-image/src/scene.js · `import { el } from '@basenative/og-image';`
+##### parseGrid(gridString)
+Parses the emoji grid used in share strings (e.g. a Wordle-style result) back into `TileState[][]` for `tileGrid`. Glyph map: 🟩 green, 🟨 yellow, ⬛ absent, ⬜ empty. Unrecognized characters are skipped; empty lines produce no row. **Parame…
 
-#### `defaultPreset(opts)` (function)
-Default brand / hero card. Title + subtitle + decorative tile row.
-packages/og-image/src/presets.js · `import { defaultPreset } from '@basenative/og-image';`
+##### theme(tokens = {})
+Pre-binds the scene helpers to a set of theme tokens so callers don't have to thread `{ theme: t }` through every `tile`/`tileGrid` call. **Parameters:** `tokens` — partial `Theme`, merged onto `defaultTheme`. **Returns:** `{ theme, box, t…
 
-#### `articlePreset(opts)` (function)
-Article / blog post card. Kicker on top, headline dominant, byline below.
-packages/og-image/src/presets.js · `import { articlePreset } from '@basenative/og-image';`
+##### defaultTheme
+The default theme token map, matching the t4bs palette as a starting point: `{ bg, fg, muted, accent, tile, letter, green, yellow, absent, empty }` (hex color strings). Override per-call via `theme()` or by passing a `theme` option to a pr…
 
-#### `scoreCardPreset(opts)` (function)
-Game-style score card. Lifts the t4bs design: brand + verdict at top, tile-grid summary on the left and the score number on the right, brand pinned bottom-right.
-packages/og-image/src/presets.js · `import { scoreCardPreset } from '@basenative/og-image';`
+##### el(type, style, children)
+Creates a raw vh-tree element: `{ type, props: { style, children } }`. Low-level — most callers want `box` or `text` instead. **Parameters:** `type` — element tag string (e.g. `"div"`); `style` — style object; `children` — vnode(s) or cont…
 
-#### `presets` (const)
-The full preset map — handy for table-driven dispatch.
-packages/og-image/src/presets.js · `import { presets } from '@basenative/og-image';`
+#### Presets (./presets)
+Ready-to-use scene builders, each sized to 1200×630 and ready to hand straight to `renderPng`. Every preset accepts a partial `theme` merged onto `defaultTheme`, and a `brand` string defaulting to `'basenative.dev'`.
+
+##### defaultPreset(opts)
+Default brand/hero card: large accent title, optional subtitle, a decorative tile row, and a title/brand footer. **Parameters:** - `opts.title` — required; also used as the footer label - `opts.subtitle` — optional - `opts.brand` — default…
+
+##### articlePreset(opts)
+Article/blog post card: uppercase kicker + accent rule on top, a dominant headline, byline and brand on the bottom. **Parameters:** - `opts.title` — required (rendered as the headline) - `opts.author` — optional; rendered as `by {author}`…
+
+##### scoreCardPreset(opts)
+Game-style score card: title + verdict at top with an optional category subhead, a tile-grid summary (parsed from an emoji `grid` string, capped at 6 rows) on the left and a large score number on the right, brand pinned bottom-right. **Par…
+
+##### presets
+The full preset map, for table-driven dispatch: `{ default: defaultPreset, article: articlePreset, scoreCard: scoreCardPreset }`.
 
 ### `@basenative/persist` (v1.0.4)
 
-@basenative/persist — TTL-aware local persistence + signal binding + server-rehydrate hook.
+Signal-driven local persistence with TTL, conflict resolution, and a server-rehydrate hook for BaseNative apps
 
-Source: `packages/persist/src`
+Source: `packages/persist/src` · Docs: `docs/api/persist.md`
 
-#### `setStorageAdapter(a)` (function)
-Override the global storage adapter (e.g. switch to IndexedDB or memory for tests). Pass `null` to reset.
-packages/persist/src/index.js · `import { setStorageAdapter } from '@basenative/persist';`
+### API Reference
+Exports available from the package root (`.`).
 
-#### `loadPersisted(key, opts = {})` (async function)
-Read a key. Honors the TTL envelope; returns null if expired or absent.
-packages/persist/src/index.js · `import { loadPersisted } from '@basenative/persist';`
+#### setStorageAdapter(a)
+Overrides the global storage adapter used by `loadPersisted`/`savePersisted`/`clearPersisted`/`persisted` (e.g. switch to IndexedDB or an in-memory adapter for tests). Pass `null` to reset back to the lazily-computed default (`defaultAdapt…
 
-#### `savePersisted(key, value, ttlSeconds)` (async function)
-Write a key. `ttlSeconds` of `0`/`undefined` means no expiry.
-packages/persist/src/index.js · `import { savePersisted } from '@basenative/persist';`
+#### loadPersisted(key, opts = {})
+Reads a key, honoring the TTL envelope. Also transparently reads the legacy t4bs `{...state, savedAt}` shape (treated as a 12-hour TTL from `savedAt` by default). If the stored value has expired, it is evicted (`removeItem`) and `null` is…
 
-#### `clearPersisted(key)` (async function)
-packages/persist/src/index.js · `import { clearPersisted } from '@basenative/persist';`
+#### savePersisted(key, value, ttlSeconds)
+Writes a key, wrapping `value` in a TTL envelope. Errors (e.g. `QuotaExceededError`) are swallowed — persistence is treated as best-effort. **Parameters:** - `key` — storage key - `value` — value to persist (JSON-serializable) - `ttlSecond…
 
-#### `persistedSavedAt(key)` (async function)
-Read the saved-at timestamp without deserialising the full payload.
-packages/persist/src/index.js · `import { persistedSavedAt } from '@basenative/persist';`
+#### clearPersisted(key)
+Removes a key. Errors are swallowed. **Parameters:** `key` — storage key.
 
-#### `persisted(key, signal, opts = {})` (function)
-Bidirectional bind between a signal and a persistence key.
-packages/persist/src/index.js · `import { persisted } from '@basenative/persist';`
+#### persistedSavedAt(key)
+Reads the saved-at timestamp for a key without deserializing the full payload — useful for staleness checks without paying the cost of parsing large values. **Parameters:** `key` — storage key. **Returns:** `Promise<number>` — milliseconds…
 
-#### `hydrateFromServer(args)` (async function)
-Combine local-cache read + server fetch + reconcile.
-packages/persist/src/index.js · `import { hydrateFromServer } from '@basenative/persist';`
+#### persisted(key, signal, opts = {})
+Bidirectionally binds a signal to a persistence key: hydrates the signal from storage on creation and writes through on every change. **Parameters:** - `key` — storage key - `signal` — a signal-shaped object (see Overview); works with `@ba…
 
-#### `wrap(value, ttlSeconds, now = Date.now)` (function)
-Wrap a value in a TTL envelope.
-packages/persist/src/ttl.js · `import { wrap } from '@basenative/persist';`
+#### hydrateFromServer(args)
+Combines a local-cache read, a server fetch, and reconciliation — the "session resume across tabs/reloads/devices" pattern. Order of operations: 1. Read the local persisted value. If present, call `onResolve(local, { source: 'local', local…
 
-#### `unwrap(envelope, now = Date.now)` (function)
-Unwrap an envelope. Returns null if the value has expired or the envelope is malformed.
-packages/persist/src/ttl.js · `import { unwrap } from '@basenative/persist';`
+### TTL (./ttl)
+The on-disk envelope shape is `{ v: <value>, t: <savedAtMs>, e: <expiresAtMs|null> }` — kept terse because every byte counts in `localStorage`.
 
-#### `fromLegacy(legacy, defaultTtlSeconds = 12 * 3600)` (function)
-Migrate the t4bs-style legacy `{...state, savedAt}` shape into the current envelope, keeping the original 12h-from-savedAt expiry.
-packages/persist/src/ttl.js · `import { fromLegacy } from '@basenative/persist';`
+#### wrap(value, ttlSeconds, now = Date.now)
+Wraps a value in a TTL envelope. **Parameters:** `value`; `ttlSeconds` — expiry in seconds from now, or falsy for no expiry; `now` — clock override, mainly for tests. **Returns:** `{ v, t, e }`.
 
-#### `defaultAdapter(opts = {})` (function)
-Pick a sensible default adapter for the current environment.
-packages/persist/src/storage.js · `import { defaultAdapter } from '@basenative/persist';`
+#### unwrap(envelope, now = Date.now)
+Unwraps an envelope, returning `null` if it's expired or malformed. **Parameters:** `envelope`; `now` — clock override. **Returns:** the unwrapped value, or `null`.
 
-#### `localStorageAdapter()` (function)
-Synchronous-localStorage-backed adapter, normalised to async.
-packages/persist/src/storage.js · `import { localStorageAdapter } from '@basenative/persist';`
+#### fromLegacy(legacy, defaultTtlSeconds = 12 * 3600)
+Migrates the t4bs-style legacy `{...state, savedAt}` shape into the current `{v, t, e}` envelope, preserving the original "12h from `savedAt`" expiry semantics. If `legacy` already looks like a current envelope (has both `v` and `t`), it's…
 
-#### `memoryAdapter()` (function)
-In-memory adapter for SSR / tests.
-packages/persist/src/storage.js · `import { memoryAdapter } from '@basenative/persist';`
+#### savedAt(envelope)
+Reads the saved-at timestamp from either envelope format (current `t` or legacy `savedAt`). **Parameters:** `envelope`. **Returns:** `number` — `0` if missing or invalid.
 
-#### `indexedDbAdapter(opts = {})` (function)
-IndexedDB-backed adapter for payloads above the ~5MB localStorage cap. Falls back to memory if IndexedDB is unavailable.
-packages/persist/src/storage.js · `import { indexedDbAdapter } from '@basenative/persist';`
+#### NO_EXPIRY
+Sentinel value (`null`) used in the envelope's `e` field to mean "never expires." Used internally by `wrap`/`fromLegacy`; exported so callers can compare against it explicitly.
 
-#### `savedAt(envelope)` (function)
-Read the saved-at timestamp from an envelope (legacy or current format). Returns 0 if missing.
-packages/persist/src/ttl.js · `import { savedAt } from '@basenative/persist';`
+### Storage (./storage)
+All adapters share the same async surface (`getItem`/`setItem`/`removeItem`/`clear`) regardless of the underlying mechanism, so callers never need to branch on which one is active.
 
-#### `NO_EXPIRY` (const)
-TTL envelope helpers.
-packages/persist/src/ttl.js · `import { NO_EXPIRY } from '@basenative/persist';`
+#### defaultAdapter(opts = {})
+Picks a sensible default adapter for the current environment: `localStorage` if available, otherwise an in-memory `Map`. Used lazily by `loadPersisted`/`savePersisted`/etc. unless overridden via `setStorageAdapter`. **Parameters:** `opts.p…
+
+#### localStorageAdapter()
+A synchronous-`localStorage`-backed adapter, normalized to the package's async interface. All operations are wrapped in `try/catch` (e.g. to swallow `QuotaExceededError`). **Returns:** a storage adapter, or `null` if `globalThis.localStora…
+
+#### memoryAdapter()
+An in-memory (`Map`-backed) adapter — always available, used for SSR, tests, and Workers. **Returns:** a storage adapter.
+
+#### indexedDbAdapter(opts = {})
+An IndexedDB-backed adapter for payloads above the ~5MB `localStorage` cap. Falls back to `memoryAdapter()` if IndexedDB isn't available in the current environment. **Parameters:** `opts.dbName` — default `'bn-persist'`; `opts.store` — obj…
 
 ### `@basenative/realtime` (v0.3.0)
 
@@ -2528,179 +2619,209 @@ const html = render(`
 #### Options
 | Option | Type | Description | |--------|------|-------------| | `hydratable` | `boolean` | Emit `<!--bn:...-->` marker comments for hydration diagnostics | | `onDiagnostic` | `(diagnostic) => void` | Callback for diagnostic events during…
 
-#### Undocumented exports (source-only — not in docs/api/server.md)
+#### resolveDeferred(options)
+Renders the content queued by `@defer` blocks encountered during `render()`, and returns a matching `<script>` injection for each one that swaps it into the page once the deferred HTML is ready. Pass the same `options` object that was pass…
+```js
+import { render, resolveDeferred } from '@basenative/server';
 
-#### `resolveDeferred(options)` (function)
-packages/server/src/render.js · `import { resolveDeferred } from '@basenative/server';`
+const options = { hydratable: true };
+const html = render(`
+  <template @defer>
+    <p>{{ slowStat() }}</p>
+  </template>
+`, ctx, options);
 
-#### `renderToStream(html, ctx, stream, options = {})` (function)
-Streaming SSR renderer for BaseNative.
-packages/server/src/stream.js · `import { renderToStream } from '@basenative/server';`
+// After the initial response is sent (or streamed), resolve each deferred block:
+…
+```
 
-#### `renderToReadableStream(html, ctx, options = {})` (function)
-Renders a template and returns a Web ReadableStream. Deferred sections are appended after the main content as script injections.
-packages/server/src/stream.js · `import { renderToReadableStream } from '@basenative/server';`
+### Streaming
+Both streaming helpers live in the `@basenative/server/stream` subpath export, not the package root.
+
+#### renderToStream(html, ctx, stream, options?)
+Renders a template and writes it to a Node.js-style writable stream in chunks, respecting backpressure. Deferred (`@defer`) sections are resolved and appended after the main content as `<script>` injections, same as `resolveDeferred` above…
+```js
+import { renderToStream } from '@basenative/server/stream';
+
+app.get('/', (req, res) => {
+  res.setHeader('Content-Type', 'text/html');
+  renderToStream(template, ctx, res, { chunkSize: 8192, hydratable: true });
+});
+```
+
+#### renderToReadableStream(html, ctx, options?)
+Same rendering and chunking behavior as `renderToStream`, but returns a Web-standard `ReadableStream` instead of writing to a passed-in stream — for Cloudflare Workers, Deno, or any `Response`-based runtime. **Parameters:** - `html` — full…
+```js
+import { renderToReadableStream } from '@basenative/server/stream';
+
+export default {
+  fetch(request) {
+    const stream = renderToReadableStream(template, ctx, { chunkSize: 8192 });
+    return new Response(stream, { headers: { 'Content-Type': 'text/html' } });
+  },
+};
+```
 
 ### `@basenative/share` (v1.0.1)
 
-Browser-side share helpers.
+Native Web Share + clipboard fallback, share-card mint client+server, and OG-redirect landing page generator for BaseNative apps
 
-Source: `packages/share/src`
+Source: `packages/share/src` · Docs: `docs/api/share.md`
 
 - `./migrations/0001` → `./migrations/0001_share_cards.sql` (non-JS resource export)
 
-#### `nativeShare(payload)` (async function)
-Try the Web Share API; fall back to clipboard; otherwise fail.
-packages/share/src/client.js · `import { nativeShare } from '@basenative/share';`
+### API Reference
 
-#### `mintShareCard(payload, opts = {})` (async function)
-POST a share-card payload and return the minted `{ id, url }`.
-packages/share/src/client.js · `import { mintShareCard } from '@basenative/share';`
+### Client (`.` / `./client`)
+The default export (`.`) and `./client` resolve to the same file — `import ... from '@basenative/share'` and `import ... from '@basenative/share/client'` are interchangeable.
 
-#### `composeShareText(template, vars = {})` (function)
-Tiny `${var}` template helper. Placeholders that don't have a matching key are left untouched (which keeps malformed templates from silently losing data).
-packages/share/src/client.js · `import { composeShareText } from '@basenative/share';`
+#### nativeShare(payload)
+Shares via the Web Share API when available, falls back to the clipboard, otherwise reports failure. Has no server dependency and works from any browser context. **Parameters:** - `payload.text` — share text; optional - `payload.url` — sha…
 
-#### `shortId(len = DEFAULT_ID_LENGTH, alphabet = DEFAULT_ALPHABET)` (function)
-Generate a cryptographically-random short id.
-packages/share/src/server.js · `import { shortId } from '@basenative/share';`
+#### mintShareCard(payload, opts = {})
+POSTs a share-card payload to your mint endpoint and returns the minted id and URL. **Parameters:** - `payload` — arbitrary JSON-serializable object describing the thing being shared - `opts.endpoint` — request path; default `'/api/share-c…
 
-#### `defineShareCards(cfg = {})` (function)
-Define a share-card store bound to a DB and a table.
-packages/share/src/server.js · `import { defineShareCards } from '@basenative/share';`
+#### composeShareText(template, vars = {})
+A minimal `${var}` template substitution helper for building share text. **Parameters:** - `template` — string containing `${key}` placeholders - `vars` — object of replacement values **Returns:** the substituted string. A placeholder whos…
 
-#### `mintHandler(opts)` (function)
-POST handler for `/api/share-cards`.
-packages/share/src/server.js · `import { mintHandler } from '@basenative/share';`
+### Server (`./server`)
 
-#### `landingHandler(opts)` (function)
-GET handler for `/s/{id}` — emits the OG-bearing landing HTML.
-packages/share/src/server.js · `import { landingHandler } from '@basenative/share';`
+#### shortId(len = DEFAULT_ID_LENGTH, alphabet = DEFAULT_ALPHABET)
+Generates a cryptographically random short id using `crypto.getRandomValues`. **Parameters:** - `len` — id length; default `DEFAULT_ID_LENGTH` (`8`) - `alphabet` — character set to draw from; default `DEFAULT_ALPHABET` **Returns:** the gen…
 
-#### `DEFAULT_ALPHABET` (const)
-Default short-id alphabet — Crockford-flavoured, no 0/1/i/l/o.
-packages/share/src/server.js · `import { DEFAULT_ALPHABET } from '@basenative/share';`
+#### defineShareCards(cfg = {})
+Defines a share-card store bound to a specific database and table. **Parameters:** - `cfg.db` — required; a D1-shaped database exposing `.prepare(sql)` - `cfg.table` — table name; default `'share_cards'` - `cfg.idLength` — passed to `short…
 
-#### `DEFAULT_ID_LENGTH` (const)
-packages/share/src/server.js · `import { DEFAULT_ID_LENGTH } from '@basenative/share';`
+#### mintHandler(opts)
+Builds a POST handler for a share-card mint endpoint (e.g. `/api/share-cards`). **Parameters:** - `opts.store` — required; a `ShareCardStore` from `defineShareCards` - `opts.origin` — string or `(env) => string`, used to build the returned…
 
-#### `escHtml(s)` (function)
-Defensive HTML escape. Inlined so the module has no dependencies.
-packages/share/src/og-redirect.js · `import { escHtml } from '@basenative/share';`
+#### landingHandler(opts)
+Builds a GET handler that serves the OG-bearing landing page for a minted share card (e.g. `/s/{id}`). **Parameters:** - `opts.store` — required; a `ShareCardStore` - `opts.buildMeta` — required; `(card, { origin, id, ogImage }) => Landing…
 
-#### `buildLandingHtml(meta)` (function)
-Build the full HTML document for a share landing page.
-packages/share/src/og-redirect.js · `import { buildLandingHtml } from '@basenative/share';`
+#### DEFAULT_ALPHABET
+The default alphabet used by `shortId`: `'23456789abcdefghjkmnpqrstuvwxyz'` — a Crockford-flavoured base32-like set that excludes `0`/`1`/`i`/`l`/`o` to avoid visually ambiguous ids.
+
+#### DEFAULT_ID_LENGTH
+The default id length used by `shortId`: `8`.
+
+### OG Redirect (`./og-redirect`)
+`landingHandler` calls `buildLandingHtml` internally, so most consumers won't need to import `./og-redirect` directly — it's exposed for building a custom landing response outside of `landingHandler`.
+
+#### buildLandingHtml(meta)
+Builds the full HTML document for a share landing page: OG/Twitter meta tags for crawlers, plus a visible fallback body that JS-redirects real visitors to `meta.redirectTo`. The redirect is done with `window.location.replace(...)` rather t…
+
+#### escHtml(s)
+Internal-use HTML escape (`&`, `<`, `>`, `"`, `'`), duplicated locally rather than imported so `og-redirect.js` has no dependencies of its own. Not typically called directly — used internally by `buildLandingHtml` to escape every field bef…
+
+### Migrations
+
+#### `./migrations/0001`
+Resolves to `migrations/0001_share_cards.sql`, a plain SQL resource (not a JS module). It creates the `share_cards` table (`id`, `user_id`, `session_id`, `category`, `score`, `won`, `grid`, `payload_json`, `created_at`) that `defineShareCa…
 
 ### `@basenative/station` (v0.2.0)
 
-@basenative/station — queue-driven local-inference primitive.
+Queue-driven local-inference primitive — drives a cloudflared-tunneled vLLM tower (or any OpenAI-compatible endpoint) with an SQLite-backed job queue, iteration loop runtime, fallback to Workers AI, and reusable job templates.
 
-Source: `packages/station/src`
+Source: `packages/station/src` · Docs: `docs/api/station.md`
 
-#### `ops` (namespace)
-Namespace re-export of ./ops.js.
-packages/station/src/index.js
-  #### `tunnelHealth(url, { fetch = globalThis.fetch, timeoutMs = DEFAULT_TIMEOUT_MS } = {})` (async function)
-  tunnelHealth — HTTP GET <url>/health. Returns `{ ok: boolean, status?: number, latencyMs?: number, error?: string }`.
-  packages/station/src/ops.js · `import { tunnelHealth } from '@basenative/station';`
-  #### `modelHealth(client)` (async function)
-  modelHealth — verifies that the expected model is listed at the primary endpoint.
-  packages/station/src/ops.js · `import { modelHealth } from '@basenative/station';`
-  #### `gpuHealth(url, { fetch = globalThis.fetch, timeoutMs = DEFAULT_TIMEOUT_MS } = {})` (async function)
-  gpuHealth — optional remote GPU stat probe. Stubbed; production deployments expose a `/gpu` endpoint over the tunnel that returns `{ tempC, memUsedPct }`.
-  packages/station/src/ops.js · `import { gpuHealth } from '@basenative/station';`
-  #### `queueHealth(queue)` (function)
-  queueHealth — depth, oldest queued age, in-flight count. Pure — runs against an in-process queue instance.
-  packages/station/src/ops.js · `import { queueHealth } from '@basenative/station';`
-  #### `summary({ tunnelUrl, client, gpuUrl, queue })` (async function)
-  summary — composite check used by `bn-station ops`.
-  packages/station/src/ops.js · `import { summary } from '@basenative/station';`
+### API Reference
 
-#### `Runner` (class)
-packages/station/src/runner.js
+#### Root (`@basenative/station`)
+The root entry re-exports everything below — `Runner`, `runOnce`, `run`, `escalate` from `./runner`; `Queue`, `createQueue`, `MemoryQueueDriver` from `./queue`; `Client`, `OpenAICompatClient`, `StationUnavailable`, `StationTimeout` from `.…
 
-#### `runOnce({ client, queue, templates, job, applyDiff, log })` (async function)
-packages/station/src/runner.js · `import { runOnce } from '@basenative/station';`
+##### defineStation(opts = {})
+Single-call factory that wires a `Client`, a `Queue`, and a `Runner` together with sane defaults, returning a frozen struct rather than a class instance. The orchestrator reaches into the returned object and uses pieces individually — e.g.…
 
-#### `run({ client, queue, templates, applyDiff, log, ...opts })` (async function)
-packages/station/src/runner.js · `import { run } from '@basenative/station';`
+#### Runner (`./runner`)
+The loop runtime. For each queued job it looks up the template for the job's `intent`, builds a prompt via `template.buildPrompt(payload)`, calls the model through the configured client, runs `template.successCheck(diff, payload)` against…
 
-#### `escalate({ queue, job, reason })` (function)
-packages/station/src/runner.js · `import { escalate } from '@basenative/station';`
+##### Runner
+Class wrapping one client + queue + template registry. **Constructor:** `new Runner({ client, queue, templates, applyDiff, log })` - `client` — an `OpenAICompatClient` (or compatible). **Required.** - `queue` — a `Queue` instance. **Requir…
 
-#### `Queue` (class)
-Queue — facade over a driver.
-packages/station/src/queue.js
+##### runOnce({ client, queue, templates, job, applyDiff, log })
+Free-standing convenience wrapper: constructs a one-off `Runner` and calls `.runOnce(job)` on it. **Parameters:** same shape as the `Runner` constructor plus `job` — the job object to run. **Returns:** `Promise` resolving to the same resul…
 
-#### `createQueue({ path = ':memory:', betterSqlite3 } = {})` (function)
-createQueue — driver auto-selection. Always returns a memory driver unless a `betterSqlite3` instance is supplied or one can be loaded.
-packages/station/src/queue.js · `import { createQueue } from '@basenative/station';`
+##### run({ client, queue, templates, applyDiff, log, ...opts })
+Free-standing convenience wrapper: constructs a one-off `Runner` and calls `.run(opts)` on it, where `opts` is everything besides `client`/`queue`/`templates`/`applyDiff`/`log` (e.g. `maxJobs`, `maxIterations`). **Returns:** `Promise<{ pro…
 
-#### `MemoryQueueDriver` (class)
-In-memory driver — full-featured, used in tests + as the fallback when better-sqlite3 isn't available.
-packages/station/src/queue.js
+##### escalate({ queue, job, reason })
+Free-standing helper that escalates a job directly against a queue, without constructing a `Runner`: calls `queue.escalate(job.id, \`${reason} -> ${job.escalateTo ?? 'sonnet'}\`)`.
 
-#### `Client` (const)
-packages/station/src/client.js · `import { Client } from '@basenative/station';`
+#### Queue (`./queue`)
+An SQLite-backed job store, exposed behind a driver interface so the same `Queue` facade works against an in-memory driver (tests, Workers) or a `better-sqlite3` driver (Node production). Tracks two logical tables: `station_jobs` (one row…
 
-#### `OpenAICompatClient` (class)
-packages/station/src/client.js
+##### createQueue({ path = ':memory:', betterSqlite3 } = {})
+Driver auto-selection factory. Always returns a `Queue` backed by `MemoryQueueDriver` unless a `betterSqlite3` constructor is supplied — station does not bundle `better-sqlite3` itself (so Workers-side consumers don't pull native deps into…
 
-#### `StationUnavailable` (class)
-packages/station/src/client.js
+##### Queue
+Facade over a driver (`{ insertJob, updateJob, getJob, selectQueued, list, insertIteration, iterationsFor }`). Constructed with `new Queue({ driver })`, but most consumers get one from `createQueue`. **Methods:** - `enqueue(job)` — inserts…
 
-#### `StationTimeout` (class)
-packages/station/src/client.js
+##### MemoryQueueDriver
+In-memory driver implementation — full-featured, used in tests and as the automatic fallback when `better-sqlite3` isn't supplied. Stores jobs in a `Map` and iterations in an array; implements the same driver surface (`insertJob`, `updateJ…
 
-#### `templates` (const)
-packages/station/src/templates/index.js · `import { templates } from '@basenative/station';`
+##### QUEUE_STATUSES
+Frozen array of every valid job status: `['queued', 'running', 'stalled', 'done', 'escalated', 'failed']`.
 
-#### `defineStation(opts = {})` (function)
-packages/station/src/define-station.js · `import { defineStation } from '@basenative/station';`
+#### Client (`./client`)
+A fetch-only HTTP client targeting any OpenAI-compatible chat-completion endpoint (a vLLM tower behind cloudflared, Workers AI in fallback mode, etc). Worker-runtime safe — no `node:fs`/`node:net`/`node:http`, only `globalThis.fetch` (or a…
 
-#### `QUEUE_STATUSES` (const)
-packages/station/src/queue.js · `import { QUEUE_STATUSES } from '@basenative/station';`
+##### OpenAICompatClient
+**Constructor:** `new OpenAICompatClient(opts)` - `opts.baseUrl` — primary endpoint base URL. **Required**; throws if omitted. - `opts.model` — primary model id. **Required**; throws if omitted. - `opts.apiKey` — bearer token sent as `Auth…
 
-#### `testsFromTodos` (const)
-tests-from-todos — given a file with `// TODO: test X` markers, generate one test per iteration. Loop pattern: knock off one TODO, mark done, advance.
-packages/station/src/templates/tests-from-todos.js · `import { testsFromTodos } from '@basenative/station';`
+##### Client
+`export const Client = OpenAICompatClient;` — an alias for the spec-mandated public name. Identical to `OpenAICompatClient`; prefer importing `Client` in application code, `OpenAICompatClient` when you need the concrete class name (e.g. `i…
 
-#### `docstringCoverage` (const)
-docstring-coverage — add a JSDoc comment to one undocumented export.
-packages/station/src/templates/docstring-coverage.js · `import { docstringCoverage } from '@basenative/station';`
+##### StationUnavailable
+`Error` subclass (`name: 'StationUnavailable'`) thrown by `OpenAICompatClient#chat` when both the primary and (if configured) fallback endpoint calls fail. Carries `{ primary, fallback }` — the underlying errors from each attempt — as prop…
 
-#### `lintBankruptcy` (const)
-lint-bankruptcy — fix one lint warning per iteration.
-packages/station/src/templates/lint-bankruptcy.js · `import { lintBankruptcy } from '@basenative/station';`
+##### StationTimeout
+`Error` subclass (`name: 'StationTimeout'`) thrown when a request exceeds `timeoutMs`, in place of the generic `AbortError` that would otherwise surface.
 
-#### `refactorMigration` (const)
-refactor-migration — apply one mechanical refactor step per iteration.
-packages/station/src/templates/refactor-migration.js · `import { refactorMigration } from '@basenative/station';`
+#### Templates (`./templates`)
+A registry of pre-built job templates, each shaped `{ name, description, buildPrompt(payload), successCheck(diffOrResponse, payload), maxIterations, escalateTo, temperature?, maxTokens? }`. `buildPrompt` renders the model prompt from the j…
 
-#### `fsmClassifier` (const)
-fsm-classifier — Greenput intake classification.
-packages/station/src/templates/fsm-classifier.js · `import { fsmClassifier } from '@basenative/station';`
+##### templates
+`Object.freeze({ ... })` mapping job `intent` strings to templates, with each template reachable under two or three aliases (e.g. both `'tests'` and `'tests-from-todos'` resolve to the same template object): This is the default registry pa…
+```
+tests, tests-from-todos          → testsFromTodos
+docs, docstring-coverage         → docstringCoverage
+lint-fix, lint-bankruptcy        → lintBankruptcy
+one-file-refactor, refactor-migration → refactorMigration
+fsm-transition, classification, fsm-classifier → fsmClassifier
+```
 
-#### `tunnelHealth(url, { fetch = globalThis.fetch, timeoutMs = DEFAULT_TIMEOUT_MS } = {})` (async function)
-tunnelHealth — HTTP GET <url>/health. Returns `{ ok: boolean, status?: number, latencyMs?: number, error?: string }`.
-packages/station/src/ops.js · `import { tunnelHealth } from '@basenative/station';`
+##### testsFromTodos
+Generates one test per iteration for a file containing `// TODO: test X` markers — knocks off one TODO per iteration. `payload`: `{ filePath, fileContents, todoLine, todoText, testFramework?, targetSymbol? }`. `successCheck` requires the r…
 
-#### `modelHealth(client)` (async function)
-modelHealth — verifies that the expected model is listed at the primary endpoint.
-packages/station/src/ops.js · `import { modelHealth } from '@basenative/station';`
+##### docstringCoverage
+Writes a single JSDoc block for one undocumented export. `payload`: `{ filePath, fileContents, exportName, exportSignature?, exportKind }`. `successCheck` requires the response to be wrapped in `/** ... */` and (absent an `exportSignature`…
 
-#### `gpuHealth(url, { fetch = globalThis.fetch, timeoutMs = DEFAULT_TIMEOUT_MS } = {})` (async function)
-gpuHealth — optional remote GPU stat probe. Stubbed; production deployments expose a `/gpu` endpoint over the tunnel that returns `{ tempC, memUsedPct }`.
-packages/station/src/ops.js · `import { gpuHealth } from '@basenative/station';`
+##### lintBankruptcy
+Fixes exactly one lint warning per iteration, as a unified diff (or an `eslint-disable-next-line` waiver when a fix isn't appropriate). `payload`: `{ filePath, fileContents, ruleId, line, column?, message, linter? }`. `successCheck` requir…
 
-#### `queueHealth(queue)` (function)
-queueHealth — depth, oldest queued age, in-flight count. Pure — runs against an in-process queue instance.
-packages/station/src/ops.js · `import { queueHealth } from '@basenative/station';`
+##### refactorMigration
+Applies one mechanical rename/refactor step to a single file per iteration, as a unified diff. `payload`: `{ filePath, fileContents, migration: { from, to, kind }, notes? }`. `successCheck` accepts an empty diff when the file doesn't conta…
 
-#### `summary({ tunnelUrl, client, gpuUrl, queue })` (async function)
-summary — composite check used by `bn-station ops`.
-packages/station/src/ops.js · `import { summary } from '@basenative/station';`
+##### fsmClassifier
+Classifies an inbound Greenput SMS reply into a validated FSM transition plus extracted slot values. `payload`: `{ message, currentState, allowedTransitions, contextHints? }`. Expects a strict JSON response `{ transition, confidence, field…
+
+#### Ops (`./ops`)
+Pure health-check functions (imported as `import { ops } from '@basenative/station'` at the root, or individually from `./ops`) consumed by the orchestrator's `station-ops` agent and the `bn-station ops` CLI command. Each returns a structu…
+
+##### tunnelHealth(url, { fetch = globalThis.fetch, timeoutMs = DEFAULT_TIMEOUT_MS } = {})
+`GET <url>/health` with a 30s default timeout. Returns `{ ok, status?, latencyMs?, error? }`; `error` is `'timeout'` on abort, `'url required'` if `url` is falsy.
+
+##### modelHealth(client)
+Verifies the expected model is present at the primary endpoint by calling `client.ping()`. Returns `{ ok, expectedModel, presentModels, raw }`, where `ok` requires both `res.ok` and `res.hasExpectedModel`. Returns `{ ok: false, error: 'inv…
+
+##### gpuHealth(url, { fetch = globalThis.fetch, timeoutMs = DEFAULT_TIMEOUT_MS } = {})
+Optional remote GPU stat probe against `<url>/gpu`, which is expected to return `{ tempC, memUsedPct }`. Considered `ok` when `tempC < 85` and `memUsedPct < 95`. Marked `stub: true` in most non-2xx/error paths since production deployments…
+
+##### queueHealth(queue)
+Pure, synchronous check against an in-process `Queue`'s `depth()`. Returns `{ ok, queued, running, oldestQueuedAgeMs }`; `ok` is `false` once `queued >= 100` or the oldest queued job has waited more than one hour. Returns `{ ok: false, err…
+
+##### summary({ tunnelUrl, client, gpuUrl, queue })
+Composite check run by `bn-station ops`: runs `tunnelHealth`, `modelHealth`, and (if `gpuUrl` given) `gpuHealth` concurrently via `Promise.all`, plus `queueHealth` if `queue` is given. Returns `{ ok, tunnel, model, gpu, queue }` where the…
 
 ### `@basenative/tenant` (v0.3.0)
 
@@ -2825,26 +2946,36 @@ All storage adapters implement the same interface:
 
 Structured validation for BaseNative templates — machine-actionable errors a model can repair from the error object alone
 
-Source: `packages/validate/src`
+Source: `packages/validate/src` · Docs: `docs/api/validate.md`
 
-#### `validateTemplate(source, options = {})` (function)
-Validate a BaseNative template.
-packages/validate/src/validate.js · `import { validateTemplate } from '@basenative/validate';`
+### API Reference
 
-#### `CODES` (const)
-packages/validate/src/codes.js · `import { CODES } from '@basenative/validate';`
+#### validateTemplate(source, options?)
+Validates a BaseNative template string and returns every diagnostic found. **Parameters:** - `source` — the template markup to check - `options.context` — when supplied, `{{ }}` interpolations and `:attr`/expression directive values are ch…
 
-#### `ERROR` (const)
-Blocking: the template will not render, or will render wrongly and silently.
-packages/validate/src/codes.js · `import { ERROR } from '@basenative/validate';`
+#### CODES
+The diagnostic taxonomy `validateTemplate` draws from — an object keyed by code name (`BN_E_FOREIGN_DIRECTIVE`, `BN_E_UNKNOWN_DIRECTIVE`, `BN_E_CONTROL_FLOW_ON_ELEMENT`, `BN_E_EXPR_UNSUPPORTED`, `BN_E_UNBOUND_REF`, `BN_E_MALFORMED_FOR`, `B…
+```js
+import { CODES } from '@basenative/validate';
 
-#### `WARNING` (const)
-Non-blocking: renders today, but relies on behaviour that is unspecified or fragile.
-packages/validate/src/codes.js · `import { WARNING } from '@basenative/validate';`
+console.log(CODES.BN_E_FOREIGN_DIRECTIVE);
+// { severity: 'error', confidence: 'high', summary: 'Syntax from another framework' }
+```
 
-#### `CONFIDENCE` (const)
-`high` — the correction is mechanical; a model can apply it verbatim. `medium` — the correction is the common case but depends on author intent. `low` — the diagnostic is a strong signal, but the fix requires context we lack.
-packages/validate/src/codes.js · `import { CONFIDENCE } from '@basenative/validate';`
+#### ERROR
+The string constant `'error'` — the `severity` value meaning the template will not render, or will render wrongly and silently. A `diagnostics` array containing any `ERROR`-severity entry makes `validateTemplate`'s `valid` result `false`.
+
+#### WARNING
+The string constant `'warning'` — the `severity` value meaning the template renders today but relies on behavior that is unspecified or fragile (e.g. an unkeyed `@for`). `WARNING`-only results still report `valid: true`.
+
+#### CONFIDENCE
+An object of the three confidence levels a diagnostic's `confidence` field can hold: `{ HIGH: 'high', MEDIUM: 'medium', LOW: 'low' }`. - `CONFIDENCE.HIGH` — the correction is mechanical; a model can apply the `suggestion` verbatim. - `CONF…
+
+### Severity contract
+`valid` is `false` only when at least one `error`-severity diagnostic is present. The validator never reports as an error something the runtime accepts — if a future runtime change makes something stricter or looser, the corresponding code…
+
+### Design notes
+The markup scanner underlying `validateTemplate` is deliberately not a DOM parser: a DOM parse discards byte offsets, normalizes casing, and silently repairs malformed markup — exactly the input this package exists to complain about. Expre…
 
 ### `@basenative/visual-builder` (v0.2.1)
 
@@ -2878,65 +3009,78 @@ Parses a BaseNative HTML template and reconstructs a canvas from it. **Returns:*
 #### createComponentPalette(options)
 Creates a component palette for a drag-and-drop UI. **Options:** - `components` — array of component definitions to offer in the palette **Returns:** `Palette` with: - `getComponents()` — get all palette components - `getComponent(type)` —…
 
-#### Undocumented exports (source-only — not in docs/api/visual-builder.md)
+#### BnCanvas (`<bn-canvas>` custom element)
+Client-side Web Component wrapping `createCanvas`/`renderNode` in a drag-and-drop editing surface. Registers itself as `<bn-canvas>` on import (a no-op if already registered). Uses `display: contents` on the host so it never affects page l…
+```html
+<script type="module">
+  import '@basenative/visual-builder'; // registers <bn-canvas>
+</script>
 
-#### `BnCanvas` (class)
-<bn-canvas> Web Component
-packages/visual-builder/src/bn-canvas.js
+<bn-canvas width="1200" height="800" grid-size="8" mode="edit"></bn-canvas>
+
+<script type="module">
+  const el = document.querySelector('bn-canvas');
+  el.registerComponents({
+    heading: (node) => `<h1>${node.props.text}</h1>`,
+…
+```
 
 ### `@basenative/wrangler-preset` (v0.2.1)
 
-Recommended baseline for any DuganLabs Worker / Pages project.
+Pinned Wrangler version + typed wrangler.toml fragment generator. Pin once, every project moves together.
 
-Source: `packages/wrangler-preset/src`
+Source: `packages/wrangler-preset/src` · Docs: `docs/api/wrangler-preset.md`
 
-#### `mergeWrangler(base, ...frags)` (function)
-Merge a base config and any number of fragments into a single wrangler config object. Array-valued bindings (d1_databases, kv_namespaces, etc.) are concatenated; object-valued bindings (durable_objects.bindings) are merged deeply by the sa…
-packages/wrangler-preset/src/index.js · `import { mergeWrangler } from '@basenative/wrangler-preset';`
+### API Reference
 
-#### `toToml(config)` (function)
-Serialize a wrangler config object to TOML.
-packages/wrangler-preset/src/index.js · `import { toToml } from '@basenative/wrangler-preset';`
+#### defaults
+Recommended baseline config fragment for any DuganLabs Worker/Pages project, as a frozen object: `compatibility_date` is bumped on each release of this package, so consumers pick up fresh Workers runtime semantics by upgrading `@basenative…
+```js
+{
+  compatibility_date: '2025-09-23',
+  compatibility_flags: ['nodejs_compat', 'global_fetch_strictly_public'],
+  pages_build_output_dir: 'dist',
+  workers_dev: true,
+  send_metrics: false,
+}
+```
 
-#### `defaults` (const)
-Recommended baseline for any DuganLabs Worker / Pages project.
-packages/wrangler-preset/src/index.js · `import { defaults } from '@basenative/wrangler-preset';`
+#### bindings
+Frozen object of fragment builder functions. Each returns a plain object shaped like a piece of wrangler config, meant to be combined with a base config via `mergeWrangler`. All four throw a `TypeError` if a required string argument is mis…
 
-#### `bindings` (const)
-Fragment builders. Each returns a plain object that can be merged into a wrangler config via `mergeWrangler`.
-packages/wrangler-preset/src/index.js · `import { bindings } from '@basenative/wrangler-preset';`
+##### bindings.d1(name, dbName, dbId)
+D1 database binding fragment. **Parameters:** - `name` — binding name (the env var the Worker sees) - `dbName` — D1 database name - `dbId` — D1 database UUID **Returns:** `{ d1_databases: [{ binding, database_name, database_id }] }`
+
+##### bindings.kv(name, id)
+KV namespace binding fragment. **Parameters:** - `name` — binding name - `id` — KV namespace id **Returns:** `{ kv_namespaces: [{ binding, id }] }`
+
+##### bindings.r2(name, bucket)
+R2 bucket binding fragment. **Parameters:** - `name` — binding name - `bucket` — R2 bucket name **Returns:** `{ r2_buckets: [{ binding, bucket_name }] }`
+
+##### bindings.do(name, className, scriptName)
+Durable Object binding fragment. **Parameters:** - `name` — binding name - `className` — Durable Object class name - `scriptName` — optional; the foreign script name, omit for an in-script Durable Object **Returns:** `{ durable_objects: {…
+
+#### mergeWrangler(base, ...frags)
+Merge a base config and any number of fragments (typically from `bindings.*`, or `defaults`) into a single wrangler config object. **Parameters:** - `base` — base config object (deep-cloned before merging; not mutated) - `...frags` — any n…
+
+#### toToml(config)
+Serialize a wrangler config object to TOML text. This is a small inline implementation covering the subset of TOML wrangler actually uses — top-level scalars (string/number/boolean/array of scalars), tables (nested plain objects, emitted a…
+```js
+import { toToml } from '@basenative/wrangler-preset';
+
+toToml({ name: 'my-worker', d1_databases: [{ binding: 'DB', database_name: 'my-db', database_id: 'abc' }] });
+// name = "my-worker"
+//
+// [[d1_databases]]
+// binding = "DB"
+// database_name = "my-db"
+// database_id = "abc"
+```
 
 ## Gaps
 
 Everything below is a real, mechanically-detected gap between source/package.json and docs — not inferred behavior. Fix by writing the missing doc, then re-running this generator (it will pick the doc up automatically).
 
-- `@basenative/admin` — no docs/api/admin.md; API below is extracted directly from source signatures/JSDoc only (13 exports).
-- `@basenative/auth-webauthn` — no docs/api/auth-webauthn.md; API below is extracted directly from source signatures/JSDoc only (30 exports).
-- `@basenative/builder` — no docs/api/builder.md; API below is extracted directly from source signatures/JSDoc only (16 exports).
-- `@basenative/claude-config` — no docs/api/claude-config.md; API below is extracted directly from source signatures/JSDoc only (7 exports).
-- `@basenative/combobox` — no docs/api/combobox.md; API below is extracted directly from source signatures/JSDoc only (10 exports).
-- `@basenative/doppler` — no docs/api/doppler.md; API below is extracted directly from source signatures/JSDoc only (8 exports).
-- `@basenative/favicon` — no docs/api/favicon.md; API below is extracted directly from source signatures/JSDoc only (33 exports).
-- `@basenative/flags`: `createKVProvider` is exported (packages/flags/src/providers/kv.js) but not mentioned in docs/api/flags.md.
-- `@basenative/forms`: `createWizard` is exported (packages/forms/src/wizard.js) but not mentioned in docs/api/forms.md.
-- `@basenative/integrations` — no docs/api/integrations.md; API below is extracted directly from source signatures/JSDoc only (15 exports).
-- `@basenative/keyboard` — no docs/api/keyboard.md; API below is extracted directly from source signatures/JSDoc only (12 exports).
-- `@basenative/logger`: `LEVELS` is exported (packages/logger/src/index.js) but not mentioned in docs/api/logger.md.
-- `@basenative/logger`: `LEVEL_NAMES` is exported (packages/logger/src/index.js) but not mentioned in docs/api/logger.md.
-- `@basenative/markdown` — no docs/api/markdown.md; API below is extracted directly from source signatures/JSDoc only (4 exports).
-- `@basenative/marketplace`: `renderPackageCard` is exported (packages/marketplace/src/card.js) but not mentioned in docs/api/marketplace.md.
-- `@basenative/marketplace`: `packageCardStyles` is exported (packages/marketplace/src/card.js) but not mentioned in docs/api/marketplace.md.
-- `@basenative/mcp` — no docs/api/mcp.md; API below is extracted directly from source signatures/JSDoc only (9 exports).
-- `@basenative/middleware`: `createExpressContext` is exported (packages/middleware/src/adapters/express.js) but not mentioned in docs/api/middleware.md.
-- `@basenative/og-image` — no docs/api/og-image.md; API below is extracted directly from source signatures/JSDoc only (15 exports).
-- `@basenative/persist` — no docs/api/persist.md; API below is extracted directly from source signatures/JSDoc only (16 exports).
-- `@basenative/server`: `resolveDeferred` is exported (packages/server/src/render.js) but not mentioned in docs/api/server.md.
-- `@basenative/server`: `renderToStream` is exported (packages/server/src/stream.js) but not mentioned in docs/api/server.md.
-- `@basenative/server`: `renderToReadableStream` is exported (packages/server/src/stream.js) but not mentioned in docs/api/server.md.
-- `@basenative/share` — no docs/api/share.md; API below is extracted directly from source signatures/JSDoc only (11 exports).
-- `@basenative/station` — no docs/api/station.md; API below is extracted directly from source signatures/JSDoc only (25 exports).
-- `@basenative/validate` — no docs/api/validate.md; API below is extracted directly from source signatures/JSDoc only (5 exports).
-- `@basenative/visual-builder`: `BnCanvas` is exported (packages/visual-builder/src/bn-canvas.js) but not mentioned in docs/api/visual-builder.md.
-- `@basenative/wrangler-preset` — no docs/api/wrangler-preset.md; API below is extracted directly from source signatures/JSDoc only (4 exports).
+_(none detected)_
 
 _Private packages excluded from this reference: `@basenative/evals`, `@basenative/fonts`, `@basenative/icons`._
