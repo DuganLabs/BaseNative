@@ -22,7 +22,7 @@ the next changeset bump would collide and be skipped — realign the local versi
 | `@basenative/claude-config` | 0.2.1 | 0.2.1 | — | in sync |
 | `@basenative/cli` | 0.4.1 | 0.4.1 | 0.2.0 | in sync |
 | `@basenative/combobox` | 1.0.4 | 1.0.4 | — | in sync |
-| `@basenative/components` | 0.7.0 | 0.6.2 | 0.3.0 | unreleased bump |
+| `@basenative/components` | 0.7.0 | 0.7.0 | 0.3.0 | in sync |
 | `@basenative/config` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
 | `@basenative/date` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
 | `@basenative/db` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
