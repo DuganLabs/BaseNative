@@ -31,7 +31,13 @@
  * @returns {Record<string, any>}
  */
 export function buildManifest(opts) {
-  const base = (opts.iconBaseUrl || "/").replace(/\/+$/, "") + "/";
+  // Strip trailing slashes with an index scan rather than /\/+$/: that
+  // regex is quadratic on input with many trailing slashes, and
+  // `iconBaseUrl` is caller-supplied.
+  const rawBase = opts.iconBaseUrl || "/";
+  let baseEnd = rawBase.length;
+  while (baseEnd > 0 && rawBase[baseEnd - 1] === "/") baseEnd--;
+  const base = rawBase.slice(0, baseEnd) + "/";
   return {
     name: opts.name,
     short_name: opts.shortName || opts.name,

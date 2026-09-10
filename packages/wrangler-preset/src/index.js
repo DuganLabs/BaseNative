@@ -142,7 +142,15 @@ export function toToml(config) {
   }
   const lines = [];
   emit(lines, config, []);
-  return lines.join('\n').replace(/\n+$/, '') + '\n';
+  const joined = lines.join('\n');
+  // Strip trailing newlines with an index scan rather than /\n+$/: that
+  // regex is quadratic on input with many trailing (or embedded, since the
+  // engine retries the match at every start position) newlines, and `obj`
+  // — and therefore every line — can come from config values outside this
+  // module's control.
+  let end = joined.length;
+  while (end > 0 && joined[end - 1] === '\n') end--;
+  return joined.slice(0, end) + '\n';
 }
 
 function emit(lines, obj, path) {
