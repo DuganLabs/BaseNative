@@ -97,8 +97,8 @@ All components are pure functions that return an HTML string. See [docs/api/comp
 
 ### Data Display
 - `renderTable(options)` — Accessible `<table>` with columns and rows config.
-- `renderDataGrid(options)` — Data grid with sorting indicators, row selection, editable cells and a pagination footer.
-- `renderTree(options)` / `renderTreeGrid(options)` — Tree view and tree grid.
+- `renderDataGrid(options)` — Data grid with sorting indicators, row selection, editable cells and a pagination footer. Sortable headers are real `<button>`s inside the `<th>` — keyboard-operable with no client JS.
+- `renderTree(options)` / `renderTreeGrid(options)` — Tree view and tree grid. Items/rows carry a static roving `tabindex` (first `0`, rest `-1`); moving it between items on arrow keys is left to your own keydown handler.
 - `renderVirtualList(options)` — First window of a virtualised list plus a spacer for the full height.
 - `renderBadge(content, options)` — Small status badge.
 - `renderAvatar(options)` — User avatar with fallback initials.
@@ -111,7 +111,7 @@ All components are pure functions that return an HTML string. See [docs/api/comp
 - `renderTabs(options)` — Tabbed content panels.
 - `renderAccordion(options)` — `<details>`/`<summary>` accordion.
 - `renderBreadcrumb(options)` — Breadcrumb navigation trail.
-- `renderTooltip(options)` — Popover-API tooltip.
+- `renderTooltip(options)` — Popover-API tooltip; the trigger renders as a real `<button type="button">` (or your own `<button>`/`<input>` slot, wired in place) since only button-like elements are valid popover invokers.
 - `renderDropdownMenu(options)` — Popover-API dropdown menu.
 - `renderCommandPalette(options)` — Keyboard-driven command palette.
 - `renderLayoutGrid(options)` / `layoutGridStyles()` — Drag-and-drop CSS grid canvas for the visual builder, plus its CSS.

@@ -406,7 +406,7 @@ Renders:
     <table data-bn="datagrid-table" role="grid">
       <caption>Invoices</caption>
       <thead><tr><th data-bn="datagrid-th-select"><input type="checkbox" aria-label="Select all" data-bn="datagrid-select-all"></th>
-        <th data-bn="datagrid-th" data-key="name" data-sortable data-sorted="asc" style="width:40%" scope="col">Name ↑</th>…</tr></thead>
+        <th data-bn="datagrid-th" data-key="name" data-sortable data-sorted="asc" aria-sort="ascending" style="width:40%" scope="col"><button type="button" data-bn="datagrid-th-button">Name ↑</button></th>…</tr></thead>
       <tbody><tr data-bn="datagrid-row" data-row-id="r1">
         <td data-bn="datagrid-td-select"><input type="checkbox" checked aria-label="Select row r1" data-bn="datagrid-row-select" data-row-id="r1"></td>
         <td data-bn="datagrid-td" data-key="name">Acme</td>…</tr></tbody>
@@ -416,7 +416,9 @@ Renders:
 </div>
 ```
 
-Accessibility: the scroll region is focusable (`tabindex="0"`) and labelled; every checkbox has an `aria-label`; `editable` columns render `contenteditable` cells. Cell values are not escaped — escape user data in `render`.
+A `sortable` column's header is a real `<button type="button" data-bn="datagrid-th-button">` inside the `<th>` — the WAI-ARIA APG sortable-column-header pattern — so it is reachable with Tab and activatable with Enter/Space in every browser with no client-side JavaScript; a non-`sortable` column's `<th>` stays plain text. The currently-sorted `<th>` also carries `aria-sort="ascending"|"descending"`. Wiring that button's `click` to actually re-sort `rows` (and re-render with updated `sortBy`/`sortDir`) is left to the caller — the same division of labour as Table's `data-sortable`.
+
+Accessibility: the scroll region is focusable (`tabindex="0"`) and labelled; every checkbox has an `aria-label`; `editable` columns render `contenteditable` cells; sortable headers are real, keyboard-operable `<button>`s (see above). Cell values are not escaped — escape user data in `render`.
 
 ## Tree
 
@@ -443,13 +445,13 @@ Renders:
 ```html
 <ul data-bn="tree" id="bn-tree-x" role="tree">
   <li data-bn="tree-item" role="treeitem" aria-expanded="true" aria-selected="false" data-node-id="src" data-level="0">
-    <div data-bn="tree-item-content"><button data-bn="tree-toggle" aria-label="Collapse" type="button">▾</button><span data-bn="tree-label">src</span></div>
+    <div data-bn="tree-item-content" tabindex="0"><button data-bn="tree-toggle" aria-label="Collapse" type="button">▾</button><span data-bn="tree-label">src</span></div>
     <ul data-bn="tree-children" role="group">…</ul>
   </li>
 </ul>
 ```
 
-Accessibility: `role="tree"` / `treeitem` / `group`; toggles are labelled Expand/Collapse. Leaf nodes carry no `aria-expanded` attribute.
+Accessibility: `role="tree"` / `treeitem` / `group`; toggles are labelled Expand/Collapse. Leaf nodes carry no `aria-expanded` attribute. `[data-bn="tree-item-content"]` carries a static roving `tabindex`: the first item in document order gets `tabindex="0"`, every other item gets `tabindex="-1"`, so Tab reaches the tree at all. This package renders markup only — there is no `initTree()` shipped that moves that `tabindex` on arrow-key presses — so a caller that wants full arrow-key roving between items must add its own keydown handler that updates `tabindex` and calls `.focus()` as it moves.
 
 ## Tree Grid
 
@@ -472,6 +474,8 @@ renderTreeGrid({
 | `attrs` | `string` | `''` | |
 
 Renders `<table data-bn="treegrid" role="treegrid">` with `<th scope="col">` headers and one `<tr data-bn="treegrid-row" role="row" aria-level="1" data-node-id="src">` per visible node; a row with children also carries `aria-expanded` (`"true"` or `"false"`), while leaf rows carry no `aria-expanded` attribute. The first cell is prefixed with `<span data-level="0">▸ </span>`.
+
+Like Tree, `[data-bn="treegrid-row"]` carries a static roving `tabindex` (first row `0`, every other row `-1`) with no client-side `initTreeGrid()` shipped to move it between rows on arrow keys — see the Tree accessibility note above for what that means for keyboard navigation.
 
 ## Virtual List
 
@@ -755,23 +759,48 @@ Renders:
 
 ## Tooltip
 
-`renderTooltip(options)` → `string`. Popover-API tooltip: a trigger span with `popovertarget` followed by a `popover` span.
+`renderTooltip(options)` → `string`. Popover-API tooltip: a trigger `<button>` with `popovertarget` followed by a `popover` span.
+
+Per the HTML spec, only button-like elements (`<button>`, and `<input
+type="button|submit|reset|image">`) can be popover invokers — a `<span
+popovertarget>` never opens by click or keyboard, in any browser. `trigger`
+is therefore always rendered as one of those elements:
+
+- Plain text, or any markup not already starting with `<button` or `<input`,
+  is wrapped in a fresh `<button type="button">`.
+- A `trigger` that already starts with `<button` or `<input`
+  (case-insensitive) is used **in place**, not wrapped — nesting one
+  interactive element inside another is invalid HTML — and instead gets
+  `data-bn="tooltip-trigger"`, `popovertarget`, `popovertargetaction="toggle"`,
+  `aria-describedby` and `attrs` spliced onto that existing tag.
 
 ```js
+renderTooltip({ trigger: 'Hover me', content: 'More information', position: 'bottom' })
+// or, supplying your own invoker:
 renderTooltip({ trigger: '<button type="button">?</button>', content: 'More information', position: 'bottom' })
 ```
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `content` | `string` | — | Tooltip text; escaped (not an HTML slot) |
-| `trigger` | `string` | — | HTML slot: not escaped; pass trusted markup only |
+| `trigger` | `string` | — | HTML slot: not escaped; pass trusted markup only. Wrapped in a `<button type="button">` invoker unless it already starts with `<button` or `<input` |
 | `position` | `string` | `'top'` | Emitted as `data-position` |
 | `id` | `string` | `bn-tooltip-{n}` | Popover id |
-| `attrs` | `string` | `''` | Extra attributes on the trigger span |
+| `attrs` | `string` | `''` | Extra attributes spliced onto the trigger invoker |
 
-Renders `<span data-bn="tooltip-trigger" popovertarget="id" popovertargetaction="toggle">…</span><span data-bn="tooltip" id="id" popover data-position="top" role="tooltip">More information</span>`.
+Renders, for a plain-text or non-invoker `trigger`:
 
-Accessibility: `role="tooltip"`; the trigger toggles the popover natively. Put the trigger content in a focusable element so keyboard users can reach it.
+```html
+<button type="button" data-bn="tooltip-trigger" popovertarget="id" popovertargetaction="toggle" aria-describedby="id">Hover me</button><span data-bn="tooltip" id="id" popover data-position="bottom" role="tooltip">More information</span>
+```
+
+or, for `trigger: '<button type="button">?</button>'`:
+
+```html
+<button data-bn="tooltip-trigger" popovertarget="id" popovertargetaction="toggle" aria-describedby="id" type="button">?</button><span data-bn="tooltip" id="id" popover data-position="bottom" role="tooltip">More information</span>
+```
+
+Accessibility: `role="tooltip"`; the trigger is always a real button-like invoker, so it is reachable by Tab and toggles the popover natively on click or Enter/Space; `aria-describedby` on the trigger points at the tooltip id.
 
 ## Dropdown Menu
 

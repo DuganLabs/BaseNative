@@ -12,6 +12,12 @@ import { attrsSuffix } from './internal/attrs.js';
  * A column's `render(value, row)` result is an HTML slot: not escaped; return
  * trusted markup only.
  *
+ * A `sortable` column header renders as `<th aria-sort="…"><button
+ * type="button" data-bn="datagrid-th-button">…</button></th>` so it is
+ * reachable and activatable by keyboard with no client-side JavaScript;
+ * wiring that button's `click` to actually re-sort `rows`/`sortBy`/`sortDir`
+ * is left to the caller, same as `data-sortable` on Table.
+ *
  * @param {object} [options]
  * @param {Array<{key: string, label: string, sortable?: boolean, resizable?: boolean, editable?: boolean, width?: string, render?: (value: unknown, row: object) => string}>} [options.columns]
  * @param {Array<object>} [options.rows]
@@ -49,11 +55,21 @@ export function renderDataGrid(options = {}) {
   const selectedSet = new Set(selectedRows);
 
   const headerCells = columns.map(col => {
+    const isSorted = sortBy === col.key;
     const sortable = col.sortable ? ' data-sortable' : '';
-    const sorted = sortBy === col.key ? ` data-sorted="${escapeAttr(sortDir)}"` : '';
+    const sorted = isSorted ? ` data-sorted="${escapeAttr(sortDir)}"` : '';
+    const ariaSort = isSorted ? ` aria-sort="${sortDir === 'asc' ? 'ascending' : 'descending'}"` : '';
     const width = col.width ? ` style="width:${escapeAttr(col.width)}"` : '';
     const resizable = col.resizable ? ' data-resizable' : '';
-    return `<th data-bn="datagrid-th" data-key="${escapeAttr(col.key)}"${sortable}${sorted}${width}${resizable} scope="col">${escapeText(col.label ?? '')}${sortBy === col.key ? (sortDir === 'asc' ? ' ↑' : ' ↓') : ''}</th>`;
+    const label = `${escapeText(col.label ?? '')}${isSorted ? (sortDir === 'asc' ? ' ↑' : ' ↓') : ''}`;
+    // A sortable header must itself be a focusable, natively activatable
+    // element — a `<th>` alone is neither. Wrapping the label in a real
+    // `<button>` (the WAI-ARIA APG sortable-column-header pattern) reaches
+    // and activates on Tab/Enter/Space with no client-side keydown handler.
+    const content = col.sortable
+      ? `<button type="button" data-bn="datagrid-th-button">${label}</button>`
+      : label;
+    return `<th data-bn="datagrid-th" data-key="${escapeAttr(col.key)}"${sortable}${sorted}${ariaSort}${width}${resizable} scope="col">${content}</th>`;
   }).join('');
 
   const selectAllHeader = selectable

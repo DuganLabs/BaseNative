@@ -756,8 +756,10 @@ renderBreadcrumb({ items: [{ label: 'Home', href: '/' }, { label: 'Projects', hr
 ```
 
 ### Tooltip
-`renderTooltip(options)` → `string`. Popover-API tooltip: a trigger span with `popovertarget` followed by a `popover` span. | Option | Type | Default | Description | |--------|------|---------|-------------| | `content` | `string` | — | To…
+`renderTooltip(options)` → `string`. Popover-API tooltip: a trigger `<button>` with `popovertarget` followed by a `popover` span. Per the HTML spec, only button-like elements (`<button>`, and `<input type="button|submit|reset|image">`) can…
 ```js
+renderTooltip({ trigger: 'Hover me', content: 'More information', position: 'bottom' })
+// or, supplying your own invoker:
 renderTooltip({ trigger: '<button type="button">?</button>', content: 'More information', position: 'bottom' })
 ```
 

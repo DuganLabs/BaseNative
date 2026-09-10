@@ -283,6 +283,7 @@ export function renderMultiselect(options?: {
 export interface DataGridColumn<Row = Record<string, unknown>> {
   key: string;
   label: string;
+  /** Renders the header as `<th aria-sort="…"><button type="button">…</button></th>` — a real, keyboard-operable invoker; wiring its `click` to re-sort is left to the caller. */
   sortable?: boolean;
   /** CSS width applied as an inline `style` on the `<th>`. */
   width?: string;
@@ -330,6 +331,12 @@ export interface TreeNode {
   children?: TreeNode[];
 }
 
+/**
+ * Items carry a static roving `tabindex`: the first item in document order
+ * gets `tabindex="0"`, every other item gets `tabindex="-1"`. No client-side
+ * `initTree()` ships to move that `tabindex` on arrow-key presses — add your
+ * own keydown handler for full arrow-key roving between items.
+ */
 export function renderTree(options?: {
   items?: TreeNode[];
   /** Ids of nodes whose children are rendered. */
@@ -353,6 +360,7 @@ export type TreeGridNode = Record<string, unknown> & {
   children?: TreeGridNode[];
 };
 
+/** Rows carry a static roving `tabindex` (first row `0`, rest `-1`) — see {@link renderTree}. */
 export function renderTreeGrid(options?: {
   columns?: TreeGridColumn[];
   items?: TreeGridNode[];
@@ -493,13 +501,20 @@ export function renderAvatar(options?: {
 export function renderTooltip(options?: {
   /** Tooltip text; escaped (not an HTML slot). */
   content?: string;
-  /** HTML slot: not escaped; pass trusted markup only. Wrapped in a `popovertarget` span. */
+  /**
+   * HTML slot: not escaped; pass trusted markup only. Only button-like
+   * elements can be popover invokers, so this is always rendered as one:
+   * wrapped in a fresh `<button type="button">` unless it already starts
+   * with `<button` or `<input` (case-insensitive), in which case that tag is
+   * used in place (not double-wrapped) and gets `popovertarget` etc. spliced
+   * onto it.
+   */
   trigger?: string;
   /** Emitted as `data-position`, default `'top'`. */
   position?: 'top' | 'bottom' | 'left' | 'right' | (string & {});
   /** Default `bn-tooltip-<n>`. */
   id?: string;
-  /** Spliced onto the trigger span. */
+  /** Spliced onto the trigger invoker (the `<button>`, or the caller's own `<button>`/`<input>`). */
   attrs?: string;
 }): string;
 
