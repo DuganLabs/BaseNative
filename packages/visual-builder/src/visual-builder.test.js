@@ -2,7 +2,7 @@ import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createCanvas } from './canvas.js';
 import { renderCanvas, renderNode } from './renderer.js';
-import { serialize, deserialize, exportToHTML } from './serializer.js';
+import { serialize, deserialize, exportToHTML, importFromHTML } from './serializer.js';
 import { createComponentPalette } from './component-palette.js';
 
 describe('createCanvas', () => {
@@ -457,5 +457,86 @@ describe('createComponentPalette', () => {
 
     assert.equal(palette.getComponent('button').label, 'Button');
     assert.equal(palette.getComponent('missing'), null);
+  });
+});
+
+describe('importFromHTML', () => {
+  test('returns an empty canvas when there is no <body>', () => {
+    const canvas = importFromHTML('<div>no body here</div>');
+    assert.deepEqual(canvas.getNodes(), []);
+  });
+
+  test('parses top-level elements with attributes and text content', () => {
+    const html = `
+      <html><body>
+        <button id="save" class="primary">Save</button>
+        <input type="text" placeholder="Name">
+      </body></html>
+    `;
+    const canvas = importFromHTML(html);
+    const nodes = canvas.getNodes();
+    assert.equal(nodes.length, 2);
+
+    assert.equal(nodes[0].type, 'button');
+    assert.equal(nodes[0].props.id, 'save');
+    assert.equal(nodes[0].props.class, 'primary');
+    assert.equal(nodes[0].props.content, 'Save');
+    assert.deepEqual(nodes[0].position, { x: 0, y: 0 });
+
+    assert.equal(nodes[1].type, 'input');
+    assert.equal(nodes[1].props.type, 'text');
+    assert.equal(nodes[1].props.placeholder, 'Name');
+    assert.equal(nodes[1].props.content, undefined);
+    assert.deepEqual(nodes[1].position, { x: 0, y: 50 });
+  });
+
+  test('treats self-closing tags as having no content', () => {
+    const html = '<body><img src="a.png"/></body>';
+    const canvas = importFromHTML(html);
+    const nodes = canvas.getNodes();
+    assert.equal(nodes.length, 1);
+    assert.equal(nodes[0].type, 'img');
+    assert.equal(nodes[0].props.src, 'a.png');
+    assert.equal(nodes[0].props.content, undefined);
+  });
+
+  test('does not parse into nested descendants — inner markup is opaque content', () => {
+    const html = '<body><div class="card"><p>Hello <b>world</b></p></div></body>';
+    const canvas = importFromHTML(html);
+    const nodes = canvas.getNodes();
+    assert.equal(nodes.length, 1);
+    assert.equal(nodes[0].type, 'div');
+    assert.equal(nodes[0].props.class, 'card');
+    assert.equal(nodes[0].props.content, '<p>Hello <b>world</b></p>');
+  });
+
+  test('a tag whose value contains ">" inside quotes does not truncate the tag early', () => {
+    const html = '<body><div data-note="a > b">x</div></body>';
+    const canvas = importFromHTML(html);
+    const nodes = canvas.getNodes();
+    assert.equal(nodes.length, 1);
+    assert.equal(nodes[0].props['data-note'], 'a > b');
+    assert.equal(nodes[0].props.content, 'x');
+  });
+
+  test('completes in well under 200ms for 50,000 unbalanced quotes', () => {
+    // The original tagRegex's attribute matcher paired with backtracking
+    // over unbalanced quotes is exactly the shape that goes polynomial.
+    const html = `<body><div title="${'"'.repeat(50000)}</body>`;
+    const start = Date.now();
+    importFromHTML(html);
+    assert.ok(Date.now() - start < 200, 'expected linear-time scan, not a backtracking blowup');
+  });
+
+  test('completes in well under 200ms for 50,000 nested unclosed tags', () => {
+    // The backreferenced `<(\w+)...>...<\/\1>` matcher is the classic
+    // catastrophic-backtracking shape for input with no matching close tag —
+    // and naively re-searching from each open tag to end-of-string for its
+    // closer would reintroduce the same quadratic blowup by another route,
+    // since none of these 50,000 same-named tags ever finds one.
+    const html = `<body>${'<div>'.repeat(50000)}</body>`;
+    const start = Date.now();
+    importFromHTML(html);
+    assert.ok(Date.now() - start < 200, 'expected linear-time scan, not a backtracking blowup');
   });
 });

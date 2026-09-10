@@ -174,7 +174,6 @@ export class BnCanvas extends HTMLElement {
         // Start drag
         const node = this._canvas.getNode(id);
         if (node) {
-          const rect = surface.getBoundingClientRect();
           this._dragState = {
             id,
             startX: e.clientX,

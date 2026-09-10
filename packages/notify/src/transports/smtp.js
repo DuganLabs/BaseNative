@@ -4,11 +4,18 @@ import { connect as tlsConnect } from 'node:tls';
 /**
  * Create a minimal SMTP transport (zero-dep).
  * For production, consider nodemailer.
- * @param {{ host: string, port: number, secure?: boolean, auth?: { user: string, pass: string } }} config
+ * @param {{ host: string, port: number, secure?: boolean, auth?: { user: string, pass: string }, insecureTls?: boolean }} config
  * @returns {{ send: (email: { to: string, from: string, subject: string, html: string, text?: string }) => Promise<void> }}
  */
 export function createSmtpTransport(config) {
-  const { host, port, secure = false, auth } = config;
+  const { host, port, secure = false, auth, insecureTls = false } = config;
+
+  if (insecureTls) {
+    console.warn(
+      `[@basenative/notify] SMTP TLS certificate validation is disabled (insecureTls: true) for ${host}:${port}. ` +
+        'This allows a man-in-the-middle to intercept mail. Never enable this in production.'
+    );
+  }
 
   function readLine(socket) {
     return new Promise((resolve, reject) => {
@@ -46,7 +53,7 @@ export function createSmtpTransport(config) {
 
       const socket = await new Promise((resolve, reject) => {
         if (secure) {
-          const sock = tlsConnect({ host, port, rejectUnauthorized: false }, () => resolve(sock));
+          const sock = tlsConnect({ host, port, rejectUnauthorized: !insecureTls }, () => resolve(sock));
           sock.on('error', reject);
         } else {
           const sock = new Socket();

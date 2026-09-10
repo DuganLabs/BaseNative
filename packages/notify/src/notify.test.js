@@ -1,5 +1,6 @@
-import { describe, it, beforeEach } from 'node:test';
+import { describe, it, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
+import { createServer as createTlsServer } from 'node:tls';
 import { renderEmail, createEmailSender } from './email.js';
 import { createNotificationCenter } from './inapp.js';
 import { createSendGridTransport } from './transports/sendgrid.js';
@@ -26,6 +27,40 @@ describe('renderEmail', () => {
     assert.ok(!result.text.includes('<p>'));
     assert.ok(result.text.includes('Title'));
     assert.ok(result.text.includes('Hello Alice'));
+  });
+
+  it('escapes a script-tag payload instead of injecting it verbatim', () => {
+    const template = '<p>Hello {{ name }}</p>';
+    const payload = '<script>alert(1)</script>';
+    const result = renderEmail(template, { name: payload });
+    assert.ok(!result.html.includes('<script>'));
+    assert.ok(result.html.includes('&lt;script&gt;alert(1)&lt;/script&gt;'));
+    // The text fallback should still read as the literal payload text, not
+    // execute or vanish it, since it was never a real tag in the markup.
+    assert.ok(result.text.includes('<script>alert(1)</script>'));
+  });
+
+  it('does not reassemble a tag from a nested <scr<script>ipt> payload', () => {
+    const template = '<p>Hello {{ name }}</p>';
+    const payload = '<scr<script>ipt>alert(1)</script>';
+    const result = renderEmail(template, { name: payload });
+    // Escaping the whole substituted value up front means there is no
+    // "inner tag" for a single-pass stripper to remove and no leftover
+    // fragments that could recombine into a live <script> tag.
+    assert.ok(!result.html.includes('<script>'));
+    assert.ok(!result.html.includes('<scr<script>ipt>'));
+    assert.equal(result.html.match(/<script/gi), null);
+  });
+
+  it('does not allow an interpolated value to break out of an attribute', () => {
+    const template = '<img src="{{ src }}" alt="pic">';
+    const payload = '" onerror="alert(1)';
+    const result = renderEmail(template, { src: payload });
+    assert.ok(!result.html.includes('" onerror="alert(1)'));
+    assert.ok(result.html.includes('&quot;'));
+    // Only one real <img> tag exists; the payload's quote did not open a
+    // second attribute.
+    assert.equal((result.html.match(/<img/gi) || []).length, 1);
   });
 });
 
@@ -432,6 +467,124 @@ describe('createSmtpTransport', () => {
         text: 'test',
       })
     );
+  });
+});
+
+// Self-signed cert + key for 127.0.0.1, generated once for this test file
+// (10-year validity). Used to verify the SMTP transport's TLS certificate
+// validation behavior without reaching a real network host.
+const TEST_TLS_KEY = `-----BEGIN PRIVATE KEY-----
+MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC7OAYrNW9y6wX2
+RNxNbWlhogzXROBrEUr2RLgojILCxytLn+sxSMvsAs4qT+RilgQeLGF8+OAzLEZB
+bxM4xQf0oEOW3dco5fKSFRBFe7vAgryw5kmbjVa8lHtl2XY3oSv6s1JoTPeIGios
+a9H48Z7iG2dN2Oe4ZdCdOxPHlBBF3k1ENxXi9ceBVC0jCSA5G4vZui4QYyWDdUSf
+sXRX5xYp117bVnaswY5Dne3CI/Uzl2z0YV87TmVmfPEUlHG6KPZ1FZJIdyIUg2xE
+QQquyS/GxzSoZuK4DzQxsSqfVkDro2mm2DVhZLA/rm9BGas7wOxSdapoh4E86cDB
+3BGNystjAgMBAAECggEAUgS2NyG+xIKP5xa9yLHhE+OxanGDO4Sk6YSrhSAhfQFS
+R1w05i91Ht0PwtujO0lrXmilAOHrHqAL20i1DA7NcG7xjVt8ki9C+Jp/uWD+nNTp
+ozoQDzR5Rj5qXPFK6A4UvUzoEkd9vcNwrGtD3qLDr1zAAgu/YDpCjU8/WBTWmDSO
+XDdbCauEX++iN0ImPPk8ShJLTbPVrJ9GVzXGvdGAR7DvRTmNpkt3vM4W/NyQ7PaB
+xbdWgvIuJPQPZBHXzOQ+8lPjiooxmWkPICcml5RHgHgyaUghq79SH7T6DT4XGWKx
+f9hGtgZnrp2Xg0n/YDw/hRG1mHscX25LJTk5xA2bIQKBgQDnMUHEfzLTATFKRlWK
+LT5ufb5vPTA15+m96k46pEk7M9RzFNzswwzI5d+xmVtXD/4B7m2sc/uzVqCAYRM1
+o8/E4yxz/daOwptjyiakp/fFJF/rffeLEd7X6buRwYkj5ivNmxST4WxxGMrNNx4/
+KrJMHC2LU1Y/zO+nM3YLJISEcQKBgQDPTtWwZOglKZWTuIGkBG6eqa9a2pbnXV8B
+uXGLrtpjXzbwm0j7G8ejS0UP+Eg9nST2dywFgLmyj2HamcLOsZ5y94qtMQfPDgK9
+85HBnmYSHTrrLFslpZdx0q40kDoWS0syoYbZ9ww7JfNVa8p7loxuG5Mu2rG5m8Aw
++aIfOSPnEwKBgGubmakEK3vbCj4wDpCKDo0PKhxMtqvgjgM/k7nnzc4oibIm+82X
+29OGa2AWqVUUtH3hpFqogXcv0vTuOiq1XHef5Yj3lW5NVlZUOThalhDEpYDO2PF6
+F+cXe56UHmj/MVQ54pISUo8xovNxvDpafTK/ytMWrwZzNPj2EvOMw8GBAoGBALw2
++gHdi3r6B0iH0oQEVh6NNpzJKwrCFhjtse49ASAJeUr34UnCzf0uwHQgWg4+lymB
+xyDz3yUD0rbytRCN6Kq+nlRh2JIfSVQGSMY+NrOpgC22JsbGUfpQakNk0qgdEhfU
+2ScZiixFZ2idpceRRsxNEtMOUR+QDe0pKA0rBrKrAoGBAJme5aSOL924GbwKMnWZ
+kESi0R8RVrnLwZ2Pl5fJ5bRzWZD9UmsP6WbIda7rlXscgsdzCippAGrf4KhjDPnG
+HLo9uNBehHGTzk3GCtMNZR5R8SCRxj9qlpUtu1mMCi1hMI4Jq95igLp6IbcuqozT
+wGvqMCVs2IDPk74iSoetJk/5
+-----END PRIVATE KEY-----
+`;
+
+const TEST_TLS_CERT = `-----BEGIN CERTIFICATE-----
+MIIDGjCCAgKgAwIBAgIUJk5ZhPkBWl47kY0IqrtQ6riH9JswDQYJKoZIhvcNAQEL
+BQAwFDESMBAGA1UEAwwJMTI3LjAuMC4xMB4XDTI2MDkxMDA3MTMxMVoXDTM2MDkw
+NzA3MTMxMVowFDESMBAGA1UEAwwJMTI3LjAuMC4xMIIBIjANBgkqhkiG9w0BAQEF
+AAOCAQ8AMIIBCgKCAQEAuzgGKzVvcusF9kTcTW1pYaIM10TgaxFK9kS4KIyCwscr
+S5/rMUjL7ALOKk/kYpYEHixhfPjgMyxGQW8TOMUH9KBDlt3XKOXykhUQRXu7wIK8
+sOZJm41WvJR7Zdl2N6Er+rNSaEz3iBoqLGvR+PGe4htnTdjnuGXQnTsTx5QQRd5N
+RDcV4vXHgVQtIwkgORuL2bouEGMlg3VEn7F0V+cWKdde21Z2rMGOQ53twiP1M5ds
+9GFfO05lZnzxFJRxuij2dRWSSHciFINsREEKrskvxsc0qGbiuA80MbEqn1ZA66Np
+ptg1YWSwP65vQRmrO8DsUnWqaIeBPOnAwdwRjcrLYwIDAQABo2QwYjAdBgNVHQ4E
+FgQUQAnCYLcWeP58AJQndSnvNbpN2hAwHwYDVR0jBBgwFoAUQAnCYLcWeP58AJQn
+dSnvNbpN2hAwDwYDVR0TAQH/BAUwAwEB/zAPBgNVHREECDAGhwR/AAABMA0GCSqG
+SIb3DQEBCwUAA4IBAQAmh1rzZkzcR+NwCWa4yHzEsvVhZyLmykMK7BzC2nrQsjhw
+uIVxx5cx0owPPQQqR1srHvb1SAUJovXx6BLMGfn8SqlJCKpRqz7pcRRKEJfMWsgv
+Vbume5boKwUT8DSwjUaA8cmjjHRViA+cChXuP5UFkakwN7u+nMHB30wCGArMhte9
+oDHkZcBgTz09H5soCNRge1EzeFejgkRF8u1+2mEo3Cnzp7hQSPeAwYQIowABrXNx
+I/HJHlddlx7zWN0N7KVsks+X2p1UH0XfwzJ10XvJCPilBCfZaOv8VxPMx05GOr8X
+reFGNaHKe+f2nEF+vrmjnwE2x7F3nFg6xQmHBLlW
+-----END CERTIFICATE-----
+`;
+
+describe('createSmtpTransport – TLS certificate validation', () => {
+  let server;
+  let port;
+
+  beforeEach(async () => {
+    server = createTlsServer({ key: TEST_TLS_KEY, cert: TEST_TLS_CERT }, (socket) => {
+      socket.write('220 fake.test ESMTP\r\n');
+      socket.on('data', (chunk) => {
+        if (chunk.toString().includes('QUIT')) {
+          socket.write('221 Bye\r\n');
+          socket.end();
+        } else {
+          socket.write('250 OK\r\n');
+        }
+      });
+      socket.on('error', () => {});
+    });
+    server.on('clientError', () => {});
+    await new Promise((resolve, reject) => {
+      server.once('error', reject);
+      server.listen(0, '127.0.0.1', resolve);
+    });
+    port = server.address().port;
+  });
+
+  afterEach(async () => {
+    await new Promise((resolve) => server.close(resolve));
+  });
+
+  it('rejects a self-signed certificate by default (rejectUnauthorized: true)', async () => {
+    const transport = createSmtpTransport({ host: '127.0.0.1', port, secure: true });
+    await assert.rejects(() =>
+      transport.send({
+        to: 'to@example.com',
+        from: 'from@example.com',
+        subject: 'Test',
+        html: '<p>hi</p>',
+        text: 'hi',
+      })
+    );
+  });
+
+  it('connects despite a self-signed certificate when insecureTls is set, and warns', async () => {
+    const originalWarn = console.warn;
+    const warnCalls = [];
+    console.warn = (...args) => warnCalls.push(args.join(' '));
+
+    try {
+      const transport = createSmtpTransport({ host: '127.0.0.1', port, secure: true, insecureTls: true });
+      await transport.send({
+        to: 'to@example.com',
+        from: 'from@example.com',
+        subject: 'Test',
+        html: '<p>hi</p>',
+        text: 'hi',
+      });
+    } finally {
+      console.warn = originalWarn;
+    }
+
+    assert.ok(warnCalls.some((msg) => msg.includes('insecureTls')));
   });
 });
 
