@@ -80,6 +80,11 @@ function readPackages() {
 }
 
 function render(pkgs, registry) {
+  const cmp = (a, b) => {
+    const k = (v) => String(v).split('.').map((n) => parseInt(n, 10) || 0);
+    const [x, y] = [k(a), k(b)];
+    return x[0] - y[0] || x[1] - y[1] || x[2] - y[2];
+  };
   const publishable = pkgs.filter((p) => !p.private);
   const priv = pkgs.filter((p) => p.private);
   const behind = publishable.filter((p) => p.npmjs && p.npmjs !== p.version);
@@ -90,11 +95,6 @@ function render(pkgs, registry) {
     (p) => p.publishConfig?.registry?.replace(/\/$/, '') === registry,
   );
 
-  const cmp = (a, b) => {
-    const k = (v) => String(v).split('.').map((n) => parseInt(n, 10) || 0);
-    const [x, y] = [k(a), k(b)];
-    return x[0] - y[0] || x[1] - y[1] || x[2] - y[2];
-  };
   const rows = pkgs
     .map((p) => {
       let state;
