@@ -14,6 +14,6 @@
   "dependencies": {
     "@basenative/validate": "workspace:^0.2.0",
     "@basenative/server": "workspace:^0.6.1",
-    "@basenative/runtime": "workspace:^0.6.1"
+    "@basenative/runtime": "workspace:^0.6.2"
   }
 }

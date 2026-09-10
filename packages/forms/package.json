@@ -1,6 +1,6 @@
 {
   "name": "@basenative/forms",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Signal-based form state with dirty/touched tracking and schema validation adapters",
   "type": "module",
   "exports": {

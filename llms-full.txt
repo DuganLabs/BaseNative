@@ -320,7 +320,7 @@ packages/auth-webauthn/src/d1-stores.js · `import { d1UserSessions } from '@bas
 Cloudflare D1 store factory for @basenative/auth-webauthn.
 packages/auth-webauthn/src/d1-stores.js · `import { migration } from '@basenative/auth-webauthn';`
 
-### `@basenative/builder` (v0.1.3)
+### `@basenative/builder` (v0.1.4)
 
 Signal-based drag-and-drop component builder for BaseNative — composes layouts, generates clean BaseNative code
 
@@ -452,7 +452,7 @@ Prints the help message listing all commands.
 #### `bn --version`
 Prints the installed CLI version.
 
-### `@basenative/combobox` (v1.0.3)
+### `@basenative/combobox` (v1.0.4)
 
 @basenative/combobox — accessible typeahead combobox primitive.
 
@@ -501,7 +501,7 @@ packages/combobox/src/a11y.js · `import { escapeOnKeydown } from '@basenative/c
 Announce a transient message to screen readers via the widget's aria-live region. Used for "N options available" / "Press Enter to create '...'" style hints. Idempotent — safe to call repeatedly.
 packages/combobox/src/a11y.js · `import { announce } from '@basenative/combobox';`
 
-### `@basenative/components` (v0.6.1)
+### `@basenative/components` (v0.6.2)
 
 15 semantic HTML UI components rendered as strings (forms, data grids, dialogs, calendar and kanban) with cascade-layer CSS, design tokens, light/dark themes and density scales
 
@@ -1209,7 +1209,7 @@ packages/favicon/src/png.js · `import { toPng } from '@basenative/favicon';`
 Convenience: rasterize the canonical icon set in one call. Returns a map of filename → PNG bytes ready to write under `public/`.
 packages/favicon/src/png.js · `import { toIconSet } from '@basenative/favicon';`
 
-### `@basenative/fetch` (v0.3.3)
+### `@basenative/fetch` (v0.3.4)
 
 Signal-based resource fetching with caching and SSR preload support
 
@@ -1360,7 +1360,7 @@ Fetches flags from an HTTP endpoint. Supports polling for updates. **Parameters:
 Cloudflare KV-backed feature flag provider with edge caching.
 packages/flags/src/providers/kv.js · `import { createKVProvider } from '@basenative/flags';`
 
-### `@basenative/forms` (v1.0.2)
+### `@basenative/forms` (v1.0.3)
 
 Signal-based form state with dirty/touched tracking and schema validation adapters
 
@@ -1548,7 +1548,7 @@ packages/integrations/src/yield.js · `import { calculateOptimalTransferTiming }
 Calculate the break-even point for a transfer based on yield difference.
 packages/integrations/src/yield.js · `import { calculateBreakEven } from '@basenative/integrations';`
 
-### `@basenative/keyboard` (v1.0.4)
+### `@basenative/keyboard` (v1.0.5)
 
 @basenative/keyboard — accessible mobile-first virtual keyboard primitive.
 
@@ -1949,7 +1949,7 @@ packages/og-image/src/presets.js · `import { scoreCardPreset } from '@basenativ
 The full preset map — handy for table-driven dispatch.
 packages/og-image/src/presets.js · `import { presets } from '@basenative/og-image';`
 
-### `@basenative/persist` (v1.0.3)
+### `@basenative/persist` (v1.0.4)
 
 @basenative/persist — TTL-aware local persistence + signal binding + server-rehydrate hook.
 
@@ -2082,7 +2082,7 @@ Returns an array of all channel name strings.
 #### createWSHandler(options)
 Creates a WebSocket connection handler with message routing. **Parameters:** - `options.onConnect(ws, req)` — called when a client connects - `options.onDisconnect(ws, code, reason)` — called when a client disconnects - `options.onMessage(…
 
-### `@basenative/router` (v0.4.4)
+### `@basenative/router` (v0.5.0)
 
 SSR-aware path routing with named params, wildcards, and history API integration
 
@@ -2145,7 +2145,7 @@ Throws a `RedirectError`, caught by `withGuards()`'s guard runner and turned int
 #### `RedirectError`
 The error class thrown by `redirect()`. Has `to: string` and `replace: boolean`.
 
-### `@basenative/runtime` (v0.6.1)
+### `@basenative/runtime` (v0.6.2)
 
 Signal-based web runtime over native HTML — zero build step, zero production dependencies
 
