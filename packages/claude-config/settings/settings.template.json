@@ -31,6 +31,7 @@
       "Bash(doppler configs:*)",
       "Bash(gh pr list:*)",
       "Bash(gh issue list:*)",
+      "Bash(gh pr merge:*)",
       "Bash(gh pr view:*)",
       "Bash(gh issue view:*)",
       "Bash(bn doctor)",
@@ -56,7 +57,6 @@
       "Bash(doppler secrets upload:*)",
       "Bash(doppler secrets delete:*)",
       "Bash(gh pr create:*)",
-      "Bash(gh pr merge:*)",
       "Bash(gh release create:*)",
       "Bash(git restore:*)",
       "Bash(git clean:*)"
