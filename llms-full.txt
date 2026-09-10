@@ -320,7 +320,7 @@ packages/auth-webauthn/src/d1-stores.js · `import { d1UserSessions } from '@bas
 Cloudflare D1 store factory for @basenative/auth-webauthn.
 packages/auth-webauthn/src/d1-stores.js · `import { migration } from '@basenative/auth-webauthn';`
 
-### `@basenative/builder` (v0.1.2)
+### `@basenative/builder` (v0.1.3)
 
 Signal-based drag-and-drop component builder for BaseNative — composes layouts, generates clean BaseNative code
 
@@ -376,7 +376,7 @@ packages/builder/src/tree-element.js
 #### `BnBuilderInspector` (class)
 packages/builder/src/inspector-element.js
 
-### `@basenative/claude-config` (v0.2.0)
+### `@basenative/claude-config` (v0.2.1)
 
 Bundled Claude Code subagents, skills, slash commands, hooks, and settings for DuganLabs / BaseNative projects. Drop in via `bn-claude install`.
 
@@ -409,7 +409,7 @@ packages/claude-config/src/install.js · `import { verify } from '@basenative/cl
 List installed agents/skills/commands/hooks for a project.
 packages/claude-config/src/install.js · `import { listInstalled } from '@basenative/claude-config';`
 
-### `@basenative/cli` (v0.4.0)
+### `@basenative/cli` (v0.4.1)
 
 The bn CLI — front door for BaseNative / DuganLabs projects (create, prd, speckit, gh, nx, deploy, doctor)
 
@@ -452,7 +452,7 @@ Prints the help message listing all commands.
 #### `bn --version`
 Prints the installed CLI version.
 
-### `@basenative/combobox` (v1.0.2)
+### `@basenative/combobox` (v1.0.3)
 
 @basenative/combobox — accessible typeahead combobox primitive.
 
@@ -501,7 +501,7 @@ packages/combobox/src/a11y.js · `import { escapeOnKeydown } from '@basenative/c
 Announce a transient message to screen readers via the widget's aria-live region. Used for "N options available" / "Press Enter to create '...'" style hints. Idempotent — safe to call repeatedly.
 packages/combobox/src/a11y.js · `import { announce } from '@basenative/combobox';`
 
-### `@basenative/components` (v0.6.0)
+### `@basenative/components` (v0.6.1)
 
 15 semantic HTML UI components rendered as strings (forms, data grids, dialogs, calendar and kanban) with cascade-layer CSS, design tokens, light/dark themes and density scales
 
@@ -1021,7 +1021,7 @@ Rolls back the most recent migrations. **Parameters:** - `adapter` — database 
 #### validateAdapter(adapter)
 Throws if the adapter does not implement the required interface (`query`, `queryOne`, `execute`, `transaction`).
 
-### `@basenative/doppler` (v0.2.0)
+### `@basenative/doppler` (v0.2.1)
 
 Thin developer-experience layer around Doppler — local-dev wrapper, CI helper, project bootstrap, environment validation. BaseNative ships plumbing, never values.
 
@@ -1077,7 +1077,7 @@ packages/eslint-config/src/worker.js
 #### `default` (default export)
 packages/eslint-config/src/react.js
 
-### `@basenative/favicon` (v1.0.1)
+### `@basenative/favicon` (v1.0.2)
 
 `@basenative/favicon` — SVG-first favicon generator + design primitives.
 
@@ -1209,7 +1209,7 @@ packages/favicon/src/png.js · `import { toPng } from '@basenative/favicon';`
 Convenience: rasterize the canonical icon set in one call. Returns a map of filename → PNG bytes ready to write under `public/`.
 packages/favicon/src/png.js · `import { toIconSet } from '@basenative/favicon';`
 
-### `@basenative/fetch` (v0.3.2)
+### `@basenative/fetch` (v0.3.3)
 
 Signal-based resource fetching with caching and SSR preload support
 
@@ -1360,7 +1360,7 @@ Fetches flags from an HTTP endpoint. Supports polling for updates. **Parameters:
 Cloudflare KV-backed feature flag provider with edge caching.
 packages/flags/src/providers/kv.js · `import { createKVProvider } from '@basenative/flags';`
 
-### `@basenative/forms` (v1.0.1)
+### `@basenative/forms` (v1.0.2)
 
 Signal-based form state with dirty/touched tracking and schema validation adapters
 
@@ -1427,7 +1427,7 @@ const form = createForm(fields, { schema });
 Creates a multi-step form wizard that coordinates pre-built form instances.
 packages/forms/src/wizard.js · `import { createWizard } from '@basenative/forms';`
 
-### `@basenative/i18n` (v0.4.0)
+### `@basenative/i18n` (v0.4.1)
 
 ICU message formatting, locale detection, and @t template directive
 
@@ -1548,7 +1548,7 @@ packages/integrations/src/yield.js · `import { calculateOptimalTransferTiming }
 Calculate the break-even point for a transfer based on yield difference.
 packages/integrations/src/yield.js · `import { calculateBreakEven } from '@basenative/integrations';`
 
-### `@basenative/keyboard` (v1.0.3)
+### `@basenative/keyboard` (v1.0.4)
 
 @basenative/keyboard — accessible mobile-first virtual keyboard primitive.
 
@@ -1700,7 +1700,7 @@ packages/markdown/src/parser.js · `import { parseAST } from '@basenative/markdo
 HTML renderer for the markdown AST. SSR-safe: produces a plain HTML string with no DOM access, escapes text content, and rejects dangerous URL schemes.
 packages/markdown/src/renderer.js · `import { render } from '@basenative/markdown';`
 
-### `@basenative/marketplace` (v0.2.0)
+### `@basenative/marketplace` (v0.2.1)
 
 Component registry for BaseNative — publishing and discovery infrastructure
 
@@ -1768,7 +1768,7 @@ packages/mcp/src/directives.js · `import { PRIMITIVES } from '@basenative/mcp';
 Syntax from other frameworks that BaseNative does NOT accept.
 packages/mcp/src/directives.js · `import { FORBIDDEN } from '@basenative/mcp';`
 
-### `@basenative/middleware` (v0.3.0)
+### `@basenative/middleware` (v0.3.1)
 
 Request pipeline middleware — CORS, rate limiting, CSRF, and adapters
 
@@ -1842,7 +1842,7 @@ All middleware receives a `ctx` object with this structure:
 Create a BaseNative context from Express req/res.
 packages/middleware/src/adapters/express.js · `import { createExpressContext } from '@basenative/middleware';`
 
-### `@basenative/notify` (v0.3.0)
+### `@basenative/notify` (v0.3.1)
 
 Email notifications via SMTP and SendGrid with template rendering
 
@@ -1949,7 +1949,7 @@ packages/og-image/src/presets.js · `import { scoreCardPreset } from '@basenativ
 The full preset map — handy for table-driven dispatch.
 packages/og-image/src/presets.js · `import { presets } from '@basenative/og-image';`
 
-### `@basenative/persist` (v1.0.2)
+### `@basenative/persist` (v1.0.3)
 
 @basenative/persist — TTL-aware local persistence + signal binding + server-rehydrate hook.
 
@@ -2082,7 +2082,7 @@ Returns an array of all channel name strings.
 #### createWSHandler(options)
 Creates a WebSocket connection handler with message routing. **Parameters:** - `options.onConnect(ws, req)` — called when a client connects - `options.onDisconnect(ws, code, reason)` — called when a client disconnects - `options.onMessage(…
 
-### `@basenative/router` (v0.4.3)
+### `@basenative/router` (v0.4.4)
 
 SSR-aware path routing with named params, wildcards, and history API integration
 
@@ -2120,7 +2120,7 @@ Intercepts internal link clicks for client-side navigation.
 const cleanup = interceptLinks(document.body, router);
 ```
 
-### `@basenative/runtime` (v0.6.0)
+### `@basenative/runtime` (v0.6.1)
 
 Signal-based web runtime over native HTML — zero build step, zero production dependencies
 
@@ -2478,7 +2478,7 @@ sanitizeUrl('javascript:alert(1)'); // null
 sanitizeUrl('/safe/path');          // '/safe/path'
 ```
 
-### `@basenative/server` (v0.6.0)
+### `@basenative/server` (v0.6.1)
 
 Server-side rendering with streaming support for BaseNative templates
 
@@ -2747,7 +2747,7 @@ Source: `packages/tsconfig/src`
 
 _(no JS exports found — resource-only or config-only package; see exports map above.)_
 
-### `@basenative/upload` (v0.3.0)
+### `@basenative/upload` (v0.3.1)
 
 File upload handling with R2 and S3 adapter support
 
@@ -2821,7 +2821,7 @@ packages/validate/src/codes.js · `import { WARNING } from '@basenative/validate
 `high` — the correction is mechanical; a model can apply it verbatim. `medium` — the correction is the common case but depends on author intent. `low` — the diagnostic is a strong signal, but the fix requires context we lack.
 packages/validate/src/codes.js · `import { CONFIDENCE } from '@basenative/validate';`
 
-### `@basenative/visual-builder` (v0.2.0)
+### `@basenative/visual-builder` (v0.2.1)
 
 No-code template builder for BaseNative components
 
@@ -2859,7 +2859,7 @@ Creates a component palette for a drag-and-drop UI. **Options:** - `components` 
 <bn-canvas> Web Component
 packages/visual-builder/src/bn-canvas.js
 
-### `@basenative/wrangler-preset` (v0.2.0)
+### `@basenative/wrangler-preset` (v0.2.1)
 
 Recommended baseline for any DuganLabs Worker / Pages project.
 

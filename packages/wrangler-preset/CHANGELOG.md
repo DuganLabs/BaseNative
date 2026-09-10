@@ -1,5 +1,11 @@
 # @basenative/wrangler-preset
 
+## 0.2.1
+
+### Patch Changes
+
+- 1bfd837: Fix a polynomial ReDoS surface (CodeQL `js/polynomial-redos`) in `toToml`: trailing newlines were stripped with `/\n+$/`, which backtracks quadratically on input with many newlines, and the input can come from config values outside this module's control. Replaced with a linear index scan; output is unchanged.
+
 ## 0.2.0
 
 ### Minor Changes

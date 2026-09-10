@@ -1,5 +1,12 @@
 # @basenative/builder
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [40a3472]
+  - @basenative/runtime@0.6.1
+
 ## 0.1.2
 
 ### Patch Changes
