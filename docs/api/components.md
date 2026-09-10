@@ -704,14 +704,36 @@ Renders:
 ```html
 <div data-bn="tabs" data-variant="default" id="t">
   <div data-bn="tab-list" role="tablist">
-    <button data-bn="tab" role="tab" id="t-tab-overview" aria-selected="true" aria-controls="t-panel-overview" data-tab="overview">Overview</button>…
+    <button data-bn="tab" role="tab" type="button" tabindex="0" id="t-tab-overview" aria-selected="true" aria-controls="t-panel-overview" data-tab="overview">Overview</button>
+    <button data-bn="tab" role="tab" type="button" tabindex="-1" id="t-tab-settings" aria-selected="false" aria-controls="t-panel-settings" data-tab="settings" disabled>Settings</button>
   </div>
   <div data-bn="tab-panel" role="tabpanel" id="t-panel-overview" aria-labelledby="t-tab-overview">…</div>
   <div data-bn="tab-panel" role="tabpanel" id="t-panel-settings" aria-labelledby="t-tab-settings" hidden>…</div>
 </div>
 ```
 
-Accessibility: full `tablist`/`tab`/`tabpanel` wiring with `aria-controls` and `aria-labelledby`; inactive panels are `hidden`.
+Accessibility: full `tablist`/`tab`/`tabpanel` wiring with `aria-controls` and `aria-labelledby`; inactive panels are `hidden`; tab buttons carry a roving `tabindex` (0 on the active tab — or the first enabled one when the active tab is disabled or unknown — and -1 elsewhere).
+
+### initTabs
+
+`initTabs(root, options?)` → `{ select(id), active(), destroy() }`. Client-side switching for a rendered `[data-bn="tabs"]` element, implementing the WAI-ARIA APG tabs pattern so consumers stop re-implementing it:
+
+```js
+import { initTabs } from '@basenative/components';
+
+const tabs = initTabs(document.querySelector('#t'), {
+  onChange: (id, tab) => router.navigate(`?view=${id}`), // user-driven changes only
+  activation: 'automatic',                                 // or 'manual'
+});
+tabs.select('settings'); // reflect app state; silent (no onChange)
+tabs.active();           // 'settings'
+tabs.destroy();
+```
+
+- Click and ArrowLeft / ArrowRight / Home / End switch tabs, wrapping at the ends and skipping disabled tabs; `aria-selected` and the roving `tabindex` follow the selection and every panel except the selected one (matched through `aria-controls`) is `hidden`. Arrow keys call `preventDefault()`; other keys are left alone.
+- `activation: 'automatic'` (default) selects as focus moves; `'manual'` moves focus and the roving `tabindex` only, and the tab's native click (Enter / Space / pointer) selects.
+- On init the widget is reconciled from the `aria-selected="true"` tab (or the first enabled tab when none is selected).
+- `select(id)` returns `false` for an unknown id and never fires `onChange` or moves focus, so a route can keep its own signal as the source of truth. Tabs and panels are re-queried on every interaction, so tabs added later are picked up; a tabs widget nested inside `root` is ignored — init it on its own root.
 
 ## Accordion
 

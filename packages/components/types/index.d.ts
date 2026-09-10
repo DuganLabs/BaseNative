@@ -442,6 +442,11 @@ export interface TabItem {
   disabled?: boolean;
 }
 
+/**
+ * Tab buttons carry a roving `tabindex` (0 on the active tab — or the first
+ * enabled one when the active tab is disabled or unknown — and -1 elsewhere).
+ * Pair with {@link initTabs} on the client for switching.
+ */
 export function renderTabs(options?: {
   tabs?: TabItem[];
   /** Id of the active tab; defaults to the first tab. */
@@ -451,6 +456,31 @@ export function renderTabs(options?: {
   id?: string;
   attrs?: string;
 }): string;
+
+export interface TabsController {
+  /** Reflects `id` into the DOM (aria-selected, tabindex, hidden) without firing `onChange`; `false` when no such tab exists. */
+  select(id: string): boolean;
+  /** `data-tab` of the selected tab, or null. */
+  active(): string | null;
+  destroy(): void;
+}
+
+/**
+ * Wires a rendered `[data-bn="tabs"]` element to the WAI-ARIA APG tabs
+ * pattern: click and ArrowLeft / ArrowRight / Home / End switch tabs (wrapping,
+ * skipping disabled tabs), `aria-selected` and the roving `tabindex` follow
+ * the selection, and every panel except the selected one is `hidden`.
+ * `onChange` fires after user-driven changes only. Nested tabs widgets inside
+ * `root` are ignored; init each one on its own root.
+ */
+export function initTabs(
+  root: HTMLElement,
+  options?: {
+    onChange?: (id: string, tab: HTMLElement) => void;
+    /** `'automatic'` (default) selects as focus moves; `'manual'` moves focus only and selects on Enter / Space / click. */
+    activation?: 'automatic' | 'manual';
+  }
+): TabsController;
 
 // ---------------------------------------------------------------- Accordion
 
