@@ -2150,6 +2150,26 @@ const stop = effect(() => {
 stop.dispose(); // stops the effect
 ```
 
+### `batch(fn)`
+Groups multiple signal writes into a single effect flush. Effects that read signals written inside `fn` run once, after `fn` returns, instead of once per write. Batches nest — only the outermost `batch()` call triggers the flush. Returns w…
+```js
+batch(() => {
+  firstName.set('Ada');
+  lastName.set('Lovelace');
+}); // dependent effects run once, not twice
+```
+
+### `registerPlugin(plugin)`
+Registers a hook that observes every signal write across the whole runtime. Returns an unregister function. This is a single global hook list, separate from the lifecycle plugin system in [`createPluginRegistry()`](#plugins) below — `onSig…
+```js
+const unregister = registerPlugin({
+  onSignalWrite(sig, previousValue, nextValue) {
+    console.log('signal changed', previousValue, '->', nextValue);
+  },
+});
+unregister(); // stop observing
+```
+
 ### `hydrate(root, ctx, options?)`
 Activates template directives in a DOM subtree. Returns a dispose function.
 ```js
@@ -2236,178 +2256,225 @@ Emits a structured diagnostic through the options callback.
 ### `reportHydrationMismatch(options, message, detail?)`
 Reports a hydration mismatch event.
 
-#### Undocumented exports (source-only — not in docs/api/runtime.md)
+### DevTools
+Instrumentation hooks that expose signal/effect/hydration state to a browser extension through `globalThis.__BASENATIVE_DEVTOOLS__`.
 
-#### `batch(fn)` (function)
-packages/runtime/src/signals.js · `import { batch } from '@basenative/runtime';`
+#### `enableDevtools()`
+Turns on devtools instrumentation and installs `globalThis.__BASENATIVE_DEVTOOLS__`, with `getSignals()`, `getEffects()`, `getHydrations()`, and `getState()`. Call before creating the signals/effects you want visible — anything created ear…
 
-#### `registerPlugin(plugin)` (function)
-packages/runtime/src/signals.js · `import { registerPlugin } from '@basenative/runtime';`
+#### `disableDevtools()`
+Turns instrumentation off, clears tracked signals/effects/hydrations, and removes `globalThis.__BASENATIVE_DEVTOOLS__`.
 
-#### `enableDevtools()` (function)
-Enables devtools instrumentation. Call this before creating signals or hydrating.
-packages/runtime/src/devtools.js · `import { enableDevtools } from '@basenative/runtime';`
+#### `isDevtoolsEnabled()`
+Returns whether devtools are currently enabled.
 
-#### `disableDevtools()` (function)
-Disables devtools and cleans up.
-packages/runtime/src/devtools.js · `import { disableDevtools } from '@basenative/runtime';`
+#### `trackSignal(accessor, label?)`
+Registers a signal for inspection. A no-op (returns `undefined`) unless devtools are enabled. Returns a numeric id otherwise.
 
-#### `isDevtoolsEnabled()` (function)
-Returns whether devtools are enabled.
-packages/runtime/src/devtools.js · `import { isDevtoolsEnabled } from '@basenative/runtime';`
+#### `trackEffect(handle, label?)`
+Registers an effect for inspection. A no-op unless devtools are enabled. Returns a numeric id otherwise.
 
-#### `trackSignal(accessor, label)` (function)
-Registers a signal for devtools inspection.
-packages/runtime/src/devtools.js · `import { trackSignal } from '@basenative/runtime';`
+#### `recordHydration(root, details?)`
+Appends a hydration event (`{ timestamp, root: root.tagName, directivesProcessed, duration }`) to the devtools timeline. A no-op unless devtools are enabled.
+```js
+import { enableDevtools, trackSignal, signal } from '@basenative/runtime';
 
-#### `trackEffect(handle, label)` (function)
-Registers an effect for devtools inspection.
-packages/runtime/src/devtools.js · `import { trackEffect } from '@basenative/runtime';`
+enableDevtools();
+const count = signal(0);
+trackSignal(count, 'count');
+// globalThis.__BASENATIVE_DEVTOOLS__.getSignals()
+//   -> [{ id: 1, label: 'count', value: 0, subscriberCount: 0 }]
+```
 
-#### `recordHydration(root, details = {})` (function)
-Records a hydration event for the timeline.
-packages/runtime/src/devtools.js · `import { recordHydration } from '@basenative/runtime';`
+### Debug Mode
+Verbose console logging for diagnosing reactivity issues during development. Zero overhead when off.
 
-#### `createErrorBoundary(options = {})` (function)
-Creates an error boundary that wraps template rendering.
-packages/runtime/src/error-boundary.js · `import { createErrorBoundary } from '@basenative/runtime';`
+#### `enableDebug(options?)`
+| Option | Type | Description | |--------|------|-------------| | `label` | `string` | Prefix included in every log line | | `logger` | `object` | Custom logger (default: `console`) | | `trackReads` | `boolean` | Also log every signal read…
 
-#### `renderWithBoundary(renderFn, options = {})` (function)
-Server-side error boundary for render(). Wraps template rendering and returns fallback HTML on error.
-packages/runtime/src/error-boundary.js · `import { renderWithBoundary } from '@basenative/runtime';`
+#### `disableDebug()`
+Turns debug mode off, logs a final `getDebugStats()` snapshot, and resets the counters to zero.
 
-#### `definePlugin(config)` (function)
-Define a plugin with a name and setup function.
-packages/runtime/src/plugins.js · `import { definePlugin } from '@basenative/runtime';`
-
-#### `createPluginRegistry()` (function)
-Create a plugin registry that manages plugin registration, lifecycle hooks, and custom directives.
-packages/runtime/src/plugins.js · `import { createPluginRegistry } from '@basenative/runtime';`
-
-#### `createLazyHydrator(options = {})` (function)
-createLazyHydrator(options) — Creates a lazy hydration controller.
-packages/runtime/src/lazy.js · `import { createLazyHydrator } from '@basenative/runtime';`
-
-#### `lazyHydrate(element, hydrateFn, options = {})` (function)
-Convenience wrapper — hydrate a single element when it becomes visible.
-packages/runtime/src/lazy.js · `import { lazyHydrate } from '@basenative/runtime';`
-
-#### `hydrateOnIdle(hydrateFn)` (function)
-Hydrate when the browser is idle. Uses requestIdleCallback where available, falls back to setTimeout.
-packages/runtime/src/lazy.js · `import { hydrateOnIdle } from '@basenative/runtime';`
-
-#### `hydrateOnInteraction(element, hydrateFn, events)` (function)
-Hydrate on the first user interaction with the element.
-packages/runtime/src/lazy.js · `import { hydrateOnInteraction } from '@basenative/runtime';`
-
-#### `hydrateOnMedia(hydrateFn, query)` (function)
-Hydrate when a CSS media query matches.
-packages/runtime/src/lazy.js · `import { hydrateOnMedia } from '@basenative/runtime';`
-
-#### `createVitalsReporter(options = {})` (function)
-createVitalsReporter(options) — aggregated Web Vitals reporter.
-packages/runtime/src/vitals.js · `import { createVitalsReporter } from '@basenative/runtime';`
-
-#### `observeLCP(callback)` (function)
-Observe Largest Contentful Paint.
-packages/runtime/src/vitals.js · `import { observeLCP } from '@basenative/runtime';`
-
-#### `observeFID(callback)` (function)
-Observe First Input Delay.
-packages/runtime/src/vitals.js · `import { observeFID } from '@basenative/runtime';`
-
-#### `observeCLS(callback)` (function)
-Observe Cumulative Layout Shift.
-packages/runtime/src/vitals.js · `import { observeCLS } from '@basenative/runtime';`
-
-#### `observeFCP(callback)` (function)
-Observe First Contentful Paint.
-packages/runtime/src/vitals.js · `import { observeFCP } from '@basenative/runtime';`
-
-#### `observeTTFB(callback)` (function)
-Observe Time to First Byte.
-packages/runtime/src/vitals.js · `import { observeTTFB } from '@basenative/runtime';`
-
-#### `observeINP(callback)` (function)
-Observe Interaction to Next Paint.
-packages/runtime/src/vitals.js · `import { observeINP } from '@basenative/runtime';`
-
-#### `enableDebug(opts = {})` (function)
-Enable debug mode.
-packages/runtime/src/debug.js · `import { enableDebug } from '@basenative/runtime';`
-
-#### `disableDebug()` (function)
-Disable debug mode and reset stats.
-packages/runtime/src/debug.js · `import { disableDebug } from '@basenative/runtime';`
-
-#### `isDebugEnabled()` (function)
+#### `isDebugEnabled()`
 Returns whether debug mode is active.
-packages/runtime/src/debug.js · `import { isDebugEnabled } from '@basenative/runtime';`
 
-#### `getDebugStats()` (function)
-Returns accumulated debug statistics.
-packages/runtime/src/debug.js · `import { getDebugStats } from '@basenative/runtime';`
+#### `getDebugStats()`
+Returns a snapshot: `{ signalsCreated, effectsCreated, signalWrites, signalReads, effectRuns }`. Mutating the returned object does not affect internal state.
 
-#### `debugSignal(s, name = 'signal')` (function)
-Wraps a signal with debug logging.
-packages/runtime/src/debug.js · `import { debugSignal } from '@basenative/runtime';`
+#### `debugSignal(signal, name?)`
+Wraps a signal created with `signal()` so every `.set()` call (and, if `trackReads` is on, every read) is logged. Returns a wrapper with the same `()` / `.set()` / `.peek()` shape.
 
-#### `debugEffect(fn, name = 'effect')` (function)
-Wraps an effect with debug logging — logs execution count and timing.
-packages/runtime/src/debug.js · `import { debugEffect } from '@basenative/runtime';`
+#### `debugEffect(fn, name?)`
+Wraps an effect body so every run is timed and logged. Returns the same dispose handle `effect()` returns.
 
-#### `debugTime(label, fn)` (function)
-Logs a timing measurement. Use around operations you want to profile.
-packages/runtime/src/debug.js · `import { debugTime } from '@basenative/runtime';`
+#### `debugTime(label, fn)`
+Runs `fn`, logs its wall-clock duration, and returns its result. When debug mode is off, still runs `fn` and returns its result — only the timing log is skipped.
 
-#### `debugAssert(condition, message)` (function)
-Asserts a reactive invariant in debug mode. No-op in production.
-packages/runtime/src/debug.js · `import { debugAssert } from '@basenative/runtime';`
+#### `debugAssert(condition, message)`
+Throws `Error('[BN:debug] Assertion failed: ' + message)` when `condition` is falsy. A full no-op when debug mode is off — it returns immediately without acting on `condition`, so it never throws in that state. Do not rely on it for invari…
 
-#### `debugDeps(s, name = 'signal')` (function)
-Logs a signal's current dependency graph (immediate subscribers only). Useful for diagnosing why a computed is or isn't re-evaluating.
-packages/runtime/src/debug.js · `import { debugDeps } from '@basenative/runtime';`
+#### `debugDeps(signal, name?)`
+Logs a signal's current value. A no-op when debug mode is off.
+```js
+import { enableDebug, debugSignal, debugEffect, signal } from '@basenative/runtime';
 
-#### `isScopeSlot(value)` (function)
-packages/runtime/src/shared/expression.js · `import { isScopeSlot } from '@basenative/runtime';`
+enableDebug({ label: 'HomePage' });
+const count = debugSignal(signal(0), 'count');
+debugEffect(() => console.log('count is', count()), 'log-count');
+count.set(1);
+// [BN:debug:HomePage] signal:count set 0 → 1
+```
 
-#### `compileExpression(source)` (function)
-packages/runtime/src/shared/expression.js · `import { compileExpression } from '@basenative/runtime';`
+### Error Boundaries
+Programmatic try/catch helpers for template and SSR rendering. Despite a comment in `packages/runtime/src/error-boundary.js` describing a `@catch` template directive, no such directive is registered anywhere in source — these are called di…
 
-#### `evaluateExpression(source, ctx = {}, options = {})` (function)
-packages/runtime/src/shared/expression.js · `import { evaluateExpression } from '@basenative/runtime';`
+#### `createErrorBoundary(options?)`
+| Option | Type | Description | |--------|------|-------------| | `onError` | `(error) => void` | Called when `.try()` catches an error | | `fallback` | `string` | Fallback HTML returned by `.getFallback()` | Returns a boundary object: | M…
+```js
+const boundary = createErrorBoundary({
+  onError(error) { logger.error('render failed', error); },
+  fallback: '<p>Something went wrong.</p>',
+});
 
-#### `clearExpressionCache()` (function)
-packages/runtime/src/shared/expression.js · `import { clearExpressionCache } from '@basenative/runtime';`
+const html = boundary.try(() => renderList(items())) ?? boundary.getFallback();
+```
 
-#### `SCOPE_SLOT` (const)
-packages/runtime/src/shared/expression.js · `import { SCOPE_SLOT } from '@basenative/runtime';`
+#### `renderWithBoundary(renderFn, options?)`
+One-shot version for a single render call — no reusable boundary object. `options` takes the same `onError`/`fallback` shape as `createErrorBoundary`. If `fallback` is omitted and `renderFn` throws, it returns an HTML comment — `<!-- BaseN…
+```js
+const html = renderWithBoundary(() => render(template, data), {
+  fallback: '<p>Unable to render this section.</p>',
+});
+```
 
-#### `isRaw(value)` (function)
-packages/runtime/src/shared/escape.js · `import { isRaw } from '@basenative/runtime';`
+### Plugins
+A lifecycle-hook and custom-directive registry, distinct from the signal-write hook registered by [`registerPlugin`](#registerpluginplugin) above.
 
-#### `unwrapRaw(value)` (function)
-The underlying string of a raw value, or the value unchanged.
-packages/runtime/src/shared/escape.js · `import { unwrapRaw } from '@basenative/runtime';`
+#### `definePlugin(config)`
+Validates and returns a plugin descriptor `{ name, setup }` from `config: { name, setup? }`. Throws if `name` is missing or an empty string. `setup` defaults to a no-op if omitted.
 
-#### `escapeText(value)` (function)
-Escape for a text node: `&` first, or the later replacements double-encode.
-packages/runtime/src/shared/escape.js · `import { escapeText } from '@basenative/runtime';`
+#### `createPluginRegistry()`
+Creates an isolated registry: | Method | Description | |--------|-------------| | `register(plugin)` | Registers a plugin (from `definePlugin`) and immediately calls its `setup(api)`. Throws if a plugin with the same `name` is already regi…
+```js
+const registry = createPluginRegistry();
 
-#### `escapeAttr(value)` (function)
-Escape for a double-quoted attribute value.
-packages/runtime/src/shared/escape.js · `import { escapeAttr } from '@basenative/runtime';`
+registry.register(definePlugin({
+  name: 'analytics',
+  setup(api) {
+    api.onAfterHydrate(() => sendPageView());
+  },
+}));
 
-#### `isUrlAttribute(name)` (function)
-packages/runtime/src/shared/escape.js · `import { isUrlAttribute } from '@basenative/runtime';`
+registry.runHook('afterHydrate'); // fires the handler above
+```
 
-#### `sanitizeUrl(value)` (function)
-Neutralise a URL-bearing attribute value, or return it unchanged.
-packages/runtime/src/shared/escape.js · `import { sanitizeUrl } from '@basenative/runtime';`
+### Lazy Hydration
+Defers hydration of a subtree until it's needed. Browser-only — every function here reads DOM/browser APIs (`IntersectionObserver`, `requestIdleCallback`, `matchMedia`) that don't exist during SSR.
 
-#### `findInterpolations(text)` (function)
-Locate every `{{ expression }}` in `text`, linearly.
-packages/runtime/src/shared/escape.js · `import { findInterpolations } from '@basenative/runtime';`
+#### `createLazyHydrator(options?)`
+| Option | Type | Default | Description | |--------|------|---------|-------------| | `rootMargin` | `string` | `'0px'` | Forwarded to `IntersectionObserver` | | `threshold` | `number` | `0` | Forwarded to `IntersectionObserver` | Returns…
+
+#### `lazyHydrate(element, hydrateFn, options?)`
+Convenience wrapper: creates a `createLazyHydrator(options)` and immediately `observe()`s a single element. Returns the hydrator, so `disconnect()`/`hydrateNow()` remain available.
+
+#### `hydrateOnIdle(hydrateFn)`
+Runs `hydrateFn` via `requestIdleCallback`, falling back to `setTimeout(fn, 0)` where it's unavailable. Returns a cancel function.
+
+#### `hydrateOnInteraction(element, hydrateFn, events?)`
+Hydrates on the first of `events` (default `['click', 'focus', 'mouseenter']`) fired on `element`, then removes all the listeners. Returns a cleanup function that removes the listeners early.
+
+#### `hydrateOnMedia(hydrateFn, query)`
+Hydrates immediately if `matchMedia(query).matches` is already true; otherwise waits for the query to start matching. Returns a cleanup function. Note the argument order: `hydrateFn` comes first, unlike the other `hydrateOn*` helpers.
+```js
+import { createLazyHydrator, hydrateOnInteraction } from '@basenative/runtime';
+
+const hydrator = createLazyHydrator({ rootMargin: '200px' });
+for (const card of document.querySelectorAll('[data-lazy]')) {
+  hydrator.observe(card, () => hydrate(card, cardContext(card)));
+}
+
+hydrateOnInteraction(document.getElementById('comments'), () => {
+  hydrate(document.getElementById('comments'), commentsContext);
+});
+```
+
+### Web Vitals
+Zero-dependency Core Web Vitals collection over `PerformanceObserver`. Every `observe*` function returns a cleanup function, or `null` when `PerformanceObserver` is unavailable (SSR, or an unsupporting browser) — always guard the return va…
+
+#### `observeLCP(callback)` / `observeFID(callback)` / `observeCLS(callback)` / `observeFCP(callback)` / `observeTTFB(callback)` / `observeINP(callback)`
+Each observes one metric and calls `callback({ name, value, entries })` as new performance entries arrive: | Function | `name` | `value` | Underlying entry type | |----------|--------|---------|------------------------| | `observeLCP` | `'…
+
+#### `createVitalsReporter(options?)`
+| Option | Type | Description | |--------|------|-------------| | `onReport` | `(metric) => void` | Called for every metric update from any observer | Returns `{ start, stop, getMetrics }`: | Method | Description | |--------|-------------|…
+```js
+import { createVitalsReporter } from '@basenative/runtime';
+
+const vitals = createVitalsReporter({
+  onReport(metric) { navigator.sendBeacon('/vitals', JSON.stringify(metric)); },
+});
+vitals.start();
+// later
+vitals.stop();
+```
+
+### Shared Expression Evaluator — `@basenative/runtime/shared/expression`
+The CSP-safe expression evaluator used internally by both `hydrate()` (client) and `@basenative/server`'s `render()` (SSR) to evaluate template expressions such as `@if="isLoggedIn()"` or `{{ item.name }}`. Exposed as a subpath export — im…
+
+#### `compileExpression(source)`
+Parses `source` into `{ source, ast }`, or `{ source, error }` on a syntax error. Cached by trimmed source string, so compiling the same expression twice returns the same object without re-parsing.
+
+#### `evaluateExpression(source, ctx?, options?)`
+Compiles (if `source` is a string; a pre-compiled object from `compileExpression` is also accepted) and evaluates an expression against a context object. Returns `undefined` and reports a diagnostic through `options.onDiagnostic` instead o…
+
+#### `clearExpressionCache()`
+Empties the module-level compile cache. Mainly useful for tests or long-running processes that compile a very large number of distinct expressions.
+
+#### `isScopeSlot(value)`
+Returns whether `value` is a "scope slot" — an object tagged with the `SCOPE_SLOT` symbol and exposing a `.get()` method, used internally to thread `@for` loop variables (`$index`, the loop item, …) through nested scopes.
+
+#### `SCOPE_SLOT`
+The `Symbol.for('basenative.scopeSlot')` used to tag scope slots. Exported so a custom directive can produce its own scope-slot-compatible values.
+```js
+import { evaluateExpression } from '@basenative/runtime/shared/expression';
+
+evaluateExpression('items.length > 0', { items: [1, 2] }); // true
+evaluateExpression('user.__proto__', { user: {} });         // undefined — reports BN_EXPR_UNSAFE_MEMBER
+```
+
+### Output Escaping — `@basenative/runtime/shared/escape`
+The escaping module shared by `hydrate()` and `@basenative/server`'s `render()`, so client and server agree on what's safe to emit — see the module header in `packages/runtime/src/shared/escape.js` for why this must not fork between the tw…
+
+#### `raw(value)`
+Marks `value` as trusted markup, exempt from HTML-escaping when interpolated. `raw()` does not exempt a value from the URL-scheme guard (`sanitizeUrl`) — a `javascript:` URL is stripped whether or not the value is marked raw.
+```js
+render('<div>{{ body }}</div>', { body: raw('<em>hi</em>') });
+```
+
+#### `isRaw(value)` / `unwrapRaw(value)`
+`isRaw` returns whether `value` was produced by `raw()`. `unwrapRaw` returns the underlying string for a raw value, or `value` unchanged otherwise.
+
+#### `escapeText(value)`
+Escapes `value` for insertion into a text node: `&`, `<`, `>`.
+
+#### `escapeAttr(value)`
+Escapes `value` for a double-quoted attribute value: everything `escapeText` covers, plus `"` and `'`.
+
+#### `isUrlAttribute(name)`
+Returns whether `name` (case-insensitive) is one of the attributes whose value is fetched or navigated to: `href`, `src`, `action`, `formaction`, `data`, `poster`, `xlink:href`, `ping`, `background`, `srcdoc`, `codebase`.
+
+#### `sanitizeUrl(value)`
+Strips control characters and whitespace, then returns `null` if what remains starts with a `javascript:`, `vbscript:`, `data:`, `blob:`, or `file:` scheme. Returns the original value unchanged otherwise — this is a scheme guard, not an es…
+
+#### `findInterpolations(text)`
+Returns every `{{ expression }}` found in `text` as `{ start, end, expression }`, scanning linearly with `indexOf` rather than a backtracking regex — the input is on the untrusted-input path (model-generated templates), where a `\{\{\s*(.+…
+```js
+import { escapeText, isUrlAttribute, sanitizeUrl } from '@basenative/runtime/shared/escape';
+
+escapeText('<script>');             // '&lt;script&gt;'
+isUrlAttribute('href');             // true
+sanitizeUrl('javascript:alert(1)'); // null
+sanitizeUrl('/safe/path');          // '/safe/path'
+```
 
 ### `@basenative/server` (v0.5.0)
 
@@ -2836,51 +2903,6 @@ Everything below is a real, mechanically-detected gap between source/package.jso
 - `@basenative/middleware`: `createExpressContext` is exported (packages/middleware/src/adapters/express.js) but not mentioned in docs/api/middleware.md.
 - `@basenative/og-image` — no docs/api/og-image.md; API below is extracted directly from source signatures/JSDoc only (15 exports).
 - `@basenative/persist` — no docs/api/persist.md; API below is extracted directly from source signatures/JSDoc only (16 exports).
-- `@basenative/runtime`: `batch` is exported (packages/runtime/src/signals.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `registerPlugin` is exported (packages/runtime/src/signals.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `enableDevtools` is exported (packages/runtime/src/devtools.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `disableDevtools` is exported (packages/runtime/src/devtools.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `isDevtoolsEnabled` is exported (packages/runtime/src/devtools.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `trackSignal` is exported (packages/runtime/src/devtools.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `trackEffect` is exported (packages/runtime/src/devtools.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `recordHydration` is exported (packages/runtime/src/devtools.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `createErrorBoundary` is exported (packages/runtime/src/error-boundary.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `renderWithBoundary` is exported (packages/runtime/src/error-boundary.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `definePlugin` is exported (packages/runtime/src/plugins.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `createPluginRegistry` is exported (packages/runtime/src/plugins.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `createLazyHydrator` is exported (packages/runtime/src/lazy.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `lazyHydrate` is exported (packages/runtime/src/lazy.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `hydrateOnIdle` is exported (packages/runtime/src/lazy.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `hydrateOnInteraction` is exported (packages/runtime/src/lazy.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `hydrateOnMedia` is exported (packages/runtime/src/lazy.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `createVitalsReporter` is exported (packages/runtime/src/vitals.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `observeLCP` is exported (packages/runtime/src/vitals.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `observeFID` is exported (packages/runtime/src/vitals.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `observeCLS` is exported (packages/runtime/src/vitals.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `observeFCP` is exported (packages/runtime/src/vitals.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `observeTTFB` is exported (packages/runtime/src/vitals.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `observeINP` is exported (packages/runtime/src/vitals.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `enableDebug` is exported (packages/runtime/src/debug.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `disableDebug` is exported (packages/runtime/src/debug.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `isDebugEnabled` is exported (packages/runtime/src/debug.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `getDebugStats` is exported (packages/runtime/src/debug.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `debugSignal` is exported (packages/runtime/src/debug.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `debugEffect` is exported (packages/runtime/src/debug.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `debugTime` is exported (packages/runtime/src/debug.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `debugAssert` is exported (packages/runtime/src/debug.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `debugDeps` is exported (packages/runtime/src/debug.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `isScopeSlot` is exported (packages/runtime/src/shared/expression.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `compileExpression` is exported (packages/runtime/src/shared/expression.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `evaluateExpression` is exported (packages/runtime/src/shared/expression.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `clearExpressionCache` is exported (packages/runtime/src/shared/expression.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `SCOPE_SLOT` is exported (packages/runtime/src/shared/expression.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `isRaw` is exported (packages/runtime/src/shared/escape.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `unwrapRaw` is exported (packages/runtime/src/shared/escape.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `escapeText` is exported (packages/runtime/src/shared/escape.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `escapeAttr` is exported (packages/runtime/src/shared/escape.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `isUrlAttribute` is exported (packages/runtime/src/shared/escape.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `sanitizeUrl` is exported (packages/runtime/src/shared/escape.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `findInterpolations` is exported (packages/runtime/src/shared/escape.js) but not mentioned in docs/api/runtime.md.
 - `@basenative/server`: `resolveDeferred` is exported (packages/server/src/render.js) but not mentioned in docs/api/server.md.
 - `@basenative/server`: `renderToStream` is exported (packages/server/src/stream.js) but not mentioned in docs/api/server.md.
 - `@basenative/server`: `renderToReadableStream` is exported (packages/server/src/stream.js) but not mentioned in docs/api/server.md.
