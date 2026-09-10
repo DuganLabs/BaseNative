@@ -32,6 +32,11 @@ export default [
       'node_modules/',
       '*.min.js',
       'examples/express/public/basenative.js',
+      // esbuild's own bundled output, same as basenative.js above: it
+      // escapes `</script>` in string literals as a safety measure for
+      // bundles that might be inlined into HTML, which no-useless-escape
+      // (correctly, for hand-written source) flags as unnecessary.
+      'examples/express/public/builder.js',
       // Scaffolding templates, not workspace members: their eslint.config.js
       // imports @basenative/eslint-config, which cannot resolve from in-repo.
       'packages/cli/templates/',
