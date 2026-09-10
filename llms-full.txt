@@ -1368,6 +1368,63 @@ const created = await fetchJson('/api/posts', {
 });
 ```
 
+#### createApiClient(options)
+Creates a typed `fetch` wrapper bound to a base URL. **Parameters:** - `options.baseUrl` — base URL string, or a function resolved on every request - `options.headers` — `HeadersInit` sent with every request; per-request headers win - `opt…
+```js
+const api = createApiClient({
+  baseUrl: () => window.__API_BASE__,
+  headers: { 'x-app': 'demo' },
+  timeoutMs: 10_000,
+  onUnauthorized: () => location.assign('/login'),
+  onError: (err, ctx) => telemetry.track('api_error', { code: err.code, path: ctx.path }),
+});
+
+const page = await api.get('/api/leads', { page: 2, status: ['new', 'open'] });
+page.data; // Lead[]
+…
+```
+
+#### ApiError
+Error class thrown by `createApiClient` and by `unwrap()`. `new ApiError(message, { status, code?, field?, url?, body?, response?, cause? })`. **Fields:** - `status` — HTTP status, or `0` when no response was received - `code` — the envelo…
+
+#### isApiError(value)
+`instanceof` guard for `ApiError`. **Example:**
+```js
+try {
+  await api.post('/api/leads', form);
+} catch (err) {
+  if (isApiError(err) && err.field) showFieldError(err.field, err.message);
+  else throw err;
+}
+```
+
+#### isApiResponse(value)
+Returns `true` for a success envelope — an object with a `data` property: `{ data, meta? }`, where `meta` carries pagination as `{ total, page, perPage }`.
+
+#### isApiErrorEnvelope(value)
+Returns `true` for an error envelope — an object whose `error` property is a non-null object: `{ error: { code, message, field? } }`.
+
+#### unwrap(envelope)
+Returns the `data` of a success envelope. Given a promise, returns a promise for the `data` of the envelope it resolves to. **Throws:** `ApiError` (with `status: 0` and the envelope's `code`/`message`/`field`) when handed an error envelope…
+```js
+const leads = await unwrap(api.get('/api/leads'));   // Lead[]
+const stats = unwrap({ data: { total: 3 } });         // { total: 3 }
+```
+
+#### serializeQuery(params)
+Serializes a params object to a query string. **Parameters:** - `params` — object of `string | number | boolean | null | undefined` values or arrays of them; `null`/`undefined` (the object itself, or a value) is skipped **Returns:** `?key=…
+```js
+serializeQuery({ q: 'hello world', tag: ['a', 'b'], page: 1, empty: null });
+// '?page=1&q=hello%20world&tag=a&tag=b'
+```
+
+#### joinUrl(base, path)
+Joins a base URL and a path with exactly one `/` between them, keeping any base path prefix and any query string already on `path`. An empty `base` returns `path` unchanged; an absolute `http(s)://` path is returned as is. **Example:**
+```js
+joinUrl('https://api.example.com/', 'v1/users?x=1'); // 'https://api.example.com/v1/users?x=1'
+joinUrl('', '/users');                                // '/users'
+```
+
 ### `@basenative/flags` (v0.4.0)
 
 Feature flags with percentage rollouts and @feature template directive
