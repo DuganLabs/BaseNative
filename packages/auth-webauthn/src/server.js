@@ -33,6 +33,8 @@ const HANDLE_RX = /^[a-z0-9_-]{2,24}$/;
 const DEFAULT_SESSION_TTL_SECONDS = 30 * 24 * 60 * 60; // 30 days
 const DEFAULT_CHALLENGE_TTL_SECONDS = 5 * 60; // 5 min — never longer
 const DEFAULT_COOKIE_NAME = 'bn_auth';
+const DEFAULT_USER_VERIFICATION = 'preferred';
+const USER_VERIFICATION_VALUES = ['preferred', 'required', 'discouraged'];
 
 export function normHandle(h) {
   return String(h ?? '').trim().toLowerCase();
@@ -100,6 +102,14 @@ export function clearCookieHeader(name) {
  * @param {number}   [opts.ttl.challengeSeconds=300]     Challenge TTL (≤ 300)
  * @param {string}   [opts.cookieName='bn_auth']
  * @param {boolean}  [opts.secureCookie=true]
+ * @param {'preferred'|'required'|'discouraged'} [opts.userVerification='preferred']
+ *   Drives both option generation (`authenticatorSelection.userVerification` on
+ *   registration, `userVerification` on authentication) and the verification step
+ *   (`requireUserVerification: userVerification === 'required'`), so the two can
+ *   no longer disagree. `'required'` is strictly stronger — it rejects assertions
+ *   from authenticators that didn't perform user verification (PIN/biometric),
+ *   not just user presence — but excludes authenticators that can't perform UV
+ *   at all. Default matches prior behaviour byte-for-byte.
  */
 export function webauthnAdapter(opts) {
   if (!opts?.rp?.rpID || !opts?.rp?.origin) {
@@ -117,6 +127,13 @@ export function webauthnAdapter(opts) {
   );
   const cookieName = opts.cookieName ?? DEFAULT_COOKIE_NAME;
   const secureCookie = opts.secureCookie !== false;
+  const userVerification = opts.userVerification ?? DEFAULT_USER_VERIFICATION;
+  if (!USER_VERIFICATION_VALUES.includes(userVerification)) {
+    throw new Error(
+      `webauthnAdapter: opts.userVerification must be one of ${USER_VERIFICATION_VALUES.join(', ')}`,
+    );
+  }
+  const requireUserVerification = userVerification === 'required';
 
   validateStores(stores);
 
@@ -158,7 +175,7 @@ export function webauthnAdapter(opts) {
         excludeCredentials,
         authenticatorSelection: {
           residentKey: 'preferred',
-          userVerification: 'preferred',
+          userVerification,
         },
       });
 
@@ -192,7 +209,7 @@ export function webauthnAdapter(opts) {
           expectedChallenge: challenge,
           expectedOrigin: rp.origin,
           expectedRPID: rp.rpID,
-          requireUserVerification: false,
+          requireUserVerification,
         });
       } catch (e) {
         return { error: `verification-failed: ${e.message}`, status: 400 };
@@ -236,7 +253,7 @@ export function webauthnAdapter(opts) {
       const lib = await getLib();
       const options = await lib.generateAuthenticationOptions({
         rpID: rp.rpID,
-        userVerification: 'preferred',
+        userVerification,
         allowCredentials,
       });
 
@@ -280,7 +297,7 @@ export function webauthnAdapter(opts) {
             counter: cred.counter,
             transports: cred.transports,
           },
-          requireUserVerification: false,
+          requireUserVerification,
         });
       } catch (e) {
         return { error: `verification-failed: ${e.message}`, status: 400 };
@@ -329,7 +346,7 @@ export function webauthnAdapter(opts) {
     },
 
     /* Expose for tests / debugging only. */
-    _config: { rp, sessionTtl, challengeTtl, cookieName, secureCookie },
+    _config: { rp, sessionTtl, challengeTtl, cookieName, secureCookie, userVerification },
   };
 }
 
