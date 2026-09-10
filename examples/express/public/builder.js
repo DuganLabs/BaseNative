@@ -101,22 +101,6 @@ function effect(fn) {
   return execute;
 }
 
-// ../../packages/runtime/src/features.js
-function cssSupports(target, rule) {
-  return Boolean(target?.CSS?.supports?.(rule));
-}
-function detectBrowserFeatures(target = globalThis) {
-  const elementProto = target?.HTMLElement?.prototype;
-  const dialogProto = target?.HTMLDialogElement?.prototype;
-  return {
-    dialog: Boolean(dialogProto?.showModal),
-    popover: Boolean(elementProto?.showPopover),
-    anchorPositioning: cssSupports(target, "anchor-name: --bn-anchor") && cssSupports(target, "position-anchor: --bn-anchor"),
-    baseSelect: cssSupports(target, "appearance: base-select") || cssSupports(target, "-webkit-appearance: base-select")
-  };
-}
-var browserFeatures = detectBrowserFeatures();
-
 // ../../packages/builder/src/state.js
 var idCounter = 0;
 function nextId() {
@@ -1305,16 +1289,16 @@ if (typeof customElements !== "undefined" && !customElements.get(TAG2)) {
 
 // ../../packages/builder/src/inspector-element.js
 var TAG3 = "bn-builder-inspector";
-function coerce(prop, raw) {
+function coerce(prop, raw2) {
   if (prop.kind === "number") {
-    if (raw === "" || raw == null) return void 0;
-    const n = Number(raw);
+    if (raw2 === "" || raw2 == null) return void 0;
+    const n = Number(raw2);
     return Number.isNaN(n) ? void 0 : n;
   }
   if (prop.kind === "boolean") {
-    return Boolean(raw);
+    return Boolean(raw2);
   }
-  return raw === "" ? void 0 : raw;
+  return raw2 === "" ? void 0 : raw2;
 }
 var BnBuilderInspector = class extends HTMLElement {
   constructor() {
@@ -1387,8 +1371,8 @@ var BnBuilderInspector = class extends HTMLElement {
       this.state.setBinding(nodeId, propName, ref ? { ref } : null);
       return;
     }
-    const raw = target.type === "checkbox" ? target.checked : target.value;
-    const value = coerce(prop, raw);
+    const raw2 = target.type === "checkbox" ? target.checked : target.value;
+    const value = coerce(prop, raw2);
     this.state.updateProps(nodeId, { [propName]: value });
   }
 };

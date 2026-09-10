@@ -222,11 +222,10 @@ describe('fuzz: evaluator result is always defined-safe', () => {
   for (const [expr, ctx] of inputs) {
     it(`returns undefined (not throws) for: ${expr}`, () => {
       clearExpressionCache();
-      let result;
+      // Any result is fine here — not throwing is the assertion that matters.
       assert.doesNotThrow(() => {
-        result = evaluateExpression(expr, ctx, { onDiagnostic: () => {} });
+        evaluateExpression(expr, ctx, { onDiagnostic: () => {} });
       });
-      assert.ok(result === undefined || result !== undefined); // any result is fine, as long as no throw
     });
   }
 });
