@@ -49,10 +49,11 @@ export function getHomePageContext() {
   };
 }
 
-export function getTasksPageContext(tasks) {
+export function getTasksPageContext(tasks, hasApi = true) {
   return {
     tasks,
     tasksJson: JSON.stringify(tasks),
+    hasApi,
   };
 }
 

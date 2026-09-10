@@ -3,7 +3,7 @@
   <p>Server-rendered initial state with client-side hydration for interactivity.</p>
 </section>
 
-<section data-tasks>
+<section data-tasks data-has-api="{{ hasApi }}">
   <output>{{ tasks.length }} tasks total</output>
 
   <ul role="list">
@@ -35,6 +35,12 @@ const initialData = JSON.parse(
   document.querySelector('[data-initial-tasks]').textContent
 );
 
+// Feature-detected once from the SSR-rendered flag: static hosts (Cloudflare
+// Pages) have no /api/tasks, and every request to it 405s and logs a
+// console error even when the response is caught. Skip the network
+// entirely there instead of finding out per request.
+const hasApi = document.querySelector('[data-tasks]')?.dataset.hasApi === 'true';
+
 const taskSignal = signal(initialData);
 const currentFilter = signal('all');
 const filterOptions = ['all', 'done', 'active', 'pending'];
@@ -49,6 +55,7 @@ const activeCount = computed(() => taskSignal().filter(x => x.status === 'active
 const summaryText = computed(() => `${taskSignal().length} tasks — ${doneCount()} done · ${activeCount()} active`);
 
 async function requestJson(url, options) {
+  if (!hasApi) return null;
   try {
     const res = await fetch(url, options);
     if (!res.ok) return null;
@@ -122,6 +129,35 @@ hydrate(hydrateRoot, {
   taskSignal, currentFilter, filterOptions,
   filteredTasks, doneCount, activeCount,
   addTask, deleteTask, String,
+});
+
+// The server-rendered "N tasks total" block above is static markup, not a
+// hydration target (render() only emits bn: markers in hydratable mode) —
+// keep it in sync with the same taskSignal directly instead of letting it
+// freeze at the initial count while the interactive list below moves on.
+const ssrOutput = document.querySelector('[data-tasks] output');
+const ssrList = document.querySelector('[data-tasks] ul[role="list"]');
+effect(() => {
+  const list = taskSignal();
+  if (ssrOutput) ssrOutput.textContent = `${list.length} tasks total`;
+  if (ssrList) {
+    ssrList.replaceChildren();
+    if (list.length === 0) {
+      const li = document.createElement('li');
+      li.textContent = 'No tasks yet — add one below';
+      ssrList.appendChild(li);
+    } else {
+      for (const task of list) {
+        const li = document.createElement('li');
+        li.append(`${task.title} `);
+        const mark = document.createElement('mark');
+        mark.dataset.status = task.status;
+        mark.textContent = task.status;
+        li.appendChild(mark);
+        ssrList.appendChild(li);
+      }
+    }
+  }
 });
 
 effect(() => {
