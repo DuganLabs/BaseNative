@@ -1,5 +1,12 @@
 # Changelog — @basenative/persist
 
+## 1.0.4
+
+### Patch Changes
+
+- Updated dependencies [d21dbdd]
+  - @basenative/runtime@0.6.2
+
 ## 1.0.3
 
 ### Patch Changes

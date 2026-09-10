@@ -1,5 +1,13 @@
 # @basenative/components
 
+## 0.6.2
+
+### Patch Changes
+
+- Updated dependencies [d21dbdd]
+  - @basenative/runtime@0.6.2
+  - @basenative/forms@1.0.3
+
 ## 0.6.1
 
 ### Patch Changes
