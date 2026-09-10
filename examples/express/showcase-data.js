@@ -1057,10 +1057,17 @@ effect(() => { value.textContent = n();
 }
 
 export function getShowcaseContext() {
-  const sections = getShowcaseSections();
+  // Demo markup and the toast container are assembled from @basenative/components
+  // renderers over hand-authored data (no user input), so they are legitimate raw()
+  // trust assertions — @basenative/server's {{ }} interpolation HTML-escapes by
+  // default, which otherwise renders every live demo as escaped text.
+  const sections = getShowcaseSections().map((section) => ({
+    ...section,
+    demos: section.demos.map((demo) => ({ ...demo, html: raw(demo.html) })),
+  }));
   return {
     sections,
-    toastContainer: renderToastContainer('top-right'),
+    toastContainer: raw(renderToastContainer('top-right')),
     packageCount: PACKAGES.length,
     // renderPackageCards() only assembles static, hand-authored strings from PACKAGES
     // above (no user input reaches it), so this is a legitimate raw() trust assertion —
