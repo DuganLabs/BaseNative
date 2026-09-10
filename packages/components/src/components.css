@@ -684,6 +684,18 @@
 [data-bn="datagrid-th"][data-sortable] { cursor: pointer; }
 [data-bn="datagrid-th"][data-sortable]:hover { color: var(--bn-color-text); }
 [data-bn="datagrid-th"][data-sortable]:focus-visible { box-shadow: var(--bn-focus-ring); outline: none; }
+/* Sortable headers render a real <button>; focus lands there, not on the <th>. */
+[data-bn="datagrid-th-button"] {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bn-space-1);
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  border-radius: var(--bn-radius-control);
+}
+[data-bn="datagrid-th-button"]:focus-visible { box-shadow: var(--bn-focus-ring); outline: none; }
 [data-bn="datagrid-th"][data-sorted]::after {
   content: '';
   display: inline-block;
