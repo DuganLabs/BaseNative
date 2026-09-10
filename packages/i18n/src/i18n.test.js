@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { writeFile, mkdir, rm } from 'node:fs/promises';
+import { writeFile, mkdtemp, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { createI18n } from './i18n.js';
@@ -196,10 +196,11 @@ describe('i18nMiddleware', () => {
 });
 
 describe('loader', () => {
-  const tmpDir = join(tmpdir(), `i18n-test-${Date.now()}`);
-
+  // `mkdtemp` rather than a `Date.now()`-suffixed name: a predictable path
+  // under the shared OS temp dir can be pre-created (e.g. as a symlink) by
+  // another local process racing this test.
   it('loadMessages reads a JSON translation file', async () => {
-    await mkdir(tmpDir, { recursive: true });
+    const tmpDir = await mkdtemp(join(tmpdir(), 'i18n-test-'));
     await writeFile(
       join(tmpDir, 'en.json'),
       JSON.stringify({ hello: 'Hello' })
@@ -210,8 +211,7 @@ describe('loader', () => {
   });
 
   it('createLoader loads and registers messages', async () => {
-    const dir = join(tmpdir(), `i18n-loader-${Date.now()}`);
-    await mkdir(dir, { recursive: true });
+    const dir = await mkdtemp(join(tmpdir(), 'i18n-loader-'));
     await writeFile(
       join(dir, 'en.json'),
       JSON.stringify({ greet: 'Hi' })

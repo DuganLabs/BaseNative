@@ -75,7 +75,10 @@ function createExpressContext(req, _res) {
 
 function parseCookieHeader(header) {
   if (!header) return {};
-  const result = {};
+  // Cookie names come straight from the request header. A null-prototype
+  // object means a crafted name like `__proto__` becomes an inert own
+  // property instead of reaching Object.prototype.
+  const result = Object.create(null);
   for (const pair of header.split(';')) {
     const eqIndex = pair.indexOf('=');
     if (eqIndex === -1) continue;
