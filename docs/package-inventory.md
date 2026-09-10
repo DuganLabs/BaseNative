@@ -17,7 +17,7 @@ the next changeset bump would collide and be skipped — realign the local versi
 |---|---|---|---|---|
 | `@basenative/admin` | 1.0.0 | 1.0.0 | — | in sync |
 | `@basenative/auth` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
-| `@basenative/auth-webauthn` | 1.0.3 | 1.0.2 | — | unreleased bump |
+| `@basenative/auth-webauthn` | 1.0.3 | 1.0.3 | — | in sync |
 | `@basenative/builder` | 0.1.1 | 0.1.1 | — | in sync |
 | `@basenative/claude-config` | 0.2.0 | 0.2.0 | — | in sync |
 | `@basenative/cli` | 0.4.0 | 0.4.0 | 0.2.0 | in sync |
