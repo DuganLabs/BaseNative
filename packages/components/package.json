@@ -1,6 +1,6 @@
 {
   "name": "@basenative/components",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "15 semantic UI components with CSS custom property theming and density scales",
   "type": "module",
   "exports": {
