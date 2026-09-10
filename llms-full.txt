@@ -502,6 +502,22 @@ Source: `packages/components/src` · Docs: `docs/api/components.md`
 - `./reset.css` → `./src/reset.css` (non-JS resource export)
 - `./states.css` → `./src/states.css` (non-JS resource export)
 
+### Escaping Policy
+Every renderer uses the runtime's shared `escapeText` / `escapeAttr` (`@basenative/runtime/shared/escape`): - **Escaped** — every attribute interpolation (`id`, `name`, `value`, `placeholder`, `alt`, `src`, `href`, `aria-*`, `data-*`, vari…
+```js
+renderInput({ name: 'q', label: '<b>Not bold</b>' })   // label is escaped
+renderButton('<b>Bold</b>')                             // content is a slot
+```
+
+### Deterministic Ids
+Renderers that need an id draw from a module counter, never `Math.random()`, so two renders of the same page produce identical markup. Every renderer honours an explicit `id` option first. Hydration matches server and client markup by id,…
+```js
+import { nextId, resetIds } from '@basenative/components';
+
+resetIds();            // once per SSR request, before rendering
+nextId('dialog');      // 'bn-dialog-1'
+```
+
 ### Button
 Variants: `primary`, `secondary`, `destructive`, `ghost`. Sizes: `default`, `sm`, `lg`.
 ```js
@@ -613,11 +629,11 @@ Returns the CSS class string for a button variant.
 packages/components/src/button.js · `import { buttonVariants } from '@basenative/components';`
 
 #### `renderCombobox(options = {})` (function)
-Combobox — searchable dropdown with keyboard navigation. Uses native <input> + <datalist> pattern with progressive enhancement.
+Combobox — searchable dropdown with keyboard navigation, rendered as a native <input> + <datalist>. Attributes, label and option labels are escaped.
 packages/components/src/combobox.js · `import { renderCombobox } from '@basenative/components';`
 
 #### `renderMultiselect(options = {})` (function)
-Multiselect — multiple value selection with tags/chips.
+Multiselect — multiple value selection with tags/chips over a hidden native <select multiple>. Attributes, label, tag text and option labels are escaped.
 packages/components/src/multiselect.js · `import { renderMultiselect } from '@basenative/components';`
 
 #### `renderDataGrid(options = {})` (function)
@@ -633,7 +649,7 @@ TreeGrid — tree structure combined with table columns.
 packages/components/src/tree.js · `import { renderTreeGrid } from '@basenative/components';`
 
 #### `renderVirtualList(options = {})` (function)
-Virtualizer — renders a virtual scroll container placeholder. Actual virtualization happens client-side via hydration. Server renders a window of items + a spacer for total height.
+Virtualizer — renders a virtual scroll container placeholder: a window of items plus a spacer for total height; actual virtualization happens client-side via hydration.
 packages/components/src/virtualizer.js · `import { renderVirtualList } from '@basenative/components';`
 
 #### `renderDialog(options = {})` (function)
@@ -645,7 +661,7 @@ Drawer — side panel that slides in from the edge.
 packages/components/src/drawer.js · `import { renderDrawer } from '@basenative/components';`
 
 #### `renderTabs(options = {})` (function)
-Tabs — tab navigation with panels.
+Tabs — tab navigation with panels. Tab buttons are type="button" and wired to their panels with aria-controls / aria-labelledby.
 packages/components/src/tabs.js · `import { renderTabs } from '@basenative/components';`
 
 #### `renderAccordion(options = {})` (function)
@@ -653,7 +669,7 @@ Accordion — collapsible sections using native <details>/<summary>.
 packages/components/src/accordion.js · `import { renderAccordion } from '@basenative/components';`
 
 #### `renderBreadcrumb(options = {})` (function)
-Breadcrumb — navigation trail.
+Breadcrumb — navigation trail; the last item is aria-current="page".
 packages/components/src/breadcrumb.js · `import { renderBreadcrumb } from '@basenative/components';`
 
 #### `renderAvatar(options = {})` (function)
@@ -665,11 +681,11 @@ Tooltip — popover-based tooltip using the Popover API.
 packages/components/src/tooltip.js · `import { renderTooltip } from '@basenative/components';`
 
 #### `renderDropdownMenu(options = {})` (function)
-Dropdown menu — popover-based menu.
+Dropdown menu — popover-based menu with role="menu" / "menuitem".
 packages/components/src/dropdown-menu.js · `import { renderDropdownMenu } from '@basenative/components';`
 
 #### `renderCommandPalette(options = {})` (function)
-Command palette — Cmd+K style searchable command menu.
+Command palette — Cmd+K style searchable command menu in a native <dialog>.
 packages/components/src/command-palette.js · `import { renderCommandPalette } from '@basenative/components';`
 
 #### `renderCalendar(options = {})` (function)

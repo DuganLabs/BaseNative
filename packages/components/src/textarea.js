@@ -1,7 +1,31 @@
 /**
  * Textarea component — wraps native <textarea> with field system integration.
  */
+import { escapeAttr, escapeText } from '@basenative/runtime/shared/escape';
+import { attrsSuffix } from './internal/attrs.js';
+import { describedBy, renderField } from './internal/field.js';
 
+/**
+ * Server-side render helper for a textarea field group.
+ *
+ * Attributes and text fields are escaped. Help text gets id `<id>-help`, the
+ * error gets `<id>-error`, and aria-describedby lists whichever are present —
+ * the same policy as renderInput.
+ *
+ * @param {object} options
+ * @param {string} options.name
+ * @param {string} [options.label]
+ * @param {string} [options.placeholder]
+ * @param {string} [options.value]
+ * @param {number} [options.rows=3]
+ * @param {boolean} [options.required]
+ * @param {boolean} [options.disabled]
+ * @param {string} [options.helpText]
+ * @param {string} [options.error]
+ * @param {string} [options.id]     Defaults to name
+ * @param {string} [options.attrs]  Raw attribute markup appended to the <textarea>; not escaped
+ * @returns {string}
+ */
 export function renderTextarea(options = {}) {
   const {
     name,
@@ -20,27 +44,8 @@ export function renderTextarea(options = {}) {
   const requiredAttr = required ? ' required' : '';
   const disabledAttr = disabled ? ' disabled' : '';
   const ariaInvalid = error ? ' aria-invalid="true"' : '';
-  const extra = attrs ? ' ' + attrs : '';
 
-  let html = `<div data-bn="field">`;
-  if (label) {
-    html += `<label for="${id}">${label}</label>`;
-  }
-  html += `<textarea data-bn="textarea" id="${id}" name="${name}" rows="${rows}" placeholder="${escapeAttr(placeholder)}"${requiredAttr}${disabledAttr}${ariaInvalid}${extra}>${escapeHtml(value)}</textarea>`;
-  if (helpText) {
-    html += `<span data-bn="field-help" id="${id}-help">${helpText}</span>`;
-  }
-  if (error) {
-    html += `<span data-bn="field-error" role="alert">${error}</span>`;
-  }
-  html += `</div>`;
-  return html;
-}
+  const control = `<textarea data-bn="textarea" id="${escapeAttr(id)}" name="${escapeAttr(name)}" rows="${escapeAttr(rows)}" placeholder="${escapeAttr(placeholder)}"${requiredAttr}${disabledAttr}${describedBy(id, helpText, error)}${ariaInvalid}${attrsSuffix(attrs)}>${escapeText(value)}</textarea>`;
 
-function escapeAttr(str) {
-  return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-}
-
-function escapeHtml(str) {
-  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return renderField({ id, label, control, helpText, error });
 }

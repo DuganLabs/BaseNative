@@ -1,5 +1,10 @@
 import type { Signal } from '@basenative/runtime';
 
+// Deterministic ids. Hydration needs either explicit `id` options or an
+// identical render order on server and client with resetIds() per request.
+export function nextId(prefix: string): string;
+export function resetIds(): void;
+
 // Button
 export function buttonVariants(variant?: string, size?: string): string;
 export function renderButton(content: string, options?: {
@@ -75,6 +80,7 @@ export function renderSelect(options?: {
   placeholder?: string;
   required?: boolean;
   disabled?: boolean;
+  helpText?: string;
   error?: string;
   id?: string;
 }): string;
@@ -89,11 +95,11 @@ export function renderAlert(content: string, options?: {
 export interface Toaster {
   position: string;
   duration: number;
-  toasts: Signal<Array<{ id: number; message: string; variant: string; duration: number }>>;
+  toasts: Signal<Array<{ id: string; message: string; variant: string; duration: number }>>;
 }
 export function createToaster(options?: { position?: string; duration?: number }): Toaster;
-export function showToast(toaster: Toaster, options?: { message?: string; variant?: string; duration?: number }): number;
-export function dismissToast(toaster: Toaster, id: number): void;
+export function showToast(toaster: Toaster, options?: { id?: string; message?: string; variant?: string; duration?: number }): string;
+export function dismissToast(toaster: Toaster, id: string): void;
 export function renderToastContainer(position?: string): string;
 
 // Table

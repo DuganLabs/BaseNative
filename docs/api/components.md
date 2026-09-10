@@ -7,6 +7,29 @@ All components render semantic HTML. Include the CSS:
 <link rel="stylesheet" href="@basenative/components/theme.css" />
 ```
 
+## Escaping Policy
+
+Every renderer uses the runtime's shared `escapeText` / `escapeAttr` (`@basenative/runtime/shared/escape`):
+
+- **Escaped** — every attribute interpolation (`id`, `name`, `value`, `placeholder`, `alt`, `src`, `href`, `aria-*`, `data-*`, variant/size/position fragments) and every text-semantic field (`label`, `helpText`, `error`, `caption`, `emptyMessage`, item labels, tooltip content, breadcrumb labels, avatar name, tree/table cell values, calendar and pipeline titles).
+- **Not escaped (HTML slots)** — designated composition points documented on each parameter as "HTML slot: not escaped; pass trusted markup only": button content, card header/body/footer, alert content, badge content, dialog/drawer body and footer, accordion and tab panel content, dropdown/tooltip trigger, menu/command/tree icons, breadcrumb separator, a DataGrid column's `render()` result, a custom `renderItem`, and every `attrs` option.
+
+```js
+renderInput({ name: 'q', label: '<b>Not bold</b>' })   // label is escaped
+renderButton('<b>Bold</b>')                             // content is a slot
+```
+
+## Deterministic Ids
+
+```js
+import { nextId, resetIds } from '@basenative/components';
+
+resetIds();            // once per SSR request, before rendering
+nextId('dialog');      // 'bn-dialog-1'
+```
+
+Renderers that need an id draw from a module counter, never `Math.random()`, so two renders of the same page produce identical markup. Every renderer honours an explicit `id` option first. Hydration matches server and client markup by id, so pass explicit `id`s to hydrated components, or render the same components in the same order on both sides and call `resetIds()` per request.
+
 ## Button
 
 ```js

@@ -10,6 +10,8 @@
  *     Submit
  *   </button>
  */
+import { escapeAttr } from '@basenative/runtime/shared/escape';
+import { attrsSuffix } from './internal/attrs.js';
 
 /**
  * Returns the CSS class string for a button variant.
@@ -20,6 +22,15 @@ export function buttonVariants(variant = 'primary', size = 'default') {
 
 /**
  * Server-side render helper for a button element.
+ *
+ * @param {string} content  HTML slot: not escaped; pass trusted markup only
+ * @param {object} [options]
+ * @param {string} [options.variant='primary']
+ * @param {string} [options.size='default']
+ * @param {boolean} [options.disabled]
+ * @param {string} [options.type='button']
+ * @param {string} [options.attrs]  Raw attribute markup appended to the <button>; not escaped
+ * @returns {string}
  */
 export function renderButton(content, options = {}) {
   const variant = options.variant || 'primary';
@@ -28,5 +39,5 @@ export function renderButton(content, options = {}) {
   const type = options.type || 'button';
   const attrs = options.attrs || '';
 
-  return `<button data-bn="button" data-variant="${variant}" data-size="${size}" type="${type}"${disabled} ${attrs}>${content}</button>`;
+  return `<button data-bn="button" data-variant="${escapeAttr(variant)}" data-size="${escapeAttr(size)}" type="${escapeAttr(type)}"${disabled}${attrsSuffix(attrs)}>${content}</button>`;
 }

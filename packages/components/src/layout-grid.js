@@ -1,4 +1,9 @@
 /**
+ * Layout grid — drag-and-drop CSS grid primitive for the visual builder.
+ */
+import { escapeAttr, escapeText } from '@basenative/runtime/shared/escape';
+
+/**
  * renderLayoutGrid - A drag-and-drop CSS grid layout component.
  * Designed to hook into @basenative/visual-builder's canvas state.
  *
@@ -6,7 +11,8 @@
  * @param {number} [options.columns=12] - Grid columns
  * @param {number} [options.gap='1rem'] - Gap between cells
  * @param {string} [options.minCellHeight='4rem'] - Minimum cell height
- * @param {Array<{id: string, label?: string, content?: string, colSpan?: number, rowSpan?: number}>} [options.cells] - Grid cells
+ * @param {Array<{id: string, label?: string, content?: string, colSpan?: number, rowSpan?: number}>} [options.cells] - Grid cells.
+ *   `label` is escaped text; `content` is an HTML slot: not escaped; pass trusted markup only
  * @param {string} [options.id] - Unique ID for the grid
  * @param {boolean} [options.editable=false] - Whether cells are draggable/resizable
  * @returns {string} HTML string
@@ -24,19 +30,24 @@ export function renderLayoutGrid(options = {}) {
   const cellsHtml = cells.map((cell, i) => {
     const span = cell.colSpan || 1;
     const rowSpan = cell.rowSpan || 1;
-    const style = `grid-column: span ${span}; grid-row: span ${rowSpan}; min-height: ${minCellHeight}`;
+    const style = `grid-column: span ${escapeAttr(span)}; grid-row: span ${escapeAttr(rowSpan)}; min-height: ${escapeAttr(minCellHeight)}`;
     const draggable = editable ? ' draggable="true"' : '';
-    const content = cell.content || cell.label || `Cell ${i + 1}`;
-    return `<div data-bn="layout-cell" data-cell-id="${esc(cell.id || `cell-${i}`)}" style="${style}"${draggable}>${content}</div>`;
+    const content = cell.content || (cell.label ? escapeText(cell.label) : `Cell ${i + 1}`);
+    return `<div data-bn="layout-cell" data-cell-id="${escapeAttr(cell.id || `cell-${i}`)}" style="${style}"${draggable}>${content}</div>`;
   }).join('\n');
 
-  return `<div data-bn="layout-grid" id="${esc(id)}" style="display:grid;grid-template-columns:repeat(${columns},1fr);gap:${gap}">
+  return `<div data-bn="layout-grid" id="${escapeAttr(id)}" style="display:grid;grid-template-columns:repeat(${escapeAttr(columns)},1fr);gap:${escapeAttr(gap)}">
 ${cellsHtml}
 </div>`;
 }
 
 /**
  * CSS for layout grid components.
+ *
+ * @deprecated components.css already ships these rules under
+ * `[data-bn="layout-grid"]` / `[data-bn="layout-cell"]`; include
+ * `@basenative/components/components.css` instead. Kept only so the public
+ * export surface is unchanged.
  * @returns {string}
  */
 export function layoutGridStyles() {
@@ -73,8 +84,4 @@ export function layoutGridStyles() {
   border-color: var(--accent, hsl(210 100% 60%));
   box-shadow: inset 0 0 0 2px var(--accent, hsl(210 100% 60%));
 }`;
-}
-
-function esc(s) {
-  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }

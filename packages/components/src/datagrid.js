@@ -1,6 +1,33 @@
 /**
  * Data grid — sortable, filterable, paginated table with virtual scrolling support.
  */
+import { escapeAttr, escapeText } from '@basenative/runtime/shared/escape';
+import { nextId } from './ids.js';
+import { attrsSuffix } from './internal/attrs.js';
+
+/**
+ * Data grid — sortable, filterable, paginated table with virtual scrolling support.
+ *
+ * Column labels, raw cell values, caption and emptyMessage are escaped text.
+ * A column's `render(value, row)` result is an HTML slot: not escaped; return
+ * trusted markup only.
+ *
+ * @param {object} [options]
+ * @param {Array<{key: string, label: string, sortable?: boolean, resizable?: boolean, editable?: boolean, width?: string, render?: (value: unknown, row: object) => string}>} [options.columns]
+ * @param {Array<object>} [options.rows]
+ * @param {string} [options.sortBy]
+ * @param {'asc'|'desc'} [options.sortDir='asc']
+ * @param {number} [options.page=1]
+ * @param {number} [options.pageSize=50]
+ * @param {number} [options.totalRows]
+ * @param {boolean} [options.selectable]
+ * @param {Array<string|number>} [options.selectedRows]
+ * @param {string} [options.emptyMessage='No data']
+ * @param {string} [options.caption]
+ * @param {string} [options.id]     Defaults to nextId('datagrid')
+ * @param {string} [options.attrs]  Raw attribute markup appended to the wrapper; not escaped
+ * @returns {string}
+ */
 export function renderDataGrid(options = {}) {
   const {
     columns = [],
@@ -14,7 +41,7 @@ export function renderDataGrid(options = {}) {
     selectedRows = [],
     emptyMessage = 'No data',
     caption,
-    id = `bn-datagrid-${Math.random().toString(36).slice(2)}`,
+    id = nextId('datagrid'),
     attrs = '',
   } = options;
 
@@ -23,10 +50,10 @@ export function renderDataGrid(options = {}) {
 
   const headerCells = columns.map(col => {
     const sortable = col.sortable ? ' data-sortable' : '';
-    const sorted = sortBy === col.key ? ` data-sorted="${sortDir}"` : '';
-    const width = col.width ? ` style="width:${col.width}"` : '';
+    const sorted = sortBy === col.key ? ` data-sorted="${escapeAttr(sortDir)}"` : '';
+    const width = col.width ? ` style="width:${escapeAttr(col.width)}"` : '';
     const resizable = col.resizable ? ' data-resizable' : '';
-    return `<th data-bn="datagrid-th" data-key="${col.key}"${sortable}${sorted}${width}${resizable} scope="col">${col.label}${sortBy === col.key ? (sortDir === 'asc' ? ' ↑' : ' ↓') : ''}</th>`;
+    return `<th data-bn="datagrid-th" data-key="${escapeAttr(col.key)}"${sortable}${sorted}${width}${resizable} scope="col">${escapeText(col.label ?? '')}${sortBy === col.key ? (sortDir === 'asc' ? ' ↑' : ' ↓') : ''}</th>`;
   }).join('');
 
   const selectAllHeader = selectable
@@ -36,24 +63,24 @@ export function renderDataGrid(options = {}) {
   const bodyRows = rows.map((row, i) => {
     const rowId = row.id ?? i;
     const cells = columns.map(col => {
-      const value = col.render ? col.render(row[col.key], row) : (row[col.key] ?? '');
+      const value = col.render ? col.render(row[col.key], row) : escapeText(row[col.key] ?? '');
       const editable = col.editable ? ' contenteditable="true" data-editable' : '';
-      return `<td data-bn="datagrid-td" data-key="${col.key}"${editable}>${value}</td>`;
+      return `<td data-bn="datagrid-td" data-key="${escapeAttr(col.key)}"${editable}>${value}</td>`;
     }).join('');
     const selectCell = selectable
-      ? `<td data-bn="datagrid-td-select"><input type="checkbox" ${selectedSet.has(rowId) ? 'checked ' : ''}aria-label="Select row ${rowId}" data-bn="datagrid-row-select" data-row-id="${rowId}"></td>`
+      ? `<td data-bn="datagrid-td-select"><input type="checkbox" ${selectedSet.has(rowId) ? 'checked ' : ''}aria-label="Select row ${escapeAttr(rowId)}" data-bn="datagrid-row-select" data-row-id="${escapeAttr(rowId)}"></td>`
       : '';
-    return `<tr data-bn="datagrid-row" data-row-id="${rowId}">${selectCell}${cells}</tr>`;
+    return `<tr data-bn="datagrid-row" data-row-id="${escapeAttr(rowId)}">${selectCell}${cells}</tr>`;
   }).join('');
 
   const emptyRow = rows.length === 0
-    ? `<tr><td colspan="${columns.length + (selectable ? 1 : 0)}" data-bn="datagrid-empty">${emptyMessage}</td></tr>`
+    ? `<tr><td colspan="${columns.length + (selectable ? 1 : 0)}" data-bn="datagrid-empty">${escapeText(emptyMessage)}</td></tr>`
     : '';
 
-  return `<div data-bn="datagrid" id="${id}" ${attrs}>
-  <div data-bn="datagrid-scroll" role="region" aria-label="${caption || 'Data grid'}" tabindex="0">
+  return `<div data-bn="datagrid" id="${escapeAttr(id)}"${attrsSuffix(attrs)}>
+  <div data-bn="datagrid-scroll" role="region" aria-label="${escapeAttr(caption || 'Data grid')}" tabindex="0">
     <table data-bn="datagrid-table" role="grid">
-      ${caption ? `<caption>${caption}</caption>` : ''}
+      ${caption ? `<caption>${escapeText(caption)}</caption>` : ''}
       <thead><tr>${selectAllHeader}${headerCells}</tr></thead>
       <tbody>${bodyRows || emptyRow}</tbody>
     </table>

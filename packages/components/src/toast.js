@@ -8,6 +8,8 @@
  *   showToast(toaster, { message: 'Saved!', variant: 'success' });
  */
 import { signal } from '@basenative/runtime';
+import { escapeAttr } from '@basenative/runtime/shared/escape';
+import { nextId } from './ids.js';
 
 /**
  * Creates a toast container and manages the toast queue.
@@ -21,11 +23,16 @@ export function createToaster(options = {}) {
 }
 
 /**
- * Shows a toast notification.
+ * Shows a toast notification and returns its id. The id is `options.id` when
+ * given, otherwise the next deterministic `bn-toast-<n>` id.
+ *
+ * @param {{position: string, duration: number, toasts: import('@basenative/runtime').Signal<Array<object>>}} toaster
+ * @param {{id?: string, message?: string, variant?: string, duration?: number}} [options]
+ * @returns {string}
  */
 export function showToast(toaster, options = {}) {
   const toast = {
-    id: Date.now() + Math.random(),
+    id: options.id ?? nextId('toast'),
     message: options.message || '',
     variant: options.variant || 'info',
     duration: options.duration || toaster.duration,
@@ -53,5 +60,5 @@ export function dismissToast(toaster, id) {
  * Server-side render helper for toast container.
  */
 export function renderToastContainer(position = 'top-right') {
-  return `<div data-bn="toast-container" data-position="${position}" role="region" aria-live="polite" aria-label="Notifications"></div>`;
+  return `<div data-bn="toast-container" data-position="${escapeAttr(position)}" role="region" aria-live="polite" aria-label="Notifications"></div>`;
 }
