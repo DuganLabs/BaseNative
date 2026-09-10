@@ -94,6 +94,10 @@
     --bn-calendar-today-header-bg: var(--bn-color-selected-bg);
     --bn-calendar-today-text: var(--bn-color-selected-text);
     --bn-calendar-today-bg: color-mix(in srgb, var(--bn-color-selected-bg) 50%, transparent);
+    /* Pipeline card / block status accent (data-status) — the "unknown
+       status" default; components.css maps known statuses onto the
+       semantic -600 tokens the badges and alerts use. */
+    --bn-pipeline-status-color: var(--bn-color-border-strong);
 
     /* Colors — Toggle track (off state). The track is a filled shape, not a
        stroke, so WCAG 1.4.11 applies to it directly — reuse the same 3:1-safe

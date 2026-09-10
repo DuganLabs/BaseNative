@@ -2106,13 +2106,59 @@ describe('Drag and drop init', () => {
     const el = fakeContainer();
     const moves = [];
     initPipelineDragDrop(el, { onCardMove: m => moves.push(m) });
-    const cardArea = { removeAttribute() {}, closest: () => ({ dataset: { columnId: 'won' } }) };
+    const cardArea = { removeAttribute() {}, closest: () => ({ dataset: { columnId: 'won' } }), querySelectorAll: () => [] };
     el.listeners.get('drop')({
       preventDefault() {},
       target: { closest: sel => (sel === '[data-bn="pipeline-column-cards"]' ? cardArea : null) },
       dataTransfer: { getData: () => JSON.stringify({ type: 'pipeline-card', cardId: 'c1' }) },
     });
-    assert.deepEqual(moves, [{ cardId: 'c1', targetColumnId: 'won', position: null }]);
+    assert.deepEqual(moves, [{ cardId: 'c1', targetColumnId: 'won', position: 0 }]);
+  });
+
+  describe('pipeline drop position', () => {
+    const card = (id, top) => ({ dataset: { cardId: id }, getBoundingClientRect: () => ({ top, height: 40 }) });
+    function board(cards, { overId = null, clientY } = {}) {
+      const over = cards.find(c => c.dataset.cardId === overId) ?? null;
+      const cardArea = { removeAttribute() {}, closest: () => ({ dataset: { columnId: 'won' } }), querySelectorAll: () => cards };
+      return {
+        preventDefault() {},
+        clientY,
+        target: { closest: sel => (sel === '[data-bn="pipeline-column-cards"]' ? cardArea : sel === '[data-card-id]' ? over : null) },
+        dataTransfer: { getData: () => JSON.stringify({ type: 'pipeline-card', cardId: 'dragged' }) },
+      };
+    }
+    const position = event => {
+      const el = fakeContainer();
+      const moves = [];
+      initPipelineDragDrop(el, { onCardMove: m => moves.push(m) });
+      el.listeners.get('drop')(event);
+      return moves[0].position;
+    };
+
+    it('is the column length when dropped on empty space', () => {
+      assert.equal(position(board([card('a', 0), card('b', 40)])), 2);
+    });
+
+    it('is the index of the card under the pointer, +1 in its lower half', () => {
+      const cards = [card('a', 0), card('b', 40), card('c', 80)];
+      assert.equal(position(board(cards, { overId: 'b', clientY: 45 })), 1);
+      assert.equal(position(board(cards, { overId: 'b', clientY: 75 })), 2);
+      assert.equal(position(board(cards, { overId: 'a', clientY: 5 })), 0);
+      assert.equal(position(board(cards, { overId: 'c', clientY: 119 })), 3);
+    });
+
+    it('excludes the dragged card from the count when it is already in the column', () => {
+      const cards = [card('a', 0), card('dragged', 40), card('c', 80)];
+      assert.equal(position(board(cards, { overId: 'c', clientY: 85 })), 1);
+      assert.equal(position(board(cards, { overId: 'c', clientY: 115 })), 2);
+      assert.equal(position(board(cards)), 2);
+      assert.equal(position(board(cards, { overId: 'dragged', clientY: 60 })), 1, 'dropped on itself keeps its index');
+    });
+
+    it('falls back to the upper half when no geometry is available', () => {
+      const cards = [{ dataset: { cardId: 'a' } }, { dataset: { cardId: 'b' } }];
+      assert.equal(position(board(cards, { overId: 'b' })), 1);
+    });
   });
 });
 
@@ -2323,5 +2369,43 @@ describe('Calendar — multi-day events', () => {
   it('single-day events carry no data-continues', () => {
     const html = renderCalendar({ startDate: '2025-06-02', now: null, events: [{ id: 's', title: 'S', start: '2025-06-02T09:00', end: '2025-06-02T10:00' }] });
     assert.ok(!html.includes('data-continues'));
+  });
+});
+
+describe('Pipeline — consumer slots', () => {
+  const opts = extra => ({ id: 'p', columns: [{ id: 'new', title: 'New' }], cards: [{ id: 'c1', columnId: 'new', title: 'Acme', ...extra }] });
+
+  it('actions and footer are HTML slots', () => {
+    const html = renderPipeline(opts({ actions: '<button type="button" data-action="convert">Convert</button>', footer: '<time datetime="2025-06-02">Jun 2</time>' }));
+    assert.ok(html.includes('<div data-bn="pipeline-card-actions"><button type="button" data-action="convert">Convert</button></div>'));
+    assert.ok(html.includes('<footer data-bn="pipeline-card-footer"><time datetime="2025-06-02">Jun 2</time></footer>'));
+    const bare = renderPipeline(opts({}));
+    assert.ok(!bare.includes('pipeline-card-actions') && !bare.includes('pipeline-card-footer'));
+  });
+
+  it('badge is escaped text rendered through renderBadge with an optional variant', () => {
+    const html = renderPipeline(opts({ badge: 'Qualified', badgeVariant: 'success' }));
+    assert.ok(html.includes('<div data-bn="pipeline-card-title">Acme</div><span data-bn="badge" data-variant="success">Qualified</span>'));
+    assert.ok(renderPipeline(opts({ badge: 'New' })).includes('data-variant="default">New</span>'));
+    assertEscaped(renderPipeline(opts({ badge: XSS })));
+    assertEscaped(renderPipeline(opts({ badge: 'x', badgeVariant: XSS })));
+    assert.ok(!renderPipeline(opts({})).includes('data-bn="badge"'));
+  });
+
+  it('each column is a section labelled by its header, which shows the card count', () => {
+    const html = renderPipeline({
+      id: 'board',
+      columns: [{ id: 'new', title: 'New' }, { id: 'won', title: 'Won', count: 12 }],
+      cards: [{ id: 'c1', columnId: 'new', title: 'A' }, { id: 'c2', columnId: 'new', title: 'B' }],
+    });
+    assert.ok(html.includes('<section data-bn="pipeline-column" data-column-id="new" aria-labelledby="board-column-new">'));
+    assert.ok(html.includes('<header data-bn="pipeline-column-header" id="board-column-new"><span data-bn="pipeline-column-title">New</span><span data-bn="pipeline-column-count">2</span></header>'));
+    assert.ok(html.includes('id="board-column-won"><span data-bn="pipeline-column-title">Won</span><span data-bn="pipeline-column-count">12</span></header>'), 'explicit count wins');
+  });
+
+  it('escapes the heading ids it generates', () => {
+    assertEscaped(renderPipeline({ id: XSS, columns: [{ id: XSS, title: 'T' }] }));
+    const html = renderPipeline({ id: 'a"b', columns: [{ id: 'c', title: 'T' }] });
+    assert.ok(html.includes('aria-labelledby="a&quot;b-column-c"') && html.includes('id="a&quot;b-column-c"'));
   });
 });

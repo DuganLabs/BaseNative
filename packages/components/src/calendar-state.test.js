@@ -421,6 +421,47 @@ describe('Pipeline State Management', () => {
       assert.equal(moveCalledData.targetColumnId, 'qualified');
     });
 
+    it('moveCard inserts at the given position among the target column\'s cards', () => {
+      const pipeline = createPipelineState({
+        columns: [{ id: 'new', title: 'New' }, { id: 'won', title: 'Won' }],
+        initialCards: [
+          { id: 'c1', columnId: 'new', title: 'Lead 1' },
+          { id: 'w1', columnId: 'won', title: 'Won 1' },
+          { id: 'w2', columnId: 'won', title: 'Won 2' },
+        ],
+      });
+      const moves = [];
+      pipeline.onCardMove = m => moves.push(m);
+
+      pipeline.moveCard('c1', 'won', 1);
+      assert.deepEqual(pipeline.getCardsInColumn('won').map(c => c.id), ['w1', 'c1', 'w2']);
+      assert.deepEqual(moves, [{ cardId: 'c1', targetColumnId: 'won', position: 1 }]);
+
+      pipeline.moveCard('c1', 'won', 0);
+      assert.deepEqual(pipeline.getCardsInColumn('won').map(c => c.id), ['c1', 'w1', 'w2']);
+
+      pipeline.moveCard('c1', 'won', 99);
+      assert.deepEqual(pipeline.getCardsInColumn('won').map(c => c.id), ['w1', 'w2', 'c1']);
+
+      pipeline.moveCard('w2', 'new', 0);
+      assert.deepEqual(pipeline.getCardsInColumn('new').map(c => c.id), ['w2']);
+      assert.deepEqual(pipeline.getCardsInColumn('won').map(c => c.id), ['w1', 'c1']);
+      assert.equal(pipeline.cards().length, 3);
+    });
+
+    it('moveCard without a position keeps the card\'s place in the overall order', () => {
+      const pipeline = createPipelineState({
+        columns: [{ id: 'new', title: 'New' }, { id: 'won', title: 'Won' }],
+        initialCards: [
+          { id: 'w1', columnId: 'won', title: 'Won 1' },
+          { id: 'c1', columnId: 'new', title: 'Lead 1' },
+          { id: 'w2', columnId: 'won', title: 'Won 2' },
+        ],
+      });
+      pipeline.moveCard('c1', 'won');
+      assert.deepEqual(pipeline.getCardsInColumn('won').map(c => c.id), ['w1', 'c1', 'w2']);
+    });
+
     it('reorders cards within a column', () => {
       const pipeline = createPipelineState({
         columns: [{ id: 'new', title: 'New' }],

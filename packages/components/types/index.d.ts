@@ -633,6 +633,8 @@ export function renderPipelineBlock(options?: {
 export interface PipelineColumn {
   id: string;
   title: string;
+  /** Shown in the column header; defaults to the number of cards placed in the column. */
+  count?: number;
 }
 
 export interface PipelineCard {
@@ -641,7 +643,16 @@ export interface PipelineCard {
   title: string;
   subtitle?: string;
   description?: string;
+  /** Emitted as `data-status`; known statuses get a token-driven accent (see components.css). */
   status?: string;
+  /** Escaped text rendered as a `renderBadge` under the title. */
+  badge?: string;
+  /** Badge variant, default `'default'`. */
+  badgeVariant?: 'default' | 'primary' | 'success' | 'warning' | 'error';
+  /** HTML slot: not escaped; pass trusted markup only. Rendered in `[data-bn="pipeline-card-actions"]`. */
+  actions?: string;
+  /** HTML slot: not escaped; pass trusted markup only. Rendered in `<footer data-bn="pipeline-card-footer">`. */
+  footer?: string;
   [extra: string]: unknown;
 }
 
@@ -688,8 +699,12 @@ export function initCalendarDragDrop(
 export interface PipelineCardMoveEvent {
   cardId: string;
   targetColumnId: string;
-  /** Always `null` — the DOM handler does not compute an index. */
-  position: number | null;
+  /**
+   * Index the card should occupy among the target column's cards after the
+   * move (itself excluded): the index of the card under the pointer, one more
+   * in that card's lower half, or the column's card count on empty space.
+   */
+  position: number;
 }
 
 export function initPipelineDragDrop(
@@ -766,7 +781,12 @@ export interface PipelineState {
   getColumn(id: string): PipelineColumn | undefined;
   addCard(card: PipelineCard): PipelineCard;
   removeCard(id: string): boolean;
-  /** Returns null when the card or target column is unknown. */
+  /**
+   * Moves the card to `targetColumnId`, inserting it at `position` among that
+   * column's cards (as reported by `initPipelineDragDrop`) or keeping its place
+   * in the overall order when `position` is null. Returns null when the card or
+   * target column is unknown.
+   */
   moveCard(id: string, targetColumnId: string, position?: number | null): PipelineCard | null;
   reorderCards(columnId: string, cardOrder: string[]): void;
   updateCard(id: string, overrides: Partial<PipelineCard>): PipelineCard | null;
