@@ -109,7 +109,7 @@ export const TOOLS = [
         };
       }
       const list = filter
-        ? DIRECTIVES.filter((d) => d.name.toLowerCase().includes(filter.toLowerCase().replace(/^@/, '@')))
+        ? DIRECTIVES.filter((d) => d.name.toLowerCase().includes(filter.toLowerCase().replace(/^@/, '')))
         : DIRECTIVES;
       if (list.length === 0) {
         return {
