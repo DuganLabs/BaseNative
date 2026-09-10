@@ -279,6 +279,9 @@ importers:
 
   packages/evals:
     dependencies:
+      '@basenative/runtime':
+        specifier: workspace:^0.5.0
+        version: link:../runtime
       '@basenative/server':
         specifier: workspace:^0.5.0
         version: link:../server

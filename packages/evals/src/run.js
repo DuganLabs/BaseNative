@@ -1,5 +1,6 @@
 import { validateTemplate } from '@basenative/validate';
 import { scoreTemplate } from './assertions.js';
+import { defaultHydrate } from './hydrate.js';
 import { extractTemplate, resolveCredentials } from './providers.js';
 import { tierCoverage, TIERS } from './corpus.js';
 
@@ -34,8 +35,9 @@ export async function defaultRender() {
   return render;
 }
 
-export async function runModel({ model, cases, withMcp, generate, render, concurrency = 4 }) {
+export async function runModel({ model, cases, withMcp, generate, render, hydrate, concurrency = 4 }) {
   const renderFn = render ?? (await defaultRender());
+  const hydrateFn = hydrate ?? (await defaultHydrate());
   const results = [];
   const queue = [...cases];
 
@@ -52,7 +54,7 @@ export async function runModel({ model, cases, withMcp, generate, render, concur
         continue;
       }
       const template = extractTemplate(raw);
-      const score = scoreTemplate({ template, testCase, validate: validateTemplate, render: renderFn });
+      const score = scoreTemplate({ template, testCase, validate: validateTemplate, render: renderFn, hydrate: hydrateFn });
       results.push({ id: testCase.id, tier: testCase.tier, template, ...score });
     }
   }
@@ -99,14 +101,15 @@ export function summarise(results) {
  * Run every model under both conditions. The delta between them is the product
  * claim: does giving a model a validator actually make it write correct BaseNative?
  */
-export async function runSuite({ cases, models, generate, render, env = process.env, conditions = [false, true] }) {
+export async function runSuite({ cases, models, generate, render, hydrate, env = process.env, conditions = [false, true] }) {
   const resolved = generate ? models : resolveCredentials(models, env);
   const renderFn = render ?? (await defaultRender());
+  const hydrateFn = hydrate ?? (await defaultHydrate());
   const runs = [];
   for (const model of resolved) {
     for (const withMcp of conditions) {
       const gen = generate ?? ((prompt, m) => m.provider.generate(prompt, m));
-      runs.push(await runModel({ model, cases, withMcp, generate: gen, render: renderFn }));
+      runs.push(await runModel({ model, cases, withMcp, generate: gen, render: renderFn, hydrate: hydrateFn }));
     }
   }
   return { coverage: tierCoverage(cases), runs, deltas: computeDeltas(runs) };

@@ -130,6 +130,77 @@ describe('scoring pipeline', () => {
   });
 });
 
+describe('hydrate stage', () => {
+  // A minimal stand-in for the DOM: tracks one string that "count.set()" rewrites,
+  // just enough to prove scoreTemplate's stage-gating and assertion wiring without
+  // spinning up the real DOM shim (covered separately by the end-to-end tests below).
+  const fakeHydrate = () => {
+    const root = { innerHTML: '<p>0</p>' };
+    const ctx = { count: { set: (v) => { root.innerHTML = `<p>${v}</p>`; } } };
+    return { root, ctx };
+  };
+
+  it('skips the hydrate stage for a case with neither "state" nor a hydrate assertion', () => {
+    const r = scoreTemplate({
+      template: '<template @if="user"><p>{{ user.name }}</p></template>',
+      testCase: CASE, validate: validateTemplate, render: fakeRender,
+    });
+    assert.equal(r.hydrates, false);
+    assert.equal(r.passed, true);
+  });
+
+  it('fails at "hydrate" when a case needs it but no hydrate function was injected', () => {
+    const r = scoreTemplate({
+      template: '<p>{{ count() }}</p>',
+      testCase: { ...CASE, state: { count: 0 }, assertions: [{ type: 'hydrated_contains', value: '0' }] },
+      validate: validateTemplate, render: fakeRender,
+    });
+    assert.equal(r.passed, false);
+    assert.equal(r.failedAt, 'hydrate');
+  });
+
+  it('checks hydrated_contains/hydrated_excludes against the hydrated DOM, not the SSR html', () => {
+    const r = scoreTemplate({
+      template: '<p>{{ count() }}</p>',
+      testCase: {
+        ...CASE, state: { count: 0 },
+        assertions: [
+          { type: 'hydrated_contains', value: '0' },
+          { type: 'hydrated_excludes', value: '99' },
+        ],
+      },
+      validate: validateTemplate, render: fakeRender, hydrate: fakeHydrate,
+    });
+    assert.equal(r.hydrates, true);
+    assert.equal(r.passed, true);
+  });
+
+  it('after_set mutates the live signal and re-checks the resulting DOM', () => {
+    const r = scoreTemplate({
+      template: '<p>{{ count() }}</p>',
+      testCase: {
+        ...CASE, state: { count: 0 },
+        assertions: [{ type: 'after_set', signal: 'count', value: 7, then: { type: 'hydrated_contains', value: '7' } }],
+      },
+      validate: validateTemplate, render: fakeRender, hydrate: fakeHydrate,
+    });
+    assert.equal(r.passed, true, JSON.stringify(r.assertions));
+  });
+
+  it('after_set fails cleanly against a signal name that is not in the hydration context', () => {
+    const r = scoreTemplate({
+      template: '<p>{{ count() }}</p>',
+      testCase: {
+        ...CASE, state: { count: 0 },
+        assertions: [{ type: 'after_set', signal: 'nope', value: 1, then: { type: 'hydrated_contains', value: '1' } }],
+      },
+      validate: validateTemplate, render: fakeRender, hydrate: fakeHydrate,
+    });
+    assert.equal(r.passed, false);
+    assert.match(r.assertions[0].detail, /no signal named "nope"/);
+  });
+});
+
 describe('prompt construction', () => {
   // If the two conditions differed by more than the tool sentence, the measured
   // delta would confound "has tools" with "was told more about the language".
@@ -174,6 +245,15 @@ describe('summary and deltas', () => {
 
   it('ignores a model that only ran one condition', () => {
     assert.deepEqual(computeDeltas([{ model: 'm', withMcp: false, summary: { passRate: 1, driftRate: 0 } }]), []);
+  });
+
+  it('buckets a hydrate-stage failure in "Where failures happen"', () => {
+    const s = summarise([{ id: 'z', tier: 'T3', passed: false, failedAt: 'hydrate', diagnostics: [] }]);
+    assert.equal(s.byStage.hydrate, 1);
+
+    const md = toMarkdown({ coverage: { T3: 1 }, runs: [{ model: 'stub', withMcp: false, summary: s }], deltas: [] });
+    assert.match(md, /## Where failures happen/);
+    assert.match(md, /\| hydrate \| 1 \|/);
   });
 });
 
@@ -308,5 +388,59 @@ describe('end to end', () => {
     assert.match(md, /# BaseNative eval results/);
     assert.match(md, /Corpus coverage/);
     assert.match(md, /50\.0%/);
+  });
+
+  // No injected `hydrate` here — this drives the real default hydrate stage, which
+  // mounts the generated template into @basenative/runtime's own DOM shim (happy-dom,
+  // see hydrate.js) and runs the real client hydrate() against it, so this is the
+  // one test in the file that proves a T3 (stateful) case can actually be scored.
+  it('scores a stateful (T3) case by hydrating it with live signals', async () => {
+    const STATEFUL_CASE = {
+      id: 't3-counter', tier: 'T3',
+      prompt: 'A counter that increments on click',
+      state: { count: 0 },
+      assertions: [
+        { type: 'hydrated_contains', value: '0' },
+        { type: 'after_set', signal: 'count', value: 5, then: { type: 'hydrated_contains', value: '5' } },
+      ],
+    };
+    const generate = async () => '<p>{{ count() }}</p><button @click="count.set(count() + 1)">+</button>';
+
+    const suite = await runSuite({
+      cases: [STATEFUL_CASE],
+      models: [{ id: 'stub' }],
+      generate,
+      render: fakeRender,
+      conditions: [false],
+    });
+
+    const [result] = suite.runs[0].results;
+    assert.equal(result.hydrates, true);
+    assert.equal(result.passed, true, JSON.stringify(result.assertions));
+    assert.equal(suite.runs[0].summary.passRate, 1);
+  });
+
+  it('fails a drifted stateful template at "assertions" when the signal never reaches the DOM', async () => {
+    const STATEFUL_CASE = {
+      id: 't3-static', tier: 'T3',
+      prompt: 'A counter that increments on click',
+      state: { count: 0 },
+      assertions: [{ type: 'after_set', signal: 'count', value: 5, then: { type: 'hydrated_contains', value: '5' } }],
+    };
+    // No {{ count() }} binding at all, so hydrate() has nothing to reattach.
+    const generate = async () => '<p>static</p>';
+
+    const suite = await runSuite({
+      cases: [STATEFUL_CASE],
+      models: [{ id: 'stub' }],
+      generate,
+      render: fakeRender,
+      conditions: [false],
+    });
+
+    const [result] = suite.runs[0].results;
+    assert.equal(result.hydrates, true);
+    assert.equal(result.passed, false);
+    assert.equal(result.failedAt, 'assertions');
   });
 });

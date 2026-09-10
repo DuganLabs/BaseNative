@@ -33,6 +33,33 @@ One JSON file per case:
 
 `id` must be unique. `tier` is one of `T1`–`T5`.
 
+### Scoring a stateful (T3) case: the `state` field
+
+`context` is what the template is server-rendered with — plain values (or, for a
+signal read like `count()`, a plain zero-arg function such as `count: () => 0`).
+It is **not** live: SSR evaluates every `{{ }}` once and discards the expression.
+
+A T3 case additionally needs its signal, computed, or effect exercised for real,
+which is what `state` is for. Add `"state": { "<name>": <initial value> }` and the
+harness wraps each entry in a real `@basenative/runtime` signal, mounts the
+*generated template itself* — directives intact, not the rendered HTML — into the
+same DOM shim `@basenative/runtime`'s own tests use, and runs the real client
+`hydrate()` against it before any hydrate-family assertion below is checked:
+
+```json
+{
+  "state": { "count": 0 },
+  "assertions": [
+    { "type": "hydrated_contains", "value": "0" },
+    { "type": "after_set", "signal": "count", "value": 5,
+      "then": { "type": "hydrated_contains", "value": "5" } }
+  ]
+}
+```
+
+A case needs `state` only if it has a hydrate-family assertion (or otherwise wants
+live signals mounted); T1/T2/T4/T5 cases are unaffected and never pay for hydration.
+
 ## Tiers
 
 | Tier | Content | Target |
@@ -57,5 +84,13 @@ the items" — to measure nearest-neighbour drift directly rather than inferring
 | `renders_equals` | `value` | Equal after collapsing whitespace |
 | `renders_count` | `value`, `count` | Exact number of occurrences |
 | `uses_directive` | `value` | The generated template used that directive |
+| `hydrated_contains` | `value` | The hydrated DOM contains the substring, right after `hydrate()` runs |
+| `hydrated_excludes` | `value` | The hydrated DOM does not contain it |
+| `after_set` | `signal`, `value`, `then` | Sets a live signal from `state` to `value`, then re-checks the nested `then` assertion (any registered type — typically `hydrated_contains`/`hydrated_excludes`) against the resulting DOM |
+
+The last three trigger the hydrate stage even without `state` on the case, but
+`after_set` then has no signal to find — it fails that assertion cleanly (naming
+the missing signal) rather than silently skipping the check. In practice, always
+pair a hydrate-family assertion with the `state` entry it needs.
 
 Assertion *types* are infrastructure. Assertion *values* are yours.
