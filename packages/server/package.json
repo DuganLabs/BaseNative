@@ -1,6 +1,6 @@
 {
   "name": "@basenative/server",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Server-side rendering with streaming support for BaseNative templates",
   "type": "module",
   "exports": {
@@ -14,12 +14,12 @@
   },
   "types": "./types/render.d.ts",
   "dependencies": {
-    "@basenative/runtime": "workspace:^0.5.0",
+    "@basenative/runtime": "workspace:^0.6.0",
     "node-html-parser": "^9.0.4"
   },
   "devDependencies": {
-    "@basenative/flags": "workspace:^0.3.0",
-    "@basenative/i18n": "workspace:^0.3.0"
+    "@basenative/flags": "workspace:^0.4.0",
+    "@basenative/i18n": "workspace:^0.4.0"
   },
   "files": [
     "src",

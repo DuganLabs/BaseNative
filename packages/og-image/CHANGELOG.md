@@ -1,5 +1,11 @@
 # @basenative/og-image
 
+## 0.2.1
+
+### Patch Changes
+
+- 8a9c7f1: renderPng works under Node
+
 ## 0.2.0
 
 ### Minor Changes

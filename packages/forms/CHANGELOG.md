@@ -1,5 +1,12 @@
 # @basenative/forms
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies [62d9857]
+  - @basenative/runtime@0.6.0
+
 ## 1.0.0
 
 ### Major Changes
