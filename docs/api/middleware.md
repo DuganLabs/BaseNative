@@ -159,6 +159,16 @@ Adapts a pipeline for Cloudflare Workers `fetch` handler.
 
 **Returns:** `(request: Request, env, ctx) => Promise<Response>` function.
 
+### createExpressContext(req, res)
+
+Converts a raw Express `req`/`res` pair into the common `ctx` shape (`{ request, response, state }`) described below. `toExpressMiddleware` calls this internally for every request — you don't need to call it yourself unless you're building a custom Express integration that needs the context object without running a full pipeline (e.g. in a test).
+
+**Parameters:**
+- `req` — Express request object
+- `res` — Express response object (accepted for signature symmetry with other adapters; unused — response state is written back by `toExpressMiddleware` after the pipeline runs)
+
+**Returns:** `ctx` object with `request` populated from `req` (`method`, `url`, `path`, `headers`, `cookies`, `query`, `body`, `ip`, `params`) and an empty `response`/`state`.
+
 ## Context Shape
 
 All middleware receives a `ctx` object with this structure:

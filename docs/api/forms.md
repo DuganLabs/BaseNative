@@ -85,6 +85,55 @@ const form = createForm({
 | `max(n, msg?)` | Number must be <= n |
 | `custom(fn)` | Custom validator function |
 
+## `createWizard(steps, options?)`
+
+Coordinates multiple pre-built `Form` instances as a linear multi-step wizard.
+
+```js
+import { createForm, createWizard } from '@basenative/forms';
+
+const wizard = createWizard([
+  { name: 'account', form: accountForm, title: 'Account' },
+  { name: 'profile', form: profileForm, title: 'Profile' },
+], {
+  validateBeforeNext: true, // default
+  async onComplete(values) {
+    // values = { account: {...}, profile: {...} }
+    return fetch('/api/signup', { method: 'POST', body: JSON.stringify(values) });
+  },
+});
+
+wizard.next();   // advance if the current step's form is valid
+wizard.prev();   // go back
+wizard.goTo(1);  // jump to a step already visited (or the next unvisited one)
+```
+
+### Wizard Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `currentIndex` | `Signal<number>` | Index of the active step |
+| `stepCount` | `number` | Total number of steps |
+| `steps` | `Array` | The `steps` array passed in |
+| `currentStep` | `Signal` | The active `{ name, form, title? }` entry |
+| `currentForm` | `Signal<Form>` | The active step's form |
+| `isFirst` / `isLast` | `Signal<boolean>` | Whether the active step is the first/last |
+| `progress` | `Signal<number>` | Percentage complete (`0`–`100`) |
+| `canNext` | `Signal<boolean>` | Whether the active step's form is currently valid |
+| `visited` | `Signal<Set<number>>` | Indexes of steps visited so far |
+| `allValid` | `Signal<boolean>` | Whether every step's form is valid |
+
+### Wizard Methods
+
+| Method | Description |
+|--------|-------------|
+| `next()` | Validates the current step (unless `validateBeforeNext: false`) and advances; returns `false` if invalid or already on the last step |
+| `prev()` | Goes back one step; returns `false` if already on the first step |
+| `goTo(index)` | Jumps to `index` if it has already been visited or is the next unvisited step; returns `false` otherwise |
+| `getValues()` | Returns `{ [stepName]: values }` across all steps |
+| `reset()` | Resets every step's form and returns to step 0 |
+| `complete()` | Touches and validates every step in order; on the first invalid step, jumps to it and resolves `{ ok: false, errors, step }`. If all steps are valid, calls `options.onComplete(values)` (when provided) and resolves `{ ok: true, data }`, or `{ ok: false, error }` if `onComplete` throws |
+
 ## `zodAdapter(schema)`
 
 Adapter for Zod schemas.

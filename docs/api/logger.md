@@ -157,6 +157,28 @@ pipeline.use(requestLogger(logger));
 ctx.state.logger.info('User fetched', { userId: 42 });
 ```
 
+### LEVELS
+
+Plain object mapping level names to their Pino-convention numbers: `{ trace: 10, debug: 20, info: 30, warn: 40, error: 50, fatal: 60 }`. Useful for comparing a stored/configured level name against a log entry's numeric `level`.
+
+```js
+import { LEVELS } from '@basenative/logger';
+
+if (entry.level >= LEVELS.warn) alertOncall(entry);
+```
+
+---
+
+### LEVEL_NAMES
+
+The inverse of `LEVELS` — maps each numeric level back to its name (`{ 10: 'trace', 20: 'debug', ... }`). Used internally by `consoleTransport()`'s pretty-print mode to render `entry.level` as `INFO`/`WARN`/etc.
+
+```js
+import { LEVEL_NAMES } from '@basenative/logger';
+
+console.log(LEVEL_NAMES[entry.level]); // 'warn'
+```
+
 ## Log Entry Format
 
 In production (JSON mode):
