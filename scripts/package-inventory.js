@@ -1,4 +1,5 @@
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -19,12 +20,51 @@ function scopeRegistry() {
   return m ? m[1].replace(/\/$/, '') : 'https://registry.npmjs.org';
 }
 
-/** Latest published version on npmjs, or null. Public mirror only — GH Packages needs auth. */
+/** Latest published version on npmjs, or null. */
 async function npmjsVersion(name) {
   const res = await fetch(`https://registry.npmjs.org/${encodeURIComponent(name)}`);
   if (!res.ok) return null;
   const body = await res.json();
   return body['dist-tags']?.latest ?? null;
+}
+
+/**
+ * A token that can read GitHub Packages: NODE_AUTH_TOKEN / GITHUB_TOKEN in CI,
+ * else the local gh login (needs the read:packages scope). Null if none.
+ */
+function githubPackagesToken() {
+  if (process.env.NODE_AUTH_TOKEN) return process.env.NODE_AUTH_TOKEN;
+  if (process.env.GITHUB_TOKEN) return process.env.GITHUB_TOKEN;
+  try {
+    return execFileSync('gh', ['auth', 'token'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim() || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Highest version on GitHub Packages, the scope's actual publish target — or
+ * null when unpublished, or 'unknown' when no token is available.
+ *
+ * "Highest" rather than the latest dist-tag on purpose: @basenative/forms had
+ * 0.5–0.13 published from the pre-monorepo repo while this tree said 0.4.0,
+ * and a latest-tag check would not have shown that a future 0.4.1 publish
+ * would silently collide.
+ */
+async function githubPackagesMax(name, token) {
+  if (!token) return 'unknown';
+  const res = await fetch(`https://npm.pkg.github.com/${encodeURIComponent(name)}`, {
+    headers: { authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) return null;
+  const body = await res.json();
+  const versions = Object.keys(body.versions ?? {});
+  if (versions.length === 0) return null;
+  const key = (v) => v.split('.').map((n) => parseInt(n, 10) || 0);
+  return versions.sort((a, b) => {
+    const [x, y] = [key(a), key(b)];
+    return x[0] - y[0] || x[1] - y[1] || x[2] - y[2];
+  }).at(-1);
 }
 
 function readPackages() {
@@ -44,20 +84,27 @@ function render(pkgs, registry) {
   const priv = pkgs.filter((p) => p.private);
   const behind = publishable.filter((p) => p.npmjs && p.npmjs !== p.version);
   const absent = publishable.filter((p) => !p.npmjs);
+  const diverged = publishable.filter((p) => p.ghp && p.ghp !== 'unknown' && cmp(p.version, p.ghp) < 0);
+  const neverGhp = publishable.filter((p) => p.ghp === null);
   const redundant = publishable.filter(
     (p) => p.publishConfig?.registry?.replace(/\/$/, '') === registry,
   );
 
+  const cmp = (a, b) => {
+    const k = (v) => String(v).split('.').map((n) => parseInt(n, 10) || 0);
+    const [x, y] = [k(a), k(b)];
+    return x[0] - y[0] || x[1] - y[1] || x[2] - y[2];
+  };
   const rows = pkgs
     .map((p) => {
-      const state = p.private
-        ? 'private'
-        : !p.npmjs
-          ? 'never on npmjs'
-          : p.npmjs === p.version
-            ? 'in sync'
-            : `behind (${p.npmjs})`;
-      return `| \`${p.name}\` | ${p.version} | ${p.npmjs ?? '—'} | ${state} |`;
+      let state;
+      if (p.private) state = 'private';
+      else if (p.ghp === 'unknown') state = 'no token';
+      else if (!p.ghp) state = 'never published';
+      else if (cmp(p.version, p.ghp) > 0) state = 'unreleased bump';
+      else if (cmp(p.version, p.ghp) === 0) state = 'in sync';
+      else state = `**registry ahead** (${p.ghp})`;
+      return `| \`${p.name}\` | ${p.version} | ${p.ghp === 'unknown' ? '?' : (p.ghp ?? '—')} | ${p.npmjs ?? '—'} | ${state} |`;
     })
     .join('\n');
 
@@ -68,17 +115,23 @@ function render(pkgs, registry) {
 Generated ${new Date().toISOString().slice(0, 10)} · ${pkgs.length} packages.
 
 **Publish target for \`@basenative/*\` is ${registry}** (set in \`.npmrc\`), not npmjs.org.
-Installing any package therefore requires a GitHub PAT with \`read:packages\` — see
-[CONSUMING-FROM-GH-PACKAGES.md](CONSUMING-FROM-GH-PACKAGES.md). The npmjs column below is a
-stale public mirror from before the move; it is what an external \`npm install\` resolves to.
+Installing any package therefore requires a GitHub token with \`read:packages\` — see
+[CONSUMING-FROM-GH-PACKAGES.md](CONSUMING-FROM-GH-PACKAGES.md). The GitHub Packages column is
+the highest version published there; the npmjs column is a stale public mirror from before
+the move and is what an unauthenticated \`npm install\` resolves to.
 
-| Package | Local | npmjs | State |
-|---|---|---|---|
+State: **registry ahead** means a version higher than this tree's is already published, so
+the next changeset bump would collide and be skipped — realign the local version first.
+
+| Package | Local | GitHub Packages | npmjs | State |
+|---|---|---|---|---|
 ${rows}
 
 ## Summary
 
 - **${publishable.length}** publishable, **${priv.length}** private (${priv.map((p) => `\`${p.name}\``).join(', ') || 'none'})
+- **${diverged.length}** have a higher version on GitHub Packages than in this tree (${diverged.map((p) => `\`${p.name}\` ${p.version} vs ${p.ghp}`).join(', ') || 'none'})
+- **${neverGhp.length}** have never been published to GitHub Packages (${neverGhp.map((p) => `\`${p.name}\``).join(', ') || 'none'})
 - **${behind.length}** have a stale npmjs copy that external installs resolve to
 - **${absent.length}** have never appeared on npmjs
 - **0** are at 1.0 on npmjs, despite ${pkgs.filter((p) => p.version.startsWith('1.')).length} being at 1.x locally
@@ -89,7 +142,11 @@ ${rows}
 
 const registry = scopeRegistry();
 const pkgs = readPackages();
-for (const p of pkgs) p.npmjs = p.private ? null : await npmjsVersion(p.name);
+const token = githubPackagesToken();
+for (const p of pkgs) {
+  p.npmjs = p.private ? null : await npmjsVersion(p.name);
+  p.ghp = p.private ? null : await githubPackagesMax(p.name, token);
+}
 const md = render(pkgs, registry);
 
 if (process.argv.includes('--check')) {
@@ -103,10 +160,10 @@ if (process.argv.includes('--check')) {
   const strip = (s) =>
     s
       .replace(/^Generated \d{4}-\d{2}-\d{2}.*$/m, '')
-      // table rows: blank the npmjs version and the derived state cell
-      .replace(/^(\| `[^`]+` \| [^|]+\|)[^|]*\|[^|]*\|$/gm, '$1 - | - |')
-      // summary bullets whose numbers come from the registry
-      .replace(/^- \*\*\d+\*\* have (a stale npmjs copy|never appeared).*$/gm, '')
+      // table rows: blank both registry columns and the derived state cell
+      .replace(/^(\| `[^`]+` \| [^|]+\|)[^|]*\|[^|]*\|[^|]*\|$/gm, '$1 - | - | - |')
+      // summary bullets whose numbers come from a registry
+      .replace(/^- \*\*\d+\*\* have (a stale npmjs copy|never appeared|a higher version|never been published).*$/gm, '')
       .replace(/^- \*\*\d+\*\* are at 1\.0 on npmjs.*$/gm, '');
 
   let current = '';
