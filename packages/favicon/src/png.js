@@ -28,13 +28,24 @@ let _resvgInit = null;
 async function loadResvg() {
   if (_resvgInit) return _resvgInit;
   _resvgInit = (async () => {
-    if (!isResvgAvailable()) {
-      throw new Error(
+    const missing = () =>
+      new Error(
         'PNG generation skipped — optional dependency "@resvg/resvg-wasm" is not installed. ' +
           "Install it with: pnpm add -D @resvg/resvg-wasm",
       );
+    if (!isResvgAvailable()) throw missing();
+    let mod;
+    try {
+      mod = await import("@resvg/resvg-wasm");
+    } catch (err) {
+      // Belt and braces: if resolution succeeded but the import still cannot
+      // find the package, report the same single clear line instead of
+      // Node's raw (multi-line) module-not-found message.
+      if (err && err.code === "ERR_MODULE_NOT_FOUND" && /@resvg\/resvg-wasm/.test(String(err.message))) {
+        throw missing();
+      }
+      throw err;
     }
-    const mod = await import("@resvg/resvg-wasm");
     await ensureResvg(mod);
     return { Resvg: mod.Resvg };
   })();

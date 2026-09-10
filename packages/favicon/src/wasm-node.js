@@ -38,8 +38,12 @@ let _initPromise = null;
  * @returns {boolean}
  */
 export function isResvgAvailable() {
+  // Resolve with ESM semantics: `png.js` loads the module with a dynamic
+  // `import()`, and CommonJS `require.resolve` can disagree with it (global
+  // NODE_PATH folders, `exports` conditions), which would report the package
+  // as present and then fail at import time with Node's raw two-line error.
   try {
-    require.resolve("@resvg/resvg-wasm");
+    import.meta.resolve("@resvg/resvg-wasm");
     return true;
   } catch {
     return false;
