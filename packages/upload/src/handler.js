@@ -15,30 +15,26 @@ export function parseMultipart(body, contentType) {
   return parts.map(part => {
     const [headerSection, ...bodyParts] = part.split('\r\n\r\n');
     const bodyContent = bodyParts.join('\r\n\r\n').replace(/\r\n$/, '');
-    // Header names come straight from the request body. A null-prototype
-    // object means a crafted name like `__proto__` becomes an inert own
-    // property instead of reaching Object.prototype.
-    const headers = Object.create(null);
+    // Header names come straight from the request body. A Map keyed by
+    // arbitrary strings (rather than a plain object written with a computed
+    // property name) has no prototype chain to pollute — `__proto__`,
+    // `constructor`, etc. are just ordinary map keys, and this object never
+    // leaves this function, so there is no public shape to preserve.
+    const headers = new Map();
 
     for (const line of headerSection.split('\r\n')) {
       const match = line.match(/^([^:]+):\s*(.+)$/);
-      if (!match) continue;
-      const key = match[1].toLowerCase();
-      // Explicit prototype-pollution guard on the exact key being written, in
-      // addition to the null-prototype object above: CodeQL's remote-property-
-      // injection check requires this guard shape immediately before the write.
-      if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
-      headers[key] = match[2];
+      if (match) headers.set(match[1].toLowerCase(), match[2]);
     }
 
-    const disposition = headers['content-disposition'] ?? '';
+    const disposition = headers.get('content-disposition') ?? '';
     const nameMatch = disposition.match(/name="([^"]+)"/);
     const filenameMatch = disposition.match(/filename="([^"]+)"/);
 
     return {
       name: nameMatch?.[1] ?? '',
       filename: filenameMatch?.[1] ?? null,
-      contentType: headers['content-type'] ?? 'application/octet-stream',
+      contentType: headers.get('content-type') ?? 'application/octet-stream',
       data: Buffer.from(bodyContent, 'binary'),
       size: Buffer.byteLength(bodyContent, 'binary'),
     };
