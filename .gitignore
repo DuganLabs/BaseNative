@@ -16,5 +16,12 @@ reports/
 /experiments
 /homelab
 
-.claude/worktrees
 .claude/settings.local.json
+
+# Secrets — nx-cloud.env holds NX_CLOUD_ACCESS_TOKEN and is read from the
+# workspace root by nx and nx-mcp. The pre-commit secret scanner has no
+# pattern for Nx Cloud tokens (they are opaque), so exclusion is the control.
+.env
+.env.*
+!.env.example
+nx-cloud.env

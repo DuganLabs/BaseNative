@@ -143,6 +143,27 @@ function checkExpression(expr, offset, source, context, locals, out) {
 
   const ast = compiled.ast;
 
+  // A single template expression must be a single expression. The tokenizer treats
+  // reserved words it does not implement (`new`, `typeof`, `delete`) as bare
+  // identifiers, so `new Date()` parses cleanly as TWO statements — an identifier
+  // `new` followed by a call `Date()` — and would otherwise be reported as valid
+  // while doing something the author never intended.
+  if (Array.isArray(ast?.body) && ast.body.length > 1) {
+    const leading = ast.body[0]?.type === 'Identifier' ? ast.body[0].name : null;
+    out.push(
+      diagnostic('BN_E_EXPR_UNSUPPORTED', {
+        message: leading
+          ? `Expression "${expr}" is not a single expression — "${leading}" is not supported and was parsed as a bare identifier`
+          : `Expression "${expr}" parses as ${ast.body.length} separate expressions, not one`,
+        suggestion: leading
+          ? `"${leading}" is not part of the CSP-safe subset. Compute the value in a named function on the context and call it, e.g. "now()" backed by context.now = () => new Date().`
+          : 'Use a single expression. Move any additional logic into a named function on the context.',
+        span: spanAt(source, offset),
+      })
+    );
+    return;
+  }
+
   for (const name of unsafeMemberReads(ast)) {
     out.push(
       diagnostic('BN_E_EXPR_UNSUPPORTED', {

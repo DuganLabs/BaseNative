@@ -115,16 +115,25 @@ function jsdocBefore(content, index) {
   return stripCommentMarkers(last[0].slice(2, -2));
 }
 
-/** First prose paragraph of a JSDoc block, tags stripped, single line. */
+// Standard JSDoc block tags. Deliberately a whitelist, not "starts with @" —
+// prose legitimately contains "@basenative/x" (an npm scope), which is not a
+// tag and must not truncate the description.
+const JSDOC_TAG_LINE = /^@(param|arg|argument|returns?|throws?|exception|example|typedef|property|prop|type|module|see|deprecated|template|callback|async|private|public|protected|readonly|default|augments|extends|memberof|namespace|function|func|method|constructor|class|abstract|access|alias|author|copyright|desc|description|enum|event|external|file|fileoverview|fires|ignore|implements|inheritdoc|instance|interface|kind|lends|license|listens|mixes|mixin|override|package|requires|since|static|summary|this|todo|tutorial|variation|version|yields?)\b/i;
+
+/** Leading prose lines of a JSDoc block, stopping at the first real `@tag`
+ * (JSDoc convention: free-text description first, then a run of tags) —
+ * never fabricates a summary when a doc block is tags-only (e.g. bare
+ * `@param`). "@basenative/x" mentions in prose are not tags and pass through. */
 function firstProseParagraph(raw, max = MAX_PROSE_CHARS) {
   if (!raw) return '';
-  const firstParagraph = raw.split(/\n\s*\n/)[0];
-  const line = firstParagraph
-    .split('\n')
-    .map((l) => l.replace(/^\*\s?/, '').trim())
-    .filter((l) => l && !l.startsWith('@'))
-    .join(' ');
-  return truncate(line, max);
+  const prose = [];
+  for (const rawLine of raw.split('\n')) {
+    const l = rawLine.replace(/^\*\s?/, '').trim();
+    if (JSDOC_TAG_LINE.test(l)) break;
+    if (l === '') { if (prose.length) break; else continue; }
+    prose.push(l);
+  }
+  return truncate(prose.join(' '), max);
 }
 
 function jsdocSummary(raw) {
@@ -137,6 +146,39 @@ function leadingFileComment(content) {
   const m = content.match(/^(?:\/\/[^\n]*\n)*\s*\/\*\*([\s\S]*?)\*\//);
   if (!m) return '';
   return stripCommentMarkers(m[1]);
+}
+
+/** Scan forward from an opening '(' at `openIdx` to its matching ')',
+ * respecting nesting (default-value arrow functions, destructuring, nested
+ * calls) — a plain `[^)]*` regex breaks on any nested paren. Returns the
+ * text between the parens, or '' if unbalanced. */
+function balancedParams(content, openIdx) {
+  let depth = 0;
+  for (let i = openIdx; i < content.length; i++) {
+    const ch = content[i];
+    if (ch === '(') depth++;
+    else if (ch === ')') {
+      depth--;
+      if (depth === 0) return content.slice(openIdx + 1, i);
+    }
+  }
+  return '';
+}
+
+/** A non-exported same-file declaration (`function foo() {}`, `const foo = ...`,
+ * `class Foo {}`), for resolving a bare `export { foo };` whose binding was
+ * declared without its own `export` keyword. */
+function findLocalDeclaration(content, name) {
+  const fnMatch = content.match(new RegExp(`(?:^|\\n)\\s*(async\\s+function|function)\\s+${escapeRegExp(name)}\\s*\\(`));
+  if (fnMatch) {
+    const openIdx = fnMatch.index + fnMatch[0].length - 1;
+    return { kind: fnMatch[1].startsWith('async') ? 'async function' : 'function', params: truncate(balancedParams(content, openIdx).trim(), 120), index: fnMatch.index + fnMatch[0].indexOf(fnMatch[1]) };
+  }
+  const classMatch = content.match(new RegExp(`(?:^|\\n)\\s*class\\s+${escapeRegExp(name)}\\b`));
+  if (classMatch) return { kind: 'class', params: '', index: classMatch.index };
+  const constMatch = content.match(new RegExp(`(?:^|\\n)\\s*const\\s+${escapeRegExp(name)}\\s*=`));
+  if (constMatch) return { kind: 'const', params: '', index: constMatch.index };
+  return null;
 }
 
 function resolveModule(fromAbsFile, spec) {
@@ -170,15 +212,17 @@ function getFileExports(absFile, visiting = new Set()) {
   const isConsumed = (index) => consumedSpans.some(([s, e]) => index >= s && index < e);
 
   // export function / export async function
-  for (const m of content.matchAll(/export\s+(async\s+function|function)\s+([A-Za-z0-9_$]+)\s*\(([^)]*)\)/g)) {
-    markConsumed(m);
+  for (const m of content.matchAll(/export\s+(async\s+function|function)\s+([A-Za-z0-9_$]+)\s*\(/g)) {
+    const openIdx = m.index + m[0].length - 1;
+    const params = balancedParams(content, openIdx);
     results.push({
       name: m[2],
       kind: m[1].startsWith('async') ? 'async function' : 'function',
-      params: m[3].trim(),
+      params: truncate(params.trim(), 120),
       doc: jsdocSummary(jsdocBefore(content, m.index)),
       file: relFile(absFile),
     });
+    consumedSpans.push([m.index, openIdx + params.length + 2]);
   }
 
   // export class
@@ -193,15 +237,26 @@ function getFileExports(absFile, visiting = new Set()) {
     });
   }
 
-  // export const NAME = ...  (captures arrow-fn params when present)
-  for (const m of content.matchAll(/export\s+const\s+([A-Za-z0-9_$]+)\s*=\s*([^\n]*)/g)) {
+  // export const NAME = ...  (captures arrow-fn params, balanced, when present)
+  for (const m of content.matchAll(/export\s+const\s+([A-Za-z0-9_$]+)\s*=\s*/g)) {
     markConsumed(m);
-    const rhs = m[2].trim();
-    const arrow = rhs.match(/^\(([^)]*)\)\s*=>/) || rhs.match(/^async\s*\(([^)]*)\)\s*=>/);
+    const valueStart = m.index + m[0].length;
+    let kind = 'const';
+    let params = '';
+    const arrowLead = content.slice(valueStart, valueStart + 20).match(/^(async\s*)?\(/);
+    if (arrowLead) {
+      const openIdx = valueStart + arrowLead[0].length - 1;
+      const inner = balancedParams(content, openIdx);
+      const afterClose = content.slice(openIdx + inner.length + 2, openIdx + inner.length + 6).trimStart();
+      if (afterClose.startsWith('=>')) {
+        kind = 'const (fn)';
+        params = truncate(inner.trim(), 120);
+      }
+    }
     results.push({
       name: m[1],
-      kind: arrow ? 'const (fn)' : 'const',
-      params: arrow ? arrow[1].trim() : '',
+      kind,
+      params,
       doc: jsdocSummary(jsdocBefore(content, m.index)),
       file: relFile(absFile),
     });
@@ -289,6 +344,19 @@ function getFileExports(absFile, visiting = new Set()) {
         const found = inner.find((e) => e.name === imp.originalName);
         if (found) { results.push({ ...found, name: exportedName }); continue; }
       }
+      // Last resort: a same-file declaration with no `export` keyword of its
+      // own (e.g. `function foo() {}` ... later `export { foo };`).
+      const localDecl = findLocalDeclaration(content, localName);
+      if (localDecl) {
+        results.push({
+          name: exportedName,
+          kind: localDecl.kind,
+          params: localDecl.params,
+          doc: jsdocSummary(jsdocBefore(content, localDecl.index)),
+          file: relFile(absFile),
+        });
+        continue;
+      }
       results.push({ name: exportedName, kind: 'unresolved', params: '', doc: '', file: relFile(absFile) });
     }
   }
@@ -327,7 +395,9 @@ function parseDocEntries(mdContent) {
       continue;
     }
     if (inCode) { codeLines.push(line); continue; }
-    if (current && line.trim()) current.prose.push(line.trim());
+    const trimmed = line.trim();
+    if (trimmed === '---' || trimmed === '***' || trimmed === '___') continue; // markdown rule, not content
+    if (current && trimmed) current.prose.push(trimmed);
   }
   flush();
   return entries;
@@ -356,12 +426,11 @@ function renderSourceExport(pkgName, exp, indent = '') {
   const sig = exp.params !== '' || exp.kind.includes('function')
     ? `${exp.name}(${exp.params})`
     : exp.name;
+  const importable = exp.kind !== 'class' && exp.kind !== 'namespace' && exp.name !== 'default';
+  const imp = importable ? ` · \`import { ${exp.name} } from '${pkgName}';\`` : '';
   let out = `${indent}#### \`${sig}\` (${exp.kind})\n`;
   if (exp.doc) out += `${indent}${exp.doc}\n`;
-  out += `${indent}Source: ${exp.file}\n`;
-  if (exp.kind !== 'class' && exp.kind !== 'namespace' && exp.name !== 'default') {
-    out += indent + '```js\nimport { ' + exp.name + ` } from '${pkgName}';\n\`\`\`\n`;
-  }
+  out += `${indent}${exp.file}${imp}\n`;
   if (exp.children?.length) {
     for (const child of exp.children) out += renderSourceExport(pkgName, child, indent + '  ');
   }
@@ -447,7 +516,16 @@ function buildPackageData(entry) {
     }
   }
 
-  const allExports = orderedFiles.flatMap((f) => seenFiles.get(f));
+  // A symbol reached via more than one package.json export subpath (e.g. a
+  // package exporting both `.` and `./renderer`, both surfacing `render`)
+  // is one declaration, not two — dedupe by name+file so it's listed once.
+  const dedupeSeen = new Set();
+  const allExports = orderedFiles.flatMap((f) => seenFiles.get(f)).filter((e) => {
+    const key = `${e.name}::${e.file}::${e.kind}`;
+    if (dedupeSeen.has(key)) return false;
+    dedupeSeen.add(key);
+    return true;
+  });
   const exportNames = [...new Set(allExports.map((e) => e.name).filter((n) => n !== 'default'))];
 
   let docText = '';
@@ -579,6 +657,19 @@ function main() {
         if (skipForRuntimeServer && DIRECTIVE_HEADINGS.has(key)) continue;
         const rendered = renderDocEntry(de);
         if (rendered) full += rendered + '\n';
+      }
+
+      // Exports the doc prose never mentions still belong in "the complete
+      // public API surface" — show them signature-only (no invented prose)
+      // rather than silently dropping them; each is also logged in Gaps.
+      const lowerDoc = data.docText.toLowerCase();
+      const undocumented = data.allExports.filter((e) => {
+        if (e.name === 'default' || e.kind === 'unresolved') return false;
+        return !new RegExp(`\\b${escapeRegExp(e.name.toLowerCase())}\\b`).test(lowerDoc);
+      });
+      if (undocumented.length) {
+        full += `#### Undocumented exports (source-only — not in docs/api/${data.shortName}.md)\n\n`;
+        for (const exp of undocumented) full += renderSourceExport(data.pkg.name, exp) + '\n';
       }
     } else if (data.allExports.length) {
       for (const exp of data.allExports) {
