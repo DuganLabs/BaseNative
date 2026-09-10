@@ -490,11 +490,12 @@ packages/combobox/src/a11y.js · `import { announce } from '@basenative/combobox
 
 ### `@basenative/components` (v0.4.1)
 
-15 semantic UI components with CSS custom property theming and density scales
+15 semantic HTML UI components rendered as strings (forms, data grids, dialogs, calendar and kanban) with cascade-layer CSS, design tokens, light/dark themes and density scales
 
 Source: `packages/components/src` · Docs: `docs/api/components.md`
 
 - `./css` → `./src/index.css` (non-JS resource export)
+- `./layers.css` → `./src/layers.css` (non-JS resource export)
 - `./tokens.css` → `./src/tokens.css` (non-JS resource export)
 - `./theme.css` → `./src/theme.css` (non-JS resource export)
 - `./components.css` → `./src/components.css` (non-JS resource export)
@@ -519,27 +520,32 @@ nextId('dialog');      // 'bn-dialog-1'
 ```
 
 ### Button
-Variants: `primary`, `secondary`, `destructive`, `ghost`. Sizes: `default`, `sm`, `lg`.
+`renderButton(content, options?)` → `string`. `buttonVariants(variant?, size?)` → `string` returns the class string `bn-button bn-button--{variant} bn-button--{size}` for hand-written markup. | Option | Type | Default | Description | |----…
 ```js
-renderButton('Submit', { variant: 'primary', disabled: false })
+renderButton('Submit', { variant: 'primary', type: 'submit' })
+buttonVariants('ghost', 'sm') // 'bn-button bn-button--ghost bn-button--sm'
 ```
 
 ### Input
+`renderInput(options)` → `string` | Option | Type | Default | Description | |--------|------|---------|-------------| | `name` | `string` | — | `name` attribute; also the default `id` | | `type` | `string` | `'text'` | `type` attribute | |…
 ```js
-renderInput({ name: 'email', label: 'Email', type: 'email', error: 'Required' })
+renderInput({ name: 'email', label: 'Email', type: 'email', required: true, error: 'Required' })
 ```
 
 ### Textarea
+`renderTextarea(options)` → `string` Same options as Input minus `type`, plus `rows` (`number`, default `3`). `value` is HTML-escaped. Renders `<div data-bn="field">` containing `<label>`, `<textarea data-bn="textarea">`, optional `[data-b…
 ```js
 renderTextarea({ name: 'bio', label: 'Bio', rows: 5 })
 ```
 
 ### Checkbox
+`renderCheckbox(options)` → `string` | Option | Type | Default | Description | |--------|------|---------|-------------| | `name` | `string` | — | | | `label` | `string` | `''` | Text inside the `<span>` | | `checked` | `boolean` | `false`…
 ```js
 renderCheckbox({ name: 'agree', label: 'I agree to terms', checked: false })
 ```
 
 ### Radio Group
+`renderRadioGroup(options)` → `string` | Option | Type | Default | Description | |--------|------|---------|-------------| | `name` | `string` | — | Shared `name`; each radio gets id `{name}-{value}` | | `label` | `string` | — | Rendered a…
 ```js
 renderRadioGroup({
   name: 'plan',
@@ -550,11 +556,13 @@ renderRadioGroup({
 ```
 
 ### Toggle / Switch
+`renderToggle(options)` → `string` Options: `name`, `label`, `checked`, `disabled`, `id` (default `name`), `attrs` (on the wrapping `<label>`). Renders: Accessibility: native checkbox with `role="switch"`.
 ```js
 renderToggle({ name: 'notifications', label: 'Enable notifications' })
 ```
 
 ### Select
+`renderSelect(options)` → `string` | Option | Type | Default | Description | |--------|------|---------|-------------| | `name` | `string` | — | | | `label` | `string` | — | `<label for>` | | `items` | `Array<string \| { value, label, disa…
 ```js
 renderSelect({
   name: 'country',
@@ -564,22 +572,36 @@ renderSelect({
 })
 ```
 
+### Combobox
+`renderCombobox(options)` → `string`. A text input backed by a native `<datalist>`. | Option | Type | Default | Description | |--------|------|---------|-------------| | `name` | `string` | — | | | `label` | `string` | — | `<label for>` |…
+```js
+renderCombobox({ name: 'city', label: 'City', items: ['Berlin', 'Boston', { value: 'sf', label: 'San Francisco' }] })
+```
+
+### Multiselect
+`renderMultiselect(options)` → `string`. Selected values render as removable tags in front of a search input; a hidden `<select multiple>` carries the form value. | Option | Type | Default | Description | |--------|------|---------|-------…
+```js
+renderMultiselect({ name: 'tags', label: 'Tags', items: ['a11y', 'css', 'html'], selected: ['css'] })
+```
+
 ### Alert
-Variants: `info`, `success`, `warning`, `error`.
+`renderAlert(content, options?)` → `string`. The first argument is the message HTML; there is no `type`/`message` option. | Option | Type | Default | Description | |--------|------|---------|-------------| | `variant` | `'info' \| 'success…
 ```js
 renderAlert('Changes saved!', { variant: 'success', dismissible: true })
 ```
 
 ### Toast
-Server-side: `renderToastContainer('top-right')`
+Client side: `createToaster(options?)` → `Toaster`, `showToast(toaster, options?)` → toast id (`string`), `dismissToast(toaster, id)`. Server side: `renderToastContainer(position?)` → `string`. | Function | Option | Type | Default | |-----…
 ```js
 import { createToaster, showToast, dismissToast } from '@basenative/components';
 
 const toaster = createToaster({ position: 'top-right', duration: 5000 });
-showToast(toaster, { message: 'Saved!', variant: 'success' });
+const id = showToast(toaster, { message: 'Saved!', variant: 'success' });
+dismissToast(toaster, id);
 ```
 
 ### Table
+`renderTable(options)` → `string` | Option | Type | Default | Description | |--------|------|---------|-------------| | `columns` | `Array<{ key, label, sortable? }>` | `[]` | `sortable` adds `data-sortable` to the `<th>` | | `rows` | `Arr…
 ```js
 renderTable({
   columns: [{ key: 'name', label: 'Name', sortable: true }],
@@ -589,152 +611,239 @@ renderTable({
 })
 ```
 
+### Data Grid
+`renderDataGrid(options)` → `string`. Sortable, selectable, paginated grid with a scroll region and a "Showing x–y of z" footer. | Option | Type | Default | Description | |--------|------|---------|-------------| | `columns` | `DataGridCol…
+```js
+renderDataGrid({
+  columns: [
+    { key: 'name', label: 'Name', sortable: true, width: '40%' },
+    { key: 'total', label: 'Total', render: (v) => `$${v}` },
+  ],
+  rows: [{ id: 'r1', name: 'Acme', total: 120 }],
+  sortBy: 'name', sortDir: 'asc', selectable: true, selectedRows: ['r1'],
+  page: 1, pageSize: 50, totalRows: 300, caption: 'Invoices',
+})
+```
+
+### Tree
+`renderTree(options)` → `string` | Option | Type | Default | Description | |--------|------|---------|-------------| | `items` | `TreeNode[]` | `[]` | `{ id?, label, icon?, children? }`; `id` falls back to `label` | | `expanded` | `Set<str…
+```js
+renderTree({
+  items: [{ id: 'src', label: 'src', children: [{ id: 'index', label: 'index.js' }] }],
+  expanded: new Set(['src']),
+  selected: 'index',
+})
+```
+
+### Tree Grid
+`renderTreeGrid(options)` → `string`. A `<table role="treegrid">` whose first column is indented per nesting level. | Option | Type | Default | Description | |--------|------|---------|-------------| | `columns` | `Array<{ key, label }>` |…
+```js
+renderTreeGrid({
+  columns: [{ key: 'name', label: 'Name' }, { key: 'size', label: 'Size' }],
+  items: [{ id: 'src', name: 'src', size: '—', children: [{ name: 'index.js', size: '2 KB' }] }],
+  expanded: new Set(['src']),
+})
+```
+
+### Virtual List
+`renderVirtualList(options)` → `string`. Server-renders only the first window of items inside a spacer sized for the whole list; a client hydrator can swap the window on scroll. | Option | Type | Default | Description | |--------|------|--…
+```js
+renderVirtualList({
+  items: rows,
+  itemHeight: 32,
+  containerHeight: 480,
+  renderItem: (row, i) => `<div data-bn="virtual-item" data-index="${i}">${row.name}</div>`,
+})
+```
+
 ### Pagination
+`renderPagination(options)` → `string`. Returns `''` when `totalPages <= 1`. | Option | Type | Default | Description | |--------|------|---------|-------------| | `currentPage` | `number` | `1` | 1-indexed | | `totalPages` | `number` | `1`…
 ```js
 renderPagination({ currentPage: 2, totalPages: 10, baseUrl: '/users' })
 ```
 
 ### Badge
-Variants: `default`, `primary`, `success`, `warning`, `error`.
+`renderBadge(content, options?)` → `string`. `content` is escaped. `variant`: `'default' | 'primary' | 'success' | 'warning' | 'error'` (default `'default'`). Renders `<span data-bn="badge" data-variant="success">Active</span>`. `attrs` is…
 ```js
 renderBadge('Active', { variant: 'success' })
 ```
 
 ### Card
+`renderCard(options)` → `string` Options: `header`, `body`, `footer` (HTML strings, default `''`; header/footer omitted when empty) and `variant` (`string`, default `'default'`, emitted as `data-variant`). Renders: `attrs` is not supported.
 ```js
 renderCard({ header: 'Title', body: '<p>Content</p>', footer: 'Footer' })
 ```
 
+### Avatar
+`renderAvatar(options)` → `string`. Shows an image, or up to two initials derived from `name` (`'?'` when no name). | Option | Type | Default | Description | |--------|------|---------|-------------| | `src` | `string` | — | Image URL | |…
+```js
+renderAvatar({ name: 'Ada Lovelace', size: 'lg' })
+renderAvatar({ src: '/ada.png', alt: 'Ada Lovelace', shape: 'square' })
+```
+
 ### Progress
+`renderProgress(options)` → `string` Options: `value` (default `0`), `max` (default `100`), `label` (escaped `aria-label`), `attrs`. Renders `<progress data-bn="progress" value="75" max="100" aria-label="Upload progress">75%</progress>` —…
 ```js
 renderProgress({ value: 75, max: 100, label: 'Upload progress' })
 ```
 
 ### Spinner
-Sizes: `sm`, `default`, `lg`.
+`renderSpinner(options)` → `string` Options: `size` (`'sm' | 'default' | 'lg'`, default `'default'`) and `label` (`aria-label`, default `'Loading'`). Renders `<span data-bn="spinner" data-size="lg" role="status" aria-label="Loading data"><…
 ```js
 renderSpinner({ size: 'lg', label: 'Loading data' })
 ```
 
 ### Skeleton
-Variants: `text`, `circle`.
+`renderSkeleton(options)` → `string` Options: `width` (default `'100%'`), `height` (default `'1rem'`), `variant` (`'text' | 'circle'`, default `'text'`), `count` (default `1`). Renders `count` copies of `<div data-bn="skeleton" data-varian…
 ```js
 renderSkeleton({ width: '200px', height: '1rem', count: 3 })
 ```
 
-#### Undocumented exports (source-only — not in docs/api/components.md)
+### Dialog
+`renderDialog(options)` → `string`. Native `<dialog>`; `modal` selects the semantics the client should apply — a modal dialog (`aria-modal="true" data-modal="true"`) is opened with `showModal()`, a non-modal one (`data-modal="false"`) with…
+```js
+renderDialog({
+  title: 'Delete project?',
+  content: '<p>This cannot be undone.</p>',
+  footer: renderButton('Delete', { variant: 'destructive' }),
+  size: 'sm',
+})
+```
 
-#### `buttonVariants(variant = 'primary', size = 'default')` (function)
-Returns the CSS class string for a button variant.
-packages/components/src/button.js · `import { buttonVariants } from '@basenative/components';`
+### Drawer
+`renderDrawer(options)` → `string`. Side panel; the overlay is rendered as a sibling **before** the `<aside>`. | Option | Type | Default | Description | |--------|------|---------|-------------| | `title` | `string` | — | | | `content` | `…
+```js
+renderDrawer({ title: 'Filters', content: '<form>…</form>', position: 'left', open: true })
+```
 
-#### `renderCombobox(options = {})` (function)
-Combobox — searchable dropdown with keyboard navigation, rendered as a native <input> + <datalist>. Attributes, label and option labels are escaped.
-packages/components/src/combobox.js · `import { renderCombobox } from '@basenative/components';`
+### Tabs
+`renderTabs(options)` → `string` | Option | Type | Default | Description | |--------|------|---------|-------------| | `tabs` | `Array<{ id, label, content?, disabled? }>` | `[]` | | | `activeTab` | `string` | first tab's id | | | `variant…
+```js
+renderTabs({
+  tabs: [
+    { id: 'overview', label: 'Overview', content: '<p>…</p>' },
+    { id: 'settings', label: 'Settings', content: '<form>…</form>', disabled: true },
+  ],
+  activeTab: 'overview',
+})
+```
 
-#### `renderMultiselect(options = {})` (function)
-Multiselect — multiple value selection with tags/chips over a hidden native <select multiple>. Attributes, label, tag text and option labels are escaped.
-packages/components/src/multiselect.js · `import { renderMultiselect } from '@basenative/components';`
+### Accordion
+`renderAccordion(options)` → `string`. Native `<details>`/`<summary>`. | Option | Type | Default | Description | |--------|------|---------|-------------| | `items` | `Array<{ title, content, open? }>` | `[]` | `title` is escaped text; `co…
+```js
+renderAccordion({
+  items: [{ title: 'Shipping', content: '<p>…</p>', open: true }, { title: 'Returns', content: '<p>…</p>' }],
+})
+```
 
-#### `renderDataGrid(options = {})` (function)
-Data grid — sortable, filterable, paginated table with virtual scrolling support.
-packages/components/src/datagrid.js · `import { renderDataGrid } from '@basenative/components';`
+### Breadcrumb
+`renderBreadcrumb(options)` → `string` | Option | Type | Default | Description | |--------|------|---------|-------------| | `items` | `Array<{ label, href? }>` | `[]` | The last item is rendered as plain text; the others as links | | `sep…
+```js
+renderBreadcrumb({ items: [{ label: 'Home', href: '/' }, { label: 'Projects', href: '/projects' }, { label: 'Alpha' }] })
+```
 
-#### `renderTree(options = {})` (function)
-Tree view — expandable hierarchical tree.
-packages/components/src/tree.js · `import { renderTree } from '@basenative/components';`
+### Tooltip
+`renderTooltip(options)` → `string`. Popover-API tooltip: a trigger span with `popovertarget` followed by a `popover` span. | Option | Type | Default | Description | |--------|------|---------|-------------| | `content` | `string` | — | To…
+```js
+renderTooltip({ trigger: '<button type="button">?</button>', content: 'More information', position: 'bottom' })
+```
 
-#### `renderTreeGrid(options = {})` (function)
-TreeGrid — tree structure combined with table columns.
-packages/components/src/tree.js · `import { renderTreeGrid } from '@basenative/components';`
+### Dropdown Menu
+`renderDropdownMenu(options)` → `string`. Popover-API menu. | Option | Type | Default | Description | |--------|------|---------|-------------| | `trigger` | `string` | — | Trigger button HTML | | `items` | `Array<{ label, action?, icon?,…
+```js
+renderDropdownMenu({
+  trigger: 'Actions',
+  items: [
+    { label: 'Rename', action: 'rename', shortcut: 'F2' },
+    { separator: true },
+    { label: 'Delete', action: 'delete', disabled: true },
+  ],
+})
+```
 
-#### `renderVirtualList(options = {})` (function)
-Virtualizer — renders a virtual scroll container placeholder: a window of items plus a spacer for total height; actual virtualization happens client-side via hydration.
-packages/components/src/virtualizer.js · `import { renderVirtualList } from '@basenative/components';`
+### Command Palette
+`renderCommandPalette(options)` → `string`. Cmd+K style `<dialog>` with a search input and grouped commands. | Option | Type | Default | Description | |--------|------|---------|-------------| | `commands` | `Array<{ id?, label, action?, g…
+```js
+renderCommandPalette({
+  commands: [
+    { id: 'new', label: 'New file', shortcut: '⌘N', group: 'File' },
+    { id: 'theme', label: 'Toggle theme', group: 'View' },
+  ],
+})
+```
 
-#### `renderDialog(options = {})` (function)
-Dialog — modal/non-modal dialog using native <dialog> element.
-packages/components/src/dialog.js · `import { renderDialog } from '@basenative/components';`
+### Calendar
+`renderCalendar(options)` → `string`. A CSS-grid week view (7 days from `startDate`) with one drop-zone slot per hour and draggable event blocks. | Option | Type | Default | Description | |--------|------|---------|-------------| | `startD…
+```js
+renderCalendar({
+  startDate: '2025-06-02',
+  events: [{ id: '1', title: 'Site visit', start: '2025-06-02T09:00', end: '2025-06-02T11:00', assignee: 'Ana' }],
+  hours: { start: 7, end: 19 },
+})
+```
 
-#### `renderDrawer(options = {})` (function)
-Drawer — side panel that slides in from the edge.
-packages/components/src/drawer.js · `import { renderDrawer } from '@basenative/components';`
+### Pipeline Block
+`renderPipelineBlock(options)` → `string`. A draggable card for use outside the calendar (e.g. an unscheduled-jobs sidebar); dropping it on a calendar slot reports `sourceType: 'pipeline'`. Options: `id` (required, `data-block-id`), `title…
+```js
+renderPipelineBlock({ id: 'job-7', title: 'Install boiler', subtitle: 'Acme Corp', status: 'pending' })
+```
 
-#### `renderTabs(options = {})` (function)
-Tabs — tab navigation with panels. Tab buttons are type="button" and wired to their panels with aria-controls / aria-labelledby.
-packages/components/src/tabs.js · `import { renderTabs } from '@basenative/components';`
+### Pipeline
+`renderPipeline(options)` → `string`. Kanban board: columns of draggable cards. | Option | Type | Default | Description | |--------|------|---------|-------------| | `columns` | `Array<{ id, title }>` | `[]` | | | `cards` | `Array<{ id, co…
+```js
+renderPipeline({
+  columns: [{ id: 'new', title: 'New leads' }, { id: 'won', title: 'Won' }],
+  cards: [{ id: 'c1', columnId: 'new', title: 'Acme Corp', subtitle: '$12k', description: 'Boiler replacement' }],
+})
+```
 
-#### `renderAccordion(options = {})` (function)
-Accordion — collapsible sections using native <details>/<summary>.
-packages/components/src/accordion.js · `import { renderAccordion } from '@basenative/components';`
+### Drag and Drop
+`initCalendarDragDrop(container, { onDrop })` and `initPipelineDragDrop(container, { onCardMove })` attach native HTML5 drag-and-drop listeners to a rendered `[data-bn="calendar"]` or `[data-bn="pipeline"]` element. Both return `{ destroy(…
+```js
+import { initCalendarDragDrop, initPipelineDragDrop } from '@basenative/components';
 
-#### `renderBreadcrumb(options = {})` (function)
-Breadcrumb — navigation trail; the last item is aria-current="page".
-packages/components/src/breadcrumb.js · `import { renderBreadcrumb } from '@basenative/components';`
+const cal = initCalendarDragDrop(document.querySelector('[data-bn="calendar"]'), {
+  onDrop: ({ eventId, date, hour, sourceType }) => { /* sourceType: 'event' | 'pipeline' */ },
+});
+const board = initPipelineDragDrop(document.querySelector('[data-bn="pipeline"]'), {
+  onCardMove: ({ cardId, targetColumnId, position }) => { /* position is always null */ },
+});
+cal.destroy(); board.destroy();
+```
 
-#### `renderAvatar(options = {})` (function)
-Avatar — user avatar with image, initials, or icon fallback.
-packages/components/src/avatar.js · `import { renderAvatar } from '@basenative/components';`
+### Calendar State
+`createCalendarState(options?)` → `CalendarState`. Framework-free event store with collision detection; works on the server (no DOM, no signals — each getter returns a fresh copy). | Member | Description | |--------|-------------| | `event…
+```js
+import { createCalendarState } from '@basenative/components';
 
-#### `renderTooltip(options = {})` (function)
-Tooltip — popover-based tooltip using the Popover API.
-packages/components/src/tooltip.js · `import { renderTooltip } from '@basenative/components';`
+const cal = createCalendarState({ startDate: '2025-06-02', initialEvents: [] });
+cal.addEvent({ id: '1', title: 'Meeting', start: '2025-06-02T09:00', end: '2025-06-02T10:00' });
+cal.onEventMove = ({ eventId, date, hour }) => save(eventId, date, hour);
+cal.moveEvent('1', '2025-06-03', 14); // null on collision (also calls onError)
+```
 
-#### `renderDropdownMenu(options = {})` (function)
-Dropdown menu — popover-based menu with role="menu" / "menuitem".
-packages/components/src/dropdown-menu.js · `import { renderDropdownMenu } from '@basenative/components';`
+### Pipeline State
+`createPipelineState(options?)` → `PipelineState`. Kanban store matching `renderPipeline`. | Member | Description | |--------|-------------| | `columns()` / `cards()` / `dragState()` | Current snapshot | | `getCard(id)` / `getColumn(id)` |…
+```js
+import { createPipelineState } from '@basenative/components';
 
-#### `renderCommandPalette(options = {})` (function)
-Command palette — Cmd+K style searchable command menu in a native <dialog>.
-packages/components/src/command-palette.js · `import { renderCommandPalette } from '@basenative/components';`
+const board = createPipelineState({
+  columns: [{ id: 'new', title: 'New' }, { id: 'won', title: 'Won' }],
+  initialCards: [{ id: 'c1', columnId: 'new', title: 'Acme' }],
+});
+board.onCardMove = ({ cardId, targetColumnId }) => save(cardId, targetColumnId);
+board.moveCard('c1', 'won');
+```
 
-#### `renderCalendar(options = {})` (function)
-Server-side render a weekly calendar grid with event blocks.
-packages/components/src/calendar.js · `import { renderCalendar } from '@basenative/components';`
-
-#### `renderPipelineBlock(options = {})` (function)
-Render a pipeline/kanban block for use outside the calendar (e.g., sidebar cards that can be dragged onto the calendar).
-packages/components/src/calendar.js · `import { renderPipelineBlock } from '@basenative/components';`
-
-#### `renderPipeline(options = {})` (function)
-Render a kanban-style pipeline view with draggable columns and cards.
-packages/components/src/calendar.js · `import { renderPipeline } from '@basenative/components';`
-
-#### `initCalendarDragDrop(container, callbacks = {})` (function)
-Client-side: Initialize drag-and-drop on a calendar container.
-packages/components/src/calendar.js · `import { initCalendarDragDrop } from '@basenative/components';`
-
-#### `initPipelineDragDrop(container, callbacks = {})` (function)
-Client-side: Initialize drag-and-drop on a pipeline container.
-packages/components/src/calendar.js · `import { initPipelineDragDrop } from '@basenative/components';`
-
-#### `createCalendarState(options = {})` (function)
-Create a calendar state container with signal-based reactive events.
-packages/components/src/calendar-state.js · `import { createCalendarState } from '@basenative/components';`
-
-#### `createPipelineState(options = {})` (function)
-Create a pipeline state container for kanban-style workflow.
-packages/components/src/calendar-state.js · `import { createPipelineState } from '@basenative/components';`
-
-#### `eventsCollide(event1, event2)` (function)
-Check if two events collide in the calendar.
-packages/components/src/calendar-state.js · `import { eventsCollide } from '@basenative/components';`
-
-#### `updateEvent(event, overrides)` (function)
-Create a new event object with merged properties.
-packages/components/src/calendar-state.js · `import { updateEvent } from '@basenative/components';`
-
-#### `getEventDuration(start, end)` (function)
-Calculate duration in minutes between ISO datetime strings.
-packages/components/src/calendar-state.js · `import { getEventDuration } from '@basenative/components';`
-
-#### `renderLayoutGrid(options = {})` (function)
-renderLayoutGrid - A drag-and-drop CSS grid layout component. Designed to hook into @basenative/visual-builder's canvas state.
-packages/components/src/layout-grid.js · `import { renderLayoutGrid } from '@basenative/components';`
-
-#### `layoutGridStyles()` (function)
-CSS for layout grid components.
-packages/components/src/layout-grid.js · `import { layoutGridStyles } from '@basenative/components';`
+### Layout Grid
+`renderLayoutGrid(options?)` → `string` and `layoutGridStyles()` → `string`. A CSS-grid canvas for `@basenative/visual-builder`; cells become draggable when `editable` is set. | Option | Type | Default | Description | |--------|------|----…
+```js
+renderLayoutGrid({
+  columns: 12,
+  cells: [{ id: 'hero', colSpan: 12, content: '<h1>Hero</h1>' }, { id: 'side', colSpan: 4 }, { id: 'main', colSpan: 8 }],
+  editable: true,
+})
+```
 
 ### `@basenative/config` (v0.3.0)
 
@@ -2668,34 +2777,6 @@ Everything below is a real, mechanically-detected gap between source/package.jso
 - `@basenative/builder` — no docs/api/builder.md; API below is extracted directly from source signatures/JSDoc only (16 exports).
 - `@basenative/claude-config` — no docs/api/claude-config.md; API below is extracted directly from source signatures/JSDoc only (7 exports).
 - `@basenative/combobox` — no docs/api/combobox.md; API below is extracted directly from source signatures/JSDoc only (10 exports).
-- `@basenative/components`: `buttonVariants` is exported (packages/components/src/button.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `renderCombobox` is exported (packages/components/src/combobox.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `renderMultiselect` is exported (packages/components/src/multiselect.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `renderDataGrid` is exported (packages/components/src/datagrid.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `renderTree` is exported (packages/components/src/tree.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `renderTreeGrid` is exported (packages/components/src/tree.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `renderVirtualList` is exported (packages/components/src/virtualizer.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `renderDialog` is exported (packages/components/src/dialog.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `renderDrawer` is exported (packages/components/src/drawer.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `renderTabs` is exported (packages/components/src/tabs.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `renderAccordion` is exported (packages/components/src/accordion.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `renderBreadcrumb` is exported (packages/components/src/breadcrumb.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `renderAvatar` is exported (packages/components/src/avatar.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `renderTooltip` is exported (packages/components/src/tooltip.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `renderDropdownMenu` is exported (packages/components/src/dropdown-menu.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `renderCommandPalette` is exported (packages/components/src/command-palette.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `renderCalendar` is exported (packages/components/src/calendar.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `renderPipelineBlock` is exported (packages/components/src/calendar.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `renderPipeline` is exported (packages/components/src/calendar.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `initCalendarDragDrop` is exported (packages/components/src/calendar.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `initPipelineDragDrop` is exported (packages/components/src/calendar.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `createCalendarState` is exported (packages/components/src/calendar-state.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `createPipelineState` is exported (packages/components/src/calendar-state.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `eventsCollide` is exported (packages/components/src/calendar-state.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `updateEvent` is exported (packages/components/src/calendar-state.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `getEventDuration` is exported (packages/components/src/calendar-state.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `renderLayoutGrid` is exported (packages/components/src/layout-grid.js) but not mentioned in docs/api/components.md.
-- `@basenative/components`: `layoutGridStyles` is exported (packages/components/src/layout-grid.js) but not mentioned in docs/api/components.md.
 - `@basenative/doppler` — no docs/api/doppler.md; API below is extracted directly from source signatures/JSDoc only (8 exports).
 - `@basenative/favicon` — no docs/api/favicon.md; API below is extracted directly from source signatures/JSDoc only (33 exports).
 - `@basenative/flags`: `createKVProvider` is exported (packages/flags/src/providers/kv.js) but not mentioned in docs/api/flags.md.

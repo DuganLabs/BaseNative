@@ -102,8 +102,8 @@ Renders:
 ```html
 <div data-bn="field">
   <label for="email">Email</label>
-  <input data-bn="input" type="email" id="email" name="email" value="" placeholder="" required aria-describedby="email-help" aria-invalid="true" />
-  <span data-bn="field-error" id="email-help" role="alert">Required</span>
+  <input data-bn="input" type="email" id="email" name="email" value="" placeholder="" required aria-describedby="email-error" aria-invalid="true" />
+  <span data-bn="field-error" id="email-error" role="alert">Required</span>
 </div>
 ```
 
@@ -239,12 +239,12 @@ renderCombobox({ name: 'city', label: 'City', items: ['Berlin', 'Boston', { valu
 |--------|------|---------|-------------|
 | `name` | `string` | — | |
 | `label` | `string` | — | `<label for>` |
-| `items` | `Array<string \| { value, label }>` | `[]` | `<datalist>` options (not escaped) |
+| `items` | `Array<string \| { value, label }>` | `[]` | `<datalist>` options; value and label are escaped |
 | `placeholder` | `string` | `''` | |
 | `required` | `boolean` | `false` | |
 | `disabled` | `boolean` | `false` | |
 | `value` | `string` | `''` | |
-| `id` | `string` | `bn-combobox-{name}` | Random suffix when `name` is absent; `{id}-list` is the datalist id |
+| `id` | `string` | `bn-combobox-{name}` | `bn-combobox-{n}` when `name` is absent; `{id}-list` is the datalist id |
 | `attrs` | `string` | `''` | Extra attributes on the `<input>` |
 
 Renders:
@@ -275,7 +275,7 @@ renderMultiselect({ name: 'tags', label: 'Tags', items: ['a11y', 'css', 'html'],
 | `selected` | `string[]` | `[]` | Pre-selected values |
 | `placeholder` | `string` | `'Select items...'` | Search input placeholder |
 | `disabled` | `boolean` | `false` | Adds `data-disabled` to the wrapper and `disabled` to the select |
-| `id` | `string` | `bn-multiselect-{name}` | |
+| `id` | `string` | `bn-multiselect-{name}` | `bn-multiselect-{n}` when `name` is absent |
 | `attrs` | `string` | `''` | Extra attributes on the search `<input>` |
 
 Renders:
@@ -395,7 +395,7 @@ renderDataGrid({
 | `selectedRows` | `Array<string \| number>` | `[]` | Row ids whose checkbox is checked |
 | `emptyMessage` | `string` | `'No data'` | |
 | `caption` | `string` | — | `<caption>` and the scroll region's `aria-label` (falls back to `'Data grid'`) |
-| `id` | `string` | `bn-datagrid-{random}` | |
+| `id` | `string` | `bn-datagrid-{n}` | |
 | `attrs` | `string` | `''` | |
 
 Renders:
@@ -435,7 +435,7 @@ renderTree({
 | `items` | `TreeNode[]` | `[]` | `{ id?, label, icon?, children? }`; `id` falls back to `label` |
 | `expanded` | `Set<string>` | `new Set()` | Node ids whose children are rendered |
 | `selected` | `string` | — | Id of the selected node |
-| `id` | `string` | `bn-tree-{random}` | |
+| `id` | `string` | `bn-tree-{n}` | |
 | `attrs` | `string` | `''` | |
 
 Renders:
@@ -468,7 +468,7 @@ renderTreeGrid({
 | `columns` | `Array<{ key, label }>` | `[]` | |
 | `items` | `TreeGridNode[]` | `[]` | Column values keyed by `key`, plus `id?` (falls back to the first column's value) and `children?` |
 | `expanded` | `Set<string>` | `new Set()` | |
-| `id` | `string` | `bn-treegrid-{random}` | |
+| `id` | `string` | `bn-treegrid-{n}` | |
 | `attrs` | `string` | `''` | |
 
 Renders `<table data-bn="treegrid" role="treegrid">` with `<th scope="col">` headers and one `<tr data-bn="treegrid-row" role="row" aria-level="1" data-node-id="src">` per visible node; a row with children also carries `aria-expanded` (`"true"` or `"false"`), while leaf rows carry no `aria-expanded` attribute. The first cell is prefixed with `<span data-level="0">▸ </span>`.
@@ -493,7 +493,7 @@ renderVirtualList({
 | `containerHeight` | `number` (px) | `400` | |
 | `renderItem` | `(item, index) => string` | wraps `${item}` in `[data-bn="virtual-item"]` | |
 | `overscan` | `number` | `5` | Extra items rendered beyond the visible count (applied twice) |
-| `id` | `string` | `bn-virtual-{random}` | |
+| `id` | `string` | `bn-virtual-{n}` | |
 | `attrs` | `string` | `''` | |
 
 Renders:
@@ -625,7 +625,7 @@ renderDialog({
 | `closable` | `boolean` | `true` | Renders the close button |
 | `size` | `'sm' \| 'default' \| 'lg'` | `'default'` | |
 | `footer` | `string` | `''` | Footer HTML |
-| `id` | `string` | `bn-dialog-{random}` | |
+| `id` | `string` | `bn-dialog-{n}` | |
 | `attrs` | `string` | `''` | |
 
 Renders:
@@ -657,7 +657,7 @@ renderDrawer({ title: 'Filters', content: '<form>…</form>', position: 'left', 
 | `size` | `'sm' \| 'default' \| 'lg'` | `'default'` | |
 | `closable` | `boolean` | `true` | |
 | `overlay` | `boolean` | `true` | Renders `[data-bn="drawer-overlay"]` |
-| `id` | `string` | `bn-drawer-{random}` | |
+| `id` | `string` | `bn-drawer-{n}` | |
 | `attrs` | `string` | `''` | |
 
 Renders:
@@ -690,7 +690,7 @@ renderTabs({
 | `tabs` | `Array<{ id, label, content?, disabled? }>` | `[]` | |
 | `activeTab` | `string` | first tab's id | |
 | `variant` | `'default' \| 'pills'` | `'default'` | |
-| `id` | `string` | `bn-tabs-{random}` | Prefixes every tab and panel id |
+| `id` | `string` | `bn-tabs-{n}` | Prefixes every tab and panel id |
 | `attrs` | `string` | `''` | |
 
 Renders:
@@ -719,9 +719,9 @@ renderAccordion({
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `items` | `Array<{ title, content, open? }>` | `[]` | |
+| `items` | `Array<{ title, content, open? }>` | `[]` | `title` is escaped text; `content` is an HTML slot: not escaped |
 | `multiple` | `boolean` | `false` | When false every `<details>` shares `name="{id}"`, so only one can be open |
-| `id` | `string` | `bn-accordion-{random}` | |
+| `id` | `string` | `bn-accordion-{n}` | |
 | `attrs` | `string` | `''` | |
 
 Renders `<div data-bn="accordion" id="…">` containing `<details data-bn="accordion-item" name="…" open><summary data-bn="accordion-header">Shipping</summary><div data-bn="accordion-content">…</div></details>` per item.
@@ -763,10 +763,10 @@ renderTooltip({ trigger: '<button type="button">?</button>', content: 'More info
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `content` | `string` | — | Tooltip HTML |
-| `trigger` | `string` | — | Trigger HTML |
+| `content` | `string` | — | Tooltip text; escaped (not an HTML slot) |
+| `trigger` | `string` | — | HTML slot: not escaped; pass trusted markup only |
 | `position` | `string` | `'top'` | Emitted as `data-position` |
-| `id` | `string` | `bn-tooltip-{random}` | Popover id |
+| `id` | `string` | `bn-tooltip-{n}` | Popover id |
 | `attrs` | `string` | `''` | Extra attributes on the trigger span |
 
 Renders `<span data-bn="tooltip-trigger" popovertarget="id" popovertargetaction="toggle">…</span><span data-bn="tooltip" id="id" popover data-position="top" role="tooltip">More information</span>`.
@@ -793,7 +793,7 @@ renderDropdownMenu({
 | `trigger` | `string` | — | Trigger button HTML |
 | `items` | `Array<{ label, action?, icon?, shortcut?, disabled? } \| { separator: true }>` | `[]` | `action` becomes `data-action` |
 | `position` | `string` | `'bottom-start'` | Emitted as `data-position` |
-| `id` | `string` | `bn-dropdown-{random}` | Popover id |
+| `id` | `string` | `bn-dropdown-{n}` | Popover id |
 | `attrs` | `string` | `''` | |
 
 Renders:
@@ -829,7 +829,7 @@ renderCommandPalette({
 | `commands` | `Array<{ id?, label, action?, group?, icon?, shortcut? }>` | `[]` | Grouped by `group` (default `'Commands'`); `data-action` is `action ?? id` |
 | `placeholder` | `string` | `'Type a command...'` | |
 | `open` | `boolean` | `false` | Adds `open` |
-| `id` | `string` | `bn-command-{random}` | |
+| `id` | `string` | `bn-command-{n}` | |
 | `attrs` | `string` | `''` | |
 
 Renders:
@@ -867,7 +867,7 @@ renderCalendar({
 | `events` | `CalendarEvent[]` | `[]` | `{ id, title, start, end, status?, color?, assignee? }` |
 | `hours` | `{ start?, end? }` | `{ start: 7, end: 19 }` | Rendered hour range |
 | `emptyMessage` | `string` | `'No events'` | Shown when `events` is empty |
-| `id` | `string` | `bn-calendar-{random}` | |
+| `id` | `string` | `bn-calendar-{n}` | |
 | `attrs` | `string` | `''` | |
 
 Renders:
@@ -915,7 +915,7 @@ renderPipeline({
 |--------|------|---------|-------------|
 | `columns` | `Array<{ id, title }>` | `[]` | |
 | `cards` | `Array<{ id, columnId, title, subtitle?, description?, status? }>` | `[]` | Cards are placed by `columnId` |
-| `id` | `string` | `bn-pipeline-{random}` | |
+| `id` | `string` | `bn-pipeline-{n}` | |
 | `emptyMessage` | `string` | `'No items'` | Shown inside a column with no cards |
 | `attrs` | `string` | `''` | |
 
