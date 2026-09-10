@@ -221,6 +221,58 @@ describe('webauthnAdapter — registration flow', () => {
     const r = await adapter.verifyRegistration(null);
     assert.equal(r.error, 'missing-attestation');
   });
+
+  it('verifyRegistration accepts a raw-bytes credential id (b64u-encodes it)', async () => {
+    const bytesLib = {
+      ...FAKE_LIB,
+      verifyRegistrationResponse: async () => ({
+        verified: true,
+        registrationInfo: {
+          credential: {
+            id: new Uint8Array([1, 2, 3, 4]),
+            publicKey: new Uint8Array([5, 6, 7, 8]),
+            counter: 0,
+          },
+        },
+      }),
+    };
+    const stores = makeStores();
+    const adapter = webauthnAdapter({ lib: bytesLib, rp: RP, stores });
+    const opts = await adapter.getRegistrationOptions('alice');
+    const result = await adapter.verifyRegistration({
+      response: { clientDataJSON: makeClientDataJSON(opts.options.challenge) },
+    });
+    assert.ok(result.ok);
+    const [cred] = stores._raw.credentials.values();
+    assert.equal(cred.id, bytesToB64u(new Uint8Array([1, 2, 3, 4])));
+  });
+
+  // @simplewebauthn/server versions predating the current `registrationInfo.credential.{id,publicKey,counter}`
+  // shape (verified stable across v11-v14, see server.js comment) returned these fields at the top level.
+  // Kept as a regression test for the defensive fallback, not because any supported peer range needs it.
+  it('verifyRegistration falls back to legacy top-level credentialID/credentialPublicKey', async () => {
+    const legacyLib = {
+      ...FAKE_LIB,
+      verifyRegistrationResponse: async () => ({
+        verified: true,
+        registrationInfo: {
+          credentialID: 'LEGACY_CRED_ID',
+          credentialPublicKey: new Uint8Array([9, 9, 9]),
+          counter: 3,
+        },
+      }),
+    };
+    const stores = makeStores();
+    const adapter = webauthnAdapter({ lib: legacyLib, rp: RP, stores });
+    const opts = await adapter.getRegistrationOptions('alice');
+    const result = await adapter.verifyRegistration({
+      response: { clientDataJSON: makeClientDataJSON(opts.options.challenge) },
+    });
+    assert.ok(result.ok);
+    const cred = stores._raw.credentials.get('LEGACY_CRED_ID');
+    assert.ok(cred);
+    assert.equal(cred.counter, 3);
+  });
 });
 
 describe('webauthnAdapter — authentication flow', () => {
@@ -275,6 +327,25 @@ describe('webauthnAdapter — authentication flow', () => {
       response: { clientDataJSON: makeClientDataJSON(opts.options.challenge) },
     });
     assert.equal(r.error, 'credential-not-found');
+  });
+
+  it('keeps the stored counter when authenticationInfo.newCounter is absent', async () => {
+    const stores = makeStores();
+    const noCounterLib = { ...FAKE_LIB, verifyAuthenticationResponse: async () => ({ verified: true, authenticationInfo: {} }) };
+    const adapter = webauthnAdapter({ lib: noCounterLib, rp: RP, stores });
+    const opts = await adapter.getRegistrationOptions('alice');
+    await adapter.verifyRegistration({
+      response: { clientDataJSON: makeClientDataJSON(opts.options.challenge) },
+    });
+    stores._raw.credentials.get('CRED_ID_1').counter = 4;
+
+    const authOpts = await adapter.getAuthenticationOptions('alice');
+    const r = await adapter.verifyAuthentication({
+      id: 'CRED_ID_1',
+      response: { clientDataJSON: makeClientDataJSON(authOpts.options.challenge) },
+    });
+    assert.ok(r.ok);
+    assert.equal(stores._raw.credentials.get('CRED_ID_1').counter, 4);
   });
 });
 
