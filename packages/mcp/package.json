@@ -1,0 +1,37 @@
+{
+  "name": "@basenative/mcp",
+  "version": "0.1.0",
+  "description": "MCP server exposing BaseNative validation, SSR preview, and directive reference to any agent",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "bin": {
+    "basenative-mcp": "./src/bin.js"
+  },
+  "files": [
+    "src"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuganLabs/basenative.git",
+    "directory": "packages/mcp"
+  },
+  "homepage": "https://github.com/DuganLabs/basenative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/basenative/issues"
+  },
+  "keywords": [
+    "basenative",
+    "mcp",
+    "model-context-protocol",
+    "llm",
+    "generative-ui"
+  ],
+  "dependencies": {
+    "@basenative/validate": "workspace:^0.1.0",
+    "@basenative/server": "workspace:^0.4.0",
+    "@basenative/runtime": "workspace:^0.4.0"
+  }
+}
