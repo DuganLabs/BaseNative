@@ -301,7 +301,11 @@ importers:
         specifier: workspace:*
         version: link:../runtime
 
-  packages/flags: {}
+  packages/flags:
+    dependencies:
+      '@basenative/runtime':
+        specifier: workspace:^0.5.0
+        version: link:../runtime
 
   packages/fonts: {}
 
@@ -311,7 +315,11 @@ importers:
         specifier: workspace:*
         version: link:../runtime
 
-  packages/i18n: {}
+  packages/i18n:
+    dependencies:
+      '@basenative/runtime':
+        specifier: workspace:^0.5.0
+        version: link:../runtime
 
   packages/icons: {}
 
@@ -378,6 +386,13 @@ importers:
       node-html-parser:
         specifier: ^9.0.4
         version: 9.0.4
+    devDependencies:
+      '@basenative/flags':
+        specifier: workspace:^0.3.0
+        version: link:../flags
+      '@basenative/i18n':
+        specifier: workspace:^0.3.0
+        version: link:../i18n
 
   packages/share:
     dependencies:
