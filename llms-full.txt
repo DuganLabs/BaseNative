@@ -2120,6 +2120,31 @@ Intercepts internal link clicks for client-side navigation.
 const cleanup = interceptLinks(document.body, router);
 ```
 
+### Navigation Guards — `@basenative/router/guards`
+Opt-in wrapper around a router instance; `createRouter()` itself is unchanged. Also re-exported from the package root.
+```js
+import { createRouter } from '@basenative/router';
+import { withGuards, redirect } from '@basenative/router/guards';
+
+const router = withGuards(createRouter(routes));
+
+router.beforeEach(({ to }) => {
+  if (to.name === 'dashboard' && !isAuthenticated()) return redirect('/login');
+});
+
+router.afterEach(({ to }) => {
+…
+```
+
+#### `withGuards(router)`
+Returns a `GuardedRouter`: the same `pathname` / `query` / `currentRoute` / `back()` / `forward()` / `routes` as the wrapped router, plus: | Method | Description | |---|---| | `navigate(to, options?)` | Same as the wrapped router's, but re…
+
+#### `redirect(to, replace = true)`
+Throws a `RedirectError`, caught by `withGuards()`'s guard runner and turned into a redirect. Never returns.
+
+#### `RedirectError`
+The error class thrown by `redirect()`. Has `to: string` and `replace: boolean`.
+
 ### `@basenative/runtime` (v0.6.1)
 
 Signal-based web runtime over native HTML — zero build step, zero production dependencies

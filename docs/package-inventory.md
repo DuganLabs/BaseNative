@@ -18,46 +18,46 @@ the next changeset bump would collide and be skipped — realign the local versi
 | `@basenative/admin` | 1.0.0 | 1.0.0 | — | in sync |
 | `@basenative/auth` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
 | `@basenative/auth-webauthn` | 1.0.3 | 1.0.3 | — | in sync |
-| `@basenative/builder` | 0.1.3 | 0.1.2 | — | unreleased bump |
-| `@basenative/claude-config` | 0.2.1 | 0.2.0 | — | unreleased bump |
-| `@basenative/cli` | 0.4.1 | 0.4.0 | 0.2.0 | unreleased bump |
-| `@basenative/combobox` | 1.0.3 | 1.0.2 | — | unreleased bump |
-| `@basenative/components` | 0.6.1 | 0.6.0 | 0.3.0 | unreleased bump |
+| `@basenative/builder` | 0.1.3 | 0.1.3 | — | in sync |
+| `@basenative/claude-config` | 0.2.1 | 0.2.1 | — | in sync |
+| `@basenative/cli` | 0.4.1 | 0.4.1 | 0.2.0 | in sync |
+| `@basenative/combobox` | 1.0.3 | 1.0.3 | — | in sync |
+| `@basenative/components` | 0.6.1 | 0.6.1 | 0.3.0 | in sync |
 | `@basenative/config` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
 | `@basenative/date` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
 | `@basenative/db` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
-| `@basenative/doppler` | 0.2.1 | 0.2.0 | — | unreleased bump |
+| `@basenative/doppler` | 0.2.1 | 0.2.1 | — | in sync |
 | `@basenative/eslint-config` | 0.2.0 | 0.2.0 | — | in sync |
 | `@basenative/evals` | 0.1.0 | — | — | private |
-| `@basenative/favicon` | 1.0.2 | 1.0.1 | — | unreleased bump |
-| `@basenative/fetch` | 0.3.3 | 0.3.2 | 0.2.0 | unreleased bump |
+| `@basenative/favicon` | 1.0.2 | 1.0.2 | — | in sync |
+| `@basenative/fetch` | 0.3.3 | 0.3.3 | 0.2.0 | in sync |
 | `@basenative/flags` | 0.4.0 | 0.4.0 | 0.2.0 | in sync |
 | `@basenative/fonts` | 0.1.0 | — | — | private |
-| `@basenative/forms` | 1.0.2 | 1.0.1 | 0.3.0 | unreleased bump |
-| `@basenative/i18n` | 0.4.1 | 0.4.0 | 0.2.0 | unreleased bump |
+| `@basenative/forms` | 1.0.2 | 1.0.2 | 0.3.0 | in sync |
+| `@basenative/i18n` | 0.4.1 | 0.4.1 | 0.2.0 | in sync |
 | `@basenative/icons` | 0.1.0 | — | — | private |
 | `@basenative/integrations` | 0.1.0 | 0.1.0 | — | in sync |
-| `@basenative/keyboard` | 1.0.4 | 1.0.3 | — | unreleased bump |
+| `@basenative/keyboard` | 1.0.4 | 1.0.4 | — | in sync |
 | `@basenative/logger` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
 | `@basenative/markdown` | 0.1.0 | 0.1.0 | — | in sync |
-| `@basenative/marketplace` | 0.2.1 | 0.2.0 | 0.2.0 | unreleased bump |
+| `@basenative/marketplace` | 0.2.1 | 0.2.1 | 0.2.0 | in sync |
 | `@basenative/mcp` | 0.2.0 | 0.2.0 | — | in sync |
-| `@basenative/middleware` | 0.3.1 | 0.3.0 | 0.2.0 | unreleased bump |
-| `@basenative/notify` | 0.3.1 | 0.3.0 | 0.2.0 | unreleased bump |
+| `@basenative/middleware` | 0.3.1 | 0.3.1 | 0.2.0 | in sync |
+| `@basenative/notify` | 0.3.1 | 0.3.1 | 0.2.0 | in sync |
 | `@basenative/og-image` | 0.2.1 | 0.2.1 | — | in sync |
-| `@basenative/persist` | 1.0.3 | 1.0.2 | — | unreleased bump |
+| `@basenative/persist` | 1.0.3 | 1.0.3 | — | in sync |
 | `@basenative/realtime` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
-| `@basenative/router` | 0.4.4 | 0.4.3 | 0.3.0 | unreleased bump |
-| `@basenative/runtime` | 0.6.1 | 0.6.0 | 0.3.0 | unreleased bump |
-| `@basenative/server` | 0.6.1 | 0.6.0 | 0.3.0 | unreleased bump |
+| `@basenative/router` | 0.4.4 | 0.4.4 | 0.3.0 | in sync |
+| `@basenative/runtime` | 0.6.1 | 0.6.1 | 0.3.0 | in sync |
+| `@basenative/server` | 0.6.1 | 0.6.1 | 0.3.0 | in sync |
 | `@basenative/share` | 1.0.1 | 1.0.1 | — | in sync |
 | `@basenative/station` | 0.2.0 | 0.2.0 | — | in sync |
 | `@basenative/tenant` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
 | `@basenative/tsconfig` | 0.2.0 | 0.2.0 | — | in sync |
-| `@basenative/upload` | 0.3.1 | 0.3.0 | 0.2.0 | unreleased bump |
+| `@basenative/upload` | 0.3.1 | 0.3.1 | 0.2.0 | in sync |
 | `@basenative/validate` | 0.2.0 | 0.2.0 | — | in sync |
-| `@basenative/visual-builder` | 0.2.1 | 0.2.0 | 0.2.0 | unreleased bump |
-| `@basenative/wrangler-preset` | 0.2.1 | 0.2.0 | — | unreleased bump |
+| `@basenative/visual-builder` | 0.2.1 | 0.2.1 | 0.2.0 | in sync |
+| `@basenative/wrangler-preset` | 0.2.1 | 0.2.1 | — | in sync |
 
 ## Summary
 

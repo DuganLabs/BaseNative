@@ -7,6 +7,10 @@
     ".": {
       "types": "./types/index.d.ts",
       "default": "./src/index.js"
+    },
+    "./guards": {
+      "types": "./types/guards.d.ts",
+      "default": "./src/guards.js"
     }
   },
   "types": "./types/index.d.ts",
