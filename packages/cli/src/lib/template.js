@@ -55,8 +55,13 @@ export function renderTemplate(srcDir, destDir, vars, opts = {}) {
       throw new Error(`Refusing to write outside destination: ${outRel}`);
     }
 
-    if (existsSync(outPath) && !overwrite) {
-      skipped.push(outRel);
+    if (dryRun) {
+      if (existsSync(outPath) && !overwrite) {
+        skipped.push(outRel);
+        return;
+      }
+      written.push(outRel);
+      if (onFile) onFile(outRel);
       return;
     }
 
@@ -68,9 +73,18 @@ export function renderTemplate(srcDir, destDir, vars, opts = {}) {
       body = raw; // binary — copy verbatim
     }
 
-    if (!dryRun) {
-      mkdirSync(join(outPath, '..'), { recursive: true });
-      writeFileSync(outPath, body);
+    mkdirSync(join(outPath, '..'), { recursive: true });
+    try {
+      // Exclusive create when not overwriting: this is the check *and* the
+      // act in one atomic syscall, so a file that appears between an
+      // `existsSync` probe and the write can't be silently clobbered.
+      writeFileSync(outPath, body, overwrite ? undefined : { flag: 'wx' });
+    } catch (err) {
+      if (!overwrite && err.code === 'EEXIST') {
+        skipped.push(outRel);
+        return;
+      }
+      throw err;
     }
     written.push(outRel);
     if (onFile) onFile(outRel);

@@ -283,7 +283,21 @@ function speckitPlan(specifyDir, values) {
     : '# Plan: {{title}}\n\n> Spec: {{id}}\n';
   const body = tpl.replace(/\{\{title\}\}/g, title).replace(/\{\{id\}\}/g, id);
 
-  if (!values['dry-run']) writeFileSync(planPath, body);
+  if (!values['dry-run']) {
+    try {
+      // Exclusive create unless --force: the existence check above and this
+      // write are two separate filesystem accesses, so a plan.md created in
+      // between would otherwise be silently overwritten without --force.
+      writeFileSync(planPath, body, values.force ? undefined : { flag: 'wx' });
+    } catch (error) {
+      if (!values.force && error.code === 'EEXIST') {
+        err(`plan.md already exists at ${planPath}`);
+        hint('Use --force to overwrite.');
+        process.exit(1);
+      }
+      throw error;
+    }
+  }
 
   ok(`Wrote plan: ${SPECIFY_DIR}/specs/${id}/plan.md`);
   info('LLM hand-off point: feed spec.md + constitution.md + plan.md to your model.');
@@ -300,8 +314,17 @@ function speckitTasks(specifyDir, cwd, values) {
   const tasksPath = join(dir, 'tasks.md');
   const tasks = [];
 
-  if (existsSync(tasksPath)) {
-    const content = readFileSync(tasksPath, 'utf-8');
+  // Read rather than `existsSync` + read: a check-then-read is racy (the
+  // file could be created or removed in between), so the read attempt
+  // itself is the existence check.
+  let content;
+  try {
+    content = readFileSync(tasksPath, 'utf-8');
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+  }
+
+  if (content !== undefined) {
     for (const line of content.split('\n')) {
       const m = line.match(/^- \[( |x|X)\]\s+(?:(T\d+)\s+)?(.+?)(\s+\[P\])?\s*$/);
       if (!m) continue;
@@ -316,7 +339,15 @@ function speckitTasks(specifyDir, cwd, values) {
     }
   } else {
     info(`No tasks.md found in ${SPECIFY_DIR}/specs/${id}/. Creating an empty one.`);
-    if (!values['dry-run']) writeFileSync(tasksPath, `# Tasks: ${id}\n\n- [ ] T01 _first task_\n`);
+    if (!values['dry-run']) {
+      try {
+        writeFileSync(tasksPath, `# Tasks: ${id}\n\n- [ ] T01 _first task_\n`, { flag: 'wx' });
+      } catch (error) {
+        if (error.code !== 'EEXIST') throw error;
+        // Another process created tasks.md between our read and this
+        // write; leave it alone rather than clobber it.
+      }
+    }
   }
 
   const output = {

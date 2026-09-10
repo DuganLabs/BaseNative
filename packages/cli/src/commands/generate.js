@@ -1,5 +1,5 @@
 // Built with BaseNative — basenative.dev
-import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { writeFileSync, mkdirSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { parseArgs } from 'node:util';
 
@@ -8,6 +8,26 @@ const generators = {
   route: generateRoute,
   page: generatePage,
 };
+
+/**
+ * Create a new file, refusing to clobber one that already exists.
+ *
+ * Uses an exclusive-create write (`flag: 'wx'`) instead of an
+ * `existsSync` check followed by a separate `writeFileSync`: checking then
+ * acting on a path is racy (the file can be created in between), so the
+ * existence check and the write are done as one atomic filesystem call.
+ */
+function writeIfAbsent(filePath, content, alreadyExistsMessage) {
+  try {
+    writeFileSync(filePath, content, { flag: 'wx' });
+  } catch (err) {
+    if (err.code === 'EEXIST') {
+      console.error(alreadyExistsMessage);
+      process.exit(1);
+    }
+    throw err;
+  }
+}
 
 export async function run(args) {
   const { values, positionals } = parseArgs({
@@ -59,12 +79,9 @@ function generateComponent(name) {
   mkdirSync(dir, { recursive: true });
 
   const filePath = join(dir, `${kebab}.js`);
-  if (existsSync(filePath)) {
-    console.error(`Component already exists: ${filePath}`);
-    process.exit(1);
-  }
-
-  writeFileSync(filePath, `/**
+  writeIfAbsent(
+    filePath,
+    `/**
  * Render a ${name} component.
  * @param {object} props
  * @returns {string} HTML string
@@ -74,7 +91,9 @@ export function render${name}(props = {}) {
   <!-- ${name} component -->
 </div>\`;
 }
-`);
+`,
+    `Component already exists: ${filePath}`
+  );
 
   console.log(`Created component: src/components/${kebab}.js`);
 }
@@ -86,18 +105,17 @@ function generateRoute(path) {
   const name = path.replace(/^\//, '').replace(/\//g, '-') || 'index';
   const filePath = join(dir, `${name}.js`);
 
-  if (existsSync(filePath)) {
-    console.error(`Route already exists: ${filePath}`);
-    process.exit(1);
-  }
-
-  writeFileSync(filePath, `/**
+  writeIfAbsent(
+    filePath,
+    `/**
  * Route handler for ${path}
  */
 export function handler(req, res) {
   res.json({ path: '${path}' });
 }
-`);
+`,
+    `Route already exists: ${filePath}`
+  );
 
   console.log(`Created route: src/routes/${name}.js`);
 }
@@ -107,15 +125,14 @@ function generatePage(name) {
   mkdirSync(dir, { recursive: true });
 
   const filePath = join(dir, `${name}.html`);
-  if (existsSync(filePath)) {
-    console.error(`Page already exists: ${filePath}`);
-    process.exit(1);
-  }
-
-  writeFileSync(filePath, `<section aria-label="${name}">
+  writeIfAbsent(
+    filePath,
+    `<section aria-label="${name}">
   <h2>${name.charAt(0).toUpperCase() + name.slice(1)}</h2>
 </section>
-`);
+`,
+    `Page already exists: ${filePath}`
+  );
 
   console.log(`Created page: views/${name}.html`);
 }

@@ -5,7 +5,7 @@
 // ────────────────────────────────────────────────────────────────────────────
 
 import { spawn, spawnSync } from 'node:child_process';
-import { readFileSync, existsSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createInterface } from 'node:readline/promises';
@@ -182,15 +182,15 @@ async function cmdInit(args) {
   }
 
   // Drop a starter doppler-required.json next to package.json if missing.
+  // Exclusive create rather than `existsSync` + write: checking then acting
+  // on a path is racy, since the file can be created in between.
   const target = resolve(process.cwd(), 'doppler-required.json');
-  if (!existsSync(target)) {
-    const tmpl = readFileSync(
-      join(__dirname, '..', 'templates', 'doppler-required.json'),
-      'utf-8',
-    );
-    writeFileSync(target, tmpl);
+  const tmpl = readFileSync(join(__dirname, '..', 'templates', 'doppler-required.json'), 'utf-8');
+  try {
+    writeFileSync(target, tmpl, { flag: 'wx' });
     console.log(`\nCreated ${target}`);
-  } else {
+  } catch (error) {
+    if (error.code !== 'EEXIST') throw error;
     console.log(`\nKept existing ${target}`);
   }
 
