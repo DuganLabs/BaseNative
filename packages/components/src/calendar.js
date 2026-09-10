@@ -15,12 +15,21 @@
  *
  * All dates are interpreted in local time: a bare `YYYY-MM-DD` startDate is the
  * local midnight of that day (not UTC), day columns are keyed by local date,
- * and event rows are computed from local hours.
+ * and events are bucketed into columns and positioned in rows by the local
+ * calendar date and hour of their parsed `start`/`end` — so a UTC ISO
+ * timestamp (`2025-06-03T03:00:00Z`) lands on the day it falls on in the
+ * runtime's zone, not on the day its string happens to begin with. Pass
+ * `timeZone` to bucket and position in an IANA zone instead.
  */
 import { escapeAttr, escapeText } from '@basenative/runtime/shared/escape';
 import { nextId } from './ids.js';
 import { attrsSuffix } from './internal/attrs.js';
 import { bindDrag, clearDragState, readDragData } from './internal/drag.js';
+
+const DEFAULT_HOURS = { start: 7, end: 19 };
+const DATE_ONLY = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+const pad = n => String(n).padStart(2, '0');
 
 /**
  * Parse a date value as local time. `YYYY-MM-DD` would be parsed as UTC by
@@ -28,15 +37,58 @@ import { bindDrag, clearDragState, readDragData } from './internal/drag.js';
  */
 function parseLocalDate(value) {
   if (value instanceof Date) return new Date(value.getTime());
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value));
+  const m = DATE_ONLY.exec(String(value));
   if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
   return new Date(value);
 }
 
 /** Local-time `YYYY-MM-DD` for a Date. */
 function toLocalDateString(d) {
-  const pad = n => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+const zoneFormatters = new Map();
+
+function zoneFormatter(timeZone) {
+  let formatter = zoneFormatters.get(timeZone);
+  if (!formatter) {
+    try {
+      formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone,
+        hourCycle: 'h23',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } catch {
+      throw new Error(
+        `renderCalendar: unknown timeZone "${timeZone}" — pass an IANA zone name such as "Europe/London", or omit it to use the runtime's local zone`
+      );
+    }
+    zoneFormatters.set(timeZone, formatter);
+  }
+  return formatter;
+}
+
+/**
+ * Calendar date (`YYYY-MM-DD`) and fractional hour of a datetime value, in the
+ * runtime's local zone or in `timeZone` when given. Unparseable values yield
+ * an empty date so the caller can skip them.
+ */
+function localParts(value, timeZone) {
+  const d = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(d.getTime())) return { date: '', hour: 0 };
+  if (!timeZone) {
+    return { date: toLocalDateString(d), hour: d.getHours() + d.getMinutes() / 60 };
+  }
+  const parts = zoneFormatter(timeZone).formatToParts(d);
+  const get = type => Number(parts.find(p => p.type === type)?.value);
+  return {
+    date: `${get('year')}-${pad(get('month'))}-${pad(get('day'))}`,
+    hour: (get('hour') % 24) + get('minute') / 60,
+  };
 }
 
 /**
@@ -61,13 +113,42 @@ function weekDates(startDate) {
   return dates;
 }
 
-function localHour(value) {
-  const d = new Date(value);
-  return d.getHours() + d.getMinutes() / 60;
+function timeLabel(value, timeZone) {
+  return new Date(value).toLocaleTimeString([], {
+    hour: 'numeric',
+    minute: '2-digit',
+    ...(timeZone ? { timeZone } : {}),
+  });
 }
 
-function timeLabel(value) {
-  return new Date(value).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+const clampHour = h => Math.min(24, Math.max(0, h));
+
+/**
+ * Split every event into the per-day segments that fall inside `dates`. An
+ * event whose local end date is after its start date is repeated in each
+ * day column it covers, clipped to that day (start→24:00, 0:00→24:00, …,
+ * 0:00→end); segments carry `continues` = 'after' | 'both' | 'before'.
+ */
+function daySegments(events, dates, partsOf) {
+  const byDate = new Map(dates.map(d => [d, []]));
+  for (const ev of events) {
+    if (!ev || !ev.start) continue;
+    const s = partsOf(ev.start);
+    if (!s.date) continue;
+    const e = ev.end ? partsOf(ev.end) : { date: '', hour: s.hour };
+    const multiDay = Boolean(e.date && e.date > s.date);
+    const lastDate = multiDay ? e.date : s.date;
+    const sameDayEnd = e.date === s.date ? e.hour : s.hour;
+    for (const date of dates) {
+      if (date < s.date || date > lastDate) continue;
+      const from = date === s.date ? s.hour : 0;
+      const to = date === lastDate ? (multiDay ? e.hour : sameDayEnd) : 24;
+      if (multiDay && date !== s.date && to <= 0) continue;
+      const continues = !multiDay ? null : date === s.date ? 'after' : date === lastDate ? 'before' : 'both';
+      byDate.get(date).push({ ev, from, to, continues });
+    }
+  }
+  return byDate;
 }
 
 /**
@@ -75,6 +156,12 @@ function timeLabel(value) {
  *
  * Event title, assignee and emptyMessage are escaped text; ids, status and
  * color are escaped attributes.
+ *
+ * Events are bucketed into day columns by the local calendar date of their
+ * parsed `start` (and `end`), never by string prefix, so UTC ISO timestamps
+ * land on the correct day. An event that ends on a later local date than it
+ * starts is repeated in every day column it covers, clipped to each day, with
+ * `data-continues="after" | "both" | "before"` on the segments.
  *
  * @param {object} options
  * @param {string} options.startDate      ISO date for the week start (Monday); local time
@@ -86,9 +173,20 @@ function timeLabel(value) {
  * @param {string} [options.events[].status]   Optional status for styling
  * @param {string} [options.events[].color]    Optional CSS color override
  * @param {string} [options.events[].assignee] Optional assignee name
- * @param {object} [options.hours]         Working hours range
- * @param {number} [options.hours.start=7]
- * @param {number} [options.hours.end=19]
+ * @param {object} [options.hours]         Working hours range. Whichever bound is
+ *   omitted is derived from the rendered events: 7 (or 19) widened to cover the
+ *   earliest start / latest end, clamped to 0–24.
+ * @param {number} [options.hours.start]
+ * @param {number} [options.hours.end]
+ * @param {string} [options.timeZone]      IANA zone used to bucket and position
+ *   events and to format their times; defaults to the runtime's local zone
+ * @param {(value: string) => string} [options.toLocalDate]  Hook returning the
+ *   `YYYY-MM-DD` day an event datetime belongs to; overrides day bucketing (and
+ *   the `now` → today mapping) only — hour rows still come from `timeZone` /
+ *   local getters
+ * @param {Date|string|number|null} [options.now]  Instant used to mark today's
+ *   header and column with `data-today` (the header also gets
+ *   `aria-current="date"`); defaults to `new Date()`. Pass `null` for no marker.
  * @param {string} [options.emptyMessage='No events']
  * @param {string} [options.id]            Defaults to nextId('calendar')
  * @param {string} [options.attrs]         Raw attribute markup appended to the wrapper; not escaped
@@ -99,19 +197,53 @@ export function renderCalendar(options = {}) {
     startDate,
     events = [],
     hours = {},
+    timeZone,
+    toLocalDate,
+    now = new Date(),
     emptyMessage = 'No events',
     id = nextId('calendar'),
     attrs = '',
   } = options;
 
-  const hourStart = hours.start ?? 7;
-  const hourEnd = hours.end ?? 19;
-  const totalHours = hourEnd - hourStart;
+  const partsOf = value => {
+    const parts = localParts(value, timeZone);
+    if (typeof toLocalDate !== 'function') return parts;
+    const date = toLocalDate(value);
+    return { date: typeof date === 'string' ? date : parts.date, hour: parts.hour };
+  };
+
   const dates = weekDates(startDate);
+  const segmentsByDate = daySegments(events, dates, partsOf);
+
+  let hourStart = hours.start;
+  let hourEnd = hours.end;
+  if (hourStart == null || hourEnd == null) {
+    let lo = hourStart ?? DEFAULT_HOURS.start;
+    let hi = hourEnd ?? DEFAULT_HOURS.end;
+    for (const segments of segmentsByDate.values()) {
+      for (const { from, to } of segments) {
+        lo = Math.min(lo, Math.floor(from));
+        hi = Math.max(hi, Math.ceil(Math.max(to, from + 0.5)));
+      }
+    }
+    hourStart = clampHour(hourStart ?? lo);
+    hourEnd = clampHour(hourEnd ?? hi);
+  }
+  if (hourEnd <= hourStart) {
+    hourEnd = Math.min(hourStart + 1, 24);
+    hourStart = hourEnd - 1;
+  }
+  const totalHours = hourEnd - hourStart;
+
+  let today = '';
+  if (now != null && now !== false) {
+    today = typeof now === 'string' && DATE_ONLY.test(now) ? now : partsOf(now).date;
+  }
+  const todayAttr = date => (date === today ? ' data-today' : '');
 
   // Header row: time gutter + 7 day columns
   const headerCells = dates.map(d =>
-    `<div data-bn="calendar-day-header" data-date="${d}">${formatDay(d)}</div>`
+    `<div data-bn="calendar-day-header" data-date="${d}"${todayAttr(d)}${d === today ? ' aria-current="date"' : ''}>${formatDay(d)}</div>`
   ).join('');
 
   // Time gutter labels. Row 1 of the grid is the day-header row (see
@@ -129,20 +261,18 @@ export function renderCalendar(options = {}) {
 
   // Day columns with drop zones
   const dayColumns = dates.map((date, colIndex) => {
-    const dayEvents = events.filter(e => e.start && e.start.startsWith(date));
-
-    const eventBlocks = dayEvents.map(ev => {
-      const startHour = localHour(ev.start);
-      const endHour = localHour(ev.end);
-      const topRow = Math.max(startHour - hourStart + 2, 2);
-      const span = Math.max(endHour - startHour, 0.5);
+    const eventBlocks = segmentsByDate.get(date).map(({ ev, from, to, continues }) => {
+      const topRow = Math.max(from - hourStart + 2, 2);
+      const span = Math.max(to - from, 0.5);
+      const rows = Math.max(1, Math.min(Math.ceil(span), totalHours - Math.floor(topRow - 2)));
       const statusAttr = ev.status ? ` data-status="${escapeAttr(ev.status)}"` : '';
+      const continuesAttr = continues ? ` data-continues="${continues}"` : '';
       const colorStyle = ev.color ? ` --bn-calendar-event-color: ${escapeAttr(ev.color)};` : '';
 
-      return `<div data-bn="calendar-event" draggable="true" data-event-id="${escapeAttr(ev.id)}"${statusAttr} title="${escapeAttr(ev.title)}" style="grid-row: ${topRow} / span ${Math.ceil(span)};${colorStyle}">
+      return `<div data-bn="calendar-event" draggable="true" data-event-id="${escapeAttr(ev.id)}"${continuesAttr}${statusAttr} title="${escapeAttr(ev.title)}" style="grid-row: ${topRow} / span ${rows};${colorStyle}">
   <span data-bn="calendar-event-title">${escapeText(ev.title)}</span>
   ${ev.assignee ? `<span data-bn="calendar-event-assignee">${escapeText(ev.assignee)}</span>` : ''}
-  <span data-bn="calendar-event-time">${timeLabel(ev.start)} – ${timeLabel(ev.end)}</span>
+  <span data-bn="calendar-event-time">${timeLabel(ev.start, timeZone)} – ${timeLabel(ev.end, timeZone)}</span>
 </div>`;
     }).join('');
 
@@ -154,7 +284,7 @@ export function renderCalendar(options = {}) {
       );
     }
 
-    return `<div data-bn="calendar-day-column" data-date="${date}" style="grid-column: ${colIndex + 2}">
+    return `<div data-bn="calendar-day-column" data-date="${date}"${todayAttr(date)} style="grid-column: ${colIndex + 2}">
   ${hourSlots.join('')}
   ${eventBlocks}
 </div>`;
@@ -243,36 +373,61 @@ export function renderPipeline(options = {}) {
 }
 
 /**
+ * Minute offset of a drop inside an hour slot, from the pointer's vertical
+ * position, rounded down to `snap`-minute steps. 0 when geometry is unavailable.
+ */
+function slotMinute(e, slot, snap) {
+  const rect = typeof slot.getBoundingClientRect === 'function' ? slot.getBoundingClientRect() : null;
+  if (!rect || !(rect.height > 0) || typeof e.clientY !== 'number') return 0;
+  const fraction = Math.min(Math.max((e.clientY - rect.top) / rect.height, 0), 0.999);
+  const step = snap > 1 ? snap : 1;
+  return Math.min(Math.floor((fraction * 60) / step) * step, 59);
+}
+
+/**
  * Client-side: Initialize drag-and-drop on a calendar container.
+ *
+ * Drops report the slot's `date` and integer `hour`, plus `minute` (the
+ * pointer's offset within the slot, snapped down to `snapMinutes`) and
+ * `datetime` (`YYYY-MM-DDTHH:MM`, a local datetime string ready for
+ * `new Date()`).
  *
  * @param {HTMLElement} container  The [data-bn="calendar"] element
  * @param {object} callbacks
- * @param {function} callbacks.onDrop  Called with { eventId, date, hour, sourceType }
+ * @param {function} callbacks.onDrop  Called with { eventId, date, hour, minute, datetime, sourceType }
+ * @param {HTMLElement} [callbacks.dragSource]  Element whose `dragstart` events
+ *   also supply payloads — a palette or sidebar of `renderPipelineBlock` cards
+ *   outside the calendar. Defaults to the container (which always hears its own
+ *   events). May be any element, including an ancestor of the container.
+ * @param {number} [callbacks.snapMinutes=15]  Minute granularity of `minute`;
+ *   1 (or less) reports exact minutes
  * @returns {{ destroy: () => void }}
  */
 export function initCalendarDragDrop(container, callbacks = {}) {
-  const { onDrop } = callbacks;
+  const { onDrop, dragSource, snapMinutes = 15 } = callbacks;
 
-  return bindDrag(container, {
-    dragstart(e) {
-      const event = e.target.closest('[data-event-id]');
-      const block = e.target.closest('[data-block-id]');
-      if (event) {
-        e.dataTransfer.setData('text/plain', JSON.stringify({
-          type: 'event',
-          id: event.dataset.eventId,
-        }));
-        e.dataTransfer.effectAllowed = 'move';
-        event.setAttribute('data-dragging', '');
-      } else if (block) {
-        e.dataTransfer.setData('text/plain', JSON.stringify({
-          type: 'pipeline',
-          id: block.dataset.blockId,
-        }));
-        e.dataTransfer.effectAllowed = 'copy';
-        block.setAttribute('data-dragging', '');
-      }
-    },
+  function dragstart(e) {
+    const event = e.target.closest('[data-event-id]');
+    const block = e.target.closest('[data-block-id]');
+    if (event) {
+      e.dataTransfer.setData('text/plain', JSON.stringify({
+        type: 'event',
+        id: event.dataset.eventId,
+      }));
+      e.dataTransfer.effectAllowed = 'move';
+      event.setAttribute('data-dragging', '');
+    } else if (block) {
+      e.dataTransfer.setData('text/plain', JSON.stringify({
+        type: 'pipeline',
+        id: block.dataset.blockId,
+      }));
+      e.dataTransfer.effectAllowed = 'copy';
+      block.setAttribute('data-dragging', '');
+    }
+  }
+
+  const handle = bindDrag(container, {
+    dragstart,
 
     dragover(e) {
       const slot = e.target.closest('[data-bn="calendar-slot"]');
@@ -299,10 +454,14 @@ export function initCalendarDragDrop(container, callbacks = {}) {
 
       const data = readDragData(e);
       if (data && onDrop) {
+        const hour = parseInt(slot.dataset.hour, 10);
+        const minute = slotMinute(e, slot, snapMinutes);
         onDrop({
           eventId: data.id,
           date: slot.dataset.date,
-          hour: parseInt(slot.dataset.hour, 10),
+          hour,
+          minute,
+          datetime: `${slot.dataset.date}T${pad(hour)}:${pad(minute)}`,
           sourceType: data.type,
         });
       }
@@ -312,6 +471,26 @@ export function initCalendarDragDrop(container, callbacks = {}) {
       clearDragState(container);
     },
   });
+
+  const source = dragSource && dragSource !== container
+    ? bindDrag(dragSource, {
+        dragstart(e) {
+          if (typeof container.contains === 'function' && container.contains(e.target)) return;
+          dragstart(e);
+        },
+        dragend() {
+          clearDragState(dragSource);
+          clearDragState(container);
+        },
+      })
+    : null;
+
+  return {
+    destroy() {
+      handle.destroy();
+      if (source) source.destroy();
+    },
+  };
 }
 
 /**

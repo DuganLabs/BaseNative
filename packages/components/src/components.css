@@ -1327,6 +1327,10 @@
   background: var(--bn-color-surface-muted);
 }
 [data-bn="calendar-day-header"]:last-of-type { border-right: none; }
+[data-bn="calendar-day-header"][data-today] {
+  background: var(--bn-calendar-today-header-bg);
+  color: var(--bn-calendar-today-text);
+}
 [data-bn="calendar-time-gutter"] {
   grid-column: 1;
   grid-row: 2 / -1;
@@ -1350,6 +1354,7 @@
   border-right: var(--bn-border-width) solid var(--bn-color-border);
 }
 [data-bn="calendar-day-column"]:last-of-type { border-right: none; }
+[data-bn="calendar-day-column"][data-today] { background: var(--bn-calendar-today-bg); }
 [data-bn="calendar-slot"] {
   border-bottom: var(--bn-border-width) solid var(--bn-color-border-light);
   transition: background-color var(--bn-transition-fast);
@@ -1388,6 +1393,31 @@
 [data-bn="calendar-event"][data-status="completed"] {
   --bn-calendar-event-color: var(--bn-color-success-600);
   --bn-calendar-event-bg: var(--bn-color-success-bg);
+}
+[data-bn="calendar-event"][data-status="invoiced"] {
+  --bn-calendar-event-color: var(--bn-color-warning-600);
+  --bn-calendar-event-bg: var(--bn-color-warning-bg);
+}
+[data-bn="calendar-event"][data-status="paid"] {
+  --bn-calendar-event-color: var(--bn-color-success-600);
+  --bn-calendar-event-bg: var(--bn-color-success-bg);
+}
+[data-bn="calendar-event"]:is([data-status="cancelled"], [data-status="canceled"]) {
+  --bn-calendar-event-color: var(--bn-color-text-muted);
+  --bn-calendar-event-bg: var(--bn-color-surface-muted);
+  opacity: 0.7;
+}
+[data-bn="calendar-event"]:is([data-status="cancelled"], [data-status="canceled"]) [data-bn="calendar-event-title"] {
+  text-decoration: line-through;
+}
+/* Multi-day segments (data-continues): square off the edge that continues into the next / previous day */
+[data-bn="calendar-event"]:is([data-continues="after"], [data-continues="both"]) {
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+}
+[data-bn="calendar-event"]:is([data-continues="before"], [data-continues="both"]) {
+  border-start-start-radius: 0;
+  border-start-end-radius: 0;
 }
 [data-bn="calendar-event-title"] {
   font-weight: var(--bn-font-weight-semibold);

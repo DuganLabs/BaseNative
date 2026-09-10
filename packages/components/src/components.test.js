@@ -32,6 +32,7 @@ import { renderVirtualList } from './virtualizer.js';
 import { renderAvatar } from './avatar.js';
 import { renderCalendar, renderPipelineBlock, renderPipeline, initCalendarDragDrop, initPipelineDragDrop } from './calendar.js';
 import { renderLayoutGrid } from './layout-grid.js';
+import { createCalendarState } from './calendar-state.js';
 import { createToaster, showToast, dismissToast } from './toast.js';
 import { nextId, resetIds } from './ids.js';
 import * as api from './index.js';
@@ -2009,7 +2010,83 @@ describe('Drag and drop init', () => {
       target: { closest: sel => (sel === '[data-bn="calendar-slot"]' ? slot : null) },
       dataTransfer: { getData: () => JSON.stringify({ type: 'event', id: 'e1' }) },
     });
-    assert.deepEqual(dropped, [{ eventId: 'e1', date: '2025-06-02', hour: 9, sourceType: 'event' }]);
+    assert.deepEqual(dropped, [{ eventId: 'e1', date: '2025-06-02', hour: 9, minute: 0, datetime: '2025-06-02T09:00', sourceType: 'event' }]);
+  });
+
+  it('calendar drop reports the minute within the slot from the pointer, snapped to 15 by default', () => {
+    const el = fakeContainer();
+    const dropped = [];
+    initCalendarDragDrop(el, { onDrop: d => dropped.push(d) });
+    const slot = { removeAttribute() {}, dataset: { date: '2025-06-02', hour: '9' }, getBoundingClientRect: () => ({ top: 100, height: 60 }) };
+    el.listeners.get('drop')({
+      preventDefault() {},
+      clientY: 135,
+      target: { closest: sel => (sel === '[data-bn="calendar-slot"]' ? slot : null) },
+      dataTransfer: { getData: () => JSON.stringify({ type: 'pipeline', id: 'b1' }) },
+    });
+    assert.deepEqual(dropped, [{ eventId: 'b1', date: '2025-06-02', hour: 9, minute: 30, datetime: '2025-06-02T09:30', sourceType: 'pipeline' }]);
+  });
+
+  it('snapMinutes: 1 reports the exact minute and the last pixel stays inside the hour', () => {
+    const el = fakeContainer();
+    const dropped = [];
+    initCalendarDragDrop(el, { onDrop: d => dropped.push(d), snapMinutes: 1 });
+    const slot = { removeAttribute() {}, dataset: { date: '2025-06-02', hour: '9' }, getBoundingClientRect: () => ({ top: 100, height: 60 }) };
+    const drop = clientY => el.listeners.get('drop')({
+      preventDefault() {},
+      clientY,
+      target: { closest: sel => (sel === '[data-bn="calendar-slot"]' ? slot : null) },
+      dataTransfer: { getData: () => JSON.stringify({ type: 'event', id: 'e' }) },
+    });
+    drop(135);
+    drop(160);
+    drop(-5);
+    assert.deepEqual(dropped.map(d => [d.minute, d.datetime]), [[35, '2025-06-02T09:35'], [59, '2025-06-02T09:59'], [0, '2025-06-02T09:00']]);
+  });
+
+  it('initCalendarDragDrop also hears dragstart from an external dragSource', () => {
+    const container = fakeContainer();
+    container.contains = () => false;
+    const palette = fakeContainer();
+    const handle = initCalendarDragDrop(container, { dragSource: palette });
+    assert.deepEqual([...container.listeners.keys()].sort(), ['dragend', 'dragleave', 'dragover', 'dragstart', 'drop']);
+    assert.deepEqual([...palette.listeners.keys()].sort(), ['dragend', 'dragstart']);
+
+    const set = [];
+    const block = { dataset: { blockId: 'opp-1' }, attrs: {}, setAttribute(k, v) { this.attrs[k] = v; } };
+    const dataTransfer = { setData: (t, v) => set.push([t, v]) };
+    palette.listeners.get('dragstart')({
+      target: { closest: sel => (sel === '[data-block-id]' ? block : null) },
+      dataTransfer,
+    });
+    assert.deepEqual(set, [['text/plain', JSON.stringify({ type: 'pipeline', id: 'opp-1' })]]);
+    assert.equal(dataTransfer.effectAllowed, 'copy');
+    assert.equal(block.attrs['data-dragging'], '');
+
+    handle.destroy();
+    assert.equal(container.listeners.size, 0);
+    assert.equal(palette.listeners.size, 0);
+  });
+
+  it('a dragSource that contains the calendar does not double-handle the calendar\'s own events', () => {
+    const container = fakeContainer();
+    container.contains = () => true;
+    const layout = fakeContainer();
+    initCalendarDragDrop(container, { dragSource: layout });
+    let sets = 0;
+    layout.listeners.get('dragstart')({
+      target: { closest: () => ({ dataset: { eventId: 'e1' }, setAttribute() {} }) },
+      dataTransfer: { setData() { sets += 1; } },
+    });
+    assert.equal(sets, 0);
+  });
+
+  it('dragSource === container binds nothing twice', () => {
+    const el = fakeContainer();
+    const handle = initCalendarDragDrop(el, { dragSource: el });
+    assert.equal(el.listeners.size, 5);
+    handle.destroy();
+    assert.equal(el.listeners.size, 0);
   });
 
   it('malformed drag data is ignored', () => {
@@ -2059,5 +2136,192 @@ describe('LayoutGrid — hardening', () => {
 
   it('cell content is an HTML slot', () => {
     assert.ok(renderLayoutGrid({ cells: [{ content: '<b>x</b>' }] }).includes('><b>x</b></div>'));
+  });
+});
+
+describe('Calendar — local-date bucketing', () => {
+  const column = (html, date) => {
+    const start = html.indexOf(`data-bn="calendar-day-column" data-date="${date}"`);
+    assert.ok(start >= 0, `expected a column for ${date}`);
+    const next = html.indexOf('data-bn="calendar-day-column"', start + 1);
+    return html.slice(start, next < 0 ? undefined : next);
+  };
+  const ALL_DAY = { start: 0, end: 24 };
+
+  it('buckets a UTC ISO timestamp by its local calendar date, not its string prefix', () => {
+    const start = new Date('2025-06-03T03:00:00Z');
+    const end = new Date(start.getTime() + 60 * 60 * 1000);
+    const pad = n => String(n).padStart(2, '0');
+    const localDate = `${start.getFullYear()}-${pad(start.getMonth() + 1)}-${pad(start.getDate())}`;
+    const html = renderCalendar({
+      startDate: '2025-06-01', hours: ALL_DAY, now: null,
+      events: [{ id: 'utc', title: 'UTC', start: start.toISOString(), end: end.toISOString() }],
+    });
+    assert.equal(html.split('data-event-id="utc"').length - 1, 1, 'rendered exactly once');
+    const col = column(html, localDate);
+    assert.ok(col.includes('data-event-id="utc"'));
+    assert.ok(col.includes(`grid-row: ${start.getHours() + start.getMinutes() / 60 + 2} / span 1`));
+  });
+
+  it('timeZone buckets and positions events in that zone regardless of the runtime zone', () => {
+    const events = [{ id: 'z', title: 'Zoned', start: '2025-06-03T03:00:00Z', end: '2025-06-03T04:30:00Z' }];
+    const la = renderCalendar({ startDate: '2025-06-01', hours: ALL_DAY, now: null, timeZone: 'America/Los_Angeles', events });
+    assert.ok(column(la, '2025-06-02').includes('data-event-id="z"'));
+    assert.ok(column(la, '2025-06-02').includes('grid-row: 22 / span 2'));
+    assert.ok(!column(la, '2025-06-03').includes('data-event-id="z"'));
+    assert.ok(la.includes('8:00'), 'time label is formatted in the zone');
+
+    const tokyo = renderCalendar({ startDate: '2025-06-01', hours: ALL_DAY, now: null, timeZone: 'Asia/Tokyo', events });
+    assert.ok(column(tokyo, '2025-06-03').includes('grid-row: 14 / span 2'));
+    assert.ok(!column(tokyo, '2025-06-02').includes('data-event-id="z"'));
+  });
+
+  it('rejects an unknown timeZone with an actionable error', () => {
+    assert.throws(
+      () => renderCalendar({ startDate: '2025-06-01', timeZone: 'Mars/Olympus', events: [{ id: 'e', title: 'T', start: '2025-06-02T09:00', end: '2025-06-02T10:00' }] }),
+      /unknown timeZone "Mars\/Olympus".*IANA/
+    );
+  });
+
+  it('toLocalDate overrides the day an event is bucketed into', () => {
+    const html = renderCalendar({
+      startDate: '2025-06-01', hours: ALL_DAY, now: null,
+      toLocalDate: () => '2025-06-05',
+      events: [{ id: 'h', title: 'Hooked', start: '2025-06-02T09:00', end: '2025-06-02T10:00' }],
+    });
+    assert.ok(column(html, '2025-06-05').includes('data-event-id="h"'));
+    assert.ok(!column(html, '2025-06-02').includes('data-event-id="h"'));
+  });
+
+  it('skips events whose start cannot be parsed instead of throwing', () => {
+    const html = renderCalendar({ startDate: '2025-06-01', now: null, events: [{ id: 'bad', title: 'Bad', start: 'not a date', end: 'nope' }] });
+    assert.ok(!html.includes('data-event-id="bad"'));
+    assert.ok(!html.includes('calendar-empty'), 'the events array was not empty');
+  });
+
+  it('a moved calendar-state event (UTC ISO from toISOString) renders in the target column', () => {
+    const cal = createCalendarState({ startDate: '2025-06-02' });
+    cal.addEvent({ id: 'm', title: 'Moved', start: '2025-06-02T09:00', end: '2025-06-02T10:00' });
+    const moved = cal.moveEvent('m', '2025-06-04', 14);
+    assert.ok(moved.start.endsWith('Z'));
+    const html = renderCalendar({ startDate: '2025-06-02', hours: ALL_DAY, now: null, events: cal.events() });
+    assert.ok(column(html, '2025-06-04').includes('grid-row: 16 / span 1'));
+    assert.ok(!column(html, '2025-06-02').includes('data-event-id="m"'));
+  });
+});
+
+describe('Calendar — today marker', () => {
+  it('marks the header and column matching now with data-today and aria-current', () => {
+    const html = renderCalendar({ startDate: '2025-06-02', now: '2025-06-04' });
+    assert.ok(html.includes('<div data-bn="calendar-day-header" data-date="2025-06-04" data-today aria-current="date">Wed 6/4</div>'));
+    assert.ok(html.includes('<div data-bn="calendar-day-column" data-date="2025-06-04" data-today style="grid-column: 4">'));
+    assert.equal(html.split('data-today').length - 1, 2);
+    assert.ok(!html.includes('data-date="2025-06-03" data-today'));
+  });
+
+  it('defaults now to the current instant and accepts Date / ISO values through timeZone', () => {
+    const pad = n => String(n).padStart(2, '0');
+    const d = new Date();
+    const today = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    const weekStart = new Date(d);
+    weekStart.setDate(d.getDate() - d.getDay());
+    const html = renderCalendar({ startDate: `${weekStart.getFullYear()}-${pad(weekStart.getMonth() + 1)}-${pad(weekStart.getDate())}` });
+    assert.ok(html.includes(`data-date="${today}" data-today`));
+
+    const zoned = renderCalendar({ startDate: '2025-06-01', timeZone: 'America/Los_Angeles', now: '2025-06-04T03:00:00Z' });
+    assert.ok(zoned.includes('data-date="2025-06-03" data-today'));
+    assert.ok(!zoned.includes('data-date="2025-06-04" data-today'));
+  });
+
+  it('now: null renders no marker', () => {
+    const html = renderCalendar({ startDate: '2025-06-02', now: null });
+    assert.ok(!html.includes('data-today'));
+    assert.ok(!html.includes('aria-current'));
+  });
+});
+
+describe('Calendar — automatic hour range', () => {
+  it('keeps 7–19 when nothing is given and no event falls outside', () => {
+    const html = renderCalendar({ startDate: '2025-06-02', now: null, events: [{ id: 'e', title: 'T', start: '2025-06-02T09:00', end: '2025-06-02T10:00' }] });
+    assert.ok(html.includes('--bn-calendar-hours: 12;'));
+    assert.ok(html.includes('data-hour="7"'));
+    assert.ok(!html.includes('data-hour="6"'));
+  });
+
+  it('widens the range to cover the earliest start and latest end, clamped to 0–24', () => {
+    const html = renderCalendar({
+      startDate: '2025-06-02', now: null,
+      events: [
+        { id: 'early', title: 'Early', start: '2025-06-02T05:30', end: '2025-06-02T06:15' },
+        { id: 'late', title: 'Late', start: '2025-06-03T20:00', end: '2025-06-03T21:15' },
+      ],
+    });
+    assert.ok(html.includes('--bn-calendar-hours: 17;'), 'start 5, end 22');
+    assert.ok(html.includes('data-bn="calendar-time-label" data-hour="5"'));
+    assert.ok(html.includes('data-bn="calendar-time-label" data-hour="21"'));
+    assert.ok(!html.includes('data-hour="22"'));
+    assert.ok(html.includes('data-event-id="early"') && html.includes('grid-row: 2.5 / span 1'));
+
+    const overnight = renderCalendar({ startDate: '2025-06-02', now: null, events: [{ id: 'n', title: 'N', start: '2025-06-02T23:30', end: '2025-06-03T00:30' }] });
+    assert.ok(overnight.includes('--bn-calendar-hours: 24;'), 'covers the 23:30–24:00 and 0:00–0:30 segments: start 0, end 24');
+    assert.ok(overnight.includes('data-event-id="n" data-continues="after"') && overnight.includes('data-event-id="n" data-continues="before"'));
+  });
+
+  it('derives only the missing bound when one is given', () => {
+    const html = renderCalendar({
+      startDate: '2025-06-02', now: null, hours: { start: 9 },
+      events: [{ id: 'e', title: 'T', start: '2025-06-02T06:00', end: '2025-06-02T21:15' }],
+    });
+    assert.ok(html.includes('--bn-calendar-hours: 13;'), 'start stays 9, end becomes 22');
+    assert.ok(!html.includes('data-hour="6"'));
+  });
+
+  it('explicit hours are honoured verbatim and an inverted range still renders one row', () => {
+    const html = renderCalendar({ startDate: '2025-06-02', now: null, hours: { start: 9, end: 12 }, events: [{ id: 'e', title: 'T', start: '2025-06-02T06:00', end: '2025-06-02T21:00' }] });
+    assert.ok(html.includes('--bn-calendar-hours: 3;'));
+    assert.ok(html.includes('grid-row: 2 / span 3'), 'span is capped at the grid');
+    assert.ok(renderCalendar({ startDate: '2025-06-02', now: null, hours: { start: 12, end: 12 } }).includes('--bn-calendar-hours: 1;'));
+  });
+});
+
+describe('Calendar — multi-day events', () => {
+  const column = (html, date) => {
+    const start = html.indexOf(`data-bn="calendar-day-column" data-date="${date}"`);
+    const next = html.indexOf('data-bn="calendar-day-column"', start + 1);
+    return html.slice(start, next < 0 ? undefined : next);
+  };
+
+  it('repeats the event in every day it covers, clipped to each day, with data-continues', () => {
+    const html = renderCalendar({
+      startDate: '2025-06-02', hours: { start: 0, end: 24 }, now: null,
+      events: [{ id: 'md', title: 'Multi', start: '2025-06-02T22:00', end: '2025-06-04T02:00', status: 'scheduled' }],
+    });
+    assert.equal(html.split('data-event-id="md"').length - 1, 3);
+    assert.ok(column(html, '2025-06-02').includes('data-event-id="md" data-continues="after" data-status="scheduled" title="Multi" style="grid-row: 24 / span 2;"'));
+    assert.ok(column(html, '2025-06-03').includes('data-event-id="md" data-continues="both" data-status="scheduled" title="Multi" style="grid-row: 2 / span 24;"'));
+    assert.ok(column(html, '2025-06-04').includes('data-event-id="md" data-continues="before" data-status="scheduled" title="Multi" style="grid-row: 2 / span 2;"'));
+  });
+
+  it('an event ending exactly at midnight gets no segment on the following day', () => {
+    const html = renderCalendar({
+      startDate: '2025-06-02', hours: { start: 0, end: 24 }, now: null,
+      events: [{ id: 'mid', title: 'Mid', start: '2025-06-02T22:00', end: '2025-06-03T00:00' }],
+    });
+    assert.equal(html.split('data-event-id="mid"').length - 1, 1);
+    assert.ok(column(html, '2025-06-02').includes('grid-row: 24 / span 2'));
+  });
+
+  it('an event that started before the week still shows its in-week days', () => {
+    const html = renderCalendar({
+      startDate: '2025-06-02', hours: { start: 0, end: 24 }, now: null,
+      events: [{ id: 'pre', title: 'Pre', start: '2025-05-31T09:00', end: '2025-06-02T12:00' }],
+    });
+    assert.ok(column(html, '2025-06-02').includes('data-event-id="pre" data-continues="before"'));
+    assert.ok(column(html, '2025-06-02').includes('grid-row: 2 / span 12'));
+  });
+
+  it('single-day events carry no data-continues', () => {
+    const html = renderCalendar({ startDate: '2025-06-02', now: null, events: [{ id: 's', title: 'S', start: '2025-06-02T09:00', end: '2025-06-02T10:00' }] });
+    assert.ok(!html.includes('data-continues'));
   });
 });
