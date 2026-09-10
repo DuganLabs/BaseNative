@@ -167,7 +167,16 @@ function processNode(node, ctx, options) {
     }
 
     node.rawAttrs = attrs
-      .map(attr => (attr.value !== '' ? `${attr.name}="${attr.value}"` : attr.name))
+      .map(attr => {
+        if (attr.value === '') return attr.name;
+        // Final belt-and-braces quote strip at the exact point of serialisation:
+        // every upstream path (escapeAttr, interpolate, or the static-text
+        // fallback) already removes quotes, but this makes the sink itself
+        // provably quote-free. Idempotent on already-escaped input since
+        // `&quot;` contains no `"`.
+        const safeValue = String(attr.value).replace(/"/g, '&quot;');
+        return `${attr.name}="${safeValue}"`;
+      })
       .join(' ');
   }
 

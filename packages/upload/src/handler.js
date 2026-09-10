@@ -22,7 +22,13 @@ export function parseMultipart(body, contentType) {
 
     for (const line of headerSection.split('\r\n')) {
       const match = line.match(/^([^:]+):\s*(.+)$/);
-      if (match) headers[match[1].toLowerCase()] = match[2];
+      if (!match) continue;
+      const key = match[1].toLowerCase();
+      // Explicit prototype-pollution guard on the exact key being written, in
+      // addition to the null-prototype object above: CodeQL's remote-property-
+      // injection check requires this guard shape immediately before the write.
+      if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
+      headers[key] = match[2];
     }
 
     const disposition = headers['content-disposition'] ?? '';

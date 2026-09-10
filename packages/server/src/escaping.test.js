@@ -56,6 +56,12 @@ describe('attribute escaping', () => {
       '<div title="&quot;&gt;&lt;script&gt;alert(1)&lt;/script&gt;">x</div>'
     );
   });
+
+  it('escapes a bare double quote in a bound :attr value', () => {
+    // Pins the final quote-strip at the attribute serialisation sink itself
+    // (packages/server/src/render.js), not just the upstream escapeAttr() call.
+    assert.equal(render('<div :title="v">x</div>', { v: 'x"y' }), '<div title="x&quot;y">x</div>');
+  });
 });
 
 describe('URL scheme guard', () => {

@@ -96,6 +96,17 @@ describe('parseMultipart', () => {
     assert.equal(parts.length, 1);
     assert.equal(parts[0].name, 'field');
   });
+
+  it('ignores __proto__/constructor/prototype header names but still parses normal ones', () => {
+    const boundary = 'protobound';
+    const body = `--${boundary}\r\n__proto__: polluted\r\nconstructor: polluted\r\nprototype: polluted\r\nContent-Disposition: form-data; name="field1"\r\nContent-Type: text/plain\r\n\r\nvalue1\r\n--${boundary}--`;
+    const parts = parseMultipart(body, `multipart/form-data; boundary=${boundary}`);
+    assert.equal(parts.length, 1);
+    assert.equal(parts[0].name, 'field1');
+    assert.equal(parts[0].contentType, 'text/plain');
+    assert.equal({}.polluted, undefined);
+    assert.equal(Object.prototype.polluted, undefined);
+  });
 });
 
 // ---- createLocalStorage ----
