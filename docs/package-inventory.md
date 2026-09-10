@@ -18,11 +18,11 @@ the next changeset bump would collide and be skipped — realign the local versi
 | `@basenative/admin` | 1.0.0 | 1.0.0 | — | in sync |
 | `@basenative/auth` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
 | `@basenative/auth-webauthn` | 1.0.2 | 1.0.2 | — | in sync |
-| `@basenative/builder` | 0.1.0 | — | — | never published |
+| `@basenative/builder` | 0.1.1 | — | — | never published |
 | `@basenative/claude-config` | 0.2.0 | 0.2.0 | — | in sync |
 | `@basenative/cli` | 0.4.0 | 0.4.0 | 0.2.0 | in sync |
-| `@basenative/combobox` | 1.0.0 | 1.0.0 | — | in sync |
-| `@basenative/components` | 0.4.0 | 0.4.0 | 0.3.0 | in sync |
+| `@basenative/combobox` | 1.0.1 | 1.0.0 | — | unreleased bump |
+| `@basenative/components` | 0.4.1 | 0.4.0 | 0.3.0 | unreleased bump |
 | `@basenative/config` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
 | `@basenative/date` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
 | `@basenative/db` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
@@ -30,42 +30,42 @@ the next changeset bump would collide and be skipped — realign the local versi
 | `@basenative/eslint-config` | 0.2.0 | 0.2.0 | — | in sync |
 | `@basenative/evals` | 0.1.0 | — | — | private |
 | `@basenative/favicon` | 1.0.0 | 1.0.0 | — | in sync |
-| `@basenative/fetch` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
+| `@basenative/fetch` | 0.3.1 | 0.3.0 | 0.2.0 | unreleased bump |
 | `@basenative/flags` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
 | `@basenative/fonts` | 0.1.0 | — | — | private |
-| `@basenative/forms` | 0.4.0 | 0.13.0 | 0.3.0 | **registry ahead** (0.13.0) |
+| `@basenative/forms` | 1.0.0 | 0.13.0 | 0.3.0 | unreleased bump |
 | `@basenative/i18n` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
 | `@basenative/icons` | 0.1.0 | — | — | private |
 | `@basenative/integrations` | 0.1.0 | 0.1.0 | — | in sync |
-| `@basenative/keyboard` | 1.0.1 | 1.0.0 | — | unreleased bump |
+| `@basenative/keyboard` | 1.0.2 | 1.0.0 | — | unreleased bump |
 | `@basenative/logger` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
 | `@basenative/markdown` | 0.1.0 | 0.1.0 | — | in sync |
 | `@basenative/marketplace` | 0.2.0 | 0.2.0 | 0.2.0 | in sync |
-| `@basenative/mcp` | 0.1.0 | — | — | never published |
+| `@basenative/mcp` | 0.1.1 | — | — | never published |
 | `@basenative/middleware` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
 | `@basenative/notify` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
 | `@basenative/og-image` | 0.2.0 | 0.2.0 | — | in sync |
-| `@basenative/persist` | 1.0.0 | 1.0.0 | — | in sync |
+| `@basenative/persist` | 1.0.1 | 1.0.0 | — | unreleased bump |
 | `@basenative/realtime` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
-| `@basenative/router` | 0.4.1 | 0.4.0 | 0.3.0 | unreleased bump |
-| `@basenative/runtime` | 0.4.1 | 0.4.1 | 0.3.0 | in sync |
-| `@basenative/server` | 0.4.2 | 0.4.2 | 0.3.0 | in sync |
+| `@basenative/router` | 0.4.2 | 0.4.0 | 0.3.0 | unreleased bump |
+| `@basenative/runtime` | 0.5.0 | 0.4.1 | 0.3.0 | unreleased bump |
+| `@basenative/server` | 0.5.0 | 0.4.2 | 0.3.0 | unreleased bump |
 | `@basenative/share` | 1.0.0 | 1.0.0 | — | in sync |
 | `@basenative/station` | 0.2.0 | 0.1.0 | — | unreleased bump |
 | `@basenative/tenant` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
 | `@basenative/tsconfig` | 0.2.0 | 0.2.0 | — | in sync |
 | `@basenative/upload` | 0.3.0 | 0.3.0 | 0.2.0 | in sync |
-| `@basenative/validate` | 0.1.0 | — | — | never published |
+| `@basenative/validate` | 0.1.1 | — | — | never published |
 | `@basenative/visual-builder` | 0.2.0 | 0.2.0 | 0.2.0 | in sync |
 | `@basenative/wrangler-preset` | 0.2.0 | 0.2.0 | — | in sync |
 
 ## Summary
 
 - **40** publishable, **3** private (`@basenative/evals`, `@basenative/fonts`, `@basenative/icons`)
-- **1** have a higher version on GitHub Packages than in this tree (`@basenative/forms` 0.4.0 vs 0.13.0)
+- **0** have a higher version on GitHub Packages than in this tree (none)
 - **3** have never been published to GitHub Packages (`@basenative/builder`, `@basenative/mcp`, `@basenative/validate`)
 - **19** have a stale npmjs copy that external installs resolve to
 - **19** have never appeared on npmjs
-- **0** are at 1.0 on npmjs, despite 7 being at 1.x locally
+- **0** are at 1.0 on npmjs, despite 8 being at 1.x locally
 - **17** set `publishConfig.registry` to the same value `.npmrc` already
   supplies for the whole scope — redundant, and drifts if the scope target ever moves
