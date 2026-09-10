@@ -270,11 +270,9 @@ function speckitPlan(specifyDir, values) {
     process.exit(1);
   }
   const planPath = join(dir, 'plan.md');
-  if (existsSync(planPath) && !values.force) {
-    err(`plan.md already exists at ${planPath}`);
-    hint('Use --force to overwrite.');
-    process.exit(1);
-  }
+  // No existsSync pre-check: the write below uses an exclusive 'wx' flag
+  // (unless --force) and reports the same "already exists" error from the
+  // resulting EEXIST, so there's no separate check-then-act window.
   const id = dir.split('/').pop();
   const title = id.replace(/^\d{3}-/, '').replace(/-/g, ' ');
   const tplPath = join(specifyDir, 'templates', 'plan.md');
@@ -285,9 +283,8 @@ function speckitPlan(specifyDir, values) {
 
   if (!values['dry-run']) {
     try {
-      // Exclusive create unless --force: the existence check above and this
-      // write are two separate filesystem accesses, so a plan.md created in
-      // between would otherwise be silently overwritten without --force.
+      // Exclusive create unless --force, so a concurrently-created plan.md
+      // is reported via EEXIST below instead of silently overwritten.
       writeFileSync(planPath, body, values.force ? undefined : { flag: 'wx' });
     } catch (error) {
       if (!values.force && error.code === 'EEXIST') {

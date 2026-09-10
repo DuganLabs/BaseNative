@@ -17,7 +17,7 @@
 import { chromium } from '@playwright/test';
 import { createServer } from 'http';
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
-import { join, extname, resolve, sep } from 'path';
+import { join, extname, resolve, relative, sep } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
@@ -37,22 +37,23 @@ const MIME_TYPES = {
 };
 
 /**
- * Resolve a request path against DIST_DIR and verify it doesn't escape that
- * root. `req.url` is attacker-controllable input (`../../etc/passwd` etc.);
- * `resolve()` collapses the `..` segments and the `startsWith` check rejects
- * anything that lands outside DIST_DIR instead of trusting the join result.
+ * Turn a request path into a candidate absolute path under DIST_DIR.
+ * `req.url` is attacker-controllable input (`../../etc/passwd` etc.), so
+ * this only builds the candidate — every caller below re-checks the
+ * specific path it is about to read (via `relative()` against DIST_DIR)
+ * immediately before the matching `readFileSync`, rather than trusting a
+ * check performed here and carried across the call boundary.
  */
-function safeDistPath(urlPath) {
+function toDistPath(urlPath) {
   const withoutQuery = urlPath.split(/[?#]/, 1)[0];
-  const candidate = resolve(DIST_DIR, `.${withoutQuery}`);
-  if (candidate !== DIST_DIR && !candidate.startsWith(DIST_DIR + sep)) return null;
-  return candidate;
+  return resolve(DIST_DIR, `.${withoutQuery}`);
 }
 
 function serve() {
   return createServer((req, res) => {
-    const filePath = safeDistPath(req.url === '/' ? '/index.html' : req.url);
-    if (!filePath) {
+    const filePath = toDistPath(req.url === '/' ? '/index.html' : req.url);
+    const filePathRel = relative(DIST_DIR, filePath);
+    if (filePathRel === '..' || filePathRel.startsWith(`..${sep}`)) {
       res.writeHead(403);
       res.end();
       return;
@@ -62,12 +63,13 @@ function serve() {
       res.writeHead(200, { 'Content-Type': MIME_TYPES[extname(filePath)] ?? 'text/plain' });
       res.end(content);
     } catch {
-      // Try serving index.html from the requested directory. `filePath` was
-      // already confirmed to stay under DIST_DIR above, and appending a
-      // fixed literal segment to a confined path can't escape it, so this
-      // does not need a second traversal check.
+      // Try serving index.html from the requested directory.
       try {
         const indexPath = join(filePath, 'index.html');
+        const indexPathRel = relative(DIST_DIR, indexPath);
+        if (indexPathRel === '..' || indexPathRel.startsWith(`..${sep}`)) {
+          throw new Error('Refusing to read outside the dist directory');
+        }
         const content = readFileSync(indexPath);
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(content);

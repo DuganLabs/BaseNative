@@ -72,12 +72,9 @@ export async function run(args) {
 }
 
 function prdInit(prdPath, values) {
-  if (existsSync(prdPath) && !values.force) {
-    err(`${PRD_PATH} already exists.`);
-    hint('Use --force to overwrite, or `bn prd edit` to modify.');
-    process.exit(1);
-  }
-
+  // No existsSync pre-check: the write below uses an exclusive 'wx' flag
+  // (unless --force) and reports the same "already exists" error from the
+  // resulting EEXIST, so there's no separate check-then-act window.
   const projectName = values.name || basename(process.cwd());
   const owner = values.owner || process.env.USER || 'TBD';
   const today = new Date().toISOString().slice(0, 10);
@@ -186,9 +183,8 @@ _[secondary persona]_
 
   mkdirSync(dirname(prdPath), { recursive: true });
   try {
-    // Exclusive create unless --force: the existence check above and this
-    // write are two separate filesystem accesses, so a file created in
-    // between would otherwise be silently overwritten without --force.
+    // Exclusive create unless --force, so a concurrently-created file is
+    // reported via EEXIST below instead of silently overwritten.
     writeFileSync(prdPath, body, values.force ? undefined : { flag: 'wx' });
   } catch (error) {
     if (!values.force && error.code === 'EEXIST') {
