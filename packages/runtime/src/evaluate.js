@@ -1,5 +1,5 @@
 import { evaluateExpression } from './shared/expression.js';
-import { raw, isRaw, unwrapRaw, escapeText } from './shared/escape.js';
+import { raw, isRaw, unwrapRaw, escapeText, findInterpolations } from './shared/escape.js';
 
 export function evaluate(expr, ctx, options) {
   return evaluateExpression(expr, ctx, options);
@@ -20,14 +20,12 @@ export function interpolate(text, ctx, options) {
   const parts = [];
   let sawRaw = false;
   let last = 0;
-  const re = /\{\{\s*(.+?)\s*\}\}/g;
-  let m;
-  while ((m = re.exec(text)) !== null) {
-    parts.push({ literal: text.slice(last, m.index) });
-    const val = evaluate(m[1], ctx, options);
+  for (const { start, end, expression } of findInterpolations(text)) {
+    parts.push({ literal: text.slice(last, start) });
+    const val = evaluate(expression, ctx, options);
     if (isRaw(val)) sawRaw = true;
     parts.push({ value: val });
-    last = m.index + m[0].length;
+    last = end;
   }
   parts.push({ literal: text.slice(last) });
 

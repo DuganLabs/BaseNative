@@ -2235,6 +2235,10 @@ packages/runtime/src/shared/escape.js · `import { isUrlAttribute } from '@basen
 Neutralise a URL-bearing attribute value, or return it unchanged.
 packages/runtime/src/shared/escape.js · `import { sanitizeUrl } from '@basenative/runtime';`
 
+#### `findInterpolations(text)` (function)
+Locate every `{{ expression }}` in `text`, linearly.
+packages/runtime/src/shared/escape.js · `import { findInterpolations } from '@basenative/runtime';`
+
 ### `@basenative/server` (v0.4.2)
 
 Server-side rendering with streaming support for BaseNative templates
@@ -2738,6 +2742,7 @@ Everything below is a real, mechanically-detected gap between source/package.jso
 - `@basenative/runtime`: `escapeAttr` is exported (packages/runtime/src/shared/escape.js) but not mentioned in docs/api/runtime.md.
 - `@basenative/runtime`: `isUrlAttribute` is exported (packages/runtime/src/shared/escape.js) but not mentioned in docs/api/runtime.md.
 - `@basenative/runtime`: `sanitizeUrl` is exported (packages/runtime/src/shared/escape.js) but not mentioned in docs/api/runtime.md.
+- `@basenative/runtime`: `findInterpolations` is exported (packages/runtime/src/shared/escape.js) but not mentioned in docs/api/runtime.md.
 - `@basenative/server`: `resolveDeferred` is exported (packages/server/src/render.js) but not mentioned in docs/api/server.md.
 - `@basenative/server`: `renderToStream` is exported (packages/server/src/stream.js) but not mentioned in docs/api/server.md.
 - `@basenative/server`: `renderToReadableStream` is exported (packages/server/src/stream.js) but not mentioned in docs/api/server.md.

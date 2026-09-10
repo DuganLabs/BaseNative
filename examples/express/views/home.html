@@ -1,28 +1,15 @@
 <section data-hero>
-  <h2>Semantic HTML, <em>natively reactive</em></h2>
-  <p>BaseNative brings Angular-inspired control flow to native template elements with a small runtime core, server rendering, and CSP-safe template evaluation. The examples in this repo still use standard workspace tooling.</p>
+  <h2>The UI runtime for <em>code you didn't write</em></h2>
+  <p>A model can generate a BaseNative interface at inference time — no build step, and no escape hatch to arbitrary JavaScript. The expression evaluator never calls <code>eval</code> or <code>new Function</code>, and <code>render()</code> takes that generated template string and returns HTML on the spot.</p>
   <nav data-controls aria-label="Primary calls to action">
     <a href="/playground" role="button">Try the playground</a>
     <a href="/docs" role="button" data-variant="outline">Read the docs</a>
   </nav>
 </section>
 
-<template @if="showStats">
-  <section data-stats>
-    <ul role="list" data-stat-grid>
-      <template @for="stat of stats; track stat.label">
-        <li>
-          <strong>{{ stat.value }}</strong>
-          <span>{{ stat.label }}</span>
-        </li>
-      </template>
-    </ul>
-  </section>
-</template>
-
 <section>
-  <h2>Features</h2>
-  <p>Everything you need to build reactive server-rendered interfaces.</p>
+  <h2>Why this is <em>different</em></h2>
+  <p>A CSP-safe evaluator, a runtime template renderer, and a toolchain that lets the model check its own output before it ships.</p>
   <ul role="list">
     <template @for="feature of features; track feature.id">
       <li>
@@ -31,6 +18,9 @@
       </li>
     </template>
   </ul>
+  <blockquote>
+    <p>Eval results: not yet published — the harness ships, the corpus is in progress.</p>
+  </blockquote>
 </section>
 
 <section data-code-preview>
@@ -66,6 +56,20 @@ app.<span class="fn">get</span>(<span class="str">'/'</span>, (req, res) =&gt; {
 });</code></pre>
   </article>
 </section>
+
+<template @if="showStats">
+  <section data-stats>
+    <p>This is a supporting fact, not the argument — the CSP sandbox and runtime string rendering above are the reasons to use it.</p>
+    <ul role="list" data-stat-grid>
+      <template @for="stat of stats; track stat.label">
+        <li>
+          <strong>{{ stat.value }}</strong>
+          <span>{{ stat.label }}</span>
+        </li>
+      </template>
+    </ul>
+  </section>
+</template>
 
 <section>
   <h2>Recent updates</h2>

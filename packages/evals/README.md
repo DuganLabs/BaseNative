@@ -53,7 +53,28 @@ lists **every** provider whose key is missing and refuses to start, rather than
 quietly producing a table with three models silently absent.
 
 Providers: `anthropic`, `openai`, `google`, `openaiCompatible` (any OpenAI-shaped
-endpoint, for open-weight models).
+endpoint, for open-weight models), `ollama` (local models via
+[Ollama](https://ollama.com), no API key required).
 
-> **Note:** running the suite requires one API key per provider. A Claude Max/Pro
-> subscription does not include API access — these are separately billed.
+**Local models are the intended path for the non-Anthropic side of the leaderboard.**
+Cloud model APIs are separately billed, and this project runs on hardware the owner
+already has rather than buying keys. Run open-weight models locally with Ollama:
+
+```bash
+ollama pull llama3.2
+ollama pull qwen2.5-coder
+bn-evals --models anthropic:claude-opus-5,ollama:llama3.2,ollama:qwen2.5-coder
+```
+
+`ollama` models default to `http://localhost:11434`; override with `--ollama-url` if
+Ollama runs elsewhere. Before running, `bn-evals` checks `/api/tags` on that endpoint
+and fails loudly — printing the exact `ollama pull <model>` command — for any requested
+model that hasn't been pulled yet, rather than burning a run on a typo.
+
+`resolveCredentials` never treats a local model as a missing credential: `ollama` needs
+no key at all, and pointing `openaiCompatible` at a `localhost` `baseUrl` (Ollama's
+OpenAI-compatible `/v1` endpoint, LM Studio, etc.) waives the key requirement too. Cloud
+providers are unaffected — a missing cloud key still refuses the run.
+
+> **Note:** running the suite against a cloud provider requires an API key for it. A
+> Claude Max/Pro subscription does not include API access — these are separately billed.
