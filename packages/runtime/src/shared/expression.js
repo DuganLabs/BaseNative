@@ -537,14 +537,35 @@ function lookupIdentifier(ctx, name) {
 }
 
 function safeMemberRead(object, property, source) {
-  if (typeof property === 'string' && UNSAFE_PROPERTIES.has(property)) {
+  // Resolve the property to the exact key JS would use (ToPropertyKey) BEFORE
+  // consulting the blocklist. Checking `typeof property === 'string'` first is
+  // not enough: a computed key such as `x[["constructor"]]` is an array, skips
+  // a string-only guard, and is then coerced to "constructor" by the property
+  // read itself — which reaches Function and yields arbitrary code execution.
+  if (typeof property === 'symbol') {
+    return object[property];
+  }
+
+  // Only primitives are valid computed keys in a template expression. Arrays and
+  // objects have no legitimate use here and exist only to smuggle a key past a
+  // type-based check, so reject them before any coercion runs.
+  if (property !== null && typeof property === 'object') {
     throw createExpressionError(
       'BN_EXPR_UNSAFE_MEMBER',
-      `Access to "${property}" is not allowed in BaseNative expressions`,
+      'Computed property keys must be a string or a number in BaseNative expressions',
       source
     );
   }
-  return object[property];
+
+  const key = String(property);
+  if (UNSAFE_PROPERTIES.has(key)) {
+    throw createExpressionError(
+      'BN_EXPR_UNSAFE_MEMBER',
+      `Access to "${key}" is not allowed in BaseNative expressions`,
+      source
+    );
+  }
+  return object[key];
 }
 
 function evaluateNode(node, ctx, source) {

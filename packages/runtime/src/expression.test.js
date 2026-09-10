@@ -211,6 +211,43 @@ describe('prototype pollution guards', () => {
     assert.equal(diags[0].code, 'BN_EXPR_UNSAFE_MEMBER');
   });
 
+  // Regression: a computed key that is not a string skipped the blocklist and was
+  // then coerced to "constructor" by the property read itself, reaching Function
+  // and yielding arbitrary code execution in both the runtime and the SSR path.
+  it('blocks constructor access via a non-string computed key', () => {
+    const diags = diagnostics$('obj[["constructor"]]', { obj: {} });
+    assert.equal(diags.length, 1);
+    assert.equal(diags[0].code, 'BN_EXPR_UNSAFE_MEMBER');
+  });
+
+  it('does not reach Function through a coerced computed key', () => {
+    clearExpressionCache();
+    const result = evaluateExpression('[][["constructor"]][["constructor"]]("return 1+1")()', {});
+    assert.equal(result, undefined, 'sandbox escape: arbitrary code executed');
+  });
+
+  it('does not reach host globals through a coerced computed key', () => {
+    clearExpressionCache();
+    const result = evaluateExpression(
+      '[][["constructor"]][["constructor"]]("return typeof process")()',
+      {}
+    );
+    assert.equal(result, undefined, 'sandbox escape: reached host global scope');
+  });
+
+  it('rejects object computed keys outright', () => {
+    const diags = diagnostics$('obj[{}]', { obj: {} });
+    assert.equal(diags.length, 1);
+    assert.equal(diags[0].code, 'BN_EXPR_UNSAFE_MEMBER');
+  });
+
+  it('still allows legitimate numeric and string computed keys', () => {
+    clearExpressionCache();
+    assert.equal(evaluateExpression('items[0]', { items: [42] }), 42);
+    assert.equal(evaluateExpression('items[i]', { items: [7, 8, 9], i: 2 }), 9);
+    assert.equal(evaluateExpression('user["name"]', { user: { name: 'ok' } }), 'ok');
+  });
+
   it('returns undefined on unsafe member access', () => {
     clearExpressionCache();
     const result = evaluateExpression('obj.constructor', { obj: {} });
