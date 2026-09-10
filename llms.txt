@@ -7,9 +7,9 @@ Full API surface: [llms-full.txt](./llms-full.txt). Each package's dedicated doc
 
 ## Packages
 
-- `@basenative/admin` v1.0.0 — Pluggable admin & moderation surface — protected-route helpers, role/permission primitives, audit-l… → docs/api/admin.md
+- `@basenative/admin` v1.0.1 — Pluggable admin & moderation surface — protected-route helpers, role/permission primitives, audit-l… → docs/api/admin.md
 - `@basenative/auth` v0.3.0 — Authentication, session management, RBAC, and OAuth2/OIDC for BaseNative apps → docs/api/auth.md
-- `@basenative/auth-webauthn` v1.0.3 — WebAuthn (passkey) adapter for @basenative/auth — server, client, and Cloudflare Workers/Pages hand… → docs/api/auth-webauthn.md
+- `@basenative/auth-webauthn` v1.1.0 — WebAuthn (passkey) adapter for @basenative/auth — server, client, and Cloudflare Workers/Pages hand… → docs/api/auth-webauthn.md
 - `@basenative/builder` v0.1.4 — Signal-based drag-and-drop component builder for BaseNative — composes layouts, generates clean Bas… → docs/api/builder.md
 - `@basenative/claude-config` v0.2.1 — Bundled Claude Code subagents, skills, slash commands, hooks, and settings for DuganLabs / BaseNati… → docs/api/claude-config.md
 - `@basenative/cli` v0.4.1 — The bn CLI — front door for BaseNative / DuganLabs projects (create, prd, speckit, gh, nx, deploy,… → docs/api/cli.md
@@ -22,7 +22,7 @@ Full API surface: [llms-full.txt](./llms-full.txt). Each package's dedicated doc
 - `@basenative/eslint-config` v0.2.0 — Shared ESLint flat-config for DuganLabs projects — security, hygiene, zero-noise defaults → packages/eslint-config/src
 - `@basenative/evals` v0.1.0 — Eval harness measuring whether models actually produce correct BaseNative → (private)
 - `@basenative/favicon` v1.0.2 — SVG-first favicon generator + design primitives — apple-touch-icon, maskable, manifest, and the rig… → docs/api/favicon.md
-- `@basenative/fetch` v0.3.4 — Signal-based resource fetching with caching and SSR preload support → docs/api/fetch.md
+- `@basenative/fetch` v0.4.0 — Signal-based resource fetching with caching and SSR preload support → docs/api/fetch.md
 - `@basenative/flags` v0.4.0 — Feature flags with percentage rollouts and @feature template directive → docs/api/flags.md
 - `@basenative/fonts` v0.1.0 — Font loading utilities for BaseNative applications → (private)
 - `@basenative/forms` v1.0.3 — Signal-based form state with dirty/touched tracking and schema validation adapters → docs/api/forms.md
