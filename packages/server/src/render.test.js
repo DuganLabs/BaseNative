@@ -276,6 +276,17 @@ describe('render — additional edge cases', () => {
     assert.match(html, /data-name="test"/);
   });
 
+  it('static single-quoted attribute values cannot break out of the re-emitted double quotes', () => {
+    const html = render(`<a title='say "hi" onmouseover="alert(1)'>x</a>`, {});
+    assert.match(html, /title="say &quot;hi&quot; onmouseover=&quot;alert\(1\)"/);
+    assert.doesNotMatch(html, /onmouseover="/);
+  });
+
+  it('static attribute values keep existing entities intact', () => {
+    const html = render('<a title="a &amp; b &quot;c&quot;">x</a>', {});
+    assert.match(html, /title="a &amp; b &quot;c&quot;"/);
+  });
+
   it(':data-x dynamic data attribute', () => {
     const html = render('<span :data-value="val">', { val: 'hello' });
     assert.match(html, /data-value="hello"/);
