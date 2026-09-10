@@ -1,5 +1,13 @@
 import { parse } from 'node-html-parser';
 import { evaluateExpression } from '@basenative/runtime/shared/expression';
+import {
+  escapeText,
+  escapeAttr,
+  isRaw,
+  unwrapRaw,
+  isUrlAttribute,
+  sanitizeUrl,
+} from '@basenative/runtime/shared/escape';
 
 function emitDiagnostic(options, diagnostic) {
   if (typeof options?.onDiagnostic === 'function') {
@@ -13,19 +21,14 @@ function evaluate(expr, ctx, options) {
 
 // Interpolated values are data, not markup. The client binds through
 // `node.textContent`, which never parses HTML; the server must match that, or the
-// SSR payload is injectable while the hydrated DOM is not. Escape `&` first.
-function escapeText(value) {
-  return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
-function escapeAttr(value) {
-  return escapeText(value).replace(/"/g, '&quot;');
-}
-
+// SSR payload is injectable while the hydrated DOM is not. Both sides share
+// @basenative/runtime/shared/escape so they cannot drift apart again.
 function interpolate(text, ctx, options, escape = escapeText) {
   return text.replace(/\{\{\s*(.+?)\s*\}\}/g, (_, expr) => {
     const value = evaluate(expr, ctx, options);
-    return value != null ? escape(value) : '';
+    if (value == null) return '';
+    // raw() is an explicit trust assertion about this one value.
+    return isRaw(value) ? unwrapRaw(value) : escape(value);
   });
 }
 
@@ -98,7 +101,25 @@ function processNode(node, ctx, options) {
       if (name.startsWith(':')) {
         const result = evaluate(value, ctx, options);
         if (result !== false && result != null) {
-          attrs.push({ name: name.slice(1), value: escapeAttr(result) });
+          const attrName = name.slice(1);
+          const resolved = unwrapRaw(result);
+          // Escaping cannot express scheme risk: `javascript:alert(1)` contains no
+          // character that HTML escaping touches, so URL attributes need their own
+          // guard. raw() does not exempt a value from it.
+          if (isUrlAttribute(attrName)) {
+            const safe = sanitizeUrl(resolved);
+            if (safe === null) {
+              emitDiagnostic(options, {
+                code: 'BN_UNSAFE_URL',
+                message: `Blocked a dangerous URL scheme in :${attrName}`,
+                expression: value,
+              });
+              continue;
+            }
+            attrs.push({ name: attrName, value: escapeAttr(safe) });
+            continue;
+          }
+          attrs.push({ name: attrName, value: escapeAttr(resolved) });
         }
         continue;
       }

@@ -8,3 +8,4 @@ export { definePlugin, createPluginRegistry } from './plugins.js';
 export { createLazyHydrator, lazyHydrate, hydrateOnIdle, hydrateOnInteraction, hydrateOnMedia } from './lazy.js';
 export { createVitalsReporter, observeLCP, observeFID, observeCLS, observeFCP, observeTTFB, observeINP } from './vitals.js';
 export { enableDebug, disableDebug, isDebugEnabled, getDebugStats, debugSignal, debugEffect, debugTime, debugAssert, debugDeps } from './debug.js';
+export { raw } from './shared/escape.js';

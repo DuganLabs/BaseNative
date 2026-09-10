@@ -3,15 +3,22 @@ import { evaluate, interpolate } from './evaluate.js';
 import { hydrateChildren } from './hydrate.js';
 import { registerCleanup } from './dom-lifecycle.js';
 import { createChildContext } from './scope.js';
+import { isRaw, unwrapRaw, isUrlAttribute, sanitizeUrl } from './shared/escape.js';
 
 export function bindNode(node, ctx, options) {
   let processed = 0;
 
   if (node.nodeType === Node.TEXT_NODE) {
-    const raw = node.textContent;
-    if (raw.includes('{{')) {
+    const source = node.textContent;
+    if (source.includes('{{')) {
       const runner = effect(() => {
-        node.textContent = interpolate(raw, ctx, options);
+        // textContent never parses HTML, which is why the client was already safe.
+        // interpolate() returns a raw-marked value only when every substitution in
+        // the text was raw(); in that case match the server and parse it, otherwise
+        // keep the safe path.
+        const result = interpolate(source, ctx, options);
+        if (isRaw(result)) node.innerHTML = unwrapRaw(result);
+        else node.textContent = result;
       });
       registerCleanup(node, () => runner.dispose?.());
       processed++;
@@ -40,8 +47,18 @@ export function bindNode(node, ctx, options) {
       const expr = attr.value;
       const runner = effect(() => {
         const result = evaluate(expr, ctx, options);
-        if (result === false || result == null) node.removeAttribute(attrName);
-        else node.setAttribute(attrName, result);
+        if (result === false || result == null) {
+          node.removeAttribute(attrName);
+          return;
+        }
+        const resolved = unwrapRaw(result);
+        // Mirrors render.js: HTML escaping cannot neutralise a `javascript:` URL,
+        // so URL attributes get a scheme guard on both sides. raw() does not exempt.
+        if (isUrlAttribute(attrName) && sanitizeUrl(resolved) === null) {
+          node.removeAttribute(attrName);
+          return;
+        }
+        node.setAttribute(attrName, resolved);
       });
       registerCleanup(node, () => runner.dispose?.());
       node.removeAttribute(attr.name);
