@@ -27,6 +27,14 @@ export default [
     },
   },
   {
-    ignores: ['dist/', 'node_modules/', '*.min.js', 'examples/express/public/basenative.js'],
+    ignores: [
+      'dist/',
+      'node_modules/',
+      '*.min.js',
+      'examples/express/public/basenative.js',
+      // Scaffolding templates, not workspace members: their eslint.config.js
+      // imports @basenative/eslint-config, which cannot resolve from in-repo.
+      'packages/cli/templates/',
+    ],
   },
 ];
