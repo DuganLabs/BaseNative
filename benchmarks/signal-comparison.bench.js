@@ -30,10 +30,6 @@ function preactComputed(fn) {
   let cached = fn();
   return { get value() { return cached; } };
 }
-function preactEffect(fn) {
-  fn();
-  return { dispose() {} };
-}
 
 // ─── SolidJS createSignal-style implementation ────────────────────────────────
 // Pull-based with synchronous push on write. Getter/setter tuple API.
@@ -122,7 +118,7 @@ table('2. Signal read / write (100 r/w cycles)', [
   }),
   bench('Plain JS ref', () => {
     const s = makeRef(0);
-    for (let i = 0; i < 100; i++) { s.current = i; s.current; }
+    for (let i = 0; i < 100; i++) { s.current = i; const _ = s.current; }
   }),
 ]);
 
@@ -145,7 +141,7 @@ table('3. Computed derivation (a + b, 100 updates)', [
     for (let i = 0; i < 100; i++) { setA(i); sum(); }
   }),
   bench('Plain JS (no reactivity)', () => {
-    let a = 1; const b = 2;
+    let a; const b = 2;
     for (let i = 0; i < 100; i++) { a = i; const _ = a + b; }
   }),
 ]);
@@ -154,28 +150,28 @@ table('3. Computed derivation (a + b, 100 updates)', [
 table('4. Effect: create → 10 updates → dispose', [
   bench('BaseNative effect', () => {
     const s = bnSignal(0);
-    let n = 0;
-    const e = bnEffect(() => { n = s(); });
+    let _n = 0;
+    const e = bnEffect(() => { _n = s(); });
     for (let i = 0; i < 10; i++) s.set(i);
     e.dispose();
   }),
   bench('Preact-style effect', () => {
     const s = preactSignal(0);
-    let n = 0;
-    const unsub = s.subscribe(() => { n = s.value; });
+    let _n = 0;
+    const unsub = s.subscribe(() => { _n = s.value; });
     for (let i = 0; i < 10; i++) s.value = i;
     unsub();
   }),
   bench('Solid-style effect', () => {
     const [get, set] = solidSignal(0);
-    let n = 0;
-    const e = solidEffect(() => { n = get(); });
+    let _n = 0;
+    const e = solidEffect(() => { _n = get(); });
     for (let i = 0; i < 10; i++) set(i);
     e.dispose();
   }),
   bench('Plain JS callback', () => {
-    let s = 0, n = 0;
-    const cb = () => { n = s; };
+    let s = 0, _n = 0;
+    const cb = () => { _n = s; };
     for (let i = 0; i < 10; i++) { s = i; cb(); }
   }),
 ]);
@@ -204,9 +200,9 @@ table('5. Diamond dependency: a → {b, c} → d  (100 updates)', [
     for (let i = 0; i < 100; i++) { setA(i); d(); }
   }),
   bench('Plain JS', () => {
-    let a = 1;
+    let a;
     for (let i = 0; i < 100; i++) {
-      a = i; const b = a * 2, c = a * 3, d = b + c;
+      a = i; const b = a * 2, c = a * 3, _ = b + c;
     }
   }),
 ]);
@@ -216,7 +212,7 @@ table('6. Fan-out: 1 source → 50 subscribers (10 updates)', [
   bench('BaseNative', () => {
     const s = bnSignal(0);
     const es = Array.from({ length: 50 }, () => {
-      let n = 0; return bnEffect(() => { n = s(); });
+      let _n = 0; return bnEffect(() => { _n = s(); });
     });
     for (let i = 0; i < 10; i++) s.set(i);
     es.forEach(e => e.dispose());
@@ -234,9 +230,8 @@ table('6. Fan-out: 1 source → 50 subscribers (10 updates)', [
     ds.forEach(d => d.dispose());
   }),
   bench('Plain JS array notify', () => {
-    let s = 0;
     const cbs = Array.from({ length: 50 }, () => () => {});
-    for (let i = 0; i < 10; i++) { s = i; cbs.forEach(fn => fn()); }
+    for (let i = 0; i < 10; i++) { cbs.forEach(fn => fn()); }
   }),
 ]);
 

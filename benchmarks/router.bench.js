@@ -74,6 +74,10 @@ bench('matchRoute (nested params)', () => {
   matchRoute(nestedParamPattern, '/users/42/posts/99');
 });
 
+bench('matchRoute (deep static)', () => {
+  matchRoute(deepPattern, '/admin/reports');
+});
+
 bench('Full route table scan (20 routes, static)', () => {
   matchAll('/admin/reports');
 });
