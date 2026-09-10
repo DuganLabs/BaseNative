@@ -171,9 +171,11 @@ function processNode(node, ctx, options) {
     const result = contentDirective.directive.server(contentDirective.value, ctx, options);
     if (result !== undefined) {
       // Same rule as text-node interpolation: a directive's return value is data
-      // unless explicitly marked raw() — set via textContent-equivalent escaping,
-      // not innerHTML, so it can never smuggle markup in.
-      node.textContent = result == null ? '' : (isRaw(result) ? unwrapRaw(result) : escapeText(String(result)));
+      // unless explicitly marked raw(). Write the already-escaped markup with
+      // set_content() rather than the textContent setter, whose escaping
+      // behaviour differs between node-html-parser majors (v9 escapes, v7 does
+      // not) and would double-escape here.
+      node.set_content(result == null ? '' : (isRaw(result) ? unwrapRaw(result) : escapeText(String(result))));
       return;
     }
   }
