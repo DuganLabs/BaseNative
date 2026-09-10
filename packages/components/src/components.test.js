@@ -18,7 +18,7 @@ import { renderSkeleton } from './skeleton.js';
 import { renderToastContainer } from './toast.js';
 import { renderDialog } from './dialog.js';
 import { renderDrawer } from './drawer.js';
-import { renderTabs } from './tabs.js';
+import { renderTabs, initTabs } from './tabs.js';
 import { renderAccordion } from './accordion.js';
 import { renderBreadcrumb } from './breadcrumb.js';
 import { renderTooltip } from './tooltip.js';
@@ -2434,5 +2434,159 @@ describe('Pipeline — consumer slots', () => {
     assertEscaped(renderPipeline({ id: XSS, columns: [{ id: XSS, title: 'T' }] }));
     const html = renderPipeline({ id: 'a"b', columns: [{ id: 'c', title: 'T' }] });
     assert.ok(html.includes('aria-labelledby="a&quot;b-column-c"') && html.includes('id="a&quot;b-column-c"'));
+  });
+});
+
+describe('Tabs — roving tabindex in markup', () => {
+  it('gives the active tab tabindex="0" and every other tab -1', () => {
+    const html = renderTabs({ id: 't', activeTab: 'b', tabs: [{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }, { id: 'c', label: 'C' }] });
+    assert.ok(html.includes('<button data-bn="tab" role="tab" type="button" tabindex="-1" id="t-tab-a"'));
+    assert.ok(html.includes('<button data-bn="tab" role="tab" type="button" tabindex="0" id="t-tab-b"'));
+    assert.ok(html.includes('tabindex="-1" id="t-tab-c"'));
+  });
+
+  it('falls back to the first enabled tab when the active tab is disabled or unknown', () => {
+    const disabled = renderTabs({ id: 't', activeTab: 'a', tabs: [{ id: 'a', label: 'A', disabled: true }, { id: 'b', label: 'B' }] });
+    assert.ok(disabled.includes('tabindex="-1" id="t-tab-a"') && disabled.includes('tabindex="0" id="t-tab-b"'));
+    const unknown = renderTabs({ id: 't', activeTab: 'zzz', tabs: [{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }] });
+    assert.ok(unknown.includes('tabindex="0" id="t-tab-a"'));
+  });
+});
+
+/** Minimal DOM stand-in for initTabs: attribute bags, closest(), focus() and root-level listeners. */
+function fakeTabs(ids, { active = ids[0], disabled = [], allHidden = false } = {}) {
+  const root = {
+    listeners: new Map(),
+    addEventListener(type, fn) { this.listeners.set(type, fn); },
+    removeEventListener(type, fn) { if (this.listeners.get(type) === fn) this.listeners.delete(type); },
+    focused: null,
+  };
+  const make = attrs => ({
+    attrs: { ...attrs },
+    focusCount: 0,
+    getAttribute(k) { return k in this.attrs ? this.attrs[k] : null; },
+    setAttribute(k, v) { this.attrs[k] = String(v); },
+    removeAttribute(k) { delete this.attrs[k]; },
+    hasAttribute(k) { return k in this.attrs; },
+    focus() { this.focusCount += 1; root.focused = this; },
+    closest(sel) {
+      if (sel === '[data-bn="tab"]') return this.attrs['data-bn'] === 'tab' ? this : null;
+      if (sel === '[data-bn="tabs"]') return this.owner ?? root;
+      return null;
+    },
+  });
+  root.tabs = ids.map(id => make({
+    'data-bn': 'tab', 'data-tab': id, id: `t-tab-${id}`, 'aria-controls': `t-panel-${id}`,
+    'aria-selected': id === active ? 'true' : 'false', tabindex: id === active ? '0' : '-1',
+    ...(disabled.includes(id) ? { disabled: '' } : {}),
+  }));
+  root.panels = ids.map(id => make({ 'data-bn': 'tab-panel', id: `t-panel-${id}`, ...(id === active && !allHidden ? {} : { hidden: '' }) }));
+  root.querySelectorAll = sel => (sel === '[data-bn="tab"]' ? [...root.tabs] : sel === '[data-bn="tab-panel"]' ? [...root.panels] : []);
+  root.tab = id => root.tabs.find(t => t.attrs['data-tab'] === id);
+  root.click = id => root.listeners.get('click')({ target: root.tab(id) });
+  root.key = (id, key) => {
+    const e = { key, target: root.tab(id), prevented: false, preventDefault() { this.prevented = true; } };
+    root.listeners.get('keydown')(e);
+    return e;
+  };
+  root.selected = () => root.tabs.filter(t => t.attrs['aria-selected'] === 'true').map(t => t.attrs['data-tab']);
+  root.focusable = () => root.tabs.filter(t => t.attrs.tabindex === '0').map(t => t.attrs['data-tab']);
+  root.visible = () => root.panels.filter(p => !('hidden' in p.attrs)).map(p => p.attrs.id.replace('t-panel-', ''));
+  return root;
+}
+
+describe('initTabs', () => {
+  it('binds click and keydown on the root and destroy unbinds them', () => {
+    const root = fakeTabs(['a', 'b']);
+    const handle = initTabs(root);
+    assert.deepEqual([...root.listeners.keys()].sort(), ['click', 'keydown']);
+    handle.destroy();
+    assert.equal(root.listeners.size, 0);
+  });
+
+  it('reconciles aria-selected, tabindex and hidden on init and selects the first enabled tab when none is', () => {
+    const root = fakeTabs(['a', 'b'], { active: 'b', allHidden: true });
+    initTabs(root);
+    assert.deepEqual([root.selected(), root.focusable(), root.visible()], [['b'], ['b'], ['b']]);
+
+    const none = fakeTabs(['a', 'b'], { active: 'none', disabled: ['a'] });
+    const handle = initTabs(none);
+    assert.deepEqual([none.selected(), none.focusable(), none.visible()], [['b'], ['b'], ['b']]);
+    assert.equal(handle.active(), 'b');
+  });
+
+  it('click selects a tab, flips the panels and reports the change once', () => {
+    const root = fakeTabs(['a', 'b', 'c'], { disabled: ['c'] });
+    const changes = [];
+    const handle = initTabs(root, { onChange: (id, tab) => changes.push([id, tab.attrs.id]) });
+    root.click('b');
+    assert.deepEqual([root.selected(), root.focusable(), root.visible()], [['b'], ['b'], ['b']]);
+    assert.deepEqual(changes, [['b', 't-tab-b']]);
+    root.click('b');
+    assert.equal(changes.length, 1, 'clicking the current tab is a no-op');
+    root.click('c');
+    assert.equal(handle.active(), 'b', 'disabled tabs are ignored');
+    root.listeners.get('click')({ target: { closest: () => null } });
+    assert.equal(changes.length, 1);
+  });
+
+  it('ArrowRight / ArrowLeft wrap and skip disabled tabs, Home / End jump, and focus follows (automatic activation)', () => {
+    const root = fakeTabs(['a', 'b', 'c', 'd'], { disabled: ['c'] });
+    const changes = [];
+    initTabs(root, { onChange: id => changes.push(id) });
+
+    assert.ok(root.key('a', 'ArrowRight').prevented);
+    assert.deepEqual([root.selected(), root.visible(), root.focused.attrs['data-tab']], [['b'], ['b'], 'b']);
+    root.key('b', 'ArrowRight');
+    assert.deepEqual(root.selected(), ['d'], 'c is disabled and skipped');
+    root.key('d', 'ArrowRight');
+    assert.deepEqual(root.selected(), ['a'], 'wraps to the start');
+    root.key('a', 'ArrowLeft');
+    assert.deepEqual(root.selected(), ['d'], 'wraps to the end');
+    root.key('d', 'Home');
+    assert.deepEqual(root.selected(), ['a']);
+    root.key('a', 'End');
+    assert.deepEqual([root.selected(), root.focusable()], [['d'], ['d']]);
+    assert.deepEqual(changes, ['b', 'd', 'a', 'd', 'a', 'd']);
+
+    const other = root.key('d', 'ArrowDown');
+    assert.ok(!other.prevented);
+    assert.deepEqual(root.selected(), ['d']);
+    assert.ok(!root.key('c', 'ArrowRight').prevented, 'keys on a disabled tab are ignored');
+  });
+
+  it('manual activation moves focus and the roving tabindex without selecting; click selects', () => {
+    const root = fakeTabs(['a', 'b', 'c']);
+    const changes = [];
+    initTabs(root, { activation: 'manual', onChange: id => changes.push(id) });
+    root.key('a', 'ArrowRight');
+    assert.deepEqual([root.selected(), root.focusable(), root.visible(), root.focused.attrs['data-tab']], [['a'], ['b'], ['a'], 'b']);
+    assert.deepEqual(changes, []);
+    root.click('b');
+    assert.deepEqual([root.selected(), root.focusable(), root.visible()], [['b'], ['b'], ['b']]);
+    assert.deepEqual(changes, ['b']);
+  });
+
+  it('select(id) reflects state silently and reports whether the tab exists', () => {
+    const root = fakeTabs(['a', 'b']);
+    const changes = [];
+    const handle = initTabs(root, { onChange: id => changes.push(id) });
+    assert.equal(handle.select('b'), true);
+    assert.deepEqual([root.selected(), root.focusable(), root.visible(), handle.active()], [['b'], ['b'], ['b'], 'b']);
+    assert.equal(handle.select('zzz'), false);
+    assert.equal(handle.active(), 'b');
+    assert.deepEqual(changes, []);
+    assert.equal(root.focused, null, 'programmatic selection does not steal focus');
+  });
+
+  it('ignores tabs that belong to a nested tabs widget', () => {
+    const root = fakeTabs(['a', 'b']);
+    const inner = fakeTabs(['x']);
+    inner.tabs[0].owner = inner;
+    root.tabs.push(inner.tabs[0]);
+    initTabs(root);
+    root.key('b', 'ArrowRight');
+    assert.deepEqual(root.selected().filter(id => id !== 'x'), ['a'], 'wrapped within the outer widget only');
+    assert.deepEqual(inner.tabs[0].attrs, { ...inner.tabs[0].attrs, 'aria-selected': 'true', tabindex: '0' }, 'the nested widget is untouched');
   });
 });

@@ -1,10 +1,10 @@
 # @basenative/components
 
-> 32 modules of semantic UI components rendered as HTML strings — no framework, no client JavaScript required
+> 32 modules of semantic UI components rendered as HTML strings — no framework, no client JavaScript required beyond three opt-in initialisers
 
 Part of the [BaseNative](https://github.com/DuganLabs/basenative) ecosystem — a signal-based web runtime over native HTML.
 
-The package exports 47 symbols from 32 source modules (re-exported through `src/index.js`): 34 `render*` helpers, the toast queue (`createToaster`, `showToast`, `dismissToast`, `renderToastContainer`), calendar/pipeline drag-and-drop initialisers, state stores and helpers, and two small utilities (`buttonVariants`, `layoutGridStyles`). Full reference with options tables, rendered markup and accessibility notes: [docs/api/components.md](../../docs/api/components.md). Type declarations ship in `types/index.d.ts`.
+The package exports 48 symbols from 32 source modules (re-exported through `src/index.js`): 34 `render*` helpers, the toast queue (`createToaster`, `showToast`, `dismissToast`, `renderToastContainer`), the tabs, calendar and pipeline client-side initialisers (`initTabs`, `initCalendarDragDrop`, `initPipelineDragDrop`), state stores and helpers, and two small utilities (`buttonVariants`, `layoutGridStyles`). Full reference with options tables, rendered markup and accessibility notes: [docs/api/components.md](../../docs/api/components.md). Type declarations ship in `types/index.d.ts`.
 
 ## Install
 
@@ -108,7 +108,7 @@ All components are pure functions that return an HTML string. See [docs/api/comp
 - `renderCard(options)` — Content card with optional header/footer.
 - `renderDialog(options)` — Native `<dialog>`, named by its title (`aria-labelledby`) and described by an optional `description` (`aria-describedby`).
 - `renderDrawer(options)` — Side drawer panel with overlay.
-- `renderTabs(options)` — Tabbed content panels.
+- `renderTabs(options)` — Tabbed content panels with a roving `tabindex`; `initTabs(root, { onChange?, activation? })` wires click / ArrowLeft / ArrowRight / Home / End switching, `aria-selected`, `tabindex` and panel `hidden` toggling (WAI-ARIA APG tabs pattern) and returns `{ select(id), active(), destroy() }`.
 - `renderAccordion(options)` — `<details>`/`<summary>` accordion.
 - `renderBreadcrumb(options)` — Breadcrumb navigation trail.
 - `renderTooltip(options)` — Popover-API tooltip; the trigger renders as a real `<button type="button">` (or your own `<button>`/`<input>` slot, wired in place) since only button-like elements are valid popover invokers.

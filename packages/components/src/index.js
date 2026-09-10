@@ -67,8 +67,8 @@ export { renderDialog } from './dialog.js';
 // Drawer
 export { renderDrawer } from './drawer.js';
 
-// Tabs
-export { renderTabs } from './tabs.js';
+// Tabs (renderTabs for SSR markup, initTabs for client-side APG switching)
+export { renderTabs, initTabs } from './tabs.js';
 
 // Accordion
 export { renderAccordion } from './accordion.js';
