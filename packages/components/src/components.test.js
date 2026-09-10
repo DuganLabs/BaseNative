@@ -607,6 +607,46 @@ describe('Input — additional', () => {
   });
 });
 
+describe('Table — column render slot and attrs', () => {
+  it('render(value, row) fills the cell unescaped while other columns stay escaped', () => {
+    const rows = [{ name: '<b>Ann</b>', start: '2025-06-02', status: 'paid' }];
+    const html = renderTable({
+      columns: [
+        { key: 'name', label: 'Name' },
+        { key: 'start', label: 'Start', render: (value, row) => `<time datetime="${value}">${row.status}</time>` },
+        { key: 'status', label: 'Status', render: value => renderBadge(value, { variant: 'success' }) },
+      ],
+      rows,
+    });
+    assert.ok(html.includes('<td>&lt;b&gt;Ann&lt;/b&gt;</td>'));
+    assert.ok(html.includes('<td><time datetime="2025-06-02">paid</time></td>'));
+    assert.ok(html.includes('<td><span data-bn="badge" data-variant="success">paid</span></td>'));
+  });
+
+  it('render receives the raw value (undefined for a missing key) and a nullish result renders an empty cell', () => {
+    const seen = [];
+    const html = renderTable({
+      columns: [{ key: 'missing', label: 'M', render: (value, row) => { seen.push([value, row]); return null; } }],
+      rows: [{ id: 1 }],
+    });
+    assert.deepEqual(seen, [[undefined, { id: 1 }]]);
+    assert.ok(html.includes('<tr><td></td></tr>'));
+  });
+
+  it('render is not consulted for the empty state or the header', () => {
+    let calls = 0;
+    const html = renderTable({ columns: [{ key: 'a', label: 'A', render: () => { calls += 1; return 'x'; } }], rows: [] });
+    assert.equal(calls, 0);
+    assert.ok(html.includes('data-bn="table-empty"'));
+  });
+
+  it('attrs is spliced onto the container', () => {
+    const html = renderTable({ attrs: 'data-testid="jobs" aria-busy="true"' });
+    assert.ok(html.startsWith('<div data-bn="table-container" data-testid="jobs" aria-busy="true"><table data-bn="table">'));
+    assert.ok(renderTable().startsWith('<div data-bn="table-container"><table'));
+  });
+});
+
 describe('Pagination — additional', () => {
   it('on first page, prev is disabled', () => {
     const html = renderPagination({ currentPage: 1, totalPages: 5 });

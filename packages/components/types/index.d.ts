@@ -172,18 +172,28 @@ export function renderToastContainer(position?: ToastPosition): string;
 
 // ---------------------------------------------------------------- Table
 
-export interface TableColumn {
+export interface TableColumn<Row = Record<string, unknown>> {
   key: string;
   label: string;
+  /** Adds `data-sortable` to the `<th>`. */
   sortable?: boolean;
+  /**
+   * Custom cell renderer; receives `row[key]` and the row. HTML slot: the
+   * result is not escaped — escape any data you interpolate. A nullish
+   * result renders an empty cell. Without it the value is stringified and
+   * escaped.
+   */
+  render?: (value: unknown, row: Row) => string | null | undefined;
 }
 
-export function renderTable(options?: {
-  columns?: TableColumn[];
-  rows?: Array<Record<string, unknown>>;
+export function renderTable<Row extends Record<string, unknown> = Record<string, unknown>>(options?: {
+  columns?: Array<TableColumn<Row>>;
+  rows?: Row[];
   /** Default `'No data'`. */
   emptyMessage?: string;
   caption?: string;
+  /** Spliced onto the `[data-bn="table-container"]` wrapper. */
+  attrs?: string;
 }): string;
 
 // ---------------------------------------------------------------- Pagination
