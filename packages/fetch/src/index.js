@@ -161,3 +161,8 @@ export async function fetchJson(url, options = {}) {
 
   return response.json();
 }
+
+export { ApiError, isApiError } from './api-error.js';
+export { isApiResponse, isApiErrorEnvelope, unwrap } from './envelope.js';
+export { serializeQuery, joinUrl } from './query.js';
+export { createApiClient } from './client.js';
