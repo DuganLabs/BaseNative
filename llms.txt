@@ -34,19 +34,19 @@ Full API surface: [llms-full.txt](./llms-full.txt). Each package's dedicated doc
 - `@basenative/markdown` v0.1.0 — Zero-dependency ES module markdown parser and SSR-safe HTML renderer → packages/markdown/src
 - `@basenative/marketplace` v0.2.1 — Component registry for BaseNative — publishing and discovery infrastructure → docs/api/marketplace.md
 - `@basenative/mcp` v0.2.0 — MCP server exposing BaseNative validation, SSR preview, and directive reference to any agent → packages/mcp/src
-- `@basenative/middleware` v0.3.1 — Request pipeline middleware — CORS, rate limiting, CSRF, and adapters → docs/api/middleware.md
+- `@basenative/middleware` v0.3.2 — Request pipeline middleware — CORS, rate limiting, CSRF, and adapters → docs/api/middleware.md
 - `@basenative/notify` v0.3.1 — Email notifications via SMTP and SendGrid with template rendering → docs/api/notify.md
 - `@basenative/og-image` v0.2.1 — Worker-runtime OG / social share PNG renderer — satori + resvg-wasm with KV-cached fonts and themab… → packages/og-image/src
 - `@basenative/persist` v1.0.4 — Signal-driven local persistence with TTL, conflict resolution, and a server-rehydrate hook for Base… → packages/persist/src
 - `@basenative/realtime` v0.3.0 — SSE and WebSocket connections with signal-based reactive message streams → docs/api/realtime.md
 - `@basenative/router` v0.5.0 — SSR-aware path routing with named params, wildcards, and history API integration → docs/api/router.md
 - `@basenative/runtime` v0.6.2 — Signal-based web runtime over native HTML — zero build step, zero production dependencies → docs/api/runtime.md
-- `@basenative/server` v0.6.1 — Server-side rendering with streaming support for BaseNative templates → docs/api/server.md
+- `@basenative/server` v0.6.2 — Server-side rendering with streaming support for BaseNative templates → docs/api/server.md
 - `@basenative/share` v1.0.1 — Native Web Share + clipboard fallback, share-card mint client+server, and OG-redirect landing page… → packages/share/src
 - `@basenative/station` v0.2.0 — Queue-driven local-inference primitive — drives a cloudflared-tunneled vLLM tower (or any OpenAI-co… → packages/station/src
 - `@basenative/tenant` v0.3.0 — Multi-tenant middleware with subdomain/path resolution and row-level query scoping → docs/api/tenant.md
 - `@basenative/tsconfig` v0.2.0 — Shared base tsconfigs for DuganLabs projects — strict, modern, runtime-targeted → packages/tsconfig/src
-- `@basenative/upload` v0.3.1 — File upload handling with R2 and S3 adapter support → docs/api/upload.md
+- `@basenative/upload` v0.3.2 — File upload handling with R2 and S3 adapter support → docs/api/upload.md
 - `@basenative/validate` v0.2.0 — Structured validation for BaseNative templates — machine-actionable errors a model can repair from… → packages/validate/src
 - `@basenative/visual-builder` v0.2.1 — No-code template builder for BaseNative components → docs/api/visual-builder.md
 - `@basenative/wrangler-preset` v0.2.1 — Pinned Wrangler version + typed wrangler.toml fragment generator. Pin once, every project moves tog… → packages/wrangler-preset/src

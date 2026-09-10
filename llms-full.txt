@@ -1768,7 +1768,7 @@ packages/mcp/src/directives.js · `import { PRIMITIVES } from '@basenative/mcp';
 Syntax from other frameworks that BaseNative does NOT accept.
 packages/mcp/src/directives.js · `import { FORBIDDEN } from '@basenative/mcp';`
 
-### `@basenative/middleware` (v0.3.1)
+### `@basenative/middleware` (v0.3.2)
 
 Request pipeline middleware — CORS, rate limiting, CSRF, and adapters
 
@@ -2503,7 +2503,7 @@ sanitizeUrl('javascript:alert(1)'); // null
 sanitizeUrl('/safe/path');          // '/safe/path'
 ```
 
-### `@basenative/server` (v0.6.1)
+### `@basenative/server` (v0.6.2)
 
 Server-side rendering with streaming support for BaseNative templates
 
@@ -2772,7 +2772,7 @@ Source: `packages/tsconfig/src`
 
 _(no JS exports found — resource-only or config-only package; see exports map above.)_
 
-### `@basenative/upload` (v0.3.1)
+### `@basenative/upload` (v0.3.2)
 
 File upload handling with R2 and S3 adapter support
 

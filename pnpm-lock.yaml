@@ -283,7 +283,7 @@ importers:
         specifier: workspace:^0.6.2
         version: link:../runtime
       '@basenative/server':
-        specifier: workspace:^0.6.1
+        specifier: workspace:^0.6.2
         version: link:../server
       '@basenative/validate':
         specifier: workspace:^0.2.0
