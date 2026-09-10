@@ -482,7 +482,7 @@
 [data-bn="accordion-item"]:only-child { border-radius: var(--bn-radius-container); }
 [data-bn="accordion-header"] {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--bn-space-2);
   padding: var(--bn-space-component-y) var(--bn-space-component-x);
   font-size: var(--bn-font-size-component);
@@ -501,6 +501,14 @@
   color: var(--bn-color-accent-600);
   transition: rotate var(--bn-transition-fast);
   flex-shrink: 0;
+  /* align-items is flex-start so multi-line summaries don't centre the
+     marker against the whole block; this offset re-centres it against the
+     first line only. Derived from the header's line-height (normal, 1.5)
+     and this marker's own font-size (0.75em of the header's): the gap
+     between the first line's box and this marker's own (smaller) box is
+     line-height / 6 of the marker's font-size — 0.25em at the current
+     tokens. A single-line header renders identically to before. */
+  margin-top: 0.25em;
 }
 [data-bn="accordion-header"]::-webkit-details-marker { display: none; }
 [data-bn="accordion-item"][open] > [data-bn="accordion-header"]::before { rotate: 90deg; }
@@ -1340,6 +1348,7 @@
 [data-bn="calendar-event"] {
   position: absolute;
   inset-inline: var(--bn-space-1);
+  inset-block: var(--bn-space-half);
   display: flex;
   flex-direction: column;
   gap: var(--bn-space-half);
@@ -1351,6 +1360,8 @@
   color: var(--bn-color-text);
   cursor: grab;
   overflow: hidden;
+  min-height: 0;
+  align-self: stretch;
   z-index: 1;
 }
 [data-bn="calendar-event"][data-dragging] { opacity: 0.5; cursor: grabbing; }
@@ -1371,10 +1382,17 @@
   overflow-wrap: anywhere;
   word-break: break-word;
   line-height: var(--bn-line-height-tight);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 [data-bn="calendar-event-assignee"],
 [data-bn="calendar-event-time"] {
   color: var(--bn-color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Pipeline block (draggable card for sidebar dispatch) */

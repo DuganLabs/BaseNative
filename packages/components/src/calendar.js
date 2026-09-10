@@ -114,12 +114,16 @@ export function renderCalendar(options = {}) {
     `<div data-bn="calendar-day-header" data-date="${d}">${formatDay(d)}</div>`
   ).join('');
 
-  // Time gutter labels
+  // Time gutter labels. Row 1 of the grid is the day-header row (see
+  // `grid-template-rows: auto repeat(...)` in components.css), so hour rows
+  // start at row 2 — the same convention used by the slots and events below.
+  // Labels must share that convention or they land one row above the
+  // slot/event they describe.
   const timeLabels = [];
   for (let h = hourStart; h < hourEnd; h++) {
     const label = h <= 12 ? `${h}am` : `${h - 12}pm`;
     timeLabels.push(
-      `<div data-bn="calendar-time-label" data-hour="${h}" style="grid-row: ${h - hourStart + 1}">${h === 12 ? '12pm' : label}</div>`
+      `<div data-bn="calendar-time-label" data-hour="${h}" style="grid-row: ${h - hourStart + 2}">${h === 12 ? '12pm' : label}</div>`
     );
   }
 
