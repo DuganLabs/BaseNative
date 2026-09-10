@@ -63,7 +63,7 @@ After the next release tag, all of these will be on GitHub Packages:
 
 | Package | Purpose |
 |---|---|
-| `@basenative/runtime` | signal-based runtime (<5KB) |
+| `@basenative/runtime` | signal-based runtime (8.8KB gzipped) |
 | `@basenative/server`, `router`, `components`, `forms`, `fetch`, `realtime` | app stack |
 | `@basenative/auth`, `auth-webauthn` | auth + passkeys |
 | `@basenative/db`, `middleware`, `upload`, `tenant`, `flags`, `notify`, `i18n`, `date`, `markdown` | backend + utility |
