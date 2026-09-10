@@ -1,6 +1,6 @@
 {
   "name": "@basenative/router",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "SSR-aware path routing with named params, wildcards, and history API integration",
   "type": "module",
   "exports": {
