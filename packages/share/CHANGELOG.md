@@ -1,5 +1,12 @@
 # Changelog — @basenative/share
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies [8a9c7f1]
+  - @basenative/og-image@0.2.1
+
 ## 1.0.0
 
 ### Minor Changes

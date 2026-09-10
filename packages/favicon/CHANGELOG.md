@@ -1,5 +1,11 @@
 # @basenative/favicon
 
+## 1.0.1
+
+### Patch Changes
+
+- 8a9c7f1: PNG generation resolves resvg; clear message when missing; manifest names
+
 ## 1.0.0
 
 ### Minor Changes
