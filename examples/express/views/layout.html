@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0a0a0c">
 <meta name="color-scheme" content="dark">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -15,13 +14,21 @@
 <meta property="og:title" content="<!--OG_TITLE-->">
 <meta property="og:description" content="<!--DESCRIPTION-->">
 <meta property="og:url" content="<!--OG_URL-->">
-<meta property="og:image" content="/og-default.svg">
+<meta property="og:image" content="https://basenative.com/og-default.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="<!--OG_TITLE-->">
 <meta name="twitter:description" content="<!--DESCRIPTION-->">
-<meta name="twitter:image" content="/og-default.svg">
+<meta name="twitter:image" content="https://basenative.com/og-default.png">
 <link rel="canonical" href="<!--OG_URL-->">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="alternate icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/favicon.svg" color="#0C0B09">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0C0B09">
 <link rel="stylesheet" href="/bn-css/index.css">
 <link rel="stylesheet" href="/bn-builder-css/builder.css">
 <link rel="stylesheet" href="/fonts/fonts.css">
@@ -37,8 +44,8 @@
     inset-block-start: -9999px;
     z-index: 10000;
     padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
-    background: var(--accent, #e8a44a);
-    color: var(--surface-0, #0a0a0c);
+    background: var(--accent, #e8920a);
+    color: var(--surface-0, #0c0b09);
     font-weight: var(--font-weight-semibold, 600);
     text-decoration: none;
     border-radius: 0 0 var(--radius-sm, 0.25rem) 0;
@@ -59,8 +66,8 @@
     border: 0;
   }
   body > [data-bn-site-header] {
-    border-block-end: var(--border-width, 1px) solid var(--border, #2a2a38);
-    background: var(--surface-1, #131318);
+    border-block-end: var(--border-width, 1px) solid var(--border, #2c2822);
+    background: var(--surface-1, #151310);
   }
   body > [data-bn-site-header] > nav {
     max-inline-size: var(--size-inline-max, 52rem);
@@ -82,7 +89,7 @@
   }
   body > [data-bn-site-header] h1 em {
     font-style: normal;
-    color: var(--accent, #e8a44a);
+    color: var(--accent, #e8920a);
   }
   body > [data-bn-site-header] [data-bn-wordmark] {
     color: inherit;
@@ -112,7 +119,7 @@
     font-family: var(--font-family);
     font-stretch: var(--font-mono, ultra-condensed);
     font-size: var(--font-size-sm, 0.8rem);
-    color: var(--text-1, #b0adc0);
+    color: var(--text-1, #b5ae9e);
     text-decoration: none;
     padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
     min-block-size: 2.75rem;
@@ -122,14 +129,14 @@
     transition: color var(--duration-fast, 0.15s), background var(--duration-fast, 0.15s);
   }
   body > [data-bn-site-header] menu a:hover {
-    color: var(--accent, #e8a44a);
-    background: var(--surface-2, #1a1a22);
+    color: var(--accent, #e8920a);
+    background: var(--surface-2, #1c1916);
   }
   body > [data-bn-site-header] menu a[aria-current="page"] {
-    color: var(--accent, #e8a44a);
+    color: var(--accent, #e8920a);
   }
   body > [data-bn-site-footer] {
-    border-block-start: var(--border-width, 1px) solid var(--border, #2a2a38);
+    border-block-start: var(--border-width, 1px) solid var(--border, #2c2822);
     padding: var(--space-lg, 1.5rem);
     text-align: center;
     display: grid;
@@ -145,10 +152,10 @@
     font-family: var(--font-family);
     font-stretch: var(--font-mono, ultra-condensed);
     font-size: var(--font-size-xs, 0.75rem);
-    color: var(--text-2, #7a7890);
+    color: var(--text-2, #857c6b);
     text-decoration: none;
   }
-  body > [data-bn-site-footer] nav a:hover { color: var(--accent, #e8a44a); }
+  body > [data-bn-site-footer] nav a:hover { color: var(--accent, #e8920a); }
   /* Showcase header visual hierarchy — override article > header { display:flex } */
   [data-bn-showcase-header] {
     display: block;
