@@ -6,7 +6,7 @@ BaseNative is an open specifications project that delivers a signal-based web ru
 
 **Monorepo**: Nx + pnpm workspace  
 **Package scope**: `@basenative/*`  
-**Node.js version**: 22 (Volta-managed)  
+**Node.js version**: 22 in CI (`.github/workflows/ci.yml` also runs 20)  
 **Package manager**: pnpm 10
 
 ---
@@ -24,7 +24,7 @@ BaseNative is an open specifications project that delivers a signal-based web ru
 
 ```
 basenative/
-├── packages/           # 23 publishable @basenative/* packages
+├── packages/           # 43 @basenative/* packages (3 private: fonts, evals, icons) — see docs/package-inventory.md
 │   ├── runtime/        # CORE: signal(), computed(), effect(), hydrate()
 │   ├── server/         # SSR: render(), renderToStream(), renderToReadableStream()
 │   ├── router/         # SSR-aware path routing
@@ -46,7 +46,7 @@ basenative/
 │   ├── cli/            # `bn` / `create-basenative` scaffolding
 │   ├── fonts/          # Font loading utilities
 │   ├── icons/          # Icon system
-│   ├── marketplace/    # Community component marketplace
+│   ├── marketplace/    # Component registry infrastructure (no third-party packages yet)
 │   └── visual-builder/ # No-code template builder
 ├── examples/           # Working reference apps
 │   ├── express/        # Node.js + Express SSR
@@ -144,7 +144,7 @@ docs(api): add @basenative/fetch API reference
 chore(ci): add bundle size check to PR workflow
 ```
 
-**Always include**: `Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>`
+**Always include** the `Co-Authored-By: Claude <model> <noreply@anthropic.com>` trailer for the model in use — the harness states the exact model name at session start; do not hardcode one.
 
 ---
 
@@ -359,40 +359,42 @@ where the two disagree.
 
 ## Next Steps / AI Backlog
 
-**UPSTREAM DOGFOODING DIRECTIVE**: You are the foundational framework builder. If a downstream consumer app (Greenput, PendingBusiness, DuganLabs) requires a generically useful primitive (like a specialized UI component, an auth flow wrapper, or parsing string utility), YOU must build it here as an open-source package first.
+**UPSTREAM DOGFOODING DIRECTIVE**: You are the foundational framework builder. If a downstream consumer app (Greenput, PendingBusiness, DuganLabs) requires a generically useful primitive (a specialized UI component, an auth flow wrapper, a parsing utility), YOU must build it here as an open-source package first.
 
-You will pull from this task list when executing autonomously.
+You will pull from this list when executing autonomously. It was verified against the code on 2026-09-10; re-verify before starting any item, and remove items here when they ship — a stale backlog steers every autonomous run into rebuilding finished work, which is exactly what the previous version of this section did.
 
-### Epic 1: Dogfooding Primitives (`@basenative/markdown` & `@basenative/components`)
+### Shipped — do not rebuild
 
-- **Task A**: Build `@basenative/markdown`, a pure ES module zero-dependency markdown parser. This is a hard blocker for DuganLabs' Dynamic Blog Epic.
-- **Task B**: Expand `@basenative/components` with a Drag-and-Drop Calendar/Pipeline block component utilizing CSS grid and native drag-and-drop APIs. This is a hard blocker for Greenput's Schedule-Aware Lead Routing Epic.
-- **Task C**: Build `@basenative/integrations/plaid`, a headless wrapper module that wraps the Plaid Link client-side initialization script and the server-side OAuth exchange logic. This is a hard blocker for PendingBusiness's FedNow auto-pay engine.
+The five epics that used to live here are done. Where each landed:
 
-### Epic 2: Reactivity Optimization (`@basenative/runtime`)
+| Former item | Lives at |
+|---|---|
+| `@basenative/markdown` zero-dep parser | `packages/markdown/src/{parser,renderer,markdown}.js` |
+| Calendar component | `packages/components/src/calendar.js`, `calendar-state.js` |
+| Plaid wrapper + yield optimisation | `packages/integrations/src/{plaid,yield}.js` |
+| `effect()` 10k-node benchmark | `benchmarks/effect-dom-nodes.bench.js` |
+| `batch()` and diamond-dependency tests | `packages/runtime/src/signals.js`, `diamond.test.js` |
+| `@defer` SSR streaming + hydrate link | `packages/server/src/render.js`, `packages/runtime/src/hydrate.js` (`data-bn-defer`) |
+| Visual builder, `<bn-canvas>` | `packages/visual-builder/src/`, `packages/builder/src/` |
+| Feature flags on KV, `registerPlugin()` | `packages/flags/src/providers/kv.js`, `packages/runtime/src/signals.js` |
 
-- **Task A**: Write benchmarking tests in `benchmarks/` to measure `effect()` re-render overhead with 10,000 DOM nodes.
-- **Task B**: Implement a `batch()` API to allow synchronous grouping of signal mutations without triggering immediate re-renders, solving the diamond problem.
-- **Task C**: Implement comprehensive unit testing (`node:test`) for diamond-dependency cases.
+An abandoned parallel builder implementation is preserved at tag `archive/feat-visual-builder-2026-04`; it is not a backlog item.
 
-### Epic 3: SSR Advanced Streaming (`@basenative/server`)
+### Open — specified well enough to start without asking
 
-- **Task A**: Introduce `@defer` directive parser logic, splitting the document stream parsing to allow "Suspense-like" partial HTML streaming.
-- **Task B**: Link `@defer` chunks to `hydrate()` so that delayed script injection re-evaluates the signal tree automatically.
+1. **Eval harness: score stateful (T3) cases.** `packages/evals` validates and SSR-renders but never hydrates, so signal/computed/effect behaviour is unscored. Add a `hydrate()` stage under a DOM shim, injected like `render` already is. Infrastructure only — the corpus stays human-authored (see "Never delegate").
+2. **Documentation drift**, recorded mechanically in the Gaps section of `llms-full.txt` (regenerate with `scripts/llms-txt.js`): ~30 undocumented `@basenative/components` exports; runtime `devtools`/`debug`/`lazy`/`vitals`/`plugins`/`error-boundary` exports missing from `docs/api/runtime.md`; `createKVProvider` missing from `docs/api/flags.md`.
+3. **`@t` and `@feature` are described as template directives** in the `i18n` and `flags` package descriptions but are registered nowhere in source. Either implement them as directives or correct the descriptions — do not leave the claim.
+4. **CodeQL backlog on `main`** (79 pre-existing alerts; a PR from `fix/codeql-backlog` is in flight — check it first): `packages/notify/src/email.js` interpolates `{{ }}` into HTML email with no escaping (same class as the SSR fix in `@basenative/server`); `packages/notify/src/transports/smtp.js` sets `rejectUnauthorized: false`; `packages/share/src/server.js` `shortId` has modulo bias; eleven file-system races in `cli`, `claude-config`, `doppler`; path injection in `examples/starter` and `scripts/audit`.
+5. **basenative.com dead code**: `PACKAGES` / `renderPackageCards()` / `packageCards` in `examples/express/showcase-data.js` are referenced by no view. Wire `packageCards` into `views/showcase.html` or delete them.
+6. **Escaping parity**: `packages/notify` should use `@basenative/runtime/shared/escape` rather than its own regex templating, once item 4 lands.
+7. **`.tabnine/agent/skills/`** is a committed third copy of the seven Nx skills now supplied by the `nx@nx-claude-plugins` plugin. Remove once the owner confirms nothing consumes it.
 
-### Epic 4: No-Code Visual Builder Engine [Phase 3]
+### Needs owner direction — do not guess
 
-- **Task A**: Initialize `@basenative/visual-builder` package. Build an AST-to-DOM parser that can translate JSON schema representations back into BaseNative primitives safely.
-- **Task B**: Expose a drag-and-drop layout grid component inside `@basenative/components` that hooks directly into the visual builder state machine.
-- **Task C**: Implement a specialized `<bn-canvas>` web component to orchestrate the drag-and-drop interface, strictly respecting `display: contents` constraints on hosts.
-
-### Epic 5: Plugin Infrastructure & Feature Flags [Phase 3]
-
-- **Task A**: Build `@basenative/flags`, enabling edge-cached feature flag evaluations utilizing Cloudflare KV.
-- **Task B**: Overhaul `@basenative/runtime` to expose an internal `registerPlugin()` API hooked into the reactivity lifecycle. Ensure external plugins can intercept signal writes without breaking the diamond-problem resolutions.
-
-<!-- nx configuration start-->
-<!-- Leave the start & end comments to automatically receive updates. -->
+- The eval corpus (`packages/evals/prompts/`, `fixtures/`) — PRD W2. Human-authored only.
+- The launch essay (PRD W5.4) — blocked on eval results that do not exist yet.
+- The registry question: 17 packages have never been published anywhere and none is at 1.0 (`docs/package-inventory.md`). Publish, or mark private, is a per-package product call.
 
 ## General Guidelines for working with Nx
 
