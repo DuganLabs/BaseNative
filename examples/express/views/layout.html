@@ -96,20 +96,59 @@
     text-decoration: none;
   }
   body > [data-bn-site-header] menu {
+    --bn-nav-fade-w: 2rem;
     list-style: none;
     display: flex;
     gap: var(--space-md, 1rem);
     margin: 0;
     padding: 0;
+    padding-inline-end: var(--bn-nav-fade-w);
     flex-wrap: nowrap;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
+    scroll-padding-inline-end: var(--bn-nav-fade-w);
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     min-inline-size: 0;
     max-inline-size: 100%;
   }
   body > [data-bn-site-header] menu::-webkit-scrollbar { display: none; }
+  /* Right-edge scroll affordance: a sticky pseudo-element pinned to the
+     visible edge of the scrollport (not the scrolled content), so it stays
+     in place while the menu scrolls under it. inset-inline-end is negative
+     by the container's own trailing padding — Chromium resolves a sticky
+     offset against the content edge, so without this the fade rests one
+     padding-width short of the edge it needs to cover. The margin cancels
+     the flex gap plus the fade's own width so it adds no extra scroll
+     distance of its own. Base opacity is a constant fade for browsers
+     without scroll-driven animations; the @supports block below fades it
+     out once scrolled to the end, and it never appears at all when the
+     menu doesn't overflow. */
+  body > [data-bn-site-header] menu::after {
+    content: '';
+    position: sticky;
+    inset-inline-end: calc(-1 * var(--bn-nav-fade-w));
+    align-self: stretch;
+    flex: 0 0 var(--bn-nav-fade-w);
+    margin-inline-start: calc(-1 * (var(--bn-nav-fade-w) + var(--space-md, 1rem)));
+    background: linear-gradient(to right, transparent, var(--surface-1, #151310));
+    pointer-events: none;
+    opacity: 1;
+  }
+  @supports (animation-timeline: scroll()) {
+    body > [data-bn-site-header] menu {
+      scroll-timeline: --bn-nav-scroll inline;
+    }
+    body > [data-bn-site-header] menu::after {
+      opacity: 0;
+      animation: bn-nav-fade linear both;
+      animation-timeline: --bn-nav-scroll;
+    }
+    @keyframes bn-nav-fade {
+      0%, 80% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+  }
   body > [data-bn-site-header] menu li {
     list-style: none;
     scroll-snap-align: start;

@@ -750,6 +750,25 @@ describe('Calendar', () => {
     const html = renderCalendar({ startDate: '2025-06-02' });
     assert.ok(html.includes('data-bn="calendar-slot"'));
   });
+
+  it('aligns the hour label, slot, and event to the same grid row', () => {
+    const html = renderCalendar({
+      startDate: '2025-06-02',
+      hours: { start: 9, end: 17 },
+      events: [{ id: 'ev', title: 'Office hours', start: '2025-06-02T11:00', end: '2025-06-02T12:00' }],
+    });
+
+    const labelMatch = html.match(/data-bn="calendar-time-label" data-hour="11" style="grid-row: (\d+)"/);
+    const slotMatch = html.match(/data-bn="calendar-slot" data-date="2025-06-02" data-hour="11" style="grid-row: (\d+)"/);
+    const eventMatch = html.match(/data-event-id="ev"[^>]*style="grid-row: (\d+) \/ span/);
+
+    assert.ok(labelMatch, 'expected an 11 AM time label');
+    assert.ok(slotMatch, 'expected an 11 AM slot');
+    assert.ok(eventMatch, 'expected the 11:00-12:00 event');
+
+    assert.equal(labelMatch[1], slotMatch[1], 'label and slot should share a grid row');
+    assert.equal(labelMatch[1], eventMatch[1], 'label and event should share a grid row');
+  });
 });
 
 describe('PipelineBlock', () => {
