@@ -1,28 +1,24 @@
+import { escapeAttr, isRaw, unwrapRaw } from '@basenative/runtime/shared/escape';
+
 /**
- * Escape a value for safe insertion into an email template.
+ * `@basenative/runtime/shared/escape` is the canonical escaping shared by the
+ * SSR renderer and client runtime (see `packages/runtime/src/shared/escape.js`
+ * and its use in `packages/server/src/render.js`). This module used to carry
+ * its own local copy so notify wouldn't need the dependency; it now imports
+ * the shared one instead, so the two template languages can't drift apart.
  *
- * This package does not depend on `@basenative/runtime`, which owns the
- * canonical escaping used by the SSR renderer and client runtime
- * (`packages/runtime/src/shared/escape.js`). Adding that dependency here
- * would touch the workspace lockfile, which is out of scope for this fix, so
- * this is a deliberate, minimal local copy.
+ * Unlike the runtime's `escapeText`/`escapeAttr` split, every substitution
+ * here uses `escapeAttr`, which also escapes quotes. The runtime can tell
+ * apart a text-node interpolation from an attribute-value one because its
+ * renderer parses the template; this module's `{{ key }}` substitution is a
+ * plain string replace with no idea which context it lands in (`<img
+ * src="{{ src }}">` vs `<p>{{ name }}</p>`). A value safe only in text nodes
+ * would let `" onerror="alert(1)` break out of an attribute, so every
+ * substituted value gets the stricter escaping.
  *
- * Unlike the runtime's `escapeText`/`escapeAttr` split, this escapes quotes
- * too. The runtime can tell apart a text-node interpolation from an
- * attribute-value one because its renderer parses the template; this
- * module's `{{ key }}` substitution is a plain string replace with no idea
- * which context it lands in (`<img src="{{ src }}">` vs `<p>{{ name }}</p>`).
- * A value safe only in text nodes would let `" onerror="alert(1)` break out
- * of an attribute, so every substituted value gets the stricter escaping.
+ * A value wrapped in `raw()` (also exported by `@basenative/runtime/shared/escape`)
+ * is inserted verbatim as trusted markup, matching the SSR renderer's opt-out.
  */
-function escapeText(value) {
-  return String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
 
 /** Named character references this module round-trips through `htmlToText`. */
 const NAMED_ENTITIES = {
@@ -155,7 +151,9 @@ function htmlToText(html) {
  */
 export function renderEmail(template, data) {
   const html = template.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, key) => {
-    return key in data ? escapeText(data[key]) : '';
+    if (!(key in data)) return '';
+    const value = data[key];
+    return isRaw(value) ? unwrapRaw(value) : escapeAttr(value ?? '');
   });
 
   return { html, text: htmlToText(html) };

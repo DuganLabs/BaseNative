@@ -1,6 +1,7 @@
 import { describe, it, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { createServer as createTlsServer } from 'node:tls';
+import { raw } from '@basenative/runtime/shared/escape';
 import { renderEmail, createEmailSender } from './email.js';
 import { createNotificationCenter } from './inapp.js';
 import { createSendGridTransport } from './transports/sendgrid.js';
@@ -61,6 +62,21 @@ describe('renderEmail', () => {
     // Only one real <img> tag exists; the payload's quote did not open a
     // second attribute.
     assert.equal((result.html.match(/<img/gi) || []).length, 1);
+  });
+
+  it('inserts a raw() value verbatim, opting out of escaping', () => {
+    const template = '<div>{{ body }}</div>';
+    const result = renderEmail(template, { body: raw('<strong>Bold</strong>') });
+    assert.equal(result.html, '<div><strong>Bold</strong></div>');
+    // The unescaped markup is real HTML now, so the text fallback should
+    // read it as tags rather than literal angle brackets.
+    assert.equal(result.text, 'Bold');
+  });
+
+  it('does not escape a raw() value even in an attribute position', () => {
+    const template = '<img src="{{ src }}">';
+    const result = renderEmail(template, { src: raw('trusted.png') });
+    assert.equal(result.html, '<img src="trusted.png">');
   });
 });
 
