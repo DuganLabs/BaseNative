@@ -280,10 +280,10 @@ importers:
   packages/evals:
     dependencies:
       '@basenative/runtime':
-        specifier: workspace:^0.6.0
+        specifier: workspace:^0.6.1
         version: link:../runtime
       '@basenative/server':
-        specifier: workspace:^0.6.0
+        specifier: workspace:^0.6.1
         version: link:../server
       '@basenative/validate':
         specifier: workspace:^0.2.0
@@ -318,7 +318,7 @@ importers:
   packages/i18n:
     dependencies:
       '@basenative/runtime':
-        specifier: workspace:^0.6.0
+        specifier: workspace:^0.6.1
         version: link:../runtime
 
   packages/icons: {}
@@ -354,7 +354,7 @@ importers:
   packages/notify:
     dependencies:
       '@basenative/runtime':
-        specifier: workspace:^0.5.0
+        specifier: workspace:^0.6.1
         version: link:../runtime
 
   packages/og-image:
@@ -385,7 +385,7 @@ importers:
   packages/server:
     dependencies:
       '@basenative/runtime':
-        specifier: workspace:^0.6.0
+        specifier: workspace:^0.6.1
         version: link:../runtime
       node-html-parser:
         specifier: ^9.0.4
@@ -395,7 +395,7 @@ importers:
         specifier: workspace:^0.4.0
         version: link:../flags
       '@basenative/i18n':
-        specifier: workspace:^0.4.0
+        specifier: workspace:^0.4.1
         version: link:../i18n
 
   packages/share:

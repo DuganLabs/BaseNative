@@ -1,5 +1,13 @@
 # @basenative/server
 
+## 0.6.1
+
+### Patch Changes
+
+- ebecc61: Static attribute values in a template are re-emitted inside double quotes; a single-quoted value containing `"` could previously break out of them. Bare double quotes in static values are now written as `&quot;` (existing entities are left intact).
+- Updated dependencies [40a3472]
+  - @basenative/runtime@0.6.1
+
 ## 0.6.0
 
 ### Minor Changes

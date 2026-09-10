@@ -1,5 +1,12 @@
 # @basenative/fetch
 
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies [40a3472]
+  - @basenative/runtime@0.6.1
+
 ## 0.3.2
 
 ### Patch Changes

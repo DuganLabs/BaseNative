@@ -10,43 +10,43 @@ Full API surface: [llms-full.txt](./llms-full.txt). Each package's dedicated doc
 - `@basenative/admin` v1.0.0 — Pluggable admin & moderation surface — protected-route helpers, role/permission primitives, audit-l… → packages/admin/src
 - `@basenative/auth` v0.3.0 — Authentication, session management, RBAC, and OAuth2/OIDC for BaseNative apps → docs/api/auth.md
 - `@basenative/auth-webauthn` v1.0.3 — WebAuthn (passkey) adapter for @basenative/auth — server, client, and Cloudflare Workers/Pages hand… → packages/auth-webauthn/src
-- `@basenative/builder` v0.1.2 — Signal-based drag-and-drop component builder for BaseNative — composes layouts, generates clean Bas… → packages/builder/src
-- `@basenative/claude-config` v0.2.0 — Bundled Claude Code subagents, skills, slash commands, hooks, and settings for DuganLabs / BaseNati… → packages/claude-config/src
-- `@basenative/cli` v0.4.0 — The bn CLI — front door for BaseNative / DuganLabs projects (create, prd, speckit, gh, nx, deploy,… → docs/api/cli.md
-- `@basenative/combobox` v1.0.2 — Accessible combobox primitive — typeahead input that filters an existing list and lets the user cre… → packages/combobox/src
-- `@basenative/components` v0.6.0 — 15 semantic HTML UI components rendered as strings (forms, data grids, dialogs, calendar and kanban… → docs/api/components.md
+- `@basenative/builder` v0.1.3 — Signal-based drag-and-drop component builder for BaseNative — composes layouts, generates clean Bas… → packages/builder/src
+- `@basenative/claude-config` v0.2.1 — Bundled Claude Code subagents, skills, slash commands, hooks, and settings for DuganLabs / BaseNati… → packages/claude-config/src
+- `@basenative/cli` v0.4.1 — The bn CLI — front door for BaseNative / DuganLabs projects (create, prd, speckit, gh, nx, deploy,… → docs/api/cli.md
+- `@basenative/combobox` v1.0.3 — Accessible combobox primitive — typeahead input that filters an existing list and lets the user cre… → packages/combobox/src
+- `@basenative/components` v0.6.1 — 15 semantic HTML UI components rendered as strings (forms, data grids, dialogs, calendar and kanban… → docs/api/components.md
 - `@basenative/config` v0.3.0 — Type-safe environment configuration loading and validation → docs/api/config.md
 - `@basenative/date` v0.3.0 — Date utilities, timezone handling, relative time formatting, and date ranges → docs/api/date.md
 - `@basenative/db` v0.3.0 — Query builder with SQLite, PostgreSQL, and Cloudflare D1 adapters → docs/api/db.md
-- `@basenative/doppler` v0.2.0 — Thin developer-experience layer around Doppler — local-dev wrapper, CI helper, project bootstrap, e… → packages/doppler/src
+- `@basenative/doppler` v0.2.1 — Thin developer-experience layer around Doppler — local-dev wrapper, CI helper, project bootstrap, e… → packages/doppler/src
 - `@basenative/eslint-config` v0.2.0 — Shared ESLint flat-config for DuganLabs projects — security, hygiene, zero-noise defaults → packages/eslint-config/src
 - `@basenative/evals` v0.1.0 — Eval harness measuring whether models actually produce correct BaseNative → (private)
-- `@basenative/favicon` v1.0.1 — SVG-first favicon generator + design primitives — apple-touch-icon, maskable, manifest, and the rig… → packages/favicon/src
-- `@basenative/fetch` v0.3.2 — Signal-based resource fetching with caching and SSR preload support → docs/api/fetch.md
+- `@basenative/favicon` v1.0.2 — SVG-first favicon generator + design primitives — apple-touch-icon, maskable, manifest, and the rig… → packages/favicon/src
+- `@basenative/fetch` v0.3.3 — Signal-based resource fetching with caching and SSR preload support → docs/api/fetch.md
 - `@basenative/flags` v0.4.0 — Feature flags with percentage rollouts and @feature template directive → docs/api/flags.md
 - `@basenative/fonts` v0.1.0 — Font loading utilities for BaseNative applications → (private)
-- `@basenative/forms` v1.0.1 — Signal-based form state with dirty/touched tracking and schema validation adapters → docs/api/forms.md
-- `@basenative/i18n` v0.4.0 — ICU message formatting, locale detection, and @t template directive → docs/api/i18n.md
+- `@basenative/forms` v1.0.2 — Signal-based form state with dirty/touched tracking and schema validation adapters → docs/api/forms.md
+- `@basenative/i18n` v0.4.1 — ICU message formatting, locale detection, and @t template directive → docs/api/i18n.md
 - `@basenative/icons` v0.1.0 — Icon system for BaseNative applications → (private)
 - `@basenative/integrations` v0.1.0 — Headless third-party integration wrappers for BaseNative apps → packages/integrations/src
-- `@basenative/keyboard` v1.0.3 — Accessible mobile-first on-screen virtual keyboard primitive — layout-agnostic, signal-driven key s… → packages/keyboard/src
+- `@basenative/keyboard` v1.0.4 — Accessible mobile-first on-screen virtual keyboard primitive — layout-agnostic, signal-driven key s… → packages/keyboard/src
 - `@basenative/logger` v0.3.0 — Structured logging with multiple transports and child logger support → docs/api/logger.md
 - `@basenative/markdown` v0.1.0 — Zero-dependency ES module markdown parser and SSR-safe HTML renderer → packages/markdown/src
-- `@basenative/marketplace` v0.2.0 — Component registry for BaseNative — publishing and discovery infrastructure → docs/api/marketplace.md
+- `@basenative/marketplace` v0.2.1 — Component registry for BaseNative — publishing and discovery infrastructure → docs/api/marketplace.md
 - `@basenative/mcp` v0.2.0 — MCP server exposing BaseNative validation, SSR preview, and directive reference to any agent → packages/mcp/src
-- `@basenative/middleware` v0.3.0 — Request pipeline middleware — CORS, rate limiting, CSRF, and adapters → docs/api/middleware.md
-- `@basenative/notify` v0.3.0 — Email notifications via SMTP and SendGrid with template rendering → docs/api/notify.md
+- `@basenative/middleware` v0.3.1 — Request pipeline middleware — CORS, rate limiting, CSRF, and adapters → docs/api/middleware.md
+- `@basenative/notify` v0.3.1 — Email notifications via SMTP and SendGrid with template rendering → docs/api/notify.md
 - `@basenative/og-image` v0.2.1 — Worker-runtime OG / social share PNG renderer — satori + resvg-wasm with KV-cached fonts and themab… → packages/og-image/src
-- `@basenative/persist` v1.0.2 — Signal-driven local persistence with TTL, conflict resolution, and a server-rehydrate hook for Base… → packages/persist/src
+- `@basenative/persist` v1.0.3 — Signal-driven local persistence with TTL, conflict resolution, and a server-rehydrate hook for Base… → packages/persist/src
 - `@basenative/realtime` v0.3.0 — SSE and WebSocket connections with signal-based reactive message streams → docs/api/realtime.md
-- `@basenative/router` v0.4.3 — SSR-aware path routing with named params, wildcards, and history API integration → docs/api/router.md
-- `@basenative/runtime` v0.6.0 — Signal-based web runtime over native HTML — zero build step, zero production dependencies → docs/api/runtime.md
-- `@basenative/server` v0.6.0 — Server-side rendering with streaming support for BaseNative templates → docs/api/server.md
+- `@basenative/router` v0.4.4 — SSR-aware path routing with named params, wildcards, and history API integration → docs/api/router.md
+- `@basenative/runtime` v0.6.1 — Signal-based web runtime over native HTML — zero build step, zero production dependencies → docs/api/runtime.md
+- `@basenative/server` v0.6.1 — Server-side rendering with streaming support for BaseNative templates → docs/api/server.md
 - `@basenative/share` v1.0.1 — Native Web Share + clipboard fallback, share-card mint client+server, and OG-redirect landing page… → packages/share/src
 - `@basenative/station` v0.2.0 — Queue-driven local-inference primitive — drives a cloudflared-tunneled vLLM tower (or any OpenAI-co… → packages/station/src
 - `@basenative/tenant` v0.3.0 — Multi-tenant middleware with subdomain/path resolution and row-level query scoping → docs/api/tenant.md
 - `@basenative/tsconfig` v0.2.0 — Shared base tsconfigs for DuganLabs projects — strict, modern, runtime-targeted → packages/tsconfig/src
-- `@basenative/upload` v0.3.0 — File upload handling with R2 and S3 adapter support → docs/api/upload.md
+- `@basenative/upload` v0.3.1 — File upload handling with R2 and S3 adapter support → docs/api/upload.md
 - `@basenative/validate` v0.2.0 — Structured validation for BaseNative templates — machine-actionable errors a model can repair from… → packages/validate/src
-- `@basenative/visual-builder` v0.2.0 — No-code template builder for BaseNative components → docs/api/visual-builder.md
-- `@basenative/wrangler-preset` v0.2.0 — Pinned Wrangler version + typed wrangler.toml fragment generator. Pin once, every project moves tog… → packages/wrangler-preset/src
+- `@basenative/visual-builder` v0.2.1 — No-code template builder for BaseNative components → docs/api/visual-builder.md
+- `@basenative/wrangler-preset` v0.2.1 — Pinned Wrangler version + typed wrangler.toml fragment generator. Pin once, every project moves tog… → packages/wrangler-preset/src

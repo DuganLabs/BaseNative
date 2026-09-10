@@ -1,6 +1,6 @@
 {
   "name": "@basenative/cli",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "The bn CLI \u2014 front door for BaseNative / DuganLabs projects (create, prd, speckit, gh, nx, deploy, doctor)",
   "type": "module",
   "bin": {

@@ -1,5 +1,11 @@
 # @basenative/doppler
 
+## 0.2.1
+
+### Patch Changes
+
+- 99561f7: Fix a file-system TOCTOU race (CodeQL `js/file-system-race`) in `bn doppler init`: the starter `doppler-required.json` write used an `existsSync` check followed by a separate write, which could silently clobber a file created in between. Now uses an exclusive create (`{ flag: 'wx' }`) and handles `EEXIST`. No user-visible behavior change.
+
 ## 0.2.0
 
 ### Minor Changes
