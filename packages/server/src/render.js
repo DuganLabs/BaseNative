@@ -159,7 +159,11 @@ function processNode(node, ctx, options) {
         continue;
       }
 
-      attrs.push({ name, value });
+      // Static attribute text is the template author's own markup, but the parser
+      // hands it back unquoted: a single-quoted value containing `"` would break
+      // out of the double quotes we re-emit. Neutralise bare quotes only — the
+      // value may legitimately contain entities already, so no full re-escape.
+      attrs.push({ name, value: value ? value.replace(/"/g, '&quot;') : value });
     }
 
     node.rawAttrs = attrs
