@@ -1,33 +1,88 @@
 # BaseNative
 
-**A signal-based web runtime over native HTML — zero build step, zero production dependencies.**
+**The UI runtime for code you didn't write.**
 
-BaseNative makes the browser's own primitives the component model. A `<template>` element is the component. A `{{ }}` interpolation is the binding. `signal()` is the state. No JSX, no virtual DOM, no namespace theater.
+A model can generate a BaseNative interface at inference time — no build step, and
+no escape hatch to arbitrary JavaScript. Every other generative-UI system today
+pre-registers a fixed component set and has the model pick from it. BaseNative
+streams arbitrary UI.
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![npm](https://img.shields.io/npm/v/@basenative/runtime)](https://www.npmjs.com/package/@basenative/runtime)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org)
 [![Tests](https://github.com/DuganLabs/basenative/actions/workflows/ci.yml/badge.svg)](https://github.com/DuganLabs/basenative/actions/workflows/ci.yml)
 
 ---
 
-## Why BaseNative?
+## Why this is different
 
-| Problem | BaseNative |
-|---------|------------|
-| Frameworks ship 50-300KB of runtime | Core runtime is < 5KB gzipped |
-| Build pipelines break, lock you in | No build step — `<script type="module">` is enough |
-| JSX/template syntax is proprietary | Standard HTML — any LLM reads it in zero shots |
-| State is tangled across multiple files | Trinity Standard — state + logic + template in one file |
-| CSS-in-JS pollutes markup | Zero inline styles — cascade layers only |
+### 1. Model-generated templates cannot execute arbitrary code
+
+The expression evaluator never calls `eval` or `new Function`. It implements a
+deliberate subset — identifiers, member and computed access, calls, literals,
+arithmetic, comparison, logical operators, ternary, array and object literals —
+and blocks access to `constructor`, `prototype`, and `__proto__`.
+
+This is the security boundary the whole idea rests on, so it is audited
+adversarially rather than assumed. See [SECURITY.md](SECURITY.md) for reporting.
+
+### 2. `render()` takes a template string at runtime
+
+No build step means no compile step in the agent loop. A model emits a template and
+it renders immediately:
+
+```js
+import { render } from '@basenative/server';
+
+render('<template @if="user"><p>{{ user.name }}</p></template>', { user });
+```
+
+### 3. The model can check its own output
+
+Reading a syntax is not the same as writing it. BaseNative's syntax is a hybrid of
+four ecosystems, and the failure mode for a model is not invention but **confident
+regression to the nearest neighbour** — reaching for `v-if` because the syntax
+rhymes with Vue's, or Angular 17's `@if (cond) { }` block form because `@if` is a
+real directive name here.
+
+So the toolchain catches it:
+
+- **[`@basenative/validate`](packages/validate)** returns structured, repairable
+  diagnostics. Every error carries the corrected syntax rather than a description of
+  the problem — the design rule is that a model must be able to fix the template
+  from the error object alone, with no documentation.
+- **[`@basenative/mcp`](packages/mcp)** exposes that to any agent over MCP, so a
+  model validates, renders, and checks expressions instead of guessing.
+- **[`@basenative/evals`](packages/evals)** measures whether that actually works,
+  running a hand-authored corpus against multiple models with and without the
+  validation loop.
+
+```js
+validateTemplate('<div v-if="isAdmin">…</div>');
+// BN_E_FOREIGN_DIRECTIVE — "v-if" is Vue syntax
+// fix: <template @if="isAdmin">
+```
+
+> **Eval results are not published yet.** The harness ships; the corpus is
+> hand-authored and in progress. This README will carry the numbers when they
+> exist, not before.
 
 ---
 
 ## Quick Start
 
+`@basenative/*` publishes to **GitHub Packages**, not npmjs.org. Consuming it needs
+a GitHub token with `read:packages` — see
+[docs/CONSUMING-FROM-GH-PACKAGES.md](docs/CONSUMING-FROM-GH-PACKAGES.md).
+
 ```bash
+# .npmrc in your project:
+#   @basenative:registry=https://npm.pkg.github.com/
 npm install @basenative/runtime @basenative/server
 ```
+
+> Older `0.2.x`/`0.3.x` builds of some packages remain on npmjs.org from before the
+> move. They are stale — [docs/package-inventory.md](docs/package-inventory.md)
+> records exactly what is published where.
 
 **Server (Node.js / Cloudflare Workers):**
 
@@ -90,8 +145,11 @@ hydrate(document.getElementById('app'), { count, doubled });
 | [`@basenative/cli`](packages/cli) | `create-basenative` scaffolding and `bn` dev commands |
 | [`@basenative/fonts`](packages/fonts) | Font loading utilities |
 | [`@basenative/icons`](packages/icons) | Icon system |
-| [`@basenative/marketplace`](packages/marketplace) | Community component registry |
+| [`@basenative/marketplace`](packages/marketplace) | Component registry (infrastructure; no third-party packages published yet) |
 | [`@basenative/visual-builder`](packages/visual-builder) | No-code template builder |
+| [`@basenative/validate`](packages/validate) | Structured template diagnostics a model can repair from |
+| [`@basenative/mcp`](packages/mcp) | MCP server — validate, render, directive reference, scaffolding |
+| [`@basenative/evals`](packages/evals) | Eval harness measuring model output correctness |
 
 ---
 
@@ -195,6 +253,23 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Contributions welcome — open an issue 
 ## Security
 
 See [SECURITY.md](SECURITY.md) for the security policy and how to report vulnerabilities.
+
+## Bundle size
+
+Measured by `scripts/bundle-size.js`, enforced in CI:
+
+| Package | Gzipped | Budget |
+|---|---|---|
+| `@basenative/runtime` | 8.8KB | 10KB |
+| `@basenative/server` | 2.2KB | 16KB |
+
+Zero production dependencies in the runtime.
+
+This is a supporting fact, not the argument. Bundle size is a fight with Svelte
+that BaseNative does not need to win — the CSP sandbox and runtime string rendering
+are the reasons to use it.
+
+---
 
 ## License
 

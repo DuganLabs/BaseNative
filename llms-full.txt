@@ -431,7 +431,7 @@ Deploys the application to BaseNative Cloud. **Options:** - `--env <name>` — t
 Manages environment variables for the project. **Subcommands:** - `bn env set <KEY> <VALUE>` — sets an environment variable - `bn env get <KEY>` — reads a single variable - `bn env list` — lists all configured variables - `bn env delete <K…
 
 #### `bn analyze`
-Analyzes bundle size and reports dependency sizes. Useful for verifying that `@basenative/runtime` stays under the 5KB gzipped budget.
+Analyzes bundle size and reports dependency sizes. Useful for verifying that `@basenative/runtime` stays under its 10KB gzipped budget (currently 8.8KB).
 
 #### `bn help`
 Prints the help message listing all commands.
@@ -1539,7 +1539,7 @@ packages/markdown/src/renderer.js · `import { render } from '@basenative/markdo
 
 ### `@basenative/marketplace` (v0.2.0)
 
-Community component marketplace for BaseNative
+Component registry for BaseNative — publishing and discovery infrastructure
 
 Source: `packages/marketplace/src` · Docs: `docs/api/marketplace.md`
 

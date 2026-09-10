@@ -32,7 +32,7 @@ Full API surface: [llms-full.txt](./llms-full.txt). Each package's dedicated doc
 - `@basenative/keyboard` v1.0.1 — Accessible mobile-first on-screen virtual keyboard primitive — layout-agnostic, signal-driven key s… → packages/keyboard/src
 - `@basenative/logger` v0.3.0 — Structured logging with multiple transports and child logger support → docs/api/logger.md
 - `@basenative/markdown` v0.1.0 — Zero-dependency ES module markdown parser and SSR-safe HTML renderer → packages/markdown/src
-- `@basenative/marketplace` v0.2.0 — Community component marketplace for BaseNative → docs/api/marketplace.md
+- `@basenative/marketplace` v0.2.0 — Component registry for BaseNative — publishing and discovery infrastructure → docs/api/marketplace.md
 - `@basenative/mcp` v0.1.0 — MCP server exposing BaseNative validation, SSR preview, and directive reference to any agent → packages/mcp/src
 - `@basenative/middleware` v0.3.0 — Request pipeline middleware — CORS, rate limiting, CSRF, and adapters → docs/api/middleware.md
 - `@basenative/notify` v0.3.0 — Email notifications via SMTP and SendGrid with template rendering → docs/api/notify.md
