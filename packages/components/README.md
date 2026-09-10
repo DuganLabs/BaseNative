@@ -119,8 +119,8 @@ All components are pure functions that return an HTML string. See [docs/api/comp
 ### Scheduling
 - `renderCalendar(options)` — Week view with hourly drop zones and draggable events. Buckets by the local calendar date of each parsed timestamp (or `timeZone`), marks today (`now`), derives the hour range from the events, and repeats multi-day events per day.
 - `renderPipelineBlock(options)` — Draggable card that can be dropped onto the calendar.
-- `renderPipeline(options)` — Kanban board of columns and cards.
-- `initCalendarDragDrop(container, { onDrop, dragSource?, snapMinutes? })` / `initPipelineDragDrop(container, { onCardMove })` — Client-side HTML5 drag-and-drop; return `{ destroy() }`. Calendar drops report `minute`/`datetime` as well as the slot, and `dragSource` lets a sidebar outside the calendar supply payloads.
+- `renderPipeline(options)` — Kanban board of columns and cards; columns are sections labelled by a header with a card count, cards take an escaped `badge` plus `actions`/`footer` HTML slots, and known `status` values get a token-driven accent.
+- `initCalendarDragDrop(container, { onDrop, dragSource?, snapMinutes? })` / `initPipelineDragDrop(container, { onCardMove })` — Client-side HTML5 drag-and-drop; return `{ destroy() }`. Calendar drops report `minute`/`datetime` as well as the slot, `dragSource` lets a sidebar outside the calendar supply payloads, and pipeline drops report the real `position` within the target column.
 - `createCalendarState(options)` / `createPipelineState(options)` — DOM-free stores with collision detection and change callbacks.
 - `eventsCollide(a, b)` / `updateEvent(event, overrides)` / `getEventDuration(start, end)` — Calendar helpers.
 

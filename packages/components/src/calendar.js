@@ -23,6 +23,7 @@
  */
 import { escapeAttr, escapeText } from '@basenative/runtime/shared/escape';
 import { nextId } from './ids.js';
+import { renderBadge } from './badge.js';
 import { attrsSuffix } from './internal/attrs.js';
 import { bindDrag, clearDragState, readDragData } from './internal/drag.js';
 
@@ -326,14 +327,39 @@ export function renderPipelineBlock(options = {}) {
 }
 
 /**
+ * Render one kanban card. Title, subtitle, description and badge are escaped
+ * text; `actions` and `footer` are HTML slots.
+ */
+function renderPipelineCard(card) {
+  const statusAttr = card.status ? ` data-status="${escapeAttr(card.status)}"` : '';
+  const badge = card.badge
+    ? renderBadge(escapeText(card.badge), { variant: card.badgeVariant || 'default' })
+    : '';
+  return `<article data-bn="pipeline-card" data-card-id="${escapeAttr(card.id)}" draggable="true"${statusAttr} title="${escapeAttr(card.title)}">
+  <div data-bn="pipeline-card-title">${escapeText(card.title)}</div>${badge}
+  ${card.subtitle ? `<div data-bn="pipeline-card-subtitle">${escapeText(card.subtitle)}</div>` : ''}
+  ${card.description ? `<div data-bn="pipeline-card-description">${escapeText(card.description)}</div>` : ''}
+  ${card.actions ? `<div data-bn="pipeline-card-actions">${card.actions}</div>` : ''}
+  ${card.footer ? `<footer data-bn="pipeline-card-footer">${card.footer}</footer>` : ''}
+</article>`;
+}
+
+/**
  * Render a kanban-style pipeline view with draggable columns and cards.
  *
- * Column titles, card title/subtitle/description and emptyMessage are escaped
- * text; ids and status are escaped attributes.
+ * Column titles, card title/subtitle/description/badge and emptyMessage are
+ * escaped text; ids and status are escaped attributes. Each column is a
+ * `<section aria-labelledby>` pointing at its header, which shows the title
+ * and a count (the number of cards placed in the column unless `count` is
+ * given).
  *
  * @param {object} options
- * @param {Array} options.columns - Column definitions: [{ id: 'new', title: 'New Leads' }, ...]
+ * @param {Array} options.columns - Column definitions: [{ id: 'new', title: 'New Leads', count?: 3 }, ...]
  * @param {Array} options.cards - Card definitions: [{ id: 'c1', columnId: 'new', title: 'Acme Corp', ... }, ...]
+ * @param {string} [options.cards[].badge]        Escaped text rendered as a badge under the title
+ * @param {string} [options.cards[].badgeVariant] Badge variant, default 'default'
+ * @param {string} [options.cards[].actions]      HTML slot: not escaped; pass trusted markup only
+ * @param {string} [options.cards[].footer]       HTML slot: not escaped; pass trusted markup only
  * @param {string} [options.id] - Container ID; defaults to nextId('pipeline')
  * @param {string} [options.emptyMessage] - Message when no cards
  * @param {string} [options.attrs] - Raw attribute markup appended to the wrapper; not escaped
@@ -350,17 +376,12 @@ export function renderPipeline(options = {}) {
 
   const columnElems = columns.map(col => {
     const colCards = cards.filter(c => c.columnId === col.id);
-    const cardsHtml = colCards.map(card => {
-      const statusAttr = card.status ? ` data-status="${escapeAttr(card.status)}"` : '';
-      return `<article data-bn="pipeline-card" data-card-id="${escapeAttr(card.id)}" draggable="true"${statusAttr} title="${escapeAttr(card.title)}">
-  <div data-bn="pipeline-card-title">${escapeText(card.title)}</div>
-  ${card.subtitle ? `<div data-bn="pipeline-card-subtitle">${escapeText(card.subtitle)}</div>` : ''}
-  ${card.description ? `<div data-bn="pipeline-card-description">${escapeText(card.description)}</div>` : ''}
-</article>`;
-    }).join('');
+    const headingId = escapeAttr(`${id}-column-${col.id}`);
+    const count = col.count ?? colCards.length;
+    const cardsHtml = colCards.map(renderPipelineCard).join('');
 
-    return `<section data-bn="pipeline-column" data-column-id="${escapeAttr(col.id)}">
-  <header data-bn="pipeline-column-header">${escapeText(col.title)}</header>
+    return `<section data-bn="pipeline-column" data-column-id="${escapeAttr(col.id)}" aria-labelledby="${headingId}">
+  <header data-bn="pipeline-column-header" id="${headingId}"><span data-bn="pipeline-column-title">${escapeText(col.title)}</span><span data-bn="pipeline-column-count">${escapeText(count)}</span></header>
   <div data-bn="pipeline-column-cards">
     ${cardsHtml || `<div data-bn="pipeline-empty">${escapeText(emptyMessage)}</div>`}
   </div>
@@ -494,7 +515,34 @@ export function initCalendarDragDrop(container, callbacks = {}) {
 }
 
 /**
+ * Index the dragged card should take among the target column's cards (the
+ * dragged card itself excluded): the index of the card under the pointer, +1
+ * when the pointer is in its lower half, or the column's length when dropped
+ * on empty space.
+ */
+function dropPosition(e, cardArea, draggedId) {
+  const all = typeof cardArea.querySelectorAll === 'function'
+    ? Array.from(cardArea.querySelectorAll('[data-card-id]'))
+    : [];
+  const others = all.filter(c => c.dataset?.cardId !== draggedId);
+  const over = e.target.closest('[data-card-id]');
+  if (!over) return others.length;
+  if (over.dataset?.cardId === draggedId) return Math.max(all.indexOf(over), 0);
+  const index = others.indexOf(over);
+  if (index < 0) return others.length;
+  const rect = typeof over.getBoundingClientRect === 'function' ? over.getBoundingClientRect() : null;
+  const below = Boolean(rect && rect.height > 0 && typeof e.clientY === 'number' && e.clientY > rect.top + rect.height / 2);
+  return below ? index + 1 : index;
+}
+
+/**
  * Client-side: Initialize drag-and-drop on a pipeline container.
+ *
+ * `position` is the index the card should occupy among the target column's
+ * cards after the move (excluding itself): the index of the card under the
+ * pointer, one more when the pointer is in that card's lower half, or the
+ * column's card count when dropped on empty space. Pass it straight to
+ * `createPipelineState().moveCard(cardId, targetColumnId, position)`.
  *
  * @param {HTMLElement} container  The [data-bn="pipeline"] element
  * @param {object} callbacks
@@ -547,7 +595,7 @@ export function initPipelineDragDrop(container, callbacks = {}) {
         onCardMove({
           cardId: data.cardId,
           targetColumnId: targetColumn.dataset.columnId,
-          position: null,
+          position: dropPosition(e, cardArea, data.cardId),
         });
       }
     },

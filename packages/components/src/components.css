@@ -1504,6 +1504,20 @@
   border-bottom: 2px solid var(--bn-color-border);
 }
 
+[data-bn="pipeline-column-count"] {
+  display: inline-block;
+  min-inline-size: 1.5em;
+  margin-inline-start: var(--bn-space-2);
+  padding: 0 var(--bn-space-2);
+  border-radius: var(--bn-radius-full);
+  background: var(--bn-color-border);
+  color: var(--bn-color-text);
+  font-size: var(--bn-font-size-xs);
+  font-weight: var(--bn-font-weight-medium);
+  line-height: 1.5;
+  text-align: center;
+}
+
 [data-bn="pipeline-column-cards"] {
   display: flex;
   flex-direction: column;
@@ -1569,6 +1583,45 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+[data-bn="pipeline-card"] > [data-bn="badge"] { align-self: flex-start; }
+
+[data-bn="pipeline-card-actions"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bn-space-1);
+  margin-block-start: var(--bn-space-1);
+}
+
+[data-bn="pipeline-card-footer"] {
+  margin-block-start: var(--bn-space-1);
+  padding-block-start: var(--bn-space-1);
+  border-block-start: var(--bn-border-width) solid var(--bn-color-border-light);
+  font-size: var(--bn-font-size-xs);
+  color: var(--bn-color-text-muted);
+}
+
+/* Pipeline status accent (data-status on cards and blocks): the same semantic
+   -600 tokens the badge/alert palette uses, as a start-edge bar. Statuses
+   outside these lists fall back to --bn-pipeline-status-color. */
+[data-bn="pipeline-card"][data-status],
+[data-bn="pipeline-block"][data-status] {
+  border-inline-start: 3px solid var(--bn-pipeline-status-color);
+}
+:is([data-bn="pipeline-card"], [data-bn="pipeline-block"]):is(
+  [data-status="new"], [data-status="open"], [data-status="contacted"], [data-status="scheduled"], [data-status="sent"]
+) { --bn-pipeline-status-color: var(--bn-color-info-600); }
+:is([data-bn="pipeline-card"], [data-bn="pipeline-block"]):is(
+  [data-status="qualified"], [data-status="won"], [data-status="converted"], [data-status="completed"],
+  [data-status="paid"], [data-status="accepted"], [data-status="active"]
+) { --bn-pipeline-status-color: var(--bn-color-success-600); }
+:is([data-bn="pipeline-card"], [data-bn="pipeline-block"]):is(
+  [data-status="proposal_sent"], [data-status="negotiating"], [data-status="in_progress"], [data-status="invoiced"],
+  [data-status="pending"], [data-status="paused"]
+) { --bn-pipeline-status-color: var(--bn-color-warning-600); }
+:is([data-bn="pipeline-card"], [data-bn="pipeline-block"]):is(
+  [data-status="lost"], [data-status="rejected"], [data-status="declined"], [data-status="cancelled"], [data-status="canceled"]
+) { --bn-pipeline-status-color: var(--bn-color-error-600); }
 
 [data-bn="pipeline-empty"] {
   padding: var(--bn-space-4);

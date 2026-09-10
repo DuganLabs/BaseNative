@@ -32,7 +32,7 @@ The individual layers are also exported. `./layers.css` contains only the `@laye
 Every renderer uses the runtime's shared `escapeText` / `escapeAttr` (`@basenative/runtime/shared/escape`):
 
 - **Escaped** — every attribute interpolation (`id`, `name`, `value`, `placeholder`, `alt`, `src`, `href`, `aria-*`, `data-*`, variant/size/position fragments) and every text-semantic field (`label`, `helpText`, `error`, `caption`, `emptyMessage`, item labels, tooltip content, breadcrumb labels, avatar name, tree/table cell values, calendar and pipeline titles).
-- **Not escaped (HTML slots)** — designated composition points documented on each parameter as "HTML slot: not escaped; pass trusted markup only": button content, card header/body/footer, alert content, badge content, dialog/drawer body and footer, accordion and tab panel content, dropdown/tooltip trigger, menu/command/tree icons, breadcrumb separator, a DataGrid column's `render()` result, a custom `renderItem`, and every `attrs` option.
+- **Not escaped (HTML slots)** — designated composition points documented on each parameter as "HTML slot: not escaped; pass trusted markup only": button content, card header/body/footer, alert content, badge content, dialog/drawer body and footer, accordion and tab panel content, dropdown/tooltip trigger, menu/command/tree icons, breadcrumb separator, pipeline card `actions`/`footer`, a DataGrid column's `render()` result, a custom `renderItem`, and every `attrs` option.
 
 ```js
 renderInput({ name: 'q', label: '<b>Not bold</b>' })   // label is escaped
@@ -947,15 +947,19 @@ Options: `id` (required, `data-block-id`), `title` (required), `subtitle`, `stat
 ```js
 renderPipeline({
   columns: [{ id: 'new', title: 'New leads' }, { id: 'won', title: 'Won' }],
-  cards: [{ id: 'c1', columnId: 'new', title: 'Acme Corp', subtitle: '$12k', description: 'Boiler replacement' }],
+  cards: [{
+    id: 'c1', columnId: 'new', title: 'Acme Corp', subtitle: '$12k', description: 'Boiler replacement',
+    status: 'qualified', badge: 'Qualified', badgeVariant: 'success',
+    actions: renderButton('Convert', { size: 'sm', attrs: 'data-action="convert" data-id="c1"' }),
+  }],
 })
 ```
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `columns` | `Array<{ id, title }>` | `[]` | |
-| `cards` | `Array<{ id, columnId, title, subtitle?, description?, status? }>` | `[]` | Cards are placed by `columnId` |
-| `id` | `string` | `bn-pipeline-{n}` | |
+| `columns` | `Array<{ id, title, count? }>` | `[]` | `count` overrides the number shown in the header (default: cards placed in the column) |
+| `cards` | `Array<{ id, columnId, title, subtitle?, description?, status?, badge?, badgeVariant?, actions?, footer? }>` | `[]` | Cards are placed by `columnId`. `badge` is escaped text rendered through `renderBadge` (`badgeVariant` default `'default'`); `actions` and `footer` are HTML slots: not escaped; pass trusted markup only |
+| `id` | `string` | `bn-pipeline-{n}` | Prefixes every column heading id |
 | `emptyMessage` | `string` | `'No items'` | Shown inside a column with no cards |
 | `attrs` | `string` | `''` | |
 
@@ -963,16 +967,21 @@ Renders:
 
 ```html
 <div data-bn="pipeline" id="bn-pipeline-x">
-  <section data-bn="pipeline-column" data-column-id="new">
-    <header data-bn="pipeline-column-header">New leads</header>
+  <section data-bn="pipeline-column" data-column-id="new" aria-labelledby="bn-pipeline-x-column-new">
+    <header data-bn="pipeline-column-header" id="bn-pipeline-x-column-new"><span data-bn="pipeline-column-title">New leads</span><span data-bn="pipeline-column-count">1</span></header>
     <div data-bn="pipeline-column-cards">
-      <article data-bn="pipeline-card" data-card-id="c1" draggable="true" title="Acme Corp">
-        <div data-bn="pipeline-card-title">Acme Corp</div><div data-bn="pipeline-card-subtitle">$12k</div><div data-bn="pipeline-card-description">…</div>
+      <article data-bn="pipeline-card" data-card-id="c1" draggable="true" data-status="qualified" title="Acme Corp">
+        <div data-bn="pipeline-card-title">Acme Corp</div><span data-bn="badge" data-variant="success">Qualified</span>
+        <div data-bn="pipeline-card-subtitle">$12k</div><div data-bn="pipeline-card-description">…</div>
+        <div data-bn="pipeline-card-actions">…</div>
+        <footer data-bn="pipeline-card-footer">…</footer>
       </article>
     </div>
   </section>
 </div>
 ```
+
+Accessibility: each column is a `<section>` labelled by its header (`aria-labelledby` → the header's id). `status` becomes `data-status` on the card (and on `renderPipelineBlock` blocks): `components.css` draws a start-edge accent from the same semantic `-600` tokens the badges use — info for `new`/`open`/`contacted`/`scheduled`/`sent`, success for `qualified`/`won`/`converted`/`completed`/`paid`/`accepted`/`active`, warning for `proposal_sent`/`negotiating`/`in_progress`/`invoiced`/`pending`/`paused`, error for `lost`/`rejected`/`declined`/`cancelled`/`canceled` — and any other status falls back to `--bn-pipeline-status-color`.
 
 ## Drag and Drop
 
@@ -989,7 +998,7 @@ const cal = initCalendarDragDrop(document.querySelector('[data-bn="calendar"]'),
   snapMinutes: 15,
 });
 const board = initPipelineDragDrop(document.querySelector('[data-bn="pipeline"]'), {
-  onCardMove: ({ cardId, targetColumnId, position }) => { /* position is always null */ },
+  onCardMove: ({ cardId, targetColumnId, position }) => state.moveCard(cardId, targetColumnId, position),
 });
 cal.destroy(); board.destroy();
 ```
@@ -997,6 +1006,8 @@ cal.destroy(); board.destroy();
 While dragging, the dragged element gets `data-dragging` and the hovered slot/column gets `data-drop-target`; both are cleared on `dragend`. `eventId` is the `data-event-id` of a calendar event or the `data-block-id` of a pipeline block.
 
 **Calendar drops.** `date` and `hour` identify the slot; `minute` is the pointer's offset within the slot, snapped down to `snapMinutes` (default 15; `1` reports exact minutes; `0` when no geometry is available), and `datetime` is `${date}T${HH}:${MM}`, a local datetime string ready for `new Date()`.
+
+**Pipeline drops.** `position` is the index the card should occupy among the target column's cards after the move (itself excluded): the index of the card under the pointer, one more when the pointer is in that card's lower half, or the column's card count when dropped on empty space. It is what `createPipelineState().moveCard(cardId, targetColumnId, position)` expects.
 
 **External drag sources.** `dragSource` is an element whose `dragstart` events also supply payloads — the documented sidebar of `renderPipelineBlock` cards, which lives outside the calendar and would otherwise never be heard. It defaults to the container, may be any element (including an ancestor of the container — its own events are not handled twice), and is unbound by `destroy()`.
 
@@ -1041,8 +1052,8 @@ const board = createPipelineState({
   columns: [{ id: 'new', title: 'New' }, { id: 'won', title: 'Won' }],
   initialCards: [{ id: 'c1', columnId: 'new', title: 'Acme' }],
 });
-board.onCardMove = ({ cardId, targetColumnId }) => save(cardId, targetColumnId);
-board.moveCard('c1', 'won');
+board.onCardMove = ({ cardId, targetColumnId, position }) => save(cardId, targetColumnId, position);
+board.moveCard('c1', 'won', 0); // first in the column
 ```
 
 | Member | Description |
@@ -1051,7 +1062,7 @@ board.moveCard('c1', 'won');
 | `getCard(id)` / `getColumn(id)` | |
 | `addCard(card)` | Requires `id`, `columnId`, `title` |
 | `removeCard(id)` | `true` when removed |
-| `moveCard(id, targetColumnId, position?)` | Returns the updated card, or `null` when the card or column is unknown |
+| `moveCard(id, targetColumnId, position?)` | Moves the card, inserting it at `position` among the target column's cards (as reported by `initPipelineDragDrop`) or keeping its place in the overall order when omitted; returns the updated card, or `null` when the card or column is unknown |
 | `reorderCards(columnId, cardOrder)` | Sorts that column's cards by the given id order |
 | `updateCard(id, overrides)` | Shallow merge |
 | `getCardsInColumn(columnId)` | |

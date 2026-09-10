@@ -255,10 +255,12 @@ export function createPipelineState(options = {}) {
     },
 
     /**
-     * Move a card to a new column.
+     * Move a card to a new column, optionally at an index within it.
      * @param {string} id - Card ID
      * @param {string} targetColumnId - Target column ID
-     * @param {number} [position] - Position within column (append if not specified)
+     * @param {number|null} [position] - Index among the target column's cards
+     *   (the moved card excluded), as reported by initPipelineDragDrop; when
+     *   null the card keeps its place in the overall order
      * @returns {object|null} Updated card or null if not found
      */
     moveCard: (id, targetColumnId, position = null) => {
@@ -269,7 +271,19 @@ export function createPipelineState(options = {}) {
       if (!column) return null;
 
       const updated = { ...card, columnId: targetColumnId };
-      cardsData = cardsData.map(c => (c.id === id ? updated : c));
+      if (typeof position === 'number' && Number.isFinite(position)) {
+        const others = cardsData.filter(c => c.id !== id);
+        const columnIndexes = [];
+        others.forEach((c, i) => { if (c.columnId === targetColumnId) columnIndexes.push(i); });
+        const slot = Math.max(0, Math.floor(position));
+        const at = columnIndexes.length === 0
+          ? others.length
+          : slot < columnIndexes.length ? columnIndexes[slot] : columnIndexes[columnIndexes.length - 1] + 1;
+        others.splice(at, 0, updated);
+        cardsData = others;
+      } else {
+        cardsData = cardsData.map(c => (c.id === id ? updated : c));
+      }
 
       state.onCardChange?.({ type: 'move', card: updated });
       state.onCardMove?.({ cardId: id, targetColumnId, position });
