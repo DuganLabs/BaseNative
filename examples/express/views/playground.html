@@ -117,26 +117,41 @@ let tempSource = null;
 
 celsiusInput.addEventListener('input', () => {
   tempSource = 'c';
-  celsius.set(celsiusInput.value);
-  const c = parseFloat(celsiusInput.value);
-  if (!isNaN(c)) fahrenheit.set(String(((c * 9) / 5 + 32).toFixed(1)));
+  const raw = celsiusInput.value;
+  celsius.set(raw);
+  if (raw.trim() === '') {
+    fahrenheit.set('');
+  } else {
+    const c = parseFloat(raw);
+    fahrenheit.set(isNaN(c) ? null : String(((c * 9) / 5 + 32).toFixed(1)));
+  }
 });
 
 fahrenheitInput.addEventListener('input', () => {
   tempSource = 'f';
-  fahrenheit.set(fahrenheitInput.value);
-  const f = parseFloat(fahrenheitInput.value);
-  if (!isNaN(f)) celsius.set(String((((f - 32) * 5) / 9).toFixed(1)));
+  const raw = fahrenheitInput.value;
+  fahrenheit.set(raw);
+  if (raw.trim() === '') {
+    celsius.set('');
+  } else {
+    const f = parseFloat(raw);
+    celsius.set(isNaN(f) ? null : String((((f - 32) * 5) / 9).toFixed(1)));
+  }
 });
 
+// `null` marks the paired field as invalid (as opposed to '' — not yet
+// typed) so a non-numeric entry clears the other field and reports why,
+// instead of echoing the raw text next to a stale converted value.
 effect(() => {
   const c = celsius(), f = fahrenheit();
   if (tempSource === 'c') {
-    fahrenheitInput.value = f;
-    tempOutput.textContent = c ? `${c}°C = ${f}°F` : 'Enter a temperature';
+    fahrenheitInput.value = f == null ? '' : f;
+    tempOutput.textContent =
+      c.trim() === '' ? 'Enter a temperature' : f == null ? 'Enter a number' : `${c}°C = ${f}°F`;
   } else if (tempSource === 'f') {
-    celsiusInput.value = c;
-    tempOutput.textContent = f ? `${f}°F = ${c}°C` : 'Enter a temperature';
+    celsiusInput.value = c == null ? '' : c;
+    tempOutput.textContent =
+      f.trim() === '' ? 'Enter a temperature' : c == null ? 'Enter a number' : `${f}°F = ${c}°C`;
   }
 });
 
