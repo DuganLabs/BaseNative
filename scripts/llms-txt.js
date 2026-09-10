@@ -569,7 +569,8 @@ function findPhantomDirectiveClaims(entry) {
   const { dirPath, pkg } = entry;
   const m = pkg.description?.match(/@(\w+)\s+template directive/i);
   if (!m) return null;
-  const directiveName = `@${m[1]}`;
+  const bareName = m[1];
+  const directiveName = `@${bareName}`;
   const srcDir = join(dirPath, 'src');
   let found = false;
   const walk = (d) => {
@@ -577,13 +578,23 @@ function findPhantomDirectiveClaims(entry) {
       if (e.isDirectory()) { walk(join(d, e.name)); continue; }
       if (!e.name.endsWith('.js') || e.name.includes('.test.')) continue;
       const content = readFileSync(join(d, e.name), 'utf8');
-      if (content.includes(`'${directiveName}'`) || content.includes(`"${directiveName}"`) || content.includes(`addDirective`)) found = true;
+      // Two ways a directive gets registered: the (dead) plugins.js addDirective API,
+      // keyed with the leading `@`; or @basenative/runtime's shared directive
+      // registry (registerDirective/unregisterDirective/getDirective), keyed by the
+      // bare name (no `@` — see packages/runtime/src/shared/directives.js).
+      if (
+        content.includes(`'${directiveName}'`) ||
+        content.includes(`"${directiveName}"`) ||
+        content.includes(`addDirective`) ||
+        content.includes(`registerDirective('${bareName}'`) ||
+        content.includes(`registerDirective("${bareName}"`)
+      ) found = true;
     }
   };
   if (existsSync(srcDir)) walk(srcDir);
   if (found) return null;
   return `\`${pkg.name}\`'s package.json description advertises a \`${directiveName}\` template directive, but no directive registration ` +
-    `(\`addDirective\`/literal \`'${directiveName}'\` attribute handling) exists in packages/${entry.dir}/src — not documented here since it isn't in source.`;
+    `(\`registerDirective('${bareName}', ...)\`/\`addDirective\`/literal \`'${directiveName}'\` attribute handling) exists in packages/${entry.dir}/src — not documented here since it isn't in source.`;
 }
 
 function main() {

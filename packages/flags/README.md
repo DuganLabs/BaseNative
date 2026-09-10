@@ -16,13 +16,11 @@ npm install @basenative/flags
 import { createFlagManager, createMemoryProvider } from '@basenative/flags';
 
 const provider = createMemoryProvider({
-  flags: {
-    newDashboard: { enabled: true },
-    betaSearch: { percentage: 20 },
-    premiumFeature: {
-      enabled: false,
-      rules: [{ attribute: 'plan', value: 'pro', value: true }],
-    },
+  newDashboard: { enabled: true },
+  betaSearch: { percentage: 20 },
+  premiumFeature: {
+    enabled: false,
+    rules: [{ attribute: 'plan', value: 'pro', value: true }],
   },
 });
 
@@ -48,6 +46,47 @@ const pipeline = createPipeline()
   .use(flagMiddleware(flags));
 // ctx.state.flags is now an object of resolved flag values
 ```
+
+## Template Directive: `@feature`
+
+`@basenative/flags` registers a `@feature` template directive with `@basenative/runtime`'s directive registry as a side effect of importing this package — it works anywhere `render()` (SSR) or `hydrate()` (client) runs, with no extra wiring:
+
+```html
+<template @feature="newDashboard">
+  <p>Try the new dashboard.</p>
+</template>
+<template @else>
+  <p>Classic dashboard.</p>
+</template>
+```
+
+`@feature` reads `ctx.$flags` from the render/hydrate context — a *synchronous* `{ isEnabled(name) }` object. `flagManager.isEnabled()` is async (it awaits the provider), while template rendering is synchronous end to end, so resolve every flag once, ahead of render, with `createFlagContext()`:
+
+```js
+import { createFlagManager, createMemoryProvider, createFlagContext } from '@basenative/flags';
+import { render } from '@basenative/server';
+
+const flags = createFlagManager(createMemoryProvider({ newDashboard: { enabled: true } }));
+const $flags = await createFlagContext(flags, { userId: user.id });
+
+const html = render(template, { ...data, $flags });
+```
+
+On the client, hydrate with the same shape — typically embedded from the server response (e.g. `$flags.flags`) and reconstructed as `{ isEnabled: (name) => Boolean(flags[name]) }`, or a live object if you want flags to react to change:
+
+```js
+import { hydrate } from '@basenative/runtime';
+
+hydrate(root, { ...data, $flags: { isEnabled: (name) => window.__FLAGS__[name] } });
+```
+
+With no `$flags` on context, `@feature` treats the flag as disabled — it renders `@else` if present, otherwise nothing — and emits a `BN_FEATURE_NO_PROVIDER` diagnostic (via `options.onDiagnostic`) rather than guessing "enabled" for a flag it cannot evaluate. `flagName` is a literal flag name, not an expression — no quotes, unlike `@if`/`@switch`.
+
+On a non-`<template>` element, `@feature="x"` is not control flow — like any other `@name` there, it becomes an event listener named `feature`, and `@basenative/validate` flags this as `BN_E_CONTROL_FLOW_ON_ELEMENT`.
+
+### `createFlagContext(flagManager, context?)`
+
+Resolves every flag once for `context` (same shape as `isEnabled`'s context) and returns a plain synchronous snapshot: `{ flags: Record<string, boolean>, isEnabled: (name) => boolean }`. Use its `isEnabled` on `ctx.$flags` for `@feature`.
 
 ## API
 

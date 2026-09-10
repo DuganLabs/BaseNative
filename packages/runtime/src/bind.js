@@ -4,6 +4,7 @@ import { hydrateChildren } from './hydrate.js';
 import { registerCleanup } from './dom-lifecycle.js';
 import { createChildContext } from './scope.js';
 import { isRaw, unwrapRaw, isUrlAttribute, sanitizeUrl } from './shared/escape.js';
+import { getDirective } from './shared/directives.js';
 
 export function bindNode(node, ctx, options) {
   let processed = 0;
@@ -29,6 +30,21 @@ export function bindNode(node, ctx, options) {
 
   for (const attr of [...node.attributes]) {
     if (attr.name.startsWith('@')) {
+      const directive = getDirective(attr.name.slice(1));
+      if (directive?.on === 'element' && directive.client) {
+        const value = attr.value;
+        const runner = effect(() => {
+          const result = directive.client(value, ctx, options);
+          if (result === undefined) return;
+          if (isRaw(result)) node.innerHTML = unwrapRaw(result);
+          else node.textContent = result == null ? '' : String(result);
+        });
+        registerCleanup(node, () => runner.dispose?.());
+        node.removeAttribute(attr.name);
+        processed++;
+        continue;
+      }
+
       const event = attr.name.slice(1);
       const body = attr.value.trim();
       const handler = function($event) {

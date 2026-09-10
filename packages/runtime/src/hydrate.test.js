@@ -445,3 +445,91 @@ describe('@defer hydration', () => {
     // No error thrown, listener was cleaned up
   });
 });
+
+describe('custom directive registry (registerDirective)', () => {
+  it('dispatches an "on: template" directive like @if, including @else', async () => {
+    const hydrate = await loadHydrate();
+    const { registerDirective, unregisterDirective } = await import('./shared/directives.js');
+
+    const flag = signal(false);
+    registerDirective('probe-block', {
+      on: 'template',
+      client: (value, ctx) => Boolean(ctx[value]?.()),
+    });
+
+    try {
+      const root = document.createElement('section');
+      root.innerHTML = `
+        <template @probe-block="flag"><p>On</p></template>
+        <template @else><p>Off</p></template>
+      `;
+      document.body.append(root);
+
+      hydrate(root, { flag });
+      assert.ok(root.textContent.includes('Off'));
+      assert.ok(!root.textContent.includes('On'));
+
+      flag.set(true);
+      assert.ok(root.textContent.includes('On'));
+      assert.ok(!root.textContent.includes('Off'));
+    } finally {
+      unregisterDirective('probe-block');
+    }
+  });
+
+  it('dispatches an "on: element" directive like text interpolation, including raw()', async () => {
+    const hydrate = await loadHydrate();
+    const { registerDirective, unregisterDirective } = await import('./shared/directives.js');
+    const { raw } = await import('./shared/escape.js');
+
+    registerDirective('probe-text', {
+      on: 'element',
+      client: (value, ctx) => (ctx.wrapRaw ? raw(`<b>${value}</b>`) : value.toUpperCase()),
+    });
+
+    try {
+      const root = document.createElement('section');
+      root.innerHTML = `<span @probe-text="hello">fallback</span>`;
+      document.body.append(root);
+
+      hydrate(root, { wrapRaw: false });
+      const span = root.querySelector('span');
+      assert.equal(span.textContent, 'HELLO');
+
+      root.innerHTML = `<span @probe-text="hi">fallback</span>`;
+      hydrate(root, { wrapRaw: true });
+      assert.equal(root.querySelector('b')?.textContent, 'hi');
+    } finally {
+      unregisterDirective('probe-text');
+    }
+  });
+
+  it('leaves existing content untouched when the handler returns undefined', async () => {
+    const hydrate = await loadHydrate();
+    const { registerDirective, unregisterDirective } = await import('./shared/directives.js');
+
+    registerDirective('probe-noop', {
+      on: 'element',
+      client: () => undefined,
+    });
+
+    try {
+      const root = document.createElement('section');
+      root.innerHTML = `<span @probe-noop="x">Untouched</span>`;
+      document.body.append(root);
+
+      hydrate(root, {});
+      assert.equal(root.querySelector('span').textContent, 'Untouched');
+    } finally {
+      unregisterDirective('probe-noop');
+    }
+  });
+});
+
+// The real `@feature` (from @basenative/flags) and `@t` (from @basenative/i18n)
+// directives are exercised end-to-end against this same hydrate() — including the
+// client DOM path — from within their own packages' test suites
+// (packages/flags/src/directive.test.js, packages/i18n/src/directive.test.js).
+// @basenative/runtime cannot depend on either package (it would be a cycle: both
+// already depend on @basenative/runtime), so those packages import `hydrate` from
+// here instead of the reverse.

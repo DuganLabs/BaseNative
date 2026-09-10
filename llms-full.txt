@@ -56,6 +56,19 @@ Loop variables: `$index`, `$first`, `$last`, `$even`, `$odd`.
 <span>{{ items().length }} items</span>
 ```
 
+### Custom Directives — `registerDirective(name, config)`
+`@if`/`@for`/`@switch`/`@defer` are built into `render()` and `hydrate()` directly. Other packages contribute directives (`@feature` from `@basenative/flags`, `@t` from `@basenative/i18n`) through this registry instead, so `@basenative/runtime` and `@basenative/server` never import them — they only consult the registry by name. Importing a directive-providing package registers it as a side effect; `render()`/`hydrate()` need no further wiring. Two kinds, matching the two places a `@name` attribute appears: - **`on: 'template'`** — control flow on a `<template>`, dispatched like `@if`: the handler returns a boolean. `true` renders the template's own content; `false` renders a following `<template @else>` sibling if present, otherwise nothing. Example: `@feature`. - **`on: 'element'`** (default) — content on any other element, dispatched like `{{ }}`: the handler returns the string (or a `raw()`-wrapped HTML string) to use as the element's text content. Returning `undefined` leaves the element's existing content untouched — a directive can fall back to whatever static markup the template already has. Example: `@t`. `server` and `client` are both optional — supply whichever side(s) the directive needs. Both are called as `(value, ctx, options) => result`, where `value` is the attribute's raw string value. On the client, if the handler reads a `signal()` internally, the surrounding `effect()` that `hydrate()` already wraps every directive-driven update in re-runs automatically — no extra reactivity plumbing needed. Also exported: `unregisterDirective(name)` and `getDirective(name)` (mainly for tests), and `listDirectives()`.
+```js
+import { registerDirective } from '@basenative/runtime';
+// or: import { registerDirective } from '@basenative/runtime/shared/directives';
+
+registerDirective('tooltip', {
+  on: 'element',                                    // 'template' | 'element' (default)
+  server: (value, ctx, options) => value,           // string (or raw()) to use as text content
+  client: (value, ctx, options) => value,
+});
+```
+
 ### Hydratable Mode (server)
 ```js
 const html = render(template, ctx, { hydratable: true });
@@ -1287,6 +1300,23 @@ Returns a map of all flag names to their evaluated boolean values for the given 
 ##### flagManager.setFlag(flagName, config)
 Sets or updates a flag configuration (if the provider supports mutation). **Parameters:** - `flagName` — flag name string - `config` — flag configuration object
 
+#### `@feature` template directive
+`<template @feature="flagName">` — renders its contents only when `flagName` is enabled, with an optional `<template @else>` sibling for the disabled case, exactly like `@if`/`@else`. Registered by importing `@basenative/flags` (a side eff…
+```html
+<template @feature="newDashboard"><p>New dashboard</p></template>
+<template @else><p>Classic dashboard</p></template>
+```
+
+##### createFlagContext(flagManager, context?)
+Resolves every flag once (via `flagManager.getAll(context)`) and returns a plain, synchronous snapshot suitable for `ctx.$flags`. **Parameters:** - `flagManager` — flag manager from `createFlagManager` - `context` — same shape as `isEnable…
+```js
+import { createFlagContext } from '@basenative/flags';
+import { render } from '@basenative/server';
+
+const $flags = await createFlagContext(flags, { userId: user.id });
+const html = render(template, { ...data, $flags });
+```
+
 #### flagMiddleware(flagManager)
 Middleware that attaches the flag manager to `ctx.state`. **Parameters:** - `flagManager` — flag manager from `createFlagManager` **Returns:** Middleware function. After this middleware runs: - `ctx.state.flags` — the flag manager instance…
 ```js
@@ -1434,6 +1464,12 @@ Registers a listener called whenever the locale changes. **Parameters:** - `fn` 
 
 ##### i18n.addMessages(locale, messages)
 Merges additional messages into a locale. Useful for lazy loading. **Parameters:** - `locale` — locale code string - `messages` — object of key/value message pairs
+
+#### `@t` template directive
+`<span @t="message.key">fallback</span>` — replaces the element's text content with the translated message for `message.key`. Registered by importing `@basenative/i18n` (a side effect of loading the package) with `@basenative/runtime`'s di…
+```html
+<h1 @t="nav.home">Home</h1>
+```
 
 #### i18nMiddleware(i18n, options)
 Middleware that detects the locale from the request and attaches the i18n instance to context. Detection order (first match wins): 1. URL query parameter (default: `locale`) 2. Cookie (default: `locale`) 3. `Accept-Language` header (respec…
@@ -2175,6 +2211,19 @@ Loop variables: `$index`, `$first`, `$last`, `$even`, `$odd`.
 <span>{{ items().length }} items</span>
 ```
 
+#### Custom Directives — `registerDirective(name, config)`
+`@if`/`@for`/`@switch`/`@defer` are built into `render()` and `hydrate()` directly. Other packages contribute directives (`@feature` from `@basenative/flags`, `@t` from `@basenative/i18n`) through this registry instead, so `@basenative/run…
+```js
+import { registerDirective } from '@basenative/runtime';
+// or: import { registerDirective } from '@basenative/runtime/shared/directives';
+
+registerDirective('tooltip', {
+  on: 'element',                                    // 'template' | 'element' (default)
+  server: (value, ctx, options) => value,           // string (or raw()) to use as text content
+  client: (value, ctx, options) => value,
+});
+```
+
 ### `detectBrowserFeatures()`
 Returns a `BrowserFeatures` object with support flags.
 
@@ -2318,10 +2367,6 @@ packages/runtime/src/debug.js · `import { debugAssert } from '@basenative/runti
 #### `debugDeps(s, name = 'signal')` (function)
 Logs a signal's current dependency graph (immediate subscribers only). Useful for diagnosing why a computed is or isn't re-evaluating.
 packages/runtime/src/debug.js · `import { debugDeps } from '@basenative/runtime';`
-
-#### `raw(value)` (function)
-Mark a string as trusted markup, exempt from HTML escaping.
-packages/runtime/src/shared/escape.js · `import { raw } from '@basenative/runtime';`
 
 #### `isScopeSlot(value)` (function)
 packages/runtime/src/shared/expression.js · `import { isScopeSlot } from '@basenative/runtime';`
@@ -2771,7 +2816,6 @@ packages/wrangler-preset/src/index.js · `import { bindings } from '@basenative/
 
 Everything below is a real, mechanically-detected gap between source/package.json and docs — not inferred behavior. Fix by writing the missing doc, then re-running this generator (it will pick the doc up automatically).
 
-- Directive `@defer` is read via getAttribute/hasAttribute in packages/runtime/src/hydrate.js and/or packages/server/src/render.js but is not covered by docs/api/runtime.md's "Template Directives" section or docs/api/server.md's server-side-directives section.
 - `@basenative/admin` — no docs/api/admin.md; API below is extracted directly from source signatures/JSDoc only (13 exports).
 - `@basenative/auth-webauthn` — no docs/api/auth-webauthn.md; API below is extracted directly from source signatures/JSDoc only (30 exports).
 - `@basenative/builder` — no docs/api/builder.md; API below is extracted directly from source signatures/JSDoc only (16 exports).
@@ -2780,9 +2824,7 @@ Everything below is a real, mechanically-detected gap between source/package.jso
 - `@basenative/doppler` — no docs/api/doppler.md; API below is extracted directly from source signatures/JSDoc only (8 exports).
 - `@basenative/favicon` — no docs/api/favicon.md; API below is extracted directly from source signatures/JSDoc only (33 exports).
 - `@basenative/flags`: `createKVProvider` is exported (packages/flags/src/providers/kv.js) but not mentioned in docs/api/flags.md.
-- `@basenative/flags`'s package.json description advertises a `@feature` template directive, but no directive registration (`addDirective`/literal `'@feature'` attribute handling) exists in packages/flags/src — not documented here since it isn't in source.
 - `@basenative/forms`: `createWizard` is exported (packages/forms/src/wizard.js) but not mentioned in docs/api/forms.md.
-- `@basenative/i18n`'s package.json description advertises a `@t` template directive, but no directive registration (`addDirective`/literal `'@t'` attribute handling) exists in packages/i18n/src — not documented here since it isn't in source.
 - `@basenative/integrations` — no docs/api/integrations.md; API below is extracted directly from source signatures/JSDoc only (15 exports).
 - `@basenative/keyboard` — no docs/api/keyboard.md; API below is extracted directly from source signatures/JSDoc only (12 exports).
 - `@basenative/logger`: `LEVELS` is exported (packages/logger/src/index.js) but not mentioned in docs/api/logger.md.
@@ -2827,7 +2869,6 @@ Everything below is a real, mechanically-detected gap between source/package.jso
 - `@basenative/runtime`: `debugTime` is exported (packages/runtime/src/debug.js) but not mentioned in docs/api/runtime.md.
 - `@basenative/runtime`: `debugAssert` is exported (packages/runtime/src/debug.js) but not mentioned in docs/api/runtime.md.
 - `@basenative/runtime`: `debugDeps` is exported (packages/runtime/src/debug.js) but not mentioned in docs/api/runtime.md.
-- `@basenative/runtime`: `raw` is exported (packages/runtime/src/shared/escape.js) but not mentioned in docs/api/runtime.md.
 - `@basenative/runtime`: `isScopeSlot` is exported (packages/runtime/src/shared/expression.js) but not mentioned in docs/api/runtime.md.
 - `@basenative/runtime`: `compileExpression` is exported (packages/runtime/src/shared/expression.js) but not mentioned in docs/api/runtime.md.
 - `@basenative/runtime`: `evaluateExpression` is exported (packages/runtime/src/shared/expression.js) but not mentioned in docs/api/runtime.md.

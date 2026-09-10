@@ -43,6 +43,25 @@ describe('valid templates', () => {
     const r = validateTemplate('<button @click="save()">go</button>');
     assert.equal(r.valid, true);
   });
+
+  it('accepts @feature / @else, contributed by @basenative/flags', () => {
+    const r = validateTemplate(
+      '<template @feature="newDashboard"><p>New</p></template><template @else><p>Classic</p></template>'
+    );
+    assert.equal(r.valid, true);
+    assert.deepEqual(r.diagnostics, []);
+  });
+
+  it('accepts @feature with no @else', () => {
+    const r = validateTemplate('<template @feature="newDashboard"><p>New</p></template>');
+    assert.equal(r.valid, true);
+  });
+
+  it('accepts @t on a normal element, contributed by @basenative/i18n', () => {
+    const r = validateTemplate('<h1 @t="nav.home">Home</h1>');
+    assert.equal(r.valid, true);
+    assert.deepEqual(r.diagnostics, []);
+  });
 });
 
 describe('BN_E_FOREIGN_DIRECTIVE', () => {
@@ -125,6 +144,44 @@ describe('BN_E_UNKNOWN_DIRECTIVE', () => {
   it('suggests a near match', () => {
     const d = first('<template @iff="a">x</template>', 'BN_E_UNKNOWN_DIRECTIVE');
     assert.match(d.suggestion, /Did you mean "@if"/);
+  });
+
+  it('does not flag @feature — it is a known template directive', () => {
+    assert.ok(!codesFor('<template @feature="x">y</template>').includes('BN_E_UNKNOWN_DIRECTIVE'));
+  });
+
+  it('lists @feature among the valid directives in a suggestion', () => {
+    const d = first('<template @unless="a">x</template>', 'BN_E_UNKNOWN_DIRECTIVE');
+    assert.match(d.suggestion, /@feature/);
+  });
+});
+
+describe('@feature (BN_E_CONTROL_FLOW_ON_ELEMENT / BN_E_ORPHAN_BRANCH)', () => {
+  it('flags @feature on a normal element as an event listener, like @if', () => {
+    const d = first('<div @feature="newDashboard">x</div>', 'BN_E_CONTROL_FLOW_ON_ELEMENT');
+    assert.equal(d.severity, ERROR);
+    assert.match(d.message, /event listener/);
+  });
+
+  it('does not flag @else governed by @feature as orphaned', () => {
+    assert.ok(
+      !codesFor(
+        '<template @feature="x">a</template><template @else>b</template>'
+      ).includes('BN_E_ORPHAN_BRANCH')
+    );
+  });
+
+  it('still flags @else with neither a preceding @if nor @feature', () => {
+    const d = first('<template @else>x</template>', 'BN_E_ORPHAN_BRANCH');
+    assert.match(d.message, /@if/);
+    assert.match(d.message, /@feature/);
+  });
+
+  it('does not run @feature\'s value through expression checking (it is a literal flag name)', () => {
+    // A flag name with characters that are not valid expression syntax (a hyphen)
+    // must not be flagged as a malformed expression.
+    const r = validateTemplate('<template @feature="beta-search">x</template>');
+    assert.equal(r.valid, true);
   });
 });
 

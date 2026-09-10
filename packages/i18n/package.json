@@ -6,6 +6,9 @@
   "exports": {
     ".": "./src/index.js"
   },
+  "dependencies": {
+    "@basenative/runtime": "workspace:^0.5.0"
+  },
   "types": "./types/index.d.ts",
   "files": [
     "src",

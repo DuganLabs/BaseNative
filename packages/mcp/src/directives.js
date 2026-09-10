@@ -80,6 +80,22 @@ export const DIRECTIVES = [
     notes: 'Catches rendering errors raised by descendants.',
   },
   {
+    name: '@feature',
+    on: 'template',
+    signature: '<template @feature="flagName">',
+    summary: 'Render the contents only when the named feature flag is enabled for the current context.',
+    example: '<template @feature="newDashboard"><p>New dashboard</p></template><template @else><p>Classic dashboard</p></template>',
+    notes: 'Contributed by @basenative/flags through @basenative/runtime\'s directive registry (registerDirective), not built into the runtime/server core. Reads ctx.$flags.isEnabled(flagName) — build $flags with createFlagContext() before render()/hydrate(). With no $flags on context it is treated as disabled (renders @else if present, otherwise nothing) and emits a BN_FEATURE_NO_PROVIDER diagnostic. flagName is a literal flag name, not an expression.',
+  },
+  {
+    name: '@t',
+    on: 'element',
+    signature: '<span @t="message.key">fallback text</span>',
+    summary: "Replace the element's text content with the translated message for the given key.",
+    example: '<h1 @t="nav.home">Home</h1>',
+    notes: "Contributed by @basenative/i18n through @basenative/runtime's directive registry (registerDirective), not built into the runtime/server core. Reads ctx.$i18n and calls i18n.t(key, ctx), so any {param} placeholder in the message (i18n's own syntax) resolves from a same-named property on the render context. With no $i18n on context the element's existing content is left untouched and a BN_T_NO_PROVIDER diagnostic is emitted. Re-renders on the client when the i18n instance's locale changes. message.key is a literal key, not an expression.",
+  },
+  {
     name: '@<event>',
     on: 'element',
     signature: '<button @click="expression">',

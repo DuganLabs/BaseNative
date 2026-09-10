@@ -377,18 +377,18 @@ The five epics that used to live here are done. Where each landed:
 | `@defer` SSR streaming + hydrate link | `packages/server/src/render.js`, `packages/runtime/src/hydrate.js` (`data-bn-defer`) |
 | Visual builder, `<bn-canvas>` | `packages/visual-builder/src/`, `packages/builder/src/` |
 | Feature flags on KV, `registerPlugin()` | `packages/flags/src/providers/kv.js`, `packages/runtime/src/signals.js` |
+| `@t` / `@feature` template directives | `packages/runtime/src/shared/directives.js` (`registerDirective` hook, consulted by `render.js`/`hydrate.js`), `packages/flags/src/directive.js`, `packages/i18n/src/directive.js` |
 
 An abandoned parallel builder implementation is preserved at tag `archive/feat-visual-builder-2026-04`; it is not a backlog item.
 
 ### Open — specified well enough to start without asking
 
 1. **Eval harness: score stateful (T3) cases.** `packages/evals` validates and SSR-renders but never hydrates, so signal/computed/effect behaviour is unscored. Add a `hydrate()` stage under a DOM shim, injected like `render` already is. Infrastructure only — the corpus stays human-authored (see "Never delegate").
-2. **Documentation drift**, recorded mechanically in the Gaps section of `llms-full.txt` (regenerate with `scripts/llms-txt.js`): ~30 undocumented `@basenative/components` exports; runtime `devtools`/`debug`/`lazy`/`vitals`/`plugins`/`error-boundary` exports missing from `docs/api/runtime.md`; `createKVProvider` missing from `docs/api/flags.md`.
-3. **`@t` and `@feature` are described as template directives** in the `i18n` and `flags` package descriptions but are registered nowhere in source. Either implement them as directives or correct the descriptions — do not leave the claim.
-4. **CodeQL backlog on `main`** (79 pre-existing alerts; a PR from `fix/codeql-backlog` is in flight — check it first): `packages/notify/src/email.js` interpolates `{{ }}` into HTML email with no escaping (same class as the SSR fix in `@basenative/server`); `packages/notify/src/transports/smtp.js` sets `rejectUnauthorized: false`; `packages/share/src/server.js` `shortId` has modulo bias; eleven file-system races in `cli`, `claude-config`, `doppler`; path injection in `examples/starter` and `scripts/audit`.
-5. **basenative.com dead code**: `PACKAGES` / `renderPackageCards()` / `packageCards` in `examples/express/showcase-data.js` are referenced by no view. Wire `packageCards` into `views/showcase.html` or delete them.
-6. **Escaping parity**: `packages/notify` should use `@basenative/runtime/shared/escape` rather than its own regex templating, once item 4 lands.
-7. **`.tabnine/agent/skills/`** is a committed third copy of the seven Nx skills now supplied by the `nx@nx-claude-plugins` plugin. Remove once the owner confirms nothing consumes it.
+2. **Documentation drift**, recorded mechanically in the Gaps section of `llms-full.txt` (regenerate with `scripts/llms-txt.js`): ~30 undocumented `@basenative/components` exports; runtime `devtools`/`debug`/`lazy`/`vitals`/`plugins`/`error-boundary` exports missing from `docs/api/runtime.md`; `createKVProvider` missing from `docs/api/flags.md`. Also newly noticed while shipping `@feature`/`@t`: `i18n.md`'s Integration section still claims "signal-based effects that call `i18n.t` will re-evaluate automatically", which isn't true of `i18n.t()` itself (only `@t`, which wraps it in a locale-change tick — see `packages/i18n/src/directive.js`).
+3. **CodeQL backlog on `main`** (79 pre-existing alerts; a PR from `fix/codeql-backlog` is in flight — check it first): `packages/notify/src/email.js` interpolates `{{ }}` into HTML email with no escaping (same class as the SSR fix in `@basenative/server`); `packages/notify/src/transports/smtp.js` sets `rejectUnauthorized: false`; `packages/share/src/server.js` `shortId` has modulo bias; eleven file-system races in `cli`, `claude-config`, `doppler`; path injection in `examples/starter` and `scripts/audit`.
+4. **basenative.com dead code**: `PACKAGES` / `renderPackageCards()` / `packageCards` in `examples/express/showcase-data.js` are referenced by no view. Wire `packageCards` into `views/showcase.html` or delete them.
+5. **Escaping parity**: `packages/notify` should use `@basenative/runtime/shared/escape` rather than its own regex templating, once item 3 lands.
+6. **`.tabnine/agent/skills/`** is a committed third copy of the seven Nx skills now supplied by the `nx@nx-claude-plugins` plugin. Remove once the owner confirms nothing consumes it.
 
 ### Needs owner direction — do not guess
 

@@ -62,6 +62,36 @@ const pipeline = createPipeline()
 // ctx.state.locale and ctx.state.t are now available
 ```
 
+## Template Directive: `@t`
+
+`@basenative/i18n` registers a `@t` template directive with `@basenative/runtime`'s directive registry as a side effect of importing this package — it works anywhere `render()` (SSR) or `hydrate()` (client) runs, with no extra wiring:
+
+```html
+<h1 @t="nav.home">Home</h1>
+```
+
+`@t` reads `ctx.$i18n` — an i18n instance from `createI18n()` — from the render/hydrate context, and replaces the element's text content with `i18n.t(key, ctx)`. Passing the whole render context as `params` means any `{name}`-style placeholder in the message (i18n's own interpolation syntax — see `i18n.t()` below, not BaseNative's `{{ }}`) is filled from a same-named property already in scope, with no second templating syntax to learn:
+
+```js
+import { createI18n } from '@basenative/i18n';
+import { render } from '@basenative/server';
+
+const i18n = createI18n({ defaultLocale: 'en', messages: { en: { 'nav.home': 'Home' } } });
+const html = render(template, { ...data, $i18n: i18n });
+```
+
+On the client:
+
+```js
+import { hydrate } from '@basenative/runtime';
+
+hydrate(root, { ...data, $i18n: i18n });
+```
+
+`@t` re-renders on the client whenever `i18n.setLocale()` runs — `createI18n()` doesn't expose a `@basenative/runtime` signal for its locale, so the directive subscribes to `onLocaleChange()` internally and drives its own reactivity from that.
+
+With no `$i18n` on context, `@t` leaves the element's existing content untouched (it does not blank it) and emits a `BN_T_NO_PROVIDER` diagnostic through `options.onDiagnostic` — so `<h1 @t="nav.home">Home</h1>` still renders "Home" as a static fallback. `message.key` is a literal key, not an expression (no quotes) — the same way `@feature`'s flag name is (see `@basenative/flags`).
+
 ## API
 
 ### `createI18n(options?)`
