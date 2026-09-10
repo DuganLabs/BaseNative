@@ -1394,9 +1394,9 @@ var LAYOUT_HTML = `
     <aside class="bn-builder__pane bn-builder__pane--palette" aria-label="Components">
       <bn-builder-palette></bn-builder-palette>
     </aside>
-    <main class="bn-builder__pane bn-builder__pane--canvas">
+    <section class="bn-builder__pane bn-builder__pane--canvas" aria-label="Canvas">
       <bn-builder-canvas></bn-builder-canvas>
-    </main>
+    </section>
     <aside class="bn-builder__pane bn-builder__pane--side" aria-label="Inspector and tree">
       <bn-builder-inspector></bn-builder-inspector>
       <bn-builder-tree></bn-builder-tree>
@@ -1453,13 +1453,6 @@ var BnBuilder = class extends HTMLElement {
         const code = this.generateCode();
         this.dispatchEvent(new CustomEvent("bn-builder-export", { detail: { code }, bubbles: true }));
       }
-    });
-    this.addEventListener("bn-palette-add", (e) => {
-      const type = e.detail?.type;
-      if (!type || !this.state || !this.palette) return;
-      const def = this.palette.get(type);
-      if (!def) return;
-      this.state.addNode(null, { type, props: { ...def.defaults } });
     });
   }
   _wirePaletteAdd() {
