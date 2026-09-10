@@ -211,6 +211,7 @@ export function renderPagination(options?: {
 
 // ---------------------------------------------------------------- Badge
 
+/** `content` is an HTML slot: not escaped; pass trusted markup only, or `escapeText()` your data. `variant` is escaped. */
 export function renderBadge(content: string, options?: {
   variant?: 'default' | 'primary' | 'success' | 'warning' | 'error';
 }): string;

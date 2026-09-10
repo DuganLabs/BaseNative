@@ -100,7 +100,7 @@ All components are pure functions that return an HTML string. See [docs/api/comp
 - `renderDataGrid(options)` — Data grid with sorting indicators, row selection, editable cells and a pagination footer. Sortable headers are real `<button>`s inside the `<th>` — keyboard-operable with no client JS.
 - `renderTree(options)` / `renderTreeGrid(options)` — Tree view and tree grid. Items/rows carry a static roving `tabindex` (first `0`, rest `-1`); moving it between items on arrow keys is left to your own keydown handler.
 - `renderVirtualList(options)` — First window of a virtualised list plus a spacer for the full height.
-- `renderBadge(content, options)` — Small status badge.
+- `renderBadge(content, options)` — Small status badge; `content` is an HTML slot (not escaped — escape data, or set the label with `textContent` after mount).
 - `renderAvatar(options)` — User avatar with fallback initials.
 - `renderPagination(options)` — Page navigation controls.
 
