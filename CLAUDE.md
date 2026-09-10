@@ -184,15 +184,19 @@ chore(ci): add bundle size check to PR workflow
 
 ## Skills, Subagents, and Delegation
 
-### Installed skill bundles: none — deliberately
+### Installed skill bundles: one, deliberately
 
-No third-party skill marketplace is installed in this repo (not `superpowers-dev`,
-`mattpocock`, `builder-skills`, or `anthropic-agent-skills`). Every installed skill's
-name and description loads into context at session start whether or not it fires, so
-startup context is treated here as a budget.
+Only `nx@nx-claude-plugins` is enabled (registered in `.claude/settings.json`; see the
+Nx section below). It costs roughly 590 startup tokens for 7 skills, a ci-monitor
+subagent, and the Nx MCP server, and it is enabled because Nx owns task running and
+workspace exploration in this repo.
 
-Two of those bundles were evaluated and rejected on specific grounds, recorded so the
-decision is not re-litigated every quarter:
+Nothing else is installed — not `superpowers-dev`, `mattpocock`, `builder-skills`, or
+`anthropic-agent-skills`. Every installed skill's name and description loads into
+context at session start whether or not it fires, so startup context is treated here
+as a budget.
+
+Bundles evaluated and rejected, recorded so the decision is not re-litigated:
 
 - **`superpowers-dev`** — best value density available (14 skills, ~538 startup tokens),
   but it is all-or-nothing, and two of its skills rewrite baseline behavior:
@@ -206,10 +210,12 @@ decision is not re-litigated every quarter:
 **Do not add a marketplace without deleting something first.** State the startup-token
 cost in the PR description.
 
-The `postinstall` hook that auto-installed the Nx agent skill bundle was removed for the
-same reason (it cost ~590 startup tokens, refetched an unpinned remote bundle on every
-install, and kept resurrecting vendor skill folders deleted in `d03a2a7`, `c31cb33`, and
-`1056c02`). Do not reintroduce it.
+The `postinstall` hook that used to auto-install the Nx agent skills was removed, and
+must not be reintroduced: it refetched an unpinned remote bundle on every install and
+kept resurrecting the vendor skill folders deleted in `d03a2a7`, `c31cb33`, and
+`1056c02`. The same skills are now declared through the supported plugin mechanism in
+`.claude/settings.json`, which is version-controlled, reviewable, and does not run on
+every `pnpm install`.
 
 ### Precedence — who owns which request
 
