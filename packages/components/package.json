@@ -1,6 +1,6 @@
 {
   "name": "@basenative/components",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "15 semantic HTML UI components rendered as strings (forms, data grids, dialogs, calendar and kanban) with cascade-layer CSS, design tokens, light/dark themes and density scales",
   "type": "module",
   "exports": {

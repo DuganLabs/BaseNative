@@ -560,7 +560,7 @@ Bind an `Escape` keydown handler at the given root, scoped to that widget, so `E
 #### announce(rootEl, message)
 Announce a transient message to screen readers via the widget's `aria-live="polite"` region (`[data-bn="cb-live"]`). Used internally by `hydrateCombobox` for "N options available" / `Press Enter to create "…"` / "Selected …" hints. Idempot…
 
-### `@basenative/components` (v0.6.2)
+### `@basenative/components` (v0.7.0)
 
 15 semantic HTML UI components rendered as strings (forms, data grids, dialogs, calendar and kanban) with cascade-layer CSS, design tokens, light/dark themes and density scales
 
