@@ -68,6 +68,32 @@ notifications.dismiss(all[0].id);
 - `renderEmail(template, data)` — Interpolates `{{ variable }}` placeholders in an HTML template. Returns `{ html, text }` where `text` is a plain-text version derived from the HTML.
 - `createEmailSender(transport)` — Creates a sender bound to a transport. Returns `{ send(options) }` where options are `{ to, from, subject, html, text? }`.
 
+#### Escaping
+
+Every `{{ variable }}` value is HTML-escaped by default, using the same
+`escapeAttr` helper `@basenative/server` uses for SSR templates
+(`@basenative/runtime/shared/escape`). A value that contains `<script>` or
+other markup is rendered as inert text, not executable HTML:
+
+```js
+renderEmail('<p>Hi {{ name }}</p>', { name: '<script>alert(1)</script>' });
+// => { html: '<p>Hi &lt;script&gt;alert(1)&lt;/script&gt;</p>', ... }
+```
+
+To insert trusted HTML without escaping it, wrap the value in `raw()`:
+
+```js
+import { raw } from '@basenative/runtime/shared/escape';
+
+renderEmail('<div>{{ body }}</div>', { body: raw('<strong>Bold</strong>') });
+// => { html: '<div><strong>Bold</strong></div>', ... }
+```
+
+Only pass `raw()` around HTML you trust — it disables escaping entirely for
+that value, in every position the placeholder appears (`{{ }}` interpolation
+here has no idea whether it landed in a text node or an attribute value, so
+opting out of escaping opts out of both).
+
 ### Transports
 
 - `createSmtpTransport(options)` — Sends email via SMTP. Options: `host`, `port`, `secure`, `auth: { user, pass }`.

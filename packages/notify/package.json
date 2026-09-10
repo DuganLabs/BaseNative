@@ -8,6 +8,9 @@
     ".": "./src/index.js"
   },
   "types": "./types/index.d.ts",
+  "dependencies": {
+    "@basenative/runtime": "workspace:^0.5.0"
+  },
   "files": [
     "src",
     "types"
