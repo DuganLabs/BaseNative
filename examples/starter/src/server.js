@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname, join, extname, resolve, sep } from 'node:path';
+import { dirname, join, extname, resolve, relative, sep } from 'node:path';
 import { render } from '@basenative/server';
 import { resolveRoute } from '@basenative/router';
 
@@ -18,12 +18,15 @@ function readPage(name) {
 /**
  * Read a file under PUBLIC_DIR, rejecting any request path that would
  * resolve outside it. `relPath` comes from the request URL, so `resolve()`
- * + a prefix check on the result — rather than trusting `join()` and the
- * caller's own `../` stripping — is what actually stops traversal.
+ * builds the candidate and `relative()` measures it against PUBLIC_DIR —
+ * a candidate that escapes shows up as a `..` segment (or exactly `..`) in
+ * that relative path, which is what actually stops traversal, checked on
+ * the same `resolved` value passed to `readFileSync` right below.
  */
 function readPublicFile(relPath) {
   const resolved = resolve(PUBLIC_DIR, `.${sep}${relPath}`);
-  if (resolved !== PUBLIC_DIR && !resolved.startsWith(PUBLIC_DIR + sep)) {
+  const rel = relative(PUBLIC_DIR, resolved);
+  if (rel === '..' || rel.startsWith(`..${sep}`)) {
     throw new Error('Refusing to read outside the public directory');
   }
   return readFileSync(resolved);
