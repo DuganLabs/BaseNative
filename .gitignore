@@ -25,3 +25,6 @@ reports/
 .env.*
 !.env.example
 nx-cloud.env
+
+# workspace symlinks created for local test runs
+packages/*/node_modules/

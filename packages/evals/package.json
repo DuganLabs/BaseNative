@@ -1,0 +1,18 @@
+{
+  "name": "@basenative/evals",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Eval harness measuring whether models actually produce correct BaseNative",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "bin": {
+    "bn-evals": "./src/bin.js"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@basenative/validate": "workspace:^0.1.0",
+    "@basenative/server": "workspace:^0.4.0"
+  }
+}
