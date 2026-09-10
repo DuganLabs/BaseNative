@@ -1,5 +1,9 @@
 # BaseNative — Product Requirements Document
 
+> **Platform vision** — the spec-first charter covering both the web runtime and the 48V DC
+> power track. Sibling documents: [docs/PRD.md](docs/PRD.md) (meta-library scope) and
+> [docs/prd-ai-native.md](docs/prd-ai-native.md) (AI-native repositioning).
+
 ## Vision
 
 BaseNative is an open specifications project that defines how native web primitives should work — and then builds the reference implementations. The web runtime track delivers a signal-based reactivity layer over native `<template>` elements in ~120 lines with zero build step. The power track specifies 48V DC residential bus architecture and USB-C device power standards. Long-term, BaseNative builds reference hardware on its own specs and feeds into Greenput OS as the runtime substrate. Everything is public, spec-first, and designed to be the ground truth that AI agents and humans read the same way.

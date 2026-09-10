@@ -1,6 +1,10 @@
 # BaseNative — Product Requirements Document
 
 > Status: **draft** · Owner: Warren Dugan · Last updated: 2026-04-26
+>
+> **Meta-library scope** — BaseNative as shared infrastructure for DuganLabs projects. This is
+> the path `bn prd` and the PRD-driven agents read. Sibling documents: [../PRD.md](../PRD.md)
+> (platform vision) and [prd-ai-native.md](prd-ai-native.md) (AI-native repositioning).
 
 ## 1. Overview
 
