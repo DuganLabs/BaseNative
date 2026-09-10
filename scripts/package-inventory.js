@@ -21,7 +21,7 @@ function scopeRegistry() {
 
 /** Latest published version on npmjs, or null. Public mirror only — GH Packages needs auth. */
 async function npmjsVersion(name) {
-  const res = await fetch(`https://registry.npmjs.org/${name.replace('/', '%2F')}`);
+  const res = await fetch(`https://registry.npmjs.org/${encodeURIComponent(name)}`);
   if (!res.ok) return null;
   const body = await res.json();
   return body['dist-tags']?.latest ?? null;
