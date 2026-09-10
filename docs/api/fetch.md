@@ -1,10 +1,10 @@
 # @basenative/fetch
 
-> Signal-based async data fetching with caching and mutation support.
+> Signal-based async data fetching with caching, mutation support, and a typed API client.
 
 ## Overview
 
-`@basenative/fetch` wraps async data fetching in reactive signals from `@basenative/runtime`. A `createResource` call automatically fetches data and exposes `data`, `loading`, `error`, and `status` signals that drive UI reactivity. `createMutation` handles POST/PUT/DELETE operations with the same signal shape. `createCache` provides a TTL-based in-memory cache for deduplication. `fetchJson` is a thin helper over `globalThis.fetch` with JSON serialization and error wrapping.
+`@basenative/fetch` wraps async data fetching in reactive signals from `@basenative/runtime`. A `createResource` call automatically fetches data and exposes `data`, `loading`, `error`, and `status` signals that drive UI reactivity. `createMutation` handles POST/PUT/DELETE operations with the same signal shape. `createCache` provides a TTL-based in-memory cache for deduplication. `fetchJson` is a thin helper over `globalThis.fetch` with JSON serialization and error wrapping. `createApiClient` is the fuller HTTP client: a base URL, default headers, query serialization, JSON bodies, a response envelope (`{ data, meta? }` / `{ error: { code, message, field? } }`), a typed `ApiError`, timeouts and request/response/error hooks.
 
 ## Installation
 
@@ -156,6 +156,141 @@ const created = await fetchJson('/api/posts', {
 });
 ```
 
+---
+
+### createApiClient(options)
+
+Creates a typed `fetch` wrapper bound to a base URL.
+
+**Parameters:**
+- `options.baseUrl` — base URL string, or a function resolved on every request
+- `options.headers` — `HeadersInit` sent with every request; per-request headers win
+- `options.fetch` — fetch implementation; default `globalThis.fetch`
+- `options.credentials` — default `RequestCredentials`; default `'include'`
+- `options.timeoutMs` — abort requests that take longer; they reject with an `ApiError` whose `code` is `'timeout'`
+- `options.onRequest(ctx)` — awaited before fetch; `ctx` is `{ url, path, method, headers, init }`
+- `options.onResponse(ctx)` — awaited after fetch, before status handling; `ctx.response` is the `Response`
+- `options.onUnauthorized(error, ctx)` — awaited on a 401 response, before `onError`
+- `options.onError(error, ctx)` — awaited before every `ApiError` is thrown
+
+**Returns:** `ApiClient` with:
+- `get(path, params?, init?)` — `params` is serialized with `serializeQuery`
+- `post(path, body?, init?)`, `put(path, body?, init?)`, `patch(path, body?, init?)`
+- `delete(path, init?)`
+- `request({ path, method?, params?, body?, headers?, signal?, credentials?, raw? })` — the general form the verbs delegate to
+- `resolveUrl(path, params?)` — the URL a request would hit
+
+`init` accepts `headers`, `signal`, `credentials` and `raw` (plus `params` / `body` where the verb does not take them positionally). Every verb resolves with the parsed response body: JSON for `*/json` and `*+json` media types, text for `text/*`, `null` otherwise, `undefined` for 204. `raw: true` resolves with the `Response` itself (non-2xx still throws). Plain-object bodies are JSON-encoded with `content-type: application/json` unless a content type is already set; `string`, `FormData`, `URLSearchParams`, `Blob`, `ArrayBuffer`, typed arrays and `ReadableStream` bodies pass through untouched.
+
+**Throws:** `ApiError` for a non-2xx status, for an error envelope in a 2xx body, for a timeout (`code: 'timeout'`, `status: 0`) and for a network failure (`code: 'network_error'`, `status: 0`, `cause` set). An abort from the caller's own `signal` is rethrown untouched (an `AbortError`, not an `ApiError`) and does not run `onError`, so `createResource(() => api.get(...))` keeps ignoring cancellations.
+
+**Example:**
+```js
+const api = createApiClient({
+  baseUrl: () => window.__API_BASE__,
+  headers: { 'x-app': 'demo' },
+  timeoutMs: 10_000,
+  onUnauthorized: () => location.assign('/login'),
+  onError: (err, ctx) => telemetry.track('api_error', { code: err.code, path: ctx.path }),
+});
+
+const page = await api.get('/api/leads', { page: 2, status: ['new', 'open'] });
+page.data; // Lead[]
+page.meta; // { total, page, perPage }
+
+const lead = await unwrap(api.post('/api/leads', { firstName: 'Jane' }));
+await api.delete(`/api/leads/${lead.id}`);
+
+const csv = await api.request({ path: '/api/leads/export', raw: true });
+```
+
+---
+
+### ApiError
+
+Error class thrown by `createApiClient` and by `unwrap()`. `new ApiError(message, { status, code?, field?, url?, body?, response?, cause? })`.
+
+**Fields:**
+- `status` — HTTP status, or `0` when no response was received
+- `code` — the envelope's `error.code` when present; otherwise `http_<status>`, or `http_network` for status 0. The client uses `'network_error'` and `'timeout'` for its own failures
+- `message` — the envelope's `error.message`, a `text/plain` body, the status text, or `HTTP <status>`
+- `field` — the envelope's `error.field`, when a form field is named
+- `url` — the fully resolved request URL (`''` when constructed without one)
+- `body` — the parsed response body, when one was read
+- `response` — the `Response`, when one was received; its body is already consumed, read `body` instead
+- `cause` — the underlying error for network failures
+
+---
+
+### isApiError(value)
+
+`instanceof` guard for `ApiError`.
+
+**Example:**
+```js
+try {
+  await api.post('/api/leads', form);
+} catch (err) {
+  if (isApiError(err) && err.field) showFieldError(err.field, err.message);
+  else throw err;
+}
+```
+
+---
+
+### isApiResponse(value)
+
+Returns `true` for a success envelope — an object with a `data` property: `{ data, meta? }`, where `meta` carries pagination as `{ total, page, perPage }`.
+
+---
+
+### isApiErrorEnvelope(value)
+
+Returns `true` for an error envelope — an object whose `error` property is a non-null object: `{ error: { code, message, field? } }`.
+
+---
+
+### unwrap(envelope)
+
+Returns the `data` of a success envelope. Given a promise, returns a promise for the `data` of the envelope it resolves to.
+
+**Throws:** `ApiError` (with `status: 0` and the envelope's `code`/`message`/`field`) when handed an error envelope; `TypeError` for a value that is neither.
+
+**Example:**
+```js
+const leads = await unwrap(api.get('/api/leads'));   // Lead[]
+const stats = unwrap({ data: { total: 3 } });         // { total: 3 }
+```
+
+---
+
+### serializeQuery(params)
+
+Serializes a params object to a query string.
+
+**Parameters:**
+- `params` — object of `string | number | boolean | null | undefined` values or arrays of them; `null`/`undefined` (the object itself, or a value) is skipped
+
+**Returns:** `?key=value&…` with keys sorted so equal objects always serialize identically, arrays repeated once per element in order, and `encodeURIComponent` applied to keys and values — or `''` when nothing survives.
+
+**Example:**
+```js
+serializeQuery({ q: 'hello world', tag: ['a', 'b'], page: 1, empty: null });
+// '?page=1&q=hello%20world&tag=a&tag=b'
+```
+
+---
+
+### joinUrl(base, path)
+
+Joins a base URL and a path with exactly one `/` between them, keeping any base path prefix and any query string already on `path`. An empty `base` returns `path` unchanged; an absolute `http(s)://` path is returned as is.
+
+**Example:**
+```js
+joinUrl('https://api.example.com/', 'v1/users?x=1'); // 'https://api.example.com/v1/users?x=1'
+joinUrl('', '/users');                                // '/users'
+```
+
 ## Integration
 
-`createResource` and `createMutation` use `signal`, `computed`, and `effect` from `@basenative/runtime`. The signals integrate directly with `@basenative/server` hydration markers, so server-rendered resource states are preserved on the client without a full re-fetch.
+`createApiClient` and its helpers have no dependencies and run anywhere `fetch` does (browsers, Node 20+, Workers); pass `fetch` explicitly to mock it in tests. `createResource` and `createMutation` use `signal`, `computed`, and `effect` from `@basenative/runtime`. The signals integrate directly with `@basenative/server` hydration markers, so server-rendered resource states are preserved on the client without a full re-fetch.

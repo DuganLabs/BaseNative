@@ -1,6 +1,6 @@
 # @basenative/fetch
 
-> Signal-based async resource fetching with caching, mutations, and request deduplication
+> Signal-based async resource fetching with caching, mutations, request deduplication, and a typed API client
 
 Part of the [BaseNative](https://github.com/DuganLabs/basenative) ecosystem — a signal-based web runtime over native HTML.
 
@@ -38,6 +38,35 @@ const createUser = createMutation(
 await createUser.mutate({ name: 'Alice' });
 ```
 
+## API client
+
+```js
+import { createApiClient, isApiError, unwrap } from '@basenative/fetch';
+
+const api = createApiClient({
+  baseUrl: 'https://api.example.com',
+  headers: { 'x-app': 'demo' },
+  timeoutMs: 10_000,
+  onUnauthorized: () => location.assign('/login'),
+});
+
+// Bodies are JSON-encoded, responses JSON-parsed; the envelope comes back as is
+const page = await api.get('/api/leads', { page: 2, status: ['new', 'open'] });
+page.data; // Lead[]
+page.meta; // { total, page, perPage }
+
+// unwrap() when you only need `data`
+const lead = await unwrap(api.post('/api/leads', { firstName: 'Jane' }));
+
+try {
+  await api.delete(`/api/leads/${lead.id}`);
+} catch (err) {
+  if (isApiError(err)) console.error(err.status, err.code, err.message);
+}
+```
+
+Every failure — a non-2xx status, an `{ error: { code, message } }` envelope in a 2xx body, a timeout, or a network error — rejects with an `ApiError`. A caller's own `AbortSignal` abort is rethrown untouched, so `createResource(() => api.get(...))` keeps ignoring cancellations.
+
 ## API
 
 ### `createResource(fetcher, options?)`
@@ -73,6 +102,37 @@ Returns: `{ get(key), set(key, data), invalidate(key?), has(key), size }`.
 ### `fetchJson(url, options?)`
 
 A fetch wrapper that serializes the request body as JSON, sets `Content-Type: application/json`, and throws a typed `Error` with `.status` and `.response` on non-2xx responses.
+
+### createApiClient(options)
+
+Creates a typed `fetch` wrapper bound to a base URL. Options:
+
+- `baseUrl` — string, or a function resolved on every request.
+- `headers` — headers sent with every request; per-request headers win.
+- `fetch` — implementation to use (default: `globalThis.fetch`).
+- `credentials` — default credentials mode (default: `'include'`).
+- `timeoutMs` — abort requests that take longer; they reject with an `ApiError` whose `code` is `'timeout'`.
+- `onRequest(ctx)`, `onResponse(ctx)`, `onUnauthorized(error, ctx)` (401 only, before `onError`), `onError(error, ctx)` — awaited hooks for auth redirects, telemetry and error tracking.
+
+Returns an `ApiClient`:
+
+- `get(path, params?, init?)`, `post(path, body?, init?)`, `put(path, body?, init?)`, `patch(path, body?, init?)`, `delete(path, init?)` — resolve with the parsed response body (`undefined` for 204). `init` accepts `headers`, `signal`, `credentials`, `raw` and (for `delete`) `params`/`body`.
+- `request({ path, method?, params?, body?, headers?, signal?, credentials?, raw? })` — the general form; `raw: true` resolves with the `Response` itself.
+- `resolveUrl(path, params?)` — the URL a request would hit.
+
+Plain-object bodies are JSON-encoded with `content-type: application/json` unless you set one; `string`, `FormData`, `URLSearchParams`, `Blob`, `ArrayBuffer`, typed arrays and streams pass through untouched.
+
+### ApiError / isApiError(value)
+
+Thrown by the client and by `unwrap()`. Fields: `status` (0 when no response was received), `code` (the envelope's `error.code`, else `http_<status>`, `network_error` or `timeout`), `message`, `field` (when the envelope names one), `url`, `body` (the parsed response body) and `response` (the `Response`, body already consumed). `isApiError(value)` is an `instanceof` guard.
+
+### isApiResponse(value) / isApiErrorEnvelope(value) / unwrap(envelope)
+
+Helpers for the response envelope — `{ data, meta? }` on success, `{ error: { code, message, field? } }` on failure. `unwrap(envelope)` returns `data` from an envelope or from a promise resolving to one, and throws `ApiError` if it is an error envelope.
+
+### serializeQuery(params) / joinUrl(base, path)
+
+`serializeQuery({ b: 1, a: ['x', 'y'], c: null })` → `?a=x&a=y&b=1` — keys sorted (stable cache keys), arrays repeated, `null`/`undefined` skipped, empty string when nothing survives. `joinUrl(base, path)` joins with exactly one `/`; an empty base returns `path`, an absolute `http(s)://` path is returned as is.
 
 ## License
 
