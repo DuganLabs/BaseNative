@@ -11,7 +11,8 @@
     "audit:observatory": "node scripts/audit/observatory.mjs",
     "audit:ux": "node scripts/audit/laws-of-ux.mjs",
     "audit": "pnpm audit:axe && pnpm audit:ux",
-    "bundle-size": "node scripts/bundle-size.js"
+    "bundle-size": "node scripts/bundle-size.js",
+    "version": "changeset version && pnpm install --lockfile-only --ignore-scripts"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.2",
