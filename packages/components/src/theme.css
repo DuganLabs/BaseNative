@@ -1,83 +1,151 @@
 @layer tokens {
-  /* Dark Mode — automatic via prefers-color-scheme */
+  /* Dark palette — defined exactly once. Both activation paths below (automatic,
+     OS-driven; and explicit [data-theme="dark"], which must win even when the OS
+     reports light) reference these values, so a color only ever needs to change
+     in one place. This replaces two previously byte-identical ~38-line blocks. */
+  :root {
+    --bn-dark-surface: var(--bn-color-gray-950);
+    --bn-dark-surface-subtle: var(--bn-color-gray-900);
+    --bn-dark-surface-muted: var(--bn-color-gray-800);
+    --bn-dark-surface-raised: var(--bn-color-gray-900);
+    --bn-dark-surface-inset: var(--bn-color-gray-950);
+    --bn-dark-surface-inverse: var(--bn-color-gray-50);
+
+    --bn-dark-text: var(--bn-color-gray-50);
+    --bn-dark-text-muted: var(--bn-color-gray-400);
+    /* text-subtle: gray-400 clears 4.5:1 on both gray-950 (7.76:1) and gray-900 (6.91:1). */
+    --bn-dark-text-subtle: var(--bn-color-gray-400);
+    --bn-dark-text-inverse: var(--bn-color-gray-900);
+    --bn-dark-text-link: var(--bn-color-primary-400);
+
+    --bn-dark-border: var(--bn-color-gray-700);
+    --bn-dark-border-strong: var(--bn-color-gray-600);
+
+    /* Error foreground — #fca5a5 is 10.48:1 on gray-950 / 9.33:1 on gray-900. */
+    --bn-dark-error-fg: #fca5a5;
+
+    /* Selection state — a slightly stronger tint than -info-bg so "selected" reads
+       distinctly from a plain hover, plus a light-on-dark text color. */
+    --bn-dark-selected-bg: rgb(37 99 235 / 0.16);
+    --bn-dark-selected-text: var(--bn-color-primary-300);
+
+    /* Table zebra stripe — a translucent white lighten reads correctly only on a dark
+       surface; on light it must invert to a translucent black darken (set in :root). */
+    --bn-dark-zebra: rgb(255 255 255 / 0.02);
+
+    /* Toggle track (off) is NOT re-themed here: it aliases --bn-color-border-control
+       (tokens.css), which is already 3:1-safe on both light and dark surfaces. */
+
+    /* Alert/Badge semantic backgrounds — dark */
+    --bn-dark-info-bg: rgb(37 99 235 / 0.12);
+    --bn-dark-info-border: rgb(37 99 235 / 0.25);
+    --bn-dark-info-text: var(--bn-color-primary-300);
+    --bn-dark-success-bg: rgb(22 163 74 / 0.12);
+    --bn-dark-success-border: rgb(22 163 74 / 0.25);
+    --bn-dark-success-text: #86efac;
+    --bn-dark-warning-bg: rgb(217 119 6 / 0.12);
+    --bn-dark-warning-border: rgb(217 119 6 / 0.25);
+    --bn-dark-warning-text: #fcd34d;
+    --bn-dark-error-bg: rgb(220 38 38 / 0.12);
+    --bn-dark-error-border: rgb(220 38 38 / 0.25);
+    --bn-dark-error-text: #fca5a5;
+
+    --bn-dark-success-badge-bg: rgb(22 163 74 / 0.15);
+    --bn-dark-success-badge-text: #86efac;
+    --bn-dark-warning-badge-bg: rgb(217 119 6 / 0.15);
+    --bn-dark-warning-badge-text: #fcd34d;
+    --bn-dark-error-badge-bg: rgb(220 38 38 / 0.15);
+    --bn-dark-error-badge-text: #fca5a5;
+  }
+
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bn-color-surface: var(--bn-color-gray-950);
-      --bn-color-surface-subtle: var(--bn-color-gray-900);
-      --bn-color-surface-muted: var(--bn-color-gray-800);
-      --bn-color-surface-raised: var(--bn-color-gray-900);
-      --bn-color-surface-inset: var(--bn-color-gray-950);
-      --bn-color-surface-inverse: var(--bn-color-gray-50);
+      --bn-color-surface: var(--bn-dark-surface);
+      --bn-color-surface-subtle: var(--bn-dark-surface-subtle);
+      --bn-color-surface-muted: var(--bn-dark-surface-muted);
+      --bn-color-surface-raised: var(--bn-dark-surface-raised);
+      --bn-color-surface-inset: var(--bn-dark-surface-inset);
+      --bn-color-surface-inverse: var(--bn-dark-surface-inverse);
 
-      --bn-color-text: var(--bn-color-gray-50);
-      --bn-color-text-muted: var(--bn-color-gray-400);
-      --bn-color-text-subtle: var(--bn-color-gray-500);
-      --bn-color-text-inverse: var(--bn-color-gray-900);
-      --bn-color-text-link: var(--bn-color-primary-400);
+      --bn-color-text: var(--bn-dark-text);
+      --bn-color-text-muted: var(--bn-dark-text-muted);
+      --bn-color-text-subtle: var(--bn-dark-text-subtle);
+      --bn-color-text-inverse: var(--bn-dark-text-inverse);
+      --bn-color-text-link: var(--bn-dark-text-link);
 
-      --bn-color-border: var(--bn-color-gray-800);
-      --bn-color-border-strong: var(--bn-color-gray-700);
+      --bn-color-border: var(--bn-dark-border);
+      --bn-color-border-strong: var(--bn-dark-border-strong);
 
-      /* Alert/Badge semantic backgrounds — dark */
-      --bn-color-info-bg: rgb(37 99 235 / 0.12);
-      --bn-color-info-border: rgb(37 99 235 / 0.25);
-      --bn-color-info-text: var(--bn-color-primary-300);
-      --bn-color-success-bg: rgb(22 163 74 / 0.12);
-      --bn-color-success-border: rgb(22 163 74 / 0.25);
-      --bn-color-success-text: #86efac;
-      --bn-color-warning-bg: rgb(217 119 6 / 0.12);
-      --bn-color-warning-border: rgb(217 119 6 / 0.25);
-      --bn-color-warning-text: #fcd34d;
-      --bn-color-error-bg: rgb(220 38 38 / 0.12);
-      --bn-color-error-border: rgb(220 38 38 / 0.25);
-      --bn-color-error-text: #fca5a5;
+      --bn-color-error-fg: var(--bn-dark-error-fg);
+      --bn-color-selected-bg: var(--bn-dark-selected-bg);
+      --bn-color-selected-text: var(--bn-dark-selected-text);
+      --bn-color-zebra: var(--bn-dark-zebra);
 
-      --bn-color-success-badge-bg: rgb(22 163 74 / 0.15);
-      --bn-color-success-badge-text: #86efac;
-      --bn-color-warning-badge-bg: rgb(217 119 6 / 0.15);
-      --bn-color-warning-badge-text: #fcd34d;
-      --bn-color-error-badge-bg: rgb(220 38 38 / 0.15);
-      --bn-color-error-badge-text: #fca5a5;
+      --bn-color-info-bg: var(--bn-dark-info-bg);
+      --bn-color-info-border: var(--bn-dark-info-border);
+      --bn-color-info-text: var(--bn-dark-info-text);
+      --bn-color-success-bg: var(--bn-dark-success-bg);
+      --bn-color-success-border: var(--bn-dark-success-border);
+      --bn-color-success-text: var(--bn-dark-success-text);
+      --bn-color-warning-bg: var(--bn-dark-warning-bg);
+      --bn-color-warning-border: var(--bn-dark-warning-border);
+      --bn-color-warning-text: var(--bn-dark-warning-text);
+      --bn-color-error-bg: var(--bn-dark-error-bg);
+      --bn-color-error-border: var(--bn-dark-error-border);
+      --bn-color-error-text: var(--bn-dark-error-text);
+
+      --bn-color-success-badge-bg: var(--bn-dark-success-badge-bg);
+      --bn-color-success-badge-text: var(--bn-dark-success-badge-text);
+      --bn-color-warning-badge-bg: var(--bn-dark-warning-badge-bg);
+      --bn-color-warning-badge-text: var(--bn-dark-warning-badge-text);
+      --bn-color-error-badge-bg: var(--bn-dark-error-badge-bg);
+      --bn-color-error-badge-text: var(--bn-dark-error-badge-text);
     }
   }
 
-  /* Explicit dark theme override */
+  /* Explicit dark theme override — must win regardless of OS preference, so it cannot
+     live inside the @media block above. Every value here is a reference into the single
+     dark palette defined at the top of this file. */
   [data-theme="dark"] {
-    --bn-color-surface: var(--bn-color-gray-950);
-    --bn-color-surface-subtle: var(--bn-color-gray-900);
-    --bn-color-surface-muted: var(--bn-color-gray-800);
-    --bn-color-surface-raised: var(--bn-color-gray-900);
-    --bn-color-surface-inset: var(--bn-color-gray-950);
-    --bn-color-surface-inverse: var(--bn-color-gray-50);
+    --bn-color-surface: var(--bn-dark-surface);
+    --bn-color-surface-subtle: var(--bn-dark-surface-subtle);
+    --bn-color-surface-muted: var(--bn-dark-surface-muted);
+    --bn-color-surface-raised: var(--bn-dark-surface-raised);
+    --bn-color-surface-inset: var(--bn-dark-surface-inset);
+    --bn-color-surface-inverse: var(--bn-dark-surface-inverse);
 
-    --bn-color-text: var(--bn-color-gray-50);
-    --bn-color-text-muted: var(--bn-color-gray-400);
-    --bn-color-text-subtle: var(--bn-color-gray-500);
-    --bn-color-text-inverse: var(--bn-color-gray-900);
-    --bn-color-text-link: var(--bn-color-primary-400);
+    --bn-color-text: var(--bn-dark-text);
+    --bn-color-text-muted: var(--bn-dark-text-muted);
+    --bn-color-text-subtle: var(--bn-dark-text-subtle);
+    --bn-color-text-inverse: var(--bn-dark-text-inverse);
+    --bn-color-text-link: var(--bn-dark-text-link);
 
-    --bn-color-border: var(--bn-color-gray-800);
-    --bn-color-border-strong: var(--bn-color-gray-700);
+    --bn-color-border: var(--bn-dark-border);
+    --bn-color-border-strong: var(--bn-dark-border-strong);
 
-    /* Alert/Badge semantic backgrounds — dark */
-    --bn-color-info-bg: rgb(37 99 235 / 0.12);
-    --bn-color-info-border: rgb(37 99 235 / 0.25);
-    --bn-color-info-text: var(--bn-color-primary-300);
-    --bn-color-success-bg: rgb(22 163 74 / 0.12);
-    --bn-color-success-border: rgb(22 163 74 / 0.25);
-    --bn-color-success-text: #86efac;
-    --bn-color-warning-bg: rgb(217 119 6 / 0.12);
-    --bn-color-warning-border: rgb(217 119 6 / 0.25);
-    --bn-color-warning-text: #fcd34d;
-    --bn-color-error-bg: rgb(220 38 38 / 0.12);
-    --bn-color-error-border: rgb(220 38 38 / 0.25);
-    --bn-color-error-text: #fca5a5;
+    --bn-color-error-fg: var(--bn-dark-error-fg);
+    --bn-color-selected-bg: var(--bn-dark-selected-bg);
+    --bn-color-selected-text: var(--bn-dark-selected-text);
+    --bn-color-zebra: var(--bn-dark-zebra);
 
-    --bn-color-success-badge-bg: rgb(22 163 74 / 0.15);
-    --bn-color-success-badge-text: #86efac;
-    --bn-color-warning-badge-bg: rgb(217 119 6 / 0.15);
-    --bn-color-warning-badge-text: #fcd34d;
-    --bn-color-error-badge-bg: rgb(220 38 38 / 0.15);
-    --bn-color-error-badge-text: #fca5a5;
+    --bn-color-info-bg: var(--bn-dark-info-bg);
+    --bn-color-info-border: var(--bn-dark-info-border);
+    --bn-color-info-text: var(--bn-dark-info-text);
+    --bn-color-success-bg: var(--bn-dark-success-bg);
+    --bn-color-success-border: var(--bn-dark-success-border);
+    --bn-color-success-text: var(--bn-dark-success-text);
+    --bn-color-warning-bg: var(--bn-dark-warning-bg);
+    --bn-color-warning-border: var(--bn-dark-warning-border);
+    --bn-color-warning-text: var(--bn-dark-warning-text);
+    --bn-color-error-bg: var(--bn-dark-error-bg);
+    --bn-color-error-border: var(--bn-dark-error-border);
+    --bn-color-error-text: var(--bn-dark-error-text);
+
+    --bn-color-success-badge-bg: var(--bn-dark-success-badge-bg);
+    --bn-color-success-badge-text: var(--bn-dark-success-badge-text);
+    --bn-color-warning-badge-bg: var(--bn-dark-warning-badge-bg);
+    --bn-color-warning-badge-text: var(--bn-dark-warning-badge-text);
+    --bn-color-error-badge-bg: var(--bn-dark-error-badge-bg);
+    --bn-color-error-badge-text: var(--bn-dark-error-badge-text);
   }
 }
