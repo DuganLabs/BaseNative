@@ -208,19 +208,12 @@ importers:
         specifier: workspace:*
         version: link:../../packages/runtime
 
-  packages/admin:
-    dependencies:
-      '@basenative/auth':
-        specifier: workspace:*
-        version: link:../auth
+  packages/admin: {}
 
   packages/auth: {}
 
   packages/auth-webauthn:
     dependencies:
-      '@basenative/auth':
-        specifier: workspace:*
-        version: link:../auth
       '@simplewebauthn/server':
         specifier: ^11.0.0 || ^12.0.0 || ^13.0.0 || ^14.0.0
         version: 11.0.0
