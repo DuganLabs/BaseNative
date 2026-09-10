@@ -100,6 +100,46 @@ Sets or updates a flag configuration (if the provider supports mutation).
 
 ---
 
+### `@feature` template directive
+
+`<template @feature="flagName">` — renders its contents only when `flagName` is enabled, with an optional `<template @else>` sibling for the disabled case, exactly like `@if`/`@else`. Registered by importing `@basenative/flags` (a side effect of loading the package) with `@basenative/runtime`'s directive registry — `@basenative/runtime` and `@basenative/server` do not import `@basenative/flags` directly.
+
+```html
+<template @feature="newDashboard"><p>New dashboard</p></template>
+<template @else><p>Classic dashboard</p></template>
+```
+
+It reads `ctx.$flags` — an object shaped `{ isEnabled(name) }` — from the render (SSR) or hydrate (client) context. `flagManager.isEnabled()` is async; template rendering is synchronous end to end, so build `ctx.$flags` ahead of time with `createFlagContext()` rather than passing a flag manager directly.
+
+**Behavior with no `$flags` on context:** the flag is treated as disabled — `@else` renders if present, otherwise nothing — and a `BN_FEATURE_NO_PROVIDER` diagnostic is emitted through `options.onDiagnostic`. `@feature` never assumes "enabled" for a flag it cannot evaluate.
+
+`flagName` is a literal name, not an expression (no quotes) — unlike `@if`/`@switch`, whose values are BaseNative expressions.
+
+On a non-`<template>` element, `@feature` is not control flow — it becomes a `feature` event listener like any other `@name`, and `@basenative/validate` reports this as `BN_E_CONTROL_FLOW_ON_ELEMENT`.
+
+---
+
+#### createFlagContext(flagManager, context?)
+
+Resolves every flag once (via `flagManager.getAll(context)`) and returns a plain, synchronous snapshot suitable for `ctx.$flags`.
+
+**Parameters:**
+- `flagManager` — flag manager from `createFlagManager`
+- `context` — same shape as `isEnabled`'s context
+
+**Returns:** `Promise<{ flags: Record<string, boolean>, isEnabled: (name: string) => boolean }>`
+
+**Example:**
+```js
+import { createFlagContext } from '@basenative/flags';
+import { render } from '@basenative/server';
+
+const $flags = await createFlagContext(flags, { userId: user.id });
+const html = render(template, { ...data, $flags });
+```
+
+---
+
 ### flagMiddleware(flagManager)
 
 Middleware that attaches the flag manager to `ctx.state`.

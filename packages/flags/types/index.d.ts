@@ -35,3 +35,14 @@ export function createFlagManager(provider: FlagProvider, options?: { defaultVal
 export function flagMiddleware(flagManager: FlagManager): (ctx: unknown, next: () => Promise<void>) => Promise<void>;
 export function createMemoryProvider(initialFlags?: Record<string, FlagConfig>): FlagProvider;
 export function createRemoteProvider(options: { url: string; headers?: Record<string, string>; pollInterval?: number; timeout?: number }): FlagProvider & { refresh(): Promise<void>; startPolling(): void; stopPolling(): void };
+
+/**
+ * A synchronous flag snapshot suitable for `ctx.$flags` — see the `@feature`
+ * template directive this package registers with @basenative/runtime.
+ */
+export interface FlagContextSnapshot {
+  flags: Record<string, boolean>;
+  isEnabled(name: string): boolean;
+}
+
+export function createFlagContext(flagManager: FlagManager, context?: FlagContext): Promise<FlagContextSnapshot>;

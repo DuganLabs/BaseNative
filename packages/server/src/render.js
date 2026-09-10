@@ -9,6 +9,7 @@ import {
   sanitizeUrl,
   findInterpolations,
 } from '@basenative/runtime/shared/escape';
+import { getDirective, listDirectives } from '@basenative/runtime/shared/directives';
 
 function emitDiagnostic(options, diagnostic) {
   if (typeof options?.onDiagnostic === 'function') {
@@ -55,6 +56,17 @@ function trackLabel(value) {
   return encodeURIComponent(String(value));
 }
 
+/** Find the first registered `on: 'template'` directive attribute present on `node`. */
+function findBlockDirective(node) {
+  for (const name of listDirectives()) {
+    const directive = getDirective(name);
+    if (directive?.on === 'template' && node.getAttribute(`@${name}`) != null) {
+      return { name, directive };
+    }
+  }
+  return null;
+}
+
 function processChildren(parent, ctx, options) {
   const children = parent.childNodes.slice();
   let index = 0;
@@ -73,7 +85,12 @@ function processChildren(parent, ctx, options) {
         processSwitch(node, ctx, options);
         index++;
       } else {
-        index++;
+        const block = findBlockDirective(node);
+        if (block) {
+          index = processDirectiveBlock(children, index, ctx, options, block.name, block.directive);
+        } else {
+          index++;
+        }
       }
       continue;
     }
@@ -98,10 +115,18 @@ function processNode(node, ctx, options) {
   if (tag === 'style') return;
   if (tag === 'script' && node.getAttribute('type') !== 'application/json') return;
 
+  let contentDirective = null;
+
   if (node.rawAttrs) {
     const attrs = [];
     for (const { name, value } of parseAttrs(node.rawAttrs)) {
-      if (name.startsWith('@')) continue;
+      if (name.startsWith('@')) {
+        const directive = getDirective(name.slice(1));
+        if (directive?.on === 'element' && directive.server) {
+          contentDirective = { directive, value };
+        }
+        continue;
+      }
 
       if (name.startsWith(':')) {
         const result = evaluate(value, ctx, options);
@@ -142,6 +167,17 @@ function processNode(node, ctx, options) {
       .join(' ');
   }
 
+  if (contentDirective) {
+    const result = contentDirective.directive.server(contentDirective.value, ctx, options);
+    if (result !== undefined) {
+      // Same rule as text-node interpolation: a directive's return value is data
+      // unless explicitly marked raw() — set via textContent-equivalent escaping,
+      // not innerHTML, so it can never smuggle markup in.
+      node.textContent = result == null ? '' : (isRaw(result) ? unwrapRaw(result) : escapeText(String(result)));
+      return;
+    }
+  }
+
   processChildren(node, ctx, options);
 }
 
@@ -166,6 +202,38 @@ function processIf(children, index, ctx, options) {
   }
 
   if (elseNode && elseNode !== ifNode) {
+    elseNode.remove();
+  }
+
+  return index + 1;
+}
+
+/**
+ * Generic server-side dispatch for a plugin-contributed `on: 'template'` directive.
+ * Mirrors processIf: the directive's `server` handler stands in for the `@if`
+ * condition, and a following `<template @else>` sibling is supported the same way.
+ */
+function processDirectiveBlock(children, index, ctx, options, name, directive) {
+  const node = children[index];
+  const value = node.getAttribute(`@${name}`);
+  let elseNode = null;
+  const next = findNextElementSibling(children, index + 1);
+  if (next?.rawTagName === 'template' && next.getAttribute('@else') != null) {
+    elseNode = next;
+  }
+
+  const condition = directive.server ? Boolean(directive.server(value, ctx, options)) : false;
+  const source = condition ? node : elseNode;
+
+  if (source) {
+    const content = parseFragment(source.innerHTML);
+    processChildren(content, ctx, options);
+    node.replaceWith(parseFragment(wrapFragment(content.toString(), name, options)));
+  } else {
+    node.remove();
+  }
+
+  if (elseNode && elseNode !== node) {
     elseNode.remove();
   }
 

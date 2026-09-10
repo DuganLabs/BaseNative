@@ -109,6 +109,30 @@ Loop variables: `$index`, `$first`, `$last`, `$even`, `$odd`.
 <span>{{ items().length }} items</span>
 ```
 
+### Custom Directives — `registerDirective(name, config)`
+
+`@if`/`@for`/`@switch`/`@defer` are built into `render()` and `hydrate()` directly. Other packages contribute directives (`@feature` from `@basenative/flags`, `@t` from `@basenative/i18n`) through this registry instead, so `@basenative/runtime` and `@basenative/server` never import them — they only consult the registry by name. Importing a directive-providing package registers it as a side effect; `render()`/`hydrate()` need no further wiring.
+
+```js
+import { registerDirective } from '@basenative/runtime';
+// or: import { registerDirective } from '@basenative/runtime/shared/directives';
+
+registerDirective('tooltip', {
+  on: 'element',                                    // 'template' | 'element' (default)
+  server: (value, ctx, options) => value,           // string (or raw()) to use as text content
+  client: (value, ctx, options) => value,
+});
+```
+
+Two kinds, matching the two places a `@name` attribute appears:
+
+- **`on: 'template'`** — control flow on a `<template>`, dispatched like `@if`: the handler returns a boolean. `true` renders the template's own content; `false` renders a following `<template @else>` sibling if present, otherwise nothing. Example: `@feature`.
+- **`on: 'element'`** (default) — content on any other element, dispatched like `{{ }}`: the handler returns the string (or a `raw()`-wrapped HTML string) to use as the element's text content. Returning `undefined` leaves the element's existing content untouched — a directive can fall back to whatever static markup the template already has. Example: `@t`.
+
+`server` and `client` are both optional — supply whichever side(s) the directive needs. Both are called as `(value, ctx, options) => result`, where `value` is the attribute's raw string value. On the client, if the handler reads a `signal()` internally, the surrounding `effect()` that `hydrate()` already wraps every directive-driven update in re-runs automatically — no extra reactivity plumbing needed.
+
+Also exported: `unregisterDirective(name)` and `getDirective(name)` (mainly for tests), and `listDirectives()`.
+
 ## `detectBrowserFeatures()`
 
 Returns a `BrowserFeatures` object with support flags.

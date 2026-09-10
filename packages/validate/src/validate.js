@@ -3,23 +3,36 @@ import { diagnostic, ERROR, WARNING, CONFIDENCE } from './codes.js';
 import { scanTags, scanInterpolations, spanAt } from './scan.js';
 import { foreignAttribute, FOREIGN_BLOCKS, FOREIGN_REACTIVITY } from './foreign.js';
 
-/** Directives BaseNative defines on a <template>. */
+/**
+ * Directives BaseNative defines on a <template>. `feature` is contributed by
+ * @basenative/flags through @basenative/runtime's directive registry, not built
+ * into the runtime/server core, but it is registered the same way `if` is — see
+ * packages/flags/src/directive.js.
+ */
 const TEMPLATE_DIRECTIVES = new Set([
-  'if', 'else', 'for', 'empty', 'switch', 'case', 'default', 'defer', 'catch',
+  'if', 'else', 'for', 'empty', 'switch', 'case', 'default', 'defer', 'catch', 'feature',
 ]);
 
 /**
  * Directives that only mean anything as control flow. On a non-template element
  * every `@name` becomes an addEventListener, so these fail silently there.
  */
-const CONTROL_FLOW = new Set(['if', 'else', 'for', 'empty', 'switch', 'case', 'default']);
+const CONTROL_FLOW = new Set(['if', 'else', 'for', 'empty', 'switch', 'case', 'default', 'feature']);
 
-/** Branch directives and the directive that must govern them. */
+/**
+ * Directives whose value is an opaque name rather than a BaseNative expression, so
+ * it must not be run through checkExpression. `feature` takes a flag name (e.g.
+ * `newDashboard`), the same way `@t` (an element directive, checked elsewhere) takes
+ * a dotted message key — neither is meant to be evaluated as JS-like syntax.
+ */
+const OPAQUE_VALUE = new Set(['else', 'default', 'empty', 'feature']);
+
+/** Branch directives and the directive(s) that may govern them. */
 const BRANCH_PARENT = {
-  else: { governor: 'if', relation: 'previous sibling' },
-  empty: { governor: 'for', relation: 'previous sibling' },
-  case: { governor: 'switch', relation: 'ancestor' },
-  default: { governor: 'switch', relation: 'ancestor' },
+  else: { governor: ['if', 'feature'], relation: 'previous sibling' },
+  empty: { governor: ['for'], relation: 'previous sibling' },
+  case: { governor: ['switch'], relation: 'ancestor' },
+  default: { governor: ['switch'], relation: 'ancestor' },
 };
 
 /** `item of items; track item.id` — mirrors the runtime's own @for grammar. */
@@ -313,16 +326,17 @@ export function validateTemplate(source, options = {}) {
       if (rel) {
         const governed =
           rel.relation === 'ancestor'
-            ? stack.some((f) => f.directives.has(rel.governor))
-            : Boolean(prevSibling?.directives?.has(rel.governor));
+            ? stack.some((f) => rel.governor.some((g) => f.directives.has(g)))
+            : rel.governor.some((g) => Boolean(prevSibling?.directives?.has(g)));
         if (!governed) {
+          const governorList = rel.governor.map((g) => `@${g}`).join(' or ');
           out.push(
             diagnostic('BN_E_ORPHAN_BRANCH', {
-              message: `"@${directive}" has no governing "@${rel.governor}" as its ${rel.relation}`,
+              message: `"@${directive}" has no governing "${governorList}" as its ${rel.relation}`,
               suggestion:
                 rel.relation === 'ancestor'
-                  ? `Wrap it: <template @${rel.governor}="value"> <template @${directive}${attr.value != null ? `="${attr.value}"` : ''}> … </template> </template>`
-                  : `Place it directly after the closing tag of the <template @${rel.governor}="…"> it belongs to`,
+                  ? `Wrap it: <template @${rel.governor[0]}="value"> <template @${directive}${attr.value != null ? `="${attr.value}"` : ''}> … </template> </template>`
+                  : `Place it directly after the closing tag of the <template @${rel.governor[0]}="…"> it belongs to`,
               span,
             })
           );
@@ -362,7 +376,7 @@ export function validateTemplate(source, options = {}) {
         continue;
       }
 
-      if (attr.value != null && directive !== 'else' && directive !== 'default' && directive !== 'empty') {
+      if (attr.value != null && !OPAQUE_VALUE.has(directive)) {
         checkExpression(attr.value, attr.offset, src, context, locals, out);
       }
     }

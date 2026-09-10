@@ -13,6 +13,9 @@
     },
     "./shared/escape": {
       "default": "./src/shared/escape.js"
+    },
+    "./shared/directives": {
+      "default": "./src/shared/directives.js"
     }
   },
   "types": "./types/index.d.ts",

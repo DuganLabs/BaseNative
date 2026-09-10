@@ -109,7 +109,7 @@ describe('render_preview', () => {
 describe('list_directives', () => {
   it('returns the full reference by default', () => {
     const text = textOf(call('list_directives', {}));
-    for (const d of ['@if', '@for', '@switch', '@defer', ':<attr>', '{{ }}']) {
+    for (const d of ['@if', '@for', '@switch', '@defer', '@feature', '@t', ':<attr>', '{{ }}']) {
       assert.ok(text.includes(d), `missing ${d}`);
     }
   });
@@ -118,6 +118,23 @@ describe('list_directives', () => {
     const text = textOf(call('list_directives', { filter: '@for' }));
     assert.match(text, /item of items; track item\.id/);
     assert.ok(!text.includes('@switch'));
+  });
+
+  it('describes @feature as a plugin-contributed template directive with an @else example', () => {
+    const text = textOf(call('list_directives', { filter: '@feature' }));
+    assert.match(text, /template/);
+    assert.match(text, /@basenative\/flags/);
+    assert.match(text, /@else/);
+    assert.match(text, /BN_FEATURE_NO_PROVIDER/);
+  });
+
+  it('describes @t as a plugin-contributed element directive', () => {
+    // 't' as a substring matches several other directives too (switch, default,
+    // catch, feature...) — this only pins down that @t's own entry is present.
+    const text = textOf(call('list_directives', { filter: '@t' }));
+    assert.match(text, /<span @t="message\.key">/);
+    assert.match(text, /@basenative\/i18n/);
+    assert.match(text, /BN_T_NO_PROVIDER/);
   });
 
   it('exposes the forbidden-syntax map', () => {

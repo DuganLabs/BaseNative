@@ -128,6 +128,32 @@ export interface PluginRegistry {
 export function definePlugin(config: { name: string; setup: (api: PluginAPI) => void }): Plugin;
 export function createPluginRegistry(): PluginRegistry;
 
+// --- Directive Registry ---
+// The extension point render()/hydrate() actually consult for plugin-contributed
+// directives (e.g. @feature from @basenative/flags, @t from @basenative/i18n).
+// Distinct from PluginAPI.addDirective above, which is not wired into render()/
+// hydrate() dispatch.
+
+export type DirectiveHandler = (
+  value: string,
+  ctx: Record<string, unknown>,
+  options?: RuntimeOptions,
+) => unknown;
+
+export interface DirectiveDefinition {
+  on: 'template' | 'element';
+  server?: DirectiveHandler;
+  client?: DirectiveHandler;
+}
+
+export function registerDirective(
+  name: string,
+  config: { on?: 'template' | 'element'; server?: DirectiveHandler; client?: DirectiveHandler },
+): void;
+export function unregisterDirective(name: string): void;
+export function getDirective(name: string): DirectiveDefinition | undefined;
+export function listDirectives(): string[];
+
 // --- Lazy Hydration ---
 
 export interface LazyHydrator {

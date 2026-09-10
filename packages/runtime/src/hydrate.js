@@ -9,6 +9,7 @@ import {
   registerCleanup,
 } from './dom-lifecycle.js';
 import { createRuntimeOptions, emitDiagnostic, reportHydrationMismatch } from './diagnostics.js';
+import { getDirective, listDirectives } from './shared/directives.js';
 
 function insertAfterAnchor(anchor, nodes) {
   let ref = anchor;
@@ -340,6 +341,50 @@ function mountSwitchTemplate(templateNode, ctx, options) {
   });
 }
 
+/** Find the first registered `on: 'template'` directive attribute present on `node`. */
+function findBlockDirective(node) {
+  for (const name of listDirectives()) {
+    const directive = getDirective(name);
+    if (directive?.on === 'template' && node.hasAttribute(`@${name}`)) {
+      return { name, directive };
+    }
+  }
+  return null;
+}
+
+/**
+ * Generic client-side mount for a plugin-contributed `on: 'template'` directive.
+ * Mirrors mountIfTemplate: the directive's `client` handler stands in for the `@if`
+ * condition, and a following `<template @else>` sibling is supported the same way.
+ */
+function mountDirectiveBlockTemplate(templateNode, name, directive, ctx, options) {
+  const value = templateNode.getAttribute(`@${name}`);
+  let elseNode = null;
+  const next = templateNode.nextElementSibling;
+  if (next?.tagName === 'TEMPLATE' && next.hasAttribute('@else')) {
+    elseNode = next;
+    elseNode.remove();
+  }
+
+  const anchor = document.createComment(`@${name}`);
+  templateNode.replaceWith(anchor);
+  let rendered = [];
+
+  const runner = effect(() => {
+    removeRenderedNodes(rendered);
+    const condition = directive.client ? Boolean(directive.client(value, ctx, options)) : false;
+    const source = condition ? templateNode : elseNode;
+    rendered = source ? cloneAndHydrate(source, ctx, options) : [];
+    insertAfterAnchor(anchor, rendered);
+  });
+
+  registerCleanup(anchor, () => {
+    runner.dispose?.();
+    removeRenderedNodes(rendered);
+    rendered = [];
+  });
+}
+
 function hasHydrationMarkers(root) {
   const SHOW_COMMENT = globalThis.NodeFilter?.SHOW_COMMENT ?? 128;
   const walker = document.createTreeWalker(root, SHOW_COMMENT);
@@ -364,6 +409,12 @@ export function hydrateChildren(parent, ctx, options = {}) {
       } else if (node.hasAttribute('@switch')) {
         mountSwitchTemplate(node, ctx, options);
         processed++;
+      } else {
+        const block = findBlockDirective(node);
+        if (block) {
+          mountDirectiveBlockTemplate(node, block.name, block.directive, ctx, options);
+          processed++;
+        }
       }
       continue;
     }
