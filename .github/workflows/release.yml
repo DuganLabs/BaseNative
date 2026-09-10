@@ -48,7 +48,7 @@ jobs:
           version: pnpm run version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Changesets reads NODE_AUTH_TOKEN for the publish step. GITHUB_TOKEN
-          # has packages:write within this repo, which is exactly what we need
-          # for @basenative/* on GitHub Packages.
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Changesets reads NODE_AUTH_TOKEN for the publish step. The @basenative
+          # packages live under the basenative org, so this repo's GITHUB_TOKEN can
+          # neither read nor write them — NPM_TOKEN is a PAT with packages:write there.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || secrets.GITHUB_TOKEN }}
