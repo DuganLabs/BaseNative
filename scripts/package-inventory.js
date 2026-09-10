@@ -93,7 +93,22 @@ for (const p of pkgs) p.npmjs = p.private ? null : await npmjsVersion(p.name);
 const md = render(pkgs, registry);
 
 if (process.argv.includes('--check')) {
-  const strip = (s) => s.replace(/^Generated \d{4}-\d{2}-\d{2}.*$/m, '');
+  // Normalise away everything this repo does not control before comparing.
+  //
+  // The npmjs column and the counts derived from it reflect the state of a public
+  // registry, so anyone publishing a version would make the committed file "stale"
+  // and fail CI on an unrelated pull request. The gate exists to catch packages
+  // added, removed, renamed, or version-bumped *here* — so compare the local facts
+  // and treat the registry column as informational.
+  const strip = (s) =>
+    s
+      .replace(/^Generated \d{4}-\d{2}-\d{2}.*$/m, '')
+      // table rows: blank the npmjs version and the derived state cell
+      .replace(/^(\| `[^`]+` \| [^|]+\|)[^|]*\|[^|]*\|$/gm, '$1 - | - |')
+      // summary bullets whose numbers come from the registry
+      .replace(/^- \*\*\d+\*\* have (a stale npmjs copy|never appeared).*$/gm, '')
+      .replace(/^- \*\*\d+\*\* are at 1\.0 on npmjs.*$/gm, '');
+
   let current = '';
   try {
     current = readFileSync(OUT, 'utf8');
@@ -104,7 +119,7 @@ if (process.argv.includes('--check')) {
     console.error('docs/package-inventory.md is stale — run: node scripts/package-inventory.js');
     process.exit(1);
   }
-  console.log('docs/package-inventory.md is current');
+  console.log('docs/package-inventory.md is current (registry column not gated)');
 } else {
   writeFileSync(OUT, md);
   console.log(`wrote ${OUT}`);
