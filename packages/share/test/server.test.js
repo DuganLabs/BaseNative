@@ -2,7 +2,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  defineShareCards, mintHandler, landingHandler, shortId, DEFAULT_ALPHABET,
+  defineShareCards, mintHandler, landingHandler, shortId, DEFAULT_ALPHABET, DEFAULT_ID_LENGTH,
 } from '../src/server.js';
 import { buildLandingHtml, escHtml } from '../src/og-redirect.js';
 
@@ -40,6 +40,31 @@ describe('shortId', () => {
     const id = shortId(8);
     assert.equal(id.length, 8);
     assert.ok([...id].every((c) => DEFAULT_ALPHABET.includes(c)));
+  });
+
+  it('always uses the default alphabet and length across many draws', () => {
+    for (let i = 0; i < 500; i++) {
+      const id = shortId();
+      assert.equal(id.length, DEFAULT_ID_LENGTH);
+      assert.ok([...id].every((c) => DEFAULT_ALPHABET.includes(c)));
+    }
+  });
+
+  it('respects a custom alphabet whose size does not evenly divide 256 (rejection sampling)', () => {
+    // 31 does not divide 256 evenly, so a naive `byte % 31` would bias
+    // output toward the first (256 % 31) = 8 characters of the alphabet.
+    const alphabet = 'abcdefghijklmnopqrstuvwxyz01234';
+    assert.equal(alphabet.length, 31);
+    for (let i = 0; i < 500; i++) {
+      const id = shortId(12, alphabet);
+      assert.equal(id.length, 12);
+      assert.ok([...id].every((c) => alphabet.includes(c)));
+    }
+  });
+
+  it('supports a single-character alphabet (no eligible byte is ever rejected)', () => {
+    const id = shortId(5, 'x');
+    assert.equal(id, 'xxxxx');
   });
 });
 

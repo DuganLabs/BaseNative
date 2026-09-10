@@ -22,13 +22,35 @@ export const DEFAULT_ID_LENGTH = 8;
 /**
  * Generate a cryptographically-random short id.
  *
+ * Uses rejection sampling rather than `byte % alphabet.length`: when 256
+ * isn't a multiple of the alphabet size, the modulo operation maps more
+ * byte values onto the low end of the alphabet than the high end, biasing
+ * every generated id toward those characters. Bytes that would introduce
+ * that bias are discarded and redrawn instead.
+ *
  * @param {number} [len]
  * @param {string} [alphabet]
  */
 export function shortId(len = DEFAULT_ID_LENGTH, alphabet = DEFAULT_ALPHABET) {
-  const bytes = crypto.getRandomValues(new Uint8Array(len));
+  const alphabetSize = alphabet.length;
+  if (!Number.isInteger(alphabetSize) || alphabetSize < 1 || alphabetSize > 256) {
+    throw new RangeError('shortId: alphabet length must be between 1 and 256');
+  }
+  const maxUsable = 256 - (256 % alphabetSize);
+
   let out = '';
-  for (let i = 0; i < len; i++) out += alphabet[bytes[i] % alphabet.length];
+  let batch = new Uint8Array(0);
+  let batchIndex = 0;
+  while (out.length < len) {
+    if (batchIndex >= batch.length) {
+      // Refill in batches sized to the remaining need, so short ids
+      // (the common case) rarely need more than one call.
+      batch = crypto.getRandomValues(new Uint8Array(Math.max((len - out.length) * 2, 16)));
+      batchIndex = 0;
+    }
+    const byte = batch[batchIndex++];
+    if (byte < maxUsable) out += alphabet[byte % alphabetSize];
+  }
   return out;
 }
 
