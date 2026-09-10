@@ -1,5 +1,11 @@
 # @basenative/middleware
 
+## 0.3.2
+
+### Patch Changes
+
+- 9bd4c1b: Fix CodeQL `js/remote-property-injection` (alert #34) by adding an explicit `__proto__`/`constructor`/`prototype` guard before writing parsed cookie names in the Express adapter's `parseCookieHeader`, alongside the existing null-prototype object.
+
 ## 0.3.1
 
 ### Patch Changes

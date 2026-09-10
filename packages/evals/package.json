@@ -13,7 +13,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@basenative/validate": "workspace:^0.2.0",
-    "@basenative/server": "workspace:^0.6.1",
+    "@basenative/server": "workspace:^0.6.2",
     "@basenative/runtime": "workspace:^0.6.2"
   }
 }

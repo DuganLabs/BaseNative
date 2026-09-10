@@ -1,6 +1,6 @@
 {
   "name": "@basenative/server",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Server-side rendering with streaming support for BaseNative templates",
   "type": "module",
   "exports": {
