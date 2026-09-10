@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { render } from '@basenative/server';
-import { resolveRoute } from '@basenative/router';
+import { escapeText } from '@basenative/runtime/shared/escape';
 import {
   renderButton,
   renderInput,
@@ -33,21 +33,16 @@ let users = [
   { id: 3, name: 'Carol Davis', email: 'carol@example.com', role: 'Viewer', status: 'inactive' },
 ];
 
-// -- Route definitions --
-const routes = [
-  { path: '/', name: 'dashboard' },
-  { path: '/users', name: 'users' },
-  { path: '/users/new', name: 'user-create' },
-  { path: '/users/:id', name: 'user-detail' },
-];
-
 // -- Layout --
 function renderPage(viewFile, ctx, title) {
   const layout = read('views/layout.html');
   const view = read(`views/${viewFile}`);
   const content = render(view, ctx);
   return layout
-    .replace('<!--TITLE-->', title)
+    // `title` can be user-controlled (e.g. a user's own name on
+    // /users/:id) and lands in the page unescaped otherwise — the same
+    // escaping @basenative/server applies to `{{ }}` interpolation.
+    .replace('<!--TITLE-->', escapeText(title))
     .replace('<!--CONTENT-->', content);
 }
 
