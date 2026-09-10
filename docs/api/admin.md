@@ -250,7 +250,7 @@ Render the admin user-management list: a labelled `type="search"` input plus one
 
 ## Integration
 
-- `@basenative/auth` is an optional peer dependency (`peerDependenciesMeta.optional`). None of the modules above import it directly — every module is written storage/auth-agnostic, accepting resolvers you supply (`getCurrentUser`, `setRole`, `identifier`, etc.). In practice you'd implement `getCurrentUser` using `@basenative/auth`'s session helpers and `roleSeed`'s `setRole` using its user store, but that wiring lives in your app, not in this package.
+- `@basenative/auth` is not a dependency of this package (peer or otherwise) — none of the modules above import it directly, and every module is written storage/auth-agnostic, accepting resolvers you supply (`getCurrentUser`, `setRole`, `identifier`, etc.). In practice you'd implement `getCurrentUser` using `@basenative/auth`'s session helpers and `roleSeed`'s `setRole` using its user store, but that wiring lives in your app, not in this package.
 - Apply `./migrations/0001` (or `AUDIT_MIGRATION` for just the audit table) before using `defineQueue` or `auditAction` against a fresh database.
 
 ## License
