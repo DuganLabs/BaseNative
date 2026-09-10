@@ -93,7 +93,7 @@ Modern web development is buried under abstraction layers that obscure what the 
 ## Success Metrics
 
 - **Token reduction**: ~70% fewer tokens vs equivalent React/Angular markup for identical UI
-- **Bundle size**: Runtime under 10KB gzipped (measured 8.8KB) with zero production dependencies
+- **Bundle size**: Runtime under 10KB gzipped (measured 9.2KB) with zero production dependencies
 - **Zero-shot LLM comprehension**: Any BaseNative template parseable by an LLM without framework-specific training
 - **Adoption**: npm download growth, GitHub stars, community component contributions
 - **Spec compliance**: W3C primitives as the only API surface — no proprietary abstractions

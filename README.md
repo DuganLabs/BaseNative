@@ -260,7 +260,7 @@ Measured by `scripts/bundle-size.js`, enforced in CI:
 
 | Package | Gzipped | Budget |
 |---|---|---|
-| `@basenative/runtime` | 8.8KB | 10KB |
+| `@basenative/runtime` | 9.2KB | 10KB |
 | `@basenative/server` | 2.2KB | 16KB |
 
 Zero production dependencies in the runtime.

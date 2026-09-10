@@ -38,7 +38,7 @@ export const PACKAGES = [
   {
     name: '@basenative/runtime',
     tag: 'core',
-    summary: 'Signal-based web runtime over native HTML — zero build step, 8.8KB gzipped (10KB budget).',
+    summary: 'Signal-based web runtime over native HTML — zero build step, 9.2KB gzipped (10KB budget).',
   },
   {
     name: '@basenative/server',

@@ -37,7 +37,7 @@ export function getHomePageContext() {
       { label: 'security boundary', value: 'no eval, no Function' },
       { label: 'render()', value: 'template string at runtime' },
       { label: 'self-check loop', value: 'validate + mcp + evals' },
-      { label: '@basenative/runtime (gzip)', value: '8.8KB / 10KB budget' },
+      { label: '@basenative/runtime (gzip)', value: '9.2KB / 10KB budget' },
     ],
     updates: [
       { id: 1, text: 'Initial proof of concept complete', date: '2025-01-15' },

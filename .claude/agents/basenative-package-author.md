@@ -36,7 +36,7 @@ Ask up front (one round of questions, then proceed):
 - **No TypeScript source.** `.d.ts` only, in `types/` if needed.
 - **ESM only.** No CommonJS, no `require`.
 - **Node `node:test`** for tests. Never Jest, never Vitest.
-- **`@basenative/runtime` stays under its 10KB gzipped CI budget** (currently 8.8KB) — never add deps to it.
+- **`@basenative/runtime` stays under its 10KB gzipped CI budget** (currently 9.2KB) — never add deps to it.
 - Match the **constitution's four axioms** if the package touches DOM/HTML.
 
 ## Workflow

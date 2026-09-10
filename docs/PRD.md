@@ -17,7 +17,7 @@ Every DuganLabs project consumes BaseNative. When a new shared concern emerges, 
 
 ## 2. Goals
 
-1. **Lightweight runtime.** 8.8KB gzipped signal core (10KB CI budget). No build step required.
+1. **Lightweight runtime.** 9.2KB gzipped signal core (10KB CI budget). No build step required.
 2. **Useful primitives.** Auth, components, router, DB, forms, realtime, OG images, virtual keyboard, admin, persist, share — everything a serious app needs without re-rolling.
 3. **CLI-first.** `bn` is the front door. `bn create`, `bn prd`, `bn speckit`, `bn deploy`, `bn doctor`.
 4. **Open-source by default.** All packages Apache-2.0. Visible repo. Contribution-friendly.

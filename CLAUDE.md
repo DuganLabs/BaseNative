@@ -162,7 +162,7 @@ chore(ci): add bundle size check to PR workflow
 ## Key Invariants to Preserve
 
 1. `@basenative/runtime` must stay under **10KB gzipped** — the budget enforced by
-   `scripts/bundle-size.js` in CI. Currently 8.8KB. (The long-standing "<5KB" claim
+   `scripts/bundle-size.js` in CI. Currently 9.2KB. (The long-standing "<5KB" claim
    was never true against the measured build; the budget has always been 10KB.)
 2. The CSP-safe evaluator must never use `eval` or `new Function`
 3. All parameterized DB queries use `?` placeholders — never string interpolation

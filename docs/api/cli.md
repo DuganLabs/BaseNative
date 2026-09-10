@@ -120,7 +120,7 @@ Manages environment variables for the project.
 
 ### `bn analyze`
 
-Analyzes bundle size and reports dependency sizes. Useful for verifying that `@basenative/runtime` stays under its 10KB gzipped budget (currently 8.8KB).
+Analyzes bundle size and reports dependency sizes. Useful for verifying that `@basenative/runtime` stays under its 10KB gzipped budget (currently 9.2KB).
 
 ---
 
