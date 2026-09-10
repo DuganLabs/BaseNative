@@ -2948,7 +2948,11 @@
     border-radius: var(--radius-md);
     padding: var(--space-md) var(--space-lg);
     position: sticky;
-    inset-block-start: var(--space-sm);
+    /* The search bar above is also sticky at the same inset-block-start —
+       offset the TOC by its rendered height (~73px at any viewport; it
+       never wraps) plus a margin, so the two never share a stuck position
+       and the TOC is not covered once both are pinned. */
+    inset-block-start: calc(var(--space-sm) + 5.25rem);
     z-index: 5;
     backdrop-filter: blur(8px);
     background: color-mix(in srgb, var(--surface-1) 92%, transparent);
@@ -3102,8 +3106,6 @@
     }
 
     [data-bn-showcase-toc] {
-      position: sticky;
-      inset-block-start: var(--space-md);
       align-self: start;
 
       & ol {
@@ -3431,7 +3433,7 @@
       }
     }
   }
-  :root[data-bn-showcase-empty] [data-bn-showcase-empty] {
+  [data-bn-showcase-search][data-bn-showcase-empty] [data-bn-showcase-empty] {
     display: block;
   }
 

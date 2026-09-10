@@ -214,9 +214,13 @@
     gap: var(--space-sm, 0.5rem);
     flex-wrap: wrap;
   }
-  /* Empty state hidden until query toggles attribute on :root */
-  [data-bn-showcase-empty] { display: none; }
-  :root[data-bn-showcase-empty] [data-bn-showcase-empty] { display: block; }
+  /* Empty state hidden until the filter toggles the flag on the results
+     container ([data-bn-showcase-search]) — scoped to that container so an
+     unscoped attribute selector can never also match :root itself and blank
+     the whole page (root carries no other content, so display:none there
+     would hide header, footer and everything). */
+  [data-bn-showcase-search] [data-bn-showcase-empty] { display: none; }
+  [data-bn-showcase-search][data-bn-showcase-empty] [data-bn-showcase-empty] { display: block; }
 </style>
 </head>
 <body>

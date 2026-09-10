@@ -351,18 +351,18 @@ export function getShowcaseSections() {
           caption: 'Variants',
           layout: 'row',
           html: [
-            renderButton('Primary', { variant: 'primary' }),
-            renderButton('Secondary', { variant: 'secondary' }),
-            renderButton('Destructive', { variant: 'destructive' }),
-            renderButton('Ghost', { variant: 'ghost' }),
-            renderButton('Disabled', { variant: 'primary', disabled: true }),
+            renderButton('Primary', { size: 'default', variant: 'primary' }),
+            renderButton('Secondary', { size: 'default', variant: 'secondary' }),
+            renderButton('Destructive', { size: 'default', variant: 'destructive' }),
+            renderButton('Ghost', { size: 'default', variant: 'ghost' }),
+            renderButton('Disabled', { size: 'default', variant: 'primary', disabled: true }),
           ].join('\n'),
           code: trim(`
-renderButton('Primary',     { variant: 'primary' })
-renderButton('Secondary',   { variant: 'secondary' })
-renderButton('Destructive', { variant: 'destructive' })
-renderButton('Ghost',       { variant: 'ghost' })
-renderButton('Disabled',    { variant: 'primary', disabled: true })`),
+renderButton('Primary', { size: 'default', variant: 'primary' })
+renderButton('Secondary', { size: 'default', variant: 'secondary' })
+renderButton('Destructive', { size: 'default', variant: 'destructive' })
+renderButton('Ghost', { size: 'default', variant: 'ghost' })
+renderButton('Disabled', { size: 'default', variant: 'primary', disabled: true })`),
         },
         {
           caption: 'Live counter (signal + effect)',
@@ -370,9 +370,9 @@ renderButton('Disabled',    { variant: 'primary', disabled: true })`),
           html: `
 <output data-bn-live-counter aria-live="polite">0</output>
 <nav data-bn-demo-row aria-label="Counter controls">
-  ${renderButton('−', { variant: 'secondary', attrs: 'data-bn-action="counter-dec" aria-label="Decrement"' })}
-  ${renderButton('+', { variant: 'primary', attrs: 'data-bn-action="counter-inc" aria-label="Increment"' })}
-  ${renderButton('Reset', { variant: 'ghost', attrs: 'data-bn-action="counter-reset"' })}
+  ${renderButton('−', { size: 'default', variant: 'secondary', attrs: 'data-bn-action="counter-dec" aria-label="Decrement"' })}
+  ${renderButton('+', { size: 'default', variant: 'primary', attrs: 'data-bn-action="counter-inc" aria-label="Increment"' })}
+  ${renderButton('Reset', { size: 'default', variant: 'ghost', attrs: 'data-bn-action="counter-reset"' })}
 </nav>`,
           code: trim(`
 const count = signal(0);
@@ -539,8 +539,8 @@ renderAlert('Failed.',  { variant: 'error', dismissible: true })`),
           html: `
 ${renderProgress({ value: 0, max: 100, label: 'Uploading…', attrs: 'data-bn-live-progress' })}
 <nav data-bn-demo-row aria-label="Progress controls">
-  ${renderButton('Pause / play', { variant: 'secondary', attrs: 'data-bn-action="progress-toggle"' })}
-  ${renderButton('Reset', { variant: 'ghost', attrs: 'data-bn-action="progress-reset"' })}
+  ${renderButton('Pause / play', { size: 'default', variant: 'secondary', attrs: 'data-bn-action="progress-toggle"' })}
+  ${renderButton('Reset', { size: 'default', variant: 'ghost', attrs: 'data-bn-action="progress-reset"' })}
 </nav>`,
           code: trim(`
 const v = signal(0);
@@ -814,14 +814,14 @@ setInterval(() => v.set(p => (p + 5) % 105), 200);`),
           caption: 'Dialog (native showModal)',
           layout: 'plain',
           html: `
-${renderButton('Open dialog', { variant: 'secondary', attrs: 'data-bn-action="open-dialog" data-bn-target="demo-dialog"' })}
+${renderButton('Open dialog', { size: 'default', variant: 'secondary', attrs: 'data-bn-action="open-dialog" data-bn-target="demo-dialog"' })}
 ${renderDialog({
   title: 'Confirm action',
   content: '<p>Are you sure you want to proceed? This cannot be undone.</p>',
   footer:
-    renderButton('Cancel', { variant: 'secondary' }) +
+    renderButton('Cancel', { size: 'default', variant: 'secondary' }) +
     ' ' +
-    renderButton('Confirm', { variant: 'primary' }),
+    renderButton('Confirm', { size: 'default', variant: 'primary' }),
   id: 'demo-dialog',
 })}`,
           code: trim(`
@@ -832,7 +832,7 @@ document.getElementById('my-dialog').showModal();`),
           caption: 'Drawer (slide-in)',
           layout: 'plain',
           html: `
-${renderButton('Open drawer', { variant: 'secondary', attrs: 'data-bn-action="open-drawer" data-bn-target="demo-drawer"' })}
+${renderButton('Open drawer', { size: 'default', variant: 'secondary', attrs: 'data-bn-action="open-drawer" data-bn-target="demo-drawer"' })}
 ${renderDrawer({
   title: 'Settings',
   content: '<p>Drawer body content goes here. This slides in from the edge of the viewport.</p>',
@@ -861,7 +861,7 @@ ${renderDrawer({
           caption: 'Tooltip',
           layout: 'plain',
           html: renderTooltip({
-            trigger: renderButton('Hover or focus', { variant: 'secondary' }),
+            trigger: renderButton('Hover or focus', { size: 'default', variant: 'secondary' }),
             content: 'This is a tooltip with helpful context. Triggers on hover or focus.',
             position: 'top',
           }),
@@ -871,7 +871,7 @@ ${renderDrawer({
           caption: 'Command palette',
           layout: 'plain',
           html: `
-${renderButton('Open command palette', { variant: 'secondary', attrs: 'data-bn-action="open-command-palette" data-bn-target="demo-cmd"' })}
+${renderButton('Open command palette', { size: 'default', variant: 'secondary', attrs: 'data-bn-action="open-command-palette" data-bn-target="demo-cmd"' })}
 <kbd>Ctrl</kbd> + <kbd>K</kbd>
 ${renderCommandPalette({
   commands: [
@@ -897,9 +897,9 @@ ${renderCommandPalette({
           layout: 'stack',
           html: `
 <nav data-bn-demo-row aria-label="Toast triggers">
-  ${renderButton('Info', { variant: 'secondary', attrs: 'data-bn-action="toast" data-bn-message="For your information." data-bn-variant="info"' })}
-  ${renderButton('Success', { variant: 'primary', attrs: 'data-bn-action="toast" data-bn-message="All good — saved." data-bn-variant="success"' })}
-  ${renderButton('Error', { variant: 'destructive', attrs: 'data-bn-action="toast" data-bn-message="Something went sideways." data-bn-variant="error"' })}
+  ${renderButton('Info', { size: 'default', variant: 'secondary', attrs: 'data-bn-action="toast" data-bn-message="For your information." data-bn-variant="info"' })}
+  ${renderButton('Success', { size: 'default', variant: 'primary', attrs: 'data-bn-action="toast" data-bn-message="All good — saved." data-bn-variant="success"' })}
+  ${renderButton('Error', { size: 'default', variant: 'destructive', attrs: 'data-bn-action="toast" data-bn-message="Something went sideways." data-bn-variant="error"' })}
 </nav>`,
           code: trim(`
 import { showToast } from '@basenative/components';
@@ -1013,16 +1013,16 @@ setInterval(() => time.set(new Date()), 1000);`),
           layout: 'stack',
           html: `
 <nav data-bn-demo-row aria-label="Pick an accent">
-  ${renderButton('Amber', { variant: 'secondary', attrs: 'data-bn-action="theme" data-bn-accent="#e8920a"' })}
-  ${renderButton('Mint', { variant: 'secondary', attrs: 'data-bn-action="theme" data-bn-accent="#7fd1a8"' })}
-  ${renderButton('Sky', { variant: 'secondary', attrs: 'data-bn-action="theme" data-bn-accent="#82aaff"' })}
-  ${renderButton('Rose', { variant: 'secondary', attrs: 'data-bn-action="theme" data-bn-accent="#f07178"' })}
-  ${renderButton('Reset', { variant: 'ghost', attrs: 'data-bn-action="theme" data-bn-accent=""' })}
+  ${renderButton('Amber', { size: 'default', variant: 'secondary', attrs: 'data-bn-action="theme" data-bn-accent="#e8920a"' })}
+  ${renderButton('Mint', { size: 'default', variant: 'secondary', attrs: 'data-bn-action="theme" data-bn-accent="#7fd1a8"' })}
+  ${renderButton('Sky', { size: 'default', variant: 'secondary', attrs: 'data-bn-action="theme" data-bn-accent="#82aaff"' })}
+  ${renderButton('Rose', { size: 'default', variant: 'secondary', attrs: 'data-bn-action="theme" data-bn-accent="#f07178"' })}
+  ${renderButton('Reset', { size: 'default', variant: 'ghost', attrs: 'data-bn-action="theme" data-bn-accent=""' })}
 </nav>
 <output data-bn-theme-preview>
   ${renderBadge('Live preview', { variant: 'primary' })}
-  ${renderButton('Buttons re-tint', { variant: 'primary' })}
-  ${renderButton('Outlines re-tint', { variant: 'secondary' })}
+  ${renderButton('Buttons re-tint', { size: 'default', variant: 'primary' })}
+  ${renderButton('Outlines re-tint', { size: 'default', variant: 'secondary' })}
 </output>`,
           code: trim(`
 btn.onclick = (e) => {
@@ -1040,8 +1040,8 @@ btn.onclick = (e) => {
   <dt>Parity</dt>    <dd data-bn-counter-parity data-parity="even">even</dd>
 </dl>
 <nav data-bn-demo-row aria-label="Computed counter controls">
-  ${renderButton('−', { variant: 'secondary', attrs: 'data-bn-action="cc-dec" aria-label="Decrement"' })}
-  ${renderButton('+', { variant: 'primary', attrs: 'data-bn-action="cc-inc" aria-label="Increment"' })}
+  ${renderButton('−', { size: 'default', variant: 'secondary', attrs: 'data-bn-action="cc-dec" aria-label="Decrement"' })}
+  ${renderButton('+', { size: 'default', variant: 'primary', attrs: 'data-bn-action="cc-inc" aria-label="Increment"' })}
 </nav>`,
           code: trim(`
 const n       = signal(0);
