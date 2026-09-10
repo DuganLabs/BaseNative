@@ -501,7 +501,7 @@ function wireShowcaseFilter() {
   if (!input) return;
   const sections = [...document.querySelectorAll('[data-bn-showcase-section]')];
   const tocLinks = [...document.querySelectorAll('[data-bn-showcase-toc-link]')];
-  const root = document.documentElement;
+  const results = document.querySelector('[data-bn-showcase-search]') || document.documentElement;
   const apply = () => {
     const q = input.value.trim().toLowerCase();
     let visible = 0;
@@ -520,7 +520,7 @@ function wireShowcaseFilter() {
       const target = id && document.getElementById(id);
       link.toggleAttribute('hidden', !target || target.hasAttribute('hidden'));
     }
-    root.toggleAttribute('data-bn-showcase-empty', visible === 0);
+    results.toggleAttribute('data-bn-showcase-empty', visible === 0);
   };
   input.addEventListener('input', apply);
   clear?.addEventListener('click', () => {
