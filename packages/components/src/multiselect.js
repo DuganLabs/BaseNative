@@ -1,6 +1,26 @@
 /**
  * Multiselect — multiple value selection with tags/chips.
  */
+import { escapeAttr, escapeText } from '@basenative/runtime/shared/escape';
+import { nextId } from './ids.js';
+import { attrsSuffix } from './internal/attrs.js';
+import { normalizeItem } from './internal/items.js';
+
+/**
+ * Multiselect — multiple value selection with tags/chips over a hidden native
+ * <select multiple>. Attributes, label, tag text and option labels are escaped.
+ *
+ * @param {object} options
+ * @param {string} [options.name]
+ * @param {string} [options.label]   Escaped text
+ * @param {Array<string | {value: string, label: string}>} [options.items]
+ * @param {string[]} [options.selected]
+ * @param {string} [options.placeholder]
+ * @param {boolean} [options.disabled]
+ * @param {string} [options.id]      Defaults to `bn-multiselect-<name>`, or nextId() without a name
+ * @param {string} [options.attrs]   Raw attribute markup appended to the search <input>; not escaped
+ * @returns {string}
+ */
 export function renderMultiselect(options = {}) {
   const {
     name,
@@ -9,36 +29,35 @@ export function renderMultiselect(options = {}) {
     selected = [],
     placeholder = 'Select items...',
     disabled = false,
-    id = `bn-multiselect-${name || Math.random().toString(36).slice(2)}`,
+    id = name ? `bn-multiselect-${name}` : nextId('multiselect'),
     attrs = '',
   } = options;
 
   const dis = disabled ? ' disabled' : '';
   const selectedSet = new Set(selected);
+  const normalized = items.map(normalizeItem);
 
   const tagsHtml = selected
     .map(val => {
-      const item = items.find(i => (typeof i === 'string' ? i : i.value) === val);
-      const text = item ? (typeof item === 'string' ? item : item.label) : val;
-      return `<span data-bn="tag" data-value="${val}">${text}<button type="button" data-bn="tag-remove" aria-label="Remove ${text}">&times;</button></span>`;
+      const item = normalized.find(i => i.value === val);
+      const text = item ? item.label : val;
+      return `<span data-bn="tag" data-value="${escapeAttr(val)}">${escapeText(text)}<button type="button" data-bn="tag-remove" aria-label="Remove ${escapeAttr(text)}">&times;</button></span>`;
     })
     .join('');
 
-  const optionsHtml = items
+  const optionsHtml = normalized
     .map(item => {
-      const val = typeof item === 'string' ? item : item.value;
-      const text = typeof item === 'string' ? item : item.label;
-      const sel = selectedSet.has(val) ? ' selected' : '';
-      return `<option value="${val}"${sel}>${text}</option>`;
+      const sel = selectedSet.has(item.value) ? ' selected' : '';
+      return `<option value="${escapeAttr(item.value)}"${sel}>${escapeText(item.label)}</option>`;
     })
     .join('');
 
   return `<div data-bn="multiselect"${dis ? ' data-disabled' : ''}>
-  ${label ? `<label for="${id}" data-bn="label">${label}</label>` : ''}
+  ${label ? `<label for="${escapeAttr(id)}" data-bn="label">${escapeText(label)}</label>` : ''}
   <div data-bn="multiselect-container">
     <div data-bn="multiselect-tags">${tagsHtml}</div>
-    <input type="text" data-bn="multiselect-search" placeholder="${placeholder}" autocomplete="off" aria-label="${label || 'Search'}" ${attrs}>
+    <input type="text" data-bn="multiselect-search" placeholder="${escapeAttr(placeholder)}" autocomplete="off" aria-label="${escapeAttr(label || 'Search')}"${attrsSuffix(attrs)}>
   </div>
-  <select id="${id}" name="${name}" multiple hidden${dis}>${optionsHtml}</select>
+  <select id="${escapeAttr(id)}" name="${escapeAttr(name)}" multiple hidden${dis}>${optionsHtml}</select>
 </div>`;
 }

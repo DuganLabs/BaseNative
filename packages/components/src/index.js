@@ -1,3 +1,6 @@
+// Deterministic ids (hydration needs explicit ids or identical render order + resetIds() per request)
+export { nextId, resetIds } from './ids.js';
+
 // Button
 export { buttonVariants, renderButton } from './button.js';
 

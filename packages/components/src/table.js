@@ -2,9 +2,11 @@
  * Table component — semantic HTML table with sorting and empty state.
  * Designed for SSR — renders full table markup on the server.
  */
+import { escapeAttr, escapeText } from '@basenative/runtime/shared/escape';
 
 /**
- * Renders a data table from columns and rows.
+ * Renders a data table from columns and rows. Column labels, cell values,
+ * caption and emptyMessage are escaped text.
  *
  * @param {object} options
  * @param {Array<{key: string, label: string, sortable?: boolean}>} options.columns
@@ -18,24 +20,24 @@ export function renderTable(options = {}) {
   let html = `<div data-bn="table-container">`;
   html += `<table data-bn="table">`;
   if (caption) {
-    html += `<caption>${escapeHtml(caption)}</caption>`;
+    html += `<caption>${escapeText(caption)}</caption>`;
   }
   html += `<thead><tr>`;
   for (const col of columns) {
     const sortAttr = col.sortable ? ' data-sortable' : '';
-    html += `<th scope="col"${sortAttr}>${escapeHtml(col.label)}</th>`;
+    html += `<th scope="col"${sortAttr}>${escapeText(col.label)}</th>`;
   }
   html += `</tr></thead>`;
   html += `<tbody>`;
 
   if (rows.length === 0) {
-    html += `<tr><td colspan="${columns.length}" data-bn="table-empty">${escapeHtml(emptyMessage)}</td></tr>`;
+    html += `<tr><td colspan="${escapeAttr(columns.length)}" data-bn="table-empty">${escapeText(emptyMessage)}</td></tr>`;
   } else {
     for (const row of rows) {
       html += `<tr>`;
       for (const col of columns) {
         const value = row[col.key];
-        html += `<td>${value != null ? escapeHtml(String(value)) : ''}</td>`;
+        html += `<td>${value != null ? escapeText(String(value)) : ''}</td>`;
       }
       html += `</tr>`;
     }
@@ -43,8 +45,4 @@ export function renderTable(options = {}) {
 
   html += `</tbody></table></div>`;
   return html;
-}
-
-function escapeHtml(str) {
-  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
