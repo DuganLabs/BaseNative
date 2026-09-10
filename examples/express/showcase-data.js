@@ -33,6 +33,7 @@ import {
   renderPipeline,
   renderLayoutGrid,
 } from '../../packages/components/src/index.js';
+import { raw } from '@basenative/runtime';
 
 export const PACKAGES = [
   {
@@ -59,6 +60,11 @@ export const PACKAGES = [
     name: '@basenative/components',
     tag: 'ui',
     summary: '25+ semantic UI components with CSS-custom-property theming.',
+  },
+  {
+    name: '@basenative/combobox',
+    tag: 'ui',
+    summary: 'Accessible combobox primitive — typeahead filtering plus create-new-entry, WAI-ARIA listbox pattern.',
   },
   {
     name: '@basenative/markdown',
@@ -1056,6 +1062,9 @@ export function getShowcaseContext() {
     sections,
     toastContainer: renderToastContainer('top-right'),
     packageCount: PACKAGES.length,
-    packageCards: renderPackageCards(),
+    // renderPackageCards() only assembles static, hand-authored strings from PACKAGES
+    // above (no user input reaches it), so this is a legitimate raw() trust assertion —
+    // @basenative/server's {{ }} interpolation HTML-escapes by default.
+    packageCards: raw(renderPackageCards()),
   };
 }
