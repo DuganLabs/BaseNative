@@ -185,7 +185,19 @@ _[secondary persona]_
   }
 
   mkdirSync(dirname(prdPath), { recursive: true });
-  writeFileSync(prdPath, body);
+  try {
+    // Exclusive create unless --force: the existence check above and this
+    // write are two separate filesystem accesses, so a file created in
+    // between would otherwise be silently overwritten without --force.
+    writeFileSync(prdPath, body, values.force ? undefined : { flag: 'wx' });
+  } catch (error) {
+    if (!values.force && error.code === 'EEXIST') {
+      err(`${PRD_PATH} already exists.`);
+      hint('Use --force to overwrite, or `bn prd edit` to modify.');
+      process.exit(1);
+    }
+    throw error;
+  }
   banner();
   ok(`Wrote ${PRD_PATH}`);
   hint('Edit it: bn prd edit');

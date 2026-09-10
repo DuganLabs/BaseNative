@@ -42,7 +42,7 @@ function ensureDir(dir) {
 
 function listTemplateFiles(srcDir, glob) {
   if (!existsSync(srcDir)) return [];
-  const ext = glob.replace('*', '');
+  const ext = glob.replaceAll('*', '');
   return readdirSync(srcDir).filter((f) => f.endsWith(ext));
 }
 
@@ -72,10 +72,20 @@ export async function install({ projectRoot, force = false, dryRun = false, quie
     for (const f of files) {
       const srcPath = join(srcDir, f);
       const destPath = join(destDir, f);
-      const exists = existsSync(destPath);
+
+      // Read rather than `existsSync` + read: a check-then-read is racy
+      // (the file can change or disappear in between), so the read attempt
+      // itself is the existence check.
+      let destContent;
+      try {
+        destContent = readFileSync(destPath, 'utf8');
+      } catch (error) {
+        if (error.code !== 'ENOENT') throw error;
+      }
+      const exists = destContent !== undefined;
 
       if (exists && !force) {
-        const same = readFileSync(srcPath, 'utf8') === readFileSync(destPath, 'utf8');
+        const same = readFileSync(srcPath, 'utf8') === destContent;
         if (same) {
           summary.skipped++;
           if (!quiet) log(`    ${dim('=')} ${f} ${dim('(unchanged)')}`);
@@ -102,25 +112,51 @@ export async function install({ projectRoot, force = false, dryRun = false, quie
   }
 
   // settings.template.json → .claude/settings.json (only if missing — we never clobber settings).
+  // `dryRun` performs no filesystem write, so an `existsSync` there is a
+  // pure report with no follow-on action; the real write below uses
+  // exclusive create instead of a check, since settings.json existing is
+  // exactly the case we must never clobber.
   const settingsDest = join(claudeDir, 'settings.json');
   if (existsSync(SETTINGS_TEMPLATE)) {
-    if (!existsSync(settingsDest)) {
-      if (!dryRun) writeFileSync(settingsDest, readFileSync(SETTINGS_TEMPLATE));
-      summary.written++;
-      if (!quiet) log(`  ${green('+')} settings.json`);
-    } else if (!quiet) {
-      log(`  ${dim('=')} settings.json ${dim('(already present — not touched)')}`);
-      log(dim(`     diff against template: ${SETTINGS_TEMPLATE}`));
+    if (dryRun) {
+      if (!existsSync(settingsDest)) {
+        summary.written++;
+        if (!quiet) log(`  ${green('+')} settings.json`);
+      } else if (!quiet) {
+        log(`  ${dim('=')} settings.json ${dim('(already present — not touched)')}`);
+        log(dim(`     diff against template: ${SETTINGS_TEMPLATE}`));
+      }
+    } else {
+      try {
+        writeFileSync(settingsDest, readFileSync(SETTINGS_TEMPLATE), { flag: 'wx' });
+        summary.written++;
+        if (!quiet) log(`  ${green('+')} settings.json`);
+      } catch (error) {
+        if (error.code !== 'EEXIST') throw error;
+        if (!quiet) {
+          log(`  ${dim('=')} settings.json ${dim('(already present — not touched)')}`);
+          log(dim(`     diff against template: ${SETTINGS_TEMPLATE}`));
+        }
+      }
     }
   }
 
   // CLAUDE.md.tmpl → CLAUDE.md (only if missing).
   if (existsSync(CLAUDE_MD_TEMPLATE)) {
     const claudeMdDest = join(projectRoot, 'CLAUDE.md');
-    if (!existsSync(claudeMdDest)) {
-      if (!dryRun) writeFileSync(claudeMdDest, readFileSync(CLAUDE_MD_TEMPLATE));
-      summary.written++;
-      if (!quiet) log(`  ${green('+')} CLAUDE.md ${dim('(from template)')}`);
+    if (dryRun) {
+      if (!existsSync(claudeMdDest)) {
+        summary.written++;
+        if (!quiet) log(`  ${green('+')} CLAUDE.md ${dim('(from template)')}`);
+      }
+    } else {
+      try {
+        writeFileSync(claudeMdDest, readFileSync(CLAUDE_MD_TEMPLATE), { flag: 'wx' });
+        summary.written++;
+        if (!quiet) log(`  ${green('+')} CLAUDE.md ${dim('(from template)')}`);
+      } catch (error) {
+        if (error.code !== 'EEXIST') throw error;
+      }
     }
   }
 
@@ -167,7 +203,7 @@ export function list({ projectRoot } = {}) {
   for (const kind of TEMPLATE_KINDS) {
     const dir = join(claudeDir, kind.dest);
     if (!existsSync(dir)) { out[kind.name] = []; continue; }
-    out[kind.name] = readdirSync(dir).filter((f) => f.endsWith(kind.glob.replace('*', '')));
+    out[kind.name] = readdirSync(dir).filter((f) => f.endsWith(kind.glob.replaceAll('*', '')));
   }
   return out;
 }
