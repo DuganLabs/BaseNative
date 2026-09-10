@@ -11,10 +11,21 @@ function evaluate(expr, ctx, options) {
   return evaluateExpression(expr, ctx, options);
 }
 
-function interpolate(text, ctx, options) {
+// Interpolated values are data, not markup. The client binds through
+// `node.textContent`, which never parses HTML; the server must match that, or the
+// SSR payload is injectable while the hydrated DOM is not. Escape `&` first.
+function escapeText(value) {
+  return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function escapeAttr(value) {
+  return escapeText(value).replace(/"/g, '&quot;');
+}
+
+function interpolate(text, ctx, options, escape = escapeText) {
   return text.replace(/\{\{\s*(.+?)\s*\}\}/g, (_, expr) => {
     const value = evaluate(expr, ctx, options);
-    return value != null ? value : '';
+    return value != null ? escape(value) : '';
   });
 }
 
@@ -87,13 +98,13 @@ function processNode(node, ctx, options) {
       if (name.startsWith(':')) {
         const result = evaluate(value, ctx, options);
         if (result !== false && result != null) {
-          attrs.push({ name: name.slice(1), value: String(result) });
+          attrs.push({ name: name.slice(1), value: escapeAttr(result) });
         }
         continue;
       }
 
       if (value && value.includes('{{')) {
-        attrs.push({ name, value: interpolate(value, ctx, options) });
+        attrs.push({ name, value: interpolate(value, ctx, options, escapeAttr) });
         continue;
       }
 
