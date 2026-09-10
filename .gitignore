@@ -28,3 +28,6 @@ nx-cloud.env
 
 # workspace symlinks created for local test runs
 packages/*/node_modules/
+
+# node_modules symlinks (worktree test wiring) — never commit
+packages/*/node_modules
