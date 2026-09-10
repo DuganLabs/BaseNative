@@ -55,14 +55,6 @@
     "queue",
     "review"
   ],
-  "peerDependencies": {
-    "@basenative/auth": "workspace:*"
-  },
-  "peerDependenciesMeta": {
-    "@basenative/auth": {
-      "optional": true
-    }
-  },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",
     "access": "public"
