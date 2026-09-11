@@ -1069,6 +1069,12 @@ describe('Button — hardening', () => {
     assert.equal(html, '<button data-bn="button" data-variant="primary" data-size="default" type="button">Go</button>');
   });
 
+  it('text is an escaped slot and wins over content', () => {
+    const html = renderButton('<b>bold</b>', { text: XSS });
+    assertEscaped(html);
+    assert.ok(!html.includes('<b>bold</b>'));
+  });
+
   it('renders with all options', () => {
     const html = renderButton('Go', { variant: 'ghost', size: 'sm', disabled: true, type: 'submit', attrs: 'data-x="1"' });
     assert.ok(html.includes('data-variant="ghost"'));
@@ -1289,6 +1295,16 @@ describe('Alert — hardening', () => {
   it('content is an HTML slot', () => {
     assert.ok(renderAlert('<a href="/x">link</a>').includes('<a href="/x">link</a>'));
   });
+
+  it('text is an escaped slot and wins over content', () => {
+    const html = renderAlert('<a href="/x">link</a>', { text: XSS });
+    assertEscaped(html);
+    assert.ok(!html.includes('<a href="/x">'));
+  });
+
+  it('appends attrs to the container', () => {
+    assert.ok(renderAlert('Hi', { attrs: 'id="a1" data-x="1"' }).startsWith('<div data-bn="alert" data-variant="info" role="status" id="a1" data-x="1">'));
+  });
 });
 
 describe('Badge — hardening', () => {
@@ -1298,6 +1314,19 @@ describe('Badge — hardening', () => {
 
   it('escapes the variant attribute', () => {
     assertEscaped(renderBadge('New', { variant: XSS }));
+  });
+
+  it('text is an escaped slot and wins over content', () => {
+    const html = renderBadge('<b>bold</b>', { text: XSS });
+    assertEscaped(html);
+    assert.ok(!html.includes('<b>bold</b>'));
+  });
+
+  it('appends attrs to the span', () => {
+    assert.equal(
+      renderBadge('New', { attrs: 'id="b1"' }),
+      '<span data-bn="badge" data-variant="default" id="b1">New</span>',
+    );
   });
 });
 
@@ -1315,6 +1344,12 @@ describe('Card — hardening', () => {
     assert.ok(html.includes('<header data-bn="card-header"><h2>H</h2></header>'));
     assert.ok(html.includes('<div data-bn="card-body"><p>B</p></div>'));
     assert.ok(html.includes('<footer data-bn="card-footer"><button>F</button></footer>'));
+  });
+
+  it('emits an escaped id and appends attrs so the card can be labelled and bound', () => {
+    const html = renderCard({ id: 'c1', attrs: 'aria-labelledby="c1-title" data-bn-bind="row"' });
+    assert.ok(html.startsWith('<article data-bn="card" data-variant="default" id="c1" aria-labelledby="c1-title" data-bn-bind="row">'));
+    assertEscaped(renderCard({ id: XSS }));
   });
 });
 

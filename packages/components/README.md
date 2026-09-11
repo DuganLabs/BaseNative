@@ -36,7 +36,9 @@ Two calling conventions exist, and the reference documents which applies to each
 - content-first: `renderButton(content, options?)`, `renderAlert(content, options?)`, `renderBadge(content, options?)`
 - options-only: everything else, e.g. `renderInput({ name, label, … })`
 
-Most `render*` helpers accept an `attrs` string of extra HTML attributes that is spliced verbatim into the outermost element. `renderAlert`, `renderBadge`, `renderCard`, `renderPagination`, `renderSpinner`, `renderSkeleton` and `renderLayoutGrid` do not.
+Most `render*` helpers accept an `attrs` string of extra HTML attributes that is spliced verbatim into the outermost element. `renderPagination`, `renderSpinner`, `renderSkeleton` and `renderLayoutGrid` do not.
+
+The content-first helpers (`renderButton`, `renderAlert`, `renderBadge`) also take `options.text`: an **escaped** label that replaces the unescaped `content` slot. Reach for it whenever the label is data rather than markup — it is the difference between remembering `escapeText()` at every call site and not being able to get it wrong.
 
 ## Styles
 
@@ -74,12 +76,32 @@ import '@basenative/components/components.css';
 
 Dark mode: `prefers-color-scheme: dark` or `data-theme="dark"` on any ancestor. Density: `data-density="compact|default|spacious"`.
 
+### Brand foregrounds
+
+Re-pointing `--bn-color-primary-*` at your brand is only half the job: something has
+to be readable *on top of* those filled boxes. Four tokens name that foreground, so a
+brand built on a light hue (amber, mint, sand) stays legible without forking any CSS:
+
+| Token | Default | Applies to |
+|-------|---------|------------|
+| `--bn-color-on-primary` | `--bn-color-white` | primary button label, `[aria-current="page"]` in pagination, toggle knob when on |
+| `--bn-color-on-accent` | `--bn-color-on-primary` | checkbox tick, radio dot, data-grid checkbox tick (these sit on `--bn-color-accent-600`) |
+| `--bn-color-on-error` | `--bn-color-white` | destructive button label |
+| `--bn-color-toggle-knob` | `--bn-color-white` | toggle knob when off (rides the neutral track, not the brand) |
+
+```css
+:root {
+  --bn-color-primary-600: #e8920a;   /* amber brand */
+  --bn-color-on-primary: #1a0a00;    /* 7.86:1 — white would be 2.46:1 */
+}
+```
+
 ## API
 
 All components are pure functions that return an HTML string. See [docs/api/components.md](../../docs/api/components.md) for options and markup.
 
 ### Form Controls
-- `renderButton(content, options)` — Button with `variant` (`primary`, `secondary`, `ghost`, `destructive`), `size` (`sm`, `default`, `lg`), `disabled`, `type`.
+- `renderButton(content, options)` — Button with `variant` (`primary`, `secondary`, `ghost`, `destructive`), `size` (`sm`, `default`, `lg`), `disabled`, `type`. `options.text` is an escaped label and wins over the `content` HTML slot.
 - `renderInput(options)` — Text input with label, help text, and error state.
 - `renderTextarea(options)` — Multiline text input.
 - `renderCheckbox(options)` — Checkbox with label.
@@ -90,7 +112,7 @@ All components are pure functions that return an HTML string. See [docs/api/comp
 - `renderMultiselect(options)` — Multi-value select with removable tags.
 
 ### Feedback
-- `renderAlert(content, options)` — Inline alert with `variant` (`info`, `success`, `warning`, `error`) and `dismissible`.
+- `renderAlert(content, options)` — Inline alert with `variant` (`info`, `success`, `warning`, `error`), `dismissible` and `attrs`. `options.text` is an escaped message and wins over the `content` HTML slot.
 - `createToaster(options)` / `showToast(toaster, options)` / `dismissToast(toaster, id)` / `renderToastContainer(position)` — Toast notification system.
 - `renderProgress(options)` / `renderSpinner(options)` — Progress bar and loading spinner.
 - `renderSkeleton(options)` — Skeleton loading placeholder.
@@ -100,12 +122,12 @@ All components are pure functions that return an HTML string. See [docs/api/comp
 - `renderDataGrid(options)` — Data grid with sorting indicators, row selection, editable cells and a pagination footer. Sortable headers are real `<button>`s inside the `<th>` — keyboard-operable with no client JS.
 - `renderTree(options)` / `renderTreeGrid(options)` — Tree view and tree grid. Items/rows carry a static roving `tabindex` (first `0`, rest `-1`); moving it between items on arrow keys is left to your own keydown handler.
 - `renderVirtualList(options)` — First window of a virtualised list plus a spacer for the full height.
-- `renderBadge(content, options)` — Small status badge; `content` is an HTML slot (not escaped — escape data, or set the label with `textContent` after mount).
+- `renderBadge(content, options)` — Small status badge with `variant` and `attrs`; `content` is an HTML slot (not escaped), `options.text` is the escaped alternative and wins over it.
 - `renderAvatar(options)` — User avatar with fallback initials.
 - `renderPagination(options)` — Page navigation controls.
 
 ### Layout & Navigation
-- `renderCard(options)` — Content card with optional header/footer.
+- `renderCard(options)` — Content card with optional header/footer, plus `id` and `attrs` so it can be labelled (`aria-labelledby`) or bound to.
 - `renderDialog(options)` — Native `<dialog>`, named by its title (`aria-labelledby`) and described by an optional `description` (`aria-describedby`).
 - `renderDrawer(options)` — Side drawer panel with overlay.
 - `renderTabs(options)` — Tabbed content panels with a roving `tabindex`; `initTabs(root, { onChange?, activation? })` wires click / ArrowLeft / ArrowRight / Home / End switching, `aria-selected`, `tabindex` and panel `hidden` toggling (WAI-ARIA APG tabs pattern) and returns `{ select(id), active(), destroy() }`.

@@ -137,7 +137,7 @@
 [data-bn="button"]:disabled { opacity: 0.5; cursor: not-allowed; }
 [data-bn="button"][data-variant="primary"] {
   background: var(--bn-color-primary-600);
-  color: var(--bn-color-white);
+  color: var(--bn-color-on-primary);
 }
 [data-bn="button"][data-variant="primary"]:hover:not(:disabled) { background: var(--bn-color-primary-700); }
 [data-bn="button"][data-variant="secondary"] {
@@ -148,7 +148,7 @@
 [data-bn="button"][data-variant="secondary"]:hover:not(:disabled) { background: var(--bn-color-surface-muted); }
 [data-bn="button"][data-variant="destructive"] {
   background: var(--bn-color-error-600);
-  color: var(--bn-color-white);
+  color: var(--bn-color-on-error);
 }
 [data-bn="button"][data-variant="destructive"]:hover:not(:disabled) { background: var(--bn-color-error-500); }
 [data-bn="button"][data-variant="ghost"] {
@@ -234,7 +234,7 @@
   left: 4px;
   width: 5px;
   height: 9px;
-  border: solid var(--bn-color-white);
+  border: solid var(--bn-color-on-accent);
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
@@ -245,7 +245,7 @@
   left: 50%;
   width: 6px;
   height: 6px;
-  background: var(--bn-color-white);
+  background: var(--bn-color-on-accent);
   border-radius: var(--bn-radius-full);
   transform: translate(-50%, -50%);
 }
@@ -283,12 +283,15 @@
   left: 2px;
   width: 1rem;
   height: 1rem;
-  background: var(--bn-color-white);
+  background: var(--bn-color-toggle-knob);
   border-radius: var(--bn-radius-full);
   transition: transform var(--bn-transition-fast);
 }
 [data-bn="toggle"]:checked { background: var(--bn-color-primary-600); }
-[data-bn="toggle"]:checked::before { transform: translateX(1.125rem); }
+[data-bn="toggle"]:checked::before {
+  transform: translateX(1.125rem);
+  background: var(--bn-color-on-primary);
+}
 [data-bn="toggle"]:focus-visible { box-shadow: var(--bn-focus-ring); }
 
 /* === Alert === */
@@ -387,7 +390,7 @@
 [data-bn="pagination"] a:focus-visible { box-shadow: var(--bn-focus-ring); outline: none; }
 [data-bn="pagination"] a[aria-current="page"] {
   background: var(--bn-color-primary-600);
-  color: var(--bn-color-white);
+  color: var(--bn-color-on-primary);
 }
 [data-bn="pagination"] span[aria-disabled] { opacity: 0.4; cursor: default; }
 
@@ -744,7 +747,7 @@
   left: 3px;
   width: 4px;
   height: 7px;
-  border: solid var(--bn-color-white);
+  border: solid var(--bn-color-on-accent);
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
