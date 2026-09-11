@@ -27,6 +27,12 @@ const ROUTES = process.env.AUDIT_BASE_URL
       '/playground/',
       '/docs/',
       '/components/',
+      // The showcase and a component detail page were both outside this list,
+      // which is how a page whose "Live render" pane printed escaped markup
+      // instead of components went unnoticed. They carry the disclosure and
+      // code-block controls, so they are exactly the pages worth auditing.
+      '/showcase/',
+      '/components/checkbox/',
       '/compare/',
       '/test-signals/',
     ];

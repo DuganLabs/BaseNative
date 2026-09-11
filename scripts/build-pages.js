@@ -30,11 +30,32 @@ function assertNoDevScripts(html, route) {
   return html;
 }
 
+// Markup handed to the template through {{ }} is HTML-escaped by default, which
+// is correct for text and silently wrong for markup: the value renders as a wall
+// of visible tags where a component should be. That is how every
+// /components/:slug page shipped its "Live render" pane and its breadcrumb as
+// source text. The fix is raw() at the context boundary; this is the guard that
+// the next one gets caught before it reaches Pages, since nothing about an
+// escaped page is broken enough to fail a build or a test on its own.
+const ESCAPED_MARKUP = /&lt;(?:\/?)[a-z][a-z0-9-]*(?=[\s&])[^<]*?data-bn/i;
+
+function assertNoEscapedMarkup(html, route) {
+  const hit = ESCAPED_MARKUP.exec(html);
+  if (hit) {
+    throw new Error(
+      `escaped component markup reached the page for ${route || '/'} — ` +
+        `a {{ }} value holds markup and needs raw() at the context boundary:\n  ` +
+        `${hit[0].slice(0, 120)}`,
+    );
+  }
+  return html;
+}
+
 function writePage(path, html) {
   const route = path.replace(/^\/+/, '');
   const dir = route ? join(dist, route) : dist;
   mkdirSync(dir, { recursive: true });
-  writeFileSync(join(dir, 'index.html'), assertNoDevScripts(html, route));
+  writeFileSync(join(dir, 'index.html'), assertNoEscapedMarkup(assertNoDevScripts(html, route), route));
   console.log(`  /${route ? `${route}/` : ''}`);
 }
 
@@ -66,7 +87,10 @@ for (const component of flatComponents) {
 
 // Cloudflare Pages serves dist/404.html with a 404 status for any unknown path
 // (and stops falling back to index.html once the file exists).
-writeFileSync(join(dist, '404.html'), assertNoDevScripts(renderNotFoundPage(), '404.html'));
+writeFileSync(
+  join(dist, '404.html'),
+  assertNoEscapedMarkup(assertNoDevScripts(renderNotFoundPage(), '404.html'), '404.html'),
+);
 console.log('  404.html');
 
 // Copy static assets

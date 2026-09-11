@@ -26,7 +26,12 @@
       <h3>Quick start</h3>
       <p>Import the render function and call it from your server template.</p>
     </header>
-    <pre><code>{{ quickstart }}</code></pre>
+    <div data-bn-code-block>
+      <pre tabindex="0" role="group" aria-label="Code sample"><code>{{ quickstart }}</code></pre>
+      <button type="button" data-bn-action="copy-code" aria-label="Copy the quick-start snippet to clipboard">
+        Copy
+      </button>
+    </div>
   </section>
 
   <section data-bn-component-examples>
@@ -50,7 +55,12 @@
 
           <figure data-bn-component-source>
             <figcaption>Source</figcaption>
-            <pre><code>{{ example.code }}</code></pre>
+            <div data-bn-code-block>
+              <pre tabindex="0" role="group" aria-label="Code sample"><code>{{ example.code }}</code></pre>
+              <button type="button" data-bn-action="copy-code" aria-label="Copy this example to clipboard">
+                Copy
+              </button>
+            </div>
           </figure>
         </div>
       </section>
@@ -62,6 +72,7 @@
       <h3>Options</h3>
       <p>Arguments accepted by <code>{{ component.fn }}()</code>.</p>
     </header>
+    <div data-bn-table-scroll tabindex="0" role="region" aria-label="{{ component.fn }} option reference">
     <table>
       <caption data-bn-visually-hidden>
         {{ component.fn }} option reference
@@ -85,6 +96,7 @@
         </template>
       </tbody>
     </table>
+    </div>
   </section>
 
   <template @if="related.length">

@@ -8,6 +8,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { render } from '@basenative/server';
+import { raw } from '@basenative/runtime/shared/escape';
 import { renderBreadcrumb } from '../../packages/components/src/index.js';
 import {
   getComparePageContext,
@@ -198,17 +199,28 @@ export function renderComponentPage(slug) {
   const ctx = {
     component,
     quickstart: demo?.quickstart ?? '',
-    examples: demo?.examples ?? [],
+    // Every example's `html` is component markup assembled by the
+    // @basenative/components render* functions over hand-authored data — no
+    // user input reaches it — so this is a legitimate raw() trust assertion,
+    // the same one getShowcaseContext() makes for the showcase demos.
+    // Without it, {{ }} escapes the markup and the "Live render" pane on every
+    // /components/:slug page shows the source as text instead of the component.
+    examples: (demo?.examples ?? []).map((example) => ({ ...example, html: raw(example.html) })),
     prev,
     next,
     related,
-    breadcrumb: renderBreadcrumb({
-      items: [
-        { label: 'Home', href: '/' },
-        { label: 'Components', href: '/components' },
-        { label: component.title },
-      ],
-    }),
+    // Same raw() assertion as `examples` above — renderBreadcrumb() emits markup
+    // from three hand-authored labels. Without it the breadcrumb printed as a
+    // wall of escaped tags across the top of every /components/:slug page.
+    breadcrumb: raw(
+      renderBreadcrumb({
+        items: [
+          { label: 'Home', href: '/' },
+          { label: 'Components', href: '/components' },
+          { label: component.title },
+        ],
+      }),
+    ),
   };
 
   return renderPage('component.html', ctx, {

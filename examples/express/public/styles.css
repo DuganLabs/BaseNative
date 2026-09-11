@@ -2593,6 +2593,11 @@
 
     & dd {
       margin: 0;
+      /* "@basenative/components" has no break opportunity a browser will take
+         on its own, so on a phone it ran past the grid column and took the
+         whole page with it. */
+      min-inline-size: 0;
+      overflow-wrap: anywhere;
     }
 
     & code {
@@ -2636,8 +2641,10 @@
     margin-block-end: var(--space-2xl);
   }
 
-  [data-bn-component-quickstart] > pre {
-    margin: 0;
+  [data-bn-component-quickstart] > [data-bn-code-block] {
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
   }
 
   /* Per example block. */
@@ -2750,17 +2757,22 @@
   }
 
   [data-bn-component-source] {
-    & > pre {
-      margin: 0;
-      padding: var(--space-md);
-      background: var(--surface-inset);
+    /* The <pre> now sits inside [data-bn-code-block] (which carries the copy
+       button), so it is a grandchild here — not a child. */
+    & > [data-bn-code-block] {
+      flex: 1;
+      min-block-size: 0;
+    }
+
+    & > [data-bn-code-block] > pre {
+      padding: calc(var(--space-sm) + 2rem) var(--space-md) var(--space-md);
       border: none;
       border-radius: 0;
-      flex: 1;
       font-size: var(--font-size-xs);
-      line-height: var(--line-height-code);
-      overflow-x: auto;
+      /* Paired with the preview pane beside it: a long example must not stretch
+         the row to the height of the whole file. */
       max-block-size: 22rem;
+      overflow: auto;
     }
   }
 
@@ -3493,9 +3505,14 @@
     }
   }
 
-  /* Source viewer: native <details> with copy button */
-  [data-bn-showcase-source],
-  [data-bn-component-source] {
+  /* Source viewer: a native <details> disclosure.
+     [data-bn-component-source] is deliberately NOT in this selector list any
+     more. It is a <figure> with no <summary>, so every summary rule here was
+     dead on it — but its `> pre` rule was not, and being later in the file it
+     silently overrode the padding and font-size the component-split rule sets
+     a thousand lines above. The two are different things: one discloses, one
+     is always open. */
+  [data-bn-showcase-source] {
     border-block-start: var(--border-width) solid var(--border);
     background: var(--surface-2);
     margin: 0;
@@ -3515,24 +3532,80 @@
       align-items: center;
       gap: var(--space-xs);
       user-select: none;
+      transition:
+        background var(--duration-fast),
+        color var(--duration-fast);
 
       &::-webkit-details-marker {
         display: none;
       }
 
-      & > span:first-child {
-        display: inline-block;
-        transition: transform var(--duration-fast) var(--ease-out-expo);
+      /* It is a button in everything but name; it should behave like one. */
+      &:hover {
+        background: var(--surface-3, var(--surface-1));
+        color: var(--text-1);
+      }
+
+      &:focus-visible {
+        outline: var(--border-inline-width) solid var(--accent);
+        outline-offset: calc(-1 * var(--border-inline-width));
+        color: var(--text-1);
       }
     }
 
-    &[open] > summary > span:first-child {
-      transform: rotate(180deg);
+    /* The site-wide disclosure rules a thousand lines above match this block
+       too — `details:not([data-bn])` is true of data-bn-showcase-source, which
+       is a different attribute — so the summary was rendering the generic "▸"
+       marker AND this block's own chevron, and the code block was picking up
+       the generic body padding on top of its own. Suppress both here rather
+       than narrowing the generic rule, which is correct for every other
+       <details> on the site. */
+    & > summary::before {
+      content: none;
     }
+
+    & > :not(summary) {
+      padding: 0;
+    }
+
+    &[open] > summary {
+      border-block-end: var(--border-width) solid var(--border);
+    }
+  }
+
+  /* Disclosure chevron. Was the text character "⌄" rotated 180deg — a glyph
+     whose ink sits low in its em box, so the rotation visibly threw it off the
+     text baseline, and whose shape changed with whatever font resolved. A path
+     rotates about its own centre. */
+  [data-bn-disclosure-chevron] {
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+    flex-shrink: 0;
+    transition: rotate var(--duration-fast) var(--ease-out-expo);
+  }
+
+  [open] > summary > [data-bn-disclosure-chevron] {
+    rotate: 180deg;
+  }
+
+  /* Code block with a copy affordance.
+     The button used to sit below the <pre>, which on a long example meant
+     scrolling past every line of the code to reach the control that would have
+     saved you reading it. Pinned to the top-right corner of the block it is
+     always where the eye already is. */
+  [data-bn-code-block] {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-inline-size: 0;
 
     & > pre {
       margin: 0;
-      padding: var(--space-md) var(--space-lg);
+      /* The top strip is reserved for the copy button, not shared with it.
+         Padding on the inline end is not enough: a line longer than the block
+         scrolls horizontally, and every line then passes under the button. */
+      padding: calc(var(--space-sm) + 2rem) var(--space-lg) var(--space-md);
       background: var(--surface-inset);
       color: var(--text-0);
       font-family: var(--font-family);
@@ -3540,11 +3613,62 @@
       font-size: var(--font-size-sm);
       line-height: var(--line-height-code);
       overflow-x: auto;
+      flex: 1;
+      /* Square inside its container, so the block reads as one surface rather
+         than a rounded card floating in a rounded card. The accent stripe on
+         the inline start is the site's code signature and stays. */
+      border-block: none;
+      border-inline-end: none;
+      border-radius: 0;
+      margin-block-start: 0;
     }
 
     & > [data-bn-action='copy-code'] {
-      margin: var(--space-sm) var(--space-md) var(--space-md);
+      position: absolute;
+      inset-block-start: var(--space-sm);
+      inset-inline-end: var(--space-sm);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-inline-size: 4rem;
+      min-block-size: 1.75rem;
+      padding-inline: var(--space-sm);
+      border: var(--border-width) solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      color: var(--text-2);
+      font-family: var(--font-family);
+      font-stretch: var(--font-mono);
+      font-size: var(--font-size-xs);
+      letter-spacing: var(--letter-spacing-wider);
       cursor: pointer;
+      /* Quiet by color, never by opacity. A dimmed --text-2 fell below the 4.5:1
+         axe checks for, and "it is only faint until you hover" is not an
+         exemption — the label has to be readable at rest. --text-2 on
+         --surface-2 is the same pairing the figcaption above it already uses. */
+      transition:
+        background var(--duration-fast),
+        border-color var(--duration-fast),
+        color var(--duration-fast);
+    }
+
+    & > [data-bn-action='copy-code']:hover {
+      background: var(--surface-1);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    & > [data-bn-action='copy-code']:focus-visible {
+      outline: var(--border-inline-width) solid var(--accent);
+      outline-offset: var(--border-inline-width);
+    }
+
+    /* The code itself scrolls horizontally, so it is a scrollable region and has
+       to be reachable by keyboard (axe: scrollable-region-focusable). The
+       templates give it tabindex="0"; this is what that focus looks like. */
+    & > pre:focus-visible {
+      outline: var(--border-inline-width) solid var(--accent);
+      outline-offset: calc(-1 * var(--border-inline-width));
     }
 
     & > [data-bn-action='copy-code'][data-bn-copied] {
