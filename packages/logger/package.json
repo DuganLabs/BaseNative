@@ -1,6 +1,6 @@
 {
   "name": "@basenative/logger",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Structured logging with multiple transports and child logger support",
   "type": "module",
   "exports": {

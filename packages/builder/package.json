@@ -1,6 +1,6 @@
 {
   "name": "@basenative/builder",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Signal-based drag-and-drop component builder for BaseNative \u2014 composes layouts, generates clean BaseNative code",
   "type": "module",
   "exports": {

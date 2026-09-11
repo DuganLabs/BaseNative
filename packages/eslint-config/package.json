@@ -1,6 +1,6 @@
 {
   "name": "@basenative/eslint-config",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Shared ESLint flat-config for DuganLabs projects \u2014 security, hygiene, zero-noise defaults",
   "type": "module",
   "exports": {

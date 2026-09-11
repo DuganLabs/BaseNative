@@ -1,6 +1,6 @@
 {
   "name": "@basenative/runtime",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Signal-based web runtime over native HTML \u2014 zero build step, zero production dependencies",
   "type": "module",
   "exports": {
