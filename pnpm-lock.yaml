@@ -177,6 +177,10 @@ importers:
       express:
         specifier: ^5.1.0
         version: 5.2.1
+    devDependencies:
+      '@basenative/hmr':
+        specifier: workspace:*
+        version: link:../../packages/hmr
 
   examples/node:
     dependencies:

@@ -10,5 +10,8 @@
     "@basenative/icons": "workspace:*",
     "@basenative/builder": "workspace:*",
     "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@basenative/hmr": "workspace:*"
   }
 }

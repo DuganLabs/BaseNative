@@ -10,6 +10,8 @@ examples/express/public/basenative.js
 examples/express/public/builder.js
 dist/
 reports/
+test-results/
+playwright-report/
 
 # Local-only sandbox dirs (not part of basenative)
 /dotfiles

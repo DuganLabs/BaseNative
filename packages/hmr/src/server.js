@@ -61,6 +61,7 @@ function pathOf(url) {
  *   handle(req: import('node:http').IncomingMessage, res: import('node:http').ServerResponse): boolean,
  *   notify(detail?: object): void,
  *   status(): object,
+ *   attachWatcher(watcher: object): void,
  *   close(): void,
  *   readonly clients: number,
  *   readonly generation: string,
@@ -114,7 +115,17 @@ export function createHmrServer(options = {}) {
     broadcast({ type: 'update', kind, files, reason: detail.reason ?? null });
   }
 
-  const watcher =
+  // The proxy runs its own watcher so it can wait out a restart before pushing;
+  // it attaches it here so `status()` still reports what is actually watched.
+  let watcher = null;
+  let ownsWatcher = true;
+
+  function attachWatcher(external) {
+    watcher = external;
+    ownsWatcher = false;
+  }
+
+  watcher =
     shouldWatch && isDevEnvironment(env)
       ? createWatcher({
           roots: roots ?? [cwd],
@@ -204,7 +215,7 @@ export function createHmrServer(options = {}) {
     if (closed) return;
     closed = true;
     clearInterval(heartbeat);
-    watcher?.close();
+    if (ownsWatcher) watcher?.close();
     for (const res of clients) {
       try {
         res.end();
@@ -219,6 +230,7 @@ export function createHmrServer(options = {}) {
     handle,
     notify,
     status,
+    attachWatcher,
     close,
     get clients() {
       return clients.size;

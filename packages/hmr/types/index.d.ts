@@ -58,6 +58,8 @@ export interface HmrServer {
   handle(req: IncomingMessage, res: ServerResponse): boolean;
   notify(detail?: { files?: string[]; kind?: UpdateKind; reason?: string }): void;
   status(): HmrStatus;
+  /** Report an externally owned watcher in `status()` (used by the proxy). */
+  attachWatcher(watcher: Watcher): void;
   close(): void;
   readonly clients: number;
   readonly generation: string;

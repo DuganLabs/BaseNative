@@ -146,6 +146,8 @@ export function createHmrProxy(options) {
     },
   });
 
+  hmr.attachWatcher(watcher);
+
   function proxyRequest(req, res) {
     const headers = { ...req.headers };
     // Take the response uncompressed so the HTML can be rewritten without a

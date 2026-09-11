@@ -147,6 +147,17 @@ describe('createHmrProxy', () => {
     await reader.cancel();
   });
 
+  it('reports the watched roots in /__bn_hmr/status', async () => {
+    const upstream = await startUpstream();
+    const dir = sandbox();
+    const { base } = await startProxy(upstream, { cwd: dir });
+
+    const status = await (await fetch(base + ROUTES.status)).json();
+    assert.equal(status.enabled, true);
+    assert.equal(status.watching, true, 'the proxy watcher must show up in status');
+    assert.deepEqual(status.roots, [dir]);
+  });
+
   it('refuses to start in production', () => {
     assert.throws(
       () => createHmrProxy({ targetPort: 1234, port: 0, env: { NODE_ENV: 'production' } }),
