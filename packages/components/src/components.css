@@ -129,7 +129,13 @@
   font-weight: var(--bn-font-weight-medium);
   line-height: var(--bn-line-height-tight);
   border: 1px solid transparent;
-  border-radius: var(--bn-radius-md);
+  /* NOT --bn-radius-md: this block sits after the shared control group
+     above, so re-declaring the radius here used to silently defeat the
+     --bn-radius-control token that group had just applied. A consumer
+     setting --bn-radius-control got every control rounded except the
+     button. Defaults are identical (--bn-radius-control aliases
+     --bn-radius-md), so nothing moves unless the token is set. */
+  border-radius: var(--bn-radius-control);
   cursor: pointer;
   transition: background-color var(--bn-transition-fast), border-color var(--bn-transition-fast);
 }

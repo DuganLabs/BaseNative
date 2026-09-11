@@ -31,6 +31,14 @@ hover) — all below the 4.5:1 WCAG 1.4.3 floor, all fixed by setting one token.
 could not carry an `id`, an `aria-labelledby`, a `data-bn-bind` hydration hook or a
 test selector, which ruled it out of any app that wires signals to the DOM.
 
+**`--bn-radius-control` now reaches the button.** The shared control-geometry
+group applies `border-radius: var(--bn-radius-control)` to button/input/select/tab,
+and the `[data-bn="button"]` block a few rules later re-declared
+`border-radius: var(--bn-radius-md)` — same specificity, later in the sheet, so it
+won. A consumer that set `--bn-radius-control` got every control rounded except the
+button. The defaults are identical (`--bn-radius-control` aliases `--bn-radius-md`),
+so nothing moves unless the token is set.
+
 **`text` on `renderBadge`, `renderAlert` and `renderButton`** — an escaped label that
 replaces the unescaped `content` slot when present. These three almost always render
 data (a status, a server message, a record name), and the previous API made escaping
