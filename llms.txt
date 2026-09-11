@@ -14,7 +14,7 @@ Full API surface: [llms-full.txt](./llms-full.txt). Each package's dedicated doc
 - `@basenative/claude-config` v0.2.2 — Bundled Claude Code subagents, skills, slash commands, hooks, and settings for DuganLabs / BaseNati… → docs/api/claude-config.md
 - `@basenative/cli` v0.5.0 — The bn CLI — front door for BaseNative / DuganLabs projects (create, prd, speckit, gh, nx, deploy,… → docs/api/cli.md
 - `@basenative/combobox` v1.0.5 — Accessible combobox primitive — typeahead input that filters an existing list and lets the user cre… → docs/api/combobox.md
-- `@basenative/components` v0.9.0 — 15 semantic HTML UI components rendered as strings (forms, data grids, dialogs, calendar and kanban… → docs/api/components.md
+- `@basenative/components` v0.10.0 — 15 semantic HTML UI components rendered as strings (forms, data grids, dialogs, calendar and kanban… → docs/api/components.md
 - `@basenative/config` v0.3.1 — Type-safe environment configuration loading and validation → docs/api/config.md
 - `@basenative/date` v0.3.2 — Date utilities, timezone handling, relative time formatting, and date ranges → docs/api/date.md
 - `@basenative/db` v0.3.1 — Query builder with SQLite, PostgreSQL, and Cloudflare D1 adapters → docs/api/db.md
@@ -46,7 +46,7 @@ Full API surface: [llms-full.txt](./llms-full.txt). Each package's dedicated doc
 - `@basenative/share` v1.0.2 — Native Web Share + clipboard fallback, share-card mint client+server, and OG-redirect landing page… → docs/api/share.md
 - `@basenative/station` v0.2.1 — Queue-driven local-inference primitive — drives a cloudflared-tunneled vLLM tower (or any OpenAI-co… → docs/api/station.md
 - `@basenative/tenant` v0.3.1 — Multi-tenant middleware with subdomain/path resolution and row-level query scoping → docs/api/tenant.md
-- `@basenative/theme` v0.1.0 — The theme layer behind @basenative/components — a four-tier token shape, a WCAG contrast harness th… → packages/theme/src
+- `@basenative/theme` v0.2.0 — The theme layer behind @basenative/components — a four-tier token shape, a WCAG contrast harness th… → packages/theme/src
 - `@basenative/tsconfig` v0.2.1 — Shared base tsconfigs for DuganLabs projects — strict, modern, runtime-targeted → packages/tsconfig/src
 - `@basenative/upload` v0.3.3 — File upload handling with R2 and S3 adapter support → docs/api/upload.md
 - `@basenative/validate` v0.3.0 — Structured validation for BaseNative templates — machine-actionable errors a model can repair from… → docs/api/validate.md

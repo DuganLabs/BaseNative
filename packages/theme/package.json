@@ -1,6 +1,6 @@
 {
   "name": "@basenative/theme",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "The theme layer behind @basenative/components — a four-tier token shape, a WCAG contrast harness that fails the build, a one-grid icon discipline and the --bn-* bridge",
   "type": "module",
   "exports": {
