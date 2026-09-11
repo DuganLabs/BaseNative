@@ -257,10 +257,14 @@ function containsActiveElement(node, active) {
 function findMatch(cursor, nextChild, keyed, consumed) {
   const key = keyOf(nextChild);
   if (key) {
-    const candidate = keyed.get(key);
-    if (candidate && !consumed.has(candidate)) {
-      keyed.delete(key);
-      return candidate;
+    // A bucket rather than a single node: a key is not guaranteed unique. A
+    // radio group shares one `name`, and a `@for` body can repeat an id. Taking
+    // them in document order keeps each live control paired with its own slot
+    // instead of rebuilding every duplicate after the first.
+    const bucket = keyed.get(key);
+    while (bucket?.length) {
+      const candidate = bucket.shift();
+      if (!consumed.has(candidate)) return candidate;
     }
     // A keyed incoming node with no counterpart must not steal an unkeyed one:
     // it is genuinely new.
@@ -284,7 +288,10 @@ function patchChildren(liveParent, nextParent, ctx) {
   const keyed = new Map();
   for (let node = liveParent.firstChild; node; node = node.nextSibling) {
     const key = keyOf(node);
-    if (key && !keyed.has(key)) keyed.set(key, node);
+    if (!key) continue;
+    const bucket = keyed.get(key);
+    if (bucket) bucket.push(node);
+    else keyed.set(key, [node]);
   }
 
   const consumed = new Set();

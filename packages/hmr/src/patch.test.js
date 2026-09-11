@@ -352,6 +352,39 @@ describe('keyed reconciliation', () => {
     assert.equal(result.stats.inserted, 0);
   });
 
+  it('keeps every member of a radio group, which shares one name key', () => {
+    const markup =
+      '<fieldset>' +
+      '<input type="radio" name="colour" value="red">' +
+      '<input type="radio" name="colour" value="blue">' +
+      '<input type="radio" name="colour" value="green">' +
+      '</fieldset>';
+    const doc = live(markup);
+    const radios = [...doc.querySelectorAll('input')];
+    radios[1].checked = true;
+    radios[1].focus();
+
+    const result = patchDocument(doc, next(markup));
+
+    assert.deepEqual([...doc.querySelectorAll('input')], radios, 'a radio was rebuilt');
+    assert.equal(result.stats.inserted, 0);
+    assert.equal(result.stats.removed, 0);
+    assert.equal(radios[1].checked, true);
+    assert.equal(doc.activeElement, radios[1]);
+  });
+
+  it('does not rebuild rows whose ids repeat (a @for body with a static id)', () => {
+    const markup = '<ul><li id="row">a</li><li id="row">b</li></ul>';
+    const doc = live(markup);
+    const rows = [...doc.querySelectorAll('li')];
+
+    const result = patchDocument(doc, next(markup));
+
+    assert.deepEqual([...doc.querySelectorAll('li')], rows);
+    assert.equal(result.stats.inserted, 0);
+    assert.equal(result.stats.removed, 0);
+  });
+
   it('does not let an unkeyed incoming node steal a keyed live node', () => {
     const doc = live('<div><span id="keep">k</span></div>');
     const keep = doc.getElementById('keep');
