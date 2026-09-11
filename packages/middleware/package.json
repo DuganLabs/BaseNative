@@ -1,7 +1,7 @@
 {
   "name": "@basenative/middleware",
   "version": "0.3.4",
-  "description": "Request pipeline middleware \u2014 CORS, rate limiting, CSRF, and adapters",
+  "description": "Request pipeline middleware \u2014 security headers, CORS, rate limiting, CSRF, and adapters",
   "type": "module",
   "exports": {
     ".": "./src/index.js",
@@ -9,7 +9,11 @@
     "./cors": "./src/builtins/cors.js",
     "./rate-limit": "./src/builtins/rate-limit.js",
     "./csrf": "./src/builtins/csrf.js",
-    "./logger": "./src/builtins/logger.js"
+    "./logger": "./src/builtins/logger.js",
+    "./security-headers": {
+      "types": "./types/security-headers.d.ts",
+      "default": "./src/builtins/security-headers.js"
+    }
   },
   "types": "./types/index.d.ts",
   "files": [
@@ -32,7 +36,9 @@
     "signals",
     "middleware",
     "cors",
-    "csrf"
+    "csrf",
+    "security-headers",
+    "csp"
   ],
   "publishConfig": {
     "access": "public"
