@@ -187,8 +187,12 @@ chore(ci): add bundle size check to PR workflow
 ## Key Invariants to Preserve
 
 1. `@basenative/runtime` must stay under **10KB gzipped** — the budget enforced by
-   `scripts/bundle-size.js` in CI. Currently 9.2KB. (The long-standing "<5KB" claim
+   `scripts/bundle-size.js` in CI. Currently 9.6KB. (The long-standing "<5KB" claim
    was never true against the measured build; the budget has always been 10KB.)
+   Do not re-type this number anywhere: `node scripts/compare-stats.js` prints the
+   measured value, and the site reads it from there. `9.2KB` is still stale in
+   `README.md`, `docs/PRD.md`, `docs/migration.md`, `docs/api/cli.md` and
+   `docs/CONSUMING-FROM-GH-PACKAGES.md`.
 2. The CSP-safe evaluator must never use `eval` or `new Function`
 3. All parameterized DB queries use `?` placeholders — never string interpolation
 4. `hydrate()` must work from server-rendered HTML without JavaScript re-rendering everything
@@ -266,6 +270,7 @@ rule and does not resolve anything.
 | about to write any new UI                  | `.claude/skills/ds-guard/SKILL.md` — fires automatically, before the markup                        | `ds-extract`, `ds-drift`; live codebase search — ds-guard reads the generated index only                |
 | "extract this component", "de-duplicate this markup", retrofit work | `.claude/skills/ds-extract/SKILL.md` — **invoked by name only**                 | `ds-guard`, `ds-drift`; grep-based discovery — use `scripts/component-usage.js`                         |
 | "check for drift", token/naming/API audit, plan a deprecation, write a codemod | `.claude/skills/ds-drift/SKILL.md` — on demand and in CI      | `ds-guard`, `ds-extract`; never mid-task                                                                |
+| "update a number on /compare"              | `scripts/compare-stats.js` (measures it from source at build time)                                 | typing a figure into `examples/express/views/compare.html` — every claim is a `{{ }}` binding and `scripts/check-compare-page.js` fails the build on a literal |
 | anything touching the eval corpus          | **the human owner. No skill, no agent.**                                                           | everything — see below                                                                                  |
 
 ### The three design-system skills — vendored forks, and they do not chain

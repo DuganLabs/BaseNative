@@ -13,6 +13,8 @@ import { defineConfig, string, optional } from '../../packages/config/src/index.
 import { createLogger } from '../../packages/logger/src/index.js';
 import { createI18n } from '../../packages/i18n/src/index.js';
 import { createFlagManager, createMemoryProvider } from '../../packages/flags/src/index.js';
+import { checkComparePage } from '../../scripts/check-compare-page.js';
+import { computeCompareStats } from '../../scripts/compare-stats.js';
 
 // ─── 1. SSR + Runtime: Context Pipeline ──────────────────────────────────────
 
@@ -323,5 +325,27 @@ describe('Flags + I18n: Locale-Gated Feature', () => {
     const msgKey = isBeta ? 'greeting_new' : 'greeting_old';
     const html = render('<p>{{ greeting }}</p>', { greeting: i18n.t(msgKey) });
     assert.ok(html.includes('Welcome to the new experience!'));
+  });
+});
+
+// ─── 12. /compare: published claims match the source ─────────────────────────
+
+describe('/compare tells the truth about this repository', () => {
+  it('every number on the page is what the source measures today', () => {
+    const problems = checkComparePage();
+    assert.deepEqual(
+      problems,
+      [],
+      `/compare disagrees with the source:\n  ${problems.join('\n  ')}`,
+    );
+  });
+
+  it('the claims the page is built on still hold', () => {
+    const stats = computeCompareStats();
+    assert.equal(stats.runtimeProdDeps, 0, '@basenative/runtime must ship zero dependencies');
+    assert.equal(stats.buildSteps, 0, '@basenative/runtime must need no build step');
+    assert.equal(stats.corePrimitives, 6, 'the page counts six core primitives');
+    assert.equal(stats.hydrationStrategies, 4, 'the page claims four hydration strategies');
+    assert.ok(stats.coreLines > 0, 'the reactivity core must be measurable');
   });
 });

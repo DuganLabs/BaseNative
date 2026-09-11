@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { render } from '@basenative/server';
 import { renderBreadcrumb } from '../../packages/components/src/index.js';
 import {
+  getComparePageContext,
   getComponentsPageContext,
   getHomePageContext,
   getRoadmapPageContext,
@@ -138,6 +139,17 @@ export const siteRoutes = [
     ogTitle: 'BaseNative Components — Semantic by Construction',
     activePage: 'components',
     ctx: () => getComponentsPageContext(),
+  },
+  {
+    path: '/compare',
+    view: 'compare.html',
+    title: 'Compare',
+    description:
+      'How BaseNative compares to React, Angular and Svelte — bundle size, build requirements, API surface, hydration, and the tradeoffs that come with them.',
+    ogTitle: 'BaseNative vs React, Angular, Svelte',
+    activePage: 'compare',
+    scripts: '<script type="module" src="/compare.js"></script>',
+    ctx: () => getComparePageContext(),
   },
   {
     path: '/roadmap',
