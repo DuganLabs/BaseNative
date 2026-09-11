@@ -20,6 +20,18 @@ export const AA_LARGE = 3;
 export const AA_NONTEXT = 3;
 
 /**
+ * A custom-property name, anchored and written so there is exactly one way to
+ * match any given string: the leading `--` is literal, and no later segment may
+ * begin with `-`. The obvious `--[a-z0-9-]+` is ambiguous — `-` belongs to the
+ * class too, so a run of dashes can be split many ways and the engine tries all
+ * of them before failing.
+ */
+const PROP_NAME = /^--[a-z0-9]+(?:-[a-z0-9]+)*$/i;
+
+/** A `var(…)` call. `[^)]*` is a negated class, so the inside is scanned once. */
+const VAR_CALL = /^var\(([^)]*)\)$/i;
+
+/**
  * Extracts `--name: value` declarations from a CSS text block.
  *
  * Later declarations win, which mirrors the cascade for a single flat block.
@@ -32,12 +44,25 @@ export const AA_NONTEXT = 3;
  */
 export function parseCustomProperties(css) {
   const out = new Map();
-  const re = /(--[a-z0-9-]+)\s*:\s*([^;}]+)[;}]/gi;
-  let m;
-  while ((m = re.exec(css)) !== null) {
-    const name = m[1];
-    const value = m[2];
-    if (name !== undefined && value !== undefined) out.set(name, value.trim());
+  // Split on the delimiters first, then read each declaration, rather than
+  // sweeping one regex across the whole sheet. A single pattern that has to
+  // find `--name: value` at every offset is polynomial on adversarial input
+  // (CodeQL js/polynomial-redos); splitting bounds the work per chunk, and
+  // `lastIndexOf` plus an anchored test does the rest without backtracking.
+  //
+  // The name is taken from the END of the text before the colon, not the whole
+  // of it: a chunk routinely opens with the tail of the previous line, as in
+  // `/* 12px */\n  --bn-font-family`, and `@basenative/components`' own token
+  // sheet is written that way throughout.
+  for (const chunk of css.split(/[;{}]/)) {
+    const colon = chunk.indexOf(':');
+    if (colon === -1) continue;
+    const head = chunk.slice(0, colon);
+    const start = head.lastIndexOf('--');
+    if (start === -1) continue;
+    const name = head.slice(start).trim();
+    const value = chunk.slice(colon + 1).trim();
+    if (PROP_NAME.test(name) && value !== '') out.set(name, value);
   }
   return out;
 }
@@ -64,10 +89,19 @@ export function resolveColor(name, props, seen = new Set()) {
   if (raw === undefined) {
     throw new Error(`Unknown custom property ${name}`);
   }
-  const varMatch = /^var\(\s*(--[a-z0-9-]+)\s*(?:,\s*([^)]+))?\)$/i.exec(raw);
+  // Split the call on its first comma by hand rather than with one pattern
+  // carrying `\s*` on both sides of an ambiguous name — that combination is
+  // what CodeQL flags as polynomial. `VAR_CALL` is anchored and its body is a
+  // negated class, so this is a single pass.
+  const varMatch = VAR_CALL.exec(raw);
   if (varMatch) {
-    const alias = varMatch[1];
-    const fallback = varMatch[2];
+    const inner = varMatch[1];
+    const comma = inner.indexOf(',');
+    const alias = (comma === -1 ? inner : inner.slice(0, comma)).trim();
+    const fallback = comma === -1 ? undefined : inner.slice(comma + 1).trim();
+    if (!PROP_NAME.test(alias)) {
+      throw new Error(`${name} is not a plain hex colour (got "${raw}")`);
+    }
     if (props.has(alias)) {
       return resolveColor(alias, props, new Set([...seen, name]));
     }
