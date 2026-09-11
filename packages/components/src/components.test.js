@@ -1353,6 +1353,48 @@ describe('Card — hardening', () => {
   });
 });
 
+describe('Table — cell hooks', () => {
+  it('labelCells stamps the escaped column label on every body cell', () => {
+    const html = renderTable({
+      columns: [{ key: 'a', label: 'Last <sync>' }],
+      rows: [{ a: 1 }],
+      labelCells: true,
+    });
+    assert.ok(html.includes('<td data-label="Last &lt;sync&gt;">1</td>'));
+  });
+
+  it('labelCells leaves an unlabelled column alone', () => {
+    const html = renderTable({ columns: [{ key: 'a', label: '' }], rows: [{ a: 1 }], labelCells: true });
+    assert.ok(html.includes('<td>1</td>'));
+  });
+
+  it('cellAttrs is spliced onto the cell, as a string or per row', () => {
+    const html = renderTable({
+      columns: [
+        { key: 'a', label: 'A', cellAttrs: 'data-bn="num"' },
+        { key: 'b', label: 'B', cellAttrs: (value) => `data-v="${value}"` },
+      ],
+      rows: [{ a: 1, b: 2 }],
+    });
+    assert.ok(html.includes('<td data-bn="num">1</td>'));
+    assert.ok(html.includes('<td data-v="2">2</td>'));
+  });
+
+  it('a cellAttrs function returning nothing adds no stray space', () => {
+    const html = renderTable({ columns: [{ key: 'a', label: 'A', cellAttrs: () => undefined }], rows: [{ a: 1 }] });
+    assert.ok(html.includes('<td>1</td>'));
+  });
+
+  it('srLabel names a column with no visible heading instead of leaving <th> empty', () => {
+    const html = renderTable({ columns: [{ key: 'a', label: '', srLabel: 'Actions' }], rows: [] });
+    assert.ok(html.includes('<th scope="col"><span data-bn="sr-only">Actions</span></th>'));
+  });
+
+  it('srLabel is escaped', () => {
+    assertEscaped(renderTable({ columns: [{ key: 'a', label: '', srLabel: XSS }], rows: [] }));
+  });
+});
+
 describe('Table — hardening', () => {
   it('renders with minimal options', () => {
     const html = renderTable();

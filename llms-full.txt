@@ -948,6 +948,9 @@ renderLayoutGrid({
 
 #### Brand foregrounds
 Pointing `--bn-color-primary-*` at a brand color is only half a theme: something has to be readable on top of the filled boxes it paints. Four tokens name that foreground, all defaulting to white so existing themes are unchanged: | Token |…
+
+#### Surfaces
+`--bn-color-surface` is both the page and the thing sitting on the page — which is only true on a light theme. Two tokens split them, both defaulting to `--bn-color-surface` so nothing moves until they are set: | Token | Applies to | |----…
 ```css
 :root {
   --bn-color-primary-600: #e8920a;   /* amber */

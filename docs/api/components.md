@@ -373,7 +373,13 @@ renderTable({
 | `rows` | `Array<Record<string, unknown>>` | `[]` | Without `render`, cell values are stringified and escaped |
 | `emptyMessage` | `string` | `'No data'` | Single full-width row when `rows` is empty (`render` is not consulted) |
 | `caption` | `string` | `''` | `<caption>` |
+| `labelCells` | `boolean` | `false` | Stamp `data-label="<column label>"` on every body cell — what a responsive stacked table needs once the `<thead>` is hidden |
 | `attrs` | `string` | `''` | Spliced onto the `[data-bn="table-container"]` wrapper |
+
+Column options: `key`, `label`, `sortable`, `render(value, row)` (HTML slot), plus
+`cellAttrs` (raw attribute markup on that column's `<td>`; a string or a
+`(value, row) => string`) and `srLabel` (a visually-hidden accessible name for a
+column with no visible `label`, so the `<th>` is never empty).
 
 Renders `<div data-bn="table-container"><table data-bn="table"><caption>…</caption><thead><tr><th scope="col" data-sortable>Name</th></tr></thead><tbody>…</tbody></table></div>`. Header cells carry `scope="col"`. Composite cells (a two-line name, a `<time>`, a badge, row-action buttons) belong in `render`; `renderDataGrid` offers the same hook when you also want sorting indicators, selection and a footer.
 
@@ -1162,6 +1168,20 @@ defaulting to white so existing themes are unchanged:
 | `--bn-color-on-accent` | `--bn-color-on-primary` | checkbox tick, radio dot, data-grid checkbox tick (all sit on `--bn-color-accent-600`) |
 | `--bn-color-on-error` | `--bn-color-white` | destructive button label |
 | `--bn-color-toggle-knob` | `--bn-color-white` | toggle knob when off (it rides the neutral track, not the brand) |
+
+### Surfaces
+
+`--bn-color-surface` is both the page and the thing sitting on the page — which is
+only true on a light theme. Two tokens split them, both defaulting to
+`--bn-color-surface` so nothing moves until they are set:
+
+| Token | Applies to |
+|-------|------------|
+| `--bn-color-surface-control` | input, textarea, select, combobox input, checkbox, radio, secondary button |
+| `--bn-color-surface-card` | card |
+
+A dark theme that re-points `--bn-color-surface` at its page background needs these,
+or its filled controls and cards dissolve into the page with only a 1px border left.
 
 Set them whenever the brand hue is light enough that white text fails WCAG 1.4.3 on it:
 
