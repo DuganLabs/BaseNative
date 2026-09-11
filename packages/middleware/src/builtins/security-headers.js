@@ -7,8 +7,9 @@
  *
  * - `bluetooth` is not a registered Permissions-Policy feature. Sending it
  *   logs "Unrecognized feature" in Chromium on every request, for a
- *   permission nobody was requesting. It is absent from the defaults and
- *   `assertPermissionsFeature` refuses to add it back by accident.
+ *   permission nobody was requesting. It is absent from the defaults, and
+ *   `mergePermissions` rejects it — and any other unregistered name — so no
+ *   product can add it back by accident.
  * - `preload` on Strict-Transport-Security is a submission to a browser-vendor
  *   list that is slow and painful to leave. It is opt-in, and it is rejected
  *   unless the directive actually meets the list's stated requirements.
@@ -22,11 +23,16 @@
 /** Statuses the Fetch spec forbids a body on; constructing one with a body throws. */
 const NULL_BODY_STATUS = new Set([101, 103, 204, 205, 304]);
 
+function deepFreeze(map) {
+  for (const value of Object.values(map)) Object.freeze(value);
+  return Object.freeze(map);
+}
+
 /**
  * Hardened baseline CSP. Caller directives are merged into these, never over
  * them; see `mergeCsp`. Ordering is fixed so output is stable and diffable.
  */
-export const DEFAULT_CSP = Object.freeze({
+export const DEFAULT_CSP = deepFreeze({
   'default-src': ["'self'"],
   'script-src': ["'self'"],
   'style-src': ["'self'"],
@@ -42,7 +48,7 @@ export const DEFAULT_CSP = Object.freeze({
 });
 
 /** Features denied by default. An empty allow-list serializes as `name=()`. */
-export const DEFAULT_PERMISSIONS = Object.freeze({
+export const DEFAULT_PERMISSIONS = deepFreeze({
   camera: [],
   microphone: [],
   geolocation: [],
