@@ -121,6 +121,25 @@
     --bn-color-surface-inset: var(--bn-color-gray-50);
     --bn-color-surface-inverse: var(--bn-color-gray-900);
 
+    /* Foreground on filled brand surfaces.
+       These name the text/glyph color that sits ON a filled --bn-color-primary-* /
+       -accent-* / -error-* box (primary + destructive buttons, the current page in
+       pagination, the checkbox tick, the radio dot, the toggle knob). They exist
+       because those foregrounds used to be hardcoded to --bn-color-white, which is
+       only readable when the brand color is dark. A consumer whose brand is a light
+       hue (amber, mint, sand) had no token to reach for: overriding
+       --bn-color-white would repaint every other white surface in the sheet, so the
+       only escape was to fork the component CSS or hand-roll the control — which is
+       exactly what T4BS and Greenput both did. Defaults are unchanged (white), so
+       re-pointing them is opt-in. */
+    --bn-color-on-primary: var(--bn-color-white);
+    --bn-color-on-accent: var(--bn-color-on-primary);
+    --bn-color-on-error: var(--bn-color-white);
+    /* Toggle knob in the OFF position rides --bn-color-toggle-track-off (a neutral),
+       not the brand, so it is its own token rather than an alias of -on-primary.
+       The ON position uses --bn-color-on-primary, since the track is primary-600. */
+    --bn-color-toggle-knob: var(--bn-color-white);
+
     /* Semantic Text */
     --bn-color-text: var(--bn-color-gray-900);
     --bn-color-text-muted: var(--bn-color-gray-500);

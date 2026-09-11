@@ -28,7 +28,10 @@ export function resetIds(): void;
 /** Returns the class string `bn-button bn-button--${variant} bn-button--${size}`. */
 export function buttonVariants(variant?: string, size?: string): string;
 
-export function renderButton(content: string, options?: {
+/** `content` is an HTML slot: not escaped. Prefer `options.text`, which is escaped and wins over `content`. */
+export function renderButton(content?: string, options?: {
+  /** Escaped text label; replaces `content` when present. */
+  text?: string;
   variant?: 'primary' | 'secondary' | 'destructive' | 'ghost';
   size?: 'default' | 'sm' | 'lg';
   disabled?: boolean;
@@ -132,10 +135,14 @@ export function renderSelect(options?: {
 
 // ---------------------------------------------------------------- Alert
 
-export function renderAlert(content: string, options?: {
+/** `content` is an HTML slot: not escaped. Prefer `options.text`, which is escaped and wins over `content`. */
+export function renderAlert(content?: string, options?: {
+  /** Escaped text; replaces `content` when present. */
+  text?: string;
   /** `error` and `warning` get `role="alert"`; `info` and `success` get `role="status"`. */
   variant?: 'info' | 'success' | 'warning' | 'error';
   dismissible?: boolean;
+  attrs?: string;
 }): string;
 
 // ---------------------------------------------------------------- Toast
@@ -211,9 +218,12 @@ export function renderPagination(options?: {
 
 // ---------------------------------------------------------------- Badge
 
-/** `content` is an HTML slot: not escaped; pass trusted markup only, or `escapeText()` your data. `variant` is escaped. */
-export function renderBadge(content: string, options?: {
+/** `content` is an HTML slot: not escaped. Prefer `options.text`, which is escaped and wins over `content`. `variant` is escaped. */
+export function renderBadge(content?: string, options?: {
+  /** Escaped text; replaces `content` when present. */
+  text?: string;
   variant?: 'default' | 'primary' | 'success' | 'warning' | 'error';
+  attrs?: string;
 }): string;
 
 // ---------------------------------------------------------------- Card
@@ -224,6 +234,9 @@ export function renderCard(options?: {
   footer?: string;
   /** Emitted as `data-variant`, default `'default'`. */
   variant?: string;
+  /** Emitted as the `<article>`'s `id` when present. */
+  id?: string;
+  attrs?: string;
 }): string;
 
 // ---------------------------------------------------------------- Progress & Spinner

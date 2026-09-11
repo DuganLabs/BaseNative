@@ -10,7 +10,7 @@
  *     Submit
  *   </button>
  */
-import { escapeAttr } from '@basenative/runtime/shared/escape';
+import { escapeAttr, escapeText } from '@basenative/runtime/shared/escape';
 import { attrsSuffix } from './internal/attrs.js';
 
 /**
@@ -23,8 +23,14 @@ export function buttonVariants(variant = 'primary', size = 'default') {
 /**
  * Server-side render helper for a button element.
  *
- * @param {string} content  HTML slot: not escaped; pass trusted markup only
+ * A button label is usually plain text, and often data (a status name, a
+ * record title), so `text` is the escaping-safe way to fill it: pass the raw
+ * string and it is escaped for you. `content` stays for labels that really do
+ * hold markup (an icon plus a span); when both are given, `text` wins.
+ *
+ * @param {string} [content]  HTML slot: not escaped; pass trusted markup only
  * @param {object} [options]
+ * @param {string} [options.text]  Escaped text label; replaces `content` when present
  * @param {string} [options.variant='primary']
  * @param {string} [options.size='default']
  * @param {boolean} [options.disabled]
@@ -32,12 +38,13 @@ export function buttonVariants(variant = 'primary', size = 'default') {
  * @param {string} [options.attrs]  Raw attribute markup appended to the <button>; not escaped
  * @returns {string}
  */
-export function renderButton(content, options = {}) {
+export function renderButton(content = '', options = {}) {
   const variant = options.variant || 'primary';
   const size = options.size || 'default';
   const disabled = options.disabled ? ' disabled' : '';
   const type = options.type || 'button';
   const attrs = options.attrs || '';
+  const slot = options.text != null ? escapeText(options.text) : content;
 
-  return `<button data-bn="button" data-variant="${escapeAttr(variant)}" data-size="${escapeAttr(size)}" type="${escapeAttr(type)}"${disabled}${attrsSuffix(attrs)}>${content}</button>`;
+  return `<button data-bn="button" data-variant="${escapeAttr(variant)}" data-size="${escapeAttr(size)}" type="${escapeAttr(type)}"${disabled}${attrsSuffix(attrs)}>${slot}</button>`;
 }

@@ -61,6 +61,7 @@ buttonVariants('ghost', 'sm') // 'bn-button bn-button--ghost bn-button--sm'
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
+| `text` | `string` | — | Escaped label; replaces the unescaped `content` slot when present |
 | `variant` | `'primary' \| 'secondary' \| 'destructive' \| 'ghost'` | `'primary'` | Emitted as `data-variant` |
 | `size` | `'default' \| 'sm' \| 'lg'` | `'default'` | Emitted as `data-size` |
 | `disabled` | `boolean` | `false` | Adds `disabled` |
@@ -303,8 +304,10 @@ renderAlert('Changes saved!', { variant: 'success', dismissible: true })
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
+| `text` | `string` | — | Escaped message; replaces the unescaped `content` slot when present |
 | `variant` | `'info' \| 'success' \| 'warning' \| 'error'` | `'info'` | Emitted as `data-variant` |
 | `dismissible` | `boolean` | `false` | Adds a dismiss button |
+| `attrs` | `string` | `''` | Extra attributes on the container |
 
 Renders:
 
@@ -315,7 +318,7 @@ Renders:
 </div>
 ```
 
-Accessibility: `error` and `warning` use `role="alert"` (assertive); `info` and `success` use `role="status"` (polite). `attrs` is not supported.
+Accessibility: `error` and `warning` use `role="alert"` (assertive); `info` and `success` use `role="status"` (polite).
 
 ## Toast
 
@@ -537,16 +540,14 @@ Renders `<nav data-bn="pagination" aria-label="Pagination"><ul>…</ul></nav>` w
 
 ## Badge
 
-`renderBadge(content, options?)` → `string`. `content` is an HTML slot: not escaped; pass trusted markup only (see [Escaping Policy](#escaping-policy)) — escape data you interpolate, or set the label with `textContent` after mount.
+`renderBadge(content, options?)` → `string`. `content` is an HTML slot: not escaped; pass trusted markup only (see [Escaping Policy](#escaping-policy)). For data, pass `options.text` instead — it is escaped and wins over `content`.
 
 ```js
-import { escapeText } from '@basenative/runtime/shared/escape';
-
-renderBadge('Active', { variant: 'success' })            // literal markup/text
-renderBadge(escapeText(job.status), { variant: 'warning' }) // data
+renderBadge('Active', { variant: 'success' })              // literal markup/text
+renderBadge('', { text: job.status, variant: 'warning' })  // data — escaped for you
 ```
 
-`variant`: `'default' | 'primary' | 'success' | 'warning' | 'error'` (default `'default'`; escaped). Renders `<span data-bn="badge" data-variant="success">Active</span>`. `attrs` is not supported.
+`variant`: `'default' | 'primary' | 'success' | 'warning' | 'error'` (default `'default'`; escaped). `attrs` is spliced onto the `<span>`. Renders `<span data-bn="badge" data-variant="success">Active</span>`.
 
 ## Card
 
@@ -556,7 +557,7 @@ renderBadge(escapeText(job.status), { variant: 'warning' }) // data
 renderCard({ header: 'Title', body: '<p>Content</p>', footer: 'Footer' })
 ```
 
-Options: `header`, `body`, `footer` (HTML strings, default `''`; header/footer omitted when empty) and `variant` (`string`, default `'default'`, emitted as `data-variant`). Renders:
+Options: `header`, `body`, `footer` (HTML strings, default `''`; header/footer omitted when empty), `variant` (`string`, default `'default'`, emitted as `data-variant`), `id` (escaped, emitted only when present) and `attrs`. `id` + `attrs` are what let a card be labelled (`aria-labelledby`) or bound to by a client runtime. Renders:
 
 ```html
 <article data-bn="card" data-variant="default">
@@ -565,8 +566,6 @@ Options: `header`, `body`, `footer` (HTML strings, default `''`; header/footer o
   <footer data-bn="card-footer">Footer</footer>
 </article>
 ```
-
-`attrs` is not supported.
 
 ## Avatar
 
@@ -1134,6 +1133,7 @@ Renders `<div data-bn="layout-grid" id="layout-grid" style="display:grid;grid-te
 See `tokens.css` for the full list. Key tokens:
 
 - Colors: `--bn-color-primary-50` … `--bn-color-primary-900`, `--bn-color-surface(-raised|-muted|-subtle|-inset|-inverse)`, `--bn-color-text(-muted|-subtle|-link|-inverse)`, `--bn-color-border(-strong|-focus)`, status `--bn-color-{info,success,warning,error}(-bg|-border|-text)`
+- Brand foregrounds: `--bn-color-on-primary`, `--bn-color-on-accent`, `--bn-color-on-error`, `--bn-color-toggle-knob` — see [Theming](#theming)
 - Spacing: `--bn-space-0` through `--bn-space-16`
 - Typography: `--bn-font-size-{xs,sm,base,lg,xl}`, `--bn-font-weight-{normal,medium,semibold,bold}`, `--bn-font-family`, `--bn-font-mono`
 - Radius: `--bn-radius-sm`, `--bn-radius-md`, `--bn-radius-lg`, `--bn-radius-xl`, `--bn-radius-full`
@@ -1149,3 +1149,28 @@ Dark mode activates via `prefers-color-scheme` or `data-theme="dark"` on any anc
 ```
 
 Density: `data-density="compact|default|spacious"` on any ancestor.
+
+### Brand foregrounds
+
+Pointing `--bn-color-primary-*` at a brand color is only half a theme: something has to
+be readable on top of the filled boxes it paints. Four tokens name that foreground, all
+defaulting to white so existing themes are unchanged:
+
+| Token | Default | Applies to |
+|-------|---------|------------|
+| `--bn-color-on-primary` | `--bn-color-white` | primary button label, `[aria-current="page"]` link in pagination, toggle knob when on |
+| `--bn-color-on-accent` | `--bn-color-on-primary` | checkbox tick, radio dot, data-grid checkbox tick (all sit on `--bn-color-accent-600`) |
+| `--bn-color-on-error` | `--bn-color-white` | destructive button label |
+| `--bn-color-toggle-knob` | `--bn-color-white` | toggle knob when off (it rides the neutral track, not the brand) |
+
+Set them whenever the brand hue is light enough that white text fails WCAG 1.4.3 on it:
+
+```css
+:root {
+  --bn-color-primary-600: #e8920a;   /* amber */
+  --bn-color-on-primary: #1a0a00;    /* 7.86:1 — white on this amber is 2.46:1 */
+}
+```
+
+Before these existed the foregrounds were hardcoded to `--bn-color-white`, and the only
+way out was to fork the component CSS or hand-roll the control.
