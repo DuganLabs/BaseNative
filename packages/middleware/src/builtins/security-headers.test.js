@@ -18,6 +18,21 @@ function ok(body = null, init = {}) {
 
 /** Parse a CSP header back into { directive: [sources] } so tests can assert
  *  on structure instead of on a serialized string. */
+/**
+ * Exact membership in a parsed directive's source list.
+ *
+ * Not `sources.includes(...)`. parseCsp returns an ARRAY, so Array#includes is
+ * already an exact comparison — but CodeQL reads `.includes` next to an https://
+ * literal as substring URL matching and files "Incomplete URL substring
+ * sanitization" against it. There is no sanitization here at all; it is a test
+ * assertion. Spelling the comparison out silences a false positive and says
+ * plainly that a CSP source must match whole, which is the property that
+ * matters: 'https://evil.com/https://api.example.com' must never satisfy it.
+ */
+function hasSource(csp, directive, source) {
+  return (csp[directive] ?? []).some((s) => s === source);
+}
+
 function parseCsp(header) {
   const directives = {};
   for (const part of header.split(';')) {
@@ -121,9 +136,12 @@ describe('securityHeaders — CSP merging', () => {
       csp: { 'connect-src': ['https://api.example.com'] },
     })(ok());
     const csp = parseCsp(res.headers.get('Content-Security-Policy'));
-    assert.ok(csp['connect-src'].includes('https://api.example.com'));
+    assert.ok(hasSource(csp, 'connect-src', 'https://api.example.com'));
     for (const baseline of DEFAULT_CSP['connect-src']) {
-      assert.ok(csp['connect-src'].includes(baseline), `lost baseline source ${baseline}`);
+      assert.ok(
+        hasSource(csp, 'connect-src', baseline),
+        `lost baseline source ${baseline}`,
+      );
     }
   });
 
