@@ -64,6 +64,24 @@ basenative/
 
 ---
 
+## Infrastructure
+
+Terraform (`infra/`, `.github/workflows/terraform.yml`) was retired 2026-09-10 — org-wide
+decision, retired everywhere as a control plane. CI + `wrangler` are now the only source
+of truth for provisioning. The R2 state bucket (`basenative-tf`) still exists but is no
+longer used by anything in this repo; it's on the owner's cleanup list, not deleted by
+this change.
+
+- Pages project `basenative` — deployed via `wrangler pages deploy dist --project-name
+  basenative` in `.github/workflows/deploy.yml`; build output configured in
+  `wrangler.toml`.
+- Apex/`www` DNS records for `basenative.com` (proxied A records) — previously
+  Terraform-managed (`infra/dns.tf`, now deleted). They keep working because the
+  Cloudflare-side record already exists, but nothing in this repo recreates them if
+  they're ever removed.
+
+---
+
 ## Build / Test / Lint Commands
 
 ```bash
