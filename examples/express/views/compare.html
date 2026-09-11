@@ -1,0 +1,340 @@
+<!--
+  Every BaseNative figure below is bound to scripts/compare-stats.js, which
+  measures it from source on each build. Do not type a number into this file —
+  `node scripts/compare-stats.js --check` fails the build if you do.
+-->
+<section data-hero>
+  <h2>How BaseNative <em>compares</em></h2>
+  <p>An honest look at BaseNative alongside React, Angular, and Svelte. Where it wins, where it doesn't, and why that matters.</p>
+</section>
+
+<section data-stats>
+  <ul role="list" data-stat-grid>
+    <li>
+      <strong data-claim>{{ stats.coreLines }}</strong>
+      <span>Lines of reactivity core</span>
+    </li>
+    <li>
+      <strong data-claim>{{ stats.runtimeProdDeps }}</strong>
+      <span>Core runtime dependencies</span>
+    </li>
+    <li>
+      <strong data-claim>{{ stats.buildSteps }}</strong>
+      <span>Build steps required</span>
+    </li>
+    <li>
+      <strong data-claim>{{ stats.corePrimitives }}</strong>
+      <span>Core API primitives</span>
+    </li>
+  </ul>
+</section>
+
+<section>
+  <h2>Bundle <em>size</em></h2>
+  <p>BaseNative ships raw ES modules. No bundler, no tree-shaking needed — what you import is what runs. The runtime is one package you can read end to end.</p>
+
+  <article>
+    <header><h3>Runtime weight and dependencies</h3></header>
+    <div data-bn-table-scroll tabindex="0" role="region" aria-label="Bundle size comparison">
+      <table data-compare-table>
+        <thead>
+          <tr>
+            <th scope="col">Measure</th>
+            <th scope="col">BaseNative</th>
+            <th scope="col">React 19</th>
+            <th scope="col">Angular 19</th>
+            <th scope="col">Svelte 5</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Runtime size (min+gz)</th>
+            <td data-tone="even" data-claim>{{ stats.runtimeGzipKb }} KB</td>
+            <td data-tone="cost" data-claim>~{{ stats.reactGzipKb }} KB</td>
+            <td data-tone="cost" data-claim>~{{ stats.angularGzipKb }} KB</td>
+            <td data-tone="win" data-claim>~{{ stats.svelteGzipKb }} KB</td>
+          </tr>
+          <tr>
+            <th scope="row">Core production deps</th>
+            <td data-tone="win" data-claim>{{ stats.runtimeProdDeps }}</td>
+            <td data-tone="even">2 (react, react-dom)</td>
+            <td data-tone="cost">6+ (zone.js, rxjs, …)</td>
+            <td data-tone="win">0</td>
+          </tr>
+          <tr>
+            <th scope="row">Build step</th>
+            <td data-tone="win">None</td>
+            <td data-tone="cost">Required (JSX)</td>
+            <td data-tone="cost">Required (TS + AOT)</td>
+            <td data-tone="cost">Required (compiler)</td>
+          </tr>
+          <tr>
+            <th scope="row">Runtime source you can read</th>
+            <td data-tone="win" data-claim>{{ stats.runtimeSourceLines }} lines</td>
+            <td data-tone="even">~80K lines</td>
+            <td data-tone="even">~300K+ lines</td>
+            <td data-tone="even">~15K lines</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p data-compare-note data-claim>
+      BaseNative's runtime is measured by <code>scripts/bundle-size.js</code> — the same
+      gzipped build CI holds to a {{ stats.runtimeBudgetKb }} KB budget — so this row is the
+      number the package actually ships, not a target. Competitor figures are published
+      production builds, min+gzip. Svelte is smaller than BaseNative; that is the honest
+      result, and the tradeoff is the compiler it needs to get there.
+    </p>
+    <p data-compare-note data-claim>
+      "Zero dependencies" is a claim about <code>@basenative/runtime</code>, and only about
+      it. Across all published <code>@basenative/*</code> packages there are
+      {{ stats.externalProdDeps }} third-party production dependencies in
+      {{ stats.externalProdDepPackages }} packages — <code>server</code> parses HTML,
+      <code>og-image</code> rasterises cards, <code>wrangler-preset</code> wraps Wrangler,
+      and <code>eslint-config</code> extends ESLint. Install only the runtime and you
+      install nothing else; the rest of the toolkit is not dependency-free.
+    </p>
+  </article>
+</section>
+
+<section>
+  <h2>API <em>surface</em></h2>
+  <p>Fewer primitives means less to learn, less to break, and less for AI tools to hallucinate. BaseNative's entire reactivity model fits on a whiteboard.</p>
+
+  <article>
+    <header><h3>Concepts and model</h3></header>
+    <div data-bn-table-scroll tabindex="0" role="region" aria-label="API surface comparison">
+      <table data-compare-table>
+        <thead>
+          <tr>
+            <th scope="col">Measure</th>
+            <th scope="col">BaseNative</th>
+            <th scope="col">React 19</th>
+            <th scope="col">Angular 19</th>
+            <th scope="col">Svelte 5</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Core concepts to learn</th>
+            <td data-tone="win" data-claim>{{ stats.corePrimitives }}</td>
+            <td data-tone="cost">15+ hooks</td>
+            <td data-tone="cost">30+ concepts</td>
+            <td data-tone="win">~8 runes</td>
+          </tr>
+          <tr>
+            <th scope="row">Reactivity model</th>
+            <td data-tone="even">Signals (push)</td>
+            <td data-tone="even">Virtual DOM (pull)</td>
+            <td data-tone="even">Signals (push)</td>
+            <td data-tone="even">Runes/compiler (push)</td>
+          </tr>
+          <tr>
+            <th scope="row">Template syntax</th>
+            <td data-tone="win">Valid HTML</td>
+            <td data-tone="cost">JSX (not HTML)</td>
+            <td data-tone="even">Extended HTML</td>
+            <td data-tone="even">Custom (.svelte)</td>
+          </tr>
+          <tr>
+            <th scope="row">TypeScript</th>
+            <td data-tone="even">Optional</td>
+            <td data-tone="even">Optional</td>
+            <td data-tone="cost">Required</td>
+            <td data-tone="even">Optional</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p data-compare-note data-claim>The {{ stats.corePrimitives }} primitives are {{ stats.corePrimitiveNames }} — counted from the modules that export them.</p>
+  </article>
+</section>
+
+<section>
+  <h2>Counter: the same app, <em>four ways</em></h2>
+  <p>A reactive counter shows each framework's mental model. BaseNative uses plain HTML with signal expressions — no compilation, no special file format.</p>
+  {{ counterTabs }}
+</section>
+
+<section>
+  <h2>SSR and <em>hydration</em></h2>
+  <p data-claim>BaseNative includes server rendering and {{ stats.hydrationStrategies }} built-in lazy hydration strategies out of the box. Most frameworks require extra packages or custom implementations for selective hydration.</p>
+
+  <article>
+    <header><h3>Rendering and hydration</h3></header>
+    <div data-bn-table-scroll tabindex="0" role="region" aria-label="SSR and hydration comparison">
+      <table data-compare-table>
+        <thead>
+          <tr>
+            <th scope="col">Measure</th>
+            <th scope="col">BaseNative</th>
+            <th scope="col">React 19</th>
+            <th scope="col">Angular 19</th>
+            <th scope="col">Svelte 5</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">SSR built-in</th>
+            <td data-tone="win">Yes</td>
+            <td data-tone="cost">Via Next.js / manual</td>
+            <td data-tone="win">Yes (Universal)</td>
+            <td data-tone="cost">Via SvelteKit</td>
+          </tr>
+          <tr>
+            <th scope="row">Lazy hydration</th>
+            <td data-tone="win" data-claim>{{ stats.hydrationStrategies }} strategies built-in</td>
+            <td data-tone="cost">Manual / React.lazy</td>
+            <td data-tone="even">@defer (partial)</td>
+            <td data-tone="cost">Manual</td>
+          </tr>
+          <tr>
+            <th scope="row">Hydration strategies</th>
+            <td data-tone="win" data-claim>{{ stats.hydrationStrategyNames }}</td>
+            <td data-tone="even">N/A</td>
+            <td data-tone="even">@defer on viewport</td>
+            <td data-tone="even">N/A</td>
+          </tr>
+          <tr>
+            <th scope="row">CSP-safe expressions</th>
+            <td data-tone="win">Yes (no eval/Function)</td>
+            <td data-tone="win">Yes (JSX compiled)</td>
+            <td data-tone="win">Yes (AOT compiled)</td>
+            <td data-tone="win">Yes (compiled)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+
+<section>
+  <h2>Developer <em>experience</em></h2>
+  <p>The place BaseNative is furthest behind. None of this is close, and pretending otherwise would waste your afternoon.</p>
+
+  <article>
+    <header><h3>Day-to-day workflow</h3></header>
+    <div data-bn-table-scroll tabindex="0" role="region" aria-label="Developer experience comparison">
+      <table data-compare-table>
+        <thead>
+          <tr>
+            <th scope="col">Measure</th>
+            <th scope="col">BaseNative</th>
+            <th scope="col">React 19</th>
+            <th scope="col">Angular 19</th>
+            <th scope="col">Svelte 5</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Time to first render</th>
+            <td data-tone="win">Open HTML file</td>
+            <td data-tone="cost">npx create-react-app</td>
+            <td data-tone="cost">ng new + ng serve</td>
+            <td data-tone="cost">npx sv create</td>
+          </tr>
+          <tr>
+            <th scope="row">Hot reload</th>
+            <td data-tone="cost">Browser refresh</td>
+            <td data-tone="win">Fast Refresh</td>
+            <td data-tone="win">HMR</td>
+            <td data-tone="win">HMR</td>
+          </tr>
+          <tr>
+            <th scope="row">Ecosystem packages</th>
+            <td data-tone="cost">Growing</td>
+            <td data-tone="win">Massive</td>
+            <td data-tone="win">Large</td>
+            <td data-tone="even">Moderate</td>
+          </tr>
+          <tr>
+            <th scope="row">Component model</th>
+            <td data-tone="cost">None (vanilla DOM)</td>
+            <td data-tone="win">Components + hooks</td>
+            <td data-tone="win">Components + DI</td>
+            <td data-tone="win">Components</td>
+          </tr>
+          <tr>
+            <th scope="row">Community size</th>
+            <td data-tone="cost">Solo project</td>
+            <td data-tone="win">Millions</td>
+            <td data-tone="win">Millions</td>
+            <td data-tone="even">Hundreds of thousands</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+
+<section>
+  <h2>Honest <em>tradeoffs</em></h2>
+  <p>BaseNative isn't trying to replace React or Angular for every use case. Here's where it genuinely excels and where you should think twice.</p>
+
+  <div data-compare-cards>
+    <article data-compare-card="win">
+      <header><h3>Where BaseNative wins</h3></header>
+      <ul role="list" data-compare-list="win">
+        <li>Zero build, zero core deps — ship an HTML file</li>
+        <li data-claim>The reactivity core is {{ stats.coreLines }} lines; the whole runtime is {{ stats.runtimeSourceLines }}</li>
+        <li data-claim>{{ stats.hydrationStrategies }} built-in lazy hydration strategies</li>
+        <li>CSP-safe without compilation</li>
+        <li>Valid HTML templates that work without JS</li>
+        <li data-claim>{{ stats.smallerThanReact }}× smaller than React, {{ stats.smallerThanAngular }}× smaller than Angular</li>
+        <li data-claim>AI-friendly: {{ stats.corePrimitives }} primitives to learn, not a framework to memorise</li>
+      </ul>
+    </article>
+
+    <article data-compare-card="cost">
+      <header><h3>Where others win</h3></header>
+      <ul role="list" data-compare-list="cost">
+        <li>No component model — composition is vanilla DOM</li>
+        <li>Ecosystem of one — no third-party component libs</li>
+        <li>No HMR — manual browser refresh during dev</li>
+        <li>Runtime expression parsing has overhead vs compiled output</li>
+        <li>Svelte is smaller and has the better-polished DX</li>
+        <li>No React DevTools, no Angular CLI, no Svelte inspector</li>
+        <li>Solo-maintained — bus factor of one</li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<section>
+  <h2>When to <em>choose</em> BaseNative</h2>
+
+  <div data-compare-cards>
+    <article data-compare-card="win">
+      <header><h3>Good fit</h3></header>
+      <ul role="list" data-compare-list="win">
+        <li>Content sites that need light interactivity</li>
+        <li>Projects where you want to own every line</li>
+        <li>Edge-deployed apps on Cloudflare Workers</li>
+        <li>Teams tired of build tool churn</li>
+        <li>Prototypes that need to ship in minutes</li>
+        <li>Embedded widgets in existing pages</li>
+      </ul>
+    </article>
+
+    <article data-compare-card="cost">
+      <header><h3>Probably not</h3></header>
+      <ul role="list" data-compare-list="cost">
+        <li>Large team apps that need enforced architecture</li>
+        <li>Projects requiring deep third-party integrations</li>
+        <li>Apps where HMR and devtools are critical workflow</li>
+        <li>Enterprise apps with strict hiring pool requirements</li>
+        <li>Complex SPAs with hundreds of components</li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<section data-compare-cta>
+  <h2>Try <em>it</em></h2>
+  <p data-claim>The reactivity core is {{ stats.coreLines }} lines. Read it, understand it, then decide.</p>
+  <nav data-controls aria-label="Next steps">
+    <a href="https://github.com/DuganLabs/BaseNative/blob/main/{{ stats.coreModule }}" role="button" rel="noopener">Read the {{ stats.coreLines }} lines</a>
+    <a href="/docs" role="button" data-variant="outline">API docs</a>
+    <a href="/components" role="button" data-variant="outline">Browse components</a>
+  </nav>
+</section>

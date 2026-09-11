@@ -1,3 +1,6 @@
+import { escapeAttr, escapeText, raw } from '@basenative/runtime/shared/escape';
+import { renderTabs } from '../../packages/components/src/index.js';
+import { computeCompareStats } from '../../scripts/compare-stats.js';
 import { componentCategories, flatComponents } from './component-catalog.js';
 
 export const navPages = [
@@ -9,7 +12,23 @@ export const navPages = [
   'showcase',
   'roadmap',
   'builder',
+  'compare',
 ];
+
+// Deriving the stats bundles the runtime with esbuild to weigh it; both the
+// home page and /compare read through this one cache rather than paying it
+// twice, or per request on the dev server.
+let compareStats;
+const stats = () => (compareStats ??= computeCompareStats());
+
+/**
+ * The home page's runtime-size stat. Measured, not typed: this line read
+ * "9.2KB / 10KB budget" long after the runtime had grown past it.
+ */
+function runtimeSizeStat() {
+  const { runtimeGzipKb, runtimeBudgetKb } = stats();
+  return `${runtimeGzipKb}KB / ${runtimeBudgetKb}KB budget`;
+}
 
 export const staticTasks = [
   { id: 1, title: 'Design token system', status: 'done' },
@@ -37,7 +56,7 @@ export function getHomePageContext() {
       { label: 'security boundary', value: 'no eval, no Function' },
       { label: 'render()', value: 'template string at runtime' },
       { label: 'self-check loop', value: 'validate + mcp + evals' },
-      { label: '@basenative/runtime (gzip)', value: '9.2KB / 10KB budget' },
+      { label: '@basenative/runtime (gzip)', value: runtimeSizeStat() },
     ],
     updates: [
       { id: 1, text: 'Initial proof of concept complete', date: '2025-01-15' },
@@ -299,5 +318,106 @@ export function getRoadmapPageContext() {
           'Implemented — dialog, drawer, tabs, accordion, breadcrumb, tooltip, dropdown menu, and command palette shipped.',
       },
     ],
+  };
+}
+
+// ─── /compare ────────────────────────────────────────────────────────────────
+
+/**
+ * The counter written four ways.
+ *
+ * Code is pre-escaped: it is handed to renderTabs() as an HTML slot, and the
+ * BaseNative and Angular samples both contain `{{ … }}`, which `render()` would
+ * otherwise evaluate as a live interpolation instead of printing.
+ */
+const COUNTER_EXAMPLES = [
+  {
+    id: 'basenative',
+    label: 'BaseNative',
+    file: 'index.html',
+    note: 'Valid HTML. No build. Drop a script tag and go.',
+    code: `&lt;div :data="{ count: 0 }"&gt;
+  &lt;p&gt;Count: &#123;&#123; count &#125;&#125;&lt;/p&gt;
+  &lt;button @click="count++"&gt;+1&lt;/button&gt;
+&lt;/div&gt;
+&lt;script type="module"&gt;
+  import { hydrate } from '/basenative.js';
+  hydrate(document.body, { count: 0 });
+&lt;/script&gt;`,
+  },
+  {
+    id: 'react',
+    label: 'React',
+    file: 'Counter.jsx',
+    note: 'Requires JSX transpilation, a bundler, and react + react-dom installed.',
+    code: `import { useState } from 'react';
+
+export default function Counter() {
+  const [count, setCount] = useState(0);
+  return (
+    &lt;div&gt;
+      &lt;p&gt;Count: {count}&lt;/p&gt;
+      &lt;button onClick={() =&gt; setCount(c =&gt; c + 1)}&gt;
+        +1
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}`,
+  },
+  {
+    id: 'angular',
+    label: 'Angular',
+    file: 'counter.component.ts',
+    note: 'Requires TypeScript, Angular CLI, AOT compilation, and the full Angular runtime.',
+    code: `import { Component, signal } from '@angular/core';
+
+@Component({
+  selector: 'app-counter',
+  template: \`
+    &lt;p&gt;Count: &#123;&#123; count() &#125;&#125;&lt;/p&gt;
+    &lt;button (click)="count.set(count() + 1)"&gt;
+      +1
+    &lt;/button&gt;
+  \`,
+})
+export class CounterComponent {
+  count = signal(0);
+}`,
+  },
+  {
+    id: 'svelte',
+    label: 'Svelte',
+    file: 'Counter.svelte',
+    note: 'Concise, but requires the Svelte compiler — no .svelte files run natively in browsers.',
+    code: `&lt;script&gt;
+  let count = $state(0);
+&lt;/script&gt;
+
+&lt;p&gt;Count: {count}&lt;/p&gt;
+&lt;button onclick={() =&gt; count++}&gt;+1&lt;/button&gt;`,
+  },
+];
+
+/**
+ * Context for /compare.
+ *
+ * `stats` is measured from source by scripts/compare-stats.js and the view
+ * binds every BaseNative number to it rather than stating one, so the page
+ * cannot drift from the runtime it describes.
+ */
+export function getComparePageContext() {
+  const tabs = COUNTER_EXAMPLES.map((example) => ({
+    id: example.id,
+    label: example.label,
+    content: `<figure data-compare-code>
+  <figcaption>${escapeText(example.file)}</figcaption>
+  <pre tabindex="0" aria-label="Counter example: ${escapeAttr(example.label)}"><code>${example.code}</code></pre>
+  <p data-compare-note>${escapeText(example.note)}</p>
+</figure>`,
+  }));
+
+  return {
+    stats: stats(),
+    counterTabs: raw(renderTabs({ tabs, attrs: 'data-compare-tabs' })),
   };
 }

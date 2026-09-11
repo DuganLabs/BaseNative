@@ -27,6 +27,7 @@ const ROUTES = process.env.AUDIT_BASE_URL
       '/playground/',
       '/docs/',
       '/components/',
+      '/compare/',
       '/test-signals/',
     ];
 
