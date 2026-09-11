@@ -208,9 +208,17 @@
   font-size: var(--bn-font-size-component);
   color: var(--bn-color-text);
   background: var(--bn-color-surface-control);
-  border: 1px solid var(--bn-color-border-control);
-  border-radius: var(--bn-radius-md);
+  border: var(--bn-border-width) solid var(--bn-color-border-control);
+  /* NOT --bn-radius-md — see the identical note on [data-bn="button"] above. This
+     block sits after the control primitive that applies --bn-radius-control, so
+     re-declaring the raw value here silently defeated it: a consumer setting
+     --bn-radius-control got a rounded button and a square input. Defaults are
+     identical, so nothing moves unless the token is set. */
+  border-radius: var(--bn-radius-control);
   transition: border-color var(--bn-transition-fast);
+}
+[data-bn="input"]:hover:not(:disabled), [data-bn="textarea"]:hover:not(:disabled), [data-bn="select"]:hover:not(:disabled) {
+  border-color: var(--bn-color-border-control-hover);
 }
 [data-bn="input"]:focus, [data-bn="textarea"]:focus, [data-bn="select"]:focus {
   border-color: var(--bn-color-border-focus);
@@ -226,57 +234,179 @@
   background: var(--bn-color-surface-muted);
 }
 
-/* === Checkbox & Radio & Toggle === */
+/* === Checkbox, Radio & Toggle ===
+   The three selection controls. They are glyphs rather than boxes you type in,
+   so they sit outside the --bn-control-height ladder — but everything else about
+   them belongs to the same family as input/select/button, and had drifted out of
+   it: the toggle carried no border at all next to four outlined controls, the
+   three of them were three different sizes, and none had a hover, disabled or
+   invalid treatment, so a disabled checkbox was pixel-identical to a live one
+   while the input beside it correctly dimmed. Geometry comes from the
+   --bn-control-indicator-* / --bn-toggle-* tokens; state comes from the same
+   -border-control / -border-control-hover / -border-focus / -error-500 ramp the
+   text controls use. */
 [data-bn="checkbox-label"], [data-bn="radio-label"], [data-bn="toggle-label"] {
   display: inline-flex;
   align-items: center;
   gap: var(--bn-space-2);
+  /* WCAG 2.5.8. Clicking the label operates the control, so the label IS the
+     target. Checkbox and radio also carry an invisible ::before hit region (see
+     the minimum-target block at the top of this file); the toggle cannot — its
+     ::before is the knob — so the label is the only place to put the floor, and
+     putting it here covers all three consistently. */
+  min-block-size: var(--bn-target-size-min);
   font-size: var(--bn-font-size-component);
+  color: var(--bn-color-text);
   cursor: pointer;
 }
-[data-bn="checkbox"], [data-bn="radio"] {
+/* A label whose control is disabled must not keep advertising itself as
+   clickable — clicking it does nothing. */
+[data-bn="checkbox-label"]:has(:disabled),
+[data-bn="radio-label"]:has(:disabled),
+[data-bn="toggle-label"]:has(:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* The datagrid's select-all and per-row checkboxes carry their own data-bn
+   names because the grid script binds behaviour to them, so they never matched
+   [data-bn="checkbox"] and rendered as raw user-agent checkboxes inside an
+   otherwise fully themed table. Folding them into the selector list here gives
+   them the family look without changing the markup contract the script reads. */
+/* --- Shared indicator surface --- */
+:is([data-bn="checkbox"], [data-bn="datagrid-select-all"], [data-bn="datagrid-row-select"]), [data-bn="radio"], [data-bn="toggle"] {
   appearance: none;
-  width: 1.125rem;
-  height: 1.125rem;
+  margin: 0;
   background: var(--bn-color-surface-control);
   border: var(--bn-border-width) solid var(--bn-color-border-control);
   cursor: pointer;
   flex-shrink: 0;
   position: relative;
-  transition: background-color var(--bn-transition-fast), border-color var(--bn-transition-fast);
+  transition:
+    background-color var(--bn-transition-fast),
+    border-color var(--bn-transition-fast);
 }
-[data-bn="checkbox"] { border-radius: var(--bn-radius-sm); }
+:is([data-bn="checkbox"], [data-bn="datagrid-select-all"], [data-bn="datagrid-row-select"]), [data-bn="radio"] {
+  inline-size: var(--bn-control-indicator-size);
+  block-size: var(--bn-control-indicator-size);
+}
+:is([data-bn="checkbox"], [data-bn="datagrid-select-all"], [data-bn="datagrid-row-select"]) { border-radius: var(--bn-radius-indicator); }
 [data-bn="radio"] { border-radius: var(--bn-radius-full); }
-[data-bn="checkbox"]:checked, [data-bn="radio"]:checked {
-  background: var(--bn-color-accent-600);
-  border-color: var(--bn-color-accent-600);
+
+/* --- Hover / focus: same ramp as input, select and textarea --- */
+:is([data-bn="checkbox"], [data-bn="datagrid-select-all"], [data-bn="datagrid-row-select"]):hover:not(:disabled),
+[data-bn="radio"]:hover:not(:disabled),
+[data-bn="toggle"]:hover:not(:disabled):not(:checked) {
+  border-color: var(--bn-color-border-control-hover);
 }
-[data-bn="checkbox"]:checked::after {
+:is([data-bn="checkbox"], [data-bn="datagrid-select-all"], [data-bn="datagrid-row-select"]):focus-visible,
+[data-bn="radio"]:focus-visible,
+[data-bn="toggle"]:focus-visible {
+  border-color: var(--bn-color-border-focus);
+  box-shadow: var(--bn-focus-ring);
+  outline: none;
+}
+
+/* --- Selected --- */
+:is([data-bn="checkbox"], [data-bn="datagrid-select-all"], [data-bn="datagrid-row-select"]):checked,
+:is([data-bn="checkbox"], [data-bn="datagrid-select-all"], [data-bn="datagrid-row-select"]):indeterminate,
+[data-bn="radio"]:checked,
+[data-bn="toggle"]:checked {
+  background: var(--bn-color-control-selected);
+  border-color: var(--bn-color-control-selected);
+}
+/* Tick and dot are drawn from percentages of the box, not fixed pixel offsets,
+   so re-pointing --bn-control-indicator-size moves the glyph with the box
+   instead of leaving it stranded in a corner. */
+:is([data-bn="checkbox"], [data-bn="datagrid-select-all"], [data-bn="datagrid-row-select"]):checked::after {
   content: '';
   position: absolute;
-  top: 1px;
-  left: 4px;
-  width: 5px;
-  height: 9px;
-  border: solid var(--bn-color-on-accent);
+  inset-block-start: 12%;
+  inset-inline-start: 32%;
+  inline-size: 28%;
+  block-size: 55%;
+  border: solid var(--bn-color-on-control-selected);
   border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+  rotate: 45deg;
+}
+/* Tri-state. The datagrid header checkbox has always been able to reach
+   `indeterminate` (partial row selection sets it), and it rendered as an empty
+   box — indistinguishable from "nothing selected". */
+:is([data-bn="checkbox"], [data-bn="datagrid-select-all"], [data-bn="datagrid-row-select"]):indeterminate::after {
+  content: '';
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 22%;
+  inline-size: 56%;
+  block-size: 2px;
+  translate: 0 -50%;
+  background: var(--bn-color-on-control-selected);
+  border-radius: var(--bn-radius-full);
 }
 [data-bn="radio"]:checked::after {
   content: '';
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 6px;
-  height: 6px;
-  background: var(--bn-color-on-accent);
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  inline-size: 36%;
+  block-size: 36%;
+  background: var(--bn-color-on-control-selected);
   border-radius: var(--bn-radius-full);
-  transform: translate(-50%, -50%);
+  translate: -50% -50%;
 }
-[data-bn="checkbox"]:focus-visible, [data-bn="radio"]:focus-visible {
-  box-shadow: var(--bn-focus-ring);
-  outline: none;
+
+/* --- Invalid: the red boundary input/textarea/select already get --- */
+:is([data-bn="checkbox"], [data-bn="datagrid-select-all"], [data-bn="datagrid-row-select"])[aria-invalid="true"],
+[data-bn="radio"][aria-invalid="true"],
+[data-bn="toggle"][aria-invalid="true"] {
+  border-color: var(--bn-color-error-500);
 }
+
+/* --- Disabled: the same dim + not-allowed recipe as the text controls --- */
+:is([data-bn="checkbox"], [data-bn="datagrid-select-all"], [data-bn="datagrid-row-select"]):disabled,
+[data-bn="radio"]:disabled,
+[data-bn="toggle"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- Toggle --- */
+[data-bn="toggle"] {
+  inline-size: var(--bn-toggle-track-inline-size);
+  block-size: var(--bn-toggle-track-block-size);
+  background: var(--bn-color-toggle-track-off);
+  border-radius: var(--bn-radius-full);
+}
+[data-bn="toggle"]::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: var(--bn-toggle-knob-inset);
+  inline-size: var(--bn-toggle-knob-size);
+  block-size: var(--bn-toggle-knob-size);
+  background: var(--bn-color-toggle-knob);
+  border-radius: var(--bn-radius-full);
+  translate: 0 -50%;
+  transition: translate var(--bn-transition-fast), background-color var(--bn-transition-fast);
+}
+/* Travel is the padding box (the track inside its own border) minus the knob and
+   its inset at both ends — derived, so the knob lands flush however the track is
+   themed. */
+[data-bn="toggle"]:checked::before {
+  translate: calc(
+    var(--bn-toggle-track-inline-size)
+    - (2 * var(--bn-border-width))
+    - var(--bn-toggle-knob-size)
+    - (2 * var(--bn-toggle-knob-inset))
+  ) -50%;
+  background: var(--bn-color-on-control-selected);
+}
+
+/* --- Radio group ---
+   The legend is the group's label, and reads as one: same size, weight and color
+   as [data-bn="field"] label, so a radio group and a text field look like
+   siblings in a form. It previously carried its own margin-block-end on top of
+   the fieldset's own gap, which double-spaced it away from the first option. */
 [data-bn="radio-group"] {
   border: none;
   padding: 0;
@@ -286,37 +416,17 @@
   gap: var(--bn-space-2);
 }
 [data-bn="radio-group"] legend {
+  padding: 0;
+  margin-block-end: var(--bn-space-1);
   font-size: var(--bn-font-size-sm);
   font-weight: var(--bn-font-weight-medium);
-  margin-bottom: var(--bn-space-2);
+  color: var(--bn-color-text);
 }
-[data-bn="toggle"] {
-  appearance: none;
-  width: 2.5rem;
-  height: 1.375rem;
-  background: var(--bn-color-toggle-track-off);
-  border-radius: var(--bn-radius-full);
-  position: relative;
-  cursor: pointer;
-  transition: background-color var(--bn-transition-fast);
+[data-bn="radio-group"] [data-bn="field-help"],
+[data-bn="radio-group"] [data-bn="field-error"] {
+  margin-block-start: calc(var(--bn-space-1) - var(--bn-space-2));
 }
-[data-bn="toggle"]::before {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 1rem;
-  height: 1rem;
-  background: var(--bn-color-toggle-knob);
-  border-radius: var(--bn-radius-full);
-  transition: transform var(--bn-transition-fast);
-}
-[data-bn="toggle"]:checked { background: var(--bn-color-primary-600); }
-[data-bn="toggle"]:checked::before {
-  transform: translateX(1.125rem);
-  background: var(--bn-color-on-primary);
-}
-[data-bn="toggle"]:focus-visible { box-shadow: var(--bn-focus-ring); }
+[data-bn="radio-group"]:disabled legend { opacity: 0.5; }
 
 /* === Alert === */
 [data-bn="alert"] {

@@ -157,6 +157,7 @@ export const BRIDGE_CSS = `@layer tokens {
     --bn-control-height-sm: var(--bn-theme-control-h-sm);
     --bn-control-height-lg: var(--bn-theme-control-h-lg);
     --bn-target-size-min: var(--bn-theme-tap-min);
+    --bn-control-indicator-size: var(--bn-theme-control-indicator);
     --bn-transition-fast: var(--bn-theme-motion-fast);
     --bn-transition-normal: var(--bn-theme-motion-base);
     --bn-transition-slow: var(--bn-theme-motion-slow);
@@ -226,6 +227,20 @@ export const UPSTREAM_OWNED = Object.freeze({
   '--bn-space-component-x': 'derived from the space ladder by the density attribute',
   '--bn-space-component-y': 'derived from the space ladder by the density attribute',
   '--bn-radius-control': 'aliases --bn-radius-md upstream',
+  '--bn-radius-indicator':
+    'derived upstream from --bn-radius-control, which aliases the bridged --bn-radius-md',
+  '--bn-color-control-selected':
+    'aliases --bn-color-accent-600 upstream; bridging primary carries it',
+  '--bn-color-on-control-selected': 'aliases --bn-color-on-accent, which is bridged',
+  '--bn-color-border-control-hover':
+    'composed upstream from --bn-color-border-control and --bn-color-text, both bridged',
+  '--bn-toggle-track-inline-size':
+    'derived upstream from --bn-control-indicator-size, which is bridged',
+  '--bn-toggle-track-block-size':
+    'derived upstream from --bn-control-indicator-size, which is bridged',
+  '--bn-toggle-knob-size':
+    'derived upstream from --bn-control-indicator-size, which is bridged',
+  '--bn-toggle-knob-inset': 'structural, not identity',
   '--bn-radius-container': 'aliases --bn-radius-lg upstream',
   '--bn-radius-modal': 'aliases --bn-radius-xl upstream',
   '--bn-shadow-sm': 'elevation is a neutral alpha ramp, not a palette',

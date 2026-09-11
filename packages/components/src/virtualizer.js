@@ -42,7 +42,16 @@ export function renderVirtualList(options = {}) {
 
   const itemsHtml = visibleItems.map((item, i) => renderItem(item, i)).join('');
 
-  return `<div data-bn="virtualizer" id="${escapeAttr(id)}" style="height:${Number(containerHeight)}px;overflow:auto"${attrsSuffix(attrs)}>
+  // The container is the scroll port. A scrollable region has to be reachable by
+  // keyboard or its content is unreadable without a mouse (axe:
+  // scrollable-region-focusable), and anything in the focus order needs a role
+  // (axe: focus-order-semantics) — a focusable bare <div> is neither. role="region"
+  // rather than "group": group is not in the roles that rule accepts, so it
+  // trades one violation for another.
+  // The label names the region; pass your own through `attrs` and it wins, since
+  // an HTML parser keeps the first of a repeated attribute.
+  const label = /\baria-label(?:ledby)?=/.test(attrs) ? '' : ' aria-label="Scrollable list"';
+  return `<div data-bn="virtualizer" id="${escapeAttr(id)}" tabindex="0" role="region"${label} style="height:${Number(containerHeight)}px;overflow:auto"${attrsSuffix(attrs)}>
   <div data-bn="virtual-spacer" style="height:${Number(totalHeight)}px;position:relative">
     <div data-bn="virtual-window" style="position:absolute;top:0;left:0;right:0" data-item-height="${Number(itemHeight)}" data-total="${items.length}">
       ${itemsHtml}

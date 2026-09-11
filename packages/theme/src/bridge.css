@@ -116,6 +116,7 @@
     --bn-control-height-sm: var(--bn-theme-control-h-sm);
     --bn-control-height-lg: var(--bn-theme-control-h-lg);
     --bn-target-size-min: var(--bn-theme-tap-min);
+    --bn-control-indicator-size: var(--bn-theme-control-indicator);
     --bn-transition-fast: var(--bn-theme-motion-fast);
     --bn-transition-normal: var(--bn-theme-motion-base);
     --bn-transition-slow: var(--bn-theme-motion-slow);
