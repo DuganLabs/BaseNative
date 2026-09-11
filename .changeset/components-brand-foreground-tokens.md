@@ -39,6 +39,36 @@ won. A consumer that set `--bn-radius-control` got every control rounded except 
 button. The defaults are identical (`--bn-radius-control` aliases `--bn-radius-md`),
 so nothing moves unless the token is set.
 
+**Surfaces split from the page.** `--bn-color-surface` was doing two jobs: the page,
+and anything filled sitting on the page. Those are the same colour only on a light
+theme, so every dark-themed consumer that re-pointed it watched its inputs, selects,
+secondary buttons and cards dissolve into the page with a 1px border left. Two new
+tokens, both defaulting to `--bn-color-surface`:
+
+| Token | Applies to |
+|-------|------------|
+| `--bn-color-surface-control` | input, textarea, select, combobox input, checkbox, radio, secondary button |
+| `--bn-color-surface-card` | card |
+
+**`renderTable` can describe its cells.** Three additions, each one a thing a
+consumer had already built by hand:
+
+- `labelCells` stamps `data-label="<column label>"` on every body cell — the
+  responsive stacked-table pattern (hide the `<thead>`, render each cell's heading
+  from `content: attr(data-label)`). PendingBusiness hand-rolls its rows for exactly
+  this.
+- `column.cellAttrs` (string, or `(value, row) => string`) appends attribute markup
+  to a column's cells — `data-bn="num"` for numeric alignment, a test hook, an
+  `aria-*`.
+- `column.srLabel` gives an accessible name to a column with no visible label.
+  Without it the header was a bare `<th scope="col"></th>`, which axe flags;
+  Greenput patches that in after mount, in a 100-line wrapper whose reason for
+  existing is that the renderer had no per-cell hook at all.
+
+`[data-bn="sr-only"]` joins `components.css` to support `srLabel`: `reset.css` has
+the same recipe as a `.visually-hidden` class, but consumers whose house style
+forbids CSS classes never import that file.
+
 **`text` on `renderBadge`, `renderAlert` and `renderButton`** — an escaped label that
 replaces the unescaped `content` slot when present. These three almost always render
 data (a status, a server message, a record name), and the previous API made escaping

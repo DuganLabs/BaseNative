@@ -191,6 +191,17 @@ export interface TableColumn<Row = Record<string, unknown>> {
    * escaped.
    */
   render?: (value: unknown, row: Row) => string | null | undefined;
+  /**
+   * Accessible name for a column with no visible `label` (a row-actions
+   * column, typically). Rendered as a visually-hidden span inside the `<th>`,
+   * so the header is not empty.
+   */
+  srLabel?: string;
+  /**
+   * Raw attribute markup appended to this column's `<td>` — `data-bn="num"`,
+   * a test hook, an `aria-*`. Not escaped. Pass a function to vary it per row.
+   */
+  cellAttrs?: string | ((value: unknown, row: Row) => string | undefined);
 }
 
 export function renderTable<Row extends Record<string, unknown> = Record<string, unknown>>(options?: {
@@ -199,6 +210,12 @@ export function renderTable<Row extends Record<string, unknown> = Record<string,
   /** Default `'No data'`. */
   emptyMessage?: string;
   caption?: string;
+  /**
+   * Stamp `data-label="<column label>"` on every body cell — what a responsive
+   * stacked table needs to render each cell's own heading from
+   * `content: attr(data-label)` once the `<thead>` is hidden.
+   */
+  labelCells?: boolean;
   /** Spliced onto the `[data-bn="table-container"]` wrapper. */
   attrs?: string;
 }): string;
