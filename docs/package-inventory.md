@@ -22,7 +22,7 @@ the next changeset bump would collide and be skipped — realign the local versi
 | `@basenative/claude-config` | 0.2.2 | 0.2.2 | — | in sync |
 | `@basenative/cli` | 0.5.0 | 0.5.0 | 0.2.0 | in sync |
 | `@basenative/combobox` | 1.0.5 | 1.0.5 | — | in sync |
-| `@basenative/components` | 0.9.0 | 0.8.0 | 0.3.0 | unreleased bump |
+| `@basenative/components` | 0.9.0 | 0.9.0 | 0.3.0 | in sync |
 | `@basenative/config` | 0.3.1 | 0.3.1 | 0.2.0 | in sync |
 | `@basenative/date` | 0.3.2 | 0.3.2 | 0.2.0 | in sync |
 | `@basenative/db` | 0.3.1 | 0.3.1 | 0.2.0 | in sync |
@@ -43,7 +43,7 @@ the next changeset bump would collide and be skipped — realign the local versi
 | `@basenative/markdown` | 0.1.1 | 0.1.1 | — | in sync |
 | `@basenative/marketplace` | 0.2.2 | 0.2.2 | 0.2.0 | in sync |
 | `@basenative/mcp` | 0.2.2 | 0.2.2 | — | in sync |
-| `@basenative/middleware` | 0.3.4 | 0.3.4 | 0.2.0 | in sync |
+| `@basenative/middleware` | 0.4.0 | 0.3.4 | 0.2.0 | unreleased bump |
 | `@basenative/notify` | 0.3.2 | 0.3.2 | 0.2.0 | in sync |
 | `@basenative/og-image` | 0.2.2 | 0.2.2 | — | in sync |
 | `@basenative/persist` | 1.0.5 | 1.0.5 | — | in sync |

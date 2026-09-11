@@ -1,6 +1,6 @@
 {
   "name": "@basenative/middleware",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "description": "Request pipeline middleware \u2014 security headers, CORS, rate limiting, CSRF, and adapters",
   "type": "module",
   "exports": {
