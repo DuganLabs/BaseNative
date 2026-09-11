@@ -187,8 +187,12 @@ chore(ci): add bundle size check to PR workflow
 ## Key Invariants to Preserve
 
 1. `@basenative/runtime` must stay under **10KB gzipped** — the budget enforced by
-   `scripts/bundle-size.js` in CI. Currently 9.2KB. (The long-standing "<5KB" claim
+   `scripts/bundle-size.js` in CI. Currently 9.6KB. (The long-standing "<5KB" claim
    was never true against the measured build; the budget has always been 10KB.)
+   Do not re-type this number anywhere: `node scripts/compare-stats.js` prints the
+   measured value, and the site reads it from there. `9.2KB` is still stale in
+   `README.md`, `docs/PRD.md`, `docs/migration.md`, `docs/api/cli.md` and
+   `docs/CONSUMING-FROM-GH-PACKAGES.md`.
 2. The CSP-safe evaluator must never use `eval` or `new Function`
 3. All parameterized DB queries use `?` placeholders — never string interpolation
 4. `hydrate()` must work from server-rendered HTML without JavaScript re-rendering everything
@@ -263,6 +267,7 @@ rule and does not resolve anything.
 | "write or edit a skill"                    | this section + `packages/claude-config/README.md`                                                  | any external skill-authoring skill                                                                      |
 | "update llms.txt / API docs"               | `scripts/llms-txt.js` (regenerate)                                                                 | hand-editing `llms.txt` or `llms-full.txt` — both are generated and CI fails on drift                   |
 | "update the package inventory"             | `scripts/package-inventory.js`                                                                     | hand-editing `docs/package-inventory.md` — same reason                                                  |
+| "update a number on /compare"              | `scripts/compare-stats.js` (measures it from source at build time)                                 | typing a figure into `examples/express/views/compare.html` — every claim is a `{{ }}` binding and `scripts/check-compare-page.js` fails the build on a literal |
 | anything touching the eval corpus          | **the human owner. No skill, no agent.**                                                           | everything — see below                                                                                  |
 
 ### Never delegate — hand-authored artifacts

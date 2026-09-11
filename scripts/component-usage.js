@@ -32,12 +32,16 @@
 
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, dirname, resolve, relative, extname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
-// scanTags/scanInterpolations are the REAL template tokenizer (linear, ReDoS-safe,
-// comment-aware) — the same one the validator and, via findInterpolations, the
-// runtime's own renderer/client-binder use. Reusing it (not reimplementing it) is
-// the entire point of Phase 0.
+// scanTags is the REAL template tokenizer (linear, ReDoS-safe, comment-aware) —
+// the same routine the validator uses. Reusing it rather than reimplementing it
+// is the entire point of Phase 0.
+//
+// Only scanTags: scanInterpolations and spanAt were imported and never called.
+// Imported by path because the workspace root has no dependency on
+// @basenative/validate, so '@basenative/validate/scan' does not resolve from
+// scripts/ on a clean --frozen-lockfile checkout.
 //
 // Imported by path rather than through the `@basenative/validate/scan` subpath
 // because Node resolves a bare specifier from the *importing file's* directory:
@@ -612,7 +616,7 @@ function main() {
   const output = {
     generatedAt: new Date().toISOString(),
     scanner: 'scripts/component-usage.js',
-    tokenizer: '@basenative/validate/scan (scanTags/scanInterpolations)',
+    tokenizer: '@basenative/validate scan.js (scanTags)',
     durationMs: Date.now() - t0,
     repos: Object.fromEntries(repos.map((r) => [r.name, relative(DUGANLABS_DIR, r.root)])),
     missingRepos,
@@ -634,4 +638,8 @@ function main() {
   }
 }
 
-main();
+// Run only when executed directly. Without this the module cannot be imported
+// without performing a full scan and overwriting its own output file.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main();
+}
