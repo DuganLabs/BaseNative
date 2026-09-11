@@ -1,5 +1,24 @@
+import { escapeAttr, escapeText } from '@basenative/runtime/shared/escape';
+
 /**
  * Date picker using native <input type="date"> with progressive enhancement.
+ *
+ * Every caller-supplied value is escaped: attribute values with `escapeAttr`,
+ * the label's text content with `escapeText`. `attrs` is the one exception —
+ * it is a markup composition point, inserted verbatim, matching
+ * @basenative/components' documented convention. Pass trusted markup only.
+ *
+ * @param {object} [options]
+ * @param {string} [options.name]
+ * @param {string} [options.label]
+ * @param {string} [options.value]
+ * @param {string} [options.min]
+ * @param {string} [options.max]
+ * @param {boolean} [options.required]
+ * @param {boolean} [options.disabled]
+ * @param {string} [options.id]
+ * @param {string} [options.attrs]  Raw attribute markup appended to the <input>; not escaped
+ * @returns {string}
  */
 export function renderDatepicker(options = {}) {
   const {
@@ -16,12 +35,13 @@ export function renderDatepicker(options = {}) {
 
   const req = required ? ' required' : '';
   const dis = disabled ? ' disabled' : '';
-  const minAttr = min ? ` min="${min}"` : '';
-  const maxAttr = max ? ` max="${max}"` : '';
+  const minAttr = min ? ` min="${escapeAttr(min)}"` : '';
+  const maxAttr = max ? ` max="${escapeAttr(max)}"` : '';
+  const safeId = escapeAttr(id);
 
   return `<div data-bn="datepicker">
-  ${label ? `<label for="${id}" data-bn="label">${label}</label>` : ''}
-  <input type="date" id="${id}" name="${name}" value="${value}"${minAttr}${maxAttr}${req}${dis} data-bn="datepicker-input" ${attrs}>
+  ${label ? `<label for="${safeId}" data-bn="label">${escapeText(label)}</label>` : ''}
+  <input type="date" id="${safeId}" name="${escapeAttr(name ?? '')}" value="${escapeAttr(value)}"${minAttr}${maxAttr}${req}${dis} data-bn="datepicker-input"${attrs ? ' ' + attrs : ''}>
 </div>`;
 }
 
