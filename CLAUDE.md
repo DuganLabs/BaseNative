@@ -267,8 +267,48 @@ rule and does not resolve anything.
 | "write or edit a skill"                    | this section + `packages/claude-config/README.md`                                                  | any external skill-authoring skill                                                                      |
 | "update llms.txt / API docs"               | `scripts/llms-txt.js` (regenerate)                                                                 | hand-editing `llms.txt` or `llms-full.txt` — both are generated and CI fails on drift                   |
 | "update the package inventory"             | `scripts/package-inventory.js`                                                                     | hand-editing `docs/package-inventory.md` — same reason                                                  |
+| about to write any new UI                  | `.claude/skills/ds-guard/SKILL.md` — fires automatically, before the markup                        | `ds-extract`, `ds-drift`; live codebase search — ds-guard reads the generated index only                |
+| "extract this component", "de-duplicate this markup", retrofit work | `.claude/skills/ds-extract/SKILL.md` — **invoked by name only**                 | `ds-guard`, `ds-drift`; grep-based discovery — use `scripts/component-usage.js`                         |
+| "check for drift", token/naming/API audit, plan a deprecation, write a codemod | `.claude/skills/ds-drift/SKILL.md` — on demand and in CI      | `ds-guard`, `ds-extract`; never mid-task                                                                |
 | "update a number on /compare"              | `scripts/compare-stats.js` (measures it from source at build time)                                 | typing a figure into `examples/express/views/compare.html` — every claim is a `{{ }}` binding and `scripts/check-compare-page.js` fails the build on a literal |
 | anything touching the eval corpus          | **the human owner. No skill, no agent.**                                                           | everything — see below                                                                                  |
+
+### The three design-system skills — vendored forks, and they do not chain
+
+`.claude/skills/ds-guard/`, `.claude/skills/ds-extract/` and `.claude/skills/ds-drift/`
+are **forks**, not installs. Each carries a `PROVENANCE.md` naming its upstream repo,
+the exact commit vendored, and what was kept, cut and rewritten. They are maintained
+here; a marketplace or plugin update must never overwrite them. `.gitignore` ignores
+`.claude/skills/*` so marketplace installs stay out of the tree, and explicitly
+un-ignores these three directories so the forks are tracked. They cost no startup
+tokens beyond their own name and description, because they are repo-local files rather
+than a marketplace bundle.
+
+They occupy three different moments, and that separation is the point:
+
+| Skill | Fires | Job |
+| ----- | ----- | --- |
+| `ds-guard` | automatically, **before** any new UI is written | Read the generated component index and say which existing component covers this, or why nothing does. Two verdicts, three lines, then out of the way. |
+| `ds-extract` | **only when invoked by name** by a human | Retrofit existing UI into shared components. Discovery comes from `scripts/component-usage.js`, never live grep. Reports INCOMPLETE until every old inline copy is deleted. |
+| `ds-drift` | on demand, and in CI — **never mid-task** | Ongoing health: token drift, contract drift, API consistency, naming, deprecations, codemods. |
+
+**They must not chain into each other.** ds-guard never invokes ds-extract or ds-drift
+and never suggests them as a next step; ds-drift never runs because UI was just
+written. Chaining them turns a three-line check into an audit on every edit, which is
+how a preventive skill becomes a tax that gets disabled.
+
+Three constraints apply to all three, and are restated inside each skill:
+
+- **They may not touch `nx.json` or `package.json`.** They identify and report; they do
+  not scaffold. Note that `nx g` currently offers **nothing** in this workspace — there
+  is no `generators.json`, no `executors.json`, no `tools/`, no `@nx/*` plugin
+  dependency and no `plugins` array in `nx.json`; Nx is a task runner and cache here.
+  New components follow the `CONTRIBUTING.md` § "Adding a New Component" checklist, by
+  hand, by a human.
+- **They may not generate eval fixtures, corpora or assertions** — see the section
+  below, which applies to them without exception.
+- **They may not re-approximate the template parser.** Anything that needs to tokenize
+  markup imports `scanTags` / `scanInterpolations` from `@basenative/validate/scan`.
 
 ### Never delegate — hand-authored artifacts
 
