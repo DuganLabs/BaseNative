@@ -136,4 +136,4 @@ Helpers for the response envelope — `{ data, meta? }` on success, `{ error: { 
 
 ## License
 
-MIT
+Apache-2.0

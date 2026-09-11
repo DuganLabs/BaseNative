@@ -67,4 +67,4 @@ Icons inherit `color` from their parent element via `currentColor` and scale wit
 
 ## License
 
-MIT
+Apache-2.0

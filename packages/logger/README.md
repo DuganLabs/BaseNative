@@ -71,4 +71,4 @@ Logger methods: `trace`, `debug`, `info`, `warn`, `error`, `fatal` — each acce
 
 ## License
 
-MIT
+Apache-2.0

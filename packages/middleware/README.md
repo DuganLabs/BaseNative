@@ -61,4 +61,4 @@ Each middleware receives a context object:
 
 ## License
 
-MIT
+Apache-2.0

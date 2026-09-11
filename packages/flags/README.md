@@ -126,4 +126,4 @@ Resolves all flags for the current request context and sets `ctx.state.flags`. O
 
 ## License
 
-MIT
+Apache-2.0

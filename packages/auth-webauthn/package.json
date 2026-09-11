@@ -68,7 +68,6 @@
     "@simplewebauthn/browser": "^13.3.0"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com",
     "access": "public"
   }
 }

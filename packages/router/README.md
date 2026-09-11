@@ -122,4 +122,4 @@ The error class `redirect()` throws. Has `to: string` and `replace: boolean` pro
 
 ## License
 
-MIT
+Apache-2.0

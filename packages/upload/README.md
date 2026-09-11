@@ -73,4 +73,4 @@ After the middleware runs, `ctx.state.uploads` contains an array of `{ field, fi
 
 ## License
 
-MIT
+Apache-2.0

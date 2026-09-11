@@ -90,4 +90,4 @@ Adapts a Zod schema for use as a form-level validator.
 
 ## License
 
-MIT
+Apache-2.0

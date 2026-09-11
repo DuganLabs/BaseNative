@@ -82,4 +82,4 @@ All builders produce `{ sql, params }` via `.build()`. All values go through `?`
 
 ## License
 
-MIT
+Apache-2.0

@@ -27,7 +27,10 @@
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/eslint-config"
   },
-  "homepage": "https://github.com/DuganLabs/basenative/tree/main/packages/eslint-config#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/eslint-config#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/BaseNative/issues"
+  },
   "keywords": [
     "basenative",
     "eslint",
@@ -36,7 +39,6 @@
     "shared"
   ],
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com",
     "access": "public"
   }
 }

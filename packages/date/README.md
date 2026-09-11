@@ -79,4 +79,4 @@ Renders two linked date inputs (start and end). Options include all `renderDatep
 
 ## License
 
-MIT
+Apache-2.0

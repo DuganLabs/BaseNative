@@ -24,7 +24,10 @@
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/tsconfig"
   },
-  "homepage": "https://github.com/DuganLabs/basenative/tree/main/packages/tsconfig#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/tsconfig#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/BaseNative/issues"
+  },
   "keywords": [
     "basenative",
     "tsconfig",
@@ -32,7 +35,6 @@
     "shared"
   ],
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com",
     "access": "public"
   }
 }
