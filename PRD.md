@@ -2,7 +2,12 @@
 
 > **Platform vision** — the spec-first charter covering both the web runtime and the 48V DC
 > power track. Sibling documents: [docs/PRD.md](docs/PRD.md) (meta-library scope) and
-> [docs/prd-ai-native.md](docs/prd-ai-native.md) (AI-native repositioning).
+> [docs/prd-ai-native.md](docs/prd-ai-native.md) (AI-native repositioning). **Which of the
+> three governs overall scope is an open owner decision** — see
+> `duganlabs-survey/99-open-questions.md` item 1; this file only corrects what the code
+> proves wrong within its own scope.
+>
+> _Last verified against the code: 2026-09-11._
 
 ## Vision
 
@@ -30,7 +35,7 @@ Modern web development is buried under abstraction layers that obscure what the 
 
 ## Architecture Overview
 
-**Monorepo**: Nx + pnpm workspace with 24 publishable packages under `@basenative/*`.
+**Monorepo**: Nx + pnpm workspace with **43** packages under `@basenative/*` (40 publishable, 3 private — see `docs/package-inventory.md`, generated, for the current authoritative count).
 
 **Core packages**:
 - `@basenative/runtime` — `signal()`, `computed()`, `effect()`, `hydrate()`. Zero production dependencies.
@@ -62,22 +67,40 @@ Modern web development is buried under abstraction layers that obscure what the 
 - CLI scaffolding tool
 - Express reference example
 
-### Phase 2 — Production Readiness (Current)
-- Router with SSR-aware path matching
-- Forms with validation and schema adapters
-- Auth and RBAC middleware
-- i18n, realtime, and notification packages
+### Phase 2 — Production Readiness (✅ complete)
+Every item below shipped; this phase is done, not current:
+- Router with SSR-aware path matching (`@basenative/router`)
+- Forms with validation and schema adapters (`@basenative/forms`)
+- Auth and RBAC middleware (`@basenative/auth`, `@basenative/auth-webauthn`)
+- i18n, realtime, and notification packages (`@basenative/i18n`, `@basenative/realtime`, `@basenative/notify`)
 - E2E test coverage with Playwright
-- npm publishing pipeline via Changesets
-- **Baseline Component Expansion**: Build robust native implementations for Data tables, accessible Modals with focus trapping, and layout primitives.
-- **SSR Streaming Enhancements**: Suspense-like boundaries for out-of-order template streaming and selective hydration.
+- Publishing pipeline via Changesets — corrected: publishes to **GitHub Packages**
+  (`.github/workflows/release.yml` sets `registry-url: https://npm.pkg.github.com`), not
+  npmjs.org; see `docs/releasing.md`.
+- **Baseline Component Expansion** — done: `packages/components/src/{datagrid,dialog,
+  layout-grid}.js`. Modals use the native `<dialog>` element (`showModal()`), which gives
+  focus trapping for free rather than custom JS — consistent with the "no namespace
+  theater" principle above.
+- **SSR Streaming Enhancements** — partially done: `@defer` sections stream after the main
+  content via script injection (`packages/server/src/{render,stream}.js`,
+  `renderToStream`/`renderToReadableStream`). This is not true incremental/out-of-order
+  streaming — `renderToStream` still renders the full output synchronously before chunking
+  it to the wire (see `docs/limitations.md`).
 
-### Phase 3 — Ecosystem (Next)
-- Visual builder for no-code template composition
-- Marketplace for community components
-- Feature flags infrastructure
-- Plugin system for runtime extensions
-- Comprehensive documentation site
+### Phase 3 — Ecosystem (✅ complete, registry question still open)
+- Visual builder for no-code template composition — shipped (`@basenative/visual-builder`,
+  `@basenative/builder`).
+- Marketplace for community components — the registry infrastructure is shipped
+  (`@basenative/marketplace`); no third-party/community packages have been published to it
+  yet, so "for community components" is aspirational within a real package.
+- Feature flags infrastructure — shipped (`@basenative/flags`, KV-backed providers).
+- Plugin system for runtime extensions — shipped: `registerPlugin()`
+  (`packages/runtime/src/signals.js`) and the directive registry
+  (`registerDirective()`/`packages/runtime/src/shared/directives.js`), consumed by
+  `@basenative/flags` and `@basenative/i18n`'s own directives.
+- Comprehensive documentation site — not done. The Express example remains the
+  docs/showcase surface; a dedicated docs site is unbuilt (see `docs/PRD.md` §7's original
+  open question, and `duganlabs-survey/99-open-questions.md` item 6).
 
 ### Phase 4 — Power Specifications (3-5 year)
 - 48V DC primary bus specification for residential architecture

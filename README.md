@@ -150,7 +150,28 @@ hydrate(document.getElementById('app'), { count, doubled });
 | [`@basenative/visual-builder`](packages/visual-builder) | No-code template builder |
 | [`@basenative/validate`](packages/validate) | Structured template diagnostics a model can repair from |
 | [`@basenative/mcp`](packages/mcp) | MCP server — validate, render, directive reference, scaffolding |
-| [`@basenative/evals`](packages/evals) | Eval harness measuring model output correctness |
+| [`@basenative/evals`](packages/evals) | Eval harness measuring model output correctness (private) |
+| [`@basenative/admin`](packages/admin) | Protected-route helpers, RBAC primitives, audit-log middleware, queue-review UI |
+| [`@basenative/auth-webauthn`](packages/auth-webauthn) | WebAuthn (passkey) adapter for `@basenative/auth` — server, client, Workers/Pages handlers |
+| [`@basenative/builder`](packages/builder) | Signal-based drag-and-drop layout builder that emits BaseNative template code |
+| [`@basenative/claude-config`](packages/claude-config) | Bundled Claude Code subagents, skills, and settings for DuganLabs/BaseNative projects |
+| [`@basenative/combobox`](packages/combobox) | Accessible combobox — typeahead filtering + create-new-entry, WAI-ARIA combobox pattern |
+| [`@basenative/doppler`](packages/doppler) | Thin DX layer around Doppler — local-dev wrapper, CI helper, project bootstrap |
+| [`@basenative/eslint-config`](packages/eslint-config) | Shared ESLint flat-config for DuganLabs projects |
+| [`@basenative/favicon`](packages/favicon) | SVG-first favicon generator + manifest/link-tag primitives |
+| [`@basenative/integrations`](packages/integrations) | Headless third-party integration wrappers |
+| [`@basenative/keyboard`](packages/keyboard) | Accessible mobile-first on-screen virtual keyboard, signal-driven key state |
+| [`@basenative/markdown`](packages/markdown) | Zero-dependency ES module markdown parser + SSR-safe HTML renderer |
+| [`@basenative/og-image`](packages/og-image) | Worker-runtime OG/social share PNG renderer — satori + resvg-wasm |
+| [`@basenative/persist`](packages/persist) | Signal-driven local persistence with TTL, conflict resolution, server rehydrate |
+| [`@basenative/share`](packages/share) | Native Web Share + clipboard fallback, share-card mint client+server |
+| [`@basenative/station`](packages/station) | Queue-driven local-inference primitive — vLLM/Workers AI job runner |
+| [`@basenative/tsconfig`](packages/tsconfig) | Shared base tsconfigs for DuganLabs projects |
+| [`@basenative/wrangler-preset`](packages/wrangler-preset) | Pinned Wrangler version + typed `wrangler.toml` fragment generator |
+
+43 packages total (40 publishable, 3 private) — see
+[docs/package-inventory.md](docs/package-inventory.md) for the generated, always-current
+list with exact versions and publish state.
 
 ---
 
@@ -238,12 +259,14 @@ npx nx run-many --target=lint --all
 |-------|-------------|
 | [Getting Started](docs/getting-started.md) | Install, first component, routing, SSR |
 | [Building a Todo App](docs/guides/todo-app.md) | End-to-end tutorial: SSR + signals + forms + flags |
-| [API Reference](docs/api/) | Full API docs for all 23 packages |
+| [API Reference](docs/api/) | Full API docs — one page per package (43 packages; see [docs/package-inventory.md](docs/package-inventory.md)) |
 | [Migration Guide](docs/migration.md) | Moving from React, Vue, Svelte, or vanilla JS |
 | [Accessibility](docs/accessibility.md) | ARIA, keyboard nav, screen reader support |
 | [Browser Support](docs/browser-support.md) | Supported browsers and polyfill guidance |
 | [Roadmap](docs/roadmap.md) | Upcoming features and milestones |
 | [Release Process](docs/releasing.md) | How versions are cut and published |
+| [Package Inventory](docs/package-inventory.md) | Generated, always-current package/version/publish-state list |
+| [PRD.md](PRD.md), [docs/PRD.md](docs/PRD.md), [docs/prd-ai-native.md](docs/prd-ai-native.md) | Three coexisting PRDs (platform vision / meta-library / AI-native repositioning); each states its own scope and cross-links the others, but which governs overall project scope is an open owner decision |
 
 ---
 
@@ -275,3 +298,7 @@ are the reasons to use it.
 ## License
 
 Apache 2.0 — see [LICENSE](LICENSE).
+
+---
+
+_Last verified against the code: 2026-09-11._

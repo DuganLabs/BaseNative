@@ -349,3 +349,74 @@ describe('generateCalendarMonth — additional', () => {
     assert.equal(nonNull.length, cal.daysInMonth);
   });
 });
+
+// ── Escaping ────────────────────────────────────────────────────────────────
+// Every caller-supplied value reaches the markup through escapeAttr (attribute
+// values) or escapeText (label content). Before this, all three render
+// functions interpolated `name`, `value`, `min`, `max`, `step`, `id` and
+// `label` raw, so a value carrying a double quote closed its attribute and the
+// rest of the payload became real attributes — including an event handler.
+//
+// The assertion is deliberately `onfocus="` WITH the quote, not `onfocus=`.
+// Escaped output still contains the literal characters `onfocus=` sitting
+// harmlessly inside a value; what must never appear is the unescaped quote
+// that would end the attribute and start a new one. Asserting on the bare
+// text would fail against correct output.
+//
+// `attrs` stays raw by design: a documented markup composition point, the same
+// contract @basenative/components uses.
+describe('escaping', () => {
+  const BREAKOUT = '" onfocus="alert(1)';
+  const TAG = '<script>alert(1)</script>';
+  const escaped = (html) => !html.includes('onfocus="') && html.includes('&quot;');
+
+  it('renderDatepicker escapes name, value, min and max', () => {
+    const html = renderDatepicker({ name: BREAKOUT, value: BREAKOUT, min: BREAKOUT, max: BREAKOUT });
+    assert.ok(escaped(html), 'the payload must not close its attribute');
+  });
+
+  it('renderDatepicker escapes the label as text, not markup', () => {
+    const html = renderDatepicker({ name: 'd', label: TAG });
+    assert.ok(!html.includes('<script>'), 'label must not inject an element');
+    assert.ok(html.includes('&lt;script&gt;'));
+  });
+
+  it('renderDatepicker escapes a caller-supplied id', () => {
+    assert.ok(escaped(renderDatepicker({ name: 'd', id: BREAKOUT })));
+  });
+
+  it('renderTimepicker escapes name, value, min, max and step', () => {
+    const html = renderTimepicker({ name: BREAKOUT, value: BREAKOUT, min: BREAKOUT, max: BREAKOUT, step: BREAKOUT });
+    assert.ok(escaped(html));
+  });
+
+  it('renderTimepicker escapes the label as text', () => {
+    assert.ok(!renderTimepicker({ name: 't', label: TAG }).includes('<script>'));
+  });
+
+  it('renderDateRange escapes both names and both values', () => {
+    const html = renderDateRange({
+      nameStart: BREAKOUT, nameEnd: BREAKOUT, valueStart: BREAKOUT, valueEnd: BREAKOUT,
+    });
+    assert.ok(escaped(html));
+  });
+
+  it('renderDateRange escapes min, max and a caller-supplied id', () => {
+    assert.ok(escaped(renderDateRange({ min: BREAKOUT, max: BREAKOUT, id: BREAKOUT })));
+  });
+
+  it('renderDateRange escapes the legend as text', () => {
+    assert.ok(!renderDateRange({ label: TAG }).includes('<script>'));
+  });
+
+  it('attrs stays raw — it is a documented composition point', () => {
+    assert.ok(renderDatepicker({ name: 'd', attrs: 'data-testid="x"' }).includes('data-testid="x"'));
+    assert.ok(renderDateRange({ attrs: 'data-testid="x"' }).includes('data-testid="x"'));
+  });
+
+  it('attrs leaves no stray space when empty', () => {
+    assert.ok(!renderDatepicker({ name: 'd' }).includes(' >'));
+    assert.ok(!renderTimepicker({ name: 't' }).includes(' >'));
+    assert.ok(!renderDateRange({}).includes(' >'));
+  });
+});

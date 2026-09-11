@@ -8,17 +8,19 @@
 
 ---
 
-> **Verified 2026-09-09.** Three figures in §1 were carried over from the README and do not
-> match the repo:
+> **Verified 2026-09-09, re-verified 2026-09-11 — even the correction below has aged.**
 >
-> | Claim | Actual |
-> |---|---|
-> | 23 packages | **40** under `packages/` |
-> | v1.0 shipped | **nothing is at 1.0 on npm** — 22 packages published one minor behind local, 18 never published |
-> | 1,461 tests | **2,595** passing across 36 packages (verified locally, all green) |
+> | Claim | 2026-09-09 correction | 2026-09-11 actual |
+> |---|---|---|
+> | 23 packages | 40 under `packages/` | **43** under `packages/` (`docs/package-inventory.md`) |
+> | v1.0 shipped | nothing at 1.0 on npm; 22 published one minor behind, 18 never published | **All 40 publishable packages are now in sync on GitHub Packages** — none never-published, none behind (`docs/package-inventory.md`, generated); npmjs.org still carries only stale `0.2.x`/`0.3.x` mirrors for some, per that file |
+> | 1,461 tests | 2,595 passing across 36 packages | not re-counted this pass |
 >
-> The argument in §1 is unaffected (40 packages strengthens the surface-area case), but §3's
-> `llms-full.txt` budget and W0.4 are sized against the real numbers, not these.
+> The argument in §1 is unaffected (more packages strengthens the surface-area case either
+> way), but §3's `llms-full.txt` budget and W0.4 are sized against the 2026-09-09 numbers,
+> not the current ones. Treat every count in this document as a snapshot, not a target —
+> `docs/package-inventory.md` is generated and is the only one of the two that stays current
+> on its own.
 
 ## 1. Problem
 

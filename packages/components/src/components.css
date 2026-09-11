@@ -58,6 +58,24 @@
   border-radius: var(--bn-radius-control);
 }
 
+/* --- Visually hidden -----------------------------------------------------
+   An accessible name with no visible box. reset.css carries the same recipe as
+   a `.visually-hidden` class, but consumers whose house style forbids CSS
+   classes (and who therefore import components.css without reset.css) had no
+   attribute form to reach for — so a column with no visible heading rendered
+   as an empty `<th>`, which axe flags. --- */
+[data-bn="sr-only"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* --- Button reset ------------------------------------------------------
    Every element used as a plain, borderless, clickable [data-bn] control
    gets this for free, so a UA `outset` button border/background can never
@@ -129,7 +147,13 @@
   font-weight: var(--bn-font-weight-medium);
   line-height: var(--bn-line-height-tight);
   border: 1px solid transparent;
-  border-radius: var(--bn-radius-md);
+  /* NOT --bn-radius-md: this block sits after the shared control group
+     above, so re-declaring the radius here used to silently defeat the
+     --bn-radius-control token that group had just applied. A consumer
+     setting --bn-radius-control got every control rounded except the
+     button. Defaults are identical (--bn-radius-control aliases
+     --bn-radius-md), so nothing moves unless the token is set. */
+  border-radius: var(--bn-radius-control);
   cursor: pointer;
   transition: background-color var(--bn-transition-fast), border-color var(--bn-transition-fast);
 }
@@ -137,18 +161,18 @@
 [data-bn="button"]:disabled { opacity: 0.5; cursor: not-allowed; }
 [data-bn="button"][data-variant="primary"] {
   background: var(--bn-color-primary-600);
-  color: var(--bn-color-white);
+  color: var(--bn-color-on-primary);
 }
 [data-bn="button"][data-variant="primary"]:hover:not(:disabled) { background: var(--bn-color-primary-700); }
 [data-bn="button"][data-variant="secondary"] {
-  background: var(--bn-color-surface);
+  background: var(--bn-color-surface-control);
   color: var(--bn-color-text);
   border-color: var(--bn-color-border);
 }
 [data-bn="button"][data-variant="secondary"]:hover:not(:disabled) { background: var(--bn-color-surface-muted); }
 [data-bn="button"][data-variant="destructive"] {
   background: var(--bn-color-error-600);
-  color: var(--bn-color-white);
+  color: var(--bn-color-on-error);
 }
 [data-bn="button"][data-variant="destructive"]:hover:not(:disabled) { background: var(--bn-color-error-500); }
 [data-bn="button"][data-variant="ghost"] {
@@ -183,7 +207,7 @@
   font-family: var(--bn-font-family);
   font-size: var(--bn-font-size-component);
   color: var(--bn-color-text);
-  background: var(--bn-color-surface);
+  background: var(--bn-color-surface-control);
   border: 1px solid var(--bn-color-border-control);
   border-radius: var(--bn-radius-md);
   transition: border-color var(--bn-transition-fast);
@@ -214,7 +238,7 @@
   appearance: none;
   width: 1.125rem;
   height: 1.125rem;
-  background: var(--bn-color-surface);
+  background: var(--bn-color-surface-control);
   border: var(--bn-border-width) solid var(--bn-color-border-control);
   cursor: pointer;
   flex-shrink: 0;
@@ -234,7 +258,7 @@
   left: 4px;
   width: 5px;
   height: 9px;
-  border: solid var(--bn-color-white);
+  border: solid var(--bn-color-on-accent);
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
@@ -245,7 +269,7 @@
   left: 50%;
   width: 6px;
   height: 6px;
-  background: var(--bn-color-white);
+  background: var(--bn-color-on-accent);
   border-radius: var(--bn-radius-full);
   transform: translate(-50%, -50%);
 }
@@ -283,12 +307,15 @@
   left: 2px;
   width: 1rem;
   height: 1rem;
-  background: var(--bn-color-white);
+  background: var(--bn-color-toggle-knob);
   border-radius: var(--bn-radius-full);
   transition: transform var(--bn-transition-fast);
 }
 [data-bn="toggle"]:checked { background: var(--bn-color-primary-600); }
-[data-bn="toggle"]:checked::before { transform: translateX(1.125rem); }
+[data-bn="toggle"]:checked::before {
+  transform: translateX(1.125rem);
+  background: var(--bn-color-on-primary);
+}
 [data-bn="toggle"]:focus-visible { box-shadow: var(--bn-focus-ring); }
 
 /* === Alert === */
@@ -387,7 +414,7 @@
 [data-bn="pagination"] a:focus-visible { box-shadow: var(--bn-focus-ring); outline: none; }
 [data-bn="pagination"] a[aria-current="page"] {
   background: var(--bn-color-primary-600);
-  color: var(--bn-color-white);
+  color: var(--bn-color-on-primary);
 }
 [data-bn="pagination"] span[aria-disabled] { opacity: 0.4; cursor: default; }
 
@@ -409,7 +436,7 @@
 
 /* === Card === */
 [data-bn="card"] {
-  background: var(--bn-color-surface);
+  background: var(--bn-color-surface-card);
   border: 1px solid var(--bn-color-border);
   border-radius: var(--bn-radius-container);
   overflow: hidden;
@@ -575,7 +602,7 @@
   font-family: var(--bn-font-family);
   font-size: var(--bn-font-size-component);
   color: var(--bn-color-text);
-  background: var(--bn-color-surface);
+  background: var(--bn-color-surface-control);
   border: var(--bn-border-width) solid var(--bn-color-border-control);
   width: 100%;
   transition: border-color var(--bn-transition-fast);
@@ -744,7 +771,7 @@
   left: 3px;
   width: 4px;
   height: 7px;
-  border: solid var(--bn-color-white);
+  border: solid var(--bn-color-on-accent);
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }

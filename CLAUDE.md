@@ -56,11 +56,14 @@ basenative/
 │   └── node/           # Standalone Node.js server
 ├── docs/               # Documentation
 ├── benchmarks/         # Performance benchmarks
-├── tests/              # Cross-package integration tests
-└── src/
-    └── shared/
-        └── expression.js  # CSP-safe expression evaluator (shared runtime/server)
+└── tests/              # Cross-package integration tests
 ```
+
+Note: there is no root `src/` directory (a `Dockerfile` `COPY src/ src/` step referencing
+one is dead — flagged, not fixed here). The CSP-safe expression evaluator lives at
+`packages/runtime/src/shared/expression.js` and is re-exported to `@basenative/server`
+via the `@basenative/runtime/shared/expression` subpath (see Architecture Decisions
+below).
 
 ---
 
@@ -114,7 +117,11 @@ All packages use **Node.js built-in test runner** (`node:test`). No Jest, no Vit
 
 ### CSP-Safe Expression Evaluator
 
-Located at `src/shared/expression.js`. Used by both `@basenative/server` (SSR) and `@basenative/runtime` (client hydration).
+Located at `packages/runtime/src/shared/expression.js` — it ships inside `@basenative/runtime`,
+not a separate root package. `@basenative/server` imports it via the
+`@basenative/runtime/shared/expression` subpath export (`packages/server/src/render.js`),
+so the evaluator has exactly one implementation shared by both SSR (`server`) and client
+hydration (`runtime`).
 
 - **No `eval`**, **no `new Function`**
 - Supports: property access, method calls, arithmetic, comparison, logical, ternary, array/object literals
@@ -141,8 +148,8 @@ All packages use `"type": "module"` and `"exports": { ".": "./src/index.js" }`. 
 
 ```
 runtime          ← server, router, forms, fetch, realtime, i18n, flags
-server           ← src/shared/expression.js
-runtime          ← src/shared/expression.js (via hydrate)
+server           ← runtime/src/shared/expression.js (via the runtime/shared/expression subpath export)
+runtime          ← runtime/src/shared/expression.js (via hydrate, same file)
 auth             ← node:crypto (no external deps)
 db               ← optional: better-sqlite3, pg, @cloudflare/workers-types
 middleware       ← runtime (signals for CSRF tokens)
@@ -180,8 +187,12 @@ chore(ci): add bundle size check to PR workflow
 ## Key Invariants to Preserve
 
 1. `@basenative/runtime` must stay under **10KB gzipped** — the budget enforced by
-   `scripts/bundle-size.js` in CI. Currently 9.2KB. (The long-standing "<5KB" claim
+   `scripts/bundle-size.js` in CI. Currently 9.6KB. (The long-standing "<5KB" claim
    was never true against the measured build; the budget has always been 10KB.)
+   Do not re-type this number anywhere: `node scripts/compare-stats.js` prints the
+   measured value, and the site reads it from there. `9.2KB` is still stale in
+   `README.md`, `docs/PRD.md`, `docs/migration.md`, `docs/api/cli.md` and
+   `docs/CONSUMING-FROM-GH-PACKAGES.md`.
 2. The CSP-safe evaluator must never use `eval` or `new Function`
 3. All parameterized DB queries use `?` placeholders — never string interpolation
 4. `hydrate()` must work from server-rendered HTML without JavaScript re-rendering everything
@@ -256,6 +267,7 @@ rule and does not resolve anything.
 | "write or edit a skill"                    | this section + `packages/claude-config/README.md`                                                  | any external skill-authoring skill                                                                      |
 | "update llms.txt / API docs"               | `scripts/llms-txt.js` (regenerate)                                                                 | hand-editing `llms.txt` or `llms-full.txt` — both are generated and CI fails on drift                   |
 | "update the package inventory"             | `scripts/package-inventory.js`                                                                     | hand-editing `docs/package-inventory.md` — same reason                                                  |
+| "update a number on /compare"              | `scripts/compare-stats.js` (measures it from source at build time)                                 | typing a figure into `examples/express/views/compare.html` — every claim is a `{{ }}` binding and `scripts/check-compare-page.js` fails the build on a literal |
 | anything touching the eval corpus          | **the human owner. No skill, no agent.**                                                           | everything — see below                                                                                  |
 
 ### Never delegate — hand-authored artifacts
@@ -412,7 +424,15 @@ An abandoned parallel builder implementation is preserved at tag `archive/feat-v
 
 - The eval corpus (`packages/evals/prompts/`, `fixtures/`) — PRD W2. Human-authored only.
 - The launch essay (PRD W5.4) — blocked on eval results that do not exist yet.
-- The registry question: every non-private package is now published to GitHub Packages under the `basenative` org (37 in sync, 3 private on 2026-09-10 — `docs/package-inventory.md`). What remains is a product call: whether to mirror to npmjs, and which packages graduate to 1.0.
+- The registry question: every non-private package is now published to GitHub Packages under the `basenative` org (40 in sync, 3 private as of 2026-09-11 — `docs/package-inventory.md`, generated; re-check that file rather than this count, which will drift again). What remains is a product call: whether to mirror to npmjs, and which packages graduate to 1.0.
+
+---
+
+_Last verified against the code: 2026-09-11. Fixed this pass: two stray root-`src/`
+references to the CSP-safe expression evaluator's real location
+(`packages/runtime/src/shared/expression.js`), and this section's package-sync count. The
+rest of this file (workspace structure, delegation policy, Nx precedence) was already
+current._
 
 ## General Guidelines for working with Nx
 

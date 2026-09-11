@@ -13,6 +13,7 @@ import {
 } from '../examples/express/page.js';
 import { flatComponents } from '../examples/express/component-catalog.js';
 import { staticTasks } from '../examples/express/site-data.js';
+import { checkComparePage } from './check-compare-page.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -39,6 +40,17 @@ function writePage(path, html) {
 
 // -- Build --
 console.log('Building static site...');
+
+// /compare states measured facts about this repository. Refuse to publish a
+// build where those numbers and the source disagree.
+const comparePageProblems = checkComparePage();
+if (comparePageProblems.length) {
+  console.error('/compare disagrees with the source — refusing to build:\n');
+  for (const problem of comparePageProblems) console.error(`  • ${problem}`);
+  console.error('\nRun `node scripts/compare-stats.js` to see what the source actually says.');
+  process.exit(1);
+}
+
 mkdirSync(dist, { recursive: true });
 
 // Top-level routes: the same table server.js serves, with the fixed task snapshot.
@@ -63,6 +75,7 @@ cpSync(join(express, 'public', 'theme.css'), join(dist, 'theme.css'));
 cpSync(join(express, 'public', 'basenative.js'), join(dist, 'basenative.js'));
 cpSync(join(express, 'public', 'showcase.js'), join(dist, 'showcase.js'));
 cpSync(join(express, 'public', 'builder.js'), join(dist, 'builder.js'));
+cpSync(join(express, 'public', 'compare.js'), join(dist, 'compare.js'));
 // Brand assets — favicon bundle (bn-favicon, preset `basenative`) + OG card
 for (const file of [
   'favicon.svg',
