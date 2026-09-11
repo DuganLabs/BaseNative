@@ -1,0 +1,1581 @@
+{
+  "generatedAt": "2026-09-11T14:29:30.906692Z",
+  "scanner": "extract_defs.py",
+  "componentCount": 61,
+  "definitions": {
+    "@basenative/admin#renderAdminQueueList": {
+      "name": "renderAdminQueueList",
+      "kind": "render-function",
+      "package": "@basenative/admin",
+      "file": "packages/admin/src/components.js",
+      "repo": "BaseNative",
+      "purpose": "Server-rendered (or hydratable) building blocks for the admin surface.",
+      "variants": null,
+      "dataAttributes": {
+        "id": [
+          "${esc(s.id)}"
+        ],
+        "action": [
+          "${esc(actionHandler)}",
+          "${esc(searchHandler)}"
+        ],
+        "decision": [
+          "approved",
+          "rejected"
+        ],
+        "bn": [
+          "admin-queue-list",
+          "admin-user-list"
+        ],
+        "user-id": [
+          "${esc(u.id)}"
+        ],
+        "handle": [
+          "${esc(u.handle)}"
+        ],
+        "role": [
+          "${esc(r)}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/admin#renderAdminUserList": {
+      "name": "renderAdminUserList",
+      "kind": "render-function",
+      "package": "@basenative/admin",
+      "file": "packages/admin/src/components.js",
+      "repo": "BaseNative",
+      "purpose": "Server-rendered (or hydratable) building blocks for the admin surface.",
+      "variants": null,
+      "dataAttributes": {
+        "id": [
+          "${esc(s.id)}"
+        ],
+        "action": [
+          "${esc(actionHandler)}",
+          "${esc(searchHandler)}"
+        ],
+        "decision": [
+          "approved",
+          "rejected"
+        ],
+        "bn": [
+          "admin-queue-list",
+          "admin-user-list"
+        ],
+        "user-id": [
+          "${esc(u.id)}"
+        ],
+        "handle": [
+          "${esc(u.handle)}"
+        ],
+        "role": [
+          "${esc(r)}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/builder#renderInspector": {
+      "name": "renderInspector",
+      "kind": "render-function",
+      "package": "@basenative/builder",
+      "file": "packages/builder/src/inspector.js",
+      "repo": "BaseNative",
+      "purpose": "[No JSDoc found]",
+      "variants": null,
+      "dataAttributes": {
+        "bn-prop": [
+          "${escapeHtml(prop.name)}"
+        ],
+        "bn-node": [
+          "${escapeHtml(node.id)}",
+          "${escapeHtml(nodeId)}"
+        ],
+        "bn-binding": [
+          "true"
+        ],
+        "bn-action": [
+          "duplicate",
+          "remove"
+        ],
+        "bn-inspector-form": [
+          "${escapeHtml(node.id)}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/builder#renderNodeToElement": {
+      "name": "renderNodeToElement",
+      "kind": "render-function",
+      "package": "@basenative/builder",
+      "file": "packages/builder/src/dom-render.js",
+      "repo": "BaseNative",
+      "purpose": "[No JSDoc found]",
+      "variants": null,
+      "dataAttributes": null,
+      "props": null
+    },
+    "@basenative/builder#renderPaletteHTML": {
+      "name": "renderPaletteHTML",
+      "kind": "render-function",
+      "package": "@basenative/builder",
+      "file": "packages/builder/src/palette-element.js",
+      "repo": "BaseNative",
+      "purpose": "[No JSDoc found]",
+      "variants": null,
+      "dataAttributes": {
+        "bn-palette-type": [
+          "${escapeHtml(def.type)}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/builder#renderTreeView": {
+      "name": "renderTreeView",
+      "kind": "render-function",
+      "package": "@basenative/builder",
+      "file": "packages/builder/src/tree-view.js",
+      "repo": "BaseNative",
+      "purpose": "[No JSDoc found]",
+      "variants": null,
+      "dataAttributes": {
+        "bn-tree-id": [
+          "${escapeHtml(node.id)}"
+        ],
+        "bn-tree-select": [
+          "${escapeHtml(node.id)}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/combobox#renderCombobox": {
+      "name": "renderCombobox",
+      "kind": "render-function",
+      "package": "@basenative/combobox",
+      "file": "packages/combobox/src/combobox.js",
+      "repo": "BaseNative",
+      "purpose": "Combobox primitive \u2014 typeahead input that filters an existing list",
+      "variants": null,
+      "dataAttributes": {
+        "theme": [
+          "${escapeHtml(options.theme)}"
+        ],
+        "bn": [
+          "cb-field",
+          "cb-input",
+          "cb-label",
+          "cb-listbox",
+          "cb-live",
+          "cb-option",
+          "cb-toggle",
+          "combobox"
+        ],
+        "bn-cb-create": [
+          "true"
+        ],
+        "index": [
+          "${i}"
+        ],
+        "value": [
+          "${escapeHtml(o.value)}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/components#renderAccordion": {
+      "name": "renderAccordion",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/accordion.js",
+      "repo": "BaseNative",
+      "purpose": "Accordion \u2014 collapsible sections using native <details>/<summary>.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "accordion",
+          "accordion-content",
+          "accordion-header",
+          "accordion-item"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/components#renderAlert": {
+      "name": "renderAlert",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/alert.js",
+      "repo": "BaseNative",
+      "purpose": "Alert component \u2014 inline feedback with semantic role=\"alert\".",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "alert",
+          "alert-content",
+          "alert-dismiss"
+        ],
+        "variant": [
+          "${escapeAttr(variant)}"
+        ]
+      },
+      "props": {
+        "content": {
+          "type": "string",
+          "description": "HTML slot: not escaped; pass trusted markup only\n *"
+        }
+      }
+    },
+    "@basenative/components#renderAvatar": {
+      "name": "renderAvatar",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/avatar.js",
+      "repo": "BaseNative",
+      "purpose": "Avatar \u2014 user avatar with image, initials, or icon fallback.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "avatar",
+          "avatar-img",
+          "avatar-initials"
+        ],
+        "size": [
+          "${escapeAttr(size)}"
+        ],
+        "shape": [
+          "${escapeAttr(shape)}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/components#renderBadge": {
+      "name": "renderBadge",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/badge.js",
+      "repo": "BaseNative",
+      "purpose": "Badge component \u2014 status indicator.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "badge"
+        ],
+        "variant": [
+          "${escapeAttr(variant)}"
+        ]
+      },
+      "props": {
+        "content": {
+          "type": "string",
+          "description": "HTML slot: not escaped; pass trusted markup only\n *"
+        }
+      }
+    },
+    "@basenative/components#renderBreadcrumb": {
+      "name": "renderBreadcrumb",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/breadcrumb.js",
+      "repo": "BaseNative",
+      "purpose": "Breadcrumb \u2014 navigation trail.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "breadcrumb",
+          "breadcrumb-item",
+          "breadcrumb-list",
+          "breadcrumb-separator"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/components#renderButton": {
+      "name": "renderButton",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/button.js",
+      "repo": "BaseNative",
+      "purpose": "Button component templates and behaviors.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "button",
+          "spinner"
+        ],
+        "variant": [
+          "${escapeAttr(variant)}",
+          "primary"
+        ],
+        "size": [
+          "${escapeAttr(size)}"
+        ]
+      },
+      "props": {
+        "content": {
+          "type": "string",
+          "description": "HTML slot: not escaped; pass trusted markup only\n *"
+        }
+      }
+    },
+    "@basenative/components#renderCalendar": {
+      "name": "renderCalendar",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/calendar.js",
+      "repo": "BaseNative",
+      "purpose": "Calendar / Pipeline block \u2014 drag-and-drop scheduling component.",
+      "variants": null,
+      "dataAttributes": {
+        "continues": [
+          "${continues}",
+          "after"
+        ],
+        "bn": [
+          "calendar",
+          "calendar-corner",
+          "calendar-day-column",
+          "calendar-day-header",
+          "calendar-empty",
+          "calendar-event",
+          "calendar-event-assignee",
+          "calendar-event-time",
+          "calendar-event-title",
+          "calendar-grid",
+          "calendar-slot",
+          "calendar-time-gutter",
+          "calendar-time-label",
+          "pipeline",
+          "pipeline-block",
+          "pipeline-block-subtitle",
+          "pipeline-block-title",
+          "pipeline-card",
+          "pipeline-card-actions",
+          "pipeline-card-description",
+          "pipeline-card-footer",
+          "pipeline-card-subtitle",
+          "pipeline-card-title",
+          "pipeline-column",
+          "pipeline-column-cards",
+          "pipeline-column-count",
+          "pipeline-column-header",
+          "pipeline-column-title",
+          "pipeline-empty"
+        ],
+        "date": [
+          "${date}",
+          "${d}"
+        ],
+        "hour": [
+          "${h}"
+        ],
+        "status": [
+          "${escapeAttr(card.status)}",
+          "${escapeAttr(ev.status)}",
+          "${escapeAttr(status)}"
+        ],
+        "event-id": [
+          "${escapeAttr(ev.id)}"
+        ],
+        "block-id": [
+          "${escapeAttr(id)}"
+        ],
+        "card-id": [
+          "${escapeAttr(card.id)}"
+        ],
+        "column-id": [
+          "${escapeAttr(col.id)}"
+        ]
+      },
+      "props": {
+        "options": {
+          "type": "Array",
+          "description": ".cards - Card definitions: [{ id: 'c1', columnId: 'new', title: 'Acme Corp', ... }, ...]\n *"
+        },
+        "container": {
+          "type": "HTMLElement",
+          "description": "The [data-bn=\"pipeline\"] element\n *"
+        },
+        "callbacks": {
+          "type": "function",
+          "description": ".onCardMove  Called with { cardId, targetColumnId, position }\n *"
+        }
+      }
+    },
+    "@basenative/components#renderCard": {
+      "name": "renderCard",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/card.js",
+      "repo": "BaseNative",
+      "purpose": "Card component \u2014 semantic <article> container.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "card",
+          "card-body",
+          "card-footer",
+          "card-header"
+        ],
+        "variant": [
+          "${escapeAttr(variant)}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/components#renderCheckbox": {
+      "name": "renderCheckbox",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/checkbox.js",
+      "repo": "BaseNative",
+      "purpose": "Checkbox component \u2014 native <input type=\"checkbox\"> with label association.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "checkbox",
+          "checkbox-label"
+        ]
+      },
+      "props": {
+        "options": {
+          "type": "string",
+          "description": ".name\n *"
+        }
+      }
+    },
+    "@basenative/components#renderCombobox": {
+      "name": "renderCombobox",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/combobox.js",
+      "repo": "BaseNative",
+      "purpose": "Combobox \u2014 searchable dropdown with keyboard navigation.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "combobox",
+          "combobox-input",
+          "label"
+        ]
+      },
+      "props": {
+        "options": {
+          "type": "object",
+          "description": "*"
+        }
+      }
+    },
+    "@basenative/components#renderCommandPalette": {
+      "name": "renderCommandPalette",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/command-palette.js",
+      "repo": "BaseNative",
+      "purpose": "Command palette \u2014 Cmd+K style searchable command menu.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "command-footer",
+          "command-group",
+          "command-group-label",
+          "command-header",
+          "command-icon",
+          "command-input",
+          "command-item",
+          "command-label",
+          "command-list",
+          "command-palette",
+          "command-shortcut"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/components#renderDataGrid": {
+      "name": "renderDataGrid",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/datagrid.js",
+      "repo": "BaseNative",
+      "purpose": "Data grid \u2014 sortable, filterable, paginated table with virtual scrolling support.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "datagrid",
+          "datagrid-empty",
+          "datagrid-footer",
+          "datagrid-info",
+          "datagrid-row",
+          "datagrid-row-select",
+          "datagrid-scroll",
+          "datagrid-select-all",
+          "datagrid-table",
+          "datagrid-td",
+          "datagrid-td-select",
+          "datagrid-th",
+          "datagrid-th-button",
+          "datagrid-th-select"
+        ],
+        "sorted": [
+          "${escapeAttr(sortDir)}"
+        ],
+        "key": [
+          "${escapeAttr(col.key)}"
+        ],
+        "row-id": [
+          "${escapeAttr(rowId)}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/components#renderDialog": {
+      "name": "renderDialog",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/dialog.js",
+      "repo": "BaseNative",
+      "purpose": "Dialog \u2014 modal/non-modal dialog using native <dialog> element.",
+      "variants": null,
+      "dataAttributes": {
+        "modal": [
+          "false",
+          "true"
+        ],
+        "bn": [
+          "dialog",
+          "dialog-body",
+          "dialog-close",
+          "dialog-description",
+          "dialog-footer",
+          "dialog-header",
+          "dialog-title"
+        ],
+        "size": [
+          "${escapeAttr(size)}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/components#renderDrawer": {
+      "name": "renderDrawer",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/drawer.js",
+      "repo": "BaseNative",
+      "purpose": "Drawer \u2014 side panel that slides in from the edge.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "drawer",
+          "drawer-body",
+          "drawer-close",
+          "drawer-header",
+          "drawer-overlay",
+          "drawer-title"
+        ],
+        "position": [
+          "${escapeAttr(position)}"
+        ],
+        "size": [
+          "${escapeAttr(size)}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/components#renderDropdownMenu": {
+      "name": "renderDropdownMenu",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/dropdown-menu.js",
+      "repo": "BaseNative",
+      "purpose": "Dropdown menu \u2014 popover-based menu.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "dropdown",
+          "dropdown-icon",
+          "dropdown-item",
+          "dropdown-menu",
+          "dropdown-separator",
+          "dropdown-shortcut",
+          "dropdown-trigger"
+        ],
+        "position": [
+          "${escapeAttr(position)}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/components#renderInput": {
+      "name": "renderInput",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/input.js",
+      "repo": "BaseNative",
+      "purpose": "Input component \u2014 wraps native <input> with field system integration.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "field",
+          "field-error",
+          "input"
+        ]
+      },
+      "props": {
+        "options": {
+          "type": "string",
+          "description": ".name\n *"
+        }
+      }
+    },
+    "@basenative/components#renderLayoutGrid": {
+      "name": "renderLayoutGrid",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/layout-grid.js",
+      "repo": "BaseNative",
+      "purpose": "Layout grid \u2014 drag-and-drop CSS grid primitive for the visual builder.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "layout-cell",
+          "layout-grid"
+        ]
+      },
+      "props": {
+        "options": {
+          "type": "object",
+          "description": "*"
+        }
+      }
+    },
+    "@basenative/components#renderMultiselect": {
+      "name": "renderMultiselect",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/multiselect.js",
+      "repo": "BaseNative",
+      "purpose": "Multiselect \u2014 multiple value selection with tags/chips.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "label",
+          "multiselect",
+          "multiselect-container",
+          "multiselect-search",
+          "multiselect-tags",
+          "tag",
+          "tag-remove"
+        ],
+        "value": [
+          "${escapeAttr(val)}"
+        ]
+      },
+      "props": {
+        "options": {
+          "type": "object",
+          "description": "*"
+        }
+      }
+    },
+    "@basenative/components#renderPagination": {
+      "name": "renderPagination",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/pagination.js",
+      "repo": "BaseNative",
+      "purpose": "Pagination component \u2014 server-friendly page navigation.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "pagination",
+          "pagination-ellipsis"
+        ]
+      },
+      "props": {
+        "options": {
+          "type": "number",
+          "description": ".totalPages - Total number of pages\n *"
+        }
+      }
+    },
+    "@basenative/components#renderPipeline": {
+      "name": "renderPipeline",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/calendar.js",
+      "repo": "BaseNative",
+      "purpose": "Calendar / Pipeline block \u2014 drag-and-drop scheduling component.",
+      "variants": null,
+      "dataAttributes": {
+        "continues": [
+          "${continues}",
+          "after"
+        ],
+        "bn": [
+          "calendar",
+          "calendar-corner",
+          "calendar-day-column",
+          "calendar-day-header",
+          "calendar-empty",
+          "calendar-event",
+          "calendar-event-assignee",
+          "calendar-event-time",
+          "calendar-event-title",
+          "calendar-grid",
+          "calendar-slot",
+          "calendar-time-gutter",
+          "calendar-time-label",
+          "pipeline",
+          "pipeline-block",
+          "pipeline-block-subtitle",
+          "pipeline-block-title",
+          "pipeline-card",
+          "pipeline-card-actions",
+          "pipeline-card-description",
+          "pipeline-card-footer",
+          "pipeline-card-subtitle",
+          "pipeline-card-title",
+          "pipeline-column",
+          "pipeline-column-cards",
+          "pipeline-column-count",
+          "pipeline-column-header",
+          "pipeline-column-title",
+          "pipeline-empty"
+        ],
+        "date": [
+          "${date}",
+          "${d}"
+        ],
+        "hour": [
+          "${h}"
+        ],
+        "status": [
+          "${escapeAttr(card.status)}",
+          "${escapeAttr(ev.status)}",
+          "${escapeAttr(status)}"
+        ],
+        "event-id": [
+          "${escapeAttr(ev.id)}"
+        ],
+        "block-id": [
+          "${escapeAttr(id)}"
+        ],
+        "card-id": [
+          "${escapeAttr(card.id)}"
+        ],
+        "column-id": [
+          "${escapeAttr(col.id)}"
+        ]
+      },
+      "props": {
+        "options": {
+          "type": "Array",
+          "description": ".cards - Card definitions: [{ id: 'c1', columnId: 'new', title: 'Acme Corp', ... }, ...]\n *"
+        },
+        "container": {
+          "type": "HTMLElement",
+          "description": "The [data-bn=\"pipeline\"] element\n *"
+        },
+        "callbacks": {
+          "type": "function",
+          "description": ".onCardMove  Called with { cardId, targetColumnId, position }\n *"
+        }
+      }
+    },
+    "@basenative/components#renderPipelineBlock": {
+      "name": "renderPipelineBlock",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/calendar.js",
+      "repo": "BaseNative",
+      "purpose": "Calendar / Pipeline block \u2014 drag-and-drop scheduling component.",
+      "variants": null,
+      "dataAttributes": {
+        "continues": [
+          "${continues}",
+          "after"
+        ],
+        "bn": [
+          "calendar",
+          "calendar-corner",
+          "calendar-day-column",
+          "calendar-day-header",
+          "calendar-empty",
+          "calendar-event",
+          "calendar-event-assignee",
+          "calendar-event-time",
+          "calendar-event-title",
+          "calendar-grid",
+          "calendar-slot",
+          "calendar-time-gutter",
+          "calendar-time-label",
+          "pipeline",
+          "pipeline-block",
+          "pipeline-block-subtitle",
+          "pipeline-block-title",
+          "pipeline-card",
+          "pipeline-card-actions",
+          "pipeline-card-description",
+          "pipeline-card-footer",
+          "pipeline-card-subtitle",
+          "pipeline-card-title",
+          "pipeline-column",
+          "pipeline-column-cards",
+          "pipeline-column-count",
+          "pipeline-column-header",
+          "pipeline-column-title",
+          "pipeline-empty"
+        ],
+        "date": [
+          "${date}",
+          "${d}"
+        ],
+        "hour": [
+          "${h}"
+        ],
+        "status": [
+          "${escapeAttr(card.status)}",
+          "${escapeAttr(ev.status)}",
+          "${escapeAttr(status)}"
+        ],
+        "event-id": [
+          "${escapeAttr(ev.id)}"
+        ],
+        "block-id": [
+          "${escapeAttr(id)}"
+        ],
+        "card-id": [
+          "${escapeAttr(card.id)}"
+        ],
+        "column-id": [
+          "${escapeAttr(col.id)}"
+        ]
+      },
+      "props": {
+        "options": {
+          "type": "Array",
+          "description": ".cards - Card definitions: [{ id: 'c1', columnId: 'new', title: 'Acme Corp', ... }, ...]\n *"
+        },
+        "container": {
+          "type": "HTMLElement",
+          "description": "The [data-bn=\"pipeline\"] element\n *"
+        },
+        "callbacks": {
+          "type": "function",
+          "description": ".onCardMove  Called with { cardId, targetColumnId, position }\n *"
+        }
+      }
+    },
+    "@basenative/components#renderProgress": {
+      "name": "renderProgress",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/progress.js",
+      "repo": "BaseNative",
+      "purpose": "Progress and Spinner components.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "progress",
+          "spinner"
+        ],
+        "size": [
+          "${escapeAttr(size)}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/components#renderRadioGroup": {
+      "name": "renderRadioGroup",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/radio.js",
+      "repo": "BaseNative",
+      "purpose": "Radio component \u2014 native <input type=\"radio\"> with group support.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "radio",
+          "radio-group",
+          "radio-label"
+        ]
+      },
+      "props": {
+        "options": {
+          "type": "string",
+          "description": ".name\n *"
+        }
+      }
+    },
+    "@basenative/components#renderSelect": {
+      "name": "renderSelect",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/select.js",
+      "repo": "BaseNative",
+      "purpose": "Select component \u2014 native <select> with optional base-select enhancement.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "select"
+        ]
+      },
+      "props": {
+        "options": {
+          "type": "string",
+          "description": ".name\n *"
+        }
+      }
+    },
+    "@basenative/components#renderSkeleton": {
+      "name": "renderSkeleton",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/skeleton.js",
+      "repo": "BaseNative",
+      "purpose": "Skeleton loading placeholder component.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "skeleton"
+        ],
+        "variant": [
+          "${escapeAttr(variant)}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/components#renderSpinner": {
+      "name": "renderSpinner",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/progress.js",
+      "repo": "BaseNative",
+      "purpose": "Progress and Spinner components.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "progress",
+          "spinner"
+        ],
+        "size": [
+          "${escapeAttr(size)}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/components#renderTable": {
+      "name": "renderTable",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/table.js",
+      "repo": "BaseNative",
+      "purpose": "Table component \u2014 semantic HTML table with sorting and empty state.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "table",
+          "table-container",
+          "table-empty"
+        ]
+      },
+      "props": {
+        "options": {
+          "type": "Array<object>",
+          "description": ".rows\n *"
+        }
+      }
+    },
+    "@basenative/components#renderTabs": {
+      "name": "renderTabs",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/tabs.js",
+      "repo": "BaseNative",
+      "purpose": "Tabs \u2014 tab navigation with panels.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "tab",
+          "tab-list",
+          "tab-panel",
+          "tabs"
+        ],
+        "tab": [
+          "${escapeAttr(tab.id)}"
+        ],
+        "variant": [
+          "${escapeAttr(variant)}"
+        ]
+      },
+      "props": {
+        "root": {
+          "type": "HTMLElement",
+          "description": "The [data-bn=\"tabs\"] element\n *"
+        }
+      }
+    },
+    "@basenative/components#renderTextarea": {
+      "name": "renderTextarea",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/textarea.js",
+      "repo": "BaseNative",
+      "purpose": "Textarea component \u2014 wraps native <textarea> with field system integration.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "textarea"
+        ]
+      },
+      "props": {
+        "options": {
+          "type": "string",
+          "description": ".name\n *"
+        }
+      }
+    },
+    "@basenative/components#renderToastContainer": {
+      "name": "renderToastContainer",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/toast.js",
+      "repo": "BaseNative",
+      "purpose": "Toast notification system \u2014 non-blocking popover-based notifications.",
+      "variants": [
+        "success"
+      ],
+      "dataAttributes": {
+        "bn": [
+          "toast-container"
+        ],
+        "position": [
+          "${escapeAttr(position)}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/components#renderToggle": {
+      "name": "renderToggle",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/toggle.js",
+      "repo": "BaseNative",
+      "purpose": "Toggle/Switch component \u2014 <input type=\"checkbox\" role=\"switch\">.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "toggle",
+          "toggle-label"
+        ]
+      },
+      "props": {
+        "options": {
+          "type": "string",
+          "description": ".name\n *"
+        }
+      }
+    },
+    "@basenative/components#renderTooltip": {
+      "name": "renderTooltip",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/tooltip.js",
+      "repo": "BaseNative",
+      "purpose": "Tooltip \u2014 popover-based tooltip using the Popover API.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "tooltip",
+          "tooltip-trigger"
+        ],
+        "position": [
+          "${escapeAttr(position)}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/components#renderTree": {
+      "name": "renderTree",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/tree.js",
+      "repo": "BaseNative",
+      "purpose": "Tree view \u2014 expandable hierarchical tree.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "tree",
+          "tree-children",
+          "tree-icon",
+          "tree-indent",
+          "tree-item",
+          "tree-item-content",
+          "tree-label",
+          "tree-toggle",
+          "treegrid",
+          "treegrid-row"
+        ],
+        "node-id": [
+          "${escapeAttr(nodeId)}"
+        ],
+        "level": [
+          "${level}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/components#renderTreeGrid": {
+      "name": "renderTreeGrid",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/tree.js",
+      "repo": "BaseNative",
+      "purpose": "Tree view \u2014 expandable hierarchical tree.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "tree",
+          "tree-children",
+          "tree-icon",
+          "tree-indent",
+          "tree-item",
+          "tree-item-content",
+          "tree-label",
+          "tree-toggle",
+          "treegrid",
+          "treegrid-row"
+        ],
+        "node-id": [
+          "${escapeAttr(nodeId)}"
+        ],
+        "level": [
+          "${level}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/components#renderVirtualList": {
+      "name": "renderVirtualList",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/virtualizer.js",
+      "repo": "BaseNative",
+      "purpose": "Virtualizer \u2014 renders a virtual scroll container placeholder.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "virtual-item",
+          "virtual-spacer",
+          "virtual-window",
+          "virtualizer"
+        ],
+        "index": [
+          "${index}"
+        ],
+        "item-height": [
+          "${Number(itemHeight)}"
+        ],
+        "total": [
+          "${items.length}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/date#renderDatepicker": {
+      "name": "renderDatepicker",
+      "kind": "render-function",
+      "package": "@basenative/date",
+      "file": "packages/date/src/datepicker.js",
+      "repo": "BaseNative",
+      "purpose": "Date picker using native <input type=\"date\"> with progressive enhancement.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "datepicker",
+          "datepicker-input",
+          "label"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/date#renderDateRange": {
+      "name": "renderDateRange",
+      "kind": "render-function",
+      "package": "@basenative/date",
+      "file": "packages/date/src/daterange.js",
+      "repo": "BaseNative",
+      "purpose": "Date range picker \u2014 two date inputs for start/end.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "daterange",
+          "daterange-end",
+          "daterange-input",
+          "daterange-inputs",
+          "daterange-separator",
+          "daterange-start",
+          "label"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/date#renderTimepicker": {
+      "name": "renderTimepicker",
+      "kind": "render-function",
+      "package": "@basenative/date",
+      "file": "packages/date/src/timepicker.js",
+      "repo": "BaseNative",
+      "purpose": "Time picker using native <input type=\"time\">.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "label",
+          "timepicker",
+          "timepicker-input"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/favicon#renderAppleSvg": {
+      "name": "renderAppleSvg",
+      "kind": "render-function",
+      "package": "@basenative/favicon",
+      "file": "packages/favicon/src/render.js",
+      "repo": "BaseNative",
+      "purpose": "Pure SVG renderer. Composes a `shape` primitive (the colored body) with a",
+      "variants": null,
+      "dataAttributes": null,
+      "props": {
+        "name": {
+          "type": "ShapeName",
+          "description": "*"
+        },
+        "palette": {
+          "type": "Palette",
+          "description": "*"
+        },
+        "spec": {
+          "type": "FaviconSpec",
+          "description": "*"
+        }
+      }
+    },
+    "@basenative/favicon#renderFaviconSvg": {
+      "name": "renderFaviconSvg",
+      "kind": "render-function",
+      "package": "@basenative/favicon",
+      "file": "packages/favicon/src/render.js",
+      "repo": "BaseNative",
+      "purpose": "Pure SVG renderer. Composes a `shape` primitive (the colored body) with a",
+      "variants": null,
+      "dataAttributes": null,
+      "props": {
+        "name": {
+          "type": "ShapeName",
+          "description": "*"
+        },
+        "palette": {
+          "type": "Palette",
+          "description": "*"
+        },
+        "spec": {
+          "type": "FaviconSpec",
+          "description": "*"
+        }
+      }
+    },
+    "@basenative/favicon#renderGlyph": {
+      "name": "renderGlyph",
+      "kind": "render-function",
+      "package": "@basenative/favicon",
+      "file": "packages/favicon/src/glyphs.js",
+      "repo": "BaseNative",
+      "purpose": "Programmatic glyph library. Every glyph is a function returning a string",
+      "variants": null,
+      "dataAttributes": null,
+      "props": {
+        "spec": {
+          "type": "GlyphSpec",
+          "description": "*"
+        },
+        "palette": {
+          "type": "Palette",
+          "description": "*"
+        },
+        "kind": {
+          "type": "\"monogram\"|\"symbol\"|\"wordmark\"|\"sigil\"",
+          "description": "*"
+        }
+      }
+    },
+    "@basenative/favicon#renderMaskableSvg": {
+      "name": "renderMaskableSvg",
+      "kind": "render-function",
+      "package": "@basenative/favicon",
+      "file": "packages/favicon/src/render.js",
+      "repo": "BaseNative",
+      "purpose": "Pure SVG renderer. Composes a `shape` primitive (the colored body) with a",
+      "variants": null,
+      "dataAttributes": null,
+      "props": {
+        "name": {
+          "type": "ShapeName",
+          "description": "*"
+        },
+        "palette": {
+          "type": "Palette",
+          "description": "*"
+        },
+        "spec": {
+          "type": "FaviconSpec",
+          "description": "*"
+        }
+      }
+    },
+    "@basenative/keyboard#renderKeyboard": {
+      "name": "renderKeyboard",
+      "kind": "render-function",
+      "package": "@basenative/keyboard",
+      "file": "packages/keyboard/src/keyboard.js",
+      "repo": "BaseNative",
+      "purpose": "Keyboard primitive \u2014 renders an on-screen keyboard from a layout",
+      "variants": null,
+      "dataAttributes": {
+        "theme": [
+          "${escapeHtml(options.theme)}"
+        ],
+        "bn": [
+          "kb-key",
+          "kb-row",
+          "kb-rows",
+          "keyboard"
+        ],
+        "kb-type": [
+          "${key.type}",
+          "char"
+        ],
+        "kb-key": [
+          "${escapeHtml(key.key)}"
+        ],
+        "kb-variant": [
+          "${escapeHtml(key.variant)}"
+        ],
+        "row": [
+          "${ri}"
+        ]
+      },
+      "props": null
+    },
+    "@basenative/marketplace#renderPackageCard": {
+      "name": "renderPackageCard",
+      "kind": "render-function",
+      "package": "@basenative/marketplace",
+      "file": "packages/marketplace/src/card.js",
+      "repo": "BaseNative",
+      "purpose": "Renders a marketplace package card as an HTML string.",
+      "variants": null,
+      "dataAttributes": {
+        "bn": [
+          "pkg-author",
+          "pkg-card",
+          "pkg-category",
+          "pkg-desc",
+          "pkg-header",
+          "pkg-name",
+          "pkg-stat",
+          "pkg-stats",
+          "pkg-tag",
+          "pkg-tags"
+        ]
+      },
+      "props": {
+        "pkg": {
+          "type": "string",
+          "description": ".name - Package name (e.g., \""
+        }
+      }
+    },
+    "@basenative/notify#renderEmail": {
+      "name": "renderEmail",
+      "kind": "render-function",
+      "package": "@basenative/notify",
+      "file": "packages/notify/src/email.js",
+      "repo": "BaseNative",
+      "purpose": "`@basenative/runtime/shared/escape` is the canonical escaping shared by the",
+      "variants": null,
+      "dataAttributes": null,
+      "props": {
+        "template": {
+          "type": "string",
+          "description": "HTML template with {{ variable }} placeholders.\n *"
+        },
+        "data": {
+          "type": "Record<string, string>",
+          "description": "Key-value pairs for interpolation.\n *"
+        }
+      }
+    },
+    "@basenative/runtime#renderWithBoundary": {
+      "name": "renderWithBoundary",
+      "kind": "render-function",
+      "package": "@basenative/runtime",
+      "file": "packages/runtime/src/error-boundary.js",
+      "repo": "BaseNative",
+      "purpose": "Error boundary system for BaseNative templates.",
+      "variants": null,
+      "dataAttributes": null,
+      "props": {
+        "options": {
+          "type": "object",
+          "description": "*"
+        },
+        "renderFn": {
+          "type": "Function",
+          "description": "Function that returns rendered HTML\n *"
+        }
+      }
+    },
+    "@basenative/visual-builder#renderCanvas": {
+      "name": "renderCanvas",
+      "kind": "render-function",
+      "package": "@basenative/visual-builder",
+      "file": "packages/visual-builder/src/renderer.js",
+      "repo": "BaseNative",
+      "purpose": "renderCanvas(canvas, componentMap) - Renders canvas nodes to HTML",
+      "variants": null,
+      "dataAttributes": null,
+      "props": {
+        "canvas": {
+          "type": "import('./canvas.js').Canvas",
+          "description": "*"
+        },
+        "componentMap": {
+          "type": "Record<string, (props: object) => string>",
+          "description": "*"
+        }
+      }
+    },
+    "@basenative/visual-builder#renderNode": {
+      "name": "renderNode",
+      "kind": "render-function",
+      "package": "@basenative/visual-builder",
+      "file": "packages/visual-builder/src/renderer.js",
+      "repo": "BaseNative",
+      "purpose": "renderCanvas(canvas, componentMap) - Renders canvas nodes to HTML",
+      "variants": null,
+      "dataAttributes": null,
+      "props": {
+        "canvas": {
+          "type": "import('./canvas.js').Canvas",
+          "description": "*"
+        },
+        "componentMap": {
+          "type": "Record<string, (props: object) => string>",
+          "description": "*"
+        }
+      }
+    },
+    "element:bn-builder": {
+      "name": "bn-builder",
+      "kind": "custom-element",
+      "package": "@basenative/builder",
+      "file": "packages/builder/src/builder-element.js",
+      "repo": "BaseNative",
+      "purpose": "[No JSDoc found]",
+      "variants": null,
+      "dataAttributes": {
+        "bn-builder-action": [
+          "clear",
+          "export",
+          "redo",
+          "undo"
+        ]
+      },
+      "props": null
+    },
+    "element:bn-builder-canvas": {
+      "name": "bn-builder-canvas",
+      "kind": "custom-element",
+      "package": "@basenative/builder",
+      "file": "packages/builder/src/builder-element.js",
+      "repo": "BaseNative",
+      "purpose": "[No JSDoc found]",
+      "variants": null,
+      "dataAttributes": {
+        "bn-builder-action": [
+          "clear",
+          "export",
+          "redo",
+          "undo"
+        ]
+      },
+      "props": null
+    },
+    "element:bn-builder-inspector": {
+      "name": "bn-builder-inspector",
+      "kind": "custom-element",
+      "package": "@basenative/builder",
+      "file": "packages/builder/src/builder-element.js",
+      "repo": "BaseNative",
+      "purpose": "[No JSDoc found]",
+      "variants": null,
+      "dataAttributes": {
+        "bn-builder-action": [
+          "clear",
+          "export",
+          "redo",
+          "undo"
+        ]
+      },
+      "props": null
+    },
+    "element:bn-builder-palette": {
+      "name": "bn-builder-palette",
+      "kind": "custom-element",
+      "package": "@basenative/builder",
+      "file": "packages/builder/src/builder-element.js",
+      "repo": "BaseNative",
+      "purpose": "[No JSDoc found]",
+      "variants": null,
+      "dataAttributes": {
+        "bn-builder-action": [
+          "clear",
+          "export",
+          "redo",
+          "undo"
+        ]
+      },
+      "props": null
+    },
+    "element:bn-builder-tree": {
+      "name": "bn-builder-tree",
+      "kind": "custom-element",
+      "package": "@basenative/builder",
+      "file": "packages/builder/src/builder-element.js",
+      "repo": "BaseNative",
+      "purpose": "[No JSDoc found]",
+      "variants": null,
+      "dataAttributes": {
+        "bn-builder-action": [
+          "clear",
+          "export",
+          "redo",
+          "undo"
+        ]
+      },
+      "props": null
+    },
+    "element:bn-canvas": {
+      "name": "bn-canvas",
+      "kind": "custom-element",
+      "package": "@basenative/visual-builder",
+      "file": "packages/visual-builder/src/bn-canvas.js",
+      "repo": "BaseNative",
+      "purpose": "<bn-canvas> Web Component",
+      "variants": null,
+      "dataAttributes": null,
+      "props": null
+    }
+  }
+}
