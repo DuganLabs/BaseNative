@@ -24,9 +24,8 @@
  * dead — the repo dimension is preserved end to end in the output so
  * BaseNative-internal and consumer usage can be read separately.
  *
- * Usage (must be run from inside a package directory — node is refused at
- * the monorepo root in this environment):
- *   cd packages/validate && node ../../scripts/component-usage.js
+ * Usage:
+ *   node scripts/component-usage.js
  *
  * Output: <BaseNative repo root>/.agents/component-usage.json
  */
@@ -39,20 +38,29 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 // the same routine the validator uses. Reusing it rather than reimplementing it
 // is the entire point of Phase 0.
 //
-// Only scanTags. scanInterpolations and spanAt were imported and never called;
-// CodeQL caught it. Interpolation holes are handled by splitting templates into
-// static segments before tokenizing (see collectTemplateSegments), and line/col
-// comes from the local lineIndex, which is cheaper here because it is computed
-// once per file rather than per offset.
+// Only scanTags: scanInterpolations and spanAt were imported and never called.
+// Imported by path because the workspace root has no dependency on
+// @basenative/validate, so '@basenative/validate/scan' does not resolve from
+// scripts/ on a clean --frozen-lockfile checkout.
 //
-// Imported by path, not as '@basenative/validate/scan'. The workspace root has
-// no dependency on @basenative/validate, so the bare specifier does not resolve
-// from scripts/ on a clean `pnpm install --frozen-lockfile` checkout — it throws
-// ERR_MODULE_NOT_FOUND. This is repo tooling reaching into a sibling package,
-// not a consumer, so a path is the honest form and needs no root dependency.
-// The published subpath still exists for real consumers and is covered by
-// packages/validate/src/scan-export.test.js.
+// Imported by path rather than through the `@basenative/validate/scan` subpath
+// because Node resolves a bare specifier from the *importing file's* directory:
+// from scripts/ that means scripts/node_modules then <root>/node_modules, and
+// the workspace root does not depend on @basenative/validate, so the bare form
+// throws ERR_MODULE_NOT_FOUND on a clean `pnpm install --frozen-lockfile`
+// checkout no matter which directory the script is invoked from. Same module,
+// same tokenizer; only the specifier differs.
 import { scanTags } from '../packages/validate/src/scan.js';
+
+// The JS string/template-literal lexer that feeds the tokenizer. Shared with
+// scripts/component-index.js and scripts/ds-lint.js so the three tools cannot
+// disagree about what counts as template content.
+import {
+  lineIndex,
+  nonCodeRanges,
+  isInRanges,
+  extractStaticSegments,
+} from './lib/template-markup.js';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const BASENATIVE_ROOT = resolve(SCRIPT_DIR, '..');
@@ -98,241 +106,6 @@ function walk(root) {
     }
   }
   return out;
-}
-
-/** 1-based line/col for an offset, without pulling in scan.js's spanAt for non-template contexts (same algorithm, kept local so line numbers are cheap to compute per-file once). */
-function lineIndex(source) {
-  const starts = [0];
-  for (let i = 0; i < source.length; i++) {
-    if (source[i] === '\n') starts.push(i + 1);
-  }
-  return (offset) => {
-    // binary search
-    let lo = 0, hi = starts.length - 1;
-    while (lo < hi) {
-      const mid = (lo + hi + 1) >> 1;
-      if (starts[mid] <= offset) lo = mid; else hi = mid - 1;
-    }
-    return { line: lo + 1, col: offset - starts[lo] + 1 };
-  };
-}
-
-// -----------------------------------------------------------------------
-// Generic JS lexing: template-literal and string-literal boundaries.
-//
-// This is NOT an approximation of scanTags — it answers a
-// different question (where does a JS string/template literal begin and end,
-// and where do its `${ }` holes fall) so that the REAL tokenizer can then be
-// run on each static segment. Getting template-literal boundaries wrong is a
-// generic JS-lexing problem, not a BaseNative-template-dialect one.
-// -----------------------------------------------------------------------
-
-/**
- * Reads a template literal starting at the backtick index `start`. Returns
- * { end, holes } where `end` is the index of the closing backtick and each
- * hole is `{ start, end }` spanning `${` ... the matching `}` (end is just
- * past the `}`). Returns null if the literal never closes (malformed/EOF).
- */
-function readTemplateLiteral(source, start) {
-  const n = source.length;
-  let i = start + 1;
-  const holes = [];
-  while (i < n) {
-    const c = source[i];
-    if (c === '\\') { i += 2; continue; }
-    if (c === '`') return { end: i, holes };
-    if (c === '$' && source[i + 1] === '{') {
-      const holeStart = i;
-      let j = i + 2;
-      let depth = 1;
-      while (j < n && depth > 0) {
-        const cj = source[j];
-        if (cj === '\\') { j += 2; continue; }
-        if (cj === '`') {
-          const nested = readTemplateLiteral(source, j);
-          j = nested ? nested.end + 1 : j + 1;
-          continue;
-        }
-        if (cj === '"' || cj === "'") {
-          const q = cj;
-          j++;
-          while (j < n && source[j] !== q) { j += source[j] === '\\' ? 2 : 1; }
-          j++;
-          continue;
-        }
-        if (cj === '/' && source[j + 1] === '/') {
-          const k = source.indexOf('\n', j);
-          j = k === -1 ? n : k;
-          continue;
-        }
-        if (cj === '/' && source[j + 1] === '*') {
-          const k = source.indexOf('*/', j + 2);
-          j = k === -1 ? n : k + 2;
-          continue;
-        }
-        if (cj === '{') { depth++; j++; continue; }
-        if (cj === '}') { depth--; j++; continue; }
-        j++;
-      }
-      holes.push({ start: holeStart, end: j });
-      i = j;
-      continue;
-    }
-    i++;
-  }
-  return null;
-}
-
-/**
- * Walks a whole file once, finding every template literal (with its holes)
- * and every plain single/double-quoted string literal, skipping comments so
- * a commented-out `<div data-bn="...">` is not counted as a live usage.
- *
- * Returns raw literal records; `extractStaticSegments` turns these into the
- * text actually handed to scanTags.
- */
-function findStringLiterals(source) {
-  const templates = [];
-  const strings = [];
-  const comments = [];
-  const n = source.length;
-  let i = 0;
-  while (i < n) {
-    const c = source[i];
-    if (c === '`') {
-      const lit = readTemplateLiteral(source, i);
-      if (lit) {
-        templates.push({ start: i + 1, end: lit.end, holes: lit.holes });
-        i = lit.end + 1;
-      } else {
-        i++;
-      }
-      continue;
-    }
-    if (c === '"' || c === "'") {
-      const q = c;
-      let j = i + 1;
-      while (j < n && source[j] !== q) { j += source[j] === '\\' ? 2 : 1; }
-      if (j < n) {
-        strings.push({ start: i + 1, end: j });
-        i = j + 1;
-      } else {
-        i++;
-      }
-      continue;
-    }
-    if (c === '/' && source[i + 1] === '/') {
-      const k = source.indexOf('\n', i);
-      comments.push({ start: i, end: k === -1 ? n : k });
-      i = k === -1 ? n : k;
-      continue;
-    }
-    if (c === '/' && source[i + 1] === '*') {
-      const k = source.indexOf('*/', i + 2);
-      comments.push({ start: i, end: k === -1 ? n : k + 2 });
-      i = k === -1 ? n : k + 2;
-      continue;
-    }
-    i++;
-  }
-  return { templates, strings, comments };
-}
-
-/**
- * Ranges of the file that are NOT executable JS — the literal text inside
- * string/template literals (never their `${ }` holes, which are real code)
- * plus comments. `(a) JS import + call` detection must stay outside these
- * ranges, or a documentation code-sample embedded in a template literal
- * (`code(\`import { renderButton } ...\`)`, seen for real in
- * examples/express/component-demos.js) gets counted as a live call site.
- * `(b)`/`(c)` detection is the opposite: it deliberately runs ONLY inside
- * these ranges, since that's where template markup lives.
- */
-function nonCodeRanges(source) {
-  const { templates, strings, comments } = findStringLiterals(source);
-  const ranges = [];
-  for (const c of comments) ranges.push([c.start, c.end]);
-  for (const s of strings) ranges.push([s.start - 1, s.end + 1]);
-  for (const t of templates) {
-    let cursor = t.start - 1;
-    for (const hole of t.holes) {
-      ranges.push([cursor, hole.start]);
-      cursor = hole.end;
-    }
-    ranges.push([cursor, t.end + 1]);
-  }
-  ranges.sort((a, b) => a[0] - b[0]);
-  const merged = [];
-  for (const r of ranges) {
-    const last = merged[merged.length - 1];
-    if (last && r[0] <= last[1]) last[1] = Math.max(last[1], r[1]);
-    else merged.push(r);
-  }
-  return merged;
-}
-
-function isInRanges(ranges, index) {
-  let lo = 0, hi = ranges.length - 1;
-  while (lo <= hi) {
-    const mid = (lo + hi) >> 1;
-    const [s, e] = ranges[mid];
-    if (index < s) hi = mid - 1;
-    else if (index >= e) lo = mid + 1;
-    else return true;
-  }
-  return false;
-}
-
-/**
- * Turns the raw literal records into the static text segments that are safe
- * to hand to scanTags, each tagged with its absolute
- * offset into the original file so line/col stay accurate.
- *
- * LIMITATION (deliberate, not a bug): a `${...}` hole splits its template
- * into separate static segments rather than being bridged or guessed at. A
- * tag whose `>` — or whose `data-bn` attribute itself — falls on the far
- * side of a hole from where the tag opened is therefore invisible to this
- * scanner, because scanTags never sees the two halves as one string. This is
- * the honest reading of "a hole splits a template into static segments; do
- * not let a hole silently merge two tags": bridging holes with a guessed
- * placeholder risks manufacturing tags that were never in the source (a hole
- * can itself expand to markup, including more tags, at runtime) or hiding a
- * hole that really does separate two unrelated tags. See LIMITATIONS in the
- * report for the practical impact.
- */
-function extractStaticSegments(source) {
-  const { templates, strings } = findStringLiterals(source);
-  const segments = [];
-
-  for (const t of templates) {
-    let cursor = t.start;
-    for (const hole of t.holes) {
-      if (hole.start > cursor) {
-        segments.push({ start: cursor, text: source.slice(cursor, hole.start) });
-      }
-      cursor = hole.end;
-    }
-    if (t.end > cursor) {
-      segments.push({ start: cursor, text: source.slice(cursor, t.end) });
-    }
-  }
-
-  for (const s of strings) {
-    if (s.end > s.start) {
-      // Plain JS strings escape their own quote char and backslashes; template
-      // literals don't use this quoting so they're left untouched above. A
-      // light unescape keeps `\"` from confusing the tokenizer's own quote
-      // handling. More exotic escapes (\uXXXX etc.) are left as-is — they
-      // don't appear in the attribute names/values this scanner cares about.
-      const raw = source.slice(s.start, s.end);
-      const text = raw.replace(/\\(["'\\])/g, '$1');
-      segments.push({ start: s.start, text });
-    }
-  }
-
-  // Only segments that could plausibly contain markup are worth tokenizing —
-  // cheap prefilter, big win at this file count.
-  return segments.filter((seg) => seg.text.includes('<') || seg.text.includes('{{'));
 }
 
 // -----------------------------------------------------------------------
@@ -865,11 +638,8 @@ function main() {
   }
 }
 
-// Run only when executed directly, not when imported. Without this guard the
-// module cannot be imported at all without performing a full scan and
-// overwriting .agents/component-usage.json as a side effect — which is exactly
-// what happened when a test first tried to import it, and is why nothing had
-// ever imported it to check that it loads.
+// Run only when executed directly. Without this the module cannot be imported
+// without performing a full scan and overwriting its own output file.
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main();
 }

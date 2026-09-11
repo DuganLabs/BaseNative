@@ -1,0 +1,2483 @@
+{
+  "$schema": "https://basenative.dev/schemas/component-index.json",
+  "generatedBy": "scripts/llms-txt.js (scripts/component-index.js)",
+  "generatedOn": "2026-09-11",
+  "contract": "Generated from source. Never hand-edit: `node scripts/llms-txt.js --check` fails CI when this file disagrees with packages/*/src. `variants` is the set of values a stylesheet actually declares a rule for, so a value outside it renders unstyled rather than erroring.",
+  "counts": {
+    "components": 63,
+    "renderFunctions": 57,
+    "customElements": 6,
+    "styledContracts": 172,
+    "componentsWithVariants": 18
+  },
+  "stylesheets": [
+    "packages/builder/src/builder.css",
+    "packages/combobox/src/styles.css",
+    "packages/components/src/components.css",
+    "packages/components/src/index.css",
+    "packages/components/src/layers.css",
+    "packages/components/src/layout.css",
+    "packages/components/src/reset.css",
+    "packages/components/src/states.css",
+    "packages/components/src/theme.css",
+    "packages/components/src/tokens.css",
+    "packages/fonts/fonts.css",
+    "packages/icons/reset.css",
+    "packages/keyboard/src/styles.css",
+    "packages/components/src/layout-grid.js",
+    "packages/marketplace/src/card.js"
+  ],
+  "contractIndex": {
+    "accordion": [
+      "@basenative/components#renderAccordion"
+    ],
+    "accordion-content": [
+      "@basenative/components#renderAccordion"
+    ],
+    "accordion-header": [
+      "@basenative/components#renderAccordion"
+    ],
+    "accordion-item": [
+      "@basenative/components#renderAccordion"
+    ],
+    "admin-queue-list": [
+      "@basenative/admin#renderAdminQueueList"
+    ],
+    "admin-user-list": [
+      "@basenative/admin#renderAdminUserList"
+    ],
+    "alert": [
+      "@basenative/components#renderAlert"
+    ],
+    "alert-content": [
+      "@basenative/components#renderAlert"
+    ],
+    "alert-dismiss": [
+      "@basenative/components#renderAlert"
+    ],
+    "avatar": [
+      "@basenative/components#renderAvatar"
+    ],
+    "avatar-img": [
+      "@basenative/components#renderAvatar"
+    ],
+    "avatar-initials": [
+      "@basenative/components#renderAvatar"
+    ],
+    "badge": [
+      "@basenative/components#renderBadge"
+    ],
+    "breadcrumb": [
+      "@basenative/components#renderBreadcrumb"
+    ],
+    "breadcrumb-item": [
+      "@basenative/components#renderBreadcrumb"
+    ],
+    "breadcrumb-list": [
+      "@basenative/components#renderBreadcrumb"
+    ],
+    "breadcrumb-separator": [
+      "@basenative/components#renderBreadcrumb"
+    ],
+    "button": [
+      "@basenative/components#renderButton"
+    ],
+    "calendar": [
+      "@basenative/components#renderCalendar"
+    ],
+    "calendar-corner": [
+      "@basenative/components#renderCalendar"
+    ],
+    "calendar-day-column": [
+      "@basenative/components#renderCalendar"
+    ],
+    "calendar-day-header": [
+      "@basenative/components#renderCalendar"
+    ],
+    "calendar-event": [
+      "@basenative/components#renderCalendar"
+    ],
+    "calendar-event-time": [
+      "@basenative/components#renderCalendar"
+    ],
+    "calendar-event-title": [
+      "@basenative/components#renderCalendar"
+    ],
+    "calendar-grid": [
+      "@basenative/components#renderCalendar"
+    ],
+    "calendar-slot": [
+      "@basenative/components#renderCalendar"
+    ],
+    "calendar-time-gutter": [
+      "@basenative/components#renderCalendar"
+    ],
+    "calendar-time-label": [
+      "@basenative/components#renderCalendar"
+    ],
+    "card": [
+      "@basenative/components#renderCard"
+    ],
+    "card-body": [
+      "@basenative/components#renderCard"
+    ],
+    "card-footer": [
+      "@basenative/components#renderCard"
+    ],
+    "card-header": [
+      "@basenative/components#renderCard"
+    ],
+    "cb-field": [
+      "@basenative/combobox#renderCombobox"
+    ],
+    "cb-input": [
+      "@basenative/combobox#renderCombobox"
+    ],
+    "cb-label": [
+      "@basenative/combobox#renderCombobox"
+    ],
+    "cb-listbox": [
+      "@basenative/combobox#renderCombobox"
+    ],
+    "cb-live": [
+      "@basenative/combobox#renderCombobox"
+    ],
+    "cb-toggle": [
+      "@basenative/combobox#renderCombobox"
+    ],
+    "checkbox": [
+      "@basenative/components#renderCheckbox"
+    ],
+    "checkbox-label": [
+      "@basenative/components#renderCheckbox"
+    ],
+    "combobox": [
+      "@basenative/combobox#renderCombobox",
+      "@basenative/components#renderCombobox"
+    ],
+    "combobox-input": [
+      "@basenative/components#renderCombobox"
+    ],
+    "command-footer": [
+      "@basenative/components#renderCommandPalette"
+    ],
+    "command-group": [
+      "@basenative/components#renderCommandPalette"
+    ],
+    "command-group-label": [
+      "@basenative/components#renderCommandPalette"
+    ],
+    "command-header": [
+      "@basenative/components#renderCommandPalette"
+    ],
+    "command-icon": [
+      "@basenative/components#renderCommandPalette"
+    ],
+    "command-input": [
+      "@basenative/components#renderCommandPalette"
+    ],
+    "command-item": [
+      "@basenative/components#renderCommandPalette"
+    ],
+    "command-label": [
+      "@basenative/components#renderCommandPalette"
+    ],
+    "command-list": [
+      "@basenative/components#renderCommandPalette"
+    ],
+    "command-palette": [
+      "@basenative/components#renderCommandPalette"
+    ],
+    "command-shortcut": [
+      "@basenative/components#renderCommandPalette"
+    ],
+    "datagrid": [
+      "@basenative/components#renderDataGrid"
+    ],
+    "datagrid-empty": [
+      "@basenative/components#renderDataGrid"
+    ],
+    "datagrid-footer": [
+      "@basenative/components#renderDataGrid"
+    ],
+    "datagrid-info": [
+      "@basenative/components#renderDataGrid"
+    ],
+    "datagrid-row": [
+      "@basenative/components#renderDataGrid"
+    ],
+    "datagrid-row-select": [
+      "@basenative/components#renderDataGrid"
+    ],
+    "datagrid-scroll": [
+      "@basenative/components#renderDataGrid"
+    ],
+    "datagrid-select-all": [
+      "@basenative/components#renderDataGrid"
+    ],
+    "datagrid-table": [
+      "@basenative/components#renderDataGrid"
+    ],
+    "datagrid-td": [
+      "@basenative/components#renderDataGrid"
+    ],
+    "datagrid-td-select": [
+      "@basenative/components#renderDataGrid"
+    ],
+    "datagrid-th": [
+      "@basenative/components#renderDataGrid"
+    ],
+    "datagrid-th-button": [
+      "@basenative/components#renderDataGrid"
+    ],
+    "datagrid-th-select": [
+      "@basenative/components#renderDataGrid"
+    ],
+    "datepicker": [
+      "@basenative/date#renderDatepicker"
+    ],
+    "datepicker-input": [
+      "@basenative/date#renderDatepicker"
+    ],
+    "daterange": [
+      "@basenative/date#renderDateRange"
+    ],
+    "daterange-end": [
+      "@basenative/date#renderDateRange"
+    ],
+    "daterange-input": [
+      "@basenative/date#renderDateRange"
+    ],
+    "daterange-inputs": [
+      "@basenative/date#renderDateRange"
+    ],
+    "daterange-separator": [
+      "@basenative/date#renderDateRange"
+    ],
+    "daterange-start": [
+      "@basenative/date#renderDateRange"
+    ],
+    "dialog": [
+      "@basenative/components#renderDialog"
+    ],
+    "dialog-body": [
+      "@basenative/components#renderDialog"
+    ],
+    "dialog-close": [
+      "@basenative/components#renderDialog"
+    ],
+    "dialog-header": [
+      "@basenative/components#renderDialog"
+    ],
+    "drawer": [
+      "@basenative/components#renderDrawer"
+    ],
+    "drawer-body": [
+      "@basenative/components#renderDrawer"
+    ],
+    "drawer-close": [
+      "@basenative/components#renderDrawer"
+    ],
+    "drawer-header": [
+      "@basenative/components#renderDrawer"
+    ],
+    "drawer-overlay": [
+      "@basenative/components#renderDrawer"
+    ],
+    "dropdown": [
+      "@basenative/components#renderDropdownMenu"
+    ],
+    "dropdown-icon": [
+      "@basenative/components#renderDropdownMenu"
+    ],
+    "dropdown-item": [
+      "@basenative/components#renderDropdownMenu"
+    ],
+    "dropdown-menu": [
+      "@basenative/components#renderDropdownMenu"
+    ],
+    "dropdown-separator": [
+      "@basenative/components#renderDropdownMenu"
+    ],
+    "dropdown-shortcut": [
+      "@basenative/components#renderDropdownMenu"
+    ],
+    "dropdown-trigger": [
+      "@basenative/components#renderDropdownMenu"
+    ],
+    "input": [
+      "@basenative/components#renderInput"
+    ],
+    "kb-key": [
+      "@basenative/keyboard#renderKeyboard"
+    ],
+    "kb-row": [
+      "@basenative/keyboard#renderKeyboard"
+    ],
+    "kb-rows": [
+      "@basenative/keyboard#renderKeyboard"
+    ],
+    "keyboard": [
+      "@basenative/keyboard#renderKeyboard"
+    ],
+    "layout-cell": [
+      "@basenative/components#renderLayoutGrid"
+    ],
+    "layout-grid": [
+      "@basenative/components#renderLayoutGrid"
+    ],
+    "multiselect": [
+      "@basenative/components#renderMultiselect"
+    ],
+    "multiselect-container": [
+      "@basenative/components#renderMultiselect"
+    ],
+    "multiselect-search": [
+      "@basenative/components#renderMultiselect"
+    ],
+    "multiselect-tags": [
+      "@basenative/components#renderMultiselect"
+    ],
+    "pagination": [
+      "@basenative/components#renderPagination"
+    ],
+    "pagination-ellipsis": [
+      "@basenative/components#renderPagination"
+    ],
+    "pipeline": [
+      "@basenative/components#renderPipeline"
+    ],
+    "pipeline-block": [
+      "@basenative/components#renderPipelineBlock"
+    ],
+    "pipeline-block-title": [
+      "@basenative/components#renderPipelineBlock"
+    ],
+    "pipeline-column": [
+      "@basenative/components#renderPipeline"
+    ],
+    "pipeline-column-cards": [
+      "@basenative/components#renderPipeline"
+    ],
+    "pipeline-column-count": [
+      "@basenative/components#renderPipeline"
+    ],
+    "pipeline-column-header": [
+      "@basenative/components#renderPipeline"
+    ],
+    "pipeline-column-title": [
+      "@basenative/components#renderPipeline"
+    ],
+    "pkg-card": [
+      "@basenative/marketplace#renderPackageCard"
+    ],
+    "pkg-header": [
+      "@basenative/marketplace#renderPackageCard"
+    ],
+    "pkg-name": [
+      "@basenative/marketplace#renderPackageCard"
+    ],
+    "pkg-stats": [
+      "@basenative/marketplace#renderPackageCard"
+    ],
+    "pkg-tags": [
+      "@basenative/marketplace#renderPackageCard"
+    ],
+    "progress": [
+      "@basenative/components#renderProgress"
+    ],
+    "radio": [
+      "@basenative/components#renderRadioGroup"
+    ],
+    "radio-group": [
+      "@basenative/components#renderRadioGroup"
+    ],
+    "radio-label": [
+      "@basenative/components#renderRadioGroup"
+    ],
+    "select": [
+      "@basenative/components#renderSelect"
+    ],
+    "skeleton": [
+      "@basenative/components#renderSkeleton"
+    ],
+    "spinner": [
+      "@basenative/components#renderSpinner"
+    ],
+    "sr-only": [
+      "@basenative/components#renderTable"
+    ],
+    "tab": [
+      "@basenative/components#renderTabs"
+    ],
+    "tab-list": [
+      "@basenative/components#renderTabs"
+    ],
+    "tab-panel": [
+      "@basenative/components#renderTabs"
+    ],
+    "table": [
+      "@basenative/components#renderTable"
+    ],
+    "table-container": [
+      "@basenative/components#renderTable"
+    ],
+    "table-empty": [
+      "@basenative/components#renderTable"
+    ],
+    "tabs": [
+      "@basenative/components#renderTabs"
+    ],
+    "tag": [
+      "@basenative/components#renderMultiselect"
+    ],
+    "tag-remove": [
+      "@basenative/components#renderMultiselect"
+    ],
+    "textarea": [
+      "@basenative/components#renderTextarea"
+    ],
+    "timepicker": [
+      "@basenative/date#renderTimepicker"
+    ],
+    "timepicker-input": [
+      "@basenative/date#renderTimepicker"
+    ],
+    "toast-container": [
+      "@basenative/components#renderToastContainer"
+    ],
+    "toggle": [
+      "@basenative/components#renderToggle"
+    ],
+    "toggle-label": [
+      "@basenative/components#renderToggle"
+    ],
+    "tooltip": [
+      "@basenative/components#renderTooltip"
+    ],
+    "tree": [
+      "@basenative/components#renderTree"
+    ],
+    "tree-children": [
+      "@basenative/components#renderTree"
+    ],
+    "tree-icon": [
+      "@basenative/components#renderTree"
+    ],
+    "tree-indent": [
+      "@basenative/components#renderTree"
+    ],
+    "tree-item": [
+      "@basenative/components#renderTree"
+    ],
+    "tree-item-content": [
+      "@basenative/components#renderTree"
+    ],
+    "tree-label": [
+      "@basenative/components#renderTree"
+    ],
+    "tree-toggle": [
+      "@basenative/components#renderTree"
+    ],
+    "treegrid": [
+      "@basenative/components#renderTreeGrid"
+    ],
+    "treegrid-row": [
+      "@basenative/components#renderTreeGrid"
+    ],
+    "virtual-item": [
+      "@basenative/components#renderVirtualList"
+    ],
+    "virtual-spacer": [
+      "@basenative/components#renderVirtualList"
+    ],
+    "virtual-window": [
+      "@basenative/components#renderVirtualList"
+    ],
+    "virtualizer": [
+      "@basenative/components#renderVirtualList"
+    ]
+  },
+  "extractionGaps": [],
+  "components": [
+    {
+      "id": "@basenative/admin#renderAdminQueueList",
+      "name": "renderAdminQueueList",
+      "kind": "render-function",
+      "package": "@basenative/admin",
+      "file": "packages/admin/src/components.js",
+      "signature": "renderAdminQueueList({ items, approveLabel, rejectLabel, emptyLabel, actionHandler })",
+      "purpose": "Render the moderation queue list.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "ul",
+        "primaryContract": "admin-queue-list",
+        "contracts": [
+          "admin-queue-list"
+        ],
+        "dataAttributes": [
+          "action",
+          "decision",
+          "id"
+        ]
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "a bare <ul> with your own classes, or literal <ul data-bn=\"admin-queue-list\"> markup"
+    },
+    {
+      "id": "@basenative/admin#renderAdminUserList",
+      "name": "renderAdminUserList",
+      "kind": "render-function",
+      "package": "@basenative/admin",
+      "file": "packages/admin/src/components.js",
+      "signature": "renderAdminUserList({ users, results, query, currentHandle, roles, labels, actionHandler, …+1 })",
+      "purpose": "Render the admin user-management list with search and per-row role controls.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "admin-user-list",
+        "contracts": [
+          "admin-user-list"
+        ],
+        "dataAttributes": [
+          "action",
+          "handle",
+          "role",
+          "user-id"
+        ]
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"admin-user-list\"> markup"
+    },
+    {
+      "id": "element:bn-builder",
+      "name": "bn-builder",
+      "kind": "custom-element",
+      "package": "@basenative/builder",
+      "file": "packages/builder/src/builder-element.js",
+      "signature": "<bn-builder></bn-builder>",
+      "purpose": "",
+      "deprecated": false,
+      "emits": {
+        "rootTag": null,
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "a hand-rolled <div> reimplementation of <bn-builder>"
+    },
+    {
+      "id": "element:bn-builder-canvas",
+      "name": "bn-builder-canvas",
+      "kind": "custom-element",
+      "package": "@basenative/builder",
+      "file": "packages/builder/src/canvas-element.js",
+      "signature": "<bn-builder-canvas></bn-builder-canvas>",
+      "purpose": "",
+      "deprecated": false,
+      "emits": {
+        "rootTag": null,
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "a hand-rolled <div> reimplementation of <bn-builder-canvas>",
+      "duplicateRegistrations": [
+        "packages/builder/src/builder-element.js",
+        "packages/builder/src/canvas-element.js"
+      ]
+    },
+    {
+      "id": "element:bn-builder-inspector",
+      "name": "bn-builder-inspector",
+      "kind": "custom-element",
+      "package": "@basenative/builder",
+      "file": "packages/builder/src/inspector-element.js",
+      "signature": "<bn-builder-inspector></bn-builder-inspector>",
+      "purpose": "",
+      "deprecated": false,
+      "emits": {
+        "rootTag": null,
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "a hand-rolled <div> reimplementation of <bn-builder-inspector>",
+      "duplicateRegistrations": [
+        "packages/builder/src/builder-element.js",
+        "packages/builder/src/inspector-element.js"
+      ]
+    },
+    {
+      "id": "element:bn-builder-palette",
+      "name": "bn-builder-palette",
+      "kind": "custom-element",
+      "package": "@basenative/builder",
+      "file": "packages/builder/src/palette-element.js",
+      "signature": "<bn-builder-palette></bn-builder-palette>",
+      "purpose": "",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "a hand-rolled <div> reimplementation of <bn-builder-palette>",
+      "duplicateRegistrations": [
+        "packages/builder/src/builder-element.js",
+        "packages/builder/src/palette-element.js"
+      ]
+    },
+    {
+      "id": "element:bn-builder-tree",
+      "name": "bn-builder-tree",
+      "kind": "custom-element",
+      "package": "@basenative/builder",
+      "file": "packages/builder/src/tree-element.js",
+      "signature": "<bn-builder-tree></bn-builder-tree>",
+      "purpose": "",
+      "deprecated": false,
+      "emits": {
+        "rootTag": null,
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "a hand-rolled <div> reimplementation of <bn-builder-tree>",
+      "duplicateRegistrations": [
+        "packages/builder/src/builder-element.js",
+        "packages/builder/src/tree-element.js"
+      ]
+    },
+    {
+      "id": "@basenative/builder#renderInspector",
+      "name": "renderInspector",
+      "kind": "render-function",
+      "package": "@basenative/builder",
+      "file": "packages/builder/src/inspector.js",
+      "signature": "renderInspector(state, palette)",
+      "purpose": "",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "header",
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "a bare <header> with your own classes"
+    },
+    {
+      "id": "@basenative/builder#renderNodeToElement",
+      "name": "renderNodeToElement",
+      "kind": "render-function",
+      "package": "@basenative/builder",
+      "file": "packages/builder/src/dom-render.js",
+      "signature": "renderNodeToElement(doc, node, palette)",
+      "purpose": "",
+      "deprecated": false,
+      "emits": {
+        "rootTag": null,
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "hand-written markup for this element"
+    },
+    {
+      "id": "@basenative/builder#renderPaletteHTML",
+      "name": "renderPaletteHTML",
+      "kind": "render-function",
+      "package": "@basenative/builder",
+      "file": "packages/builder/src/palette-element.js",
+      "signature": "renderPaletteHTML(palette)",
+      "purpose": "",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "li",
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "a bare <li> with your own classes"
+    },
+    {
+      "id": "@basenative/builder#renderTreeView",
+      "name": "renderTreeView",
+      "kind": "render-function",
+      "package": "@basenative/builder",
+      "file": "packages/builder/src/tree-view.js",
+      "signature": "renderTreeView(state)",
+      "purpose": "",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "ul",
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "a bare <ul> with your own classes"
+    },
+    {
+      "id": "@basenative/combobox#renderCombobox",
+      "name": "renderCombobox",
+      "kind": "render-function",
+      "package": "@basenative/combobox",
+      "file": "packages/combobox/src/combobox.js",
+      "signature": "renderCombobox(options)",
+      "purpose": "Render the combobox as an HTML string — pre-paint friendly. The static markup includes: - root <div role=\"com…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "combobox",
+        "contracts": [
+          "cb-label",
+          "combobox",
+          "cb-field",
+          "cb-input",
+          "cb-toggle",
+          "cb-listbox",
+          "cb-live"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"combobox\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderAccordion",
+      "name": "renderAccordion",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/accordion.js",
+      "signature": "renderAccordion(options)",
+      "purpose": "Accordion — collapsible sections using native <details>/<summary>.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "accordion",
+        "contracts": [
+          "accordion-item",
+          "accordion-header",
+          "accordion-content",
+          "accordion"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"accordion\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderAlert",
+      "name": "renderAlert",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/alert.js",
+      "signature": "renderAlert(content, options)",
+      "purpose": "Alert component — inline feedback; error/warning use role=\"alert\", others role=\"status\".",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "alert",
+        "contracts": [
+          "alert",
+          "alert-content",
+          "alert-dismiss"
+        ],
+        "dataAttributes": [
+          "variant"
+        ]
+      },
+      "variants": {
+        "variant": {
+          "contract": "alert",
+          "values": [
+            "error",
+            "info",
+            "success",
+            "warning"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": true
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"alert\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderAvatar",
+      "name": "renderAvatar",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/avatar.js",
+      "signature": "renderAvatar(options)",
+      "purpose": "Avatar — user avatar with image, initials, or icon fallback.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "span",
+        "primaryContract": "avatar",
+        "contracts": [
+          "avatar",
+          "avatar-img",
+          "avatar-initials"
+        ],
+        "dataAttributes": [
+          "shape",
+          "size"
+        ]
+      },
+      "variants": {
+        "size": {
+          "contract": "avatar",
+          "values": [
+            "lg",
+            "sm",
+            "xl"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": true
+        },
+        "shape": {
+          "contract": "avatar",
+          "values": [
+            "square"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": true
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <span> with your own classes, or literal <span data-bn=\"avatar\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderBadge",
+      "name": "renderBadge",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/badge.js",
+      "signature": "renderBadge(content, options)",
+      "purpose": "Badge component — status indicator.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "span",
+        "primaryContract": "badge",
+        "contracts": [
+          "badge"
+        ],
+        "dataAttributes": [
+          "variant"
+        ]
+      },
+      "variants": {
+        "variant": {
+          "contract": "badge",
+          "values": [
+            "default",
+            "error",
+            "primary",
+            "success",
+            "warning"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": true
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <span> with your own classes, or literal <span data-bn=\"badge\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderBreadcrumb",
+      "name": "renderBreadcrumb",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/breadcrumb.js",
+      "signature": "renderBreadcrumb(options)",
+      "purpose": "Breadcrumb — navigation trail; the last item is aria-current=\"page\".",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "nav",
+        "primaryContract": "breadcrumb",
+        "contracts": [
+          "breadcrumb-item",
+          "breadcrumb-separator",
+          "breadcrumb",
+          "breadcrumb-list"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <nav> with your own classes, or literal <nav data-bn=\"breadcrumb\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderButton",
+      "name": "renderButton",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/button.js",
+      "signature": "renderButton(content, options)",
+      "purpose": "Server-side render helper for a button element.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "button",
+        "primaryContract": "button",
+        "contracts": [
+          "button"
+        ],
+        "dataAttributes": [
+          "size",
+          "variant"
+        ]
+      },
+      "variants": {
+        "size": {
+          "contract": "button",
+          "values": [
+            "lg",
+            "sm"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": true
+        },
+        "variant": {
+          "contract": "button",
+          "values": [
+            "destructive",
+            "ghost",
+            "primary",
+            "secondary"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": true
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <button> with your own classes, or literal <button data-bn=\"button\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderCalendar",
+      "name": "renderCalendar",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/calendar.js",
+      "signature": "renderCalendar(options)",
+      "purpose": "Server-side render a weekly calendar grid with event blocks.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "calendar",
+        "contracts": [
+          "calendar-day-header",
+          "calendar-time-label",
+          "calendar-event",
+          "calendar-event-title",
+          "calendar-event-time",
+          "calendar-slot",
+          "calendar-day-column",
+          "calendar",
+          "calendar-grid",
+          "calendar-corner",
+          "calendar-time-gutter"
+        ],
+        "dataAttributes": [
+          "date",
+          "event-id",
+          "hour"
+        ]
+      },
+      "variants": {
+        "calendar-day-header.today": {
+          "contract": "calendar-day-header",
+          "values": [],
+          "openPatterns": [],
+          "matchesAnyValue": true,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": false
+        },
+        "calendar-event.dragging": {
+          "contract": "calendar-event",
+          "values": [],
+          "openPatterns": [],
+          "matchesAnyValue": true,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": false
+        },
+        "calendar-event.status": {
+          "contract": "calendar-event",
+          "values": [
+            "canceled",
+            "cancelled",
+            "completed",
+            "in_progress",
+            "invoiced",
+            "paid",
+            "scheduled"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": false
+        },
+        "calendar-event.continues": {
+          "contract": "calendar-event",
+          "values": [
+            "after",
+            "before",
+            "both"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": false
+        },
+        "calendar-slot.drop-target": {
+          "contract": "calendar-slot",
+          "values": [],
+          "openPatterns": [],
+          "matchesAnyValue": true,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": false
+        },
+        "calendar-day-column.today": {
+          "contract": "calendar-day-column",
+          "values": [],
+          "openPatterns": [],
+          "matchesAnyValue": true,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": false
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"calendar\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderCard",
+      "name": "renderCard",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/card.js",
+      "signature": "renderCard(options)",
+      "purpose": "Card component — semantic <article> container.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "article",
+        "primaryContract": "card",
+        "contracts": [
+          "card",
+          "card-header",
+          "card-body",
+          "card-footer"
+        ],
+        "dataAttributes": [
+          "variant"
+        ]
+      },
+      "variants": {},
+      "inertAxes": [
+        "variant"
+      ],
+      "styled": true,
+      "useInsteadOf": "a bare <article> with your own classes, or literal <article data-bn=\"card\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderCheckbox",
+      "name": "renderCheckbox",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/checkbox.js",
+      "signature": "renderCheckbox(options)",
+      "purpose": "Checkbox component — native <input type=\"checkbox\"> with label association.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "input",
+        "primaryContract": "checkbox",
+        "contracts": [
+          "checkbox-label",
+          "checkbox"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <input> with your own classes, or literal <input data-bn=\"checkbox\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderCombobox",
+      "name": "renderCombobox",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/combobox.js",
+      "signature": "renderCombobox(options)",
+      "purpose": "Combobox — searchable dropdown with keyboard navigation, rendered as a native <input> + <datalist>. Attribute…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "combobox",
+        "contracts": [
+          "combobox",
+          "combobox-input"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"combobox\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderCommandPalette",
+      "name": "renderCommandPalette",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/command-palette.js",
+      "signature": "renderCommandPalette(options)",
+      "purpose": "Command palette — Cmd+K style searchable command menu in a native <dialog>.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "dialog",
+        "primaryContract": "command-palette",
+        "contracts": [
+          "command-icon",
+          "command-shortcut",
+          "command-item",
+          "command-label",
+          "command-group",
+          "command-group-label",
+          "command-palette",
+          "command-header",
+          "command-input",
+          "command-list",
+          "command-footer"
+        ],
+        "dataAttributes": [
+          "action"
+        ]
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <dialog> with your own classes, or literal <dialog data-bn=\"command-palette\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderDataGrid",
+      "name": "renderDataGrid",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/datagrid.js",
+      "signature": "renderDataGrid(options)",
+      "purpose": "Data grid — sortable, filterable, paginated table with virtual scrolling support.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "datagrid",
+        "contracts": [
+          "datagrid-th-button",
+          "datagrid-th",
+          "datagrid-th-select",
+          "datagrid-select-all",
+          "datagrid-td",
+          "datagrid-td-select",
+          "datagrid-row-select",
+          "datagrid-row",
+          "datagrid-empty",
+          "datagrid",
+          "datagrid-scroll",
+          "datagrid-table",
+          "datagrid-footer",
+          "datagrid-info"
+        ],
+        "dataAttributes": [
+          "key",
+          "row-id"
+        ]
+      },
+      "variants": {
+        "datagrid-th.sortable": {
+          "contract": "datagrid-th",
+          "values": [],
+          "openPatterns": [],
+          "matchesAnyValue": true,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": false
+        },
+        "datagrid-th.sorted": {
+          "contract": "datagrid-th",
+          "values": [
+            "asc",
+            "desc"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": true,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": false
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"datagrid\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderDialog",
+      "name": "renderDialog",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/dialog.js",
+      "signature": "renderDialog(options)",
+      "purpose": "Dialog — modal/non-modal dialog using native <dialog> element.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "dialog",
+        "primaryContract": "dialog",
+        "contracts": [
+          "dialog-close",
+          "dialog",
+          "dialog-header",
+          "dialog-body"
+        ],
+        "dataAttributes": [
+          "size"
+        ]
+      },
+      "variants": {
+        "size": {
+          "contract": "dialog",
+          "values": [
+            "lg",
+            "sm"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": true
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <dialog> with your own classes, or literal <dialog data-bn=\"dialog\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderDrawer",
+      "name": "renderDrawer",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/drawer.js",
+      "signature": "renderDrawer(options)",
+      "purpose": "Drawer — side panel that slides in from the edge.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "aside",
+        "primaryContract": "drawer",
+        "contracts": [
+          "drawer-close",
+          "drawer-overlay",
+          "drawer",
+          "drawer-header",
+          "drawer-body"
+        ],
+        "dataAttributes": [
+          "position",
+          "size"
+        ]
+      },
+      "variants": {
+        "drawer-overlay.open": {
+          "contract": "drawer-overlay",
+          "values": [],
+          "openPatterns": [],
+          "matchesAnyValue": true,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": false
+        },
+        "position": {
+          "contract": "drawer",
+          "values": [
+            "left"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": true
+        },
+        "open": {
+          "contract": "drawer",
+          "values": [],
+          "openPatterns": [],
+          "matchesAnyValue": true,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": false
+        },
+        "size": {
+          "contract": "drawer",
+          "values": [
+            "lg",
+            "sm"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": true
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <aside> with your own classes, or literal <aside data-bn=\"drawer\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderDropdownMenu",
+      "name": "renderDropdownMenu",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/dropdown-menu.js",
+      "signature": "renderDropdownMenu(options)",
+      "purpose": "Dropdown menu — popover-based menu with role=\"menu\" / \"menuitem\".",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "dropdown-menu",
+        "contracts": [
+          "dropdown-separator",
+          "dropdown-icon",
+          "dropdown-shortcut",
+          "dropdown-item",
+          "dropdown",
+          "dropdown-trigger",
+          "dropdown-menu"
+        ],
+        "dataAttributes": [
+          "action",
+          "position"
+        ]
+      },
+      "variants": {
+        "position": {
+          "contract": "dropdown-menu",
+          "values": [
+            "left",
+            "right"
+          ],
+          "openPatterns": [
+            "$=\"end\"",
+            "^=\"top\""
+          ],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": true
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"dropdown-menu\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderInput",
+      "name": "renderInput",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/input.js",
+      "signature": "renderInput(options)",
+      "purpose": "Server-side render helper for an input field group.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "input",
+        "primaryContract": "input",
+        "contracts": [
+          "input"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <input> with your own classes, or literal <input data-bn=\"input\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderLayoutGrid",
+      "name": "renderLayoutGrid",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/layout-grid.js",
+      "signature": "renderLayoutGrid(options)",
+      "purpose": "renderLayoutGrid - A drag-and-drop CSS grid layout component. Designed to hook into @basenative/visual-builde…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "layout-grid",
+        "contracts": [
+          "layout-cell",
+          "layout-grid"
+        ],
+        "dataAttributes": [
+          "cell-id"
+        ]
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"layout-grid\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderMultiselect",
+      "name": "renderMultiselect",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/multiselect.js",
+      "signature": "renderMultiselect(options)",
+      "purpose": "Multiselect — multiple value selection with tags/chips over a hidden native <select multiple>. Attributes, la…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "multiselect",
+        "contracts": [
+          "tag",
+          "tag-remove",
+          "multiselect",
+          "multiselect-container",
+          "multiselect-tags",
+          "multiselect-search"
+        ],
+        "dataAttributes": [
+          "value"
+        ]
+      },
+      "variants": {
+        "disabled": {
+          "contract": "multiselect",
+          "values": [],
+          "openPatterns": [],
+          "matchesAnyValue": true,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": false
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"multiselect\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderPagination",
+      "name": "renderPagination",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/pagination.js",
+      "signature": "renderPagination(options)",
+      "purpose": "Renders a pagination control. Page link hrefs are escaped attributes.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "nav",
+        "primaryContract": "pagination",
+        "contracts": [
+          "pagination",
+          "pagination-ellipsis"
+        ],
+        "dataAttributes": [
+          "active"
+        ]
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <nav> with your own classes, or literal <nav data-bn=\"pagination\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderPipeline",
+      "name": "renderPipeline",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/calendar.js",
+      "signature": "renderPipeline(options)",
+      "purpose": "Render a kanban-style pipeline view with draggable columns and cards.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "pipeline",
+        "contracts": [
+          "pipeline-column",
+          "pipeline-column-header",
+          "pipeline-column-title",
+          "pipeline-column-count",
+          "pipeline-column-cards",
+          "pipeline"
+        ],
+        "dataAttributes": [
+          "column-id"
+        ]
+      },
+      "variants": {
+        "pipeline-column-cards.drop-target": {
+          "contract": "pipeline-column-cards",
+          "values": [],
+          "openPatterns": [],
+          "matchesAnyValue": true,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": false
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"pipeline\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderPipelineBlock",
+      "name": "renderPipelineBlock",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/calendar.js",
+      "signature": "renderPipelineBlock(options)",
+      "purpose": "Render a pipeline/kanban block for use outside the calendar (e.g., sidebar cards that can be dragged onto the…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "pipeline-block",
+        "contracts": [
+          "pipeline-block",
+          "pipeline-block-title"
+        ],
+        "dataAttributes": [
+          "block-id"
+        ]
+      },
+      "variants": {
+        "dragging": {
+          "contract": "pipeline-block",
+          "values": [],
+          "openPatterns": [],
+          "matchesAnyValue": true,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": false
+        },
+        "status": {
+          "contract": "pipeline-block",
+          "values": [
+            "accepted",
+            "active",
+            "canceled",
+            "cancelled",
+            "completed",
+            "contacted",
+            "converted",
+            "declined",
+            "in_progress",
+            "invoiced",
+            "lost",
+            "negotiating",
+            "new",
+            "open",
+            "paid",
+            "paused",
+            "pending",
+            "proposal_sent",
+            "qualified",
+            "rejected",
+            "scheduled",
+            "sent",
+            "won"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": true,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": false
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"pipeline-block\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderProgress",
+      "name": "renderProgress",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/progress.js",
+      "signature": "renderProgress(options)",
+      "purpose": "Renders a determinate progress bar using native <progress>. The fallback percentage text is 0% when max is 0,…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "progress",
+        "primaryContract": "progress",
+        "contracts": [
+          "progress"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <progress> with your own classes, or literal <progress data-bn=\"progress\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderRadioGroup",
+      "name": "renderRadioGroup",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/radio.js",
+      "signature": "renderRadioGroup(options)",
+      "purpose": "Radio component — native <input type=\"radio\"> group inside a <fieldset>.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "fieldset",
+        "primaryContract": "radio-group",
+        "contracts": [
+          "radio-group",
+          "radio-label",
+          "radio"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <fieldset> with your own classes, or literal <fieldset data-bn=\"radio-group\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderSelect",
+      "name": "renderSelect",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/select.js",
+      "signature": "renderSelect(options)",
+      "purpose": "Server-side render helper for a select field group.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "select",
+        "primaryContract": "select",
+        "contracts": [
+          "select"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <select> with your own classes, or literal <select data-bn=\"select\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderSkeleton",
+      "name": "renderSkeleton",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/skeleton.js",
+      "signature": "renderSkeleton(options)",
+      "purpose": "Renders `count` skeleton placeholders.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "skeleton",
+        "contracts": [
+          "skeleton"
+        ],
+        "dataAttributes": [
+          "variant"
+        ]
+      },
+      "variants": {
+        "variant": {
+          "contract": "skeleton",
+          "values": [
+            "circle"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": true
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"skeleton\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderSpinner",
+      "name": "renderSpinner",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/progress.js",
+      "signature": "renderSpinner(options)",
+      "purpose": "Renders an indeterminate spinner.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "span",
+        "primaryContract": "spinner",
+        "contracts": [
+          "spinner"
+        ],
+        "dataAttributes": [
+          "size"
+        ]
+      },
+      "variants": {
+        "size": {
+          "contract": "spinner",
+          "values": [
+            "lg",
+            "sm"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": true
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <span> with your own classes, or literal <span data-bn=\"spinner\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderTable",
+      "name": "renderTable",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/table.js",
+      "signature": "renderTable(options)",
+      "purpose": "Renders a data table from columns and rows. Column labels, cell values, caption and emptyMessage are escaped…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "table",
+        "primaryContract": "table",
+        "contracts": [
+          "table-container",
+          "table",
+          "sr-only",
+          "table-empty"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <table> with your own classes, or literal <table data-bn=\"table\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderTabs",
+      "name": "renderTabs",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/tabs.js",
+      "signature": "renderTabs(options)",
+      "purpose": "Tabs — tab navigation with panels. Tab buttons are type=\"button\" and wired to their panels with aria-controls…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "tabs",
+        "contracts": [
+          "tab",
+          "tab-panel",
+          "tabs",
+          "tab-list"
+        ],
+        "dataAttributes": [
+          "tab",
+          "variant"
+        ]
+      },
+      "variants": {
+        "variant": {
+          "contract": "tabs",
+          "values": [
+            "pills"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": true
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"tabs\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderTextarea",
+      "name": "renderTextarea",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/textarea.js",
+      "signature": "renderTextarea(options)",
+      "purpose": "Server-side render helper for a textarea field group.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "textarea",
+        "primaryContract": "textarea",
+        "contracts": [
+          "textarea"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <textarea> with your own classes, or literal <textarea data-bn=\"textarea\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderToastContainer",
+      "name": "renderToastContainer",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/toast.js",
+      "signature": "renderToastContainer(position)",
+      "purpose": "Server-side render helper for toast container.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "toast-container",
+        "contracts": [
+          "toast-container"
+        ],
+        "dataAttributes": [
+          "position"
+        ]
+      },
+      "variants": {
+        "position": {
+          "contract": "toast-container",
+          "values": [
+            "bottom-left",
+            "bottom-right",
+            "top-left",
+            "top-right"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": true
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"toast-container\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderToggle",
+      "name": "renderToggle",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/toggle.js",
+      "signature": "renderToggle(options)",
+      "purpose": "Toggle/Switch component — <input type=\"checkbox\" role=\"switch\">.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "input",
+        "primaryContract": "toggle",
+        "contracts": [
+          "toggle-label",
+          "toggle"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <input> with your own classes, or literal <input data-bn=\"toggle\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderTooltip",
+      "name": "renderTooltip",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/tooltip.js",
+      "signature": "renderTooltip(options)",
+      "purpose": "Tooltip — popover-based tooltip using the Popover API.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "span",
+        "primaryContract": "tooltip",
+        "contracts": [
+          "tooltip"
+        ],
+        "dataAttributes": [
+          "position"
+        ]
+      },
+      "variants": {
+        "position": {
+          "contract": "tooltip",
+          "values": [
+            "bottom",
+            "left",
+            "right"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": true
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <span> with your own classes, or literal <span data-bn=\"tooltip\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderTree",
+      "name": "renderTree",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/tree.js",
+      "signature": "renderTree(options)",
+      "purpose": "Tree view — expandable hierarchical tree.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "ul",
+        "primaryContract": "tree",
+        "contracts": [
+          "tree-item",
+          "tree-item-content",
+          "tree-toggle",
+          "tree-indent",
+          "tree-icon",
+          "tree-label",
+          "tree-children",
+          "tree"
+        ],
+        "dataAttributes": [
+          "level",
+          "node-id"
+        ]
+      },
+      "variants": {
+        "tree-item.level": {
+          "contract": "tree-item",
+          "values": [
+            "1",
+            "2",
+            "3"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": true
+        },
+        "tree-item-content.selected": {
+          "contract": "tree-item-content",
+          "values": [],
+          "openPatterns": [],
+          "matchesAnyValue": true,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": false
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <ul> with your own classes, or literal <ul data-bn=\"tree\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderTreeGrid",
+      "name": "renderTreeGrid",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/tree.js",
+      "signature": "renderTreeGrid(options)",
+      "purpose": "TreeGrid — tree structure combined with table columns.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "table",
+        "primaryContract": "treegrid",
+        "contracts": [
+          "treegrid-row",
+          "treegrid"
+        ],
+        "dataAttributes": [
+          "level",
+          "node-id"
+        ]
+      },
+      "variants": {},
+      "inertAxes": [
+        "level"
+      ],
+      "styled": true,
+      "useInsteadOf": "a bare <table> with your own classes, or literal <table data-bn=\"treegrid\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderVirtualList",
+      "name": "renderVirtualList",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/virtualizer.js",
+      "signature": "renderVirtualList(options)",
+      "purpose": "Virtualizer — renders a virtual scroll container placeholder: a window of items plus a spacer for total heigh…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "virtualizer",
+        "contracts": [
+          "virtual-item",
+          "virtualizer",
+          "virtual-spacer",
+          "virtual-window"
+        ],
+        "dataAttributes": [
+          "index",
+          "item-height",
+          "total"
+        ]
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"virtualizer\"> markup"
+    },
+    {
+      "id": "@basenative/date#renderDatepicker",
+      "name": "renderDatepicker",
+      "kind": "render-function",
+      "package": "@basenative/date",
+      "file": "packages/date/src/datepicker.js",
+      "signature": "renderDatepicker(options)",
+      "purpose": "Date picker using native <input type=\"date\"> with progressive enhancement.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "datepicker",
+        "contracts": [
+          "datepicker",
+          "datepicker-input"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"datepicker\"> markup"
+    },
+    {
+      "id": "@basenative/date#renderDateRange",
+      "name": "renderDateRange",
+      "kind": "render-function",
+      "package": "@basenative/date",
+      "file": "packages/date/src/daterange.js",
+      "signature": "renderDateRange(options)",
+      "purpose": "Date range picker — two date inputs for start/end.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "fieldset",
+        "primaryContract": "daterange",
+        "contracts": [
+          "daterange",
+          "daterange-inputs",
+          "daterange-start",
+          "daterange-input",
+          "daterange-separator",
+          "daterange-end"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "a bare <fieldset> with your own classes, or literal <fieldset data-bn=\"daterange\"> markup"
+    },
+    {
+      "id": "@basenative/date#renderTimepicker",
+      "name": "renderTimepicker",
+      "kind": "render-function",
+      "package": "@basenative/date",
+      "file": "packages/date/src/timepicker.js",
+      "signature": "renderTimepicker(options)",
+      "purpose": "Time picker using native <input type=\"time\">.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "timepicker",
+        "contracts": [
+          "timepicker",
+          "timepicker-input"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"timepicker\"> markup"
+    },
+    {
+      "id": "@basenative/favicon#renderAppleSvg",
+      "name": "renderAppleSvg",
+      "kind": "render-function",
+      "package": "@basenative/favicon",
+      "file": "packages/favicon/src/render.js",
+      "signature": "renderAppleSvg(spec)",
+      "purpose": "Render an apple-touch-icon SVG — Apple wants a non-transparent square, no rounded corners (iOS rounds them it…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": null,
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "hand-written markup for this element"
+    },
+    {
+      "id": "@basenative/favicon#renderFaviconSvg",
+      "name": "renderFaviconSvg",
+      "kind": "render-function",
+      "package": "@basenative/favicon",
+      "file": "packages/favicon/src/render.js",
+      "signature": "renderFaviconSvg(spec)",
+      "purpose": "Render a complete favicon SVG document.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "svg",
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "a bare <svg> with your own classes"
+    },
+    {
+      "id": "@basenative/favicon#renderGlyph",
+      "name": "renderGlyph",
+      "kind": "render-function",
+      "package": "@basenative/favicon",
+      "file": "packages/favicon/src/glyphs.js",
+      "signature": "renderGlyph(kind, spec, palette)",
+      "purpose": "Dispatch a glyph by `kind`.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": null,
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "hand-written markup for this element"
+    },
+    {
+      "id": "@basenative/favicon#renderMaskableSvg",
+      "name": "renderMaskableSvg",
+      "kind": "render-function",
+      "package": "@basenative/favicon",
+      "file": "packages/favicon/src/render.js",
+      "signature": "renderMaskableSvg(spec)",
+      "purpose": "Render a maskable variant — adds the 80% safe zone Android requires by scaling the glyph down (the body fills…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "svg",
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "a bare <svg> with your own classes"
+    },
+    {
+      "id": "@basenative/keyboard#renderKeyboard",
+      "name": "renderKeyboard",
+      "kind": "render-function",
+      "package": "@basenative/keyboard",
+      "file": "packages/keyboard/src/keyboard.js",
+      "signature": "renderKeyboard(options)",
+      "purpose": "Render the keyboard as an HTML string. Pre-paint friendly — works in SSR, hydrates cleanly client-side.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "keyboard",
+        "contracts": [
+          "kb-key",
+          "kb-row",
+          "keyboard",
+          "kb-rows"
+        ],
+        "dataAttributes": [
+          "kb-key",
+          "kb-type",
+          "row"
+        ]
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"keyboard\"> markup"
+    },
+    {
+      "id": "@basenative/marketplace#renderPackageCard",
+      "name": "renderPackageCard",
+      "kind": "render-function",
+      "package": "@basenative/marketplace",
+      "file": "packages/marketplace/src/card.js",
+      "signature": "renderPackageCard(pkg)",
+      "purpose": "Renders a marketplace package card as an HTML string. Works on both server (SSR) and client via @basenative/c…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "article",
+        "primaryContract": "pkg-card",
+        "contracts": [
+          "pkg-tags",
+          "pkg-stats",
+          "pkg-card",
+          "pkg-header",
+          "pkg-name"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <article> with your own classes, or literal <article data-bn=\"pkg-card\"> markup"
+    },
+    {
+      "id": "@basenative/notify#renderEmail",
+      "name": "renderEmail",
+      "kind": "render-function",
+      "package": "@basenative/notify",
+      "file": "packages/notify/src/email.js",
+      "signature": "renderEmail(template, data)",
+      "purpose": "Render an HTML email template with {{ variable }} interpolation.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": null,
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "hand-written markup for this element"
+    },
+    {
+      "id": "@basenative/runtime#renderWithBoundary",
+      "name": "renderWithBoundary",
+      "kind": "render-function",
+      "package": "@basenative/runtime",
+      "file": "packages/runtime/src/error-boundary.js",
+      "signature": "renderWithBoundary(renderFn, options)",
+      "purpose": "Server-side error boundary for render(). Wraps template rendering and returns fallback HTML on error.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": null,
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "hand-written markup for this element"
+    },
+    {
+      "id": "@basenative/server#renderToReadableStream",
+      "name": "renderToReadableStream",
+      "kind": "render-function",
+      "package": "@basenative/server",
+      "file": "packages/server/src/stream.js",
+      "signature": "renderToReadableStream(html, ctx, options)",
+      "purpose": "Renders a template and returns a Web ReadableStream. Deferred sections are appended after the main content as…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": null,
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "hand-written markup for this element"
+    },
+    {
+      "id": "@basenative/server#renderToStream",
+      "name": "renderToStream",
+      "kind": "render-function",
+      "package": "@basenative/server",
+      "file": "packages/server/src/stream.js",
+      "signature": "renderToStream(html, ctx, stream, options)",
+      "purpose": "Streaming SSR renderer for BaseNative.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": null,
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "hand-written markup for this element"
+    },
+    {
+      "id": "element:bn-canvas",
+      "name": "bn-canvas",
+      "kind": "custom-element",
+      "package": "@basenative/visual-builder",
+      "file": "packages/visual-builder/src/bn-canvas.js",
+      "signature": "<bn-canvas></bn-canvas>",
+      "purpose": "",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "a hand-rolled <div> reimplementation of <bn-canvas>"
+    },
+    {
+      "id": "@basenative/visual-builder#renderCanvas",
+      "name": "renderCanvas",
+      "kind": "render-function",
+      "package": "@basenative/visual-builder",
+      "file": "packages/visual-builder/src/renderer.js",
+      "signature": "renderCanvas(canvas, componentMap)",
+      "purpose": "renderCanvas(canvas, componentMap) - Renders canvas nodes to HTML",
+      "deprecated": false,
+      "emits": {
+        "rootTag": null,
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "hand-written markup for this element"
+    },
+    {
+      "id": "@basenative/visual-builder#renderNode",
+      "name": "renderNode",
+      "kind": "render-function",
+      "package": "@basenative/visual-builder",
+      "file": "packages/visual-builder/src/renderer.js",
+      "signature": "renderNode(node, componentMap)",
+      "purpose": "renderNode(node, componentMap) - Render a single node and its children",
+      "deprecated": false,
+      "emits": {
+        "rootTag": null,
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "hand-written markup for this element"
+    }
+  ]
+}
