@@ -33,7 +33,11 @@ export function pathTo(el) {
   const root = el.ownerDocument?.documentElement;
   const parts = [];
   let node = el;
-  while (node && node !== root) {
+  // No `node &&` guard: node starts non-null (checked above) and is only ever
+  // reassigned to a parentElement that the line below has already proven
+  // non-null, so the check can never fail. If `root` is undefined the walk ends
+  // by running out of parents and returning null, which is the same outcome.
+  while (node !== root) {
     const parent = node.parentElement;
     if (!parent) return null;
     let index = 0;
