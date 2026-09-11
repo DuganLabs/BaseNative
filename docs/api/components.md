@@ -359,8 +359,11 @@ renderTable({
     { key: 'name', label: 'Name', sortable: true },
     { key: 'status', label: 'Status', render: (value, row) => renderBadge(escapeText(value), { variant: row.status === 'paid' ? 'success' : 'default' }) },
     { key: 'start', label: 'Start', render: value => `<time datetime="${escapeAttr(value)}">${escapeText(formatDate(value))}</time>` },
+    { key: 'amount', label: 'Amount', numeric: true },
   ],
-  rows: [{ name: 'Alice', status: 'paid', start: '2025-06-02' }],
+  rows: [{ name: 'Alice', status: 'paid', start: '2025-06-02', amount: '$1,240' }],
+  footer: [{ name: 'Total', amount: '$1,240' }],
+  labelCells: true,
   emptyMessage: 'No data',
   caption: 'Users',
   attrs: 'data-testid="users"',
@@ -369,19 +372,45 @@ renderTable({
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `columns` | `Array<{ key, label, sortable?, render? }>` | `[]` | `sortable` adds `data-sortable` to the `<th>`; `render(value, row)` is an HTML slot: not escaped; escape any data you interpolate — a nullish result renders an empty cell |
+| `columns` | `Array<{ key, label, srLabel?, sortable?, align?, numeric?, render?, cellAttrs? }>` | `[]` | `sortable` adds `data-sortable` to the `<th>`; `align` (`'start'` \| `'center'` \| `'end'`) and `numeric` are described below; `render(value, row)` is an HTML slot: not escaped; escape any data you interpolate — a nullish result renders an empty cell. `srLabel` and `cellAttrs` are described below the table |
 | `rows` | `Array<Record<string, unknown>>` | `[]` | Without `render`, cell values are stringified and escaped |
+| `footer` | `Array<Record<string, unknown>>` | `[]` | `<tfoot>` rows (totals, subtotals), read with the same keys and the same `render` / `cellAttrs` hooks as the body; the first cell of each is a `<th scope="row">`, so a totals row is announced as a row heading rather than as data |
 | `emptyMessage` | `string` | `'No data'` | Single full-width row when `rows` is empty (`render` is not consulted) |
+| `emptyContent` | `string` | `''` | HTML slot used instead of `emptyMessage` — for an empty state with its own call to action. Not escaped |
 | `caption` | `string` | `''` | `<caption>` |
-| `labelCells` | `boolean` | `false` | Stamp `data-label="<column label>"` on every body cell — what a responsive stacked table needs once the `<thead>` is hidden |
+| `labelCells` | `boolean` | `false` | Stamp `data-label="<column label>"` on every body and footer cell — what a responsive stacked table needs once the `<thead>` is hidden |
 | `attrs` | `string` | `''` | Spliced onto the `[data-bn="table-container"]` wrapper |
 
-Column options: `key`, `label`, `sortable`, `render(value, row)` (HTML slot), plus
-`cellAttrs` (raw attribute markup on that column's `<td>`; a string or a
-`(value, row) => string`) and `srLabel` (a visually-hidden accessible name for a
-column with no visible `label`, so the `<th>` is never empty).
+Column options: `key`, `label`, `sortable`, `align`, `numeric`, `render(value, row)`
+(HTML slot), plus `cellAttrs` (raw attribute markup on that column's cells, footer
+included; a string or a `(value, row) => string`) and `srLabel` (a visually-hidden
+accessible name for a column with no visible `label`, so the `<th>` is never empty).
+For numeric alignment reach for `numeric` rather than hand-rolling it through
+`cellAttrs`: it is styled by the shipped stylesheet and it marks the `<th>` too.
 
 Renders `<div data-bn="table-container"><table data-bn="table"><caption>…</caption><thead><tr><th scope="col" data-sortable>Name</th></tr></thead><tbody>…</tbody></table></div>`. Header cells carry `scope="col"`. Composite cells (a two-line name, a `<time>`, a badge, row-action buttons) belong in `render`; `renderDataGrid` offers the same hook when you also want sorting indicators, selection and a footer.
+
+### Columns of figures
+
+`numeric: true` emits `data-numeric` on the `<th>` and every cell in the column, and implies `align: 'end'`. The CSS gives those cells `font-variant-numeric: tabular-nums lining-nums` and `white-space: nowrap`, so digits sit on a fixed grid and a value never wraps mid-number. An explicit `align` wins over the alignment `numeric` implies.
+
+The heading is marked alongside its cells deliberately: a left-aligned `Amount` header over right-aligned figures is the most common data-table defect, because it breaks the vertical edge the eye tracks down the column.
+
+**Decimal alignment is the caller's half of the contract.** Right alignment plus tabular figures aligns decimal points only when every cell in the column carries the same number of fraction digits — `$8,000.00` and `$310,500` in one column cannot be aligned by any amount of CSS. Pick one precision per column and render nulls at that precision too (`—` in the units position, not an empty cell).
+
+### Responsive stacking
+
+`labelCells: true` stamps `data-label` with the column's label on every body and footer cell. A stacked layout for narrow viewports can then hide `<thead>` and recover the heading in CSS, without the renderer knowing anything about the breakpoint:
+
+```css
+@container (max-width: 32rem) {
+  [data-bn="table"] thead { display: none; }
+  [data-bn="table"] td { display: grid; grid-template-columns: 1fr 1fr; }
+  [data-bn="table"] td::before { content: attr(data-label); }
+}
+```
+
+It is opt-in because the attribute is dead weight in every table that is not stacked, and a table's markup should not grow an attribute nobody reads. `<thead>` stays in the DOM either way, so the accessibility tree is unchanged at every width — the transform is purely presentational.
 
 ## Data Grid
 

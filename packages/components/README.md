@@ -126,7 +126,7 @@ All components are pure functions that return an HTML string. See [docs/api/comp
 - `renderSkeleton(options)` — Skeleton loading placeholder.
 
 ### Data Display
-- `renderTable(options)` — Accessible `<table>` with columns and rows config; a column's `render(value, row)` hook fills composite cells (badge, `<time>`, row actions) as an HTML slot, the default is escaped text. `labelCells` stamps `data-label` on every body cell for responsive stacked layouts, `column.cellAttrs` adds attributes to a column's cells, and `column.srLabel` names a column that has no visible heading.
+- `renderTable(options)` — Accessible `<table>` with columns and rows config; a column's `render(value, row)` hook fills composite cells (badge, `<time>`, row actions) as an HTML slot, the default is escaped text. Columns take `align` and `numeric` (tabular lining figures, end-aligned, marked on the `<th>` too), `cellAttrs` to splice attributes onto a column's cells, and `srLabel` to name a column with no visible heading; `footer` rows render a `<tfoot>`; `labelCells` stamps `data-label` on every body and footer cell so a stacked mobile layout can recover the heading in CSS.
 - `renderDataGrid(options)` — Data grid with sorting indicators, row selection, editable cells and a pagination footer. Sortable headers are real `<button>`s inside the `<th>` — keyboard-operable with no client JS.
 - `renderTree(options)` / `renderTreeGrid(options)` — Tree view and tree grid. Items/rows carry a static roving `tabindex` (first `0`, rest `-1`); moving it between items on arrow keys is left to your own keydown handler.
 - `renderVirtualList(options)` — First window of a virtualised list plus a spacer for the full height.

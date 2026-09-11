@@ -1,5 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 
 import { renderButton, buttonVariants } from './button.js';
 import { renderInput } from './input.js';
@@ -47,6 +48,35 @@ function assertEscaped(html) {
   assert.ok(!html.includes('<script>'), 'raw <script> leaked into markup');
   assert.ok(!html.includes('"><script'), 'attribute breakout');
   assert.ok(html.includes('&lt;script&gt;'), 'payload was not escaped');
+}
+
+/**
+ * Every `<th>`/`<td>` of a rendered table as `{ tag, attrs, content }` plus
+ * attribute accessors, so a test can assert what a cell *says* instead of the
+ * order its attributes happen to be emitted in. Pinning a whole open tag makes
+ * every additive attribute a test failure, which is how a suite ends up
+ * recording today's markup rather than the contract.
+ */
+function tableCells(html) {
+  return [...html.matchAll(/<(th|td)\b([^>]*)>([\s\S]*?)<\/\1>/g)].map(([, tag, attrs, content]) => ({
+    tag,
+    attrs,
+    content,
+    has: name => new RegExp(`(?:^|\\s)${name}(?:[=\\s]|$)`).test(attrs),
+    attr: name => (attrs.match(new RegExp(`(?:^|\\s)${name}="([^"]*)"`)) || [])[1],
+  }));
+}
+
+/** The one cell whose rendered content is exactly `content`. */
+function cellWith(html, content) {
+  const found = tableCells(html).filter(c => c.content === content);
+  assert.equal(found.length, 1, `expected exactly one cell rendering ${JSON.stringify(content)}`);
+  return found[0];
+}
+
+/** Just the body/footer `<td>` contents, in document order. */
+function cellContents(html) {
+  return tableCells(html).filter(c => c.tag === 'td').map(c => c.content);
 }
 
 function fakeContainer() {
@@ -618,9 +648,11 @@ describe('Table — column render slot and attrs', () => {
       ],
       rows,
     });
-    assert.ok(html.includes('<td>&lt;b&gt;Ann&lt;/b&gt;</td>'));
-    assert.ok(html.includes('<td><time datetime="2025-06-02">paid</time></td>'));
-    assert.ok(html.includes('<td><span data-bn="badge" data-variant="success">paid</span></td>'));
+    assert.deepEqual(cellContents(html), [
+      '&lt;b&gt;Ann&lt;/b&gt;',
+      '<time datetime="2025-06-02">paid</time>',
+      '<span data-bn="badge" data-variant="success">paid</span>',
+    ]);
   });
 
   it('render receives the raw value (undefined for a missing key) and a nullish result renders an empty cell', () => {
@@ -630,7 +662,7 @@ describe('Table — column render slot and attrs', () => {
       rows: [{ id: 1 }],
     });
     assert.deepEqual(seen, [[undefined, { id: 1 }]]);
-    assert.ok(html.includes('<tr><td></td></tr>'));
+    assert.deepEqual(cellContents(html), ['']);
   });
 
   it('render is not consulted for the empty state or the header', () => {
@@ -644,6 +676,134 @@ describe('Table — column render slot and attrs', () => {
     const html = renderTable({ attrs: 'data-testid="jobs" aria-busy="true"' });
     assert.ok(html.startsWith('<div data-bn="table-container" data-testid="jobs" aria-busy="true"><table data-bn="table">'));
     assert.ok(renderTable().startsWith('<div data-bn="table-container"><table'));
+  });
+});
+
+describe('Table — numeric columns, alignment, labels and footer', () => {
+  const money = [
+    { label: 'Chase Sapphire', principal: '$18,420' },
+    { label: 'Amex Platinum', principal: '$7,310' },
+  ];
+  const columns = [
+    { key: 'label', label: 'Liability' },
+    { key: 'principal', label: 'Principal', numeric: true },
+  ];
+  const total = [{ label: 'Total', principal: '$25,730' }];
+
+  it('numeric marks the heading as well as the cells, so they cannot drift apart', () => {
+    const html = renderTable({ columns, rows: money });
+    for (const cell of [cellWith(html, 'Principal'), cellWith(html, '$18,420')]) {
+      assert.equal(cell.attr('data-align'), 'end');
+      assert.ok(cell.has('data-numeric'));
+    }
+    const plain = cellWith(html, 'Liability');
+    assert.equal(plain.attr('data-align'), undefined);
+    assert.ok(!plain.has('data-numeric'));
+  });
+
+  it('an explicit align wins over the end alignment numeric implies', () => {
+    const html = renderTable({
+      columns: [{ key: 'n', label: 'N', numeric: true, align: 'center' }],
+      rows: [{ n: 1 }],
+    });
+    assert.equal(cellWith(html, '1').attr('data-align'), 'center');
+    assert.ok(cellWith(html, '1').has('data-numeric'));
+    assert.ok(!html.includes('data-align="end"'));
+  });
+
+  it('align "start" is the default and emits nothing', () => {
+    const html = renderTable({ columns: [{ key: 'n', label: 'N', align: 'start' }], rows: [{ n: 1 }] });
+    assert.ok(!html.includes('data-align'));
+  });
+
+  it('ignores an unknown align rather than emitting one no rule would match', () => {
+    const html = renderTable({ columns: [{ key: 'n', label: 'N', align: 'middle' }], rows: [{ n: 1 }] });
+    assert.ok(!html.includes('data-align'));
+  });
+
+  it('every data-align value it can emit is declared by the shipped stylesheet', () => {
+    const css = readFileSync(new URL('./components.css', import.meta.url), 'utf8');
+    for (const align of ['center', 'end']) {
+      const html = renderTable({ columns: [{ key: 'n', label: 'N', align }], rows: [{ n: 1 }] });
+      assert.equal(cellWith(html, '1').attr('data-align'), align, `${align} was not emitted`);
+      assert.ok(css.includes(`[data-align="${align}"]`), `${align} renders unstyled: no rule declares it`);
+    }
+    assert.ok(css.includes('[data-numeric]'), 'data-numeric renders unstyled: no rule declares it');
+  });
+
+  it('labelCells recovers the hidden heading for body and footer cells alike', () => {
+    const html = renderTable({ columns, rows: money, footer: total, labelCells: true });
+    assert.equal(cellWith(html, 'Chase Sapphire').attr('data-label'), 'Liability');
+    assert.equal(cellWith(html, '$18,420').attr('data-label'), 'Principal');
+    assert.equal(cellWith(html, 'Total').attr('data-label'), 'Liability');
+    assert.equal(cellWith(html, '$25,730').attr('data-label'), 'Principal');
+  });
+
+  it('leaves every cell unlabelled while labelCells is off, footer included', () => {
+    const html = renderTable({ columns, rows: money, footer: total });
+    assert.ok(!html.includes('data-label'));
+  });
+
+  it('renders a footer row as th scope=row plus cells, using the same render hooks', () => {
+    const html = renderTable({
+      columns: [
+        { key: 'label', label: 'Liability' },
+        { key: 'principal', label: 'Principal', numeric: true, render: value => `<b>${value}</b>` },
+      ],
+      rows: money,
+      footer: total,
+    });
+    const [heading, ...rest] = tableCells(html.slice(html.indexOf('<tfoot>'), html.indexOf('</tfoot>')));
+    assert.equal(heading.tag, 'th');
+    assert.equal(heading.attr('scope'), 'row');
+    assert.equal(heading.content, 'Total');
+    assert.deepEqual(rest.map(c => [c.tag, c.content]), [['td', '<b>$25,730</b>']]);
+    assert.ok(rest[0].has('data-numeric'), 'a footer cell does not carry its column alignment');
+  });
+
+  it('a column cellAttrs hook reaches its footer cell too', () => {
+    const html = renderTable({
+      columns: [
+        { key: 'label', label: 'Liability' },
+        { key: 'principal', label: 'Principal', cellAttrs: 'data-role="figure"' },
+      ],
+      rows: money,
+      footer: total,
+    });
+    assert.equal(cellWith(html, '$25,730').attr('data-role'), 'figure');
+    assert.equal(cellWith(html, '$18,420').attr('data-role'), 'figure');
+  });
+
+  it('omits tfoot entirely when there is no footer, or no columns to place it in', () => {
+    assert.ok(!renderTable({ columns, rows: money }).includes('<tfoot>'));
+    assert.ok(!renderTable({ columns: [], rows: [], footer: [{ a: 1 }] }).includes('<tfoot>'));
+  });
+
+  it('a footer survives an empty body, so a zeroed total can still be shown', () => {
+    const html = renderTable({ columns, rows: [], footer: [{ label: 'Total', principal: '$0' }] });
+    assert.ok(html.includes('data-bn="table-empty"'));
+    assert.ok(html.includes('<tfoot>'));
+  });
+
+  it('escapes footer values, which are data like any other row', () => {
+    assertEscaped(renderTable({ columns, rows: [], footer: [{ label: XSS, principal: XSS }] }));
+  });
+
+  it('emptyContent is an HTML slot that replaces emptyMessage', () => {
+    const html = renderTable({
+      columns,
+      rows: [],
+      emptyMessage: 'ignored',
+      emptyContent: 'No accounts yet. <a href="/settings">Connect a bank</a>',
+    });
+    assert.ok(html.includes('<a href="/settings">Connect a bank</a>'));
+    assert.ok(!html.includes('ignored'));
+  });
+
+  it('still escapes emptyMessage when no emptyContent is given', () => {
+    const html = renderTable({ columns, rows: [], emptyMessage: '<script>x</script>' });
+    assert.ok(html.includes('&lt;script'));
+    assert.ok(!html.includes('<script>x'));
   });
 });
 
@@ -1360,29 +1520,29 @@ describe('Table — cell hooks', () => {
       rows: [{ a: 1 }],
       labelCells: true,
     });
-    assert.ok(html.includes('<td data-label="Last &lt;sync&gt;">1</td>'));
+    assert.equal(cellWith(html, '1').attr('data-label'), 'Last &lt;sync&gt;');
   });
 
   it('labelCells leaves an unlabelled column alone', () => {
     const html = renderTable({ columns: [{ key: 'a', label: '' }], rows: [{ a: 1 }], labelCells: true });
-    assert.ok(html.includes('<td>1</td>'));
+    assert.equal(cellWith(html, '1').attr('data-label'), undefined);
   });
 
   it('cellAttrs is spliced onto the cell, as a string or per row', () => {
     const html = renderTable({
       columns: [
-        { key: 'a', label: 'A', cellAttrs: 'data-bn="num"' },
+        { key: 'a', label: 'A', cellAttrs: 'data-role="figure"' },
         { key: 'b', label: 'B', cellAttrs: (value) => `data-v="${value}"` },
       ],
       rows: [{ a: 1, b: 2 }],
     });
-    assert.ok(html.includes('<td data-bn="num">1</td>'));
-    assert.ok(html.includes('<td data-v="2">2</td>'));
+    assert.equal(cellWith(html, '1').attr('data-role'), 'figure');
+    assert.equal(cellWith(html, '2').attr('data-v'), '2');
   });
 
   it('a cellAttrs function returning nothing adds no stray space', () => {
     const html = renderTable({ columns: [{ key: 'a', label: 'A', cellAttrs: () => undefined }], rows: [{ a: 1 }] });
-    assert.ok(html.includes('<td>1</td>'));
+    assert.equal(cellWith(html, '1').attrs, '');
   });
 
   it('srLabel names a column with no visible heading instead of leaving <th> empty', () => {
@@ -1410,7 +1570,7 @@ describe('Table — hardening', () => {
     });
     assert.ok(html.includes('<caption>Cap</caption>'));
     assert.ok(html.includes('<th scope="col" data-sortable>A</th>'));
-    assert.ok(html.includes('<td>1</td><td></td>'));
+    assert.deepEqual(cellContents(html), ['1', '']);
   });
 
   it('escapes caption, labels, cells and empty message', () => {
