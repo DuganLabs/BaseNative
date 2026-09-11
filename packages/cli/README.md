@@ -48,7 +48,7 @@ bn deploy --preview
 
 | Command | What it does |
 |---|---|
-| `bn dev`                                | Run the project's dev server (npm-script first, then `node --watch`, then `wrangler dev`). |
+| `bn dev`                                | Run the project's dev server with hot module replacement (npm-script first, then `node --watch`, then `wrangler dev`). `--no-hmr` opts out. |
 | `bn deploy --prod` / `--preview`        | `wrangler pages deploy` (or `wrangler deploy`), wrapped in `doppler run --` if Doppler is installed. |
 | `bn deploy --env <preview|staging|production>` | Legacy basenative.cloud deploy. `--dry-run` prints a manifest. |
 | `bn doctor`                             | Validate Node version, `.nvmrc`, packageManager, eslint config, tsconfig, doppler-required.json, deploy.yml. |

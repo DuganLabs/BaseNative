@@ -1,13 +1,30 @@
 import express from 'express';
-import { watch } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { hmrMiddleware } from '@basenative/hmr';
 import { renderRoute, renderComponentPage, renderNotFoundPage, siteRoutes } from './page.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pkgRoot = join(__dirname, '..', '..');
 
 const app = express();
+
+// -- Hot module replacement (dev only; inert when NODE_ENV=production) --
+// Registered first so /__bn_hmr/* wins before the static handlers. It injects
+// an external module script — no inline <script>, so the strict CSP in
+// docs/guides/security.md still holds.
+app.use(
+  hmrMiddleware({
+    roots: [
+      join(__dirname, 'views'),
+      join(__dirname, 'public'),
+      __dirname,
+      join(pkgRoot, 'packages', 'components', 'src'),
+    ],
+    cwd: pkgRoot,
+  })
+);
+
 app.use(express.json());
 app.use(express.static(join(__dirname, 'public')));
 app.use('/bn-css', express.static(join(pkgRoot, 'packages', 'components', 'src')));
@@ -58,43 +75,7 @@ app.delete('/api/tasks/:id', (req, res) => {
   res.status(204).end();
 });
 
-// -- Live reload (dev only) --
-const liveClients = new Set();
-
-app.get('/__live', (req, res) => {
-  res.writeHead(200, {
-    'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache',
-    Connection: 'keep-alive',
-  });
-  res.write('data: connected\n\n');
-  liveClients.add(res);
-  req.on('close', () => liveClients.delete(res));
-});
-
-let reloadTimer;
-function notifyReload() {
-  clearTimeout(reloadTimer);
-  reloadTimer = setTimeout(() => {
-    for (const client of liveClients) client.write('data: reload\n\n');
-  }, 200);
-}
-
-const watchDirs = [
-  join(__dirname, 'views'),
-  join(__dirname, 'public'),
-  join(__dirname),
-  join(pkgRoot, 'packages', 'components', 'src'),
-];
-for (const dir of watchDirs) {
-  try {
-    watch(dir, { recursive: true }, () => notifyReload());
-  } catch {
-    /* dir may not exist in CI */
-  }
-}
-
-// -- 404: registered last so every route above, including /__live, wins first --
+// -- 404: registered last so every route above wins first --
 app.use((req, res) => {
   res.status(404).send(renderNotFoundPage());
 });
