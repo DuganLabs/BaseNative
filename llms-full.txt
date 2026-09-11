@@ -496,7 +496,7 @@ bn dev
 ```
 
 #### `bn dev [options]`
-Starts the development server with hot reload. **Options:** - `--port <number>` — port to listen on; default `3000`
+Starts the development server with hot module replacement. The dev server runs on a private internal port; `@basenative/hmr` owns the port you asked for, injects its client into HTML responses, and watches the tree. On a change the browser…
 
 #### `bn build`
 Bundles the application for production using ESBuild. Output goes to `./dist`.
