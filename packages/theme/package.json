@@ -1,0 +1,61 @@
+{
+  "name": "@basenative/theme",
+  "version": "0.1.0",
+  "description": "The theme layer behind @basenative/components — a four-tier token shape, a WCAG contrast harness that fails the build, a one-grid icon discipline and the --bn-* bridge",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./contrast": {
+      "types": "./types/index.d.ts",
+      "default": "./src/contrast.js"
+    },
+    "./audit": {
+      "types": "./types/index.d.ts",
+      "default": "./src/audit.js"
+    },
+    "./css": {
+      "types": "./types/index.d.ts",
+      "default": "./src/css.js"
+    },
+    "./icons": {
+      "types": "./types/index.d.ts",
+      "default": "./src/icons.js"
+    },
+    "./bridge.css": "./src/bridge.css"
+  },
+  "types": "./types/index.d.ts",
+  "scripts": {
+    "test": "node --test src/contrast.test.js src/theme.test.js src/audit.test.js src/css.test.js src/icons.test.js src/bridge.test.js src/readme.test.js types/exports.test.js"
+  },
+  "files": [
+    "src",
+    "types"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DuganLabs/BaseNative.git",
+    "directory": "packages/theme"
+  },
+  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/BaseNative/issues"
+  },
+  "keywords": [
+    "basenative",
+    "design-tokens",
+    "theme",
+    "wcag",
+    "contrast",
+    "accessibility",
+    "design-system",
+    "css-custom-properties",
+    "duganlabs"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

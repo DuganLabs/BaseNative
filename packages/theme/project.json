@@ -1,0 +1,30 @@
+{
+  "name": "@basenative/theme",
+  "targets": {
+    "test": {
+      "cache": true,
+      "command": "node --test src/contrast.test.js src/theme.test.js src/audit.test.js src/css.test.js src/icons.test.js src/bridge.test.js src/readme.test.js types/exports.test.js",
+      "inputs": [
+        "{projectRoot}/src/**/*.js",
+        "{projectRoot}/src/**/*.css",
+        "{projectRoot}/types/**/*",
+        "{projectRoot}/package.json",
+        "{projectRoot}/README.md",
+        "{workspaceRoot}/packages/components/src/**/*.css"
+      ],
+      "options": {
+        "cwd": "{projectRoot}"
+      }
+    },
+    "lint": {
+      "cache": true,
+      "command": "pnpm exec eslint src/",
+      "inputs": [
+        "{projectRoot}/src/**/*.js"
+      ],
+      "options": {
+        "cwd": "{projectRoot}"
+      }
+    }
+  }
+}

@@ -166,6 +166,7 @@ hydrate(document.getElementById('app'), { count, doubled });
 | [`@basenative/persist`](packages/persist) | Signal-driven local persistence with TTL, conflict resolution, server rehydrate |
 | [`@basenative/share`](packages/share) | Native Web Share + clipboard fallback, share-card mint client+server |
 | [`@basenative/station`](packages/station) | Queue-driven local-inference primitive — vLLM/Workers AI job runner |
+| [`@basenative/theme`](packages/theme) | The theme layer behind `components` — token tiers, a WCAG contrast harness that fails the build, icon discipline, the `--bn-*` bridge |
 | [`@basenative/tsconfig`](packages/tsconfig) | Shared base tsconfigs for DuganLabs projects |
 | [`@basenative/wrangler-preset`](packages/wrangler-preset) | Pinned Wrangler version + typed `wrangler.toml` fragment generator |
 
