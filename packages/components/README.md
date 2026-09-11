@@ -89,6 +89,14 @@ brand built on a light hue (amber, mint, sand) stays legible without forking any
 | `--bn-color-on-error` | `--bn-color-white` | destructive button label |
 | `--bn-color-toggle-knob` | `--bn-color-white` | toggle knob when off (rides the neutral track, not the brand) |
 
+Two more tokens split "the page" from "a thing sitting on the page", which are the
+same colour only on a light theme:
+
+| Token | Default | Applies to |
+|-------|---------|------------|
+| `--bn-color-surface-control` | `--bn-color-surface` | input, textarea, select, combobox input, checkbox, radio, secondary button |
+| `--bn-color-surface-card` | `--bn-color-surface` | card |
+
 ```css
 :root {
   --bn-color-primary-600: #e8920a;   /* amber brand */
@@ -118,7 +126,7 @@ All components are pure functions that return an HTML string. See [docs/api/comp
 - `renderSkeleton(options)` — Skeleton loading placeholder.
 
 ### Data Display
-- `renderTable(options)` — Accessible `<table>` with columns and rows config; a column's `render(value, row)` hook fills composite cells (badge, `<time>`, row actions) as an HTML slot, the default is escaped text.
+- `renderTable(options)` — Accessible `<table>` with columns and rows config; a column's `render(value, row)` hook fills composite cells (badge, `<time>`, row actions) as an HTML slot, the default is escaped text. `labelCells` stamps `data-label` on every body cell for responsive stacked layouts, `column.cellAttrs` adds attributes to a column's cells, and `column.srLabel` names a column that has no visible heading.
 - `renderDataGrid(options)` — Data grid with sorting indicators, row selection, editable cells and a pagination footer. Sortable headers are real `<button>`s inside the `<th>` — keyboard-operable with no client JS.
 - `renderTree(options)` / `renderTreeGrid(options)` — Tree view and tree grid. Items/rows carry a static roving `tabindex` (first `0`, rest `-1`); moving it between items on arrow keys is left to your own keydown handler.
 - `renderVirtualList(options)` — First window of a virtualised list plus a spacer for the full height.
