@@ -273,13 +273,13 @@ importers:
   packages/evals:
     dependencies:
       '@basenative/runtime':
-        specifier: workspace:^0.6.2
+        specifier: workspace:^0.6.3
         version: link:../runtime
       '@basenative/server':
-        specifier: workspace:^0.6.2
+        specifier: workspace:^0.6.3
         version: link:../server
       '@basenative/validate':
-        specifier: workspace:^0.2.0
+        specifier: workspace:^0.2.1
         version: link:../validate
 
   packages/favicon:
@@ -297,7 +297,7 @@ importers:
   packages/flags:
     dependencies:
       '@basenative/runtime':
-        specifier: workspace:^0.6.0
+        specifier: workspace:^0.6.3
         version: link:../runtime
 
   packages/fonts: {}
@@ -311,7 +311,7 @@ importers:
   packages/i18n:
     dependencies:
       '@basenative/runtime':
-        specifier: workspace:^0.6.1
+        specifier: workspace:^0.6.3
         version: link:../runtime
 
   packages/icons: {}
@@ -333,13 +333,13 @@ importers:
   packages/mcp:
     dependencies:
       '@basenative/runtime':
-        specifier: workspace:^0.6.0
+        specifier: workspace:^0.6.3
         version: link:../runtime
       '@basenative/server':
-        specifier: workspace:^0.6.0
+        specifier: workspace:^0.6.3
         version: link:../server
       '@basenative/validate':
-        specifier: workspace:^0.2.0
+        specifier: workspace:^0.2.1
         version: link:../validate
 
   packages/middleware: {}
@@ -347,7 +347,7 @@ importers:
   packages/notify:
     dependencies:
       '@basenative/runtime':
-        specifier: workspace:^0.6.1
+        specifier: workspace:^0.6.3
         version: link:../runtime
 
   packages/og-image:
@@ -378,17 +378,17 @@ importers:
   packages/server:
     dependencies:
       '@basenative/runtime':
-        specifier: workspace:^0.6.1
+        specifier: workspace:^0.6.3
         version: link:../runtime
       node-html-parser:
         specifier: ^9.0.4
         version: 9.0.4
     devDependencies:
       '@basenative/flags':
-        specifier: workspace:^0.4.0
+        specifier: workspace:^0.4.1
         version: link:../flags
       '@basenative/i18n':
-        specifier: workspace:^0.4.1
+        specifier: workspace:^0.4.2
         version: link:../i18n
 
   packages/share:
@@ -408,7 +408,7 @@ importers:
   packages/validate:
     dependencies:
       '@basenative/runtime':
-        specifier: workspace:^0.6.0
+        specifier: workspace:^0.6.3
         version: link:../runtime
 
   packages/visual-builder: {}

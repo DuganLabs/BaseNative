@@ -1,6 +1,6 @@
 {
   "name": "@basenative/date",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Date utilities, timezone handling, relative time formatting, and date ranges",
   "type": "module",
   "exports": {
