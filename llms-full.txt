@@ -673,7 +673,7 @@ dismissToast(toaster, id);
 ```
 
 ### Table
-`renderTable(options)` → `string` | Option | Type | Default | Description | |--------|------|---------|-------------| | `columns` | `Array<{ key, label, sortable?, render? }>` | `[]` | `sortable` adds `data-sortable` to the `<th>`; `render…
+`renderTable(options)` → `string` | Option | Type | Default | Description | |--------|------|---------|-------------| | `columns` | `Array<{ key, label, sortable?, align?, numeric?, render? }>` | `[]` | `sortable` adds `data-sortable` to t…
 ```js
 import { escapeAttr, escapeText } from '@basenative/runtime/shared/escape';
 
@@ -682,10 +682,23 @@ renderTable({
     { key: 'name', label: 'Name', sortable: true },
     { key: 'status', label: 'Status', render: (value, row) => renderBadge(escapeText(value), { variant: row.status === 'paid' ? 'success' : 'default' }) },
     { key: 'start', label: 'Start', render: value => `<time datetime="${escapeAttr(value)}">${escapeText(formatDate(value))}</time>` },
+    { key: 'amount', label: 'Amount', numeric: true },
   ],
-  rows: [{ name: 'Alice', status: 'paid', start: '2025-06-02' }],
-  emptyMessage: 'No data',
+  rows: [{ name: 'Alice', status: 'paid', start: '2025-06-02', amount: '$1,240' }],
 …
+```
+
+#### Columns of figures
+`numeric: true` emits `data-numeric` on the `<th>` and every cell in the column, and implies `align: 'end'`. The CSS gives those cells `font-variant-numeric: tabular-nums lining-nums` and `white-space: nowrap`, so digits sit on a fixed gri…
+
+#### Responsive stacking
+Every `<td>` carries `data-label` with its column's label. A stacked layout for narrow viewports can therefore hide `<thead>` and recover the heading in CSS, without the renderer knowing anything about the breakpoint: `<thead>` stays in th…
+```css
+@container (max-width: 32rem) {
+  [data-bn="table"] thead { display: none; }
+  [data-bn="table"] td { display: grid; grid-template-columns: 1fr 1fr; }
+  [data-bn="table"] td::before { content: attr(data-label); }
+}
 ```
 
 ### Data Grid

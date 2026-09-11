@@ -618,9 +618,11 @@ describe('Table — column render slot and attrs', () => {
       ],
       rows,
     });
-    assert.ok(html.includes('<td>&lt;b&gt;Ann&lt;/b&gt;</td>'));
-    assert.ok(html.includes('<td><time datetime="2025-06-02">paid</time></td>'));
-    assert.ok(html.includes('<td><span data-bn="badge" data-variant="success">paid</span></td>'));
+    assert.ok(html.includes('<td data-label="Name">&lt;b&gt;Ann&lt;/b&gt;</td>'));
+    assert.ok(html.includes('<td data-label="Start"><time datetime="2025-06-02">paid</time></td>'));
+    assert.ok(
+      html.includes('<td data-label="Status"><span data-bn="badge" data-variant="success">paid</span></td>'),
+    );
   });
 
   it('render receives the raw value (undefined for a missing key) and a nullish result renders an empty cell', () => {
@@ -630,7 +632,7 @@ describe('Table — column render slot and attrs', () => {
       rows: [{ id: 1 }],
     });
     assert.deepEqual(seen, [[undefined, { id: 1 }]]);
-    assert.ok(html.includes('<tr><td></td></tr>'));
+    assert.ok(html.includes('<tr><td data-label="M"></td></tr>'));
   });
 
   it('render is not consulted for the empty state or the header', () => {
@@ -644,6 +646,94 @@ describe('Table — column render slot and attrs', () => {
     const html = renderTable({ attrs: 'data-testid="jobs" aria-busy="true"' });
     assert.ok(html.startsWith('<div data-bn="table-container" data-testid="jobs" aria-busy="true"><table data-bn="table">'));
     assert.ok(renderTable().startsWith('<div data-bn="table-container"><table'));
+  });
+});
+
+describe('Table — numeric columns, alignment, labels and footer', () => {
+  const money = [
+    { label: 'Chase Sapphire', principal: '$18,420' },
+    { label: 'Amex Platinum', principal: '$7,310' },
+  ];
+  const columns = [
+    { key: 'label', label: 'Liability' },
+    { key: 'principal', label: 'Principal', numeric: true },
+  ];
+
+  it('numeric marks the heading as well as the cells, so they cannot drift apart', () => {
+    const html = renderTable({ columns, rows: money });
+    assert.ok(html.includes('<th scope="col" data-align="end" data-numeric>Principal</th>'));
+    assert.ok(html.includes('data-label="Principal" data-align="end" data-numeric>$18,420</td>'));
+    assert.ok(html.includes('<th scope="col">Liability</th>'));
+  });
+
+  it('an explicit align wins over the end alignment numeric implies', () => {
+    const html = renderTable({
+      columns: [{ key: 'n', label: 'N', numeric: true, align: 'center' }],
+      rows: [{ n: 1 }],
+    });
+    assert.ok(html.includes('data-align="center" data-numeric'));
+    assert.ok(!html.includes('data-align="end"'));
+  });
+
+  it('align "start" is the default and emits nothing', () => {
+    const html = renderTable({ columns: [{ key: 'n', label: 'N', align: 'start' }], rows: [{ n: 1 }] });
+    assert.ok(!html.includes('data-align'));
+  });
+
+  it('ignores an unknown align rather than emitting it', () => {
+    const html = renderTable({ columns: [{ key: 'n', label: 'N', align: 'middle' }], rows: [{ n: 1 }] });
+    assert.ok(!html.includes('data-align'));
+  });
+
+  it('labels every cell so a stacked layout can recover the hidden heading', () => {
+    const html = renderTable({ columns, rows: money });
+    assert.ok(html.includes('<td data-label="Liability">Chase Sapphire</td>'));
+  });
+
+  it('escapes the label it copies into data-label', () => {
+    const html = renderTable({ columns: [{ key: 'a', label: 'A "B" & C' }], rows: [{ a: 1 }] });
+    assert.ok(html.includes('data-label="A &quot;B&quot; &amp; C"'));
+  });
+
+  it('renders a footer row as th scope=row plus cells, using the same render hooks', () => {
+    const html = renderTable({
+      columns: [
+        { key: 'label', label: 'Liability' },
+        { key: 'principal', label: 'Principal', numeric: true, render: value => `<b>${value}</b>` },
+      ],
+      rows: money,
+      footer: [{ label: 'Total', principal: '$25,730' }],
+    });
+    assert.ok(html.includes('<tfoot><tr><th scope="row" data-label="Liability">Total</th>'));
+    assert.ok(html.includes('data-numeric><b>$25,730</b></td></tr></tfoot>'));
+  });
+
+  it('omits tfoot entirely when there is no footer, or no columns to place it in', () => {
+    assert.ok(!renderTable({ columns, rows: money }).includes('<tfoot>'));
+    assert.ok(!renderTable({ columns: [], rows: [], footer: [{ a: 1 }] }).includes('<tfoot>'));
+  });
+
+  it('a footer survives an empty body, so a zeroed total can still be shown', () => {
+    const html = renderTable({ columns, rows: [], footer: [{ label: 'Total', principal: '$0' }] });
+    assert.ok(html.includes('data-bn="table-empty"'));
+    assert.ok(html.includes('<tfoot>'));
+  });
+
+  it('emptyContent is an HTML slot that replaces emptyMessage', () => {
+    const html = renderTable({
+      columns,
+      rows: [],
+      emptyMessage: 'ignored',
+      emptyContent: 'No accounts yet. <a href="/settings">Connect a bank</a>',
+    });
+    assert.ok(html.includes('<a href="/settings">Connect a bank</a>'));
+    assert.ok(!html.includes('ignored'));
+  });
+
+  it('still escapes emptyMessage when no emptyContent is given', () => {
+    const html = renderTable({ columns, rows: [], emptyMessage: '<script>x</script>' });
+    assert.ok(html.includes('&lt;script'));
+    assert.ok(!html.includes('<script>x'));
   });
 });
 
@@ -1333,7 +1423,7 @@ describe('Table — hardening', () => {
     });
     assert.ok(html.includes('<caption>Cap</caption>'));
     assert.ok(html.includes('<th scope="col" data-sortable>A</th>'));
-    assert.ok(html.includes('<td>1</td><td></td>'));
+    assert.ok(html.includes('<td data-label="A">1</td><td data-label="B"></td>'));
   });
 
   it('escapes caption, labels, cells and empty message', () => {

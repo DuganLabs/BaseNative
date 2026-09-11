@@ -356,8 +356,10 @@ renderTable({
     { key: 'name', label: 'Name', sortable: true },
     { key: 'status', label: 'Status', render: (value, row) => renderBadge(escapeText(value), { variant: row.status === 'paid' ? 'success' : 'default' }) },
     { key: 'start', label: 'Start', render: value => `<time datetime="${escapeAttr(value)}">${escapeText(formatDate(value))}</time>` },
+    { key: 'amount', label: 'Amount', numeric: true },
   ],
-  rows: [{ name: 'Alice', status: 'paid', start: '2025-06-02' }],
+  rows: [{ name: 'Alice', status: 'paid', start: '2025-06-02', amount: '$1,240' }],
+  footer: [{ name: 'Total', amount: '$1,240' }],
   emptyMessage: 'No data',
   caption: 'Users',
   attrs: 'data-testid="users"',
@@ -366,13 +368,37 @@ renderTable({
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `columns` | `Array<{ key, label, sortable?, render? }>` | `[]` | `sortable` adds `data-sortable` to the `<th>`; `render(value, row)` is an HTML slot: not escaped; escape any data you interpolate — a nullish result renders an empty cell |
+| `columns` | `Array<{ key, label, sortable?, align?, numeric?, render? }>` | `[]` | `sortable` adds `data-sortable` to the `<th>`; `align` (`'start'` \| `'center'` \| `'end'`) and `numeric` are described below; `render(value, row)` is an HTML slot: not escaped; escape any data you interpolate — a nullish result renders an empty cell |
 | `rows` | `Array<Record<string, unknown>>` | `[]` | Without `render`, cell values are stringified and escaped |
+| `footer` | `Array<Record<string, unknown>>` | `[]` | `<tfoot>` rows (totals, subtotals), read with the same keys and `render` hooks; the first cell of each is a `<th scope="row">` |
 | `emptyMessage` | `string` | `'No data'` | Single full-width row when `rows` is empty (`render` is not consulted) |
+| `emptyContent` | `string` | `''` | HTML slot used instead of `emptyMessage` — for an empty state with its own call to action. Not escaped |
 | `caption` | `string` | `''` | `<caption>` |
 | `attrs` | `string` | `''` | Spliced onto the `[data-bn="table-container"]` wrapper |
 
 Renders `<div data-bn="table-container"><table data-bn="table"><caption>…</caption><thead><tr><th scope="col" data-sortable>Name</th></tr></thead><tbody>…</tbody></table></div>`. Header cells carry `scope="col"`. Composite cells (a two-line name, a `<time>`, a badge, row-action buttons) belong in `render`; `renderDataGrid` offers the same hook when you also want sorting indicators, selection and a footer.
+
+### Columns of figures
+
+`numeric: true` emits `data-numeric` on the `<th>` and every cell in the column, and implies `align: 'end'`. The CSS gives those cells `font-variant-numeric: tabular-nums lining-nums` and `white-space: nowrap`, so digits sit on a fixed grid and a value never wraps mid-number. An explicit `align` wins over the alignment `numeric` implies.
+
+The heading is marked alongside its cells deliberately: a left-aligned `Amount` header over right-aligned figures is the most common data-table defect, because it breaks the vertical edge the eye tracks down the column.
+
+**Decimal alignment is the caller's half of the contract.** Right alignment plus tabular figures aligns decimal points only when every cell in the column carries the same number of fraction digits — `$8,000.00` and `$310,500` in one column cannot be aligned by any amount of CSS. Pick one precision per column and render nulls at that precision too (`—` in the units position, not an empty cell).
+
+### Responsive stacking
+
+Every `<td>` carries `data-label` with its column's label. A stacked layout for narrow viewports can therefore hide `<thead>` and recover the heading in CSS, without the renderer knowing anything about the breakpoint:
+
+```css
+@container (max-width: 32rem) {
+  [data-bn="table"] thead { display: none; }
+  [data-bn="table"] td { display: grid; grid-template-columns: 1fr 1fr; }
+  [data-bn="table"] td::before { content: attr(data-label); }
+}
+```
+
+`<thead>` stays in the DOM, so the accessibility tree is unchanged at every width.
 
 ## Data Grid
 

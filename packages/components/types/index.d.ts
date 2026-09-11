@@ -178,10 +178,22 @@ export interface TableColumn<Row = Record<string, unknown>> {
   /** Adds `data-sortable` to the `<th>`. */
   sortable?: boolean;
   /**
+   * Column alignment, emitted as `data-align` on the `<th>` and every cell.
+   * `'start'` is the default and emits nothing. An explicit value wins over
+   * the `end` alignment `numeric` implies.
+   */
+  align?: 'start' | 'center' | 'end';
+  /**
+   * Marks a column of figures: emits `data-numeric` (tabular lining figures,
+   * no wrapping) and implies `align: 'end'`. Decimal alignment additionally
+   * requires the caller to render one precision for the whole column.
+   */
+  numeric?: boolean;
+  /**
    * Custom cell renderer; receives `row[key]` and the row. HTML slot: the
    * result is not escaped — escape any data you interpolate. A nullish
    * result renders an empty cell. Without it the value is stringified and
-   * escaped.
+   * escaped. Also used for `footer` rows.
    */
   render?: (value: unknown, row: Row) => string | null | undefined;
 }
@@ -189,8 +201,19 @@ export interface TableColumn<Row = Record<string, unknown>> {
 export function renderTable<Row extends Record<string, unknown> = Record<string, unknown>>(options?: {
   columns?: Array<TableColumn<Row>>;
   rows?: Row[];
+  /**
+   * Footer rows (totals, subtotals), read with the same column keys and
+   * `render` hooks as the body. The first cell of each row is a
+   * `<th scope="row">`.
+   */
+  footer?: Row[];
   /** Default `'No data'`. */
   emptyMessage?: string;
+  /**
+   * HTML slot used in place of `emptyMessage` when there are no rows — for an
+   * empty state that carries its own call to action. Not escaped.
+   */
+  emptyContent?: string;
   caption?: string;
   /** Spliced onto the `[data-bn="table-container"]` wrapper. */
   attrs?: string;
