@@ -185,10 +185,22 @@ export interface TableColumn<Row = Record<string, unknown>> {
   /** Adds `data-sortable` to the `<th>`. */
   sortable?: boolean;
   /**
+   * Column alignment, emitted as `data-align` on the `<th>` and every cell.
+   * `'start'` is the default and emits nothing. An explicit value wins over
+   * the `end` alignment `numeric` implies.
+   */
+  align?: 'start' | 'center' | 'end';
+  /**
+   * Marks a column of figures: emits `data-numeric` (tabular lining figures,
+   * no wrapping) and implies `align: 'end'`. Decimal alignment additionally
+   * requires the caller to render one precision for the whole column.
+   */
+  numeric?: boolean;
+  /**
    * Custom cell renderer; receives `row[key]` and the row. HTML slot: the
    * result is not escaped — escape any data you interpolate. A nullish
    * result renders an empty cell. Without it the value is stringified and
-   * escaped.
+   * escaped. Also used for `footer` rows.
    */
   render?: (value: unknown, row: Row) => string | null | undefined;
   /**
@@ -198,8 +210,10 @@ export interface TableColumn<Row = Record<string, unknown>> {
    */
   srLabel?: string;
   /**
-   * Raw attribute markup appended to this column's `<td>` — `data-bn="num"`,
-   * a test hook, an `aria-*`. Not escaped. Pass a function to vary it per row.
+   * Raw attribute markup appended to this column's cells — a test hook, an
+   * `aria-*`, a `data-bn-bind`. Not escaped. Pass a function to vary it per
+   * row. For numeric alignment reach for `numeric` instead: it is styled by
+   * the shipped stylesheet, and it marks the `<th>` as well as the cells.
    */
   cellAttrs?: string | ((value: unknown, row: Row) => string | undefined);
 }
@@ -207,12 +221,24 @@ export interface TableColumn<Row = Record<string, unknown>> {
 export function renderTable<Row extends Record<string, unknown> = Record<string, unknown>>(options?: {
   columns?: Array<TableColumn<Row>>;
   rows?: Row[];
+  /**
+   * Footer rows (totals, subtotals), read with the same column keys and the
+   * same `render` / `cellAttrs` hooks as the body. The first cell of each row
+   * is a `<th scope="row">`, so a totals row is announced as a row heading
+   * rather than as data.
+   */
+  footer?: Row[];
   /** Default `'No data'`. */
   emptyMessage?: string;
+  /**
+   * HTML slot used in place of `emptyMessage` when there are no rows — for an
+   * empty state that carries its own call to action. Not escaped.
+   */
+  emptyContent?: string;
   caption?: string;
   /**
-   * Stamp `data-label="<column label>"` on every body cell — what a responsive
-   * stacked table needs to render each cell's own heading from
+   * Stamp `data-label="<column label>"` on every body and footer cell — what a
+   * responsive stacked table needs to render each cell's own heading from
    * `content: attr(data-label)` once the `<thead>` is hidden.
    */
   labelCells?: boolean;

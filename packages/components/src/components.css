@@ -384,6 +384,25 @@
   border-bottom: 1px solid var(--bn-color-border);
   color: var(--bn-color-text);
 }
+/*
+ * Column alignment. A column's heading carries the same data-align as its
+ * cells, so a right-aligned money column can never sit under a left-aligned
+ * heading — the most common data-table defect, because it breaks the vertical
+ * edge the eye tracks down the column.
+ */
+[data-bn="table"] [data-align="end"] { text-align: right; }
+[data-bn="table"] [data-align="center"] { text-align: center; }
+/*
+ * Numeric columns get tabular lining figures so digits sit on a fixed grid,
+ * and never wrap. Decimal alignment then follows from the caller rendering one
+ * precision per column; nothing here can align cells that carry a different
+ * number of fraction digits.
+ */
+[data-bn="table"] [data-numeric] {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: 'tnum' 1, 'lnum' 1;
+  white-space: nowrap;
+}
 [data-bn="table"] tbody tr:nth-child(even) { background: var(--bn-color-zebra); }
 [data-bn="table"] tbody tr:hover { background: var(--bn-color-surface-subtle); }
 [data-bn="table-empty"] {
@@ -391,6 +410,20 @@
   color: var(--bn-color-text-muted);
   padding: var(--bn-space-8) !important;
 }
+/*
+ * Footer rows carry totals, so they sit above the accounting double rule and
+ * outweigh the body rows they sum.
+ */
+[data-bn="table"] tfoot th,
+[data-bn="table"] tfoot td {
+  padding: var(--bn-space-3) var(--bn-space-4);
+  border-top: 3px double var(--bn-color-border-strong);
+  border-bottom: 0;
+  font-weight: var(--bn-font-weight-semibold);
+  color: var(--bn-color-text);
+}
+[data-bn="table"] tfoot th { color: var(--bn-color-text-muted); }
+[data-bn="table"] tfoot tr:hover { background: transparent; }
 
 /* === Pagination === */
 [data-bn="pagination"] ul {
