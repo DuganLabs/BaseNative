@@ -1,0 +1,124 @@
+@layer tokens {
+  /* @basenative/theme — the --bn-* bridge.
+     Generated from src/bridge.js; edit that, not this. See the rationale there
+     for why both selectors are (0,2,1) and why this block lives in @layer tokens. */
+  html:root[data-theme],
+  html:root:not([data-theme="light"]) {
+    /* Ramps. --bn-color-accent-* already aliases --bn-color-primary-* upstream,
+       so re-pointing primary carries accent with it. */
+    --bn-color-gray-50: var(--bn-theme-ramp-neutral-50);
+    --bn-color-gray-100: var(--bn-theme-ramp-neutral-100);
+    --bn-color-gray-200: var(--bn-theme-ramp-neutral-200);
+    --bn-color-gray-300: var(--bn-theme-ramp-neutral-300);
+    --bn-color-gray-400: var(--bn-theme-ramp-neutral-400);
+    --bn-color-gray-500: var(--bn-theme-ramp-neutral-500);
+    --bn-color-gray-600: var(--bn-theme-ramp-neutral-600);
+    --bn-color-gray-700: var(--bn-theme-ramp-neutral-700);
+    --bn-color-gray-800: var(--bn-theme-ramp-neutral-800);
+    --bn-color-gray-900: var(--bn-theme-ramp-neutral-900);
+    --bn-color-gray-950: var(--bn-theme-ramp-neutral-950);
+    --bn-color-primary-50: var(--bn-theme-ramp-primary-50);
+    --bn-color-primary-100: var(--bn-theme-ramp-primary-100);
+    --bn-color-primary-200: var(--bn-theme-ramp-primary-200);
+    --bn-color-primary-300: var(--bn-theme-ramp-primary-300);
+    --bn-color-primary-400: var(--bn-theme-ramp-primary-400);
+    --bn-color-primary-500: var(--bn-theme-ramp-primary-500);
+    --bn-color-primary-600: var(--bn-theme-ramp-primary-600);
+    --bn-color-primary-700: var(--bn-theme-ramp-primary-700);
+    --bn-color-primary-800: var(--bn-theme-ramp-primary-800);
+    --bn-color-primary-900: var(--bn-theme-ramp-primary-900);
+
+    /* Surfaces. -control and -card take the RAISED surface, not the page: on a
+       dark theme a control that shares the page colour dissolves into it with
+       nothing but a 1px border left, which is the bug components/tokens.css
+       documents T4BS and PendingBusiness both hitting. */
+    --bn-color-surface: var(--bn-theme-surface);
+    --bn-color-surface-subtle: var(--bn-theme-surface-subtle);
+    --bn-color-surface-muted: var(--bn-theme-surface-sunk);
+    --bn-color-surface-inset: var(--bn-theme-surface-sunk);
+    --bn-color-surface-raised: var(--bn-theme-surface-raised);
+    --bn-color-surface-control: var(--bn-theme-surface-raised);
+    --bn-color-surface-card: var(--bn-theme-surface-raised);
+    --bn-color-surface-inverse: var(--bn-theme-surface-inverse);
+
+    /* Ink */
+    --bn-color-text: var(--bn-theme-ink);
+    --bn-color-text-muted: var(--bn-theme-ink-muted);
+    --bn-color-text-subtle: var(--bn-theme-ink-subtle);
+    --bn-color-text-inverse: var(--bn-theme-ink-inverse);
+    --bn-color-text-link: var(--bn-theme-ink-link);
+
+    /* Borders and focus. --bn-color-border-light is a decorative hairline and
+       rides --bn-theme-border; only -border-control carries SC 1.4.11. */
+    --bn-color-border: var(--bn-theme-border);
+    --bn-color-border-light: var(--bn-theme-border);
+    --bn-color-border-strong: var(--bn-theme-border-strong);
+    --bn-color-border-control: var(--bn-theme-border-control);
+    --bn-color-toggle-track-off: var(--bn-theme-border-control);
+    --bn-color-border-focus: var(--bn-theme-focus);
+    --bn-focus-ring-color: var(--bn-theme-focus);
+
+    /* Foreground on a filled brand surface. The toggle knob rides the primary
+       track when ON, so it takes the same foreground. */
+    --bn-color-on-primary: var(--bn-theme-on-primary);
+    --bn-color-on-accent: var(--bn-theme-on-primary);
+    --bn-color-toggle-knob: var(--bn-theme-on-primary);
+    --bn-color-on-error: var(--bn-theme-slot-error-on-solid);
+
+    /* Selection */
+    --bn-color-selected-bg: var(--bn-theme-selected-bg);
+    --bn-color-selected-text: var(--bn-theme-selected-ink);
+    --bn-color-zebra: var(--bn-theme-zebra);
+
+    /* The five declared badge/alert variants, driven by whichever signal family
+       the theme assigned to each slot. A theme names its families for its own
+       domain; these five names are the component contract. */
+    --bn-color-info-bg: var(--bn-theme-slot-primary-bg);
+    --bn-color-info-border: var(--bn-theme-slot-primary-line);
+    --bn-color-info-text: var(--bn-theme-slot-primary-ink);
+    --bn-color-info-500: var(--bn-theme-slot-primary-line);
+    --bn-color-info-600: var(--bn-theme-slot-primary-solid);
+    --bn-color-success-bg: var(--bn-theme-slot-success-bg);
+    --bn-color-success-50: var(--bn-theme-slot-success-bg);
+    --bn-color-success-border: var(--bn-theme-slot-success-line);
+    --bn-color-success-text: var(--bn-theme-slot-success-ink);
+    --bn-color-success-500: var(--bn-theme-slot-success-line);
+    --bn-color-success-600: var(--bn-theme-slot-success-solid);
+    --bn-color-warning-bg: var(--bn-theme-slot-warning-bg);
+    --bn-color-warning-50: var(--bn-theme-slot-warning-bg);
+    --bn-color-warning-border: var(--bn-theme-slot-warning-line);
+    --bn-color-warning-text: var(--bn-theme-slot-warning-ink);
+    --bn-color-warning-500: var(--bn-theme-slot-warning-line);
+    --bn-color-warning-600: var(--bn-theme-slot-warning-solid);
+    --bn-color-error-bg: var(--bn-theme-slot-error-bg);
+    --bn-color-error-border: var(--bn-theme-slot-error-line);
+    --bn-color-error-text: var(--bn-theme-slot-error-ink);
+    --bn-color-error-fg: var(--bn-theme-slot-error-ink);
+    --bn-color-error-500: var(--bn-theme-slot-error-line);
+    --bn-color-error-600: var(--bn-theme-slot-error-solid);
+    --bn-color-success-badge-bg: var(--bn-theme-slot-success-bg);
+    --bn-color-success-badge-text: var(--bn-theme-slot-success-ink);
+    --bn-color-warning-badge-bg: var(--bn-theme-slot-warning-bg);
+    --bn-color-warning-badge-text: var(--bn-theme-slot-warning-ink);
+    --bn-color-error-badge-bg: var(--bn-theme-slot-error-bg);
+    --bn-color-error-badge-text: var(--bn-theme-slot-error-ink);
+
+    /* Type, geometry, motion. The size ladder, weights, line heights, the space
+       scale and the easing curves stay upstream — see UPSTREAM_OWNED. */
+    --bn-font-family: var(--bn-theme-font-sans);
+    --bn-font-mono: var(--bn-theme-font-mono);
+    --bn-radius-sm: var(--bn-theme-radius-sm);
+    --bn-radius-md: var(--bn-theme-radius-md);
+    --bn-radius-lg: var(--bn-theme-radius-lg);
+    --bn-radius-xl: var(--bn-theme-radius-xl);
+    --bn-radius-full: var(--bn-theme-radius-full);
+    --bn-control-height: var(--bn-theme-control-h);
+    --bn-control-height-sm: var(--bn-theme-control-h-sm);
+    --bn-control-height-lg: var(--bn-theme-control-h-lg);
+    --bn-target-size-min: var(--bn-theme-tap-min);
+    --bn-transition-fast: var(--bn-theme-motion-fast);
+    --bn-transition-normal: var(--bn-theme-motion-base);
+    --bn-transition-slow: var(--bn-theme-motion-slow);
+    --bn-scrim: var(--bn-theme-scrim);
+  }
+}

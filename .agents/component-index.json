@@ -4,8 +4,8 @@
   "generatedOn": "2026-09-11",
   "contract": "Generated from source. Never hand-edit: `node scripts/llms-txt.js --check` fails CI when this file disagrees with packages/*/src. `variants` is the set of values a stylesheet actually declares a rule for, so a value outside it renders unstyled rather than erroring.",
   "counts": {
-    "components": 63,
-    "renderFunctions": 57,
+    "components": 64,
+    "renderFunctions": 58,
     "customElements": 6,
     "styledContracts": 172,
     "componentsWithVariants": 18
@@ -24,6 +24,7 @@
     "packages/fonts/fonts.css",
     "packages/icons/reset.css",
     "packages/keyboard/src/styles.css",
+    "packages/theme/src/bridge.css",
     "packages/components/src/layout-grid.js",
     "packages/marketplace/src/card.js"
   ],
@@ -2418,6 +2419,26 @@
       "inertAxes": [],
       "styled": false,
       "useInsteadOf": "hand-written markup for this element"
+    },
+    {
+      "id": "@basenative/theme#renderIcon",
+      "name": "renderIcon",
+      "kind": "render-function",
+      "package": "@basenative/theme",
+      "file": "packages/theme/src/icons.js",
+      "signature": "renderIcon(set, name, options)",
+      "purpose": "Renders one icon from a set as an `<svg>` string.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "svg",
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "a bare <svg> with your own classes"
     },
     {
       "id": "element:bn-canvas",
