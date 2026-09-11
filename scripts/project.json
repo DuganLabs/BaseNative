@@ -1,0 +1,21 @@
+{
+  "name": "basenative-design-system",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "cache": true,
+      "command": "pnpm exec eslint scripts && node scripts/ds-lint.js",
+      "inputs": [
+        "{workspaceRoot}/packages/*/src/**/*.css",
+        "{workspaceRoot}/packages/*/*.css",
+        "{workspaceRoot}/packages/*/src/**/*.js",
+        "{workspaceRoot}/design-system.config.json",
+        "{workspaceRoot}/design-system.baseline.json",
+        "{workspaceRoot}/docs/adr/**/*.md",
+        "{workspaceRoot}/eslint.config.js",
+        "{projectRoot}/**/*.js",
+        "{projectRoot}/**/*.mjs"
+      ]
+    }
+  }
+}

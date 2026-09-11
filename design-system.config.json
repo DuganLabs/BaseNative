@@ -1,0 +1,19 @@
+{
+  "$comment": [
+    "Design-system enforcement config, read by scripts/ds-lint.js.",
+    "",
+    "variantCeiling is the maximum number of values ONE style axis of ONE data-bn",
+    "contract may declare — e.g. [data-bn=\"badge\"][data-variant=\"...\"] currently",
+    "declares 5. It is null on purpose: the mechanism is built, the number is the",
+    "owner's call. Run `node scripts/ds-lint.js` to see the current distribution",
+    "ranked, then put a number here.",
+    "",
+    "While it is null the check reports and passes. Once it is a number, an axis",
+    "over it fails the build, and the only two ways to clear the failure are to",
+    "remove values or to write an ADR under variantCeilingAdrDir containing the",
+    "line `bn-variant-exception: <contract>.<axis> = <count>`. The grant is for",
+    "that exact count, so the axis cannot keep growing behind one ADR."
+  ],
+  "variantCeiling": null,
+  "variantCeilingAdrDir": "docs/adr"
+}
