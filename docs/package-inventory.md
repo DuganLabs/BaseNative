@@ -20,11 +20,11 @@ the next changeset bump would collide and be skipped — realign the local versi
 | `@basenative/auth-webauthn` | 1.1.1 | 1.1.1 | — | in sync |
 | `@basenative/builder` | 0.1.5 | 0.1.5 | — | in sync |
 | `@basenative/claude-config` | 0.2.2 | 0.2.2 | — | in sync |
-| `@basenative/cli` | 0.5.0 | 0.4.2 | 0.2.0 | unreleased bump |
+| `@basenative/cli` | 0.5.0 | 0.5.0 | 0.2.0 | in sync |
 | `@basenative/combobox` | 1.0.5 | 1.0.5 | — | in sync |
-| `@basenative/components` | 0.8.0 | 0.7.1 | 0.3.0 | unreleased bump |
+| `@basenative/components` | 0.9.0 | 0.8.0 | 0.3.0 | unreleased bump |
 | `@basenative/config` | 0.3.1 | 0.3.1 | 0.2.0 | in sync |
-| `@basenative/date` | 0.3.2 | 0.3.1 | 0.2.0 | unreleased bump |
+| `@basenative/date` | 0.3.2 | 0.3.2 | 0.2.0 | in sync |
 | `@basenative/db` | 0.3.1 | 0.3.1 | 0.2.0 | in sync |
 | `@basenative/doppler` | 0.2.2 | 0.2.2 | — | in sync |
 | `@basenative/eslint-config` | 0.2.1 | 0.2.1 | — | in sync |
@@ -34,7 +34,7 @@ the next changeset bump would collide and be skipped — realign the local versi
 | `@basenative/flags` | 0.4.1 | 0.4.1 | 0.2.0 | in sync |
 | `@basenative/fonts` | 0.1.0 | — | — | private |
 | `@basenative/forms` | 1.0.4 | 1.0.4 | 0.3.0 | in sync |
-| `@basenative/hmr` | 0.2.0 | — | — | never published |
+| `@basenative/hmr` | 0.2.0 | 0.2.0 | — | in sync |
 | `@basenative/i18n` | 0.4.2 | 0.4.2 | 0.2.0 | in sync |
 | `@basenative/icons` | 0.1.0 | — | — | private |
 | `@basenative/integrations` | 0.1.1 | 0.1.1 | — | in sync |
@@ -42,7 +42,7 @@ the next changeset bump would collide and be skipped — realign the local versi
 | `@basenative/logger` | 0.3.1 | 0.3.1 | 0.2.0 | in sync |
 | `@basenative/markdown` | 0.1.1 | 0.1.1 | — | in sync |
 | `@basenative/marketplace` | 0.2.2 | 0.2.2 | 0.2.0 | in sync |
-| `@basenative/mcp` | 0.2.2 | 0.2.1 | — | unreleased bump |
+| `@basenative/mcp` | 0.2.2 | 0.2.2 | — | in sync |
 | `@basenative/middleware` | 0.3.4 | 0.3.4 | 0.2.0 | in sync |
 | `@basenative/notify` | 0.3.2 | 0.3.2 | 0.2.0 | in sync |
 | `@basenative/og-image` | 0.2.2 | 0.2.2 | — | in sync |
@@ -56,7 +56,7 @@ the next changeset bump would collide and be skipped — realign the local versi
 | `@basenative/tenant` | 0.3.1 | 0.3.1 | 0.2.0 | in sync |
 | `@basenative/tsconfig` | 0.2.1 | 0.2.1 | — | in sync |
 | `@basenative/upload` | 0.3.3 | 0.3.3 | 0.2.0 | in sync |
-| `@basenative/validate` | 0.3.0 | 0.2.1 | — | unreleased bump |
+| `@basenative/validate` | 0.3.0 | 0.3.0 | — | in sync |
 | `@basenative/visual-builder` | 0.2.2 | 0.2.2 | 0.2.0 | in sync |
 | `@basenative/wrangler-preset` | 0.2.2 | 0.2.2 | — | in sync |
 
@@ -64,7 +64,7 @@ the next changeset bump would collide and be skipped — realign the local versi
 
 - **41** publishable, **3** private (`@basenative/evals`, `@basenative/fonts`, `@basenative/icons`)
 - **0** have a higher version on GitHub Packages than in this tree (none)
-- **1** have never been published to GitHub Packages (`@basenative/hmr`)
+- **0** have never been published to GitHub Packages (none)
 - **21** have a stale npmjs copy that external installs resolve to
 - **20** have never appeared on npmjs
 - **0** are at 1.0 on npmjs, despite 8 being at 1.x locally
