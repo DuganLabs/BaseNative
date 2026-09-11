@@ -3,7 +3,13 @@ node_modules/
 .agent/
 .agents/
 agent/
-.claude/skills/
+# Skills installed from a marketplace are not committed. The three vendored
+# design-system forks below ARE committed on purpose: they are forks, not
+# installs, and a marketplace update must never clobber them.
+.claude/skills/*
+!.claude/skills/ds-guard/
+!.claude/skills/ds-extract/
+!.claude/skills/ds-drift/
 .claude/worktrees/
 skills-lock.json
 examples/express/public/basenative.js
