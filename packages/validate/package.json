@@ -1,6 +1,6 @@
 {
   "name": "@basenative/validate",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Structured validation for BaseNative templates \u2014 machine-actionable errors a model can repair from the error object alone",
   "type": "module",
   "exports": {

@@ -476,7 +476,7 @@ Absolute path to `settings/settings.template.json` under `PACKAGE_ROOT`. Install
 ##### CLAUDE_MD_TEMPLATE
 Absolute path to `CLAUDE.md.tmpl` under `PACKAGE_ROOT`. Installed to `<projectRoot>/CLAUDE.md` only if that file doesn't already exist.
 
-### `@basenative/cli` (v0.4.2)
+### `@basenative/cli` (v0.5.0)
 
 The bn CLI — front door for BaseNative / DuganLabs projects (create, prd, speckit, gh, nx, deploy, doctor)
 
@@ -560,7 +560,7 @@ Bind an `Escape` keydown handler at the given root, scoped to that widget, so `E
 #### announce(rootEl, message)
 Announce a transient message to screen readers via the widget's `aria-live="polite"` region (`[data-bn="cb-live"]`). Used internally by `hydrateCombobox` for "N options available" / `Press Enter to create "…"` / "Selected …" hints. Idempot…
 
-### `@basenative/components` (v0.7.1)
+### `@basenative/components` (v0.8.0)
 
 15 semantic HTML UI components rendered as strings (forms, data grids, dialogs, calendar and kanban) with cascade-layer CSS, design tokens, light/dark themes and density scales
 
@@ -1020,7 +1020,7 @@ Loads a `.env` file and merges it into `process.env`. Variables already set in t
 #### parseEnvFile(content)
 Parses `.env` file content into a plain object without modifying `process.env`. **Parameters:** - `content` — string content of a `.env` file **Returns:** `Record<string, string>`
 
-### `@basenative/date` (v0.3.1)
+### `@basenative/date` (v0.3.2)
 
 Date utilities, timezone handling, relative time formatting, and date ranges
 
@@ -1612,7 +1612,7 @@ const schema = zodAdapter(z.object({
 const form = createForm(fields, { schema });
 ```
 
-### `@basenative/hmr` (v0.1.0)
+### `@basenative/hmr` (v0.2.0)
 
 Dev-only hot module replacement — state-preserving DOM patching, focus and caret retention, SSE live reload
 
@@ -2036,7 +2036,7 @@ ${components.map(renderPackageCard).join('')}
 ### Registry API
 The registry backend accepts: - `GET /search?q=<query>&page=<n>&limit=<n>` — search components - `GET /packages/<name>` — get package metadata - `GET /packages/<name>/<version>` — get specific version - `POST /publish` — publish (requires…
 
-### `@basenative/mcp` (v0.2.1)
+### `@basenative/mcp` (v0.2.2)
 
 MCP server exposing BaseNative validation, SSR preview, and directive reference to any agent
 
@@ -3140,7 +3140,7 @@ All storage adapters implement the same interface:
 }
 ```
 
-### `@basenative/validate` (v0.2.1)
+### `@basenative/validate` (v0.3.0)
 
 Structured validation for BaseNative templates — machine-actionable errors a model can repair from the error object alone
 

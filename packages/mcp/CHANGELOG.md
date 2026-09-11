@@ -1,5 +1,12 @@
 # @basenative/mcp
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [746ba45]
+  - @basenative/validate@0.3.0
+
 ## 0.2.1
 
 ### Patch Changes
