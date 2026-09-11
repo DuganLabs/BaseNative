@@ -33,13 +33,25 @@
 
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, dirname, resolve, relative, extname, basename } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 // scanTags/scanInterpolations are the REAL template tokenizer (linear, ReDoS-safe,
 // comment-aware) — the same one the validator and, via findInterpolations, the
 // runtime's own renderer/client-binder use. Reusing it (not reimplementing it) is
 // the entire point of Phase 0.
-import { scanTags, scanInterpolations, spanAt } from '@basenative/validate/scan';
+//
+// Imported by path, not as '@basenative/validate/scan'. The workspace root has
+// no dependency on @basenative/validate, so the bare specifier does not resolve
+// from scripts/ on a clean `pnpm install --frozen-lockfile` checkout — it throws
+// ERR_MODULE_NOT_FOUND. This is repo tooling reaching into a sibling package,
+// not a consumer, so a path is the honest form and needs no root dependency.
+// The published subpath still exists for real consumers and is covered by
+// packages/validate/src/scan-export.test.js.
+import {
+  scanTags,
+  scanInterpolations,
+  spanAt,
+} from '../packages/validate/src/scan.js';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const BASENATIVE_ROOT = resolve(SCRIPT_DIR, '..');
@@ -857,4 +869,11 @@ function main() {
   }
 }
 
-main();
+// Run only when executed directly, not when imported. Without this guard the
+// module cannot be imported at all without performing a full scan and
+// overwriting .agents/component-usage.json as a side effect — which is exactly
+// what happened when a test first tried to import it, and is why nothing had
+// ever imported it to check that it loads.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main();
+}
