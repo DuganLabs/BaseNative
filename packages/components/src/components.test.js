@@ -2073,9 +2073,9 @@ describe('Tree — hardening', () => {
       items: [{ id: 'p', label: 'P', icon: '<svg></svg>', children: [{ id: 'c', label: 'C' }] }],
     });
     assert.ok(html.includes('<ul data-bn="tree" id="t" role="tree" data-x="1">'));
-    assert.ok(html.includes('role="treeitem" aria-expanded="true" aria-selected="false" data-node-id="p" data-level="0"'));
+    assert.ok(html.includes('role="treeitem" tabindex="0" aria-expanded="true" aria-selected="false" data-node-id="p" data-level="0"'));
     assert.ok(html.includes('aria-label="Collapse" type="button">▾</button><span data-bn="tree-icon"><svg></svg></span>'));
-    assert.ok(html.includes('<ul data-bn="tree-children" role="group"><li data-bn="tree-item" role="treeitem" aria-selected="true" data-node-id="c" data-level="1"><div data-bn="tree-item-content" tabindex="-1" data-selected>'));
+    assert.ok(html.includes('<ul data-bn="tree-children" role="group"><li data-bn="tree-item" role="treeitem" tabindex="-1" aria-selected="true" data-node-id="c" data-level="1"><div data-bn="tree-item-content" data-selected>'));
   });
 
   it('the first item in document order is tabindex="0"; every other item is tabindex="-1" (roving tabindex)', () => {
@@ -2086,7 +2086,8 @@ describe('Tree — hardening', () => {
         { id: 'q', label: 'Q' },
       ],
     });
-    assert.ok(html.includes('<div data-bn="tree-item-content" tabindex="0">'));
+    // The roving tabindex sits on the element that carries role="treeitem".
+    assert.ok(html.includes('<li data-bn="tree-item" role="treeitem" tabindex="0"'));
     assert.equal((html.match(/tabindex="0"/g) || []).length, 1);
     assert.equal((html.match(/tabindex="-1"/g) || []).length, 2);
   });
@@ -2155,7 +2156,11 @@ describe('TreeGrid — hardening', () => {
 describe('VirtualList — hardening', () => {
   it('renders with minimal options', () => {
     const html = renderVirtualList({ id: 'v' });
-    assert.ok(html.includes('<div data-bn="virtualizer" id="v" style="height:400px;overflow:auto">'));
+    assert.ok(
+      html.includes(
+        '<div data-bn="virtualizer" id="v" tabindex="0" role="region" aria-label="Scrollable list" style="height:400px;overflow:auto">',
+      ),
+    );
     assert.ok(html.includes('data-item-height="40" data-total="0"'));
   });
 

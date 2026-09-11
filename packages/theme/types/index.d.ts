@@ -75,6 +75,8 @@ export interface ControlTokens {
   heightLg: string;
   /** WCAG 2.2 SC 2.5.8 is 24px; raise to `2.75rem` for a gloved field app. */
   tapMin: string;
+  /** The checkbox/radio square. The switch derives its track and knob from it. */
+  indicator: string;
 }
 export interface MotionTokens {
   fast: string;

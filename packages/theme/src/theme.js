@@ -110,6 +110,10 @@ export const GEOMETRY_DEFAULTS = Object.freeze({
     // for a field app used with gloves; that is SC 2.5.5 (AAA) territory and a
     // per-property call, not a default this package makes for everyone.
     tapMin: '1.5rem',
+    // The checkbox/radio square. The switch derives its track and knob from
+    // this upstream, so one value scales all three selection controls with the
+    // rest of the control ladder above.
+    indicator: '1.125rem',
   }),
   motion: Object.freeze({
     fast: '150ms ease',
@@ -517,6 +521,7 @@ function geometryDeclarations(theme) {
     ['--bn-theme-control-h-sm', control.heightSm],
     ['--bn-theme-control-h-lg', control.heightLg],
     ['--bn-theme-tap-min', control.tapMin],
+    ['--bn-theme-control-indicator', control.indicator],
     ['--bn-theme-motion-fast', motion.fast],
     ['--bn-theme-motion-base', motion.base],
     ['--bn-theme-motion-slow', motion.slow],

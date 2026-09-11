@@ -46,8 +46,13 @@ export function renderTree(options = {}) {
       const icon = node.icon ?? '';
       const tabIndex = rovingTabIndex(level, index);
 
-      let html = `<li data-bn="tree-item" role="treeitem"${ariaExpanded(hasChildren, isExpanded)} aria-selected="${isSelected}" data-node-id="${escapeAttr(nodeId)}" data-level="${level}">`;
-      html += `<div data-bn="tree-item-content" tabindex="${tabIndex}"${isSelected ? ' data-selected' : ''}>`;
+      // The roving tabindex belongs on the element that carries role="treeitem",
+      // not on a presentational wrapper inside it. It used to sit on the <div>,
+      // which made a bare <div> the focus target of a tree — axe flags it
+      // (focus-order-semantics) and a screen reader lands on something with no
+      // role while the treeitem it describes is never focused.
+      let html = `<li data-bn="tree-item" role="treeitem" tabindex="${tabIndex}"${ariaExpanded(hasChildren, isExpanded)} aria-selected="${isSelected}" data-node-id="${escapeAttr(nodeId)}" data-level="${level}">`;
+      html += `<div data-bn="tree-item-content"${isSelected ? ' data-selected' : ''}>`;
       if (hasChildren) {
         html += `<button data-bn="tree-toggle" aria-label="${isExpanded ? 'Collapse' : 'Expand'}" type="button">${isExpanded ? '▾' : '▸'}</button>`;
       } else {
