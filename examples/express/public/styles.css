@@ -3806,3 +3806,107 @@
     }
   }
 }
+
+/* -- /compare ------------------------------------------------------------- */
+@layer components {
+  /* Verdict colouring. Plain coloured text rather than <mark> badges: a
+     five-column table with a pill in every cell reads as noise, and the point
+     of these tables is scanning one row against another. */
+  [data-compare-table] th[scope='row'] {
+    color: var(--text-0);
+    white-space: nowrap;
+    text-align: start;
+  }
+  [data-compare-table] td[data-tone='win'] {
+    color: var(--success);
+    font-weight: var(--font-weight-semibold);
+  }
+  [data-compare-table] td[data-tone='cost'] {
+    color: var(--accent);
+  }
+  [data-compare-table] td[data-tone='even'] {
+    color: var(--text-1);
+  }
+
+  [data-compare-note] {
+    font-size: var(--font-size-sm);
+    color: var(--text-2);
+    line-height: var(--line-height-body);
+  }
+
+  [data-compare-cards] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: var(--space-md);
+    align-items: start;
+  }
+
+  [data-compare-card='win'] > header h3 {
+    color: var(--success);
+  }
+  [data-compare-card='cost'] > header h3 {
+    color: var(--accent);
+  }
+
+  /* Reset the site's default list-item chrome — these are prose bullets with a
+     leading verdict glyph, not the bordered rows ul[role='list'] renders. */
+  ul[role='list'][data-compare-list] {
+    display: grid;
+    gap: var(--space-xs);
+    list-style: none;
+  }
+  ul[role='list'][data-compare-list] > li {
+    display: grid;
+    grid-template-columns: 1ch 1fr;
+    gap: var(--space-sm);
+    padding: 0;
+    background: none;
+    border: 0;
+    font-size: var(--font-size-sm);
+    color: var(--text-1);
+    line-height: var(--line-height-tight);
+  }
+  ul[role='list'][data-compare-list] > li:hover {
+    background: none;
+  }
+  ul[role='list'][data-compare-list] > li::before {
+    font-weight: var(--font-weight-bold);
+  }
+  ul[role='list'][data-compare-list='win'] > li::before {
+    content: '+';
+    color: var(--success);
+  }
+  ul[role='list'][data-compare-list='cost'] > li::before {
+    content: '~';
+    color: var(--accent);
+  }
+
+  [data-compare-code] {
+    margin: 0;
+  }
+  [data-compare-code] > figcaption {
+    font-family: var(--font-family);
+    font-stretch: var(--font-mono);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wider);
+    color: var(--text-2);
+  }
+  [data-compare-code] > [data-compare-note] {
+    margin-block-start: var(--space-sm);
+  }
+
+  [data-compare-tabs] {
+    margin-block-start: var(--space-md);
+  }
+
+  [data-compare-cta] {
+    text-align: center;
+  }
+  [data-compare-cta] nav {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
