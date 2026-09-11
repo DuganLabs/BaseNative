@@ -237,7 +237,7 @@ importers:
   packages/cli:
     dependencies:
       '@basenative/hmr':
-        specifier: workspace:^0.1.0
+        specifier: workspace:^0.2.0
         version: link:../hmr
 
   packages/combobox:
@@ -291,7 +291,7 @@ importers:
         specifier: workspace:^0.6.3
         version: link:../server
       '@basenative/validate':
-        specifier: workspace:^0.2.1
+        specifier: workspace:^0.3.0
         version: link:../validate
 
   packages/favicon:
@@ -353,7 +353,7 @@ importers:
         specifier: workspace:^0.6.3
         version: link:../server
       '@basenative/validate':
-        specifier: workspace:^0.2.1
+        specifier: workspace:^0.3.0
         version: link:../validate
 
   packages/middleware: {}

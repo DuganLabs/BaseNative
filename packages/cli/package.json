@@ -1,6 +1,6 @@
 {
   "name": "@basenative/cli",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "The bn CLI \u2014 front door for BaseNative / DuganLabs projects (create, prd, speckit, gh, nx, deploy, doctor)",
   "type": "module",
   "bin": {
@@ -13,7 +13,7 @@
   },
   "types": "./types/index.d.ts",
   "dependencies": {
-    "@basenative/hmr": "workspace:^0.1.0"
+    "@basenative/hmr": "workspace:^0.2.0"
   },
   "files": [
     "src",
