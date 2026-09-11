@@ -21,8 +21,8 @@
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
   "dependencies": {
-    "@basenative/validate": "workspace:^0.2.0",
-    "@basenative/server": "workspace:^0.6.2",
-    "@basenative/runtime": "workspace:^0.6.2"
+    "@basenative/validate": "workspace:^0.2.1",
+    "@basenative/server": "workspace:^0.6.3",
+    "@basenative/runtime": "workspace:^0.6.3"
   }
 }

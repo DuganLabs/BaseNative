@@ -1,6 +1,6 @@
 {
   "name": "@basenative/auth",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Authentication, session management, RBAC, and OAuth2/OIDC for BaseNative apps",
   "type": "module",
   "exports": {

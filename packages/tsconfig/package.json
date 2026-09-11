@@ -1,6 +1,6 @@
 {
   "name": "@basenative/tsconfig",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Shared base tsconfigs for DuganLabs projects \u2014 strict, modern, runtime-targeted",
   "type": "module",
   "exports": {
