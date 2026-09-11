@@ -16,8 +16,6 @@ function ok(body = null, init = {}) {
   return new Response(body, init);
 }
 
-/** Parse a CSP header back into { directive: [sources] } so tests can assert
- *  on structure instead of on a serialized string. */
 /**
  * Exact membership in a parsed directive's source list.
  *
@@ -33,6 +31,8 @@ function hasSource(csp, directive, source) {
   return (csp[directive] ?? []).some((s) => s === source);
 }
 
+/** Parse a CSP header back into { directive: [sources] } so tests can assert
+ *  on structure instead of on a serialized string. */
 function parseCsp(header) {
   const directives = {};
   for (const part of header.split(';')) {
