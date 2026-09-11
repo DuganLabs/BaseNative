@@ -1,10 +1,13 @@
 # BaseNative — Product Requirements Document
 
-> Status: **draft** · Owner: Warren Dugan · Last updated: 2026-04-26
+> Status: **draft** · Owner: Warren Dugan · Last updated: 2026-09-11 (milestones + architecture corrected against the code)
 >
 > **Meta-library scope** — BaseNative as shared infrastructure for DuganLabs projects. This is
 > the path `bn prd` and the PRD-driven agents read. Sibling documents: [../PRD.md](../PRD.md)
-> (platform vision) and [prd-ai-native.md](prd-ai-native.md) (AI-native repositioning).
+> (platform vision) and [prd-ai-native.md](prd-ai-native.md) (AI-native repositioning). **Which
+> of the three governs overall scope is an open owner decision** — see
+> `duganlabs-survey/99-open-questions.md` item 1. This file corrects only what the code proves
+> wrong within its own scope; it does not resolve that precedence question.
 
 ## 1. Overview
 
@@ -72,10 +75,12 @@ N/A — runtime + library.
 ## 7. Architecture
 
 - pnpm workspace + Nx
-- ~30 packages under `packages/*`
+- **43** packages under `packages/*` (40 publishable, 3 private — see
+  `docs/package-inventory.md`, generated and authoritative for the current count/versions)
 - Tests: Node `--test` runner + Playwright e2e
 - CI/CD: lint + test + bundle-size on every PR
-- Release: Changesets
+- Release: Changesets, publishing to **GitHub Packages** (not npmjs.org — see
+  `docs/releasing.md`)
 
 ## 8. Milestones
 
@@ -89,22 +94,28 @@ N/A — runtime + library.
 - `@basenative/eslint-config`
 - `@basenative/tsconfig`
 
-### M2 — Game / app showcase suite (in progress)
-- `@basenative/og-image` (✅ scaffolded)
-- `@basenative/keyboard` (✅ scaffolded)
-- `@basenative/auth-webauthn`
-- `@basenative/admin`
-- `@basenative/persist`
-- `@basenative/share`
-- `@basenative/wrangler-preset`
-- `@basenative/doppler`
-- `@basenative/claude-config`
-- `bn` CLI overhaul: `create`, `prd`, `speckit`, `gh`, `nx`, `dev`, `deploy`, `doctor`
+### M2 — Game / app showcase suite (✅ shipped)
+All nine items here are done, not "in progress" — verified in the package inventory and
+against t4bs's own dependencies:
+- `@basenative/og-image` — published (0.2.1); t4bs evaluated it and deliberately does **not**
+  use it (satori's `harfbuzzjs` is incompatible with the Workers runtime — see
+  `t4bs/functions/_shared/og.js`'s file header). Package ships; one consumer opted out for a
+  documented technical reason.
+- `@basenative/keyboard`, `@basenative/auth-webauthn`, `@basenative/admin`, `@basenative/persist`,
+  `@basenative/share` — published and live in t4bs's `package.json`/import sites.
+- `@basenative/wrangler-preset`, `@basenative/doppler`, `@basenative/claude-config` — published
+  (`docs/package-inventory.md`); consumer adoption not verified beyond publication.
+- `bn` CLI overhaul — all eight subcommands exist: `packages/cli/src/commands/{create,prd,
+  speckit,gh,nx,dev,deploy,doctor}.js`, wired in `packages/cli/src/index.js`.
 
-### M3 — Adoption sweep
-- t4bs migrates fully onto BaseNative (the reference consumer)
-- Other DuganLabs projects extend `eslint-config` + `tsconfig`
-- All consume `@basenative/wrangler-preset` for deploys
+### M3 — Adoption sweep (✅ shipped, for t4bs)
+- t4bs migrates fully onto BaseNative — **done**. BaseNative SSR (`@basenative/server` +
+  `@basenative/router` + `@basenative/runtime`) is t4bs's default render path for every route,
+  not a `?next=1` opt-in; see `t4bs/CLAUDE.md` and `t4bs/docs/PRD.md` §7-8 (also corrected
+  2026-09-11).
+- Other DuganLabs projects extending `eslint-config`/`tsconfig`, and adopting
+  `@basenative/wrangler-preset` for deploys — not verified in this pass across GreenPut/
+  PendingBusiness/warrendugan; treat as still open until checked per-repo.
 
 ### M4 — v1.0
 - Stabilize public APIs
@@ -122,3 +133,7 @@ N/A — runtime + library.
 - **bn** — the BaseNative CLI binary.
 - **Easter egg** — the discreet `<meta name="generator">` tag and source banner that anything BaseNative-built carries.
 - **Showcase** — t4bs.com, the public reference consumer.
+
+---
+
+_Last verified against the code: 2026-09-11._
