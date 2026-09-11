@@ -32,13 +32,18 @@
  */
 
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'node:fs';
-import { join, dirname, resolve, relative, extname, basename } from 'node:path';
+import { join, dirname, resolve, relative, extname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-// scanTags/scanInterpolations are the REAL template tokenizer (linear, ReDoS-safe,
-// comment-aware) — the same one the validator and, via findInterpolations, the
-// runtime's own renderer/client-binder use. Reusing it (not reimplementing it) is
-// the entire point of Phase 0.
+// scanTags is the REAL template tokenizer (linear, ReDoS-safe, comment-aware) —
+// the same routine the validator uses. Reusing it rather than reimplementing it
+// is the entire point of Phase 0.
+//
+// Only scanTags. scanInterpolations and spanAt were imported and never called;
+// CodeQL caught it. Interpolation holes are handled by splitting templates into
+// static segments before tokenizing (see collectTemplateSegments), and line/col
+// comes from the local lineIndex, which is cheaper here because it is computed
+// once per file rather than per offset.
 //
 // Imported by path, not as '@basenative/validate/scan'. The workspace root has
 // no dependency on @basenative/validate, so the bare specifier does not resolve
@@ -47,11 +52,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 // not a consumer, so a path is the honest form and needs no root dependency.
 // The published subpath still exists for real consumers and is covered by
 // packages/validate/src/scan-export.test.js.
-import {
-  scanTags,
-  scanInterpolations,
-  spanAt,
-} from '../packages/validate/src/scan.js';
+import { scanTags } from '../packages/validate/src/scan.js';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const BASENATIVE_ROOT = resolve(SCRIPT_DIR, '..');
@@ -99,10 +100,6 @@ function walk(root) {
   return out;
 }
 
-function kebab(name) {
-  return name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
-}
-
 /** 1-based line/col for an offset, without pulling in scan.js's spanAt for non-template contexts (same algorithm, kept local so line numbers are cheap to compute per-file once). */
 function lineIndex(source) {
   const starts = [0];
@@ -123,7 +120,7 @@ function lineIndex(source) {
 // -----------------------------------------------------------------------
 // Generic JS lexing: template-literal and string-literal boundaries.
 //
-// This is NOT an approximation of scanTags/scanInterpolations — it answers a
+// This is NOT an approximation of scanTags — it answers a
 // different question (where does a JS string/template literal begin and end,
 // and where do its `${ }` holes fall) so that the REAL tokenizer can then be
 // run on each static segment. Getting template-literal boundaries wrong is a
@@ -192,7 +189,7 @@ function readTemplateLiteral(source, start) {
  * a commented-out `<div data-bn="...">` is not counted as a live usage.
  *
  * Returns raw literal records; `extractStaticSegments` turns these into the
- * text actually handed to scanTags/scanInterpolations.
+ * text actually handed to scanTags.
  */
 function findStringLiterals(source) {
   const templates = [];
@@ -288,7 +285,7 @@ function isInRanges(ranges, index) {
 
 /**
  * Turns the raw literal records into the static text segments that are safe
- * to hand to scanTags/scanInterpolations, each tagged with its absolute
+ * to hand to scanTags, each tagged with its absolute
  * offset into the original file so line/col stay accurate.
  *
  * LIMITATION (deliberate, not a bug): a `${...}` hole splits its template
@@ -396,7 +393,6 @@ function resolveExports(entryFile, warnings) {
   // than guessed if it ever appears, per the "do not guess" instruction.
   const bareExportRe = /export\s*\{([^}]*)\}\s*;/g;
   while ((m = bareExportRe.exec(src))) {
-    const isReExport = src.slice(Math.max(0, m.index - 1), m.index).endsWith('\n') && false;
     // Distinguish from the `from`-form already handled: only flag if this
     // exact block wasn't already consumed above (heuristically, by checking
     // the text immediately after the closing brace isn't `from`).
@@ -847,7 +843,7 @@ function main() {
   const output = {
     generatedAt: new Date().toISOString(),
     scanner: 'scripts/component-usage.js',
-    tokenizer: '@basenative/validate/scan (scanTags/scanInterpolations)',
+    tokenizer: '@basenative/validate scan.js (scanTags)',
     durationMs: Date.now() - t0,
     repos: Object.fromEntries(repos.map((r) => [r.name, relative(DUGANLABS_DIR, r.root)])),
     missingRepos,
