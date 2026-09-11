@@ -17,7 +17,7 @@ on:
 
 jobs:
   deploy:
-    uses: DuganLabs/.github/.github/workflows/cf-deploy.yml@ci/doppler-fallback-and-worker-deploy
+    uses: DuganLabs/.github/.github/workflows/cf-deploy.yml@main
     with:
       project-name: basenative
       build-command: build:pages
