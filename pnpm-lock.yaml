@@ -249,7 +249,11 @@ importers:
 
   packages/config: {}
 
-  packages/date: {}
+  packages/date:
+    dependencies:
+      '@basenative/runtime':
+        specifier: workspace:*
+        version: link:../runtime
 
   packages/db: {}
 
