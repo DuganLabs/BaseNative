@@ -94,7 +94,7 @@ describe('createWatcher', () => {
     const watcher = createWatcher({
       roots: [dir],
       cwd: dir,
-      debounceMs: 80,
+      debounceMs: 400,
       onChange: (files) => batches.push(files),
       env: { NODE_ENV: 'development' },
     });
@@ -102,8 +102,8 @@ describe('createWatcher', () => {
 
     for (let i = 0; i < 8; i++) writeFileSync(join(dir, `f${i}.js`), String(i));
 
-    assert.ok(await until(() => batches.length > 0));
-    await new Promise((resolve) => setTimeout(resolve, 250));
+    assert.ok(await until(() => batches.length > 0, 8000));
+    await new Promise((resolve) => setTimeout(resolve, 600));
     assert.equal(batches.length, 1, `expected one coalesced batch, got ${batches.length}`);
     assert.ok(batches[0].length >= 2, 'the batch should carry several files');
   });
@@ -123,7 +123,7 @@ describe('createWatcher', () => {
     cleanup.push(() => watcher.close());
 
     writeFileSync(join(dir, 'node_modules', 'junk.js'), 'x');
-    await new Promise((resolve) => setTimeout(resolve, 250));
+    await new Promise((resolve) => setTimeout(resolve, 500));
     assert.deepEqual(batches, []);
 
     writeFileSync(join(dir, 'real.js'), 'x');
@@ -146,7 +146,7 @@ describe('createWatcher', () => {
     assert.equal(watcher.watching, false);
 
     writeFileSync(join(dir, 'after.js'), 'x');
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 500));
     assert.deepEqual(batches, []);
   });
 

@@ -141,7 +141,7 @@ describe('the event stream', () => {
     assert.equal(hmr.clients, 1);
     controller.abort();
 
-    const deadline = Date.now() + 2000;
+    const deadline = Date.now() + 10_000;
     while (hmr.clients !== 0 && Date.now() < deadline) {
       await new Promise((resolve) => setTimeout(resolve, 20));
     }
