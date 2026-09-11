@@ -1,7 +1,13 @@
 node_modules/
 .nx/
 .agent/
-.agents/
+# .agents/ holds throwaway scan output, EXCEPT the generated component index:
+# that one is a committed contract (CI fails when it drifts from source), so it
+# has to be visible in `git status` rather than needing `git add -f` every time.
+# `.agents/*` rather than `.agents/` so git still descends and sees the negations.
+.agents/*
+!.agents/component-index.json
+!.agents/component-index.md
 agent/
 .claude/skills/
 .claude/worktrees/

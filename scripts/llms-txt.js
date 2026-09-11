@@ -1,21 +1,30 @@
-import { readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join, dirname, relative, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-// Generates llms.txt (package index) and llms-full.txt (complete public API
-// surface) from packages/*/package.json, packages/*/src/**/*.js exports, and
-// docs/*.md. Mirrors scripts/package-inventory.js: never hand-edit the
-// output — API docs that drift from the exported surface are worse than none
-// (PRD W3 constraint, applied here too).
+import { buildComponentIndex, MARKDOWN_TOKEN_BUDGET } from './component-index.js';
+
+// Generates llms.txt (package index), llms-full.txt (complete public API
+// surface) and the component index from packages/*/package.json,
+// packages/*/src/**/*.js exports, and docs/*.md. Mirrors
+// scripts/package-inventory.js: never hand-edit the output — API docs that
+// drift from the exported surface are worse than none (PRD W3 constraint,
+// applied here too).
 //
-//   node scripts/llms-txt.js          write llms.txt + llms-full.txt
-//   node scripts/llms-txt.js --check  exit 1 if the committed copies are stale
+// The component index is generated HERE, in the same pass and off the same
+// export extraction as llms-full.txt, rather than by a second walk that could
+// disagree with this one about what a package exports.
+//
+//   node scripts/llms-txt.js          write llms.txt + llms-full.txt + component index
+//   node scripts/llms-txt.js --check  exit 1 if any committed copy is stale
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PACKAGES_DIR = join(ROOT, 'packages');
 const DOCS_API_DIR = join(ROOT, 'docs', 'api');
 const OUT_INDEX = join(ROOT, 'llms.txt');
 const OUT_FULL = join(ROOT, 'llms-full.txt');
+const OUT_COMPONENT_JSON = join(ROOT, '.agents', 'component-index.json');
+const OUT_COMPONENT_MD = join(ROOT, '.agents', 'component-index.md');
 
 const MAX_CODE_LINES = 10;
 const MAX_PROSE_CHARS = 240;
@@ -558,7 +567,7 @@ function buildPackageData(entry) {
   }
 
   return {
-    dir, pkg, shortName, docPath, hasDoc: hasDocForFns,
+    dir, dirPath, pkg, shortName, docPath, hasDoc: hasDocForFns,
     subpaths, resourceSubpaths, orderedFiles, seenFiles, allExports, exportNames,
     docText, docEntries, overview,
   };
@@ -658,8 +667,12 @@ function main() {
 
   full += `## Packages\n\n`;
 
-  for (const entry of publicEntries) {
-    const data = buildPackageData(entry);
+  // One extraction, reused: llms-full.txt below and the component index further
+  // down both read this, so they cannot disagree about the export surface.
+  const packageData = allEntries.map((entry) => buildPackageData(entry));
+  const publicData = packageData.filter((d) => !d.pkg.private);
+
+  for (const data of publicData) {
     full += `### \`${data.pkg.name}\` (v${data.pkg.version})\n\n`;
     full += `${truncate(data.overview, 320)}\n\n`;
     full += `Source: \`packages/${data.dir}/src\``;
@@ -702,7 +715,7 @@ function main() {
     }
 
     allGaps.push(...findExportGaps(data));
-    const phantom = findPhantomDirectiveClaims(entry);
+    const phantom = findPhantomDirectiveClaims(data);
     if (phantom) allGaps.push(phantom);
   }
 
@@ -719,27 +732,48 @@ function main() {
     full += `\n_Private packages excluded from this reference: ${privateEntries.map((e) => `\`${e.pkg.name}\``).join(', ')}._\n`;
   }
 
+  /* -------------------------------------------------- component index */
+
+  const component = buildComponentIndex({ root: ROOT, packages: packageData, generatedOn: today });
+  const componentJson = JSON.stringify(component.json, null, 2) + '\n';
+  const componentMd = component.markdown;
+  const componentTokens = Math.ceil(componentMd.length / 4);
+  if (componentTokens > MARKDOWN_TOKEN_BUDGET) {
+    // "Token-budgeted" has to be enforced or it is just a label. Breaching the
+    // budget is a generation failure, not a warning that scrolls past.
+    console.error(
+      `.agents/component-index.md is ~${componentTokens} tokens, over the ${MARKDOWN_TOKEN_BUDGET}-token budget. ` +
+      'Tighten the per-component lines in scripts/component-index.js, or raise MARKDOWN_TOKEN_BUDGET deliberately.');
+    process.exit(1);
+  }
+
   /* ------------------------------------------------------------- write */
 
   if (process.argv.includes('--check')) {
-    const strip = (s) => s.replace(/^Generated \d{4}-\d{2}-\d{2}.*$/m, '');
-    let curIndex = '', curFull = '';
-    try { curIndex = readFileSync(OUT_INDEX, 'utf8'); } catch { /* missing counts as stale */ }
-    try { curFull = readFileSync(OUT_FULL, 'utf8'); } catch { /* missing counts as stale */ }
-    const staleIndex = strip(curIndex) !== strip(index);
-    const staleFull = strip(curFull) !== strip(full);
-    if (staleIndex || staleFull) {
-      if (staleIndex) console.error('llms.txt is stale');
-      if (staleFull) console.error('llms-full.txt is stale');
+    const strip = (s) => s.replace(/^Generated \d{4}-\d{2}-\d{2}.*$/m, '').replace(/^\s*"generatedOn": ".*",$/m, '');
+    const read = (p) => { try { return readFileSync(p, 'utf8'); } catch { return ''; } }; // missing counts as stale
+    const stale = [
+      ['llms.txt', read(OUT_INDEX), index],
+      ['llms-full.txt', read(OUT_FULL), full],
+      ['.agents/component-index.json', read(OUT_COMPONENT_JSON), componentJson],
+      ['.agents/component-index.md', read(OUT_COMPONENT_MD), componentMd],
+    ].filter(([, current, expected]) => strip(current) !== strip(expected));
+    if (stale.length) {
+      for (const [name] of stale) console.error(`${name} is stale`);
       console.error('run: node scripts/llms-txt.js');
       process.exit(1);
     }
-    console.log('llms.txt and llms-full.txt are current');
+    console.log('llms.txt, llms-full.txt and .agents/component-index.{json,md} are current');
   } else {
     writeFileSync(OUT_INDEX, index);
     writeFileSync(OUT_FULL, full);
+    mkdirSync(dirname(OUT_COMPONENT_JSON), { recursive: true });
+    writeFileSync(OUT_COMPONENT_JSON, componentJson);
+    writeFileSync(OUT_COMPONENT_MD, componentMd);
     console.log(`wrote ${OUT_INDEX} (${index.length} chars, ~${Math.ceil(index.length / 4)} tokens)`);
     console.log(`wrote ${OUT_FULL} (${full.length} chars, ~${Math.ceil(full.length / 4)} tokens)`);
+    console.log(`wrote ${OUT_COMPONENT_JSON} (${component.json.counts.components} components)`);
+    console.log(`wrote ${OUT_COMPONENT_MD} (${componentMd.length} chars, ~${componentTokens} tokens, budget ${MARKDOWN_TOKEN_BUDGET})`);
   }
 }
 
