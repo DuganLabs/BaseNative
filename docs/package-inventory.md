@@ -22,7 +22,7 @@ the next changeset bump would collide and be skipped — realign the local versi
 | `@basenative/claude-config` | 0.2.2 | 0.2.2 | — | in sync |
 | `@basenative/cli` | 0.5.0 | 0.5.0 | 0.2.0 | in sync |
 | `@basenative/combobox` | 1.0.5 | 1.0.5 | — | in sync |
-| `@basenative/components` | 0.9.0 | 0.9.0 | 0.3.0 | in sync |
+| `@basenative/components` | 0.10.0 | 0.9.0 | 0.3.0 | unreleased bump |
 | `@basenative/config` | 0.3.1 | 0.3.1 | 0.2.0 | in sync |
 | `@basenative/date` | 0.3.2 | 0.3.2 | 0.2.0 | in sync |
 | `@basenative/db` | 0.3.1 | 0.3.1 | 0.2.0 | in sync |
@@ -54,7 +54,7 @@ the next changeset bump would collide and be skipped — realign the local versi
 | `@basenative/share` | 1.0.2 | 1.0.2 | — | in sync |
 | `@basenative/station` | 0.2.1 | 0.2.1 | — | in sync |
 | `@basenative/tenant` | 0.3.1 | 0.3.1 | 0.2.0 | in sync |
-| `@basenative/theme` | 0.1.0 | — | — | never published |
+| `@basenative/theme` | 0.2.0 | — | — | never published |
 | `@basenative/tsconfig` | 0.2.1 | 0.2.1 | — | in sync |
 | `@basenative/upload` | 0.3.3 | 0.3.3 | 0.2.0 | in sync |
 | `@basenative/validate` | 0.3.0 | 0.3.0 | — | in sync |
