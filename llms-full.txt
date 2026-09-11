@@ -3175,6 +3175,20 @@ An object of the three confidence levels a diagnostic's `confidence` field can h
 ### Design notes
 The markup scanner underlying `validateTemplate` is deliberately not a DOM parser: a DOM parse discards byte offsets, normalizes casing, and silently repairs malformed markup — exactly the input this package exists to complain about. Expre…
 
+#### Undocumented exports (source-only — not in docs/api/validate.md)
+
+#### `spanAt(source, offset)` (function)
+Convert a 0-based offset into 1-based line/col.
+packages/validate/src/scan.js · `import { spanAt } from '@basenative/validate';`
+
+#### `scanTags(source)` (function)
+Yield every element open tag with its attributes and their offsets. Close tags are reported too (`closing: true`) so branch adjacency can be checked.
+packages/validate/src/scan.js · `import { scanTags } from '@basenative/validate';`
+
+#### `scanInterpolations(source)` (function)
+Yield every `{{ ... }}` interpolation with its inner expression and offset.
+packages/validate/src/scan.js · `import { scanInterpolations } from '@basenative/validate';`
+
 ### `@basenative/visual-builder` (v0.2.2)
 
 No-code template builder for BaseNative components
@@ -3289,5 +3303,8 @@ Everything below is a real, mechanically-detected gap between source/package.jso
 - `@basenative/hmr`: `CLIENT_MARKER` is exported (packages/hmr/src/protocol.js) but not mentioned in docs/api/hmr.md.
 - `@basenative/hmr`: `SKIP_ATTR` is exported (packages/hmr/src/protocol.js) but not mentioned in docs/api/hmr.md.
 - `@basenative/hmr`: `PATCH_HEADER` is exported (packages/hmr/src/protocol.js) but not mentioned in docs/api/hmr.md.
+- `@basenative/validate`: `spanAt` is exported (packages/validate/src/scan.js) but not mentioned in docs/api/validate.md.
+- `@basenative/validate`: `scanTags` is exported (packages/validate/src/scan.js) but not mentioned in docs/api/validate.md.
+- `@basenative/validate`: `scanInterpolations` is exported (packages/validate/src/scan.js) but not mentioned in docs/api/validate.md.
 
 _Private packages excluded from this reference: `@basenative/evals`, `@basenative/fonts`, `@basenative/icons`._
