@@ -2086,7 +2086,7 @@ Syntax from other frameworks that BaseNative does NOT accept. A lookup table fro
 
 ### `@basenative/middleware` (v0.3.4)
 
-Request pipeline middleware — CORS, rate limiting, CSRF, and adapters
+Request pipeline middleware — security headers, CORS, rate limiting, CSRF, and adapters
 
 Source: `packages/middleware/src` · Docs: `docs/api/middleware.md`
 
@@ -2124,6 +2124,37 @@ CSRF token middleware. Issues a token and validates it on mutating requests. **P
 #### logger(options)
 Request logging middleware. Logs method, URL, status, and duration. **Parameters:** - `options.log` — log function `(message, data) => void`; default `console.log` **Returns:** Middleware function.
 
+#### securityHeaders(options)
+Builds a response finalizer that stamps a hardened header set onto every outgoing response. Imported from `@basenative/middleware/security-headers`. Options are validated eagerly, so a bad directive throws at boot rather than on the first…
+```js
+import { securityHeaders } from '@basenative/middleware/security-headers';
+
+const harden = securityHeaders({
+  csp: { 'connect-src': ['https://api.example.com'] },
+  hsts: { preload: true },
+  cache: ({ contentType }) =>
+    contentType.startsWith('application/json') ? 'private, no-store' : null,
+});
+
+export default {
+…
+```
+
+#### buildSecurityHeaders(options, context)
+The same header set as a plain record, for handlers that need headers before a response exists or whose policy varies per request. Never includes `Cache-Control`, which is derived from a response. **Returns:** `Record<string, string>`.
+```js
+const headers = buildSecurityHeaders({
+  permissions: { camera: tenant.allowsScanner ? ['self'] : [] },
+});
+return new Response(html, { headers: { ...headers, 'Content-Type': 'text/html' } });
+```
+
+#### securityHeadersMiddleware(options)
+The same headers as a `createPipeline()` stage. Runs downstream middleware first so `cache` sees the content type the handler chose, and publishes the nonce on `ctx.state.cspNonce`. **Returns:** Middleware function.
+
+#### createNonce(byteLength)
+A base64 CSP nonce from the platform CSPRNG. Use it when the response body must carry the same nonce the header declares, then pass the value back as `context.nonce`; supplying a nonce without `nonce: true` throws rather than silently bloc…
+
 #### toExpressMiddleware(pipeline)
 Adapts a pipeline or middleware function for use with Express. **Parameters:** - `pipeline` — a pipeline instance or middleware function **Returns:** Express-compatible `(req, res, next) => void` function.
 
@@ -2154,6 +2185,16 @@ All middleware receives a `ctx` object with this structure:
   response: {
 …
 ```
+
+#### Undocumented exports (source-only — not in docs/api/middleware.md)
+
+#### `DEFAULT_CSP` (const)
+Hardened baseline CSP. Caller directives are merged into these, never over them; see `mergeCsp`. Ordering is fixed so output is stable and diffable.
+packages/middleware/src/builtins/security-headers.js · `import { DEFAULT_CSP } from '@basenative/middleware';`
+
+#### `DEFAULT_PERMISSIONS` (const)
+Features denied by default. An empty allow-list serializes as `name=()`.
+packages/middleware/src/builtins/security-headers.js · `import { DEFAULT_PERMISSIONS } from '@basenative/middleware';`
 
 ### `@basenative/notify` (v0.3.2)
 
@@ -3316,6 +3357,8 @@ Everything below is a real, mechanically-detected gap between source/package.jso
 - `@basenative/hmr`: `CLIENT_MARKER` is exported (packages/hmr/src/protocol.js) but not mentioned in docs/api/hmr.md.
 - `@basenative/hmr`: `SKIP_ATTR` is exported (packages/hmr/src/protocol.js) but not mentioned in docs/api/hmr.md.
 - `@basenative/hmr`: `PATCH_HEADER` is exported (packages/hmr/src/protocol.js) but not mentioned in docs/api/hmr.md.
+- `@basenative/middleware`: `DEFAULT_CSP` is exported (packages/middleware/src/builtins/security-headers.js) but not mentioned in docs/api/middleware.md.
+- `@basenative/middleware`: `DEFAULT_PERMISSIONS` is exported (packages/middleware/src/builtins/security-headers.js) but not mentioned in docs/api/middleware.md.
 - `@basenative/validate`: `spanAt` is exported (packages/validate/src/scan.js) but not mentioned in docs/api/validate.md.
 - `@basenative/validate`: `scanTags` is exported (packages/validate/src/scan.js) but not mentioned in docs/api/validate.md.
 - `@basenative/validate`: `scanInterpolations` is exported (packages/validate/src/scan.js) but not mentioned in docs/api/validate.md.

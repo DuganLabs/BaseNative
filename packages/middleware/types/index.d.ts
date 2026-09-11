@@ -83,3 +83,21 @@ export function toExpressMiddleware(pipeline: Pipeline): (req: unknown, res: unk
 export function toHonoMiddleware(pipeline: Pipeline): (c: unknown, next: () => Promise<void>) => Promise<void | Response>;
 export function toFastifyPlugin(pipeline: Pipeline): (fastify: unknown, opts: unknown, done: () => void) => void;
 export function toCloudflareHandler(pipeline: Pipeline): (request: Request, env?: unknown, ctx?: unknown) => Promise<Response>;
+
+export type {
+  CspDirectives,
+  PermissionsPolicy,
+  HstsOptions,
+  CacheInfo,
+  SecurityHeadersOptions,
+  SecurityHeadersContext,
+} from './security-headers.js';
+
+export {
+  securityHeaders,
+  securityHeadersMiddleware,
+  buildSecurityHeaders,
+  createNonce,
+  DEFAULT_CSP,
+  DEFAULT_PERMISSIONS,
+} from './security-headers.js';

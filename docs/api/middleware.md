@@ -126,6 +126,89 @@ Request logging middleware. Logs method, URL, status, and duration.
 
 ---
 
+### securityHeaders(options)
+
+Builds a response finalizer that stamps a hardened header set onto every outgoing
+response. Imported from `@basenative/middleware/security-headers`. Options are
+validated eagerly, so a bad directive throws at boot rather than on the first
+request that needs it.
+
+```js
+import { securityHeaders } from '@basenative/middleware/security-headers';
+
+const harden = securityHeaders({
+  csp: { 'connect-src': ['https://api.example.com'] },
+  hsts: { preload: true },
+  cache: ({ contentType }) =>
+    contentType.startsWith('application/json') ? 'private, no-store' : null,
+});
+
+export default {
+  async fetch(request, env, ctx) {
+    return harden(await handle(request, env, ctx), { request });
+  },
+};
+```
+
+**Parameters:**
+- `options.csp` — directives merged into the hardened baseline, or `false` to send no CSP. A source array is unioned with the baseline's sources; `null` removes the directive.
+- `options.nonce` — generate a fresh per-response CSP nonce; default `false`
+- `options.nonceDirectives` — directives the nonce is added to; default `['script-src']`
+- `options.hsts` — `{ maxAge = 31536000, includeSubDomains = true, preload = false }`, or `false` to omit. `preload` requires `includeSubDomains` and a one-year `maxAge`, matching the browser preload list's own requirements.
+- `options.permissions` — per-feature allow-lists. Unlike CSP these **replace** the default for that feature; `null` removes it. Unregistered feature names are rejected.
+- `options.frameOptions` — default `'DENY'`; `false` omits
+- `options.referrerPolicy` — default `'strict-origin-when-cross-origin'`
+- `options.coop` / `options.coep` / `options.corp` — Cross-Origin-Opener / Embedder / Resource Policy. `coop` defaults to `'same-origin'`; the other two are omitted unless set.
+- `options.noindex` — `true` sends `noindex, nofollow, noarchive`; a string sends itself
+- `options.cache` — `({ contentType, status, request, response }) => string | null`; return a `Cache-Control` value to set, `null` to leave the handler's
+
+**Returns:** `(response, context?) => Response`, where `context` is `{ request?, nonce? }`. The returned response preserves status, statusText, body and every header the finalizer does not own, and accepts the immutable `Response` that `env.ASSETS.fetch()` returns.
+
+**Defaults:** `default-src 'self'`, `script-src 'self'`, `style-src 'self'`, `style-src-attr 'none'`, `img-src 'self' data:`, `font-src 'self'`, `connect-src 'self'`, `object-src 'none'`, `frame-ancestors 'none'`, `base-uri 'self'`, `form-action 'self'`, `upgrade-insecure-requests`; HSTS one year with `includeSubDomains`; `X-Frame-Options: DENY`; `X-Content-Type-Options: nosniff`; `Referrer-Policy: strict-origin-when-cross-origin`; `Permissions-Policy` denying camera, microphone, geolocation, payment and usb; `Cross-Origin-Opener-Policy: same-origin`.
+
+---
+
+### buildSecurityHeaders(options, context)
+
+The same header set as a plain record, for handlers that need headers before a
+response exists or whose policy varies per request. Never includes
+`Cache-Control`, which is derived from a response.
+
+```js
+const headers = buildSecurityHeaders({
+  permissions: { camera: tenant.allowsScanner ? ['self'] : [] },
+});
+return new Response(html, { headers: { ...headers, 'Content-Type': 'text/html' } });
+```
+
+**Returns:** `Record<string, string>`.
+
+---
+
+### securityHeadersMiddleware(options)
+
+The same headers as a `createPipeline()` stage. Runs downstream middleware first
+so `cache` sees the content type the handler chose, and publishes the nonce on
+`ctx.state.cspNonce`.
+
+**Returns:** Middleware function.
+
+---
+
+### createNonce(byteLength)
+
+A base64 CSP nonce from the platform CSPRNG. Use it when the response body must
+carry the same nonce the header declares, then pass the value back as
+`context.nonce`; supplying a nonce without `nonce: true` throws rather than
+silently blocking the script it tags.
+
+**Parameters:**
+- `byteLength` — default `16`; fewer than 16 throws, per CSP Level 3
+
+**Returns:** `string`.
+
+---
+
 ### toExpressMiddleware(pipeline)
 
 Adapts a pipeline or middleware function for use with Express.
