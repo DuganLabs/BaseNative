@@ -131,6 +131,7 @@ hydrate(document.getElementById('app'), { count, doubled });
 | [`@basenative/components`](packages/components) | 15 semantic UI components with design token theming |
 | [`@basenative/auth`](packages/auth) | Session management, RBAC, password hashing, OAuth providers |
 | [`@basenative/db`](packages/db) | Query builder + SQLite/PostgreSQL/D1 adapters |
+| [`@basenative/hmr`](packages/hmr) | Dev-only hot module replacement — patches the DOM, keeps focus and caret |
 | [`@basenative/middleware`](packages/middleware) | Pipeline, CORS, rate-limit, CSRF — Hono/Fastify/CF Workers adapters |
 | [`@basenative/config`](packages/config) | Env loading, type-safe schema validation |
 | [`@basenative/logger`](packages/logger) | Structured logging, multiple transports, child loggers |

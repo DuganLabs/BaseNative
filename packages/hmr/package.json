@@ -1,0 +1,55 @@
+{
+  "name": "@basenative/hmr",
+  "version": "0.1.0",
+  "description": "Dev-only hot module replacement — state-preserving DOM patching, focus and caret retention, SSE live reload",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./patch": {
+      "types": "./types/patch.d.ts",
+      "default": "./src/patch.js"
+    },
+    "./preserve": {
+      "types": "./types/preserve.d.ts",
+      "default": "./src/preserve.js"
+    },
+    "./protocol": {
+      "types": "./types/protocol.d.ts",
+      "default": "./src/protocol.js"
+    }
+  },
+  "types": "./types/index.d.ts",
+  "files": [
+    "src",
+    "types"
+  ],
+  "scripts": {
+    "test": "node --test src/guard.test.js src/watcher.test.js src/inject.test.js src/protocol.test.js src/patch.test.js src/preserve.test.js src/middleware.test.js src/server.test.js src/proxy.test.js src/csp.test.js"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DuganLabs/BaseNative.git",
+    "directory": "packages/hmr"
+  },
+  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/BaseNative/issues"
+  },
+  "keywords": [
+    "basenative",
+    "web-components",
+    "signals",
+    "hmr",
+    "hot-reload",
+    "live-reload",
+    "dev-server",
+    "zero-dependency"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

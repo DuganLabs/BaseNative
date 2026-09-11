@@ -12,6 +12,9 @@
     "./manifest": "./manifest.json"
   },
   "types": "./types/index.d.ts",
+  "dependencies": {
+    "@basenative/hmr": "workspace:^0.1.0"
+  },
   "files": [
     "src",
     "types",

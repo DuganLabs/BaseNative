@@ -230,7 +230,11 @@ importers:
 
   packages/claude-config: {}
 
-  packages/cli: {}
+  packages/cli:
+    dependencies:
+      '@basenative/hmr':
+        specifier: workspace:^0.1.0
+        version: link:../hmr
 
   packages/combobox:
     dependencies:
@@ -307,6 +311,8 @@ importers:
       '@basenative/runtime':
         specifier: workspace:*
         version: link:../runtime
+
+  packages/hmr: {}
 
   packages/i18n:
     dependencies:
