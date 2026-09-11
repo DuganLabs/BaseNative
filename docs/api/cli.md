@@ -73,10 +73,14 @@ bn dev
 
 ### `bn dev [options]`
 
-Starts the development server with hot reload.
+Starts the development server with hot module replacement.
+
+The dev server runs on a private internal port; `@basenative/hmr` owns the port you asked for, injects its client into HTML responses, and watches the tree. On a change the browser re-fetches the current URL and patches the live DOM — focus, caret, scroll position and open dialogs all survive. A change that cannot be patched safely falls back to a full reload and logs why. See [`@basenative/hmr`](hmr.md).
 
 **Options:**
 - `--port <number>` — port to listen on; default `3000`
+- `--host <host>` — host to bind; default `0.0.0.0`
+- `--no-hmr` — disable HMR and run the dev server directly on `--port`. `BN_HMR=off` does the same via the environment.
 
 ---
 

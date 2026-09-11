@@ -20,21 +20,21 @@ const root = join(__dirname, '..');
 const express = join(root, 'examples', 'express');
 const dist = join(root, 'dist');
 
-// The dev-only live-reload snippet (an EventSource against /__live, which
-// only server.js serves) has no route on the static host, so it should
-// never ship — Pages returns HTML for that request, which the browser then
-// rejects and logs as a console error on every page load.
-const LIVE_RELOAD_SCRIPT = /\s*<script>if\(!location\.search\.includes\('nolr'\)\)new EventSource\('\/__live'\)[^<]*<\/script>/;
-
-function stripDevScripts(html) {
-  return html.replace(LIVE_RELOAD_SCRIPT, '');
+// The dev-only client is injected by `hmrMiddleware()` at request time, which
+// this build never runs — so the static output carries no dev script to strip.
+// Guarded anyway: a dev tag reaching Pages would 404 on every page load.
+function assertNoDevScripts(html, route) {
+  if (html.includes('data-bn-hmr')) {
+    throw new Error(`dev-only HMR client leaked into the static build for ${route || '/'}`);
+  }
+  return html;
 }
 
 function writePage(path, html) {
   const route = path.replace(/^\/+/, '');
   const dir = route ? join(dist, route) : dist;
   mkdirSync(dir, { recursive: true });
-  writeFileSync(join(dir, 'index.html'), stripDevScripts(html));
+  writeFileSync(join(dir, 'index.html'), assertNoDevScripts(html, route));
   console.log(`  /${route ? `${route}/` : ''}`);
 }
 
@@ -66,7 +66,7 @@ for (const component of flatComponents) {
 
 // Cloudflare Pages serves dist/404.html with a 404 status for any unknown path
 // (and stops falling back to index.html once the file exists).
-writeFileSync(join(dist, '404.html'), stripDevScripts(renderNotFoundPage()));
+writeFileSync(join(dist, '404.html'), assertNoDevScripts(renderNotFoundPage(), '404.html'));
 console.log('  404.html');
 
 // Copy static assets

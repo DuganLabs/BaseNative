@@ -59,10 +59,11 @@
     },
     {
       "name": "dev",
-      "description": "Start the dev server",
+      "description": "Start the dev server with hot module replacement",
       "options": [
         { "name": "--port", "short": "-p" },
-        { "name": "--host" }
+        { "name": "--host" },
+        { "name": "--no-hmr" }
       ]
     },
     {
