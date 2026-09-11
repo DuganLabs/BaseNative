@@ -1,6 +1,14 @@
 import { buildSync } from 'esbuild';
 import { gzipSync } from 'node:zlib';
-import { pathToFileURL } from 'node:url';
+import { dirname, join } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+
+// Every entry below is written relative to the repository root, so anchor
+// esbuild there explicitly. Without this the measurement only works when the
+// process happens to be started from the root — which is true of the CLI and
+// false of `nx run basenative-integration-tests:test`, whose cwd is the test's
+// own directory.
+const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 // Per-package gzipped budgets (bytes). These are the contract — fail CI if exceeded.
 const KB = 1024;
@@ -64,6 +72,7 @@ export const packages = [
  */
 export function measure(pkg) {
   const result = buildSync({
+    absWorkingDir: repoRoot,
     entryPoints: [pkg.entry],
     bundle: true,
     format: 'esm',
