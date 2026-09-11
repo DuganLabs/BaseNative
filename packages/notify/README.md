@@ -110,4 +110,4 @@ opting out of escaping opts out of both).
 
 ## License
 
-MIT
+Apache-2.0

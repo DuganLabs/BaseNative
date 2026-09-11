@@ -168,3 +168,7 @@ cd packages/builder && node --test
 ```
 
 Tests are written with `node:test` — no Jest, no Vitest, no browser harness required for the pure logic. Web component tests require a DOM and are exercised in downstream apps.
+
+## License
+
+Apache-2.0

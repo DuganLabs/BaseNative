@@ -78,4 +78,4 @@ const config = defineConfig({
 
 ## License
 
-MIT
+Apache-2.0

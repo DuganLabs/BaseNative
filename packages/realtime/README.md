@@ -93,4 +93,4 @@ Creates a WebSocket connection handler. Options: `onConnect`, `onMessage`, `onCl
 
 ## License
 
-MIT
+Apache-2.0

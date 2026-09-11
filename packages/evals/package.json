@@ -11,6 +11,15 @@
     "bn-evals": "./src/bin.js"
   },
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DuganLabs/BaseNative.git",
+    "directory": "packages/evals"
+  },
+  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "bugs": {
+    "url": "https://github.com/DuganLabs/BaseNative/issues"
+  },
   "dependencies": {
     "@basenative/validate": "workspace:^0.2.0",
     "@basenative/server": "workspace:^0.6.2",

@@ -73,4 +73,4 @@ Creates a theme manager. Options: `registry` — a registry client instance.
 
 ## License
 
-MIT
+Apache-2.0

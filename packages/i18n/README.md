@@ -118,4 +118,4 @@ Detects the request locale from `Accept-Language` header and attaches `ctx.state
 
 ## License
 
-MIT
+Apache-2.0

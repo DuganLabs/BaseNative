@@ -66,4 +66,4 @@ return new Response(stream);
 
 ## License
 
-MIT
+Apache-2.0

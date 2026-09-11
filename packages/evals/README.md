@@ -87,3 +87,7 @@ providers are unaffected — a missing cloud key still refuses the run.
 
 > **Note:** running the suite against a cloud provider requires an API key for it. A
 > Claude Max/Pro subscription does not include API access — these are separately billed.
+
+## License
+
+Apache-2.0

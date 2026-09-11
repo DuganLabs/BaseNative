@@ -79,4 +79,4 @@ guard.can('viewer', 'write'); // false
 
 ## License
 
-MIT
+Apache-2.0

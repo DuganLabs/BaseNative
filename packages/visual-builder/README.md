@@ -93,4 +93,4 @@ Creates a palette of available component types for the builder UI. Options: `com
 
 ## License
 
-MIT
+Apache-2.0

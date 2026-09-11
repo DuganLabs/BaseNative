@@ -55,4 +55,4 @@ All fonts are in `.woff2` format and use `font-display: swap` for fast initial p
 
 ## License
 
-MIT
+Apache-2.0

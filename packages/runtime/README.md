@@ -97,4 +97,4 @@ hydrate(document.body, { count });
 
 ## License
 
-MIT
+Apache-2.0
