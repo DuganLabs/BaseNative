@@ -1,0 +1,1775 @@
+{
+  "metadata": {
+    "scanDate": "2026-09-11T14:30:17.286Z",
+    "repository": "BaseNative",
+    "basePath": "/home/dugan/Developer/github.com/DuganLabs/bn-dsscan",
+    "scope": [
+      "packages/*/src/*.css",
+      "packages/*/src/*.ts",
+      "packages/*/src/*.tsx",
+      "packages/*/src/*.js"
+    ],
+    "description": "Inventory of hardcoded design values (colors, spacing, radius, typography) found in the codebase"
+  },
+  "normalization": {
+    "method": "Mechanical value normalization",
+    "colorNotation": "#fff / #ffffff / rgb(255,255,255) → #ffffff",
+    "details": [
+      "Hex colors normalized to lowercase 6-digit form",
+      "rgb(r, g, b) and rgb(r g b) converted to #rrggbb",
+      "rgba(...) base color normalized to hex, alpha suffix preserved",
+      "All other values (spacing, typography) preserved as-is"
+    ]
+  },
+  "summary": {
+    "totalScanned": 295,
+    "totalMeaningfulDesignValues": 165,
+    "byType": {
+      "sizing": 4,
+      "transition": 79,
+      "spacing": 15,
+      "color": 4,
+      "z-index": 3,
+      "typography-weight": 2,
+      "typography-family": 46,
+      "typography-size": 7,
+      "typography": 2,
+      "shadow": 3
+    }
+  },
+  "valuesByType": {
+    "sizing": [
+      {
+        "value": "100%",
+        "kind": "sizing",
+        "occurrences": 8,
+        "fileCount": 6,
+        "files": {
+          "packages/combobox/src/styles.css": 1,
+          "packages/builder/src/builder.css": 1,
+          "packages/components/src/states.css": 1,
+          "packages/components/src/layout.css": 1,
+          "packages/components/src/components.css": 2,
+          "packages/components/src/reset.css": 2
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "1px",
+        "kind": "sizing",
+        "occurrences": 4,
+        "fileCount": 4,
+        "files": {
+          "packages/combobox/src/styles.css": 1,
+          "packages/components/src/components.css": 1,
+          "packages/components/src/reset.css": 1,
+          "packages/keyboard/src/styles.css": 1
+        },
+        "existingTokens": [
+          "bn-border-width"
+        ]
+      },
+      {
+        "value": "32rem",
+        "kind": "sizing",
+        "occurrences": 2,
+        "fileCount": 2,
+        "files": {
+          "packages/builder/src/builder.css": 1,
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "28rem",
+        "kind": "sizing",
+        "occurrences": 2,
+        "fileCount": 2,
+        "files": {
+          "packages/builder/src/builder.css": 1,
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      }
+    ],
+    "transition": [
+      {
+        "value": "absolute",
+        "kind": "transition",
+        "occurrences": 5,
+        "fileCount": 5,
+        "files": {
+          "packages/combobox/src/styles.css": 1,
+          "packages/components/src/components.css": 1,
+          "packages/components/src/reset.css": 1,
+          "packages/visual-builder/src/bn-canvas.js": 1,
+          "packages/components/src/virtualizer.js": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "space-between",
+        "kind": "transition",
+        "occurrences": 4,
+        "fileCount": 4,
+        "files": {
+          "packages/combobox/src/styles.css": 1,
+          "packages/builder/src/builder.css": 1,
+          "packages/components/src/layout.css": 1,
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "stretch",
+        "kind": "transition",
+        "occurrences": 2,
+        "fileCount": 2,
+        "files": {
+          "packages/combobox/src/styles.css": 1,
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "ellipsis",
+        "kind": "transition",
+        "occurrences": 2,
+        "fileCount": 2,
+        "files": {
+          "packages/combobox/src/styles.css": 1,
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "1px solid transparent",
+        "kind": "transition",
+        "occurrences": 2,
+        "fileCount": 2,
+        "files": {
+          "packages/builder/src/builder.css": 1,
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "uppercase",
+        "kind": "transition",
+        "occurrences": 2,
+        "fileCount": 2,
+        "files": {
+          "packages/builder/src/builder.css": 1,
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "start",
+        "kind": "transition",
+        "occurrences": 2,
+        "fileCount": 2,
+        "files": {
+          "packages/builder/src/builder.css": 1,
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "0.01ms",
+        "kind": "transition",
+        "occurrences": 2,
+        "fileCount": 2,
+        "files": {
+          "packages/components/src/states.css": 1,
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "hover { background: var(--bn-color-surface-muted)",
+        "kind": "transition",
+        "occurrences": 2,
+        "fileCount": 2,
+        "files": {
+          "packages/components/src/layout.css": 1,
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "1px solid var(--cb-border)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/combobox/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "1px solid var(--cb-listbox-border)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/combobox/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "distinct color + leading icon hint */\n  .bn-cb-option--create {\n    color: var(--cb-create-fg)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/combobox/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "2px solid Highlight",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/combobox/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "880px) {\n    .bn-builder__panes {\n      grid-template-columns: 1fr",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/builder/src/builder.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "last-child {\n    border-inline-end: 0",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/builder/src/builder.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "active {\n    cursor: grabbing",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/builder/src/builder.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "20rem) {\n    [data-bn=\"stats-grid\"] {\n      grid-template-columns: 1fr",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/states.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "inline-size",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/layout.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "stats",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/layout.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "none` on their own\n   :focus-visible rule take precedence (real selector specificity beats this\n   :where()-wrapped one) and are unaffected",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "2px solid var(--bn-focus-ring-color)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": ":before hit region is centered on top of the unchanged control. --- */\n[data-bn=\"tree-toggle\"] {\n  min-inline-size: var(--bn-target-size-min)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "not(:disabled) { background: var(--bn-color-primary-700)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "not(:disabled) { background: var(--bn-color-surface-muted)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "not(:disabled) { background: var(--bn-color-error-500)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "1px solid var(--bn-color-border-control)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "border-color var(--bn-transition-fast)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "solid var(--bn-color-white)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "background-color var(--bn-transition-fast)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "transform var(--bn-transition-fast)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": ":before { transform: translateX(1.125rem)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "flex-start",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "1px solid",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "collapse",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "1px solid var(--bn-color-border)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "hover { background: var(--bn-color-surface-subtle)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "0 var(--bn-space-2)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "2px solid var(--bn-color-border-control)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "bn-spin 0.6s linear infinite",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "bn-shimmer 1.5s infinite",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "rotate var(--bn-transition-fast)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "sticky",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "4px solid transparent",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "4px solid currentColor",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "0 0 var(--bn-space-3)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "translateX(100%)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "transform 300ms var(--bn-ease-out-expo)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "translateX(-100%)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "translateX(0)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "opacity 300ms var(--bn-ease-out-expo)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "anchor(--bn-dropdown-trigger start)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "3px solid transparent",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "pills variant */\n[data-bn=\"tabs\"][data-variant=\"pills\"] [data-bn=\"tab-list\"] { border-bottom: none",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "[data-bn=\"tooltip-trigger\"] is `position: relative`\n     (above)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "anchor(--bn-tooltip-trigger start)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "subgrid",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "reduce) {\n  [data-bn=\"pipeline\"] [data-bn=\"pipeline-card\"] {\n    transition: none",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "2px solid var(--bn-color-border)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "2px dashed var(--bn-color-info-border)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "translateY(-2px)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "3px solid var(--bn-pipeline-status-color)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "1px dashed var(--bn-color-border)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "inset 0 0 0 2px var(--bn-color-primary-500)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "gray-400 clears 4.5:1 on both gray-950 (7.76:1) and gray-900 (6.91:1). */\n    --bn-dark-text-subtle: var(--bn-color-gray-400)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/theme.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "dark) {\n    :root:not([data-theme=\"light\"]) {\n      --bn-color-surface: var(--bn-dark-surface)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/theme.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "Compact */\n  [data-density=\"compact\"] {\n    --bn-space-component-x: var(--bn-space-2)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/tokens.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "Spacious */\n  [data-density=\"spacious\"] {\n    --bn-space-component-x: var(--bn-space-4)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/tokens.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "first last",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/reset.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "antialiased",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/reset.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "focus {\n    top: var(--bn-space-4)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/reset.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "1px solid var(--kb-key-border)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/keyboard/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "not(:disabled) {\n    background: var(--kb-key-hover)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/keyboard/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "not(:disabled) {\n    background: var(--kb-key-active)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/keyboard/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "scale(0.92)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/keyboard/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "2px solid var(--kb-key-primary-bg)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/keyboard/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "lowercase",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/keyboard/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "inset 0 0 0 2px var(--kb-key-staked)",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/keyboard/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "reduce) {\n    [data-bn=\"kb-key\"] {\n      transition: background-color 80ms",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/keyboard/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "not(:disabled) {\n      transform: none",
+        "kind": "transition",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/keyboard/src/styles.css": 1
+        },
+        "existingTokens": null
+      }
+    ],
+    "spacing": [
+      {
+        "value": "0.5rem",
+        "kind": "spacing",
+        "occurrences": 4,
+        "fileCount": 3,
+        "files": {
+          "packages/builder/src/builder.css": 1,
+          "packages/components/src/components.css": 1,
+          "packages/visual-builder/src/bn-canvas.js": 2
+        },
+        "existingTokens": [
+          "bn-space-2",
+          "bn-radius-lg"
+        ]
+      },
+      {
+        "value": "2px",
+        "kind": "spacing",
+        "occurrences": 3,
+        "fileCount": 3,
+        "files": {
+          "packages/builder/src/builder.css": 1,
+          "packages/components/src/components.css": 1,
+          "packages/keyboard/src/styles.css": 1
+        },
+        "existingTokens": [
+          "bn-border-width-thick"
+        ]
+      },
+      {
+        "value": "0.75rem",
+        "kind": "spacing",
+        "occurrences": 3,
+        "fileCount": 2,
+        "files": {
+          "packages/builder/src/builder.css": 2,
+          "packages/visual-builder/src/bn-canvas.js": 1
+        },
+        "existingTokens": [
+          "bn-font-size-xs",
+          "bn-space-3",
+          "bn-radius-xl"
+        ]
+      },
+      {
+        "value": "1rem",
+        "kind": "spacing",
+        "occurrences": 3,
+        "fileCount": 2,
+        "files": {
+          "packages/builder/src/builder.css": 1,
+          "packages/components/src/components.css": 2
+        },
+        "existingTokens": [
+          "bn-font-size-base",
+          "bn-space-4"
+        ]
+      },
+      {
+        "value": "4px",
+        "kind": "spacing",
+        "occurrences": 3,
+        "fileCount": 2,
+        "files": {
+          "packages/components/src/components.css": 2,
+          "packages/visual-builder/src/bn-canvas.js": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "6px",
+        "kind": "spacing",
+        "occurrences": 2,
+        "fileCount": 2,
+        "files": {
+          "packages/combobox/src/styles.css": 1,
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "12px",
+        "kind": "spacing",
+        "occurrences": 2,
+        "fileCount": 2,
+        "files": {
+          "packages/combobox/src/styles.css": 1,
+          "packages/keyboard/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "1.5rem",
+        "kind": "spacing",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/builder/src/builder.css": 1
+        },
+        "existingTokens": [
+          "bn-font-size-2xl",
+          "bn-space-6",
+          "bn-target-size-min"
+        ]
+      },
+      {
+        "value": "0.4rem",
+        "kind": "spacing",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/builder/src/builder.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "0.25rem",
+        "kind": "spacing",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/builder/src/builder.css": 1
+        },
+        "existingTokens": [
+          "bn-space-1",
+          "bn-radius-sm"
+        ]
+      },
+      {
+        "value": "0.2rem",
+        "kind": "spacing",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/builder/src/builder.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "50%",
+        "kind": "spacing",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "0.25em",
+        "kind": "spacing",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "3px",
+        "kind": "spacing",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "1.5em",
+        "kind": "spacing",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      }
+    ],
+    "color": [
+      {
+        "value": "transparent",
+        "kind": "color",
+        "occurrences": 2,
+        "fileCount": 2,
+        "files": {
+          "packages/combobox/src/styles.css": 1,
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "#ffffff",
+        "kind": "color",
+        "occurrences": 2,
+        "fileCount": 2,
+        "files": {
+          "packages/components/src/theme.css": 1,
+          "packages/keyboard/src/styles.css": 1
+        },
+        "existingTokens": [
+          "bn-color-white"
+        ]
+      },
+      {
+        "value": "#2e5bff",
+        "kind": "color",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/combobox/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "#2563eb",
+        "kind": "color",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/theme.css": 1
+        },
+        "existingTokens": [
+          "bn-color-primary-600",
+          "bn-color-info-600"
+        ]
+      }
+    ],
+    "z-index": [
+      {
+        "value": "10",
+        "kind": "z-index",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/visual-builder/src/bn-canvas.js": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "50",
+        "kind": "z-index",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/combobox/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "9999",
+        "kind": "z-index",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/reset.css": 1
+        },
+        "existingTokens": null
+      }
+    ],
+    "typography-weight": [
+      {
+        "value": "600",
+        "kind": "typography-weight",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/combobox/src/styles.css": 1
+        },
+        "existingTokens": [
+          "bn-font-weight-semibold"
+        ]
+      },
+      {
+        "value": "normal",
+        "kind": "typography-weight",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      }
+    ],
+    "typography-family": [
+      {
+        "value": "the listbox is `position: absolute` and only\n * shown when expanded, so opening/closing never reflows the page.\n *\n * All visual properties are driven by CSS custom properties so the\n * combobox inherits its host theme:\n *\n *   :root { --cb-bg: #fff",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/combobox/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "*   fg #111 on bg #fff                          → 19.5:1\n *   create-fg #0F5132 on listbox-bg #fff        → 8.5:1\n *   border-focus #2E5BFF on bg #fff             → 4.6:1 (AA non-text 3:1, AA text 4.5:1)\n */\n\n@layer combobox {\n  [data-bn=\"combobox\"] {\n    /* ── Theming tokens ─────────────────────────────────── */\n    --cb-bg: #ffffff",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/combobox/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "absolute popup, doesn't push content. */\n    position: absolute",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/combobox/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "hover,\n  .bn-cb-option--create[aria-selected=\"true\"],\n  .bn-cb-option--create.bn-cb-option--active {\n    /* Slightly darker accent — still WCAG-AA on white. */\n    background: #D1FADF",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/combobox/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "drop transitions entirely. The popup uses display:\n   * none/block so there's no enter/exit animation regardless. */\n  @media (prefers-reduced-motion: reduce) {\n    [data-bn=\"cb-field\"],\n    [data-bn=\"cb-option\"] {\n      transition: none",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/combobox/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "1px solid var(--bn-color-border, #2a2a2e)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/builder/src/builder.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "hover {\n    background: var(--bn-color-surface-4, #2f2f37)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/builder/src/builder.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "focus-visible {\n    outline: 2px solid var(--bn-color-accent, #6366f1)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/builder/src/builder.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "minmax(14rem, auto)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/builder/src/builder.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "1px dashed var(--bn-color-border-subtle, #2a2a2e)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/builder/src/builder.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "0 0 0 1px var(--bn-color-accent, #6366f1) inset",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/builder/src/builder.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "hover {\n    background: var(--bn-color-surface-3, #27272d)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/builder/src/builder.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "36rem) {\n    [data-bn=\"stats-grid\"] {\n      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr))",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/states.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "reduce) {\n    *, *::before, *::after {\n      animation-duration: 0.01ms",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/states.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "repeat(auto-fit, minmax(180px, 1fr))",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/layout.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "components.css is also exported standalone\n   (@basenative/components/components.css) so a consumer who imports only\n   this file must still get the clamp. Keep both copies in sync. --- */\n@media (prefers-reduced-motion: reduce) {\n  *, *::before, *::after {\n    animation-duration: 0.01ms",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "button 38px,\n   input 42px, select 39px, pagination 32px, tab 42px) even though they sit\n   side by side in forms and toolbars. --- */\n[data-bn=\"button\"],\n[data-bn=\"input\"],\n[data-bn=\"select\"],\n[data-bn=\"combobox-input\"],\n[data-bn=\"dropdown-trigger\"],\n[data-bn=\"pagination\"] a,\n[data-bn=\"pagination\"] span,\n[data-bn=\"tab\"] {\n  block-size: var(--bn-control-height)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "same starting height as a floor, never a hard cap. */\n[data-bn=\"textarea\"],\n[data-bn=\"multiselect-container\"] {\n  min-block-size: var(--bn-control-height)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "background-color var(--bn-transition-fast), border-color var(--bn-transition-fast)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "translate(-50%, -50%)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "linear-gradient(90deg, var(--bn-color-surface-muted) 25%, var(--bn-color-border-control) 50%, var(--bn-color-surface-muted) 75%)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "min(24rem, 80vh)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "[data-bn=\"dropdown\"] is `position: relative` (above), so\n     this absolutely-positioned popover resolves its containing block to the\n     trigger wrapper. Without this, a bare [popover] promotes to the top layer\n     and defaults to `position: fixed` pinned to the viewport's 0,0. */\n  inset-block-start: 100%",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "real CSS anchor positioning where supported, so the\n   menu can escape the trigger wrapper's overflow/stacking context. Popovers\n   default to only one open at a time (popover=\"auto\" light-dismiss), so a\n   single shared anchor-name is safe in practice. */\n@supports (anchor-name: --bn-anchor) {\n  [data-bn=\"dropdown-trigger\"] { anchor-name: --bn-dropdown-trigger",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "color var(--bn-transition-fast), border-color var(--bn-transition-fast)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "0 (all four sides). Only two sides\n       are meant to be anchored here — the other two must be released to auto,\n       or the box is over-constrained and the browser silently keeps the UA\n       default (0) for one of them instead of the anchored value. */\n    inset-block-start: auto",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "4rem repeat(var(--bn-calendar-cols, 7), 1fr)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "auto repeat(var(--bn-calendar-hours, 12), minmax(3.5rem, 1fr))",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "3px solid var(--bn-calendar-event-color, var(--bn-color-primary-600))",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "box-shadow var(--bn-transition-fast), border-color var(--bn-transition-fast)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "0 0 min(100%, 20rem)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "box-shadow var(--bn-transition-fast), transform var(--bn-transition-fast)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "border-color var(--bn-transition-fast), box-shadow var(--bn-transition-fast)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "1 on white, dark 10.48:1 on gray-950 — both pass WCAG 4.5:1 at any size. */\n    --bn-color-error-fg: var(--bn-color-error-600)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/tokens.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "1-safe\n       value as --bn-color-border-control rather than the old gray-300\n       (1.48:1, and hardcoded regardless of theme). */\n    --bn-color-toggle-track-off: var(--bn-color-border-control)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/tokens.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "inline controls get -control,\n       containers get -container, modal surfaces get -modal. */\n    --bn-radius-control: var(--bn-radius-md)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/tokens.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "Default */\n  :root, [data-density=\"default\"] {\n    --bn-space-component-x: var(--bn-space-3)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/tokens.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "rect(0, 0, 0, 0)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/reset.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "*   green   #2E8B5A on #0C0B09  → 4.7:1\n *   yellow  #D4B445 on #1F1700  → 8.6:1\n *   absent  #5A5550 on #1E1C18  → 5.0:1 (subdued, intentional)\n */\n\n@layer keyboard {\n  [data-bn=\"keyboard\"] {\n    /* ── Theming tokens ─────────────────────────────────── */\n    --kb-bg: #0C0B09",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/keyboard/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "calc(var(--kb-padding-y) + env(safe-area-inset-bottom, 0px))",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/keyboard/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "380px) {\n    [data-bn=\"keyboard\"] {\n      --kb-font-size: 15px",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/keyboard/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "1px solid var(--border,hsl(220 15% 22%))",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/visual-builder/src/bn-canvas.js": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "radial-gradient(circle,var(--border,hsl(220 15% 22%)) 1px,transparent 1px)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/visual-builder/src/bn-canvas.js": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "2px solid var(--accent,hsl(210 100% 60%))",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/visual-builder/src/bn-canvas.js": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "1px dashed var(--border,hsl(220 15% 22%))",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/visual-builder/src/bn-canvas.js": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "repeat(${escapeAttr(columns)},1fr)",
+        "kind": "typography-family",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/layout-grid.js": 1
+        },
+        "existingTokens": null
+      }
+    ],
+    "typography-size": [
+      {
+        "value": "0.875em",
+        "kind": "typography-size",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/combobox/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "14px",
+        "kind": "typography-size",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/combobox/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "0.9em",
+        "kind": "typography-size",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/combobox/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "0.7rem",
+        "kind": "typography-size",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/builder/src/builder.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "0.75em",
+        "kind": "typography-size",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "13px",
+        "kind": "typography-size",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/keyboard/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "18px",
+        "kind": "typography-size",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/keyboard/src/styles.css": 1
+        },
+        "existingTokens": null
+      }
+    ],
+    "typography": [
+      {
+        "value": "0.5px",
+        "kind": "typography",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/combobox/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "0.04em",
+        "kind": "typography",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/builder/src/builder.css": 1
+        },
+        "existingTokens": null
+      }
+    ],
+    "shadow": [
+      {
+        "value": "8px 12px",
+        "kind": "shadow",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/combobox/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "ensure focus outline is visible regardless of\n   * the box-shadow (which Windows HC mode will strip). */\n  @media (forced-colors: active) {\n    [data-bn=\"cb-field\"]:focus-within {\n      outline: 2px solid CanvasText",
+        "kind": "shadow",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/combobox/src/styles.css": 1
+        },
+        "existingTokens": null
+      },
+      {
+        "value": "focus-visible { box-shadow: var(--bn-focus-ring)",
+        "kind": "shadow",
+        "occurrences": 1,
+        "fileCount": 1,
+        "files": {
+          "packages/components/src/components.css": 1
+        },
+        "existingTokens": null
+      }
+    ]
+  }
+}
