@@ -1,76 +1,51 @@
 // Built with BaseNative — basenative.dev
 /**
- * Node-safe WASM bootstrap for `@resvg/resvg-wasm` — the default/Node variant.
+ * Where the resvg WASM module comes from under plain Node.
  *
  * `@resvg/resvg-wasm/index_bg.wasm`'s wasm-bindgen glue imports a synthetic
- * `wbg` module specifier that only a wasm-aware bundler (wrangler's esbuild
- * pass, in Workers) knows how to satisfy — a static `import ... from
- * "*.wasm"` of it fails at link time under plain Node, even with
- * `--experimental-wasm-modules`. So here we resolve the `.wasm` file's path
- * with `createRequire` (works from an ESM module without needing import
- * assertions or a loader), read its bytes with `fs/promises`, and hand them
- * to `initWasm()` ourselves — the same call `@resvg/resvg-wasm` documents
- * for any non-bundled environment.
+ * `wbg` specifier that only a wasm-aware bundler knows how to satisfy, so a
+ * static `import ... from "*.wasm"` of it fails at link time under Node even
+ * with `--experimental-wasm-modules`. Node is also the one runtime here where
+ * compiling WASM from bytes is allowed. So this variant resolves the file's URL
+ * and reads it, and `./wasm.js` hands the bytes to `initWasm()` — the path
+ * `@resvg/resvg-wasm` documents for any non-bundled environment.
  *
- * Selection: `src/index.js` imports the bootstrap via the internal
- * `#wasm-init` subpath (see this package's `package.json` `imports` map).
- * This file is the `"default"` condition target, so plain Node — including
- * `node --test` — lands here. Workers land in `./wasm.workerd.js` instead,
- * via the `workerd`/`browser` conditions. Keep both files' exports in
- * lockstep.
+ * Selection: this is the `"default"` condition target of the internal
+ * `#wasm-init` subpath, so plain Node — `node --test` included — lands here,
+ * and workerd never does (it resolves `"workerd"`/`"browser"` to
+ * `./wasm.workerd.js`). **This is the only file in the package that touches a
+ * filesystem, and nothing reachable from the Workers entry imports it.**
+ * `test/import-graph.test.js` asserts both of those over the real import graph
+ * rather than trusting this comment.
  *
- * The module-scoped `_inited` flag mirrors the Workers variant: a single
- * process/isolate only ever calls `initWasm` once.
+ * `import.meta.resolve` is preferred over `createRequire`: it is the standard
+ * ESM resolver, needs no CommonJS shim, and — unlike anything built on
+ * `__dirname` — has no meaning to fall back to on a runtime without a
+ * filesystem, so it cannot silently half-work there. That distinction is the
+ * whole reason this package was unusable on Workers for two releases.
  *
  * @module
  */
 
-import { createRequire } from "node:module";
 import { readFile } from "node:fs/promises";
 
-import { initWasm } from "@resvg/resvg-wasm";
-
-const require = createRequire(import.meta.url);
-
-let _inited = false;
-let _initPromise = null;
+const WASM_SPECIFIER = "@resvg/resvg-wasm/index_bg.wasm";
 
 /**
- * Initialize the resvg WASM module. Idempotent across the process's lifetime.
+ * Read the resvg WASM bytes off disk.
  *
- * Concurrent callers receive the same in-flight promise so we never call
- * `initWasm` twice (which throws).
- *
- * @returns {Promise<void>}
+ * @returns {Promise<Uint8Array>}
  */
-export async function ensureResvg() {
-  if (_inited) return;
-  if (_initPromise) return _initPromise;
-  _initPromise = (async () => {
-    const wasmPath = require.resolve("@resvg/resvg-wasm/index_bg.wasm");
-    const bytes = await readFile(wasmPath);
-    await initWasm(bytes);
-    _inited = true;
-    _initPromise = null;
-  })();
-  return _initPromise;
-}
-
-/**
- * Test hook: reset the init guard. Not part of the public API.
- *
- * @returns {void}
- */
-export function _resetWasmForTest() {
-  _inited = false;
-  _initPromise = null;
-}
-
-/**
- * Inspect the init state. Useful for diagnostics.
- *
- * @returns {boolean}
- */
-export function isResvgInited() {
-  return _inited;
+export async function loadResvgWasmSource() {
+  /** @type {string} */
+  let url;
+  if (typeof import.meta.resolve === "function") {
+    url = import.meta.resolve(WASM_SPECIFIER);
+  } else {
+    // Node < 20.6 without --experimental-import-meta-resolve.
+    const { createRequire } = await import("node:module");
+    const { pathToFileURL } = await import("node:url");
+    url = pathToFileURL(createRequire(import.meta.url).resolve(WASM_SPECIFIER)).href;
+  }
+  return new Uint8Array(await readFile(new URL(url)));
 }

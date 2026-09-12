@@ -17,6 +17,21 @@ on:
 
 jobs:
   deploy:
+    # Declared explicitly because this repo's default GITHUB_TOKEN is read-only
+    # (Settings > Actions > Workflow permissions). cf-deploy.yml's own job asks
+    # for `deployments: write`, and a called workflow can never hold more than
+    # its caller grants — so with the read-only default the run failed before
+    # any job started, with only "This run likely failed because of a workflow
+    # file issue" to show for it. Every push to main since this workflow moved
+    # onto the reusable one startup-failed that way, which is why
+    # basenative.com/compare has been a 404 while duganlabs.com links to it from
+    # every page. DuganLabs' own deploy works because that repo's default is
+    # `write`; matching these three to what cf-deploy.yml requests fixes it
+    # without loosening the repo-wide default.
+    permissions:
+      contents: read
+      deployments: write
+      packages: read
     uses: DuganLabs/.github/.github/workflows/cf-deploy.yml@main
     with:
       project-name: basenative

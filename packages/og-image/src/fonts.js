@@ -1,135 +1,259 @@
 // Built with BaseNative — basenative.dev
 /**
- * Font loader for OG renders.
+ * Font loading for OG renders.
  *
- * Pulls woff files from the immutable jsdelivr `@fontsource/*` CDN, then
- * caches them in a KV namespace (configurable binding name, default
- * `OG_CACHE`). Module-scoped maps keep the buffers in memory for the life
- * of the isolate — KV is only hit on cold start.
+ * Two render paths want two different *formats*, and getting that wrong is
+ * silent, so it is explicit here:
  *
- * If no cache binding is provided we fall back to fetching every cold
- * isolate and emit a `console.warn` so the operator notices.
+ *  - **`ttf`** — for the rasterizer path (`renderSvg` / `renderCard`).
+ *    `@resvg/resvg-wasm`'s bundled `fontdb` only understands raw sfnt
+ *    (TrueType/OpenType). Hand it a `.woff` and it does not error: it loads no
+ *    faces and draws **no glyphs at all**, so you get a correctly sized card
+ *    with the text missing. That is why this path does not use `@fontsource`,
+ *    whose modern releases publish only `.woff`/`.woff2` — verified, 2026-09:
+ *    `@fontsource/inter@5.2.8/files/inter-latin-700-normal.woff` begins
+ *    `wOFF`. It uses `@expo-google-fonts/*` instead, which publishes the
+ *    upstream Google Fonts TTFs at immutable npm versions (magic `00010000`,
+ *    same check).
+ *  - **`woff`** — for the satori path (`@basenative/og-image/satori`). satori
+ *    decompresses WOFF itself, and the smaller files are worth it there.
+ *
+ * Caching, cheapest first: a module-scoped map (free, per isolate) → a KV
+ * namespace if one is bound (shared across isolates and colos) → the CDN, with
+ * `cf.cacheEverything` so Cloudflare's own edge cache absorbs the miss even
+ * when no KV binding exists. Pass `cacheBinding: null` to say "no KV on
+ * purpose" and suppress the warning.
  *
  * @module
  */
 
+import { OgImageError } from "./errors.js";
+
 /** @typedef {{ name: string, data: ArrayBuffer, weight: number, style: "normal" | "italic" }} SatoriFont */
+
+/** @typedef {"ttf" | "woff"} FontFormat */
 
 /** @typedef {{
  *   family?: string,
  *   weights?: number[],
+ *   format?: FontFormat,
  *   cdnVersion?: string,
- *   cacheBinding?: string,
+ *   cacheBinding?: string | null,
  *   cacheKeyPrefix?: string,
  *   buffers?: Record<number, ArrayBuffer | Uint8Array>,
+ *   urls?: Record<number, string>,
  * }} FontConfig */
 
 const DEFAULT_FAMILY = "Inter";
-const DEFAULT_WEIGHTS = [600, 700, 800];
-const DEFAULT_CDN_VERSION = "5.0.16";
 const DEFAULT_CACHE_BINDING = "OG_CACHE";
 const DEFAULT_CACHE_KEY_PREFIX = "font:";
 
-// Module-scoped cache: family-weight → ArrayBuffer.
-// Survives across requests on a warm isolate; cold isolates start empty.
-/** @type {Map<string, ArrayBuffer>} */
-const _memo = new Map();
+/** Weights the card layouts actually ask for; keeping the default tight keeps
+ *  the cold-start fetch to two files. */
+const DEFAULT_TTF_WEIGHTS = [600, 800];
+const DEFAULT_WOFF_WEIGHTS = [600, 700, 800];
+
+const DEFAULT_TTF_VERSION = "0.2.3"; // @expo-google-fonts/* — immutable
+const DEFAULT_WOFF_VERSION = "5.0.16"; // @fontsource/* — immutable
 
 /**
- * Build a jsdelivr URL for an `@fontsource` weight file.
+ * TTF registry: `@expo-google-fonts/<slug>` file names by weight. Families not
+ * listed here are still reachable — pass `urls` with your own per-weight URLs.
  *
+ * @type {Record<string, Record<number, string>>}
+ */
+const TTF_FILES = {
+  inter: {
+    100: "Inter_100Thin.ttf",
+    200: "Inter_200ExtraLight.ttf",
+    300: "Inter_300Light.ttf",
+    400: "Inter_400Regular.ttf",
+    500: "Inter_500Medium.ttf",
+    600: "Inter_600SemiBold.ttf",
+    700: "Inter_700Bold.ttf",
+    800: "Inter_800ExtraBold.ttf",
+    900: "Inter_900Black.ttf",
+  },
+};
+
+/**
  * @param {string} family
- * @param {number} weight
- * @param {string} version
  * @returns {string}
  */
-function fontUrl(family, weight, version) {
-  const slug = family.toLowerCase().replace(/\s+/g, "-");
-  return `https://cdn.jsdelivr.net/npm/@fontsource/${slug}@${version}/files/${slug}-latin-${weight}-normal.woff`;
+function slugify(family) {
+  return String(family).toLowerCase().replace(/\s+/g, "-");
 }
 
 /**
- * Define a font configuration. Returned object is consumed by `loadFonts`.
+ * Build the CDN URL for one family/weight/format.
+ *
+ * @param {Required<Pick<FontConfig, "family" | "format" | "cdnVersion">>} cfg
+ * @param {number} weight
+ * @returns {string}
+ */
+export function fontUrl(cfg, weight) {
+  const slug = slugify(cfg.family);
+  if (cfg.format === "woff") {
+    return `https://cdn.jsdelivr.net/npm/@fontsource/${slug}@${cfg.cdnVersion}/files/${slug}-latin-${weight}-normal.woff`;
+  }
+  const files = TTF_FILES[slug];
+  const file = files && files[weight];
+  if (!file) {
+    throw new OgImageError(
+      "font-fetch-failed",
+      `No TTF known for ${cfg.family} weight ${weight}. Supply one with ` +
+        `defineFonts({ urls: { ${weight}: "https://…/Font.ttf" } }) or defineFonts({ buffers }).`,
+    );
+  }
+  return `https://cdn.jsdelivr.net/npm/@expo-google-fonts/${slug}@${cfg.cdnVersion}/${file}`;
+}
+
+/**
+ * Resolve a font configuration. Defaults depend on `format`, because the two
+ * formats come from different packages with different version lines.
  *
  * @param {FontConfig} [cfg]
- * @returns {Required<FontConfig>}
+ * @param {FontFormat} [defaultFormat]
+ * @returns {Required<Omit<FontConfig, "buffers" | "urls">> & { buffers?: FontConfig["buffers"], urls?: FontConfig["urls"] }}
  */
-export function defineFonts(cfg = {}) {
+export function defineFonts(cfg = {}, defaultFormat = "ttf") {
+  const format = cfg.format ?? defaultFormat;
   return {
     family: cfg.family ?? DEFAULT_FAMILY,
-    weights: cfg.weights ?? DEFAULT_WEIGHTS,
-    cdnVersion: cfg.cdnVersion ?? DEFAULT_CDN_VERSION,
-    cacheBinding: cfg.cacheBinding ?? DEFAULT_CACHE_BINDING,
+    weights: cfg.weights ?? (format === "woff" ? DEFAULT_WOFF_WEIGHTS : DEFAULT_TTF_WEIGHTS),
+    format,
+    cdnVersion: cfg.cdnVersion ?? (format === "woff" ? DEFAULT_WOFF_VERSION : DEFAULT_TTF_VERSION),
+    // `undefined` means "use the default binding name"; `null` means "there is
+    // deliberately no KV here" and silences the warning.
+    cacheBinding: cfg.cacheBinding === undefined ? DEFAULT_CACHE_BINDING : cfg.cacheBinding,
     cacheKeyPrefix: cfg.cacheKeyPrefix ?? DEFAULT_CACHE_KEY_PREFIX,
-    buffers: cfg.buffers ?? undefined,
+    buffers: cfg.buffers,
+    urls: cfg.urls,
   };
 }
 
+// Module-scoped cache: cache key → bytes. Survives across requests on a warm
+// isolate; cold isolates start empty.
+/** @type {Map<string, ArrayBuffer>} */
+const _memo = new Map();
+
+/** Warn about a missing KV binding once per isolate, not once per font. */
+let _warnedNoBinding = false;
+
 /**
- * Fetch a binary asset, going through KV → upstream CDN, with module-memo.
+ * Cache key for one resolved font file.
  *
- * @param {Record<string, any>} env Worker env binding map.
- * @param {string} cacheBinding KV binding name.
- * @param {string} cacheKey
- * @param {string} url
+ * The format and CDN version are part of the key on purpose: without them a
+ * `.woff` cached by the satori path would be served to the rasterizer path,
+ * which cannot parse it and would draw an empty card — a failure with no error
+ * anywhere to find it by.
+ *
+ * @param {ReturnType<typeof defineFonts>} cfg
+ * @param {number} weight
+ * @returns {string}
+ */
+export function fontCacheKey(cfg, weight) {
+  return `${cfg.cacheKeyPrefix}${slugify(cfg.family)}-${weight}-${cfg.format}-${cfg.cdnVersion}`;
+}
+
+/**
+ * Fetch a font file, going module-memo → KV → CDN.
+ *
+ * @param {Record<string, any>} env
+ * @param {ReturnType<typeof defineFonts>} cfg
+ * @param {number} weight
  * @returns {Promise<ArrayBuffer>}
  */
-async function fetchAndCache(env, cacheBinding, cacheKey, url) {
-  if (_memo.has(cacheKey)) return /** @type {ArrayBuffer} */ (_memo.get(cacheKey));
+async function loadOne(env, cfg, weight) {
+  const key = fontCacheKey(cfg, weight);
+  const memo = _memo.get(key);
+  if (memo) return memo;
 
-  const cache = env && env[cacheBinding];
+  const cache = cfg.cacheBinding ? env && env[cfg.cacheBinding] : null;
   if (cache && typeof cache.get === "function") {
-    const cached = await cache.get(cacheKey, "arrayBuffer");
+    const cached = await cache.get(key, "arrayBuffer");
     if (cached) {
-      _memo.set(cacheKey, cached);
+      _memo.set(key, cached);
       return cached;
     }
-  } else {
-    // No KV binding — fetch every cold start. Loud, on purpose.
+  } else if (cfg.cacheBinding && !_warnedNoBinding) {
+    _warnedNoBinding = true;
     console.warn(
-      `[basenative/og-image] no '${cacheBinding}' KV binding on env; ` +
-        `font ${cacheKey} will be re-fetched on every cold isolate.`,
+      `[basenative/og-image] no '${cfg.cacheBinding}' KV binding on env; fonts will be ` +
+        `re-fetched on every cold isolate. Bind one, or pass ` +
+        `defineFonts({ cacheBinding: null }) to accept that deliberately.`,
     );
   }
 
+  const url = (cfg.urls && cfg.urls[weight]) || fontUrl(cfg, weight);
+  // `cacheEverything` puts the response in Cloudflare's own edge cache, which
+  // is what makes the no-KV configuration viable rather than merely tolerable.
   const r = await fetch(url, { cf: { cacheTtl: 86400, cacheEverything: true } });
-  if (!r.ok) throw new Error(`og-asset-fetch-failed: ${cacheKey} ${r.status}`);
+  if (!r.ok) {
+    throw new OgImageError("font-fetch-failed", `og-font-fetch-failed: ${key} ${r.status} ${url}`);
+  }
   const buf = await r.arrayBuffer();
 
   if (cache && typeof cache.put === "function") {
-    // Long TTL — these are immutable URLs.
-    await cache.put(cacheKey, buf, { expirationTtl: 60 * 60 * 24 * 365 });
+    await cache.put(key, buf, { expirationTtl: 60 * 60 * 24 * 365 });
   }
-
-  _memo.set(cacheKey, buf);
+  _memo.set(key, buf);
   return buf;
 }
 
 /**
- * Load the configured fonts and return them in satori's expected shape.
+ * @param {ArrayBuffer | Uint8Array} b
+ * @returns {Uint8Array}
+ */
+function asBytes(b) {
+  return b instanceof Uint8Array ? b : new Uint8Array(b);
+}
+
+/**
+ * Load fonts as raw byte arrays, for the rasterizer.
  *
- * If `cfg.buffers[weight]` is supplied, that weight is served straight from
- * the buffer — no KV lookup, no network fetch. This is the escape hatch for
- * environments without `fetch` to `cdn.jsdelivr.net` (offline dev, sandboxed
- * CI, tests): pre-load a `.ttf`/`.woff` yourself and hand the bytes in.
+ * @param {Record<string, any>} env Worker env binding map (may be `{}`).
+ * @param {ReturnType<typeof defineFonts>} cfg
+ * @returns {Promise<Uint8Array[]>}
+ */
+export async function loadFontBuffers(env, cfg) {
+  const out = await Promise.all(
+    cfg.weights.map(async (weight) => {
+      const provided = cfg.buffers && cfg.buffers[weight];
+      if (provided != null) return asBytes(provided);
+      return asBytes(await loadOne(env, cfg, weight));
+    }),
+  );
+  if (out.length === 0) {
+    throw new OgImageError(
+      "no-fonts",
+      "No font weights configured — defineFonts({ weights: [...] }) resolved to an empty list, " +
+        "and the rasterizer draws nothing without at least one face.",
+    );
+  }
+  return out;
+}
+
+/**
+ * Load fonts in satori's descriptor shape.
  *
- * @param {Record<string, any>} env Worker env (must contain the KV binding).
- * @param {Required<FontConfig>} cfg Resolved font config from `defineFonts`.
+ * @param {Record<string, any>} env
+ * @param {ReturnType<typeof defineFonts>} cfg
  * @returns {Promise<SatoriFont[]>}
  */
 export async function loadFonts(env, cfg) {
-  const { family, weights, cdnVersion, cacheBinding, cacheKeyPrefix, buffers } = cfg;
-  const out = await Promise.all(
-    weights.map(async (weight) => {
-      if (buffers && buffers[weight] != null) {
-        return /** @type {SatoriFont} */ ({ name: family, data: buffers[weight], weight, style: "normal" });
-      }
-      const key = `${cacheKeyPrefix}${family.toLowerCase().replace(/\s+/g, "-")}-${weight}`;
-      const data = await fetchAndCache(env, cacheBinding, key, fontUrl(family, weight, cdnVersion));
-      return /** @type {SatoriFont} */ ({ name: family, data, weight, style: "normal" });
+  return Promise.all(
+    cfg.weights.map(async (weight) => {
+      const provided = cfg.buffers && cfg.buffers[weight];
+      const data = provided != null ? provided : await loadOne(env, cfg, weight);
+      return /** @type {SatoriFont} */ ({
+        name: cfg.family,
+        data,
+        weight,
+        style: "normal",
+      });
     }),
   );
-  return out;
 }
 
 /**
@@ -139,4 +263,5 @@ export async function loadFonts(env, cfg) {
  */
 export function _resetFontsForTest() {
   _memo.clear();
+  _warnedNoBinding = false;
 }
