@@ -1,11 +1,11 @@
 {
   "$schema": "https://basenative.dev/schemas/component-index.json",
   "generatedBy": "scripts/llms-txt.js (scripts/component-index.js)",
-  "generatedOn": "2026-09-11",
+  "generatedOn": "2026-09-12",
   "contract": "Generated from source. Never hand-edit: `node scripts/llms-txt.js --check` fails CI when this file disagrees with packages/*/src. `variants` is the set of values a stylesheet actually declares a rule for, so a value outside it renders unstyled rather than erroring.",
   "counts": {
-    "components": 64,
-    "renderFunctions": 58,
+    "components": 66,
+    "renderFunctions": 60,
     "customElements": 6,
     "styledContracts": 174,
     "componentsWithVariants": 18
@@ -2348,6 +2348,46 @@
       "file": "packages/notify/src/email.js",
       "signature": "renderEmail(template, data)",
       "purpose": "Render an HTML email template with {{ variable }} interpolation.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": null,
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "hand-written markup for this element"
+    },
+    {
+      "id": "@basenative/og-image#renderCard",
+      "name": "renderCard",
+      "kind": "render-function",
+      "package": "@basenative/og-image",
+      "file": "packages/og-image/src/index.js",
+      "signature": "renderCard(card, env, opts)",
+      "purpose": "Build a brand card and rasterize it — the common case, in one call.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": null,
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "hand-written markup for this element"
+    },
+    {
+      "id": "@basenative/og-image#renderSvg",
+      "name": "renderSvg",
+      "kind": "render-function",
+      "package": "@basenative/og-image",
+      "file": "packages/og-image/src/index.js",
+      "signature": "renderSvg(svg, env, opts)",
+      "purpose": "Rasterize an SVG document to PNG bytes.",
       "deprecated": false,
       "emits": {
         "rootTag": null,

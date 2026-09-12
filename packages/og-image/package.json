@@ -1,12 +1,16 @@
 {
   "name": "@basenative/og-image",
   "version": "0.2.2",
-  "description": "Worker-runtime OG / social share PNG renderer \u2014 satori + resvg-wasm with KV-cached fonts and themable scene presets",
+  "description": "Runtime-agnostic OG / social share PNG renderer — SVG card scenes rasterized by resvg-wasm, with CDN+KV-cached fonts; runs on Cloudflare Workers, Node, Deno and Bun",
   "type": "module",
   "exports": {
     ".": {
       "types": "./types/index.d.ts",
       "default": "./src/index.js"
+    },
+    "./satori": {
+      "types": "./types/index.d.ts",
+      "default": "./src/satori.js"
     },
     "./presets": {
       "types": "./types/index.d.ts",
@@ -43,14 +47,26 @@
     "basenative",
     "og-image",
     "social-share",
-    "satori",
+    "open-graph",
     "resvg",
+    "satori",
     "cloudflare-workers",
+    "workerd",
     "edge"
   ],
   "dependencies": {
-    "satori": "^0.33.4",
     "@resvg/resvg-wasm": "^2.6.2"
+  },
+  "peerDependencies": {
+    "satori": "^0.33.4"
+  },
+  "peerDependenciesMeta": {
+    "satori": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "satori": "^0.33.4"
   },
   "publishConfig": {
     "access": "public"

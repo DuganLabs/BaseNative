@@ -30,7 +30,14 @@ import {
   scoreCardPreset,
   presets,
 } from "../src/presets.js";
-import { defineFonts, loadFonts, _resetFontsForTest } from "../src/fonts.js";
+import {
+  defineFonts,
+  fontCacheKey,
+  fontUrl,
+  loadFontBuffers,
+  loadFonts,
+  _resetFontsForTest,
+} from "../src/fonts.js";
 
 /* ─── Scene helpers ─── */
 
@@ -231,12 +238,20 @@ describe("font loader (KV cache path)", () => {
     globalThis.fetch = _origFetch;
   });
 
-  it("defineFonts() applies sensible defaults", () => {
+  it("defineFonts() defaults to the rasterizer's format", () => {
     const cfg = defineFonts();
     assert.equal(cfg.family, "Inter");
-    assert.deepEqual(cfg.weights, [600, 700, 800]);
+    assert.equal(cfg.format, "ttf", "resvg's font parser cannot read WOFF");
+    assert.deepEqual(cfg.weights, [600, 800]);
     assert.equal(cfg.cacheBinding, "OG_CACHE");
     assert.equal(cfg.cacheKeyPrefix, "font:");
+  });
+
+  it("defineFonts() takes woff defaults when asked for the satori format", () => {
+    const cfg = defineFonts({}, "woff");
+    assert.equal(cfg.format, "woff");
+    assert.deepEqual(cfg.weights, [600, 700, 800]);
+    assert.equal(cfg.cdnVersion, "5.0.16");
   });
 
   it("defineFonts() honors overrides", () => {
@@ -246,9 +261,40 @@ describe("font loader (KV cache path)", () => {
     assert.equal(cfg.cacheBinding, "MY_KV");
   });
 
+  it("distinguishes null (no KV on purpose) from undefined (use the default binding)", () => {
+    assert.equal(defineFonts({ cacheBinding: null }).cacheBinding, null);
+    assert.equal(defineFonts({}).cacheBinding, "OG_CACHE");
+  });
+
+  it("keys the cache by format and CDN version, not just family and weight", () => {
+    const ttf = fontCacheKey(defineFonts({ weights: [700] }), 700);
+    const woff = fontCacheKey(defineFonts({ weights: [700] }, "woff"), 700);
+    assert.equal(ttf, "font:inter-700-ttf-0.2.3");
+    assert.equal(woff, "font:inter-700-woff-5.0.16");
+    assert.notEqual(
+      ttf,
+      woff,
+      "a WOFF cached by the satori path must never be served to the rasterizer path — " +
+        "it parses to zero faces and draws an empty card, with no error anywhere",
+    );
+  });
+
+  it("builds a TTF URL for the rasterizer and a WOFF URL for satori", () => {
+    assert.match(fontUrl(defineFonts({}), 700), /@expo-google-fonts\/inter@0\.2\.3\/Inter_700Bold\.ttf$/);
+    assert.match(
+      fontUrl(defineFonts({}, "woff"), 700),
+      /@fontsource\/inter@5\.0\.16\/files\/inter-latin-700-normal\.woff$/,
+    );
+  });
+
+  it("names the escape hatch when no TTF is known for a family", () => {
+    assert.throws(() => fontUrl(defineFonts({ family: "Obscure Grotesk" }), 700), /defineFonts\(\{ urls/);
+  });
+
   it("hits KV first; skips upstream fetch on cache HIT", async () => {
     const buf = new Uint8Array([1, 2, 3]).buffer;
-    const kv = mockKV({ "font:inter-700": buf });
+    const key = "font:inter-700-ttf-0.2.3";
+    const kv = mockKV({ [key]: buf });
     const counter = stubFetch(buf);
 
     const cfg = defineFonts({ weights: [700] });
@@ -258,13 +304,14 @@ describe("font loader (KV cache path)", () => {
     assert.equal(fonts[0].name, "Inter");
     assert.equal(fonts[0].weight, 700);
     assert.equal(fonts[0].data, buf);
-    assert.deepEqual(kv.calls.gets, ["font:inter-700"]);
+    assert.deepEqual(kv.calls.gets, [key]);
     assert.deepEqual(kv.calls.puts, []);
     assert.equal(counter(), 0, "should not hit upstream on cache HIT");
   });
 
   it("falls through to upstream + writes to KV on cache MISS", async () => {
     const buf = new Uint8Array([7, 7, 7]).buffer;
+    const key = "font:inter-600-ttf-0.2.3";
     const kv = mockKV();
     const counter = stubFetch(buf);
 
@@ -273,12 +320,12 @@ describe("font loader (KV cache path)", () => {
 
     assert.equal(fonts.length, 1);
     assert.equal(fonts[0].data, buf);
-    assert.deepEqual(kv.calls.gets, ["font:inter-600"]);
-    assert.deepEqual(kv.calls.puts, ["font:inter-600"]);
+    assert.deepEqual(kv.calls.gets, [key]);
+    assert.deepEqual(kv.calls.puts, [key]);
     assert.equal(counter(), 1);
   });
 
-  it("warns and re-fetches when no KV binding is present", async () => {
+  it("warns once when a KV binding was expected and is absent", async () => {
     const buf = new Uint8Array([9]).buffer;
     const counter = stubFetch(buf);
 
@@ -287,14 +334,28 @@ describe("font loader (KV cache path)", () => {
     console.warn = (msg) => warnings.push(String(msg));
 
     try {
-      const cfg = defineFonts({ weights: [800] });
+      const cfg = defineFonts({ weights: [600, 800] });
       const fonts = await loadFonts({}, cfg);
-      assert.equal(fonts.length, 1);
+      assert.equal(fonts.length, 2);
+      assert.equal(counter(), 2);
+      assert.equal(warnings.length, 1, "one warning per isolate, not one per font file");
+      assert.match(warnings[0], /OG_CACHE/);
+    } finally {
+      console.warn = origWarn;
+    }
+  });
+
+  it("stays silent when the caller said cacheBinding: null", async () => {
+    const buf = new Uint8Array([9]).buffer;
+    const counter = stubFetch(buf);
+    const warnings = [];
+    const origWarn = console.warn;
+    console.warn = (msg) => warnings.push(String(msg));
+    try {
+      const cfg = defineFonts({ weights: [700], cacheBinding: null });
+      await loadFonts({}, cfg);
       assert.equal(counter(), 1);
-      assert.ok(
-        warnings.some((w) => w.includes("OG_CACHE") && w.includes("font:inter-800")),
-        `expected warning, got: ${JSON.stringify(warnings)}`,
-      );
+      assert.deepEqual(warnings, [], "an explicit null is a decision, not a mistake");
     } finally {
       console.warn = origWarn;
     }
@@ -321,6 +382,32 @@ describe("font loader (KV cache path)", () => {
 
     const cfg = defineFonts({ weights: [700], cacheKeyPrefix: "ogfont/" });
     await loadFonts({ OG_CACHE: kv }, cfg);
-    assert.deepEqual(kv.calls.puts, ["ogfont/inter-700"]);
+    assert.deepEqual(kv.calls.puts, ["ogfont/inter-700-ttf-0.2.3"]);
+  });
+
+  it("loadFontBuffers() returns raw bytes, and honours injected buffers without any I/O", async () => {
+    const kv = mockKV();
+    const counter = stubFetch(new Uint8Array([0]).buffer);
+    const cfg = defineFonts({ weights: [600, 800], buffers: { 600: new Uint8Array([1]), 800: new Uint8Array([2]) } });
+    const bufs = await loadFontBuffers({ OG_CACHE: kv }, cfg);
+    assert.equal(bufs.length, 2);
+    assert.ok(bufs[0] instanceof Uint8Array);
+    assert.deepEqual([...bufs[0]], [1]);
+    assert.deepEqual([...bufs[1]], [2]);
+    assert.equal(counter(), 0);
+    assert.deepEqual(kv.calls.gets, []);
+  });
+
+  it("loadFontBuffers() refuses an empty weight list rather than drawing a blank card", async () => {
+    await assert.rejects(() => loadFontBuffers({}, defineFonts({ weights: [] })), /no-fonts|draws nothing/);
+  });
+
+  it("loadFontBuffers() converts an ArrayBuffer from KV to bytes", async () => {
+    const buf = new Uint8Array([3, 4, 5]).buffer;
+    const kv = mockKV({ "font:inter-700-ttf-0.2.3": buf });
+    stubFetch(buf);
+    const bufs = await loadFontBuffers({ OG_CACHE: kv }, defineFonts({ weights: [700] }));
+    assert.ok(bufs[0] instanceof Uint8Array);
+    assert.deepEqual([...bufs[0]], [3, 4, 5]);
   });
 });
