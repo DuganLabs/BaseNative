@@ -160,7 +160,7 @@ describe("brandCard — the ordinary case", () => {
     assert.match(texts, /Northside Electrical/);
     assert.match(texts, /Manchester/);
     assert.match(texts, /LICENSED ELECTRICIAN/);
-    assert.match(texts, /northside\.greenput\.com/);
+    assert.ok(texts.includes("northside.greenput.com"));
   });
 
   it("is deterministic — same input, same bytes", () => {
@@ -240,7 +240,7 @@ describe("brandCard — inputs that must not break it", () => {
 
   it("still identifies the business by its brand line when the title is unusable", () => {
     const svg = brandCard({ title: LEAF, brand: "northside.greenput.com" });
-    assert.match(textContents(svg).join("|"), /northside\.greenput\.com/);
+    assert.ok(textContents(svg).join("|").includes("northside.greenput.com"));
   });
 
   it("sets an RTL base direction only for RTL content", () => {
