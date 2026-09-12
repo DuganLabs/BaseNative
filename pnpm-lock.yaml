@@ -369,6 +369,7 @@ importers:
       '@resvg/resvg-wasm':
         specifier: ^2.6.2
         version: 2.6.2
+    devDependencies:
       satori:
         specifier: ^0.33.4
         version: 0.33.4
