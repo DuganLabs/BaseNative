@@ -160,7 +160,11 @@ describe("brandCard — the ordinary case", () => {
     assert.match(texts, /Northside Electrical/);
     assert.match(texts, /Manchester/);
     assert.match(texts, /LICENSED ELECTRICIAN/);
-    assert.ok(texts.includes("northside.greenput.com"));
+    // Exact equality on the extracted run, not a substring search: the brand
+    // line is drawn as its own <text> element, so "is this run exactly the
+    // brand" is both the stronger assertion and the one that does not read as
+    // a (partial, and therefore unsound) URL host check.
+    assert.ok(textContents(svg).some((t) => t === BASE.brand));
   });
 
   it("is deterministic — same input, same bytes", () => {
@@ -239,8 +243,8 @@ describe("brandCard — inputs that must not break it", () => {
   });
 
   it("still identifies the business by its brand line when the title is unusable", () => {
-    const svg = brandCard({ title: LEAF, brand: "northside.greenput.com" });
-    assert.ok(textContents(svg).join("|").includes("northside.greenput.com"));
+    const svg = brandCard({ title: LEAF, brand: BASE.brand });
+    assert.ok(textContents(svg).some((t) => t === BASE.brand));
   });
 
   it("sets an RTL base direction only for RTL content", () => {
