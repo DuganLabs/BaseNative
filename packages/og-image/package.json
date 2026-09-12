@@ -1,6 +1,6 @@
 {
   "name": "@basenative/og-image",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Runtime-agnostic OG / social share PNG renderer — SVG card scenes rasterized by resvg-wasm, with CDN+KV-cached fonts; runs on Cloudflare Workers, Node, Deno and Bun",
   "type": "module",
   "exports": {

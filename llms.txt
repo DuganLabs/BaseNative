@@ -37,13 +37,13 @@ Full API surface: [llms-full.txt](./llms-full.txt). Each package's dedicated doc
 - `@basenative/mcp` v0.2.2 — MCP server exposing BaseNative validation, SSR preview, and directive reference to any agent → docs/api/mcp.md
 - `@basenative/middleware` v0.4.0 — Request pipeline middleware — security headers, CORS, rate limiting, CSRF, and adapters → docs/api/middleware.md
 - `@basenative/notify` v0.3.2 — Email notifications via SMTP and SendGrid with template rendering → docs/api/notify.md
-- `@basenative/og-image` v0.2.2 — Runtime-agnostic OG / social share PNG renderer — SVG card scenes rasterized by resvg-wasm, with CD… → docs/api/og-image.md
+- `@basenative/og-image` v0.3.0 — Runtime-agnostic OG / social share PNG renderer — SVG card scenes rasterized by resvg-wasm, with CD… → docs/api/og-image.md
 - `@basenative/persist` v1.0.5 — Signal-driven local persistence with TTL, conflict resolution, and a server-rehydrate hook for Base… → docs/api/persist.md
 - `@basenative/realtime` v0.3.1 — SSE and WebSocket connections with signal-based reactive message streams → docs/api/realtime.md
 - `@basenative/router` v0.5.1 — SSR-aware path routing with named params, wildcards, and history API integration → docs/api/router.md
 - `@basenative/runtime` v0.6.3 — Signal-based web runtime over native HTML — zero build step, zero production dependencies → docs/api/runtime.md
 - `@basenative/server` v0.6.3 — Server-side rendering with streaming support for BaseNative templates → docs/api/server.md
-- `@basenative/share` v1.0.2 — Native Web Share + clipboard fallback, share-card mint client+server, and OG-redirect landing page… → docs/api/share.md
+- `@basenative/share` v1.0.3 — Native Web Share + clipboard fallback, share-card mint client+server, and OG-redirect landing page… → docs/api/share.md
 - `@basenative/station` v0.2.1 — Queue-driven local-inference primitive — drives a cloudflared-tunneled vLLM tower (or any OpenAI-co… → docs/api/station.md
 - `@basenative/tenant` v0.3.1 — Multi-tenant middleware with subdomain/path resolution and row-level query scoping → docs/api/tenant.md
 - `@basenative/theme` v0.2.0 — The theme layer behind @basenative/components — a four-tier token shape, a WCAG contrast harness th… → packages/theme/src

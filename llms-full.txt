@@ -2237,7 +2237,7 @@ Resend email transport. **Parameters:** - `config.apiKey` — Resend API key **R
 #### createNotificationCenter()
 Creates an in-app notification center for managing per-user notification queues. **Returns:** Notification center object with methods for creating, listing, and marking notifications as read.
 
-### `@basenative/og-image` (v0.2.2)
+### `@basenative/og-image` (v0.3.0)
 
 Runtime-agnostic OG / social share PNG renderer — SVG card scenes rasterized by resvg-wasm, with CDN+KV-cached fonts; runs on Cloudflare Workers, Node, Deno and Bun
 
@@ -3035,7 +3035,7 @@ export default {
 };
 ```
 
-### `@basenative/share` (v1.0.2)
+### `@basenative/share` (v1.0.3)
 
 Native Web Share + clipboard fallback, share-card mint client+server, and OG-redirect landing page generator for BaseNative apps
 
