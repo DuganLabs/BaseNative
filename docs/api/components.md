@@ -1,6 +1,6 @@
 # @basenative/components API
 
-Every function in this package is a pure `render*` helper that returns an HTML string (or a small state helper for toasts, calendars and pipelines). Markup is semantic HTML tagged with `data-bn="…"` attributes; there is no client-side JavaScript except the opt-in initialisers (`initTabs`, `initDrawer`, and the drag-and-drop initialisers).
+Every function in this package is a pure `render*` helper that returns an HTML string (or a small state helper for toasts, calendars and pipelines). Markup is semantic HTML tagged with `data-bn="…"` attributes; there is no client-side JavaScript except the opt-in initialisers — `initTabs`, `initDrawer`, `initCommandPalette`, `initDataGrid`, `initTree`, `initMultiselect`, `initVirtualList`, `initDropdownMenu` and the drag-and-drop initialisers — each of which takes the rendered root element, works off the `data-bn` hooks and native ARIA attributes, re-queries them on every interaction, and returns a handle with `destroy()`.
 
 All `render*` functions accept an `attrs` option unless the table says otherwise: a raw string of extra HTML attributes spliced verbatim into the outermost element (for example `attrs: 'data-testid="save" aria-describedby="hint"'`). Content options (`content`, `body`, `title`, `label`, …) are inserted as HTML, not escaped, unless noted.
 
@@ -262,7 +262,7 @@ Accessibility: `role="combobox"`, `aria-autocomplete="list"`; the `<datalist>` g
 
 ## Multiselect
 
-`renderMultiselect(options)` → `string`. Selected values render as removable tags in front of a search input; a hidden `<select multiple>` carries the form value.
+`renderMultiselect(options)` → `string`. Selected values render as removable tags in front of a search input backed by a `<datalist>` of the item labels; a hidden `<select multiple>` carries the form value. Pair with `initMultiselect` on the client to make the tags editable.
 
 ```js
 renderMultiselect({ name: 'tags', label: 'Tags', items: ['a11y', 'css', 'html'], selected: ['css'] })
@@ -286,13 +286,34 @@ Renders:
   <label for="bn-multiselect-tags" data-bn="label">Tags</label>
   <div data-bn="multiselect-container">
     <div data-bn="multiselect-tags"><span data-bn="tag" data-value="css">css<button type="button" data-bn="tag-remove" aria-label="Remove css">×</button></span></div>
-    <input type="text" data-bn="multiselect-search" placeholder="Select items..." autocomplete="off" aria-label="Tags">
+    <input type="text" data-bn="multiselect-search" placeholder="Select items..." autocomplete="off" aria-label="Tags" list="bn-multiselect-tags-options">
   </div>
+  <datalist id="bn-multiselect-tags-options"><option value="a11y"></option>…</datalist>
   <select id="bn-multiselect-tags" name="tags" multiple hidden>…</select>
 </div>
 ```
 
-Accessibility: each remove button has an `aria-label`; the hidden native select keeps the value submittable.
+Accessibility: each remove button has an `aria-label`; the hidden native select keeps the value submittable; the `<datalist>` gives the search input native, script-free suggestions.
+
+### `initMultiselect(root, options?)` → `MultiselectController`
+
+```js
+import { initMultiselect } from '@basenative/components';
+
+const tags = initMultiselect(document.querySelector('[data-bn="multiselect"]'), {
+  onChange: values => form.set('tags', values), // user-driven changes only
+});
+tags.add('html');   // silent; false when unknown or already selected
+tags.remove('css'); // silent
+tags.values();      // ['html'] — read from the <select>
+tags.destroy();
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `onChange` | `(values: string[]) => void` | — | Called after every user-driven change with the selected values in option order |
+
+The hidden `<select multiple>` is the source of truth: every path changes an `<option>`'s `selected` first and the tags second, so a form submit always matches what is shown. A click on a tag's × deselects that value, removes the tag and moves focus to the search input. In the input, Backspace on an empty value removes the last tag; Enter, or picking a `<datalist>` suggestion (the input's `change`), selects the item whose label or value matches the typed text, appends its tag and clears the input. `add(value)` / `remove(value)` reflect state without calling `onChange` and return whether anything changed; `destroy()` removes every listener.
 
 ## Alert
 
@@ -414,7 +435,7 @@ It is opt-in because the attribute is dead weight in every table that is not sta
 
 ## Data Grid
 
-`renderDataGrid(options)` → `string`. Sortable, selectable, paginated grid with a scroll region and a "Showing x–y of z" footer.
+`renderDataGrid(options)` → `string`. Sortable, selectable, paginated grid with a scroll region and a "Showing x–y of z" footer. Pair with `initDataGrid` on the client for sorting, selection and arrow-key navigation.
 
 ```js
 renderDataGrid({
@@ -462,13 +483,39 @@ Renders:
 </div>
 ```
 
-A `sortable` column's header is a real `<button type="button" data-bn="datagrid-th-button">` inside the `<th>` — the WAI-ARIA APG sortable-column-header pattern — so it is reachable with Tab and activatable with Enter/Space in every browser with no client-side JavaScript; a non-`sortable` column's `<th>` stays plain text. The currently-sorted `<th>` also carries `aria-sort="ascending"|"descending"`. Wiring that button's `click` to actually re-sort `rows` (and re-render with updated `sortBy`/`sortDir`) is left to the caller — the same division of labour as Table's `data-sortable`.
+A `sortable` column's header is a real `<button type="button" data-bn="datagrid-th-button">` inside the `<th>` — the WAI-ARIA APG sortable-column-header pattern — so it is reachable with Tab and activatable with Enter/Space in every browser with no client-side JavaScript; a non-`sortable` column's `<th>` stays plain text. The currently-sorted `<th>` also carries `aria-sort="ascending"|"descending"`. `initDataGrid` turns that button's `click` into a sort; without it the markup is a static table, the same division of labour as Table's `data-sortable`.
 
 Accessibility: the scroll region is focusable (`tabindex="0"`) and labelled; every checkbox has an `aria-label`; `editable` columns render `contenteditable` cells; sortable headers are real, keyboard-operable `<button>`s (see above). Cell values are not escaped — escape user data in `render`.
 
+### `initDataGrid(wrapper, options?)` → `DataGridController`
+
+```js
+import { initDataGrid } from '@basenative/components';
+
+const grid = initDataGrid(document.querySelector('[data-bn="datagrid"]'), {
+  onSort: ({ key, dir }) => router.navigate(`?sort=${key}&dir=${dir}`), // paged data: re-fetch
+  onSelectionChange: ids => bulkActions.enable(ids.length > 0),
+});
+grid.sort('total', 'desc'); // silent: moves the indicator only
+grid.select(['r1', 'r3']);  // silent: checks those rows, reconciles select-all
+grid.selected();            // ['r1', 'r3']
+grid.sortState();           // { key: 'total', dir: 'desc' } or null
+grid.destroy();
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `onSort` | `({ key, dir }) => void` | — | Called on a header click. When given, the rows are the caller's to re-render or re-fetch — the only correct answer for paged data. Without it the rows in the DOM are reordered in place by that column's cell text, numeric-aware and stable |
+| `onSelectionChange` | `(ids: string[]) => void` | — | Called after every checkbox change with the selected `data-row-id`s |
+
+- A click on a sortable header's button sorts by that column, ascending first and flipping on the next click: `data-sorted` and `aria-sort` move to that `<th>` (the others lose theirs) and the header text's ↑/↓ follows.
+- The select-all checkbox checks or clears every row checkbox; the row checkboxes keep select-all `checked` when all rows are selected, `indeterminate` when some are, and clear when none are. Selected `<tr>`s carry `aria-selected="true"`. The select-all state is reconciled from the rows on init, so a server-rendered partial selection shows as indeterminate.
+- Every cell gets a roving `tabindex` (0 on the first header cell, -1 elsewhere): ArrowLeft / ArrowRight move along the row, ArrowUp / ArrowDown along the column, Home / End to the row's first / last cell, Ctrl+Home / Ctrl+End to the grid's. Left / Right are left alone inside a `contenteditable` cell so the caret still moves.
+- Headers, rows and checkboxes are re-queried on every interaction; `sort()` and `select()` never fire the callbacks.
+
 ## Tree
 
-`renderTree(options)` → `string`
+`renderTree(options)` → `string`. Pair with `initTree` on the client for expand/collapse, selection and the APG tree keys.
 
 ```js
 renderTree({
@@ -481,7 +528,7 @@ renderTree({
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `items` | `TreeNode[]` | `[]` | `{ id?, label, icon?, children? }`; `id` falls back to `label` |
-| `expanded` | `Set<string>` | `new Set()` | Node ids whose children are rendered |
+| `expanded` | `Set<string>` | `new Set()` | Node ids whose children are shown; every other parent's group is rendered `hidden` |
 | `selected` | `string` | — | Id of the selected node |
 | `id` | `string` | `bn-tree-{n}` | |
 | `attrs` | `string` | `''` | |
@@ -490,14 +537,44 @@ Renders:
 
 ```html
 <ul data-bn="tree" id="bn-tree-x" role="tree">
-  <li data-bn="tree-item" role="treeitem" aria-expanded="true" aria-selected="false" data-node-id="src" data-level="0">
-    <div data-bn="tree-item-content" tabindex="0"><button data-bn="tree-toggle" aria-label="Collapse" type="button">▾</button><span data-bn="tree-label">src</span></div>
-    <ul data-bn="tree-children" role="group">…</ul>
+  <li data-bn="tree-item" role="treeitem" tabindex="0" aria-expanded="true" aria-selected="false" data-node-id="src" data-level="0">
+    <div data-bn="tree-item-content"><button data-bn="tree-toggle" aria-label="Collapse" type="button">▾</button><span data-bn="tree-label">src</span></div>
+    <ul data-bn="tree-children" role="group">
+      <li data-bn="tree-item" role="treeitem" tabindex="-1" aria-expanded="false" aria-selected="false" data-node-id="lib" data-level="1">
+        <div data-bn="tree-item-content"><button data-bn="tree-toggle" aria-label="Expand" type="button">▸</button><span data-bn="tree-label">lib</span></div>
+        <ul data-bn="tree-children" role="group" hidden>…</ul>
+      </li>
+    </ul>
   </li>
 </ul>
 ```
 
-Accessibility: `role="tree"` / `treeitem` / `group`; toggles are labelled Expand/Collapse. Leaf nodes carry no `aria-expanded` attribute. `[data-bn="tree-item-content"]` carries a static roving `tabindex`: the first item in document order gets `tabindex="0"`, every other item gets `tabindex="-1"`, so Tab reaches the tree at all. This package renders markup only — there is no `initTree()` shipped that moves that `tabindex` on arrow-key presses — so a caller that wants full arrow-key roving between items must add its own keydown handler that updates `tabindex` and calls `.focus()` as it moves.
+Accessibility: `role="tree"` / `treeitem` / `group`; toggles are labelled Expand/Collapse. Leaf nodes carry no `aria-expanded` attribute and no group. Every parent renders its `[data-bn="tree-children"]` group — `hidden` when collapsed — so expanding on the client is an attribute flip. `[data-bn="tree-item"]` carries a static roving `tabindex`: the first item in document order gets `tabindex="0"`, every other item gets `tabindex="-1"`, so Tab reaches the tree; `initTree` moves it as the arrow keys move focus.
+
+### `initTree(tree, options?)` → `TreeController`
+
+```js
+import { initTree } from '@basenative/components';
+
+const files = initTree(document.querySelector('[data-bn="tree"]'), {
+  onToggle: (id, expanded) => expandedIds[expanded ? 'add' : 'delete'](id),
+  onSelect: id => openFile(id),
+});
+files.expand('src');       // silent; false when unknown, a leaf, or already expanded
+files.collapse('src');     // silent
+files.select('index.js');  // silent: aria-selected + roving tabindex
+files.selected();          // 'index.js' or null
+files.destroy();
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `onToggle` | `(id, expanded, item) => void` | — | After a user expands or collapses a node |
+| `onSelect` | `(id, item) => void` | — | After a user selects a node |
+
+- A click on a node's toggle flips `aria-expanded`, shows or hides its group and relabels the toggle (Expand / Collapse, ▸ / ▾). A click on the rest of the row selects the node — `aria-selected="true"` on the item, `data-selected` on its content — and moves focus there.
+- With focus on a node: ArrowDown / ArrowUp move to the next / previous visible node (nodes inside a `hidden` group are skipped), Home / End to the first / last; ArrowRight expands a collapsed node or moves into an expanded one's first child; ArrowLeft collapses an expanded node or moves to the parent; Enter and Space select. On the toggle button, Enter and Space are its native click and are left alone.
+- The roving `tabindex` follows focus, starting on the selected node (or the first). Nodes are re-queried on every interaction; `expand()`, `collapse()` and `select()` never fire the callbacks.
 
 ## Tree Grid
 
@@ -521,11 +598,11 @@ renderTreeGrid({
 
 Renders `<table data-bn="treegrid" role="treegrid">` with `<th scope="col">` headers and one `<tr data-bn="treegrid-row" role="row" aria-level="1" data-node-id="src">` per visible node; a row with children also carries `aria-expanded` (`"true"` or `"false"`), while leaf rows carry no `aria-expanded` attribute. The first cell is prefixed with `<span data-level="0">▸ </span>`.
 
-Like Tree, `[data-bn="treegrid-row"]` carries a static roving `tabindex` (first row `0`, every other row `-1`) with no client-side `initTreeGrid()` shipped to move it between rows on arrow keys — see the Tree accessibility note above for what that means for keyboard navigation.
+Like Tree, `[data-bn="treegrid-row"]` carries a static roving `tabindex` (first row `0`, every other row `-1`), but unlike Tree there is no `initTreeGrid()` to move it, and collapsed rows are not rendered at all — a caller that wants arrow-key roving or client-side expand must add its own keydown handler and re-render with an updated `expanded` set.
 
 ## Virtual List
 
-`renderVirtualList(options)` → `string`. Server-renders only the first window of items inside a spacer sized for the whole list; a client hydrator can swap the window on scroll.
+`renderVirtualList(options)` → `string`. Server-renders only the first window of items inside a spacer sized for the whole list; `initVirtualList` swaps the window on scroll. Without it the first window is all that ever renders.
 
 ```js
 renderVirtualList({
@@ -541,7 +618,7 @@ renderVirtualList({
 | `items` | `T[]` | `[]` | |
 | `itemHeight` | `number` (px) | `40` | |
 | `containerHeight` | `number` (px) | `400` | |
-| `renderItem` | `(item, index) => string` | wraps `${item}` in `[data-bn="virtual-item"]` | |
+| `renderItem` | `(item, index) => string` | `defaultRenderItem` — escaped `${item}` in `[data-bn="virtual-item"]` | |
 | `overscan` | `number` | `5` | Extra items rendered beyond the visible count (applied twice) |
 | `id` | `string` | `bn-virtual-{n}` | |
 | `attrs` | `string` | `''` | |
@@ -555,6 +632,30 @@ Renders:
   </div>
 </div>
 ```
+
+### `initVirtualList(container, options)` → `VirtualListController`
+
+```js
+import { initVirtualList } from '@basenative/components';
+
+const list = initVirtualList(document.querySelector('[data-bn="virtualizer"]'), {
+  items: rows,                                    // required: the array the server rendered from
+  renderItem: (row, i) => `<div data-bn="virtual-item" data-index="${i}">${escapeText(row.name)}</div>`,
+});
+list.range();        // { start, end } currently rendered (end exclusive)
+list.scrollTo(500);  // item 500 to the top of the container
+list.setItems(next); // swap the data, resize the spacer, re-render
+list.destroy();
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `items` | `T[]` | required | Only the first window is in the DOM, so the initialiser cannot recover the rest; it throws without this |
+| `renderItem` | `(item, index) => string` | `defaultRenderItem` | The same markup `renderVirtualList` uses when omitted |
+| `itemHeight` | `number` (px) | the window's `data-item-height` | |
+| `overscan` | `number` | `5` | Items rendered above and below the viewport |
+
+On every `scroll` the visible index range is recomputed from `scrollTop`, the container's height and `itemHeight`; when it changes, the window is re-rendered from `items.slice(start, end)` and repositioned with `top`. The first `update()` runs on init. `defaultRenderItem(item, index)` is also exported.
 
 ## Pagination
 
@@ -893,7 +994,7 @@ Accessibility: `role="tooltip"`; the trigger is always a real button-like invoke
 
 ## Dropdown Menu
 
-`renderDropdownMenu(options)` → `string`. Popover-API menu.
+`renderDropdownMenu(options)` → `string`. Popover-API menu: open, Escape and light dismiss need no script. Pair with `initDropdownMenu` on the client for the arrow keys and close-on-select.
 
 ```js
 renderDropdownMenu({
@@ -927,11 +1028,31 @@ Renders:
 </div>
 ```
 
-Accessibility: `role="menu"`/`menuitem`/`separator`; disabled items use `aria-disabled` (they stay focusable). Arrow-key navigation is not provided.
+Accessibility: `role="menu"`/`menuitem`/`separator`; disabled items use `aria-disabled` (they stay focusable). Arrow-key navigation comes from `initDropdownMenu`.
+
+### `initDropdownMenu(root, options?)` → `DropdownMenuController`
+
+```js
+import { initDropdownMenu } from '@basenative/components';
+
+const actions = initDropdownMenu(document.querySelector('[data-bn="dropdown"]'), {
+  onSelect: action => run(action), // after the popover hides
+});
+actions.open();   // showPopover(); focus lands on the first item
+actions.close();
+actions.isOpen();
+actions.destroy();
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `onSelect` | `(action, item) => void` | — | Called with the activated item's `data-action`; `aria-disabled` items do not activate |
+
+When the popover opens (its `toggle` event) focus moves to the first item — or the last, when it was opened with ArrowUp on the trigger. ArrowDown / ArrowUp move between items, wrapping at the ends; Home / End go to the first / last; ArrowDown / ArrowUp on the trigger open the menu. Disabled items stay in the arrow order but do not activate. Activating an item (its click, so Enter / Space too) hides the popover, which returns focus to the trigger natively.
 
 ## Command Palette
 
-`renderCommandPalette(options)` → `string`. Cmd+K style `<dialog>` with a search input and grouped commands.
+`renderCommandPalette(options)` → `string`. Cmd+K style `<dialog>` with a search input and grouped commands. Pair with `initCommandPalette` on the client — the footer's "↑↓ Navigate / ↵ Select / Esc Close" names the keys it binds.
 
 ```js
 renderCommandPalette({
@@ -944,7 +1065,7 @@ renderCommandPalette({
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `commands` | `Array<{ id?, label, action?, group?, icon?, shortcut? }>` | `[]` | Grouped by `group` (default `'Commands'`); `data-action` is `action ?? id` |
+| `commands` | `Array<{ id?, label, action?, group?, icon?, shortcut? }>` | `[]` | Grouped by `group` (default `'Commands'`); `data-action` is `action ?? id`; each item gets `id="{id}-item-{n}"` |
 | `placeholder` | `string` | `'Type a command...'` | |
 | `open` | `boolean` | `false` | Adds `open` |
 | `id` | `string` | `bn-command-{n}` | |
@@ -954,18 +1075,41 @@ Renders:
 
 ```html
 <dialog data-bn="command-palette" id="bn-command-x">
-  <div data-bn="command-header"><input data-bn="command-input" type="text" placeholder="Type a command..." role="combobox" aria-expanded="true" autocomplete="off" autofocus></div>
-  <div data-bn="command-list" role="listbox">
+  <div data-bn="command-header"><input data-bn="command-input" type="text" placeholder="Type a command..." role="combobox" aria-expanded="true" aria-autocomplete="list" aria-controls="bn-command-x-list" autocomplete="off" autofocus></div>
+  <div data-bn="command-list" id="bn-command-x-list" role="listbox">
     <div data-bn="command-group" role="group" aria-label="File">
       <div data-bn="command-group-label">File</div>
-      <button data-bn="command-item" role="option" data-action="new" type="button"><span data-bn="command-label">New file</span><kbd data-bn="command-shortcut">⌘N</kbd></button>
+      <button data-bn="command-item" role="option" id="bn-command-x-item-0" data-action="new" type="button"><span data-bn="command-label">New file</span><kbd data-bn="command-shortcut">⌘N</kbd></button>
     </div>
   </div>
   <div data-bn="command-footer"><span>↑↓ Navigate</span><span>↵ Select</span><span>Esc Close</span></div>
 </dialog>
 ```
 
-Accessibility: `combobox` input over a `listbox` of `option`s grouped with labelled `group`s. Filtering and arrow-key navigation are left to client code.
+Accessibility: `combobox` input (`aria-controls` the list, `aria-activedescendant` the highlighted item once initialised) over a `listbox` of `option`s grouped with labelled `group`s. Filtering and the keys come from `initCommandPalette`.
+
+### `initCommandPalette(dialog, options?)` → `CommandPaletteController`
+
+```js
+import { initCommandPalette } from '@basenative/components';
+
+const palette = initCommandPalette(document.querySelector('[data-bn="command-palette"]'), {
+  onSelect: action => commands[action](), // after the dialog closes
+  hotkey: 'Mod+K',                         // Meta or Ctrl + K toggles it
+});
+palette.open();        // clears the filter, showModal(), focuses the input
+palette.filter('set'); // returns the visible items
+palette.active();      // data-action of the highlighted command, or null
+palette.close();
+palette.destroy();
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `onSelect` | `(action, item) => void` | — | Called with the activated command's `data-action` after the dialog closes |
+| `hotkey` | `string` | — | e.g. `'Mod+K'` (Mod is Meta or Ctrl); a document-level keydown that toggles the palette |
+
+Typing in the input filters the commands by case-insensitive substring of their label — non-matching items and then-empty groups are `hidden` — and the first visible command becomes the highlighted one (`aria-selected` on the item, `aria-activedescendant` on the input). ArrowDown / ArrowUp move the highlight through the visible commands, wrapping at the ends; Enter or a click activates one, which closes the dialog and calls `onSelect`; Escape closes without selecting. Items without an `id` get one on init. Items are re-queried on every interaction.
 
 ## Calendar
 

@@ -202,7 +202,7 @@ renderLayoutGrid - A drag-and-drop CSS grid layout component. Designed to hook i
 
 ### `renderMultiselect(options)`
 Multiselect — multiple value selection with tags/chips over a hidden native <select multiple>. Attributes, la…
-`packages/components/src/multiselect.js` · emits `<div data-bn="multiselect">` + 5 more contract(s)
+`packages/components/src/multiselect.js` · emits `<div data-bn="multiselect">` + 3 more contract(s)
 - disabled: `<any value>` — open set, a rule matches beyond the listed values
 - use instead of: a bare <div> with your own classes, or literal <div data-bn="multiselect"> markup
 
@@ -308,7 +308,7 @@ TreeGrid — tree structure combined with table columns.
 
 ### `renderVirtualList(options)`
 Virtualizer — renders a virtual scroll container placeholder: a window of items plus a spacer for total heigh…
-`packages/components/src/virtualizer.js` · emits `<div data-bn="virtualizer">` + 3 more contract(s)
+`packages/components/src/virtualizer.js` · emits `<div data-bn="virtualizer">` + 2 more contract(s)
 - variants: none declared
 - use instead of: a bare <div> with your own classes, or literal <div data-bn="virtualizer"> markup
 

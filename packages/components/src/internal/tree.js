@@ -11,19 +11,24 @@
  * emitted HTML regardless of nesting. That node is the one a roving-tabindex
  * pattern should start on (`tabindex="0"`), with every other node at `-1`.
  *
+ * `renderCollapsed` renders a collapsed node's children too (Tree wraps them
+ * in a `hidden` group so `initTree()` can expand without a round trip);
+ * TreeGrid leaves it off because its rows are siblings with nothing to hide
+ * them behind.
+ *
  * @param {Array<object>} items
- * @param {{ getId: (node: object) => string, expanded: Set<string>, render: (state: {node: object, nodeId: string, hasChildren: boolean, isExpanded: boolean, level: number, children: string, index: number}) => string }} options
+ * @param {{ getId: (node: object) => string, expanded: Set<string>, renderCollapsed?: boolean, render: (state: {node: object, nodeId: string, hasChildren: boolean, isExpanded: boolean, level: number, children: string, index: number}) => string }} options
  * @param {number} [level]
  * @returns {string}
  */
 export function renderNodes(items, options, level = 0) {
-  const { getId, expanded, render } = options;
+  const { getId, expanded, render, renderCollapsed = false } = options;
   return items
     .map((node, index) => {
       const nodeId = getId(node);
       const hasChildren = Boolean(node.children && node.children.length > 0);
       const isExpanded = hasChildren && expanded.has(nodeId);
-      const children = isExpanded ? renderNodes(node.children, options, level + 1) : '';
+      const children = hasChildren && (isExpanded || renderCollapsed) ? renderNodes(node.children, options, level + 1) : '';
       return render({ node, nodeId, hasChildren, isExpanded, level, children, index });
     })
     .join('');
