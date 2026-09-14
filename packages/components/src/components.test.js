@@ -18,7 +18,7 @@ import { renderProgress, renderSpinner } from './progress.js';
 import { renderSkeleton } from './skeleton.js';
 import { renderToastContainer } from './toast.js';
 import { renderDialog } from './dialog.js';
-import { renderDrawer } from './drawer.js';
+import { renderDrawer, initDrawer } from './drawer.js';
 import { renderTabs, initTabs } from './tabs.js';
 import { renderAccordion } from './accordion.js';
 import { renderBreadcrumb } from './breadcrumb.js';
@@ -1824,6 +1824,208 @@ describe('Drawer — hardening', () => {
 
   it('content is an HTML slot', () => {
     assert.ok(renderDrawer({ content: '<nav>N</nav>' }).includes('<div data-bn="drawer-body"><nav>N</nav></div>'));
+  });
+});
+
+describe('initDrawer', () => {
+  function fakeDocument() {
+    const listeners = new Map();
+    return {
+      listeners,
+      activeElement: null,
+      addEventListener(type, fn) { listeners.set(type, fn); },
+      removeEventListener(type, fn) { if (listeners.get(type) === fn) listeners.delete(type); },
+      dispatch(type, event = {}) { listeners.get(type)?.({ preventDefault() {}, ...event }); },
+    };
+  }
+
+  function fakeElement(doc, bn, { children = [], focusable = true } = {}) {
+    const attrs = new Map();
+    const listeners = new Map();
+    const el = {
+      bn,
+      attrs,
+      listeners,
+      ownerDocument: doc,
+      previousElementSibling: null,
+      parent: null,
+      focusCount: 0,
+      hasAttribute: name => attrs.has(name),
+      getAttribute: name => attrs.get(name) ?? null,
+      setAttribute(name, value) { attrs.set(name, value); },
+      removeAttribute(name) { attrs.delete(name); },
+      addEventListener(type, fn) { listeners.set(type, fn); },
+      removeEventListener(type, fn) { if (listeners.get(type) === fn) listeners.delete(type); },
+      dispatch(type, event = {}) { listeners.get(type)?.({ target: el, preventDefault() {}, ...event }); },
+      matches: selector => selector === `[data-bn="${bn}"]`,
+      closest(selector) {
+        let node = el;
+        while (node) {
+          if (node.matches(selector)) return node;
+          node = node.parent;
+        }
+        return null;
+      },
+      querySelector(selector) {
+        for (const child of children) {
+          if (child.matches(selector)) return child;
+          const nested = child.querySelector(selector);
+          if (nested) return nested;
+        }
+        return null;
+      },
+    };
+    if (focusable) el.focus = () => { el.focusCount++; doc.activeElement = el; };
+    for (const child of children) child.parent = el;
+    return el;
+  }
+
+  /** The shape renderDrawer() emits: overlay sibling first, then the <aside> with a close button. */
+  function setup({ overlay = true, closable = true, open = false } = {}) {
+    const doc = fakeDocument();
+    const closeBtn = fakeElement(doc, 'drawer-close');
+    const drawer = fakeElement(doc, 'drawer', { children: closable ? [closeBtn] : [] });
+    const overlayEl = overlay ? fakeElement(doc, 'drawer-overlay', { focusable: false }) : null;
+    if (open) {
+      drawer.setAttribute('data-open', '');
+      overlayEl?.setAttribute('data-open', '');
+    } else {
+      drawer.setAttribute('inert', '');
+    }
+    if (overlayEl) drawer.previousElementSibling = overlayEl;
+    const opener = fakeElement(doc, 'button');
+    opener.focus();
+    return { doc, drawer, overlayEl, closeBtn, opener };
+  }
+
+  it('removes inert when it opens and restores it when it closes', () => {
+    const { drawer, overlayEl } = setup();
+    const handle = initDrawer(drawer);
+    assert.ok(drawer.hasAttribute('inert'), 'starts closed and inert');
+    handle.open();
+    assert.ok(!drawer.hasAttribute('inert'), 'an open drawer must not be inert');
+    assert.ok(drawer.hasAttribute('data-open'));
+    assert.ok(overlayEl.hasAttribute('data-open'), 'the scrim must be shown by data-open, not hidden');
+    assert.equal(handle.isOpen(), true);
+    handle.close();
+    assert.ok(drawer.hasAttribute('inert'));
+    assert.ok(!drawer.hasAttribute('data-open'));
+    assert.ok(!overlayEl.hasAttribute('data-open'));
+    assert.equal(handle.isOpen(), false);
+  });
+
+  it('moves focus to the close button on open and back to the opener on close', () => {
+    const { doc, drawer, closeBtn, opener } = setup();
+    const handle = initDrawer(drawer);
+    handle.open();
+    assert.equal(doc.activeElement, closeBtn);
+    handle.close();
+    assert.equal(doc.activeElement, opener, 'focus returns to the element focused before open()');
+    assert.equal(opener.focusCount, 2);
+  });
+
+  it('focuses the panel itself when there is no close button', () => {
+    const { doc, drawer } = setup({ closable: false });
+    initDrawer(drawer).open();
+    assert.equal(doc.activeElement, drawer);
+    assert.equal(drawer.getAttribute('tabindex'), '-1', 'an <aside> needs tabindex to take focus');
+  });
+
+  it('the close button closes it', () => {
+    const { drawer, closeBtn } = setup();
+    const handle = initDrawer(drawer);
+    handle.open();
+    drawer.dispatch('click', { target: closeBtn });
+    assert.equal(handle.isOpen(), false);
+    assert.ok(drawer.hasAttribute('inert'));
+  });
+
+  it('a click elsewhere in the drawer does not close it', () => {
+    const { drawer } = setup();
+    const handle = initDrawer(drawer);
+    handle.open();
+    drawer.dispatch('click', { target: drawer });
+    assert.equal(handle.isOpen(), true);
+  });
+
+  it('a click on the overlay closes it', () => {
+    const { drawer, overlayEl } = setup();
+    const handle = initDrawer(drawer);
+    handle.open();
+    overlayEl.dispatch('click');
+    assert.equal(handle.isOpen(), false);
+    assert.ok(!overlayEl.hasAttribute('data-open'));
+  });
+
+  it('dismissible: false keeps the overlay click from closing it but not the close button', () => {
+    const { drawer, overlayEl, closeBtn } = setup();
+    const handle = initDrawer(drawer, { dismissible: false });
+    handle.open();
+    overlayEl.dispatch('click');
+    assert.equal(handle.isOpen(), true);
+    drawer.dispatch('click', { target: closeBtn });
+    assert.equal(handle.isOpen(), false);
+  });
+
+  it('Escape closes it only while open', () => {
+    const { doc, drawer } = setup();
+    const handle = initDrawer(drawer);
+    let prevented = 0;
+    doc.dispatch('keydown', { key: 'Escape', preventDefault: () => prevented++ });
+    assert.equal(prevented, 0, 'a closed drawer does not swallow Escape');
+    handle.open();
+    doc.dispatch('keydown', { key: 'Enter' });
+    assert.equal(handle.isOpen(), true);
+    doc.dispatch('keydown', { key: 'Escape', preventDefault: () => prevented++ });
+    assert.equal(handle.isOpen(), false);
+    assert.equal(prevented, 1);
+  });
+
+  it('toggle() alternates and onChange reports each transition', () => {
+    const { drawer } = setup();
+    const changes = [];
+    const handle = initDrawer(drawer, { onChange: open => changes.push(open) });
+    handle.toggle();
+    handle.toggle();
+    handle.close();
+    assert.deepEqual(changes, [true, false]);
+  });
+
+  it('closes a drawer rendered open without a remembered focus target', () => {
+    const { drawer, overlayEl } = setup({ open: true });
+    const handle = initDrawer(drawer);
+    assert.equal(handle.isOpen(), true);
+    handle.close();
+    assert.ok(drawer.hasAttribute('inert'));
+    assert.ok(!overlayEl.hasAttribute('data-open'));
+  });
+
+  it('finds the overlay only as the preceding sibling, or via options.overlay', () => {
+    const { drawer } = setup({ overlay: false });
+    const handle = initDrawer(drawer);
+    handle.open();
+    handle.close();
+    assert.ok(drawer.hasAttribute('inert'), 'works with renderDrawer({ overlay: false }) markup');
+
+    const other = setup({ overlay: false });
+    const explicit = fakeElement(other.doc, 'drawer-overlay', { focusable: false });
+    const explicitHandle = initDrawer(other.drawer, { overlay: explicit });
+    explicitHandle.open();
+    assert.ok(explicit.hasAttribute('data-open'));
+    explicit.dispatch('click');
+    assert.equal(explicitHandle.isOpen(), false);
+  });
+
+  it('destroy() removes every listener it added', () => {
+    const { doc, drawer, overlayEl } = setup();
+    const handle = initDrawer(drawer);
+    assert.equal(drawer.listeners.size, 1);
+    assert.equal(overlayEl.listeners.size, 1);
+    assert.equal(doc.listeners.size, 1);
+    handle.destroy();
+    assert.equal(drawer.listeners.size, 0);
+    assert.equal(overlayEl.listeners.size, 0);
+    assert.equal(doc.listeners.size, 0);
   });
 });
 

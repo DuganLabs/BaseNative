@@ -1,6 +1,6 @@
 # @basenative/components API
 
-Every function in this package is a pure `render*` helper that returns an HTML string (or a small state helper for toasts, calendars and pipelines). Markup is semantic HTML tagged with `data-bn="…"` attributes; there is no client-side JavaScript except the opt-in drag-and-drop initialisers.
+Every function in this package is a pure `render*` helper that returns an HTML string (or a small state helper for toasts, calendars and pipelines). Markup is semantic HTML tagged with `data-bn="…"` attributes; there is no client-side JavaScript except the opt-in initialisers (`initTabs`, `initDrawer`, and the drag-and-drop initialisers).
 
 All `render*` functions accept an `attrs` option unless the table says otherwise: a raw string of extra HTML attributes spliced verbatim into the outermost element (for example `attrs: 'data-testid="save" aria-describedby="hint"'`). Content options (`content`, `body`, `title`, `label`, …) are inserted as HTML, not escaped, unless noted.
 
@@ -720,7 +720,27 @@ Renders:
 </aside>
 ```
 
-Accessibility: `role="dialog" aria-modal="true"`; focus management is left to the caller because `<aside>` is not a native dialog.
+A closed drawer is rendered `inert`, so nothing inside it is tabbable or exposed to assistive technology while it is off-screen. Pair it with `initDrawer` on the client — the markup is not usable without it.
+
+### `initDrawer(drawer, options?)` → `DrawerController`
+
+```js
+import { initDrawer } from '@basenative/components';
+
+const filters = initDrawer(document.querySelector('[data-bn="drawer"]'), { dismissible: true });
+document.querySelector('#open-filters').addEventListener('click', () => filters.open());
+filters.destroy();
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `dismissible` | `boolean` | `true` | Whether a click on the overlay closes the drawer |
+| `overlay` | `Element \| null` | preceding sibling | The scrim, when it is not the `[data-bn="drawer-overlay"]` rendered immediately before the `<aside>` |
+| `onChange` | `(open: boolean) => void` | — | Called after every open and close |
+
+Returns `{ open(), close(), toggle(), isOpen(), destroy() }`. `open()` removes `inert`, adds `data-open` to the drawer and overlay, and moves focus to the close button (or to the panel itself when `closable: false`); `close()` removes `data-open` from both, returns focus to the element that had it before `open()`, then sets `inert`. The close button, a click on the overlay (unless `dismissible: false`) and Escape all close it; `destroy()` removes every listener it added.
+
+Accessibility: `role="dialog" aria-modal="true"`; `initDrawer` handles focus on open and close because `<aside>` is not a native dialog, but it does not trap Tab inside the panel.
 
 ## Tabs
 

@@ -27,7 +27,6 @@ stale, fix it in the same PR that discovers it.
 
 ## Serious
 
-- [`BN-019`](BN-019.md) (small) — renderDrawer marks a closed drawer inert and nothing ever removes it, so the open drawer's close button cannot be clicked or focused and no scrim appears
 - [`BN-020`](BN-020.md) (medium) — bindDrag binds only HTML5 drag events, so the calendar's only scheduling gesture is unavailable on touch and to the keyboard
 - [`BN-027`](BN-027.md) (medium) — 15 of 78 Source snippets on /components/* are not parseable JavaScript, six teach a client render API that does not exist, and four pages ship zero runnable code
 - [`BN-028`](BN-028.md) (small) — /components/virtual-list renders the component as a ~2px empty sliver
@@ -51,4 +50,4 @@ stale, fix it in the same PR that discovers it.
 
 ---
 
-16 open tickets.
+15 open tickets.

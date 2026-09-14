@@ -499,6 +499,33 @@ export function renderDrawer(options?: {
   attrs?: string;
 }): string;
 
+export interface DrawerController {
+  /** Removes `inert`, adds `data-open` to the drawer and overlay, moves focus into the panel. */
+  open(): void;
+  /** Removes `data-open`, returns focus to the element focused before `open()`, then sets `inert`. */
+  close(): void;
+  toggle(): void;
+  isOpen(): boolean;
+  destroy(): void;
+}
+
+/**
+ * Wires a rendered `[data-bn="drawer"]` element: a closed drawer is `inert`,
+ * `open()` lifts that and shows the overlay, and the close button, a click on
+ * the overlay (unless `dismissible: false`) and Escape close it. The overlay
+ * is the drawer's preceding `[data-bn="drawer-overlay"]` sibling — what
+ * {@link renderDrawer} emits — unless `overlay` is given.
+ */
+export function initDrawer(
+  drawer: HTMLElement,
+  options?: {
+    /** Whether a click on the overlay closes the drawer, default true. */
+    dismissible?: boolean;
+    overlay?: Element | null;
+    onChange?: (open: boolean) => void;
+  }
+): DrawerController;
+
 // ---------------------------------------------------------------- Tabs
 
 export interface TabItem {

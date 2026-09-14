@@ -64,8 +64,8 @@ export { renderVirtualList } from './virtualizer.js';
 // Dialog
 export { renderDialog } from './dialog.js';
 
-// Drawer
-export { renderDrawer } from './drawer.js';
+// Drawer (renderDrawer for SSR markup, initDrawer for client-side open/close)
+export { renderDrawer, initDrawer } from './drawer.js';
 
 // Tabs (renderTabs for SSR markup, initTabs for client-side APG switching)
 export { renderTabs, initTabs } from './tabs.js';
