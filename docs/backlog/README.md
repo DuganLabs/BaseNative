@@ -25,13 +25,8 @@ stale, fix it in the same PR that discovers it.
 - [`BN-018`](BN-018.md) — Catalogue summaries and component footers advertise filtering, sorting, expand/collapse, chip editing, arrow-key navigation and windowing that no shipped code implements
   - **"Should @basenative/components ship the working interaction for these components (a small client-side script per component, the way it already does for tabs and the calendar), or stay a markup-only library with the website's descriptions rewritten to promise only markup?"**
 
-## Blocking
-
-- [`BN-010`](BN-010.md) (small) — renderCalendar emits a non-integer grid-row start for any event not on the hour, so the block loses its placement and covers the whole day column
-
 ## Serious
 
-- [`BN-019`](BN-019.md) (small) — renderDrawer marks a closed drawer inert and nothing ever removes it, so the open drawer's close button cannot be clicked or focused and no scrim appears
 - [`BN-020`](BN-020.md) (medium) — bindDrag binds only HTML5 drag events, so the calendar's only scheduling gesture is unavailable on touch and to the keyboard
 - [`BN-027`](BN-027.md) (medium) — 15 of 78 Source snippets on /components/* are not parseable JavaScript, six teach a client render API that does not exist, and four pages ship zero runnable code
 - [`BN-028`](BN-028.md) (small) — /components/virtual-list renders the component as a ~2px empty sliver
@@ -46,7 +41,6 @@ stale, fix it in the same PR that discovers it.
 - [`BN-059`](BN-059.md) (small) — Accordion "Expand all" opens one of three sections, and the Dialog's × has no listener while the snippet claims backdrop-click close
 - [`BN-060`](BN-060.md) (small) — /showcase's pagination demo is eight real links to ?page=N on a static host that ignores the query string
 - [`BN-061`](BN-061.md) (small) — /tasks accepts tasks on the published site, keeps them only in memory, and never says so
-- [`BN-063`](BN-063.md) (small · after [BN-010]) — Calendar hour labels and drop slots are numbered for the outer grid but placed inside a subgrid, so every row is one hour low and the last two hours share one band
 - [`BN-064`](BN-064.md) (small) — Alert dismiss and breadcrumb links are below the 24px minimum tap target (chip remove is already compliant — see Notes)
 
 ## Cosmetic
@@ -56,4 +50,4 @@ stale, fix it in the same PR that discovers it.
 
 ---
 
-18 open tickets.
+15 open tickets.

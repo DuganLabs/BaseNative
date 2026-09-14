@@ -247,30 +247,44 @@ export function renderCalendar(options = {}) {
     `<div data-bn="calendar-day-header" data-date="${d}"${todayAttr(d)}${d === today ? ' aria-current="date"' : ''}>${formatDay(d)}</div>`
   ).join('');
 
-  // Time gutter labels. Row 1 of the grid is the day-header row (see
-  // `grid-template-rows: auto repeat(...)` in components.css), so hour rows
-  // start at row 2 — the same convention used by the slots and events below.
-  // Labels must share that convention or they land one row above the
-  // slot/event they describe.
+  // Time gutter labels. The gutter and the day columns are subgrids spanning
+  // the outer grid's rows `2 / -1` (see components.css), so their local row 1
+  // *is* the first hour row: hour `h` is local row `h - hourStart + 1`. The
+  // slots and events below share that numbering, or they land one row below
+  // the label that describes them.
   const timeLabels = [];
   for (let h = hourStart; h < hourEnd; h++) {
     const label = h <= 12 ? `${h}am` : `${h - 12}pm`;
     timeLabels.push(
-      `<div data-bn="calendar-time-label" data-hour="${h}" style="grid-row: ${h - hourStart + 2}">${h === 12 ? '12pm' : label}</div>`
+      `<div data-bn="calendar-time-label" data-hour="${h}" style="grid-row: ${h - hourStart + 1}">${h === 12 ? '12pm' : label}</div>`
     );
   }
 
   // Day columns with drop zones
   const dayColumns = dates.map((date, colIndex) => {
     const eventBlocks = segmentsByDate.get(date).map(({ ev, from, to, continues }) => {
-      const topRow = Math.max(from - hourStart + 2, 2);
-      const span = Math.max(to - from, 0.5);
-      const rows = Math.max(1, Math.min(Math.ceil(span), totalHours - Math.floor(topRow - 2)));
+      // Grid rows are integers; the sub-hour remainder trimmed off the top
+      // (`lead`) and bottom (`trail`) of the block travels in custom properties
+      // that components.css turns into an inset offset within the row span.
+      const clampedFrom = Math.min(Math.max(from, hourStart), hourEnd);
+      const clampedTo = Math.min(Math.max(to, clampedFrom + 0.5), hourEnd);
+      const startOffset = clampedFrom - hourStart;
+      const endOffset = clampedTo - hourStart;
+      const firstRow = Math.floor(startOffset);
+      const lastRow = Math.max(Math.ceil(endOffset), firstRow + 1);
+      const rows = lastRow - firstRow;
+      const topRow = firstRow + 1;
+      const lead = startOffset - firstRow;
+      const trail = lastRow - endOffset;
       const statusAttr = ev.status ? ` data-status="${escapeAttr(ev.status)}"` : '';
       const continuesAttr = continues ? ` data-continues="${continues}"` : '';
       const colorStyle = ev.color ? ` --bn-calendar-event-color: ${escapeAttr(ev.color)};` : '';
+      const offsetStyle =
+        lead > 0 || trail > 0
+          ? ` --bn-calendar-event-rows: ${rows}; --bn-calendar-event-lead: ${lead}; --bn-calendar-event-trail: ${trail};`
+          : '';
 
-      return `<div data-bn="calendar-event" draggable="true" data-event-id="${escapeAttr(ev.id)}"${continuesAttr}${statusAttr} title="${escapeAttr(ev.title)}" style="grid-row: ${topRow} / span ${rows};${colorStyle}">
+      return `<div data-bn="calendar-event" draggable="true" data-event-id="${escapeAttr(ev.id)}"${continuesAttr}${statusAttr} title="${escapeAttr(ev.title)}" style="grid-row: ${topRow} / span ${rows};${colorStyle}${offsetStyle}">
   <span data-bn="calendar-event-title">${escapeText(ev.title)}</span>
   ${ev.assignee ? `<span data-bn="calendar-event-assignee">${escapeText(ev.assignee)}</span>` : ''}
   <span data-bn="calendar-event-time">${timeLabel(ev.start, timeZone)} – ${timeLabel(ev.end, timeZone)}</span>
@@ -281,7 +295,7 @@ export function renderCalendar(options = {}) {
     const hourSlots = [];
     for (let h = hourStart; h < hourEnd; h++) {
       hourSlots.push(
-        `<div data-bn="calendar-slot" data-date="${date}" data-hour="${h}" style="grid-row: ${h - hourStart + 2}"></div>`
+        `<div data-bn="calendar-slot" data-date="${date}" data-hour="${h}" style="grid-row: ${h - hourStart + 1}"></div>`
       );
     }
 

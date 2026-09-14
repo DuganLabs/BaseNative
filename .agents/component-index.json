@@ -1,7 +1,7 @@
 {
   "$schema": "https://basenative.dev/schemas/component-index.json",
   "generatedBy": "scripts/llms-txt.js (scripts/component-index.js)",
-  "generatedOn": "2026-09-12",
+  "generatedOn": "2026-09-14",
   "contract": "Generated from source. Never hand-edit: `node scripts/llms-txt.js --check` fails CI when this file disagrees with packages/*/src. `variants` is the set of values a stylesheet actually declares a rule for, so a value outside it renders unstyled rather than erroring.",
   "counts": {
     "components": 66,
