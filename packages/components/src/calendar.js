@@ -1,8 +1,10 @@
 /**
  * Calendar / Pipeline block — drag-and-drop scheduling component.
  *
- * Renders a CSS-grid-based weekly calendar with draggable event blocks.
- * Uses native HTML5 Drag and Drop API. No external dependencies.
+ * Renders a CSS-grid-based weekly calendar with movable event blocks. Events
+ * move by native HTML5 drag and drop, or by select-then-place: one tap/click
+ * (or Enter/Space) picks an event up, one tap/click on a slot (or arrow keys
+ * then Enter) drops it. No external dependencies.
  *
  * Usage (SSR):
  *   renderCalendar({
@@ -11,7 +13,8 @@
  *     hours: { start: 7, end: 19 },
  *   })
  *
- * Client-side: initCalendarDragDrop(container, { onDrop })
+ * Client-side: initCalendarDragDrop(container, { onDrop }) — hears drags,
+ * taps/clicks and the keyboard alike and reports every move through onDrop.
  *
  * All dates are interpreted in local time: a bare `YYYY-MM-DD` startDate is the
  * local midnight of that day (not UTC), day columns are keyed by local date,
@@ -25,7 +28,7 @@ import { escapeAttr, escapeText } from '@basenative/runtime/shared/escape';
 import { nextId } from './ids.js';
 import { renderBadge } from './badge.js';
 import { attrsSuffix } from './internal/attrs.js';
-import { bindDrag, clearDragState, readDragData } from './internal/drag.js';
+import { bindDrag, clearDragState, clearDropTargets, readDragData } from './internal/drag.js';
 
 const DEFAULT_HOURS = { start: 7, end: 19 };
 const DATE_ONLY = /^(\d{4})-(\d{2})-(\d{2})$/;
@@ -125,6 +128,15 @@ function timeLabel(value, timeZone) {
 const clampHour = h => Math.min(24, Math.max(0, h));
 
 /**
+ * The select-then-place instructions, rendered once per calendar / pipeline
+ * as a visually hidden node that every movable block is `aria-describedby`.
+ */
+const CALENDAR_HELP =
+  'Press Enter or Space to pick up, arrow keys to move by time and day, Enter to drop, Escape to cancel; or tap the event, then a time slot.';
+const PIPELINE_HELP =
+  'Press Enter or Space to pick up, Up and Down to reorder, Left and Right to change column, Enter to drop, Escape to cancel; or tap the card, then a column.';
+
+/**
  * Split every event into the per-day segments that fall inside `dates`. An
  * event whose local end date is after its start date is repeated in each
  * day column it covers, clipped to that day (start→24:00, 0:00→24:00, …,
@@ -215,6 +227,7 @@ export function renderCalendar(options = {}) {
 
   const dates = weekDates(startDate);
   const segmentsByDate = daySegments(events, dates, partsOf);
+  const helpId = escapeAttr(`${id}-help`);
 
   let hourStart = hours.start;
   let hourEnd = hours.end;
@@ -283,8 +296,15 @@ export function renderCalendar(options = {}) {
         lead > 0 || trail > 0
           ? ` --bn-calendar-event-rows: ${rows}; --bn-calendar-event-lead: ${lead}; --bn-calendar-event-trail: ${trail};`
           : '';
+      // The block's visible start, for the keyboard path's initial target.
+      let startHour = Math.floor(clampedFrom);
+      let startMinute = Math.round((clampedFrom - startHour) * 60);
+      if (startMinute === 60) {
+        startHour += 1;
+        startMinute = 0;
+      }
 
-      return `<div data-bn="calendar-event" draggable="true" data-event-id="${escapeAttr(ev.id)}"${continuesAttr}${statusAttr} title="${escapeAttr(ev.title)}" style="grid-row: ${topRow} / span ${rows};${colorStyle}${offsetStyle}">
+      return `<div data-bn="calendar-event" draggable="true" tabindex="0" aria-describedby="${helpId}" data-date="${date}" data-hour="${startHour}" data-minute="${startMinute}" data-event-id="${escapeAttr(ev.id)}"${continuesAttr}${statusAttr} title="${escapeAttr(ev.title)}" style="grid-row: ${topRow} / span ${rows};${colorStyle}${offsetStyle}">
   <span data-bn="calendar-event-title">${escapeText(ev.title)}</span>
   ${ev.assignee ? `<span data-bn="calendar-event-assignee">${escapeText(ev.assignee)}</span>` : ''}
   <span data-bn="calendar-event-time">${timeLabel(ev.start, timeZone)} – ${timeLabel(ev.end, timeZone)}</span>
@@ -314,13 +334,17 @@ export function renderCalendar(options = {}) {
     </div>
     ${dayColumns}
   </div>
+  <p data-bn="calendar-help" id="${helpId}">${CALENDAR_HELP}</p>
+  <div data-bn="calendar-status" aria-live="polite" aria-atomic="true"></div>
   ${events.length === 0 ? `<div data-bn="calendar-empty">${escapeText(emptyMessage)}</div>` : ''}
 </div>`;
 }
 
 /**
  * Render a pipeline/kanban block for use outside the calendar
- * (e.g., sidebar cards that can be dragged onto the calendar).
+ * (e.g., sidebar cards that can be dragged, or picked up and placed, onto the
+ * calendar). The block is focusable; pass `attrs: 'aria-describedby="…"'` to
+ * point it at the calendar's `[data-bn="calendar-help"]` node (`<id>-help`).
  *
  * @param {object} options
  * @param {string} options.id
@@ -334,7 +358,7 @@ export function renderPipelineBlock(options = {}) {
   const { id, title, subtitle, status, attrs = '' } = options;
   const statusAttr = status ? ` data-status="${escapeAttr(status)}"` : '';
 
-  return `<div data-bn="pipeline-block" draggable="true" data-block-id="${escapeAttr(id)}"${statusAttr}${attrsSuffix(attrs)}>
+  return `<div data-bn="pipeline-block" draggable="true" tabindex="0" data-block-id="${escapeAttr(id)}"${statusAttr}${attrsSuffix(attrs)}>
   <span data-bn="pipeline-block-title">${escapeText(title)}</span>
   ${subtitle ? `<span data-bn="pipeline-block-subtitle">${escapeText(subtitle)}</span>` : ''}
 </div>`;
@@ -344,12 +368,12 @@ export function renderPipelineBlock(options = {}) {
  * Render one kanban card. Title, subtitle, description and badge are escaped
  * text; `actions` and `footer` are HTML slots.
  */
-function renderPipelineCard(card) {
+function renderPipelineCard(card, helpId) {
   const statusAttr = card.status ? ` data-status="${escapeAttr(card.status)}"` : '';
   const badge = card.badge
     ? renderBadge(escapeText(card.badge), { variant: card.badgeVariant || 'default' })
     : '';
-  return `<article data-bn="pipeline-card" data-card-id="${escapeAttr(card.id)}" draggable="true"${statusAttr} title="${escapeAttr(card.title)}">
+  return `<article data-bn="pipeline-card" data-card-id="${escapeAttr(card.id)}" draggable="true" tabindex="0" aria-describedby="${helpId}"${statusAttr} title="${escapeAttr(card.title)}">
   <div data-bn="pipeline-card-title">${escapeText(card.title)}</div>${badge}
   ${card.subtitle ? `<div data-bn="pipeline-card-subtitle">${escapeText(card.subtitle)}</div>` : ''}
   ${card.description ? `<div data-bn="pipeline-card-description">${escapeText(card.description)}</div>` : ''}
@@ -365,7 +389,9 @@ function renderPipelineCard(card) {
  * escaped text; ids and status are escaped attributes. Each column is a
  * `<section aria-labelledby>` pointing at its header, which shows the title
  * and a count (the number of cards placed in the column unless `count` is
- * given).
+ * given). Cards are focusable and `aria-describedby` the wrapper's
+ * `[data-bn="pipeline-help"]` instructions; a `[data-bn="pipeline-status"]`
+ * polite live region announces pick-up and drop for `initPipelineDragDrop`.
  *
  * @param {object} options
  * @param {Array} options.columns - Column definitions: [{ id: 'new', title: 'New Leads', count?: 3 }, ...]
@@ -388,11 +414,12 @@ export function renderPipeline(options = {}) {
     attrs = '',
   } = options;
 
+  const helpId = escapeAttr(`${id}-help`);
   const columnElems = columns.map(col => {
     const colCards = cards.filter(c => c.columnId === col.id);
     const headingId = escapeAttr(`${id}-column-${col.id}`);
     const count = col.count ?? colCards.length;
-    const cardsHtml = colCards.map(renderPipelineCard).join('');
+    const cardsHtml = colCards.map(card => renderPipelineCard(card, helpId)).join('');
 
     return `<section data-bn="pipeline-column" data-column-id="${escapeAttr(col.id)}" aria-labelledby="${headingId}">
   <header data-bn="pipeline-column-header" id="${headingId}"><span data-bn="pipeline-column-title">${escapeText(col.title)}</span><span data-bn="pipeline-column-count">${escapeText(count)}</span></header>
@@ -404,6 +431,8 @@ export function renderPipeline(options = {}) {
 
   return `<div data-bn="pipeline" id="${escapeAttr(id)}"${attrsSuffix(attrs)}>
   ${columnElems}
+  <p data-bn="pipeline-help" id="${helpId}">${PIPELINE_HELP}</p>
+  <div data-bn="pipeline-status" aria-live="polite" aria-atomic="true"></div>
 </div>`;
 }
 
@@ -419,29 +448,160 @@ function slotMinute(e, slot, snap) {
   return Math.min(Math.floor((fraction * 60) / step) * step, 59);
 }
 
+/** `YYYY-MM-DD` shifted by `days`, in local time. */
+function shiftDate(date, days) {
+  const d = parseLocalDate(date);
+  d.setDate(d.getDate() + days);
+  return toLocalDateString(d);
+}
+
+/** "9:30 AM" for the live region. */
+function clockText(hour, minute) {
+  const h12 = hour % 12 === 0 ? 12 : hour % 12;
+  return `${h12}:${pad(minute)} ${hour < 12 ? 'AM' : 'PM'}`;
+}
+
+const isActivate = e => e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar';
+
+/** Arrow key → [columns or days, steps] for the keyboard path of both initialisers. */
+const KEY_MOVES = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] };
+
+/** Write to the component's polite live region, when it rendered one. */
+function announce(container, bn, text) {
+  const region = typeof container.querySelector === 'function' ? container.querySelector(`[data-bn="${bn}"]`) : null;
+  if (region) region.textContent = text;
+}
+
+function itemLabel(el, fallback) {
+  const title = typeof el.getAttribute === 'function' ? el.getAttribute('title') : null;
+  return title || fallback;
+}
+
 /**
- * Client-side: Initialize drag-and-drop on a calendar container.
+ * Client-side: make a rendered calendar's events movable, by drag and drop, by
+ * tap/click and by keyboard. Every path reports the move through `onDrop`
+ * with the same payload, so a consumer wires one callback.
  *
- * Drops report the slot's `date` and integer `hour`, plus `minute` (the
- * pointer's offset within the slot, snapped down to `snapMinutes`) and
+ * - **Drag and drop.** Native HTML5: drag an event (or a `renderPipelineBlock`
+ *   from `dragSource`) onto a slot. `minute` is the pointer's offset within the
+ *   slot, snapped down to `snapMinutes`.
+ * - **Select, then place.** One tap or click on an event picks it up
+ *   (`data-picked`; a second on the same event cancels); one tap or click on a
+ *   slot drops it there, `minute` from the tap's position as for a drop. This
+ *   is the single-pointer alternative to dragging that touch needs.
+ * - **Keyboard.** Events are focusable. Enter or Space picks the focused event
+ *   up, with the pending target at its own slot (`data-drop-target`); ArrowUp /
+ *   ArrowDown move the target by `snapMinutes`, ArrowLeft / ArrowRight by a
+ *   day, within the rendered slots; Enter or Space drops; Escape cancels.
+ *
+ * Pick-up, each move and the drop are announced in the calendar's
+ * `[data-bn="calendar-status"]` live region. A drag started while an event is
+ * picked cancels the pick.
+ *
+ * Drops report the slot's `date` and integer `hour`, plus `minute` and
  * `datetime` (`YYYY-MM-DDTHH:MM`, a local datetime string ready for
  * `new Date()`).
  *
  * @param {HTMLElement} container  The [data-bn="calendar"] element
  * @param {object} callbacks
  * @param {function} callbacks.onDrop  Called with { eventId, date, hour, minute, datetime, sourceType }
- * @param {HTMLElement} [callbacks.dragSource]  Element whose `dragstart` events
- *   also supply payloads — a palette or sidebar of `renderPipelineBlock` cards
- *   outside the calendar. Defaults to the container (which always hears its own
- *   events). May be any element, including an ancestor of the container.
- * @param {number} [callbacks.snapMinutes=15]  Minute granularity of `minute`;
- *   1 (or less) reports exact minutes
+ * @param {HTMLElement} [callbacks.dragSource]  Element whose `dragstart`,
+ *   `click` and `keydown` events also supply payloads — a palette or sidebar of
+ *   `renderPipelineBlock` cards outside the calendar. Defaults to the container
+ *   (which always hears its own events). May be any element, including an
+ *   ancestor of the container.
+ * @param {number} [callbacks.snapMinutes=15]  Minute granularity of `minute`
+ *   and of the keyboard's ArrowUp / ArrowDown step; 1 (or less) reports exact
+ *   minutes
  * @returns {{ destroy: () => void }}
  */
 export function initCalendarDragDrop(container, callbacks = {}) {
   const { onDrop, dragSource, snapMinutes = 15 } = callbacks;
+  const step = snapMinutes > 1 ? snapMinutes : 1;
+  const say = text => announce(container, 'calendar-status', text);
+  const query = selector => (typeof container.querySelector === 'function' ? container.querySelector(selector) : null);
+  const slotAt = (date, hour) => query(`[data-bn="calendar-slot"][data-date="${date}"][data-hour="${hour}"]`);
+
+  let picked = null;
+  let target = null;
+
+  function itemOf(node) {
+    const event = node.closest('[data-event-id]');
+    if (event) return { type: 'event', id: event.dataset.eventId, el: event };
+    const block = node.closest('[data-block-id]');
+    if (block) return { type: 'pipeline', id: block.dataset.blockId, el: block };
+    return null;
+  }
+
+  const label = () => itemLabel(picked.el, picked.id);
+
+  function release() {
+    if (picked) picked.el.removeAttribute('data-picked');
+    picked = null;
+    target = null;
+    clearDropTargets(container);
+  }
+
+  function cancel() {
+    if (!picked) return;
+    const moved = label();
+    release();
+    say(`Cancelled moving ${moved}.`);
+  }
+
+  function initialTarget(el) {
+    const { date, hour, minute } = el.dataset ?? {};
+    if (date && hour != null) return { date, hour: parseInt(hour, 10), minute: parseInt(minute, 10) || 0 };
+    const first = query('[data-bn="calendar-slot"]');
+    return first ? { date: first.dataset.date, hour: parseInt(first.dataset.hour, 10), minute: 0 } : null;
+  }
+
+  function showTarget() {
+    clearDropTargets(container);
+    const slot = target && slotAt(target.date, target.hour);
+    if (slot) slot.setAttribute('data-drop-target', '');
+  }
+
+  function pick(item) {
+    release();
+    picked = item;
+    item.el.setAttribute('data-picked', '');
+    target = initialTarget(item.el);
+    showTarget();
+    say(
+      target
+        ? `Picked up ${label()}. Use the arrow keys to choose a new time, Enter to drop, Escape to cancel.`
+        : `Picked up ${label()}. Choose a time slot to drop it on, or press Escape to cancel.`
+    );
+  }
+
+  function place(date, hour, minute) {
+    const moved = label();
+    const sourceType = picked.type;
+    const eventId = picked.id;
+    release();
+    if (onDrop) {
+      onDrop({
+        eventId,
+        date,
+        hour,
+        minute,
+        datetime: `${date}T${pad(hour)}:${pad(minute)}`,
+        sourceType,
+      });
+    }
+    say(`Moved ${moved} to ${formatDay(date)} at ${clockText(hour, minute)}.`);
+  }
+
+  function shiftTarget(from, days, minutes) {
+    let minute = from.minute + minutes;
+    const carry = Math.floor(minute / 60);
+    minute -= carry * 60;
+    return { date: days ? shiftDate(from.date, days) : from.date, hour: from.hour + carry, minute };
+  }
 
   function dragstart(e) {
+    release();
     const event = e.target.closest('[data-event-id]');
     const block = e.target.closest('[data-block-id]');
     if (event) {
@@ -459,6 +619,49 @@ export function initCalendarDragDrop(container, callbacks = {}) {
       e.dataTransfer.effectAllowed = 'copy';
       block.setAttribute('data-dragging', '');
     }
+  }
+
+  function click(e) {
+    const item = itemOf(e.target);
+    if (item) {
+      if (picked && picked.el === item.el) cancel();
+      else pick(item);
+      return;
+    }
+    if (!picked) return;
+    const slot = e.target.closest('[data-bn="calendar-slot"]');
+    if (slot) place(slot.dataset.date, parseInt(slot.dataset.hour, 10), slotMinute(e, slot, snapMinutes));
+  }
+
+  function keydown(e) {
+    if (e.key === 'Escape') {
+      if (picked) {
+        e.preventDefault();
+        cancel();
+      }
+      return;
+    }
+    if (isActivate(e)) {
+      const item = itemOf(e.target);
+      if (picked && (!item || item.el === picked.el)) {
+        e.preventDefault();
+        if (target) place(target.date, target.hour, target.minute);
+        return;
+      }
+      if (item) {
+        e.preventDefault();
+        pick(item);
+      }
+      return;
+    }
+    const move = KEY_MOVES[e.key];
+    if (!move || !picked || !target) return;
+    e.preventDefault();
+    const next = shiftTarget(target, move[0], move[1] * step);
+    if (!slotAt(next.date, next.hour)) return;
+    target = next;
+    showTarget();
+    say(`${formatDay(next.date)} at ${clockText(next.hour, next.minute)}. Press Enter to drop ${label()} here.`);
   }
 
   const handle = bindDrag(container, {
@@ -503,20 +706,28 @@ export function initCalendarDragDrop(container, callbacks = {}) {
     },
 
     dragend() {
+      release();
       clearDragState(container);
     },
+
+    click,
+    keydown,
   });
 
+  const outside = fn => e => {
+    if (typeof container.contains === 'function' && container.contains(e.target)) return;
+    fn(e);
+  };
   const source = dragSource && dragSource !== container
     ? bindDrag(dragSource, {
-        dragstart(e) {
-          if (typeof container.contains === 'function' && container.contains(e.target)) return;
-          dragstart(e);
-        },
+        dragstart: outside(dragstart),
         dragend() {
+          release();
           clearDragState(dragSource);
           clearDragState(container);
         },
+        click: outside(click),
+        keydown: outside(keydown),
       })
     : null;
 
@@ -550,7 +761,22 @@ function dropPosition(e, cardArea, draggedId) {
 }
 
 /**
- * Client-side: Initialize drag-and-drop on a pipeline container.
+ * Client-side: make a rendered pipeline's cards movable, by drag and drop, by
+ * tap/click and by keyboard. Every path reports the move through `onCardMove`
+ * with the same payload.
+ *
+ * - **Drag and drop.** Native HTML5: drag a card onto a column's card area.
+ * - **Select, then place.** One tap or click on a card picks it up
+ *   (`data-picked`; a second on the same card cancels); one tap or click in a
+ *   column — on empty space or on a card, above or below its middle — drops it
+ *   there, at the same `position` a drop at that point would report.
+ * - **Keyboard.** Cards are focusable. Enter or Space picks the focused card
+ *   up, with the pending target at its own place (the target column's card
+ *   area gets `data-drop-target`); ArrowUp / ArrowDown move the position,
+ *   ArrowLeft / ArrowRight the column; Enter or Space drops; Escape cancels.
+ *
+ * Pick-up, each move and the drop are announced in the pipeline's
+ * `[data-bn="pipeline-status"]` live region.
  *
  * `position` is the index the card should occupy among the target column's
  * cards after the move (excluding itself): the index of the card under the
@@ -565,11 +791,117 @@ function dropPosition(e, cardArea, draggedId) {
  */
 export function initPipelineDragDrop(container, callbacks = {}) {
   const { onCardMove } = callbacks;
+  const say = text => announce(container, 'pipeline-status', text);
+  const queryAll = (root, selector) =>
+    typeof root.querySelectorAll === 'function' ? Array.from(root.querySelectorAll(selector)) : [];
+  const queryOne = (root, selector) => (typeof root.querySelector === 'function' ? root.querySelector(selector) : null);
+  const columns = () => queryAll(container, '[data-column-id]');
+  const columnOf = columnId => columns().find(c => c.dataset?.columnId === columnId) ?? null;
+  const columnTitle = column => queryOne(column, '[data-bn="pipeline-column-title"]')?.textContent || column.dataset.columnId;
+
+  let picked = null;
+  let target = null;
+
+  const label = () => itemLabel(picked.el, picked.id);
+  const othersIn = column => queryAll(column, '[data-card-id]').filter(c => c.dataset?.cardId !== picked.id);
+
+  function release() {
+    if (picked) picked.el.removeAttribute('data-picked');
+    picked = null;
+    target = null;
+    clearDropTargets(container);
+  }
+
+  function cancel() {
+    if (!picked) return;
+    const moved = label();
+    release();
+    say(`Cancelled moving ${moved}.`);
+  }
+
+  function showTarget() {
+    clearDropTargets(container);
+    const column = target && columnOf(target.columnId);
+    const area = column && queryOne(column, '[data-bn="pipeline-column-cards"]');
+    if (area) area.setAttribute('data-drop-target', '');
+  }
+
+  function pick(card) {
+    release();
+    picked = { id: card.dataset.cardId, el: card };
+    card.setAttribute('data-picked', '');
+    const column = card.closest('[data-column-id]');
+    if (column) {
+      target = { columnId: column.dataset.columnId, position: Math.max(queryAll(column, '[data-card-id]').indexOf(card), 0) };
+    } else {
+      const first = columns()[0];
+      target = first ? { columnId: first.dataset.columnId, position: 0 } : null;
+    }
+    showTarget();
+    say(`Picked up ${label()}. Use the arrow keys to choose a column and position, Enter to drop, Escape to cancel.`);
+  }
+
+  function place(columnId, position) {
+    const moved = label();
+    const cardId = picked.id;
+    const column = columnOf(columnId);
+    release();
+    if (onCardMove) onCardMove({ cardId, targetColumnId: columnId, position });
+    say(`Moved ${moved} to ${column ? columnTitle(column) : columnId}, position ${position + 1}.`);
+  }
+
+  function click(e) {
+    const card = e.target.closest('[data-card-id]');
+    if (card && (!picked || picked.el === card)) {
+      if (picked) cancel();
+      else pick(card);
+      return;
+    }
+    if (!picked) return;
+    const cardArea = e.target.closest('[data-bn="pipeline-column-cards"]');
+    const column = cardArea && cardArea.closest('[data-column-id]');
+    if (column) place(column.dataset.columnId, dropPosition(e, cardArea, picked.id));
+  }
+
+  function keydown(e) {
+    if (e.key === 'Escape') {
+      if (picked) {
+        e.preventDefault();
+        cancel();
+      }
+      return;
+    }
+    if (isActivate(e)) {
+      const card = e.target.closest('[data-card-id]');
+      if (picked && (!card || card === picked.el)) {
+        e.preventDefault();
+        if (target) place(target.columnId, target.position);
+        return;
+      }
+      if (card) {
+        e.preventDefault();
+        pick(card);
+      }
+      return;
+    }
+    const move = KEY_MOVES[e.key];
+    if (!move || !picked || !target) return;
+    e.preventDefault();
+    const all = columns();
+    const column = all[all.findIndex(c => c.dataset?.columnId === target.columnId) + move[0]];
+    if (!column) return;
+    const max = othersIn(column).length;
+    const position = Math.min(Math.max(target.position + move[1], 0), max);
+    target = { columnId: column.dataset.columnId, position };
+    showTarget();
+    say(`${columnTitle(column)}, position ${position + 1} of ${max + 1}. Press Enter to drop ${label()} here.`);
+  }
 
   return bindDrag(container, {
     dragstart(e) {
       const card = e.target.closest('[data-card-id]');
       if (!card) return;
+      release();
 
       e.dataTransfer.setData('text/plain', JSON.stringify({
         type: 'pipeline-card',
@@ -590,9 +922,7 @@ export function initPipelineDragDrop(container, callbacks = {}) {
 
     dragleave(e) {
       if (!e.target.closest('[data-card-id]')) {
-        container.querySelectorAll('[data-drop-target]').forEach(el =>
-          el.removeAttribute('data-drop-target')
-        );
+        clearDropTargets(container);
       }
     },
 
@@ -615,7 +945,11 @@ export function initPipelineDragDrop(container, callbacks = {}) {
     },
 
     dragend() {
+      release();
       clearDragState(container);
     },
+
+    click,
+    keydown,
   });
 }

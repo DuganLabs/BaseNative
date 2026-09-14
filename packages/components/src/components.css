@@ -63,8 +63,13 @@
    a `.visually-hidden` class, but consumers whose house style forbids CSS
    classes (and who therefore import components.css without reset.css) had no
    attribute form to reach for — so a column with no visible heading rendered
-   as an empty `<th>`, which axe flags. --- */
-[data-bn="sr-only"] {
+   as an empty `<th>`, which axe flags. The calendar's and pipeline's
+   select-then-place instructions and live regions use the same recipe. --- */
+[data-bn="sr-only"],
+[data-bn="calendar-help"],
+[data-bn="calendar-status"],
+[data-bn="pipeline-help"],
+[data-bn="pipeline-status"] {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -1598,6 +1603,13 @@
   z-index: 1;
 }
 [data-bn="calendar-event"][data-dragging] { opacity: 0.5; cursor: grabbing; }
+/* Picked up by tap/click or Enter/Space and waiting for a slot: lifted, and
+   ringed like a focused button so the state reads with focus anywhere else. */
+[data-bn="calendar-event"][data-picked] {
+  box-shadow: var(--bn-focus-ring), var(--bn-shadow-md);
+  cursor: grabbing;
+  z-index: 2;
+}
 [data-bn="calendar-event"][data-status="scheduled"] {
   --bn-calendar-event-color: var(--bn-color-primary-600);
   --bn-calendar-event-bg: var(--bn-color-info-bg);
@@ -1670,6 +1682,10 @@
   box-shadow: var(--bn-shadow-sm);
 }
 [data-bn="pipeline-block"][data-dragging] { opacity: 0.5; cursor: grabbing; }
+[data-bn="pipeline-block"][data-picked] {
+  box-shadow: var(--bn-focus-ring), var(--bn-shadow-md);
+  cursor: grabbing;
+}
 [data-bn="pipeline-block-title"] {
   font-weight: var(--bn-font-weight-medium);
   font-size: var(--bn-font-size-sm);
@@ -1771,6 +1787,11 @@
 
 [data-bn="pipeline-card"][data-dragging] {
   opacity: 0.5;
+  cursor: grabbing;
+}
+
+[data-bn="pipeline-card"][data-picked] {
+  box-shadow: var(--bn-focus-ring), var(--bn-shadow-md);
   cursor: grabbing;
 }
 

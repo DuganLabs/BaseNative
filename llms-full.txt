@@ -920,7 +920,7 @@ renderPipeline({
 ```
 
 ### Drag and Drop
-`initCalendarDragDrop(container, { onDrop, dragSource?, snapMinutes? })` and `initPipelineDragDrop(container, { onCardMove })` attach native HTML5 drag-and-drop listeners to a rendered `[data-bn="calendar"]` or `[data-bn="pipeline"]` eleme…
+`initCalendarDragDrop(container, { onDrop, dragSource?, snapMinutes? })` and `initPipelineDragDrop(container, { onCardMove })` make a rendered `[data-bn="calendar"]` or `[data-bn="pipeline"]` movable. Each hears three gestures and reports…
 ```js
 import { initCalendarDragDrop, initPipelineDragDrop } from '@basenative/components';
 
