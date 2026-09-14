@@ -16,6 +16,12 @@ import { createFlagManager, createMemoryProvider } from '../../packages/flags/sr
 import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { checkComparePage, capabilityProblems, roadmapProblems } from '../../scripts/check-compare-page.js';
+import {
+  demoSnippets,
+  demoSnippetProblems,
+  demoClientApiProblems,
+  snippetSyntaxError,
+} from '../../scripts/check-demo-snippets.js';
 import { computeCompareStats } from '../../scripts/compare-stats.js';
 import { renderRoute, siteRoutes } from '../../examples/express/page.js';
 import { flatComponents } from '../../examples/express/component-catalog.js';
@@ -518,3 +524,37 @@ describe('every published route is reachable from the navigation', () => {
     assert.ok(siteRoutes.some((r) => r.internal), 'the verification harness is still expected to be internal');
   });
 });
+
+// ─── 14. /components/*: every Source pane is code a reader can run ───────────
+// The pane's string is authored apart from the render beside it and from the
+// client script; the Copy button hands it over verbatim. Fifteen of them
+// shipped `items: [...]`, six taught a browser-side renderX() that the client
+// bundle does not export, and four pages had nothing parseable at all.
+
+describe('component Source panes are runnable JavaScript', () => {
+  it('the syntax check rejects an elision and accepts real ESM', () => {
+    assert.match(
+      snippetSyntaxError("import { renderCombobox } from '@basenative/components';\nrenderCombobox({ items: [...] });"),
+      /Unexpected token/,
+    );
+    assert.equal(snippetSyntaxError("import { renderCombobox } from '@basenative/components';\nrenderCombobox({ items: ['React'] });"), null);
+  });
+
+  it('every quickstart and example snippet parses, and every component page has one', () => {
+    assert.ok(demoSnippets().length >= 78, `expected the catalogue's snippets, found ${demoSnippets().length}`);
+    const problems = demoSnippetProblems();
+    assert.deepEqual(problems, [], `Source panes that are not runnable:\n  ${problems.join('\n  ')}`);
+  });
+
+  it('no Source pane contains an elided array', () => {
+    for (const { slug, label, code } of demoSnippets()) {
+      assert.ok(!code.includes('[...]'), `${slug}/${label} still elides its data with [...]`);
+    }
+  });
+
+  it('scripted panes use the client API the page itself uses, not a server render helper', () => {
+    const problems = demoClientApiProblems();
+    assert.deepEqual(problems, [], problems.join('\n'));
+  });
+});
+

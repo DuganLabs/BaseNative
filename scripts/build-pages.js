@@ -15,6 +15,7 @@ import {
 import { flatComponents } from '../examples/express/component-catalog.js';
 import { staticTasks } from '../examples/express/site-data.js';
 import { checkComparePage } from './check-compare-page.js';
+import { demoSnippetProblems, demoClientApiProblems } from './check-demo-snippets.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -40,8 +41,12 @@ function assertNoDevScripts(html, route) {
 // escaped page is broken enough to fail a build or a test on its own.
 const ESCAPED_MARKUP = /&lt;(?:\/?)[a-z][a-z0-9-]*(?=[\s&])[^<]*?data-bn/i;
 
+// A <pre> block is the one place escaped markup is right: the Source panes on
+// /components/* show the data-bn markup a client script builds, as text.
+const CODE_BLOCK = /<pre\b[\s\S]*?<\/pre>/gi;
+
 function assertNoEscapedMarkup(html, route) {
-  const hit = ESCAPED_MARKUP.exec(html);
+  const hit = ESCAPED_MARKUP.exec(html.replace(CODE_BLOCK, ''));
   if (hit) {
     throw new Error(
       `escaped component markup reached the page for ${route || '/'} — ` +
@@ -77,6 +82,20 @@ if (comparePageProblems.length) {
   console.error('\nRun `node scripts/compare-stats.js` to see what the source actually says.');
   process.exit(1);
 }
+
+// Every Source pane on /components/* goes to the reader's clipboard verbatim.
+// Refuse to publish one that does not parse, a page with nothing runnable, or
+// a client snippet that calls a render helper the browser bundle does not have.
+function assertDemoSnippetsParse() {
+  const problems = [...demoSnippetProblems(), ...demoClientApiProblems()];
+  if (problems.length) {
+    console.error('/components/* Source panes are not runnable — refusing to build:\n');
+    for (const problem of problems) console.error(`  • ${problem}`);
+    console.error('\nFix the `code:` strings in examples/express/component-demos.js.');
+    process.exit(1);
+  }
+}
+assertDemoSnippetsParse();
 
 mkdirSync(dist, { recursive: true });
 

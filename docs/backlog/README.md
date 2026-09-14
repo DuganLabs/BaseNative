@@ -24,11 +24,10 @@ stale, fix it in the same PR that discovers it.
 
 ## Serious
 
-- [`BN-027`](BN-027.md) (medium) — 15 of 78 Source snippets on /components/* are not parseable JavaScript, six teach a client render API that does not exist, and four pages ship zero runnable code
 - [`BN-029`](BN-029.md) (medium) — /docs advertises the API of five packages, documents two, and every import statement on it names an unpublishable package
 
 ## Annoying
 
 ---
 
-4 open tickets.
+2 open tickets.

@@ -76,7 +76,10 @@ renderButton('Ghost',       { variant: 'ghost' })
           renderButton('Disabled', { variant: 'primary', disabled: true }),
           renderButton('Disabled', { variant: 'secondary', disabled: true }),
         ].join(' '),
-        code: code(`renderButton('Disabled', { variant: 'primary', disabled: true })`),
+        code: code(`
+renderButton('Disabled', { variant: 'primary',   disabled: true })
+renderButton('Disabled', { variant: 'secondary', disabled: true })
+        `),
       },
       {
         title: 'Interactive counter',
@@ -286,7 +289,7 @@ renderRadioGroup({ name: 'plan', label: 'Plan', items: ['Free', 'Pro', 'Enterpri
           selected: 'Pro',
         }),
         code: code(
-          `renderRadioGroup({ name: 'plan', label: 'Plan', items: [...], selected: 'Pro' })`,
+          `renderRadioGroup({ name: 'plan', label: 'Plan', items: ['Free', 'Pro', 'Enterprise'], selected: 'Pro' })`,
         ),
       },
       {
@@ -351,7 +354,7 @@ toggle.onchange = (e) => dim.set(e.target.checked);
     quickstart: code(`
 import { renderCombobox } from '@basenative/components';
 
-renderCombobox({ name: 'framework', label: 'Framework', items: [...] });
+renderCombobox({ name: 'framework', label: 'Framework', items: ['React', 'Vue', 'Svelte'] });
     `),
     examples: [
       {
@@ -363,7 +366,14 @@ renderCombobox({ name: 'framework', label: 'Framework', items: [...] });
           items: ['Angular', 'React', 'Vue', 'Svelte', 'Solid', 'Lit', 'Qwik', 'Astro'],
           placeholder: 'Search frameworks…',
         }),
-        code: code(`renderCombobox({ name: 'framework', label: 'Framework', items: [...] })`),
+        code: code(`
+renderCombobox({
+  name: 'framework',
+  label: 'Framework',
+  items: ['Angular', 'React', 'Vue', 'Svelte', 'Solid', 'Lit', 'Qwik', 'Astro'],
+  placeholder: 'Search frameworks…',
+})
+        `),
       },
     ],
   }),
@@ -372,7 +382,7 @@ renderCombobox({ name: 'framework', label: 'Framework', items: [...] });
     quickstart: code(`
 import { renderMultiselect } from '@basenative/components';
 
-renderMultiselect({ name: 'tags', label: 'Tags', items: [...] });
+renderMultiselect({ name: 'tags', label: 'Tags', items: ['JavaScript', 'CSS', 'HTML'] });
     `),
     examples: [
       {
@@ -385,7 +395,14 @@ renderMultiselect({ name: 'tags', label: 'Tags', items: [...] });
           selected: ['JavaScript', 'CSS'],
         }),
         code: code(
-          `renderMultiselect({ name: 'tags', label: 'Tags', items: [...], selected: [...] })`,
+          `
+renderMultiselect({
+  name: 'tags',
+  label: 'Tags',
+  items: ['JavaScript', 'TypeScript', 'CSS', 'HTML', 'Node.js'],
+  selected: ['JavaScript', 'CSS'],
+})
+          `,
         ),
       },
     ],
@@ -408,9 +425,10 @@ renderAlert('Saved.', { variant: 'success' });
           renderAlert('Something went wrong.', { variant: 'error', dismissible: true }),
         ].join(''),
         code: code(`
-renderAlert('Saved.',    { variant: 'success' })
-renderAlert('Heads up.', { variant: 'warning' })
-renderAlert('Failed.',   { variant: 'error', dismissible: true })
+renderAlert('This is an informational message.', { variant: 'info' })
+renderAlert('Operation completed successfully.', { variant: 'success' })
+renderAlert('Proceed with caution.',             { variant: 'warning' })
+renderAlert('Something went wrong.',             { variant: 'error', dismissible: true })
         `),
       },
       {
@@ -423,14 +441,15 @@ ${renderButton('Add alert', { variant: 'primary', attrs: 'data-bn-demo-alert-pus
         code: code(`
 const counter = signal(0);
 
+// renderAlert() is a server helper; in the browser the alert markup is built inline.
 push.onclick = () => {
   counter.set(counter() + 1);
   stack.insertAdjacentHTML(
     'afterbegin',
-    renderAlert('Alert #' + counter() + ' just landed.', {
-      variant: 'info',
-      dismissible: true,
-    }),
+    '<div data-bn="alert" data-variant="info" role="status">' +
+      '<span data-bn="alert-content">Alert #' + counter() + ' just landed.</span>' +
+      '<button data-bn="alert-dismiss" type="button" aria-label="Dismiss">×</button>' +
+      '</div>',
   );
 };
         `),
@@ -488,7 +507,11 @@ renderSpinner({ size: 'lg', label: 'Loading' });
           ${renderSpinner({ size: 'md', label: 'Loading' })}
           ${renderSpinner({ size: 'lg', label: 'Loading' })}
         </div>`,
-        code: code(`renderSpinner({ size: 'lg', label: 'Loading' })`),
+        code: code(`
+renderSpinner({ size: 'sm', label: 'Loading' })
+renderSpinner({ size: 'md', label: 'Loading' })
+renderSpinner({ size: 'lg', label: 'Loading' })
+        `),
       },
     ],
   }),
@@ -519,11 +542,18 @@ ${renderButton('Reload', { variant: 'secondary', attrs: 'data-bn-demo-skel-reloa
   <p>Status: shipped to staging — ready for review.</p>
 </section>`,
         code: code(`
+const realHtml = target.innerHTML;
+const skeletonHtml =
+  '<div data-bn="skeleton-stack">' +
+  ['100%', '85%', '70%']
+    .map((w) => '<div data-bn="skeleton" style="width:' + w + ';height:1rem"></div>')
+    .join('') +
+  '</div>';
+
 const loading = signal(false);
 
-effect(() => target.innerHTML = loading()
-  ? renderSkeleton({ count: 3 })
-  : realContentHtml);
+// renderSkeleton() is a server helper; in the browser the signal swaps the markup.
+effect(() => { target.innerHTML = loading() ? skeletonHtml : realHtml; });
 
 reload.onclick = () => {
   loading.set(true);
@@ -551,7 +581,13 @@ renderBadge('Active', { variant: 'success' });
           renderBadge('Warning', { variant: 'warning' }),
           renderBadge('Error', { variant: 'error' }),
         ].join(' '),
-        code: code(`renderBadge('Active', { variant: 'success' })`),
+        code: code(`
+renderBadge('Default', { variant: 'default' })
+renderBadge('Primary', { variant: 'primary' })
+renderBadge('Success', { variant: 'success' })
+renderBadge('Warning', { variant: 'warning' })
+renderBadge('Error',   { variant: 'error' })
+        `),
       },
       {
         title: 'Live counter badge',
@@ -569,9 +605,14 @@ renderBadge('Active', { variant: 'success' });
         code: code(`
 const unread = signal(3);
 
-effect(() => slot.innerHTML = renderBadge(unread(), {
-  variant: unread() > 5 ? 'error' : 'primary',
-}));
+// renderBadge() is a server helper; in the browser the signal drives the markup directly.
+effect(() => {
+  const variant = unread() > 5 ? 'error' : 'primary';
+  slot.innerHTML = '<span data-bn="badge" data-variant="' + variant + '">' + unread() + '</span>';
+});
+
+inc.onclick = () => unread.set(unread() + 1);
+dec.onclick = () => unread.set(Math.max(0, unread() - 1));
         `),
       },
     ],
@@ -610,13 +651,17 @@ ${renderInput({ name: 'demo-card-title', label: 'Card title', value: 'Project At
         code: code(`
 const title = signal('Project Atlas');
 
-effect(() => slot.innerHTML = renderCard({
-  header: title(),
-  body:   '<p>The card title comes from a signal.</p>',
-  footer: 'Live preview',
-}));
+// renderCard() is a server helper; in the browser the signal drives the markup directly.
+effect(() => {
+  slot.innerHTML =
+    '<article data-bn="card">' +
+    '<header data-bn="card-header">' + title() + '</header>' +
+    '<div data-bn="card-body"><p>The card title comes from a signal.</p></div>' +
+    '<footer data-bn="card-footer">Live preview</footer>' +
+    '</article>';
+});
 
-input.oninput = (e) => title.set(e.target.value);
+input.oninput = (e) => title.set(e.target.value || ' ');
         `),
       },
     ],
@@ -651,7 +696,14 @@ renderAccordion({ items: [{ title: '...', content: '...' }] });
             },
           ],
         }),
-        code: code(`renderAccordion({ items: [{ title, content }, ...] })`),
+        code: code(`
+renderAccordion({
+  items: [
+    { title: 'What is BaseNative?', content: 'A signal-based runtime over native HTML.' },
+    { title: 'How does SSR work?', content: 'Directives are evaluated at request time.' },
+  ],
+})
+        `),
       },
       {
         title: 'Expand / collapse all',
@@ -675,7 +727,13 @@ ${renderAccordion({
         code: code(`
 // multiple: true — without it the group is exclusive (shared name=), so
 // opening each <details> in turn closes the one before it.
-renderAccordion({ multiple: true, items: [...] });
+renderAccordion({
+  multiple: true,
+  items: [
+    { title: 'Section one', content: 'Body for section one.' },
+    { title: 'Section two', content: 'Body for section two.' },
+  ],
+});
 
 const open = signal(false);
 
@@ -723,7 +781,14 @@ renderTabs({ tabs: [{ id: 'a', label: 'A', content: '...' }] });
             },
           ],
         }),
-        code: code(`renderTabs({ tabs: [{ id, label, content }, ...] })`),
+        code: code(`
+renderTabs({
+  tabs: [
+    { id: 'overview', label: 'Overview', content: '<p>Control flow on native templates.</p>' },
+    { id: 'features', label: 'Features', content: '<p>Signals, SSR, hydration.</p>' },
+  ],
+})
+        `),
       },
     ],
   }),
@@ -760,9 +825,18 @@ renderAvatar({ name: 'Dan Lee', size: 'xl' })
 ${renderInput({ name: 'demo-avatar-name', label: 'Name', value: 'Ada Lovelace', attrs: 'data-bn-demo-av-input' })}
 <aside data-bn-demo-av-slot data-demo-display></aside>`,
         code: code(`
+const initials = (n) =>
+  (n || '?').split(/\\s+/).filter(Boolean).map((w) => w[0]).slice(0, 2).join('').toUpperCase() || '?';
+
 const name = signal('Ada Lovelace');
 
-effect(() => slot.innerHTML = renderAvatar({ name: name(), size: 'xl' }));
+// renderAvatar() is a server helper; in the browser the signal drives the markup directly.
+effect(() => {
+  slot.innerHTML =
+    '<span data-bn="avatar" data-size="xl" data-shape="circle" role="img" aria-label="' + name() + '">' +
+    '<span data-bn="avatar-initials">' + initials(name()) + '</span>' +
+    '</span>';
+});
 
 input.oninput = (e) => name.set(e.target.value);
         `),
@@ -788,7 +862,15 @@ renderBreadcrumb({ items: [{ label: 'Home', href: '/' }, { label: 'Page' }] });
             { label: 'Breadcrumb' },
           ],
         }),
-        code: code(`renderBreadcrumb({ items: [{ label, href }, ...] })`),
+        code: code(`
+renderBreadcrumb({
+  items: [
+    { label: 'Home', href: '/' },
+    { label: 'Components', href: '/components' },
+    { label: 'Breadcrumb' },
+  ],
+})
+        `),
       },
     ],
   }),
@@ -816,11 +898,36 @@ renderPagination({ currentPage: 3, totalPages: 10, baseUrl: '/items' });
 </section>
 <output data-bn-demo-pager-out aria-live="polite" data-demo-display>Page 1 of 8</output>`,
         code: code(`
+const TOTAL = 8;
+
+// renderPagination() is a server helper; in the browser the pager is rebuilt from the signal.
+const renderPager = (current) => {
+  const pages = [];
+  for (let i = 1; i <= TOTAL; i++) {
+    pages.push(
+      '<li>' +
+        (i === current
+          ? '<span aria-current="page">' + i + '</span>'
+          : '<a href="#p" data-page="' + i + '">' + i + '</a>') +
+        '</li>',
+    );
+  }
+  const prev = current > 1
+    ? '<a href="#p" data-page="' + (current - 1) + '" rel="prev">Previous</a>'
+    : '<span data-bn="pagination-disabled">Previous</span>';
+  const next = current < TOTAL
+    ? '<a href="#p" data-page="' + (current + 1) + '" rel="next">Next</a>'
+    : '<span data-bn="pagination-disabled">Next</span>';
+  return '<nav data-bn="pagination" aria-label="Pagination"><ol>' +
+    '<li>' + prev + '</li>' + pages.join('') + '<li>' + next + '</li>' +
+    '</ol></nav>';
+};
+
 const page = signal(1);
 
 effect(() => {
-  slot.innerHTML = renderPagination({ currentPage: page(), totalPages: 8, baseUrl: '#p' });
-  out.textContent = 'Page ' + page() + ' of 8';
+  slot.innerHTML = renderPager(page());
+  out.textContent = 'Page ' + page() + ' of ' + TOTAL;
 });
 
 slot.addEventListener('click', (e) => {
@@ -874,7 +981,7 @@ document.getElementById('cmd').showModal();
     quickstart: code(`
 import { renderTable } from '@basenative/components';
 
-renderTable({ columns: [{ key: 'name', label: 'Name' }], rows: [...] });
+renderTable({ columns: [{ key: 'name', label: 'Name' }], rows: [{ name: 'Alice Johnson' }] });
     `),
     examples: [
       {
@@ -893,7 +1000,19 @@ renderTable({ columns: [{ key: 'name', label: 'Name' }], rows: [...] });
           ],
           caption: 'Team members',
         }),
-        code: code(`renderTable({ columns: [...], rows: [...], caption: '...' })`),
+        code: code(`
+renderTable({
+  columns: [
+    { key: 'name', label: 'Name' },
+    { key: 'role', label: 'Role' },
+  ],
+  rows: [
+    { name: 'Alice Johnson', role: 'Admin' },
+    { name: 'Bob Smith', role: 'Editor' },
+  ],
+  caption: 'Team members',
+})
+        `),
       },
       {
         title: 'Live filter',
@@ -937,7 +1056,12 @@ input.oninput = (e) => query.set(e.target.value.toLowerCase());
     quickstart: code(`
 import { renderDataGrid } from '@basenative/components';
 
-renderDataGrid({ columns: [...], rows: [...], sortBy: 'task', sortDir: 'asc' });
+renderDataGrid({
+  columns: [{ key: 'task', label: 'Task', sortable: true }],
+  rows: [{ id: 1, task: 'Design token system' }],
+  sortBy: 'task',
+  sortDir: 'asc',
+});
     `),
     examples: [
       {
@@ -995,7 +1119,7 @@ renderDataGrid({ columns: [...], rows: [...], sortBy: 'task', sortDir: 'asc' });
     quickstart: code(`
 import { renderTree } from '@basenative/components';
 
-renderTree({ items: [{ id: '1', label: 'src', children: [...] }] });
+renderTree({ items: [{ id: '1', label: 'src', children: [{ id: '1-1', label: 'signals.js' }] }] });
     `),
     examples: [
       {
@@ -1031,7 +1155,24 @@ renderTree({ items: [{ id: '1', label: 'src', children: [...] }] });
           expanded: new Set(['1', '1-1']),
           selected: '1-1-1',
         }),
-        code: code(`renderTree({ items: [...], expanded: Set, selected: id })`),
+        code: code(`
+renderTree({
+  items: [
+    {
+      id: '1',
+      label: 'src',
+      icon: '📁',
+      children: [
+        { id: '1-1', label: 'signals.js', icon: '📄' },
+        { id: '1-2', label: 'hydrate.js', icon: '📄' },
+      ],
+    },
+    { id: '2', label: 'examples', icon: '📁' },
+  ],
+  expanded: new Set(['1']),
+  selected: '1-1',
+})
+        `),
       },
     ],
   }),
@@ -1118,7 +1259,7 @@ ${renderDrawer({
     quickstart: code(`
 import { renderDropdownMenu } from '@basenative/components';
 
-renderDropdownMenu({ trigger: 'Actions', items: [{ label, action }, ...] });
+renderDropdownMenu({ trigger: 'Actions', items: [{ label: 'Edit', action: 'edit' }] });
     `),
     examples: [
       {
@@ -1133,7 +1274,17 @@ renderDropdownMenu({ trigger: 'Actions', items: [{ label, action }, ...] });
             { label: 'Delete', action: 'delete', icon: '🗑️' },
           ],
         }),
-        code: code(`renderDropdownMenu({ trigger, items: [{ label, action, icon }, ...] })`),
+        code: code(`
+renderDropdownMenu({
+  trigger: 'Actions',
+  items: [
+    { label: 'Edit', action: 'edit', icon: '✏️' },
+    { label: 'Duplicate', action: 'duplicate', icon: '📋' },
+    { separator: true },
+    { label: 'Delete', action: 'delete', icon: '🗑️' },
+  ],
+})
+        `),
       },
     ],
   }),
