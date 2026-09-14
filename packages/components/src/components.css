@@ -1538,9 +1538,17 @@
   background: var(--bn-color-info-bg);
 }
 [data-bn="calendar-event"] {
+  /* renderCalendar overrides these inline for an event that does not start or
+     end on the hour: the block's integer row span, and the fraction of an hour
+     trimmed off its top (lead) and bottom (trail). */
+  --bn-calendar-event-rows: 1;
+  --bn-calendar-event-lead: 0;
+  --bn-calendar-event-trail: 0;
   position: absolute;
   inset-inline: var(--bn-space-1);
-  inset-block: var(--bn-space-half);
+  /* One hour is 100% / rows of the event's grid area. */
+  inset-block-start: calc(var(--bn-space-half) + (var(--bn-calendar-event-lead) / var(--bn-calendar-event-rows)) * 100%);
+  inset-block-end: calc(var(--bn-space-half) + (var(--bn-calendar-event-trail) / var(--bn-calendar-event-rows)) * 100%);
   display: flex;
   flex-direction: column;
   gap: var(--bn-space-half);

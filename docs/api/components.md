@@ -979,10 +979,10 @@ Renders:
     <div data-bn="calendar-corner"></div>
     <div data-bn="calendar-day-header" data-date="2025-06-02">Mon 6/2</div>…
     <div data-bn="calendar-day-header" data-date="2025-06-04" data-today aria-current="date">Wed 6/4</div>…
-    <div data-bn="calendar-time-gutter"><div data-bn="calendar-time-label" data-hour="7" style="grid-row: 2">7am</div>…</div>
+    <div data-bn="calendar-time-gutter"><div data-bn="calendar-time-label" data-hour="7" style="grid-row: 1">7am</div>…</div>
     <div data-bn="calendar-day-column" data-date="2025-06-02" style="grid-column: 2">
-      <div data-bn="calendar-slot" data-date="2025-06-02" data-hour="7" style="grid-row: 2"></div>…
-      <div data-bn="calendar-event" draggable="true" data-event-id="1" title="Site visit" style="grid-row: 4 / span 2;">
+      <div data-bn="calendar-slot" data-date="2025-06-02" data-hour="7" style="grid-row: 1"></div>…
+      <div data-bn="calendar-event" draggable="true" data-event-id="1" title="Site visit" style="grid-row: 3 / span 2;">
         <span data-bn="calendar-event-title">Site visit</span><span data-bn="calendar-event-assignee">Ana</span><span data-bn="calendar-event-time">9:00 AM – 11:00 AM</span>
       </div>
     </div>
@@ -990,6 +990,8 @@ Renders:
   </div>
 </div>
 ```
+
+**Rows.** The time gutter and each day column are subgrids spanning the outer grid's hour rows, so hour `h` is subgrid row `h - hours.start + 1` (7am is row 1 on the default 7–19 grid) for labels, slots and events alike. An event's `grid-row` start and span are always integers; an event that does not start or end on the hour also carries `--bn-calendar-event-rows`, `--bn-calendar-event-lead` and `--bn-calendar-event-trail` (the fraction of an hour trimmed off the top and bottom of its row span), which `components.css` turns into an inset offset — a 9:30–10:30 event renders `grid-row: 3 / span 2; --bn-calendar-event-rows: 2; --bn-calendar-event-lead: 0.5; --bn-calendar-event-trail: 0.5;`.
 
 **Day bucketing.** Events are placed by the local calendar date and hour of their parsed `start`/`end` — never by string prefix — so the UTC ISO timestamps APIs return (`2025-06-03T03:00:00Z`) land on the day they fall on in the runtime's zone (or in `timeZone`), and the local-time strings `createCalendarState().moveEvent()` produces round-trip correctly. Events whose `start` cannot be parsed are skipped.
 
