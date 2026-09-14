@@ -1,20 +1,30 @@
-import { signal, effect } from '/basenative.js';
+import {
+  signal,
+  effect,
+  initTabs,
+  initDrawer,
+  initDropdownMenu,
+  initCommandPalette,
+  initVirtualList,
+} from '/basenative.js';
 
 const ready = (fn) =>
   document.readyState === 'loading'
     ? document.addEventListener('DOMContentLoaded', fn, { once: true })
     : fn();
 
+// Tabs, drawers, dropdown menus, the command palette and the virtual list run
+// the package's own initialisers; the functions below only find the rendered
+// roots and wire the demo's triggers and toasts to them.
 ready(() => {
   wireTabs();
   wireDialogs();
   wireDrawer();
-  wireDropdowns();
   wireTooltips();
-  wireCommandPalette();
   wireAlerts();
   const toaster = wireToasts();
-  wireToastDemo(toaster);
+  wireDropdowns(toaster);
+  wireCommandPalette(toaster);
   wireToastButtons(toaster);
   wireVirtualList();
   wirePagination();
@@ -30,41 +40,7 @@ ready(() => {
 });
 
 function wireTabs() {
-  for (const tablist of document.querySelectorAll('[data-bn="tabs"]')) {
-    const tabs = [...tablist.querySelectorAll('[data-bn="tab"]')];
-    const panels = [...tablist.querySelectorAll('[data-bn="tab-panel"]')];
-
-    const activate = (tab) => {
-      for (const t of tabs) t.setAttribute('aria-selected', String(t === tab));
-      for (const p of panels) p.hidden = p.getAttribute('aria-labelledby') !== tab.id;
-    };
-
-    for (const tab of tabs) {
-      tab.addEventListener('click', () => activate(tab));
-      tab.addEventListener('keydown', (e) => {
-        const i = tabs.indexOf(tab);
-        if (e.key === 'ArrowRight') {
-          e.preventDefault();
-          const next = tabs[(i + 1) % tabs.length];
-          next.focus();
-          activate(next);
-        } else if (e.key === 'ArrowLeft') {
-          e.preventDefault();
-          const prev = tabs[(i - 1 + tabs.length) % tabs.length];
-          prev.focus();
-          activate(prev);
-        } else if (e.key === 'Home') {
-          e.preventDefault();
-          tabs[0].focus();
-          activate(tabs[0]);
-        } else if (e.key === 'End') {
-          e.preventDefault();
-          tabs[tabs.length - 1].focus();
-          activate(tabs[tabs.length - 1]);
-        }
-      });
-    }
-  }
+  for (const tabs of document.querySelectorAll('[data-bn="tabs"]')) initTabs(tabs);
 }
 
 function wireDialogs() {
@@ -90,52 +66,18 @@ function wireDrawer() {
   for (const trigger of document.querySelectorAll('[data-bn-action="open-drawer"]')) {
     const drawer = document.getElementById(trigger.getAttribute('data-bn-target'));
     if (!drawer) continue;
-    const overlay = drawer.previousElementSibling?.matches?.('[data-bn="drawer-overlay"]')
-      ? drawer.previousElementSibling
-      : document.querySelector(`[data-bn="drawer-overlay"][data-for="${drawer.id}"]`);
-
-    const open = () => {
-      drawer.setAttribute('data-open', '');
-      overlay?.setAttribute('data-open', '');
-      drawer.querySelector('[data-bn="drawer-close"], button')?.focus();
-    };
-    const close = () => {
-      drawer.removeAttribute('data-open');
-      overlay?.removeAttribute('data-open');
-      trigger.focus();
-    };
-
-    trigger.addEventListener('click', open);
-    drawer.querySelector('[data-bn="drawer-close"]')?.addEventListener('click', close);
-    overlay?.addEventListener('click', close);
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && drawer.hasAttribute('data-open')) close();
-    });
+    const panel = initDrawer(drawer);
+    trigger.addEventListener('click', () => panel.open());
   }
 }
 
-function wireDropdowns() {
+function wireDropdowns(toaster) {
   for (const dropdown of document.querySelectorAll('[data-bn="dropdown"]')) {
-    const trigger = dropdown.querySelector('[data-bn="dropdown-trigger"]');
-    const menu = dropdown.querySelector('[data-bn="dropdown-menu"]');
-    if (!trigger || !menu) continue;
-
-    const supportsPopover = HTMLElement.prototype.hasOwnProperty('popover');
-    if (!supportsPopover) {
-      trigger.addEventListener('click', () => {
-        menu.toggleAttribute('data-open');
-      });
-      document.addEventListener('click', (e) => {
-        if (!dropdown.contains(e.target)) menu.removeAttribute('data-open');
-      });
-    }
-
-    for (const item of menu.querySelectorAll('[data-bn="dropdown-item"]')) {
-      item.addEventListener('click', () => {
-        if (supportsPopover && menu.matches(':popover-open')) menu.hidePopover();
-        else menu.removeAttribute('data-open');
-      });
-    }
+    initDropdownMenu(dropdown, {
+      onSelect: (action, item) => {
+        toaster?.push(item.textContent.trim(), action === 'delete' ? 'error' : 'info');
+      },
+    });
   }
 }
 
@@ -199,78 +141,21 @@ function wireTooltips() {
   }
 }
 
-function wireCommandPalette() {
-  for (const trigger of document.querySelectorAll('[data-bn-action="open-command-palette"]')) {
-    const palette = document.getElementById(trigger.getAttribute('data-bn-target'));
-    if (!palette) continue;
-    trigger.addEventListener('click', () => {
-      palette.showModal();
-      palette.querySelector('[data-bn="command-input"]')?.focus();
-    });
-  }
-
-  for (const palette of document.querySelectorAll('[data-bn="command-palette"]')) {
-    const input = palette.querySelector('[data-bn="command-input"]');
-    const items = [...palette.querySelectorAll('[data-bn="command-item"]')];
-    const groups = [...palette.querySelectorAll('[data-bn="command-group"]')];
-
-    const filter = (query) => {
-      const q = query.trim().toLowerCase();
-      for (const item of items) {
-        const label =
-          item.querySelector('[data-bn="command-label"]')?.textContent.toLowerCase() ?? '';
-        item.hidden = q.length > 0 && !label.includes(q);
-      }
-      for (const group of groups) {
-        const visibleItems = group.querySelectorAll('[data-bn="command-item"]:not([hidden])');
-        group.hidden = visibleItems.length === 0;
-      }
-      const firstVisible = items.find((i) => !i.hidden);
-      for (const item of items) item.removeAttribute('aria-selected');
-      if (firstVisible) firstVisible.setAttribute('aria-selected', 'true');
-    };
-
-    input?.addEventListener('input', () => filter(input.value));
-    input?.addEventListener('keydown', (e) => {
-      const visible = items.filter((i) => !i.hidden);
-      const currentIndex = visible.findIndex((i) => i.getAttribute('aria-selected') === 'true');
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        const next = visible[(currentIndex + 1) % visible.length];
-        for (const item of items) item.removeAttribute('aria-selected');
-        next?.setAttribute('aria-selected', 'true');
-        next?.scrollIntoView({ block: 'nearest' });
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        const prev = visible[(currentIndex - 1 + visible.length) % visible.length];
-        for (const item of items) item.removeAttribute('aria-selected');
-        prev?.setAttribute('aria-selected', 'true');
-        prev?.scrollIntoView({ block: 'nearest' });
-      } else if (e.key === 'Enter') {
-        e.preventDefault();
-        visible[currentIndex >= 0 ? currentIndex : 0]?.click();
-      } else if (e.key === 'Escape') {
-        palette.close();
-      }
-    });
-
-    for (const item of items) {
-      item.addEventListener('click', () => {
-        const action = item.dataset.action;
+function wireCommandPalette(toaster) {
+  const palettes = new Map();
+  for (const dialog of document.querySelectorAll('[data-bn="command-palette"]')) {
+    const palette = initCommandPalette(dialog, {
+      hotkey: 'Mod+K',
+      onSelect: (action, item) => {
         const label = item.querySelector('[data-bn="command-label"]')?.textContent ?? action;
-        palette.close();
-        if (input) input.value = '';
-        filter('');
-        palette.dispatchEvent(
-          new CustomEvent('command', { detail: { action, label }, bubbles: true }),
-        );
-      });
-    }
-
-    palette.addEventListener('close', () => {
-      if (input) input.value = '';
-      filter('');
+        toaster?.push(`Ran command: ${label}`, action === 'delete' ? 'error' : 'success');
+      },
     });
+    palettes.set(dialog.id, palette);
+  }
+  for (const trigger of document.querySelectorAll('[data-bn-action="open-command-palette"]')) {
+    const palette = palettes.get(trigger.getAttribute('data-bn-target'));
+    if (palette) trigger.addEventListener('click', () => palette.open());
   }
 }
 
@@ -311,23 +196,6 @@ function wireToasts() {
   };
 
   return { push, toasts };
-}
-
-function wireToastDemo(toaster) {
-  if (!toaster) return;
-
-  document.addEventListener('command', (e) => {
-    const { action, label } = e.detail;
-    toaster.push(`Ran command: ${label}`, action === 'delete' ? 'error' : 'success');
-  });
-
-  for (const item of document.querySelectorAll('[data-bn="dropdown-item"]')) {
-    item.addEventListener('click', () => {
-      const label = item.textContent.trim();
-      const action = item.dataset.action;
-      toaster.push(`${label}`, action === 'delete' ? 'error' : 'info');
-    });
-  }
 }
 
 function wireToastButtons(toaster) {
@@ -587,39 +455,15 @@ function wirePagination() {
   }
 }
 
+// The server rendered the first window of rows from a generated list; rebuild
+// that list from the total the markup carries and the first row's label so the
+// package can re-slice the window as the region scrolls.
 function wireVirtualList() {
-  for (const v of document.querySelectorAll('[data-bn="virtualizer"]')) {
-    const window_ = v.querySelector('[data-bn="virtual-window"]');
-    if (!window_) continue;
-    const itemHeight = Number(window_.dataset.itemHeight) || 40;
-    const total = Number(window_.dataset.total) || 0;
-    const overscan = 5;
-    const viewportHeight = v.clientHeight;
-    const visibleCount = Math.ceil(viewportHeight / itemHeight) + overscan * 2;
-
-    const items = [...window_.querySelectorAll('[data-bn="virtual-item"]')];
-    if (items.length === 0 || total <= items.length) return;
-
-    const allLabels = Array.from(
-      { length: total },
-      (_, i) => items[i]?.textContent ?? `Item ${i + 1}`,
-    );
-
-    const render = () => {
-      const scrollTop = v.scrollTop;
-      const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
-      const endIndex = Math.min(total, startIndex + visibleCount);
-      window_.style.transform = `translateY(${startIndex * itemHeight}px)`;
-      window_.innerHTML = '';
-      for (let i = startIndex; i < endIndex; i++) {
-        const el = document.createElement('div');
-        el.setAttribute('data-bn', 'virtual-item');
-        el.setAttribute('data-index', String(i));
-        el.textContent = allLabels[i] ?? `Item ${i + 1}`;
-        window_.append(el);
-      }
-    };
-
-    v.addEventListener('scroll', render, { passive: true });
+  for (const container of document.querySelectorAll('[data-bn="virtualizer"]')) {
+    const total = Number(container.querySelector('[data-bn="virtual-window"]')?.dataset.total) || 0;
+    const first = container.querySelector('[data-bn="virtual-item"]')?.textContent.trim() ?? 'Row 1';
+    initVirtualList(container, {
+      items: Array.from({ length: total }, (_, i) => first.replace(/\d+/, String(i + 1))),
+    });
   }
 }

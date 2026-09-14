@@ -19,13 +19,11 @@ stale, fix it in the same PR that discovers it.
 
 ## Blocked on a decision
 
-- [`BN-018`](BN-018.md) — Catalogue summaries and component footers advertise filtering, sorting, expand/collapse, chip editing, arrow-key navigation and windowing that no shipped code implements
-  - **"Should @basenative/components ship the working interaction for these components (a small client-side script per component, the way it already does for tabs and the calendar), or stay a markup-only library with the website's descriptions rewritten to promise only markup?"**
-
 ## Serious
 
 ## Annoying
 
 ---
 
-1 open ticket.
+0 open tickets. Every ticket from the 2026-09-12 audit has merged; the
+history of this directory is the archive.

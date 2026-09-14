@@ -192,7 +192,8 @@ export const componentCategories = [
         title: 'Multiselect',
         tag: 'div',
         fn: 'renderMultiselect',
-        summary: 'Tag-based multi-value select with chip removal and keyboard support.',
+        summary:
+          'Tag-based multi-value select over a hidden select multiple; initMultiselect adds chip removal, Backspace and datalist entry.',
         api: [
           { name: 'name', type: 'string', default: '—', description: 'Form field name.' },
           { name: 'label', type: 'string', default: '—', description: 'Field label.' },
@@ -339,7 +340,7 @@ export const componentCategories = [
         title: 'Tabs',
         tag: 'div',
         fn: 'renderTabs',
-        summary: 'Tablist with arrow-key navigation and proper ARIA wiring.',
+        summary: 'Tablist with proper ARIA wiring; initTabs adds the APG arrow-key navigation.',
         api: [
           {
             name: 'tabs',
@@ -410,7 +411,8 @@ export const componentCategories = [
         title: 'Command Palette',
         tag: 'dialog',
         fn: 'renderCommandPalette',
-        summary: 'Modal dialog with grouped commands, fuzzy filter, and shortcuts.',
+        summary:
+          'Modal dialog with grouped commands and shortcuts; initCommandPalette adds the substring filter and the keys its footer names.',
         api: [
           {
             name: 'commands',
@@ -460,7 +462,8 @@ export const componentCategories = [
         title: 'Data Grid',
         tag: 'table',
         fn: 'renderDataGrid',
-        summary: 'Sortable, selectable grid built on native table with arrow-key navigation.',
+        summary:
+          'Sortable, selectable grid built on native table; initDataGrid adds sorting, selection and arrow-key cell navigation.',
         api: [
           {
             name: 'columns',
@@ -494,7 +497,7 @@ export const componentCategories = [
         title: 'Tree',
         tag: 'ul',
         fn: 'renderTree',
-        summary: 'role="tree" list with expand/collapse and selection state.',
+        summary: 'role="tree" list; initTree adds expand/collapse, selection state and the APG tree keys.',
         api: [
           {
             name: 'items',
@@ -521,7 +524,8 @@ export const componentCategories = [
         title: 'Virtual List',
         tag: 'div',
         fn: 'renderVirtualList',
-        summary: 'Windowed list — only renders the visible slice for long collections.',
+        summary:
+          'Windowed list — the server renders only the first slice; initVirtualList re-slices it on scroll.',
         api: [
           { name: 'items', type: 'string[]', default: '—', description: 'Items to render.' },
           { name: 'itemHeight', type: 'number', default: '40', description: 'Row height in px.' },
@@ -576,7 +580,8 @@ export const componentCategories = [
         title: 'Dropdown Menu',
         tag: 'menu',
         fn: 'renderDropdownMenu',
-        summary: 'Popover-anchored menu with keyboard navigation and shortcuts.',
+        summary:
+          'Popover-anchored menu with shortcuts; open, Escape and light dismiss are native, initDropdownMenu adds the arrow keys and close-on-select.',
         api: [
           { name: 'trigger', type: 'string', default: '—', description: 'Trigger button label.' },
           {
