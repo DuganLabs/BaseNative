@@ -14,7 +14,8 @@ afterEach(async () => {
   while (cleanup.length) await cleanup.pop()();
 });
 
-const PAGE = '<!doctype html><html><head><title>t</title></head><body><main>upstream</main></body></html>';
+const PAGE =
+  '<!doctype html><html><head><title>t</title></head><body><main>upstream</main></body></html>';
 
 async function startUpstream() {
   const server = createServer((req, res) => {
@@ -97,7 +98,7 @@ describe('createHmrProxy', () => {
   });
 
   it('answers with a self-recovering page while the upstream is down', async () => {
-    const dead = await findFreePort(45_000);
+    const dead = await findFreePort(61_000);
     const { base } = await startProxy(dead);
 
     const res = await fetch(base + '/');
@@ -106,7 +107,10 @@ describe('createHmrProxy', () => {
     assert.equal(res.status, 503);
     assert.match(res.headers.get('x-bn-hmr-error'), /^[A-Z_]+$/);
     assert.ok(body.includes('Dev server restarting'));
-    assert.ok(body.includes(ROUTES.client), 'the down page must still load the client so it recovers');
+    assert.ok(
+      body.includes(ROUTES.client),
+      'the down page must still load the client so it recovers',
+    );
   });
 
   it('pushes an update when a watched file changes', async () => {
@@ -161,7 +165,7 @@ describe('createHmrProxy', () => {
   it('refuses to start in production', () => {
     assert.throws(
       () => createHmrProxy({ targetPort: 1234, port: 0, env: { NODE_ENV: 'production' } }),
-      /createHmrProxy\(\) refused to start/
+      /createHmrProxy\(\) refused to start/,
     );
   });
 
@@ -174,7 +178,7 @@ describe('port helpers', () => {
   it('isPortOpen distinguishes a live listener from a dead port', async () => {
     const upstream = await startUpstream();
     assert.equal(await isPortOpen(upstream), true);
-    assert.equal(await isPortOpen(await findFreePort(46_000)), false);
+    assert.equal(await isPortOpen(await findFreePort(61_100)), false);
   });
 
   it('findFreePort walks past a port that is taken', async () => {
@@ -184,8 +188,15 @@ describe('port helpers', () => {
     assert.equal(await isPortOpen(free), false);
   });
 
+  // Test ports sit ABOVE the kernel's ephemeral range (32768–60999 by default
+  // on Linux; the WSL box this was diagnosed on uses 44620–48715, which is
+  // exactly where the old 45_000–48_000 ports lived). Every probe is a client
+  // connect that borrows an ephemeral source port, and a probe whose source
+  // port equals the port under test can self-connect on loopback or hold the
+  // port at the instant the server binds — so "resolves as soon as the server
+  // appears" flaked into a swallowed EADDRINUSE about one run in three.
   it('waitForUpstream resolves as soon as the server appears', async () => {
-    const port = await findFreePort(47_000);
+    const port = await findFreePort(61_200);
     // Resolving true *is* the assertion: the helper only does so by observing
     // the socket open, and it gives up with false at the deadline.
     const waiting = waitForUpstream(port, '127.0.0.1', { timeoutMs: 15_000, intervalMs: 20 });
@@ -204,7 +215,10 @@ describe('port helpers', () => {
   });
 
   it('waitForUpstream gives up rather than hanging forever', async () => {
-    const port = await findFreePort(48_000);
-    assert.equal(await waitForUpstream(port, '127.0.0.1', { timeoutMs: 200, intervalMs: 40 }), false);
+    const port = await findFreePort(61_300);
+    assert.equal(
+      await waitForUpstream(port, '127.0.0.1', { timeoutMs: 200, intervalMs: 40 }),
+      false,
+    );
   });
 });
