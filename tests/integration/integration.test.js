@@ -26,9 +26,12 @@ import { computeCompareStats } from '../../scripts/compare-stats.js';
 import { renderRoute, siteRoutes } from '../../examples/express/page.js';
 import { flatComponents } from '../../examples/express/component-catalog.js';
 import { getDemo } from '../../examples/express/component-demos.js';
+import { getDemoScripts, demoInitialisers } from '../../examples/express/component-demo-scripts.js';
 import { getShowcaseSections } from '../../examples/express/showcase-data.js';
 import { getRoadmapPageContext } from '../../examples/express/site-data.js';
-import { renderDrawer, renderPagination } from '../../packages/components/src/index.js';
+import * as components from '../../packages/components/src/index.js';
+
+const { renderDrawer, renderPagination } = components;
 
 // ─── 1. SSR + Runtime: Context Pipeline ──────────────────────────────────────
 
@@ -603,3 +606,154 @@ describe('/docs names real packages and links onward', () => {
   });
 });
 
+// ─── 16. /components/* and /showcase run the package's initialisers ──────────
+// The catalogue promised filtering, sorting, expand/collapse, chip editing,
+// arrow keys and windowing while the site bundle shipped no `init*` at all
+// (`grep -o 'init[A-Za-z]*' basenative.js` returned only "initial") and the
+// demos hand-rolled a click-only copy of the tabs the package already had.
+
+describe('the site bundle ships every client initialiser the package exports', () => {
+  const shipped = Object.keys(components).filter((name) => /^init[A-Z]/.test(name));
+  const entry = readFileSync(repo('examples/express/basenative-entry.js'), 'utf8');
+  const bundle = readFileSync(repo('examples/express/public/basenative.js'), 'utf8');
+  // esbuild's ESM output ends in one `export { … }` block; that list is what a
+  // page can import from /basenative.js.
+  const exported = bundle
+    .match(/export\s*\{([^}]*)\}\s*;?\s*$/)[1]
+    .split(',')
+    .map((name) => name.trim().split(/\s+as\s+/).pop())
+    .filter(Boolean);
+
+  it('the package exports the ten initialisers the catalogue relies on', () => {
+    assert.deepEqual(
+      shipped.sort(),
+      [
+        'initCalendarDragDrop', 'initCommandPalette', 'initDataGrid', 'initDrawer', 'initDropdownMenu',
+        'initMultiselect', 'initPipelineDragDrop', 'initTabs', 'initTree', 'initVirtualList',
+      ],
+    );
+  });
+
+  it('basenative-entry.js re-exports each one and the committed bundle carries it', () => {
+    for (const name of shipped) {
+      assert.ok(entry.includes(name), `${name} is missing from examples/express/basenative-entry.js`);
+      assert.ok(
+        exported.includes(name),
+        `${name} is not exported by examples/express/public/basenative.js — run \`nx bundle basenative-example-express\` and commit the bundle`,
+      );
+    }
+    for (const name of ['signal', 'computed', 'effect', 'hydrate']) {
+      assert.ok(exported.includes(name), `the bundle lost the runtime's ${name}`);
+    }
+  });
+});
+
+describe('component demos call the package initialisers instead of copying them', () => {
+  const initOf = (fn) => fn.replace(/^render/, 'init');
+  const withInit = flatComponents.filter((c) => typeof components[initOf(c.fn)] === 'function');
+  const importsOf = (script) => /import \{([^}]*)\} from '\/basenative\.js'/.exec(script)[1];
+
+  it('the shared script hands every tablist to initTabs and no longer sets aria-selected by hand', () => {
+    const script = getDemoScripts('button');
+    assert.match(importsOf(script), /\binitTabs\b/);
+    assert.match(script, /initTabs\(/);
+    assert.doesNotMatch(script, /aria-selected/);
+    assert.doesNotMatch(script, /tabindex/);
+  });
+
+  it('every component with an initialiser is listed, and its demo page imports and calls it', () => {
+    assert.ok(withInit.length >= 8, `expected the eight initialised components, found ${withInit.length}`);
+    for (const { slug, fn } of withInit) {
+      const init = initOf(fn);
+      if (slug !== 'tabs') {
+        assert.equal(demoInitialisers[slug], init, `demoInitialisers has no ${init} for /components/${slug}`);
+      }
+      const script = getDemoScripts(slug);
+      assert.match(importsOf(script), new RegExp(`\\b${init}\\b`), `/components/${slug} does not import ${init}`);
+      assert.match(script, new RegExp(`${init}\\(`), `/components/${slug} never calls ${init}`);
+    }
+    for (const [slug, init] of Object.entries(demoInitialisers)) {
+      assert.ok(flatComponents.some((c) => c.slug === slug), `demoInitialisers names an unknown slug ${slug}`);
+      assert.equal(typeof components[init], 'function', `${init} is not exported by @basenative/components`);
+    }
+  });
+
+  it('/components/drawer opens through initDrawer and never toggles hidden or data-open itself (BN-019)', () => {
+    const script = getDemoScripts('drawer');
+    assert.match(script, /const panel = initDrawer\(drawer\)/);
+    assert.match(script, /panel\.open\(\)/);
+    assert.doesNotMatch(script, /data-open|'hidden'|inert/);
+  });
+
+  it('/components/command-palette binds the Ctrl+K its demo advertises', () => {
+    const script = getDemoScripts('command-palette');
+    assert.match(script, /initCommandPalette\(cmd, \{ hotkey: 'Mod\+K' \}\)/);
+    assert.doesNotMatch(script, /showModal/);
+  });
+
+  it('the virtual list demo rebuilds the full list from the total the markup carries', () => {
+    const html = getDemo('virtual-list').examples[0].html;
+    const total = Number(/data-total="(\d+)"/.exec(html)[1]);
+    assert.equal(total, 1000);
+    assert.match(getDemoScripts('virtual-list'), /dataset\.total/);
+  });
+});
+
+describe('catalogue copy promises only what a shipped initialiser delivers', () => {
+  const initOf = (fn) => fn.replace(/^render/, 'init');
+  // The capability verbs the 2026-09-12 audit found advertised with nothing
+  // behind them. A summary may use one only when the package ships the
+  // component's initialiser and the summary names it, as docs/api/components.md does.
+  const FORBIDDEN = [/arrow-key/i, /fuzzy filter/i, /expand\/collapse/i, /chip removal/i, /visible slice/i, /re-slices/i, /close-on-select/i];
+
+  it('a summary using a capability verb names the shipped initialiser that provides it', () => {
+    for (const { slug, fn, summary } of flatComponents) {
+      const hit = FORBIDDEN.find((re) => re.test(summary));
+      if (!hit) continue;
+      const init = initOf(fn);
+      assert.equal(typeof components[init], 'function',
+        `/components/${slug} promises "${summary}" but the package ships no ${init}`);
+      assert.ok(summary.includes(init), `/components/${slug} promises "${summary}" without naming ${init}`);
+    }
+  });
+
+  it('nothing on the site calls the command filter fuzzy — it is a substring match', () => {
+    for (const { slug, summary } of flatComponents) assert.doesNotMatch(summary, /fuzzy/i, slug);
+    for (const { slug } of flatComponents) {
+      for (const ex of getDemo(slug).examples || []) {
+        assert.doesNotMatch(`${ex.title} ${ex.description}`, /fuzzy/i, `${slug}: ${ex.title}`);
+      }
+    }
+    assert.match(summaryOf(flatComponents, 'command-palette'), /substring filter/);
+  });
+
+  it('the tooltip demo says the invoker opens on activation, not hover', () => {
+    const [example] = getDemo('tooltip').examples;
+    assert.doesNotMatch(`${example.title} ${example.html}`, /hover/i);
+    assert.match(example.html, /Click or press Enter/);
+    assert.match(example.html, /popovertarget=/, 'the trigger must be a popover invoker');
+  });
+
+  function summaryOf(list, slug) {
+    return list.find((c) => c.slug === slug).summary;
+  }
+});
+
+describe('/showcase runs the package initialisers rather than its own copies', () => {
+  const showcase = readFileSync(repo('examples/express/public/showcase.js'), 'utf8');
+  const imports = /import \{([^}]*)\} from '\/basenative\.js'/.exec(showcase)[1];
+
+  it('imports and calls the tabs, drawer, dropdown, palette and virtual list initialisers', () => {
+    for (const init of ['initTabs', 'initDrawer', 'initDropdownMenu', 'initCommandPalette', 'initVirtualList']) {
+      assert.match(imports, new RegExp(`\\b${init}\\b`), `showcase.js does not import ${init}`);
+      assert.match(showcase, new RegExp(`${init}\\(`), `showcase.js never calls ${init}`);
+    }
+  });
+
+  it('no longer flips aria-selected, hides popovers or moves the virtual window by hand', () => {
+    assert.doesNotMatch(showcase, /aria-selected/);
+    assert.doesNotMatch(showcase, /"dropdown-item"|"command-item"|menu\.hidePopover/);
+    assert.doesNotMatch(showcase, /translateY|virtual-item', |data-index/);
+    assert.doesNotMatch(showcase, /drawer-close|drawer-overlay|inert/);
+  });
+});

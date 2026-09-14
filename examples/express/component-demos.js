@@ -387,7 +387,8 @@ renderMultiselect({ name: 'tags', label: 'Tags', items: ['JavaScript', 'CSS', 'H
     examples: [
       {
         title: 'Tag picker',
-        description: 'Type to filter, click to add a chip, click × on the chip to remove.',
+        description:
+          'Type to filter the suggestions and pick one (or press Enter) to add a chip; click × on a chip, or press Backspace in the empty input, to remove one.',
         html: renderMultiselect({
           name: 'demo-tags',
           label: 'Tags',
@@ -948,7 +949,8 @@ renderCommandPalette({ commands: [{ label: 'Open', action: 'open' }] });
     examples: [
       {
         title: 'Cmd+K palette',
-        description: 'Modal dialog with grouped commands and a fuzzy filter.',
+        description:
+          'Modal dialog with grouped commands and a substring filter. Ctrl/Cmd+K opens it; ↑↓ move, ↵ selects, Esc closes.',
         scripted: 'command-palette',
         html: `
 ${renderButton('Open command palette', { variant: 'secondary', attrs: `data-bn-demo-cmd-open` })}
@@ -1066,7 +1068,8 @@ renderDataGrid({
     examples: [
       {
         title: 'Sortable, selectable rows',
-        description: 'Native table with sort indicators and a checkbox column for selection.',
+        description:
+          'Native table: click a sortable header to sort, the checkbox column selects rows, and the arrow keys move between cells.',
         html: renderDataGrid({
           columns: [
             { key: 'task', label: 'Task', sortable: true },
@@ -1124,7 +1127,7 @@ renderTree({ items: [{ id: '1', label: 'src', children: [{ id: '1-1', label: 'si
     examples: [
       {
         title: 'File tree',
-        description: 'role="tree" with expandable nodes, icons, and selection state.',
+        description: 'role="tree" with expand/collapse, icons, selection state and the APG arrow keys.',
         html: renderTree({
           items: [
             {
@@ -1264,7 +1267,8 @@ renderDropdownMenu({ trigger: 'Actions', items: [{ label: 'Edit', action: 'edit'
     examples: [
       {
         title: 'Action menu',
-        description: 'Built on the Popover API. Anchored to its trigger.',
+        description:
+          'Built on the Popover API and anchored to its trigger; arrow keys move between items and choosing one closes the menu.',
         html: renderDropdownMenu({
           trigger: 'Actions',
           items: [
@@ -1297,10 +1301,11 @@ renderTooltip({ trigger: 'Help', content: 'Helpful context', position: 'top' });
     `),
     examples: [
       {
-        title: 'Hover for context',
-        description: 'role="tooltip" anchored to its trigger via the Popover API.',
+        title: 'Click or press Enter for context',
+        description:
+          'role="tooltip" anchored to its trigger via the Popover API. The trigger is a popover invoker, so it opens on activation — click, or Enter / Space with focus — not on hover.',
         html: renderTooltip({
-          trigger: renderButton('Hover or focus me', { variant: 'secondary' }),
+          trigger: renderButton('Click or press Enter', { variant: 'secondary' }),
           content: 'This is a tooltip with helpful context.',
           position: 'top',
         }),

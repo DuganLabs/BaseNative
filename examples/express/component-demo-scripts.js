@@ -4,6 +4,18 @@
  * interactions as the live route.
  */
 
+// The package initialiser each demo page calls, imported from the site bundle
+// beside the runtime. A slug missing here gets the runtime only.
+export const demoInitialisers = {
+  'command-palette': 'initCommandPalette',
+  datagrid: 'initDataGrid',
+  tree: 'initTree',
+  multiselect: 'initMultiselect',
+  'virtual-list': 'initVirtualList',
+  'dropdown-menu': 'initDropdownMenu',
+  drawer: 'initDrawer',
+};
+
 export function getDemoScripts(slug) {
   const perSlug = {
     button: `
@@ -224,9 +236,36 @@ export function getDemoScripts(slug) {
       }
     `,
     'command-palette': `
-      const cmdOpen = document.querySelector('[data-bn-demo-cmd-open]');
       const cmd = document.getElementById('demo-cmd-page');
-      cmdOpen?.addEventListener('click', () => cmd?.showModal());
+      if (cmd) {
+        const palette = initCommandPalette(cmd, { hotkey: 'Mod+K' });
+        document.querySelector('[data-bn-demo-cmd-open]')?.addEventListener('click', () => palette.open());
+      }
+    `,
+    multiselect: `
+      const multiselect = document.querySelector('[data-bn="multiselect"]');
+      if (multiselect) initMultiselect(multiselect);
+    `,
+    datagrid: `
+      const grid = document.querySelector('[data-bn="datagrid"]');
+      if (grid) initDataGrid(grid);
+    `,
+    tree: `
+      const tree = document.querySelector('[data-bn="tree"]');
+      if (tree) initTree(tree);
+    `,
+    'virtual-list': `
+      const virtualizer = document.querySelector('[data-bn="virtualizer"]');
+      if (virtualizer) {
+        // The server rendered the first window of 'Item N' rows; rebuild the
+        // full list from the total it emitted so the window can follow the scroll.
+        const total = Number(virtualizer.querySelector('[data-bn="virtual-window"]')?.dataset.total) || 0;
+        initVirtualList(virtualizer, { items: Array.from({ length: total }, (_, i) => 'Item ' + (i + 1)) });
+      }
+    `,
+    'dropdown-menu': `
+      const dropdown = document.querySelector('[data-bn="dropdown"]');
+      if (dropdown) initDropdownMenu(dropdown);
     `,
     table: `
       const tq = document.querySelector('input[data-bn-demo-table-q]');
@@ -250,19 +289,10 @@ export function getDemoScripts(slug) {
     `,
     drawer: `
       const drawer = document.getElementById('demo-drawer-page');
-      const opener = document.querySelector('[data-bn-demo-drawer-open]');
-      const overlay = document.querySelector('[data-bn="drawer-overlay"]');
-      const close = document.querySelector('[data-bn="drawer-close"]');
-      opener?.addEventListener('click', () => {
-        drawer?.setAttribute('data-open', '');
-        overlay?.removeAttribute('hidden');
-      });
-      const dismiss = () => {
-        drawer?.removeAttribute('data-open');
-        overlay?.setAttribute('hidden', '');
-      };
-      overlay?.addEventListener('click', dismiss);
-      close?.addEventListener('click', dismiss);
+      if (drawer) {
+        const panel = initDrawer(drawer);
+        document.querySelector('[data-bn-demo-drawer-open]')?.addEventListener('click', () => panel.open());
+      }
     `,
     toast: `
       const tcontainer = document.querySelector('[data-bn="toast-container"]');
@@ -292,18 +322,11 @@ export function getDemoScripts(slug) {
 
   const slugScript = perSlug[slug] || '';
 
-  // Shared interactions for components rendered on every demo page.
+  // Shared interactions for components rendered on every demo page. Tabs get
+  // the package's own APG implementation (arrow keys, roving tabindex) rather
+  // than a click-only copy of it.
   const sharedScript = `
-    document.querySelectorAll('[data-bn="tab"]').forEach((tab) => {
-      tab.addEventListener('click', () => {
-        const tabs = tab.closest('[data-bn="tabs"]');
-        tabs.querySelectorAll('[data-bn="tab"]').forEach((t) => t.setAttribute('aria-selected', 'false'));
-        tabs.querySelectorAll('[data-bn="tab-panel"]').forEach((p) => (p.hidden = true));
-        tab.setAttribute('aria-selected', 'true');
-        const panel = tabs.querySelector('#' + tab.getAttribute('aria-controls'));
-        if (panel) panel.hidden = false;
-      });
-    });
+    document.querySelectorAll('[data-bn="tabs"]').forEach((tabs) => initTabs(tabs));
     document.querySelectorAll('[data-bn="alert-dismiss"]').forEach((btn) => {
       btn.addEventListener('click', () => btn.closest('[data-bn="alert"]')?.remove());
     });
@@ -313,9 +336,12 @@ export function getDemoScripts(slug) {
     });
   `;
 
+  const imports = ['signal', 'effect', 'computed', 'initTabs'];
+  if (demoInitialisers[slug]) imports.push(demoInitialisers[slug]);
+
   return `
     <script type="module">
-      import { signal, effect, computed } from '/basenative.js';
+      import { ${imports.join(', ')} } from '/basenative.js';
       ${sharedScript}
       ${slugScript}
     </script>
