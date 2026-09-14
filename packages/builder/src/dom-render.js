@@ -4,6 +4,10 @@ const VOID_ELEMENTS = new Set([
   'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr',
 ]);
 
+function attrName(key) {
+  return key.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
+}
+
 function tagFor(node, def) {
   if (node.type === 'heading' && typeof node.props.level === 'string') return node.props.level;
   if (def?.tag) return def.tag;
@@ -23,12 +27,19 @@ export function renderNodeToElement(doc, node, palette) {
     el.setAttribute('role', def.role);
   }
 
+  // Same attribute contract as codegen.js, so the canvas preview is styled by
+  // the same [data-bn] rules as the exported markup.
+  if (def?.bn && node.props['data-bn'] == null) {
+    el.setAttribute('data-bn', def.bn);
+  }
+
   for (const key of Object.keys(node.props)) {
     if (key === 'text' || key === 'level') continue;
     const value = node.props[key];
     if (value === false || value == null) continue;
-    if (value === true) el.setAttribute(key, '');
-    else el.setAttribute(key, String(value));
+    const name = def?.dataProps?.includes(key) ? `data-${attrName(key)}` : key;
+    if (value === true) el.setAttribute(name, '');
+    else el.setAttribute(name, String(value));
   }
 
   if (typeof node.props.text === 'string' && (!node.children || node.children.length === 0) && !isVoid) {

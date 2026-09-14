@@ -135,3 +135,64 @@ describe('generateBaseNative', () => {
     assert.ok(code.includes('\t<p>Hi</p>'));
   });
 });
+
+describe('exported markup carries the @basenative/components attribute contract', () => {
+  // components.css is keyed on data-bn="<token>" and data-<prop>; a bare
+  // `variant="primary"` matches no rule in the project, so this is what
+  // decides whether the export is styled at all.
+  test('a button built from the palette defaults exports data-bn and data-variant', () => {
+    const s = createBuilderState();
+    const palette = defaultPalette();
+    s.addNode(null, { type: 'button', props: { ...palette.get('button').defaults } });
+    const html = generateBaseNative(s, { palette });
+    assert.match(html, /data-bn="button"/);
+    assert.match(html, /data-variant="primary"/);
+    assert.match(html, /data-size="default"/);
+    assert.doesNotMatch(html, /<button[^>]*\svariant=/);
+    assert.doesNotMatch(html, /<button[^>]*\ssize=/);
+  });
+
+  test('the exported button carries every data-* attribute the real renderButton emits', async () => {
+    const { renderButton } = await import('../../components/src/button.js');
+    const s = createBuilderState();
+    const palette = defaultPalette();
+    s.addNode(null, { type: 'button', props: { ...palette.get('button').defaults } });
+    const html = generateBaseNative(s, { palette });
+    const real = renderButton('Click me', { variant: 'primary' });
+    const dataAttrs = real.match(/data-[a-z-]+="[^"]*"/g);
+    assert.ok(dataAttrs.length >= 3, `renderButton should emit data-* attributes, got ${real}`);
+    for (const attr of dataAttrs) {
+      assert.ok(html.includes(attr), `export is missing ${attr} that renderButton emits:\n${html}`);
+    }
+  });
+
+  test('a user-supplied data-bn prop wins over the palette token', () => {
+    const s = createBuilderState();
+    const palette = defaultPalette();
+    s.addNode(null, { type: 'button', props: { text: 'Go', 'data-bn': 'custom' } });
+    const html = generateBaseNative(s, { palette });
+    assert.match(html, /data-bn="custom"/);
+    assert.equal((html.match(/data-bn=/g) || []).length, 1);
+  });
+
+  test('input, textarea and checkbox export their data-bn token', () => {
+    const s = createBuilderState();
+    const palette = defaultPalette();
+    for (const type of ['input', 'textarea', 'checkbox']) {
+      s.addNode(null, { type, props: { ...palette.get(type).defaults, name: type } });
+    }
+    const html = generateBaseNative(s, { palette });
+    assert.match(html, /<input data-bn="input"/);
+    assert.match(html, /<textarea data-bn="textarea"/);
+    assert.match(html, /<input data-bn="checkbox"/);
+  });
+
+  test('elements with no component counterpart get no data-bn', () => {
+    const s = createBuilderState();
+    const palette = defaultPalette();
+    s.addNode(null, { type: 'heading', props: { level: 'h1', text: 'Hi' } });
+    s.addNode(null, { type: 'link', props: { href: '/', text: 'Home' } });
+    const html = generateBaseNative(s, { palette });
+    assert.doesNotMatch(html, /data-bn=/);
+  });
+});

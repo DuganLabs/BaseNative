@@ -46,6 +46,18 @@ export interface ComponentDefinition {
   defaultContent?: string;
   /** Optional ARIA role assigned to the rendered element. */
   role?: string;
+  /**
+   * The `data-bn` token the matching @basenative/components render function
+   * emits (`'button'`, `'input'`, …). Both the canvas and the code generator
+   * add `data-bn="<bn>"` to the element, which is what the library's CSS
+   * selects on. Omit for plain HTML elements with no component.
+   */
+  bn?: string;
+  /**
+   * Prop names the component serialises as `data-<name>` rather than as bare
+   * attributes (button: `['variant', 'size']`). Defaults to `[]`.
+   */
+  dataProps?: string[];
 }
 
 export interface ComponentPalette {

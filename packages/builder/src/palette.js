@@ -15,6 +15,8 @@ export function createPalette() {
       defaults: spec.defaults ? { ...spec.defaults } : {},
       defaultContent: spec.defaultContent,
       role: spec.role,
+      bn: spec.bn,
+      dataProps: Array.isArray(spec.dataProps) ? spec.dataProps.slice() : [],
     };
     map.set(def.type, def);
     return def;
@@ -131,13 +133,16 @@ export function defaultPalette() {
     category: 'inputs',
     tag: 'button',
     container: false,
+    bn: 'button',
+    dataProps: ['variant', 'size'],
     props: [
       { name: 'text', kind: 'string', label: 'Label' },
       { name: 'variant', kind: 'enum', options: ['primary', 'secondary', 'ghost', 'destructive'], default: 'primary', label: 'Variant' },
+      { name: 'size', kind: 'enum', options: ['sm', 'default', 'lg'], default: 'default', label: 'Size' },
       { name: 'type', kind: 'enum', options: ['button', 'submit', 'reset'], default: 'button', label: 'Type' },
       { name: 'disabled', kind: 'boolean', default: false, label: 'Disabled' },
     ],
-    defaults: { text: 'Click me', variant: 'primary', type: 'button' },
+    defaults: { text: 'Click me', variant: 'primary', size: 'default', type: 'button' },
   });
 
   palette.register({
@@ -146,6 +151,7 @@ export function defaultPalette() {
     category: 'inputs',
     tag: 'input',
     container: false,
+    bn: 'input',
     props: [
       { name: 'type', kind: 'enum', options: ['text', 'email', 'password', 'number', 'search', 'tel', 'url'], default: 'text', label: 'Type' },
       { name: 'name', kind: 'string', label: 'Name' },
@@ -162,6 +168,7 @@ export function defaultPalette() {
     category: 'inputs',
     tag: 'textarea',
     container: false,
+    bn: 'textarea',
     props: [
       { name: 'name', kind: 'string', label: 'Name' },
       { name: 'placeholder', kind: 'string', label: 'Placeholder' },
@@ -177,6 +184,7 @@ export function defaultPalette() {
     category: 'inputs',
     tag: 'input',
     container: false,
+    bn: 'checkbox',
     props: [
       { name: 'name', kind: 'string', label: 'Name' },
       { name: 'label', kind: 'string', label: 'Label' },

@@ -90,7 +90,7 @@ Creates an empty, mutable registry of component definitions.
 **Parameters:** none
 
 **Returns:** a palette object:
-- `register(spec)` — adds a definition; `spec.type` is required, `label`/`category`/`tag` default to `type`, `container` defaults to `false`, `props` is an array of `{ name, kind, label?, options?, default? }` field descriptors, `defaults` seeds initial prop values
+- `register(spec)` — adds a definition; `spec.type` is required, `label`/`category`/`tag` default to `type`, `container` defaults to `false`, `props` is an array of `{ name, kind, label?, options?, default? }` field descriptors, `defaults` seeds initial prop values; `bn` is the `data-bn` token the matching `@basenative/components` render function emits and `dataProps` lists the props it serialises as `data-<name>` (button: `bn: 'button'`, `dataProps: ['variant', 'size']`) — both emitters add `data-bn="<bn>"` and write those props as `data-*`, which is what `components.css` selects on
 - `unregister(type)`
 - `get(type)` — returns the definition or `null`
 - `list()` — all definitions
