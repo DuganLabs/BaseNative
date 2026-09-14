@@ -246,6 +246,7 @@ export function getDemoScripts(slug) {
       document.querySelector('[data-bn-demo-dialog-open]')?.addEventListener('click', () => dlg?.showModal());
       document.querySelector('[data-bn-demo-dialog-cancel]')?.addEventListener('click', () => dlg?.close());
       document.querySelector('[data-bn-demo-dialog-confirm]')?.addEventListener('click', () => dlg?.close());
+      dlg?.querySelector('[data-bn="dialog-close"]')?.addEventListener('click', () => dlg.close());
     `,
     drawer: `
       const drawer = document.getElementById('demo-drawer-page');

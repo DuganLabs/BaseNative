@@ -1,6 +1,11 @@
 <section>
   <h2>Task <em>Manager</em></h2>
   <p>Server-rendered initial state with client-side hydration for interactivity.</p>
+  <template @if="!hasApi">
+    <p data-tasks-static-notice>
+      This is the static demo — tasks you add are kept in your browser and are not saved to a server.
+    </p>
+  </template>
 </section>
 
 <section data-tasks data-has-api="{{ hasApi }}">
@@ -41,10 +46,36 @@ const initialData = JSON.parse(
 // entirely there instead of finding out per request.
 const hasApi = document.querySelector('[data-tasks]')?.dataset.hasApi === 'true';
 
-const taskSignal = signal(initialData);
+// Without an API the list lives in this browser. localStorage keeps it across
+// reloads; the notice above says so. Every access is guarded — a private
+// window or blocked site data makes the accessor itself throw — and the
+// server-rendered seed rows are the fallback either way.
+const STORAGE_KEY = 'bn-tasks';
+function readStoredTasks() {
+  if (hasApi) return null;
+  try {
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return Array.isArray(stored) ? stored : null;
+  } catch {
+    return null;
+  }
+}
+function storeTasks(list) {
+  if (hasApi) return;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  } catch {
+    // Nothing to do: the list still works for this page view.
+  }
+}
+
+const taskSignal = signal(readStoredTasks() ?? initialData);
 const currentFilter = signal('all');
 const filterOptions = ['all', 'done', 'active', 'pending'];
-let nextLocalId = initialData.reduce((maxId, task) => Math.max(maxId, task.id), 0) + 1;
+// Seeded from whatever the list actually holds, so restored tasks never
+// collide with a freshly minted id.
+let nextLocalId = taskSignal().reduce((maxId, task) => Math.max(maxId, task.id), 0) + 1;
+effect(() => storeTasks(taskSignal()));
 
 const filteredTasks = computed(() => {
   const f = currentFilter(), t = taskSignal();

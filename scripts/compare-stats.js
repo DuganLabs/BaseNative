@@ -116,7 +116,7 @@ function requireExport(file, name) {
 }
 
 /** Workspace package directories, with their parsed package.json. */
-function workspacePackages() {
+export function workspacePackages() {
   return readdirSync(join(root, 'packages'))
     .map((dir) => {
       try {
@@ -234,6 +234,7 @@ export function computeCompareStats() {
   return {
     coreModule: CORE_MODULE,
     coreLines,
+    publicPackages: workspacePackages().filter(({ pkg }) => pkg.private !== true).length,
     corePrimitives: CORE_PRIMITIVES.length,
     corePrimitiveNames: CORE_PRIMITIVES.map((p) => `${p.name}()`).join(', '),
     runtimeProdDeps,

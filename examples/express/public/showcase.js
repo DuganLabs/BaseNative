@@ -17,6 +17,7 @@ ready(() => {
   wireToastDemo(toaster);
   wireToastButtons(toaster);
   wireVirtualList();
+  wirePagination();
   wireCounter();
   wireClock();
   wireLiveCounter();
@@ -550,6 +551,40 @@ function wireShowcaseToc() {
     { rootMargin: '-30% 0px -60% 0px' },
   );
   for (const sec of sections) observer.observe(sec);
+}
+
+// The pagination demo renders real anchors (so it stays focusable and
+// keyboard-activatable) against a '#' baseUrl. Take the clicks over and move
+// the current page in place; letting them through would navigate to the same
+// static page and throw away the scroll position.
+function wirePagination() {
+  for (const nav of document.querySelectorAll('[data-bn="pagination"]')) {
+    const pageOf = (a) =>
+      Number(new URL(a.href).searchParams.get('page') || a.hash.match(/page=(\d+)/)?.[1]);
+    nav.addEventListener('click', (e) => {
+      const link = e.target.closest('a[href]');
+      if (!link || !nav.contains(link)) return;
+      e.preventDefault();
+      const target = pageOf(link);
+      if (!target) return;
+      const pages = [...nav.querySelectorAll('li > a, li > span')];
+      const numbered = pages.filter((el) => /^\d+$/.test(el.textContent.trim()));
+      for (const el of numbered) {
+        const n = Number(el.textContent.trim());
+        if (n === target) {
+          el.setAttribute('aria-current', 'page');
+          el.setAttribute('data-active', '');
+        } else {
+          el.removeAttribute('aria-current');
+          el.removeAttribute('data-active');
+        }
+      }
+      const prev = nav.querySelector('[rel="prev"]');
+      const next = nav.querySelector('[rel="next"]');
+      if (prev) prev.href = `#?page=${target - 1}`;
+      if (next) next.href = `#?page=${target + 1}`;
+    });
+  }
 }
 
 function wireVirtualList() {

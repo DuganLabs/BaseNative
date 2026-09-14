@@ -84,40 +84,49 @@ export function getComponentsPageContext() {
   };
 }
 
+// The browsers the roadmap's policy section names; the readiness tile counts
+// this list rather than restating it.
+const targetBrowsers = ['Chrome', 'Edge', 'Firefox', 'Safari'];
+
 export function getRoadmapPageContext() {
+  const releaseStages = [
+    {
+      milestone: 'v0.2',
+      focus: 'Trust blockers',
+      outcome:
+        'CSP-safe expressions, keyed reconciliation, hydration diagnostics, browser feature helpers, honest docs.',
+      status: 'Implemented',
+      tone: 'done',
+    },
+    {
+      milestone: 'v0.3',
+      focus: 'Pilot baseline',
+      outcome:
+        'Router, forms, semantic component baseline, reference business app, edge deployment example, published metrics.',
+      status: 'Implemented',
+      tone: 'done',
+    },
+    {
+      milestone: 'v0.4+',
+      focus: 'Workflow breadth',
+      outcome:
+        'Dialog, drawer, menu, tabs, shell navigation, loading states, and DX hardening after pilot evidence is green.',
+      status: 'Implemented',
+      tone: 'done',
+    },
+  ];
   return {
+    // Measured or derived, never typed: the package count read "39" while the
+    // workspace published 42, and "4 engines" counted four browsers that share
+    // three engines. 'Shipped' is a judgement, not a measurement, so it stays.
     readinessStats: [
-      { label: 'Current Milestone', value: 'v0.4+' },
-      { label: 'Browser Support', value: '4 engines' },
-      { label: 'Public Packages', value: '39' },
+      { label: 'Current Milestone', value: releaseStages.at(-1).milestone },
+      { label: 'Browser Support', value: `${targetBrowsers.length} browsers` },
+      { label: 'Public Packages', value: String(stats().publicPackages) },
       { label: 'Advanced Widgets', value: 'Shipped' },
     ],
-    releaseStages: [
-      {
-        milestone: 'v0.2',
-        focus: 'Trust blockers',
-        outcome:
-          'CSP-safe expressions, keyed reconciliation, hydration diagnostics, browser feature helpers, honest docs.',
-        status: 'Implemented',
-        tone: 'done',
-      },
-      {
-        milestone: 'v0.3',
-        focus: 'Pilot baseline',
-        outcome:
-          'Router, forms, semantic component baseline, reference business app, edge deployment example, published metrics.',
-        status: 'Implemented',
-        tone: 'done',
-      },
-      {
-        milestone: 'v0.4+',
-        focus: 'Workflow breadth',
-        outcome:
-          'Dialog, drawer, menu, tabs, shell navigation, loading states, and DX hardening after pilot evidence is green.',
-        status: 'Implemented',
-        tone: 'done',
-      },
-    ],
+    targetBrowserList: `${targetBrowsers.slice(0, -1).join(', ')}, and ${targetBrowsers.at(-1)}`,
+    releaseStages,
     trustBlockers: [
       {
         item: 'Template evaluation',

@@ -34,7 +34,6 @@ const ROUTES = process.env.AUDIT_BASE_URL
       '/showcase/',
       '/components/checkbox/',
       '/compare/',
-      '/test-signals/',
     ];
 
 const MIME_TYPES = {
