@@ -22,8 +22,8 @@
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.12.0",
-    "happy-dom": "^20.14.0",
-    "nx": "^23.2.0",
+    "happy-dom": "^20.14.3",
+    "nx": "^23.2.1",
     "nx-mcp": "^0.25.0",
     "prettier": "^3.9.6",
     "wrangler": "^4.129.0"
