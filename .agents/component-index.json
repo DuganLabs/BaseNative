@@ -7,7 +7,7 @@
     "components": 66,
     "renderFunctions": 60,
     "customElements": 6,
-    "styledContracts": 173,
+    "styledContracts": 177,
     "componentsWithVariants": 18
   },
   "stylesheets": [
@@ -25,6 +25,7 @@
     "packages/icons/reset.css",
     "packages/keyboard/src/styles.css",
     "packages/theme/src/bridge.css",
+    "packages/components/src/calendar.js",
     "packages/components/src/layout-grid.js",
     "packages/marketplace/src/card.js"
   ],
@@ -107,7 +108,13 @@
     "calendar-grid": [
       "@basenative/components#renderCalendar"
     ],
+    "calendar-help": [
+      "@basenative/components#renderCalendar"
+    ],
     "calendar-slot": [
+      "@basenative/components#renderCalendar"
+    ],
+    "calendar-status": [
       "@basenative/components#renderCalendar"
     ],
     "calendar-time-gutter": [
@@ -367,6 +374,12 @@
       "@basenative/components#renderPipeline"
     ],
     "pipeline-column-title": [
+      "@basenative/components#renderPipeline"
+    ],
+    "pipeline-help": [
+      "@basenative/components#renderPipeline"
+    ],
+    "pipeline-status": [
       "@basenative/components#renderPipeline"
     ],
     "pkg-card": [
@@ -1042,12 +1055,15 @@
           "calendar",
           "calendar-grid",
           "calendar-corner",
-          "calendar-time-gutter"
+          "calendar-time-gutter",
+          "calendar-help",
+          "calendar-status"
         ],
         "dataAttributes": [
           "date",
           "event-id",
-          "hour"
+          "hour",
+          "minute"
         ]
       },
       "variants": {
@@ -1062,6 +1078,16 @@
           "emittedByRenderer": false
         },
         "calendar-event.dragging": {
+          "contract": "calendar-event",
+          "values": [],
+          "openPatterns": [],
+          "matchesAnyValue": true,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": false
+        },
+        "calendar-event.picked": {
           "contract": "calendar-event",
           "values": [],
           "openPatterns": [],
@@ -1593,7 +1619,9 @@
           "pipeline-column-title",
           "pipeline-column-count",
           "pipeline-column-cards",
-          "pipeline"
+          "pipeline",
+          "pipeline-help",
+          "pipeline-status"
         ],
         "dataAttributes": [
           "column-id"
@@ -1622,7 +1650,7 @@
       "package": "@basenative/components",
       "file": "packages/components/src/calendar.js",
       "signature": "renderPipelineBlock(options)",
-      "purpose": "Render a pipeline/kanban block for use outside the calendar (e.g., sidebar cards that can be dragged onto the…",
+      "purpose": "Render a pipeline/kanban block for use outside the calendar (e.g., sidebar cards that can be dragged, or pick…",
       "deprecated": false,
       "emits": {
         "rootTag": "div",
@@ -1637,6 +1665,16 @@
       },
       "variants": {
         "dragging": {
+          "contract": "pipeline-block",
+          "values": [],
+          "openPatterns": [],
+          "matchesAnyValue": true,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": false
+        },
+        "picked": {
           "contract": "pipeline-block",
           "values": [],
           "openPatterns": [],

@@ -2502,13 +2502,13 @@ describe('Calendar — hardening', () => {
 describe('PipelineBlock — hardening', () => {
   it('renders with minimal options', () => {
     const html = renderPipelineBlock({ id: 'b', title: 'T' });
-    assert.ok(html.startsWith('<div data-bn="pipeline-block" draggable="true" data-block-id="b">'));
+    assert.ok(html.startsWith('<div data-bn="pipeline-block" draggable="true" tabindex="0" data-block-id="b">'));
     assert.ok(!html.includes('subtitle'));
   });
 
   it('renders with all options without a stray space', () => {
     const html = renderPipelineBlock({ id: 'b', title: 'T', subtitle: 'S', status: 'hot', attrs: 'data-x="1"' });
-    assert.ok(html.startsWith('<div data-bn="pipeline-block" draggable="true" data-block-id="b" data-status="hot" data-x="1">'));
+    assert.ok(html.startsWith('<div data-bn="pipeline-block" draggable="true" tabindex="0" data-block-id="b" data-status="hot" data-x="1">'));
     assert.ok(html.includes('<span data-bn="pipeline-block-subtitle">S</span>'));
   });
 
@@ -2532,25 +2532,27 @@ describe('Pipeline — hardening', () => {
     assertEscaped(renderPipeline({ columns: [{ id: 'a', title: 'A' }], emptyMessage: XSS }));
   });
 
-  it('cards are draggable articles titled for hover', () => {
-    const html = renderPipeline({ columns: [{ id: 'a', title: 'A' }], cards: [{ id: 'c', columnId: 'a', title: 'Card' }] });
-    assert.ok(html.includes('<article data-bn="pipeline-card" data-card-id="c" draggable="true" title="Card">'));
+  it('cards are draggable, focusable articles titled for hover and described by the wrapper\'s instructions', () => {
+    const html = renderPipeline({ id: 'p', columns: [{ id: 'a', title: 'A' }], cards: [{ id: 'c', columnId: 'a', title: 'Card' }] });
+    assert.ok(html.includes('<article data-bn="pipeline-card" data-card-id="c" draggable="true" tabindex="0" aria-describedby="p-help" title="Card">'));
+    assert.ok(html.includes('<p data-bn="pipeline-help" id="p-help">Press Enter or Space to pick up, Up and Down to reorder, Left and Right to change column, Enter to drop, Escape to cancel; or tap the card, then a column.</p>'));
+    assert.ok(html.includes('<div data-bn="pipeline-status" aria-live="polite" aria-atomic="true"></div>'));
   });
 });
 
 describe('Drag and drop init', () => {
-  it('initCalendarDragDrop binds the five drag events and destroy unbinds them', () => {
+  it('initCalendarDragDrop binds the five drag events plus click and keydown, and destroy unbinds them', () => {
     const el = fakeContainer();
     const handle = initCalendarDragDrop(el, {});
-    assert.deepEqual([...el.listeners.keys()].sort(), ['dragend', 'dragleave', 'dragover', 'dragstart', 'drop']);
+    assert.deepEqual([...el.listeners.keys()].sort(), ['click', 'dragend', 'dragleave', 'dragover', 'dragstart', 'drop', 'keydown']);
     handle.destroy();
     assert.equal(el.listeners.size, 0);
   });
 
-  it('initPipelineDragDrop binds the five drag events and destroy unbinds them', () => {
+  it('initPipelineDragDrop binds the five drag events plus click and keydown, and destroy unbinds them', () => {
     const el = fakeContainer();
     const handle = initPipelineDragDrop(el, {});
-    assert.deepEqual([...el.listeners.keys()].sort(), ['dragend', 'dragleave', 'dragover', 'dragstart', 'drop']);
+    assert.deepEqual([...el.listeners.keys()].sort(), ['click', 'dragend', 'dragleave', 'dragover', 'dragstart', 'drop', 'keydown']);
     handle.destroy();
     assert.equal(el.listeners.size, 0);
   });
@@ -2604,8 +2606,8 @@ describe('Drag and drop init', () => {
     container.contains = () => false;
     const palette = fakeContainer();
     const handle = initCalendarDragDrop(container, { dragSource: palette });
-    assert.deepEqual([...container.listeners.keys()].sort(), ['dragend', 'dragleave', 'dragover', 'dragstart', 'drop']);
-    assert.deepEqual([...palette.listeners.keys()].sort(), ['dragend', 'dragstart']);
+    assert.deepEqual([...container.listeners.keys()].sort(), ['click', 'dragend', 'dragleave', 'dragover', 'dragstart', 'drop', 'keydown']);
+    assert.deepEqual([...palette.listeners.keys()].sort(), ['click', 'dragend', 'dragstart', 'keydown']);
 
     const set = [];
     const block = { dataset: { blockId: 'opp-1' }, attrs: {}, setAttribute(k, v) { this.attrs[k] = v; } };
@@ -2639,7 +2641,7 @@ describe('Drag and drop init', () => {
   it('dragSource === container binds nothing twice', () => {
     const el = fakeContainer();
     const handle = initCalendarDragDrop(el, { dragSource: el });
-    assert.equal(el.listeners.size, 5);
+    assert.equal(el.listeners.size, 7);
     handle.destroy();
     assert.equal(el.listeners.size, 0);
   });
@@ -2714,6 +2716,301 @@ describe('Drag and drop init', () => {
       const cards = [{ dataset: { cardId: 'a' } }, { dataset: { cardId: 'b' } }];
       assert.equal(position(board(cards, { overId: 'b' })), 1);
     });
+  });
+});
+
+describe('Select, then place', () => {
+  /**
+   * A minimal DOM: attribute-only selectors (`[a]`, `[a="v"]`, compounds and
+   * comma lists), closest/querySelector/querySelectorAll over a tree, dataset
+   * derived from data-* attributes, and events that bubble to every ancestor's
+   * listeners with `target` set to the node they were fired on.
+   */
+  function matches(node, selector) {
+    return selector.split(',').some(part => {
+      const conds = [...part.trim().matchAll(/\[([\w-]+)(?:="([^"]*)")?\]/g)];
+      return conds.length > 0 && conds.every(([, name, value]) => (value === undefined ? node.attrs.has(name) : node.attrs.get(name) === value));
+    });
+  }
+  function node(attributes = {}, children = []) {
+    const attrs = new Map(Object.entries(attributes));
+    const listeners = new Map();
+    const el = {
+      attrs,
+      listeners,
+      children,
+      parent: null,
+      textContent: attributes.text ?? '',
+      rect: null,
+      get dataset() {
+        const out = {};
+        for (const [k, v] of attrs) if (k.startsWith('data-')) out[k.slice(5).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = v;
+        return out;
+      },
+      hasAttribute: name => attrs.has(name),
+      getAttribute: name => attrs.get(name) ?? null,
+      setAttribute(name, value) { attrs.set(name, value); },
+      removeAttribute(name) { attrs.delete(name); },
+      addEventListener(type, fn) { listeners.set(type, fn); },
+      removeEventListener(type, fn) { if (listeners.get(type) === fn) listeners.delete(type); },
+      matches: selector => matches(el, selector),
+      closest(selector) {
+        let n = el;
+        while (n) { if (n.matches(selector)) return n; n = n.parent; }
+        return null;
+      },
+      querySelectorAll(selector) {
+        const out = [];
+        for (const child of children) {
+          if (child.matches(selector)) out.push(child);
+          out.push(...child.querySelectorAll(selector));
+        }
+        return out;
+      },
+      querySelector(selector) { return el.querySelectorAll(selector)[0] ?? null; },
+      contains(other) { let n = other; while (n) { if (n === el) return true; n = n.parent; } return false; },
+    };
+    for (const child of children) child.parent = el;
+    return el;
+  }
+  /** Dispatch on `target`, bubbling to every ancestor's listener of that type. */
+  function fire(target, type, extra = {}) {
+    const prevented = [];
+    const event = { type, target, key: extra.key, clientY: extra.clientY, preventDefault() { prevented.push(type); }, ...extra };
+    for (let n = target; n; n = n.parent) n.listeners.get(type)?.(event);
+    return prevented.length > 0;
+  }
+
+  /** The shape renderCalendar emits for 2025-06-02..08, hours 8–12, one event Tue 9:30. */
+  function calendar() {
+    const dates = ['2025-06-02', '2025-06-03', '2025-06-04', '2025-06-05', '2025-06-06', '2025-06-07', '2025-06-08'];
+    const slots = {};
+    const eventBlock = node({ 'data-bn': 'calendar-event', tabindex: '0', 'data-date': '2025-06-03', 'data-hour': '9', 'data-minute': '30', 'data-event-id': 'ev', title: 'Fix wiring' });
+    const columns = dates.map(date => {
+      const daySlots = [];
+      for (let h = 8; h < 12; h++) {
+        const slot = node({ 'data-bn': 'calendar-slot', 'data-date': date, 'data-hour': String(h) });
+        slot.getBoundingClientRect = () => ({ top: 100, height: 60 });
+        daySlots.push(slot);
+        slots[`${date}:${h}`] = slot;
+      }
+      return node({ 'data-bn': 'calendar-day-column', 'data-date': date }, date === '2025-06-03' ? [...daySlots, eventBlock] : daySlots);
+    });
+    const status = node({ 'data-bn': 'calendar-status', 'aria-live': 'polite' });
+    const container = node({ 'data-bn': 'calendar' }, [node({ 'data-bn': 'calendar-grid' }, columns), status]);
+    return { container, eventBlock, status, slotFor: (date, hour) => slots[`${date}:${hour}`] };
+  }
+
+  it('renders events focusable, described by one shared instruction node, with a polite live region', () => {
+    const html = renderCalendar({ id: 'cal', startDate: '2025-06-02', events: [{ id: 'ev', title: 'T', start: '2025-06-03T09:30', end: '2025-06-03T10:30' }] });
+    assert.ok(html.includes('<div data-bn="calendar-event" draggable="true" tabindex="0" aria-describedby="cal-help" data-date="2025-06-03" data-hour="9" data-minute="30" data-event-id="ev" title="T"'));
+    assert.equal((html.match(/data-bn="calendar-help"/g) || []).length, 1);
+    assert.ok(html.includes('<p data-bn="calendar-help" id="cal-help">Press Enter or Space to pick up, arrow keys to move by time and day, Enter to drop, Escape to cancel; or tap the event, then a time slot.</p>'));
+    assert.ok(html.includes('<div data-bn="calendar-status" aria-live="polite" aria-atomic="true"></div>'));
+  });
+
+  it('reschedules by tap-to-pick then tap-to-place, with no drag events', () => {
+    const { container, eventBlock, status, slotFor } = calendar();
+    const drops = [];
+    initCalendarDragDrop(container, { onDrop: d => drops.push(d) });
+    fire(eventBlock, 'click');
+    assert.ok(eventBlock.hasAttribute('data-picked'), 'the tapped event is marked picked');
+    assert.match(status.textContent, /Picked up Fix wiring/);
+    fire(slotFor('2025-06-03', 14) ?? slotFor('2025-06-03', 11), 'click', { clientY: 100 });
+    assert.equal(drops.length, 1);
+    assert.deepEqual(
+      { eventId: drops[0].eventId, date: drops[0].date, hour: drops[0].hour, sourceType: drops[0].sourceType },
+      { eventId: 'ev', date: '2025-06-03', hour: 11, sourceType: 'event' },
+    );
+    assert.equal(drops[0].datetime, '2025-06-03T11:00');
+    assert.ok(!eventBlock.hasAttribute('data-picked'), 'the pick is released after the drop');
+    assert.match(status.textContent, /Moved Fix wiring to Tue 6\/3 at 11:00 AM/);
+  });
+
+  it('a tap on a slot reports the minute from the tap position, like a drop', () => {
+    const { container, eventBlock, slotFor } = calendar();
+    const drops = [];
+    initCalendarDragDrop(container, { onDrop: d => drops.push(d) });
+    fire(eventBlock, 'click');
+    fire(slotFor('2025-06-05', 10), 'click', { clientY: 135 });
+    assert.deepEqual(drops, [{ eventId: 'ev', date: '2025-06-05', hour: 10, minute: 30, datetime: '2025-06-05T10:30', sourceType: 'event' }]);
+  });
+
+  it('a tap on a slot with nothing picked, or a second tap on the picked event, drops nothing', () => {
+    const { container, eventBlock, status, slotFor } = calendar();
+    const drops = [];
+    initCalendarDragDrop(container, { onDrop: d => drops.push(d) });
+    fire(slotFor('2025-06-02', 8), 'click');
+    fire(eventBlock, 'click');
+    fire(eventBlock, 'click');
+    assert.ok(!eventBlock.hasAttribute('data-picked'));
+    assert.match(status.textContent, /Cancelled moving Fix wiring/);
+    fire(slotFor('2025-06-02', 8), 'click');
+    assert.equal(drops.length, 0);
+  });
+
+  it('reschedules from the keyboard', () => {
+    const { container, eventBlock, status, slotFor } = calendar();
+    const drops = [];
+    initCalendarDragDrop(container, { onDrop: d => drops.push(d) });
+    assert.ok(fire(eventBlock, 'keydown', { key: 'Enter' }), 'Enter on an event is consumed');
+    assert.ok(eventBlock.hasAttribute('data-picked'));
+    assert.ok(slotFor('2025-06-03', 9).hasAttribute('data-drop-target'), 'the pending target starts at the event\'s own slot');
+    fire(eventBlock, 'keydown', { key: 'ArrowRight' });
+    assert.ok(slotFor('2025-06-04', 9).hasAttribute('data-drop-target'));
+    assert.ok(!slotFor('2025-06-03', 9).hasAttribute('data-drop-target'));
+    assert.match(status.textContent, /Wed 6\/4 at 9:30 AM/);
+    fire(eventBlock, 'keydown', { key: 'Enter' });
+    assert.deepEqual(drops, [{ eventId: 'ev', date: '2025-06-04', hour: 9, minute: 30, datetime: '2025-06-04T09:30', sourceType: 'event' }]);
+    assert.ok(!eventBlock.hasAttribute('data-picked'));
+    assert.ok(!slotFor('2025-06-04', 9).hasAttribute('data-drop-target'));
+  });
+
+  it('ArrowUp/ArrowDown move by snapMinutes and carry across the hour; moves off the grid are ignored', () => {
+    const { container, eventBlock, slotFor } = calendar();
+    const drops = [];
+    initCalendarDragDrop(container, { onDrop: d => drops.push(d) });
+    fire(eventBlock, 'keydown', { key: ' ' });
+    fire(eventBlock, 'keydown', { key: 'ArrowDown' });
+    fire(eventBlock, 'keydown', { key: 'ArrowDown' });
+    assert.ok(slotFor('2025-06-03', 10).hasAttribute('data-drop-target'), '9:30 + 15 + 15 = 10:00');
+    for (let i = 0; i < 12; i++) fire(eventBlock, 'keydown', { key: 'ArrowDown' });
+    assert.ok(slotFor('2025-06-03', 11).hasAttribute('data-drop-target'), 'stops at the last rendered hour');
+    for (let i = 0; i < 20; i++) fire(eventBlock, 'keydown', { key: 'ArrowUp' });
+    assert.ok(slotFor('2025-06-03', 8).hasAttribute('data-drop-target'), 'stops at the first rendered hour');
+    for (let i = 0; i < 3; i++) fire(eventBlock, 'keydown', { key: 'ArrowLeft' });
+    assert.ok(slotFor('2025-06-02', 8).hasAttribute('data-drop-target'), 'stops at the first rendered day');
+    fire(eventBlock, 'keydown', { key: ' ' });
+    assert.deepEqual(drops.map(d => d.datetime), ['2025-06-02T08:00']);
+  });
+
+  it('Escape cancels a pick and clears the marks; unpicked, it is not consumed', () => {
+    const { container, eventBlock, status, slotFor } = calendar();
+    const drops = [];
+    initCalendarDragDrop(container, { onDrop: d => drops.push(d) });
+    assert.equal(fire(eventBlock, 'keydown', { key: 'Escape' }), false);
+    fire(eventBlock, 'keydown', { key: 'Enter' });
+    assert.equal(fire(eventBlock, 'keydown', { key: 'Escape' }), true);
+    assert.ok(!eventBlock.hasAttribute('data-picked'));
+    assert.ok(!slotFor('2025-06-03', 9).hasAttribute('data-drop-target'));
+    assert.match(status.textContent, /Cancelled/);
+    fire(eventBlock, 'keydown', { key: 'Enter' });
+    fire(eventBlock, 'keydown', { key: 'ArrowRight' });
+    fire(eventBlock, 'keydown', { key: 'Escape' });
+    fire(eventBlock, 'keydown', { key: 'Enter' });
+    fire(eventBlock, 'keydown', { key: 'Enter' });
+    assert.deepEqual(drops.map(d => d.date), ['2025-06-03'], 'a fresh pick starts again from the event\'s own slot');
+  });
+
+  it('a drag started while an event is picked cancels the pick', () => {
+    const { container, eventBlock, slotFor } = calendar();
+    initCalendarDragDrop(container, {});
+    fire(eventBlock, 'click');
+    fire(eventBlock, 'dragstart', { dataTransfer: { setData() {} } });
+    assert.ok(!eventBlock.hasAttribute('data-picked'));
+    assert.ok(eventBlock.hasAttribute('data-dragging'));
+    assert.ok(!slotFor('2025-06-03', 9).hasAttribute('data-drop-target'));
+    fire(container, 'dragend');
+    assert.ok(!eventBlock.hasAttribute('data-dragging'));
+  });
+
+  it('a pipeline block in an external dragSource is picked by tap or Enter and placed on a calendar slot', () => {
+    const { container, status, slotFor } = calendar();
+    const block = node({ 'data-bn': 'pipeline-block', tabindex: '0', 'data-block-id': 'job-7', title: 'Job 7' });
+    const palette = node({ 'data-bn-sidebar': '' }, [block]);
+    const drops = [];
+    initCalendarDragDrop(container, { onDrop: d => drops.push(d), dragSource: palette });
+    fire(block, 'click');
+    assert.ok(block.hasAttribute('data-picked'));
+    fire(slotFor('2025-06-06', 9), 'click', { clientY: 100 });
+    assert.deepEqual(drops, [{ eventId: 'job-7', date: '2025-06-06', hour: 9, minute: 0, datetime: '2025-06-06T09:00', sourceType: 'pipeline' }]);
+    assert.ok(!block.hasAttribute('data-picked'));
+
+    fire(block, 'keydown', { key: 'Enter' });
+    assert.ok(slotFor('2025-06-02', 8).hasAttribute('data-drop-target'), 'a block has no slot of its own: the target starts at the first slot');
+    fire(block, 'keydown', { key: 'ArrowDown' });
+    fire(block, 'keydown', { key: 'ArrowRight' });
+    fire(block, 'keydown', { key: 'Enter' });
+    assert.equal(drops[1].datetime, '2025-06-03T08:15');
+    assert.match(status.textContent, /Moved Job 7 to Tue 6\/3 at 8:15 AM/);
+  });
+
+  it('destroy() unbinds the tap and keyboard paths too', () => {
+    const { container, eventBlock, slotFor } = calendar();
+    const drops = [];
+    initCalendarDragDrop(container, { onDrop: d => drops.push(d) }).destroy();
+    assert.equal(container.listeners.size, 0);
+    fire(eventBlock, 'click');
+    fire(slotFor('2025-06-03', 10), 'click');
+    fire(eventBlock, 'keydown', { key: 'Enter' });
+    assert.equal(drops.length, 0);
+    assert.ok(!eventBlock.hasAttribute('data-picked'));
+  });
+
+  /** The shape renderPipeline emits: two columns, cards a/b in the first, c in the second. */
+  function pipeline() {
+    const card = (id, top) => {
+      const el = node({ 'data-bn': 'pipeline-card', tabindex: '0', 'data-card-id': id, title: `Card ${id.toUpperCase()}` });
+      el.getBoundingClientRect = () => ({ top, height: 40 });
+      return el;
+    };
+    const cards = { a: card('a', 0), b: card('b', 40), c: card('c', 0) };
+    const column = (id, title, kids) => {
+      const area = node({ 'data-bn': 'pipeline-column-cards' }, kids);
+      return { column: node({ 'data-bn': 'pipeline-column', 'data-column-id': id }, [node({ 'data-bn': 'pipeline-column-header' }, [node({ 'data-bn': 'pipeline-column-title', text: title })]), area]), area };
+    };
+    const first = column('new', 'New leads', [cards.a, cards.b]);
+    const second = column('won', 'Won', [cards.c]);
+    const status = node({ 'data-bn': 'pipeline-status', 'aria-live': 'polite' });
+    const container = node({ 'data-bn': 'pipeline' }, [first.column, second.column, status]);
+    return { container, cards, areas: { new: first.area, won: second.area }, status };
+  }
+
+  it('moves a pipeline card by tap-to-pick then tap-to-place', () => {
+    const { container, cards, areas, status } = pipeline();
+    const moves = [];
+    initPipelineDragDrop(container, { onCardMove: m => moves.push(m) });
+    fire(cards.a, 'click');
+    assert.ok(cards.a.hasAttribute('data-picked'));
+    assert.ok(areas.new.hasAttribute('data-drop-target'));
+    fire(areas.won, 'click');
+    assert.deepEqual(moves, [{ cardId: 'a', targetColumnId: 'won', position: 1 }]);
+    assert.ok(!cards.a.hasAttribute('data-picked'));
+    assert.ok(!areas.new.hasAttribute('data-drop-target'));
+    assert.match(status.textContent, /Moved Card A to Won, position 2/);
+
+    fire(cards.b, 'click');
+    fire(cards.c, 'click', { clientY: 5 });
+    assert.deepEqual(moves[1], { cardId: 'b', targetColumnId: 'won', position: 0 }, 'a tap on a card in the upper half drops before it');
+  });
+
+  it('moves a pipeline card from the keyboard', () => {
+    const { container, cards, areas, status } = pipeline();
+    const moves = [];
+    initPipelineDragDrop(container, { onCardMove: m => moves.push(m) });
+    fire(cards.b, 'keydown', { key: 'Enter' });
+    assert.ok(cards.b.hasAttribute('data-picked'));
+    assert.match(status.textContent, /Picked up Card B/);
+    fire(cards.b, 'keydown', { key: 'ArrowRight' });
+    assert.ok(areas.won.hasAttribute('data-drop-target'));
+    assert.ok(!areas.new.hasAttribute('data-drop-target'));
+    assert.match(status.textContent, /Won, position 2 of 2/);
+    fire(cards.b, 'keydown', { key: 'ArrowUp' });
+    assert.match(status.textContent, /Won, position 1 of 2/);
+    fire(cards.b, 'keydown', { key: 'ArrowUp' });
+    assert.match(status.textContent, /position 1 of 2/, 'clamped at the top');
+    fire(cards.b, 'keydown', { key: 'ArrowRight' });
+    assert.ok(areas.won.hasAttribute('data-drop-target'), 'no column to the right: stays put');
+    fire(cards.b, 'keydown', { key: 'Enter' });
+    assert.deepEqual(moves, [{ cardId: 'b', targetColumnId: 'won', position: 0 }]);
+    assert.ok(!cards.b.hasAttribute('data-picked'));
+
+    fire(cards.a, 'keydown', { key: ' ' });
+    fire(cards.a, 'keydown', { key: 'ArrowDown' });
+    fire(cards.a, 'keydown', { key: 'Escape' });
+    assert.ok(!cards.a.hasAttribute('data-picked'));
+    assert.ok(!areas.new.hasAttribute('data-drop-target'));
+    assert.equal(moves.length, 1);
   });
 });
 

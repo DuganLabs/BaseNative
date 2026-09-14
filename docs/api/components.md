@@ -1002,14 +1002,18 @@ Renders:
     <div data-bn="calendar-time-gutter"><div data-bn="calendar-time-label" data-hour="7" style="grid-row: 1">7am</div>…</div>
     <div data-bn="calendar-day-column" data-date="2025-06-02" style="grid-column: 2">
       <div data-bn="calendar-slot" data-date="2025-06-02" data-hour="7" style="grid-row: 1"></div>…
-      <div data-bn="calendar-event" draggable="true" data-event-id="1" title="Site visit" style="grid-row: 3 / span 2;">
+      <div data-bn="calendar-event" draggable="true" tabindex="0" aria-describedby="bn-calendar-x-help" data-date="2025-06-02" data-hour="9" data-minute="0" data-event-id="1" title="Site visit" style="grid-row: 3 / span 2;">
         <span data-bn="calendar-event-title">Site visit</span><span data-bn="calendar-event-assignee">Ana</span><span data-bn="calendar-event-time">9:00 AM – 11:00 AM</span>
       </div>
     </div>
     <div data-bn="calendar-day-column" data-date="2025-06-04" data-today style="grid-column: 4">…</div>
   </div>
+  <p data-bn="calendar-help" id="bn-calendar-x-help">Press Enter or Space to pick up, arrow keys to move by time and day, Enter to drop, Escape to cancel; or tap the event, then a time slot.</p>
+  <div data-bn="calendar-status" aria-live="polite" aria-atomic="true"></div>
 </div>
 ```
+
+Every event is focusable (`tabindex="0"`) and `aria-describedby` the calendar's one visually hidden `[data-bn="calendar-help"]` node (`<id>-help`); `data-date` / `data-hour` / `data-minute` carry its visible start for the keyboard path, and `[data-bn="calendar-status"]` is the polite live region `initCalendarDragDrop` announces pick-up, moves and drops in. Both nodes are hidden with the `[data-bn="sr-only"]` recipe.
 
 **Rows.** The time gutter and each day column are subgrids spanning the outer grid's hour rows, so hour `h` is subgrid row `h - hours.start + 1` (7am is row 1 on the default 7–19 grid) for labels, slots and events alike. An event's `grid-row` start and span are always integers; an event that does not start or end on the hour also carries `--bn-calendar-event-rows`, `--bn-calendar-event-lead` and `--bn-calendar-event-trail` (the fraction of an hour trimmed off the top and bottom of its row span), which `components.css` turns into an inset offset — a 9:30–10:30 event renders `grid-row: 3 / span 2; --bn-calendar-event-rows: 2; --bn-calendar-event-lead: 0.5; --bn-calendar-event-trail: 0.5;`.
 
@@ -1029,7 +1033,7 @@ Event times are formatted with `toLocaleTimeString` in the server's locale, in `
 renderPipelineBlock({ id: 'job-7', title: 'Install boiler', subtitle: 'Acme Corp', status: 'pending' })
 ```
 
-Options: `id` (required, `data-block-id`), `title` (required), `subtitle`, `status` (`data-status`), `attrs`. Renders `<div data-bn="pipeline-block" draggable="true" data-block-id="job-7" data-status="pending"><span data-bn="pipeline-block-title">…</span><span data-bn="pipeline-block-subtitle">…</span></div>`.
+Options: `id` (required, `data-block-id`), `title` (required), `subtitle`, `status` (`data-status`), `attrs`. Renders `<div data-bn="pipeline-block" draggable="true" tabindex="0" data-block-id="job-7" data-status="pending"><span data-bn="pipeline-block-title">…</span><span data-bn="pipeline-block-subtitle">…</span></div>`. The block is focusable so it can be picked up from the keyboard; pass `attrs: 'aria-describedby="<calendar id>-help"'` to point it at the calendar's instructions.
 
 ## Pipeline
 
@@ -1061,7 +1065,7 @@ Renders:
   <section data-bn="pipeline-column" data-column-id="new" aria-labelledby="bn-pipeline-x-column-new">
     <header data-bn="pipeline-column-header" id="bn-pipeline-x-column-new"><span data-bn="pipeline-column-title">New leads</span><span data-bn="pipeline-column-count">1</span></header>
     <div data-bn="pipeline-column-cards">
-      <article data-bn="pipeline-card" data-card-id="c1" draggable="true" data-status="qualified" title="Acme Corp">
+      <article data-bn="pipeline-card" data-card-id="c1" draggable="true" tabindex="0" aria-describedby="bn-pipeline-x-help" data-status="qualified" title="Acme Corp">
         <div data-bn="pipeline-card-title">Acme Corp</div><span data-bn="badge" data-variant="success">Qualified</span>
         <div data-bn="pipeline-card-subtitle">$12k</div><div data-bn="pipeline-card-description">…</div>
         <div data-bn="pipeline-card-actions">…</div>
@@ -1069,14 +1073,24 @@ Renders:
       </article>
     </div>
   </section>
+  <p data-bn="pipeline-help" id="bn-pipeline-x-help">Press Enter or Space to pick up, Up and Down to reorder, Left and Right to change column, Enter to drop, Escape to cancel; or tap the card, then a column.</p>
+  <div data-bn="pipeline-status" aria-live="polite" aria-atomic="true"></div>
 </div>
 ```
+
+Every card is focusable (`tabindex="0"`) and `aria-describedby` the wrapper's one visually hidden `[data-bn="pipeline-help"]` node (`<id>-help`); `[data-bn="pipeline-status"]` is the polite live region `initPipelineDragDrop` announces in.
 
 Accessibility: each column is a `<section>` labelled by its header (`aria-labelledby` → the header's id). `status` becomes `data-status` on the card (and on `renderPipelineBlock` blocks): `components.css` draws a start-edge accent from the same semantic `-600` tokens the badges use — info for `new`/`open`/`contacted`/`scheduled`/`sent`, success for `qualified`/`won`/`converted`/`completed`/`paid`/`accepted`/`active`, warning for `proposal_sent`/`negotiating`/`in_progress`/`invoiced`/`pending`/`paused`, error for `lost`/`rejected`/`declined`/`cancelled`/`canceled` — and any other status falls back to `--bn-pipeline-status-color`.
 
 ## Drag and Drop
 
-`initCalendarDragDrop(container, { onDrop, dragSource?, snapMinutes? })` and `initPipelineDragDrop(container, { onCardMove })` attach native HTML5 drag-and-drop listeners to a rendered `[data-bn="calendar"]` or `[data-bn="pipeline"]` element. Both return `{ destroy() }`.
+`initCalendarDragDrop(container, { onDrop, dragSource?, snapMinutes? })` and `initPipelineDragDrop(container, { onCardMove })` make a rendered `[data-bn="calendar"]` or `[data-bn="pipeline"]` movable. Each hears three gestures and reports every one of them through the same callback with the same payload, so a consumer wires one function. Both return `{ destroy() }`, which unbinds all three.
+
+- **Drag and drop** — native HTML5 `dragstart` … `drop`. The fastest gesture with a mouse.
+- **Select, then place** — one tap or click on an event or card picks it up (it gets `data-picked`; a second tap on it cancels), one tap or click on the target slot or column drops it. This is the single-pointer alternative WCAG 2.5.7 asks for, and the only one touch has: a touch drag fires no drag events.
+- **Keyboard** — events and cards are focusable (`tabindex="0"`). Enter or Space picks the focused one up with the pending target at its own place, marked `data-drop-target`; the arrow keys move the target; Enter or Space drops; Escape cancels. On the calendar, ArrowUp / ArrowDown move by `snapMinutes` and ArrowLeft / ArrowRight by a day, within the rendered slots. On the pipeline, ArrowUp / ArrowDown move the position and ArrowLeft / ArrowRight the column.
+
+Each pick-up, move and drop is announced in the component's polite live region (`[data-bn="calendar-status"]` / `[data-bn="pipeline-status"]`), and every event and card is `aria-describedby` the component's one instruction node (`[data-bn="calendar-help"]` / `[data-bn="pipeline-help"]`), so the gesture is discoverable by a screen-reader user.
 
 ```js
 import { initCalendarDragDrop, initPipelineDragDrop } from '@basenative/components';
@@ -1094,13 +1108,13 @@ const board = initPipelineDragDrop(document.querySelector('[data-bn="pipeline"]'
 cal.destroy(); board.destroy();
 ```
 
-While dragging, the dragged element gets `data-dragging` and the hovered slot/column gets `data-drop-target`; both are cleared on `dragend`. `eventId` is the `data-event-id` of a calendar event or the `data-block-id` of a pipeline block.
+While dragging, the dragged element gets `data-dragging` and the hovered slot/column gets `data-drop-target`; while picked, the element gets `data-picked` and the keyboard's pending slot/column gets `data-drop-target`. All are cleared on drop, cancel and `dragend`; a drag started while something is picked cancels the pick. `eventId` is the `data-event-id` of a calendar event or the `data-block-id` of a pipeline block.
 
-**Calendar drops.** `date` and `hour` identify the slot; `minute` is the pointer's offset within the slot, snapped down to `snapMinutes` (default 15; `1` reports exact minutes; `0` when no geometry is available), and `datetime` is `${date}T${HH}:${MM}`, a local datetime string ready for `new Date()`.
+**Calendar drops.** `date` and `hour` identify the slot; `minute` is the pointer's offset within the slot (for a drop or a tap), snapped down to `snapMinutes` (default 15; `1` reports exact minutes; `0` when no geometry is available), or the minute chosen with the arrow keys; `datetime` is `${date}T${HH}:${MM}`, a local datetime string ready for `new Date()`. The keyboard path starts from the event's own `data-date` / `data-hour` / `data-minute`; a pipeline block, which has no slot of its own, starts from the first rendered slot.
 
-**Pipeline drops.** `position` is the index the card should occupy among the target column's cards after the move (itself excluded): the index of the card under the pointer, one more when the pointer is in that card's lower half, or the column's card count when dropped on empty space. It is what `createPipelineState().moveCard(cardId, targetColumnId, position)` expects.
+**Pipeline drops.** `position` is the index the card should occupy among the target column's cards after the move (itself excluded): the index of the card under the pointer, one more when the pointer is in that card's lower half, or the column's card count when dropped on empty space — a tap on a card or on empty space reports the same. From the keyboard it is the position the arrow keys chose. It is what `createPipelineState().moveCard(cardId, targetColumnId, position)` expects.
 
-**External drag sources.** `dragSource` is an element whose `dragstart` events also supply payloads — the documented sidebar of `renderPipelineBlock` cards, which lives outside the calendar and would otherwise never be heard. It defaults to the container, may be any element (including an ancestor of the container — its own events are not handled twice), and is unbound by `destroy()`.
+**External drag sources.** `dragSource` is an element whose `dragstart`, `click` and `keydown` events also supply payloads — the documented sidebar of `renderPipelineBlock` cards, which lives outside the calendar and would otherwise never be heard. It defaults to the container, may be any element (including an ancestor of the container — its own events are not handled twice), and is unbound by `destroy()`.
 
 ## Calendar State
 

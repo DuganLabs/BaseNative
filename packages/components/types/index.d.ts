@@ -799,25 +799,41 @@ export interface CalendarDropEvent {
   date: string;
   /** The slot's integer hour. */
   hour: number;
-  /** Pointer offset within the slot, snapped down to `snapMinutes`; 0 when no geometry is available. */
+  /**
+   * Pointer offset within the slot (for a drop or a tap), snapped down to
+   * `snapMinutes`, 0 when no geometry is available; or the minute chosen with
+   * the arrow keys.
+   */
   minute: number;
   /** `${date}T${HH}:${MM}` — a local datetime string ready for `new Date()`. */
   datetime: string;
   sourceType: 'event' | 'pipeline';
 }
 
+/**
+ * Make a rendered calendar's events movable by drag and drop, by tap/click
+ * (one on an event picks it up — `data-picked` — one on a slot drops it) and
+ * by keyboard (events are focusable: Enter/Space picks up, arrow keys move the
+ * pending target — `data-drop-target` — by `snapMinutes` and by day, Enter/Space
+ * drops, Escape cancels). Every path calls `onDrop` with the same payload.
+ * Pick-up, moves and drops are announced in the calendar's
+ * `[data-bn="calendar-status"]` live region.
+ */
 export function initCalendarDragDrop(
   container: HTMLElement,
   callbacks?: {
     onDrop?: (event: CalendarDropEvent) => void;
     /**
-     * Element whose `dragstart` events also supply payloads — a palette or
-     * sidebar of `renderPipelineBlock` cards outside the calendar. May be any
-     * element, including an ancestor of `container`; the container always
-     * hears its own events.
+     * Element whose `dragstart`, `click` and `keydown` events also supply
+     * payloads — a palette or sidebar of `renderPipelineBlock` cards outside
+     * the calendar. May be any element, including an ancestor of `container`;
+     * the container always hears its own events.
      */
     dragSource?: HTMLElement;
-    /** Minute granularity of `minute`, default 15; 1 (or less) reports exact minutes. */
+    /**
+     * Minute granularity of `minute` and of the keyboard's ArrowUp/ArrowDown
+     * step, default 15; 1 (or less) reports exact minutes.
+     */
     snapMinutes?: number;
   }
 ): { destroy: () => void };
@@ -833,6 +849,15 @@ export interface PipelineCardMoveEvent {
   position: number;
 }
 
+/**
+ * Make a rendered pipeline's cards movable by drag and drop, by tap/click (one
+ * on a card picks it up — `data-picked` — one in a column drops it) and by
+ * keyboard (cards are focusable: Enter/Space picks up, ArrowUp/ArrowDown move
+ * the position and ArrowLeft/ArrowRight the column — the target column's card
+ * area gets `data-drop-target` — Enter/Space drops, Escape cancels). Every path
+ * calls `onCardMove` with the same payload; pick-up, moves and drops are
+ * announced in the pipeline's `[data-bn="pipeline-status"]` live region.
+ */
 export function initPipelineDragDrop(
   container: HTMLElement,
   callbacks?: { onCardMove?: (event: PipelineCardMoveEvent) => void }
