@@ -34,7 +34,7 @@
 <span class="tag">&lt;/button&gt;</span>
 
 <span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="str">"module"</span><span class="tag">&gt;</span>
-  <span class="kw">import</span> { signal, hydrate } <span class="kw">from</span> <span class="str">'basenative'</span>;
+  <span class="kw">import</span> { signal, hydrate } <span class="kw">from</span> <span class="str">'@basenative/runtime'</span>;
   <span class="kw">const</span> count = <span class="fn">signal</span>(<span class="num">0</span>);
   <span class="kw">function</span> <span class="fn">incrementCount</span>() { count.<span class="fn">set</span>(count() + <span class="num">1</span>); }
   <span class="fn">hydrate</span>(document.body, { count, incrementCount });
@@ -44,7 +44,7 @@
   <article>
     <header><h3>Server-rendered list with Express</h3></header>
     <pre tabindex="0" aria-label="Code example: Server-rendered list with Express"><code><span class="cmt">// server.js</span>
-<span class="kw">import</span> { render } <span class="kw">from</span> <span class="str">'basenative/server'</span>;
+<span class="kw">import</span> { render } <span class="kw">from</span> <span class="str">'@basenative/server'</span>;
 
 app.<span class="fn">get</span>(<span class="str">'/'</span>, (req, res) =&gt; {
   <span class="kw">const</span> html = <span class="fn">render</span>(<span class="str">`

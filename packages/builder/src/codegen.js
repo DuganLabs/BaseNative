@@ -61,11 +61,20 @@ function renderNode(node, palette, depth, indent) {
     attrs += renderAttr('role', def.role);
   }
 
+  // The library's CSS is keyed on data-bn="<token>" plus data-<prop> for the
+  // props a component serialises that way (button: data-variant, data-size),
+  // so an export without them is unstyled. The palette declares both.
+  if (def && def.bn && node.props['data-bn'] == null) {
+    attrs += renderAttr('data-bn', def.bn);
+  }
+
   for (const key of Object.keys(node.props)) {
     if (key === 'text' || key === 'children' || key === 'level') continue;
     if (node.bindings && node.bindings[key]) continue;
     const value = node.props[key];
-    if (BOOL_ATTRS.has(key)) {
+    if (def && def.dataProps && def.dataProps.includes(key)) {
+      attrs += renderAttr(`data-${attrName(key)}`, value);
+    } else if (BOOL_ATTRS.has(key)) {
       if (value) attrs += ` ${attrName(key)}`;
     } else if (ATTR_PROPS.has(key) || /^data-/.test(key)) {
       attrs += renderAttr(key, value);

@@ -71,3 +71,47 @@ describe('defaultPalette', () => {
     assert.equal(valueProp.kind, 'signal');
   });
 });
+
+describe('component attribute contract (bn / dataProps)', () => {
+  test('register normalises bn and dataProps', () => {
+    const p = createPalette();
+    const plain = p.register({ type: 'foo' });
+    assert.equal(plain.bn, undefined);
+    assert.deepEqual(plain.dataProps, []);
+    const props = ['variant'];
+    const def = p.register({ type: 'bar', bn: 'bar', dataProps: props });
+    assert.equal(def.bn, 'bar');
+    assert.deepEqual(def.dataProps, ['variant']);
+    assert.notEqual(def.dataProps, props, 'dataProps is copied, not shared');
+  });
+
+  test('the button declares the token and data props renderButton emits', () => {
+    const def = defaultPalette().get('button');
+    assert.equal(def.bn, 'button');
+    assert.deepEqual([...def.dataProps].sort(), ['size', 'variant']);
+    assert.equal(def.defaults.variant, 'primary');
+    assert.equal(def.defaults.size, 'default');
+  });
+
+  test('every dataProp is a declared prop with a default', () => {
+    // A dataProp that is not in the schema cannot be edited in the inspector,
+    // and one without a default exports nothing — either way the contract
+    // the palette promises is not what the export carries.
+    for (const def of defaultPalette().list()) {
+      for (const name of def.dataProps) {
+        assert.ok(def.props.some((p) => p.name === name), `${def.type}: dataProp "${name}" is not in props`);
+        assert.ok(name in def.defaults, `${def.type}: dataProp "${name}" has no default`);
+      }
+    }
+  });
+
+  test('the form controls that have a component counterpart carry its data-bn token', () => {
+    const palette = defaultPalette();
+    assert.equal(palette.get('input').bn, 'input');
+    assert.equal(palette.get('textarea').bn, 'textarea');
+    assert.equal(palette.get('checkbox').bn, 'checkbox');
+    for (const type of ['section', 'stack', 'grid', 'heading', 'text', 'label', 'form', 'link', 'image', 'signal-text']) {
+      assert.equal(palette.get(type).bn, undefined, `${type} has no @basenative/components render function`);
+    }
+  });
+});

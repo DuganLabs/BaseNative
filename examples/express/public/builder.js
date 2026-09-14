@@ -426,7 +426,9 @@ function createPalette() {
       props: Array.isArray(spec.props) ? spec.props.slice() : [],
       defaults: spec.defaults ? { ...spec.defaults } : {},
       defaultContent: spec.defaultContent,
-      role: spec.role
+      role: spec.role,
+      bn: spec.bn,
+      dataProps: Array.isArray(spec.dataProps) ? spec.dataProps.slice() : []
     };
     map.set(def.type, def);
     return def;
@@ -527,13 +529,16 @@ function defaultPalette() {
     category: "inputs",
     tag: "button",
     container: false,
+    bn: "button",
+    dataProps: ["variant", "size"],
     props: [
       { name: "text", kind: "string", label: "Label" },
       { name: "variant", kind: "enum", options: ["primary", "secondary", "ghost", "destructive"], default: "primary", label: "Variant" },
+      { name: "size", kind: "enum", options: ["sm", "default", "lg"], default: "default", label: "Size" },
       { name: "type", kind: "enum", options: ["button", "submit", "reset"], default: "button", label: "Type" },
       { name: "disabled", kind: "boolean", default: false, label: "Disabled" }
     ],
-    defaults: { text: "Click me", variant: "primary", type: "button" }
+    defaults: { text: "Click me", variant: "primary", size: "default", type: "button" }
   });
   palette.register({
     type: "input",
@@ -541,6 +546,7 @@ function defaultPalette() {
     category: "inputs",
     tag: "input",
     container: false,
+    bn: "input",
     props: [
       { name: "type", kind: "enum", options: ["text", "email", "password", "number", "search", "tel", "url"], default: "text", label: "Type" },
       { name: "name", kind: "string", label: "Name" },
@@ -556,6 +562,7 @@ function defaultPalette() {
     category: "inputs",
     tag: "textarea",
     container: false,
+    bn: "textarea",
     props: [
       { name: "name", kind: "string", label: "Name" },
       { name: "placeholder", kind: "string", label: "Placeholder" },
@@ -570,6 +577,7 @@ function defaultPalette() {
     category: "inputs",
     tag: "input",
     container: false,
+    bn: "checkbox",
     props: [
       { name: "name", kind: "string", label: "Name" },
       { name: "label", kind: "string", label: "Label" },
@@ -742,11 +750,16 @@ function renderNode(node, palette, depth, indent) {
   if (def && def.role && !node.props.role) {
     attrs += renderAttr("role", def.role);
   }
+  if (def && def.bn && node.props["data-bn"] == null) {
+    attrs += renderAttr("data-bn", def.bn);
+  }
   for (const key of Object.keys(node.props)) {
     if (key === "text" || key === "children" || key === "level") continue;
     if (node.bindings && node.bindings[key]) continue;
     const value = node.props[key];
-    if (BOOL_ATTRS.has(key)) {
+    if (def && def.dataProps && def.dataProps.includes(key)) {
+      attrs += renderAttr(`data-${attrName(key)}`, value);
+    } else if (BOOL_ATTRS.has(key)) {
       if (value) attrs += ` ${attrName(key)}`;
     } else if (ATTR_PROPS.has(key) || /^data-/.test(key)) {
       attrs += renderAttr(key, value);
@@ -999,6 +1012,9 @@ var VOID_ELEMENTS2 = /* @__PURE__ */ new Set([
   "track",
   "wbr"
 ]);
+function attrName2(key) {
+  return key.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
+}
 function tagFor(node, def) {
   if (node.type === "heading" && typeof node.props.level === "string") return node.props.level;
   if (def?.tag) return def.tag;
@@ -1014,12 +1030,16 @@ function renderNodeToElement(doc, node, palette) {
   if (def?.role && !node.props.role) {
     el.setAttribute("role", def.role);
   }
+  if (def?.bn && node.props["data-bn"] == null) {
+    el.setAttribute("data-bn", def.bn);
+  }
   for (const key of Object.keys(node.props)) {
     if (key === "text" || key === "level") continue;
     const value = node.props[key];
     if (value === false || value == null) continue;
-    if (value === true) el.setAttribute(key, "");
-    else el.setAttribute(key, String(value));
+    const name = def?.dataProps?.includes(key) ? `data-${attrName2(key)}` : key;
+    if (value === true) el.setAttribute(name, "");
+    else el.setAttribute(name, String(value));
   }
   if (typeof node.props.text === "string" && (!node.children || node.children.length === 0) && !isVoid) {
     el.textContent = node.props.text;

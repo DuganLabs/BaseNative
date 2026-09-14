@@ -13,9 +13,15 @@ import { defineConfig, string, optional } from '../../packages/config/src/index.
 import { createLogger } from '../../packages/logger/src/index.js';
 import { createI18n } from '../../packages/i18n/src/index.js';
 import { createFlagManager, createMemoryProvider } from '../../packages/flags/src/index.js';
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { checkComparePage, capabilityProblems, roadmapProblems } from '../../scripts/check-compare-page.js';
+import {
+  demoSnippets,
+  demoSnippetProblems,
+  demoClientApiProblems,
+  snippetSyntaxError,
+} from '../../scripts/check-demo-snippets.js';
 import { computeCompareStats } from '../../scripts/compare-stats.js';
 import { renderRoute, siteRoutes } from '../../examples/express/page.js';
 import { flatComponents } from '../../examples/express/component-catalog.js';
@@ -518,3 +524,82 @@ describe('every published route is reachable from the navigation', () => {
     assert.ok(siteRoutes.some((r) => r.internal), 'the verification harness is still expected to be internal');
   });
 });
+
+// ─── 14. /components/*: every Source pane is code a reader can run ───────────
+// The pane's string is authored apart from the render beside it and from the
+// client script; the Copy button hands it over verbatim. Fifteen of them
+// shipped `items: [...]`, six taught a browser-side renderX() that the client
+// bundle does not export, and four pages had nothing parseable at all.
+
+describe('component Source panes are runnable JavaScript', () => {
+  it('the syntax check rejects an elision and accepts real ESM', () => {
+    assert.match(
+      snippetSyntaxError("import { renderCombobox } from '@basenative/components';\nrenderCombobox({ items: [...] });"),
+      /Unexpected token/,
+    );
+    assert.equal(snippetSyntaxError("import { renderCombobox } from '@basenative/components';\nrenderCombobox({ items: ['React'] });"), null);
+  });
+
+  it('every quickstart and example snippet parses, and every component page has one', () => {
+    assert.ok(demoSnippets().length >= 78, `expected the catalogue's snippets, found ${demoSnippets().length}`);
+    const problems = demoSnippetProblems();
+    assert.deepEqual(problems, [], `Source panes that are not runnable:\n  ${problems.join('\n  ')}`);
+  });
+
+  it('no Source pane contains an elided array', () => {
+    for (const { slug, label, code } of demoSnippets()) {
+      assert.ok(!code.includes('[...]'), `${slug}/${label} still elides its data with [...]`);
+    }
+  });
+
+  it('scripted panes use the client API the page itself uses, not a server render helper', () => {
+    const problems = demoClientApiProblems();
+    assert.deepEqual(problems, [], problems.join('\n'));
+  });
+});
+
+// ─── 15. /docs: import samples name published packages, and the page leads on ─
+// Five samples imported from 'basenative' — a package that does not exist —
+// four lines below the paragraph explaining the real @basenative/* names, and
+// the page had no links at all, though it is the 404's and the footer's Docs
+// target.
+
+describe('/docs names real packages and links onward', () => {
+  const viewsDir = repo('examples/express/views');
+  const views = readdirSync(viewsDir).filter((f) => f.endsWith('.html'));
+  const docs = readFileSync(repo('examples/express/views/docs.html'), 'utf8');
+
+  it("no view imports from 'basenative' — the published names are @basenative/*", () => {
+    for (const f of views) {
+      const src = readFileSync(`${viewsDir}/${f}`, 'utf8');
+      const hit = /'basenative(?:\/|')/.exec(src);
+      assert.equal(
+        hit,
+        null,
+        `${f} imports from ${hit && hit[0]}… — the published names are @basenative/runtime and @basenative/server`,
+      );
+    }
+  });
+
+  it('every documented primitive links to its generated reference', () => {
+    assert.ok(docs.includes('<a '), '/docs has no links at all');
+    for (const [fn, doc] of [['signal', 'runtime'], ['computed', 'runtime'], ['effect', 'runtime'], ['hydrate', 'runtime'], ['render', 'server']]) {
+      assert.match(docs, new RegExp(`href="[^"]*docs/api/${doc}\\.md[^"]*"[^>]*>Full <code>${fn}\\(\\)</code>`),
+        `${fn}() on /docs does not link to docs/api/${doc}.md`);
+    }
+  });
+
+  it('every package the /docs description names is linked to an existing docs/api reference', () => {
+    const route = siteRoutes.find((r) => r.path === '/docs');
+    const named = route.description.match(/@basenative\/[a-z-]+/g);
+    assert.ok(named.length >= 2, 'the description should name the packages it covers');
+    for (const pkg of new Set(named)) {
+      const short = pkg.replace('@basenative/', '');
+      assert.ok(docs.includes(`docs/api/${short}.md`), `${pkg} is promised by the /docs description but not linked from docs.html`);
+    }
+    for (const short of docs.match(/docs\/api\/([a-z-]+)\.md/g).map((m) => m.slice('docs/api/'.length, -'.md'.length))) {
+      assert.ok(existsSync(repo(`docs/api/${short}.md`)), `docs.html links docs/api/${short}.md, which does not exist`);
+    }
+  });
+});
+
