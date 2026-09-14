@@ -651,9 +651,23 @@ renderCombobox({ name: 'city', label: 'City', items: ['Berlin', 'Boston', { valu
 ```
 
 ### Multiselect
-`renderMultiselect(options)` → `string`. Selected values render as removable tags in front of a search input; a hidden `<select multiple>` carries the form value. | Option | Type | Default | Description | |--------|------|---------|-------…
+`renderMultiselect(options)` → `string`. Selected values render as removable tags in front of a search input backed by a `<datalist>` of the item labels; a hidden `<select multiple>` carries the form value. Pair with `initMultiselect` on t…
 ```js
 renderMultiselect({ name: 'tags', label: 'Tags', items: ['a11y', 'css', 'html'], selected: ['css'] })
+```
+
+#### `initMultiselect(root, options?)` → `MultiselectController`
+| Option | Type | Default | Description | |--------|------|---------|-------------| | `onChange` | `(values: string[]) => void` | — | Called after every user-driven change with the selected values in option order | The hidden `<select mult…
+```js
+import { initMultiselect } from '@basenative/components';
+
+const tags = initMultiselect(document.querySelector('[data-bn="multiselect"]'), {
+  onChange: values => form.set('tags', values), // user-driven changes only
+});
+tags.add('html');   // silent; false when unknown or already selected
+tags.remove('css'); // silent
+tags.values();      // ['html'] — read from the <select>
+tags.destroy();
 ```
 
 ### Alert
@@ -702,7 +716,7 @@ renderTable({
 ```
 
 ### Data Grid
-`renderDataGrid(options)` → `string`. Sortable, selectable, paginated grid with a scroll region and a "Showing x–y of z" footer. | Option | Type | Default | Description | |--------|------|---------|-------------| | `columns` | `DataGridCol…
+`renderDataGrid(options)` → `string`. Sortable, selectable, paginated grid with a scroll region and a "Showing x–y of z" footer. Pair with `initDataGrid` on the client for sorting, selection and arrow-key navigation. | Option | Type | Defa…
 ```js
 renderDataGrid({
   columns: [
@@ -715,14 +729,46 @@ renderDataGrid({
 })
 ```
 
+#### `initDataGrid(wrapper, options?)` → `DataGridController`
+| Option | Type | Default | Description | |--------|------|---------|-------------| | `onSort` | `({ key, dir }) => void` | — | Called on a header click. When given, the rows are the caller's to re-render or re-fetch — the only correct ans…
+```js
+import { initDataGrid } from '@basenative/components';
+
+const grid = initDataGrid(document.querySelector('[data-bn="datagrid"]'), {
+  onSort: ({ key, dir }) => router.navigate(`?sort=${key}&dir=${dir}`), // paged data: re-fetch
+  onSelectionChange: ids => bulkActions.enable(ids.length > 0),
+});
+grid.sort('total', 'desc'); // silent: moves the indicator only
+grid.select(['r1', 'r3']);  // silent: checks those rows, reconciles select-all
+grid.selected();            // ['r1', 'r3']
+grid.sortState();           // { key: 'total', dir: 'desc' } or null
+…
+```
+
 ### Tree
-`renderTree(options)` → `string` | Option | Type | Default | Description | |--------|------|---------|-------------| | `items` | `TreeNode[]` | `[]` | `{ id?, label, icon?, children? }`; `id` falls back to `label` | | `expanded` | `Set<str…
+`renderTree(options)` → `string`. Pair with `initTree` on the client for expand/collapse, selection and the APG tree keys. | Option | Type | Default | Description | |--------|------|---------|-------------| | `items` | `TreeNode[]` | `[]`…
 ```js
 renderTree({
   items: [{ id: 'src', label: 'src', children: [{ id: 'index', label: 'index.js' }] }],
   expanded: new Set(['src']),
   selected: 'index',
 })
+```
+
+#### `initTree(tree, options?)` → `TreeController`
+| Option | Type | Default | Description | |--------|------|---------|-------------| | `onToggle` | `(id, expanded, item) => void` | — | After a user expands or collapses a node | | `onSelect` | `(id, item) => void` | — | After a user selec…
+```js
+import { initTree } from '@basenative/components';
+
+const files = initTree(document.querySelector('[data-bn="tree"]'), {
+  onToggle: (id, expanded) => expandedIds[expanded ? 'add' : 'delete'](id),
+  onSelect: id => openFile(id),
+});
+files.expand('src');       // silent; false when unknown, a leaf, or already expanded
+files.collapse('src');     // silent
+files.select('index.js');  // silent: aria-selected + roving tabindex
+files.selected();          // 'index.js' or null
+…
 ```
 
 ### Tree Grid
@@ -736,7 +782,7 @@ renderTreeGrid({
 ```
 
 ### Virtual List
-`renderVirtualList(options)` → `string`. Server-renders only the first window of items inside a spacer sized for the whole list; a client hydrator can swap the window on scroll. | Option | Type | Default | Description | |--------|------|--…
+`renderVirtualList(options)` → `string`. Server-renders only the first window of items inside a spacer sized for the whole list; `initVirtualList` swaps the window on scroll. Without it the first window is all that ever renders. | Option |…
 ```js
 renderVirtualList({
   items: rows,
@@ -744,6 +790,21 @@ renderVirtualList({
   containerHeight: 480,
   renderItem: (row, i) => `<div data-bn="virtual-item" data-index="${i}">${row.name}</div>`,
 })
+```
+
+#### `initVirtualList(container, options)` → `VirtualListController`
+| Option | Type | Default | Description | |--------|------|---------|-------------| | `items` | `T[]` | required | Only the first window is in the DOM, so the initialiser cannot recover the rest; it throws without this | | `renderItem` | `…
+```js
+import { initVirtualList } from '@basenative/components';
+
+const list = initVirtualList(document.querySelector('[data-bn="virtualizer"]'), {
+  items: rows,                                    // required: the array the server rendered from
+  renderItem: (row, i) => `<div data-bn="virtual-item" data-index="${i}">${escapeText(row.name)}</div>`,
+});
+list.range();        // { start, end } currently rendered (end exclusive)
+list.scrollTo(500);  // item 500 to the top of the container
+list.setItems(next); // swap the data, resize the spacer, re-render
+list.destroy();
 ```
 
 ### Pagination
@@ -867,7 +928,7 @@ renderTooltip({ trigger: '<button type="button">?</button>', content: 'More info
 ```
 
 ### Dropdown Menu
-`renderDropdownMenu(options)` → `string`. Popover-API menu. | Option | Type | Default | Description | |--------|------|---------|-------------| | `trigger` | `string` | — | Trigger button HTML | | `items` | `Array<{ label, action?, icon?,…
+`renderDropdownMenu(options)` → `string`. Popover-API menu: open, Escape and light dismiss need no script. Pair with `initDropdownMenu` on the client for the arrow keys and close-on-select. | Option | Type | Default | Description | |------…
 ```js
 renderDropdownMenu({
   trigger: 'Actions',
@@ -879,8 +940,22 @@ renderDropdownMenu({
 })
 ```
 
+#### `initDropdownMenu(root, options?)` → `DropdownMenuController`
+| Option | Type | Default | Description | |--------|------|---------|-------------| | `onSelect` | `(action, item) => void` | — | Called with the activated item's `data-action`; `aria-disabled` items do not activate | When the popover open…
+```js
+import { initDropdownMenu } from '@basenative/components';
+
+const actions = initDropdownMenu(document.querySelector('[data-bn="dropdown"]'), {
+  onSelect: action => run(action), // after the popover hides
+});
+actions.open();   // showPopover(); focus lands on the first item
+actions.close();
+actions.isOpen();
+actions.destroy();
+```
+
 ### Command Palette
-`renderCommandPalette(options)` → `string`. Cmd+K style `<dialog>` with a search input and grouped commands. | Option | Type | Default | Description | |--------|------|---------|-------------| | `commands` | `Array<{ id?, label, action?, g…
+`renderCommandPalette(options)` → `string`. Cmd+K style `<dialog>` with a search input and grouped commands. Pair with `initCommandPalette` on the client — the footer's "↑↓ Navigate / ↵ Select / Esc Close" names the keys it binds. | Option…
 ```js
 renderCommandPalette({
   commands: [
@@ -888,6 +963,22 @@ renderCommandPalette({
     { id: 'theme', label: 'Toggle theme', group: 'View' },
   ],
 })
+```
+
+#### `initCommandPalette(dialog, options?)` → `CommandPaletteController`
+| Option | Type | Default | Description | |--------|------|---------|-------------| | `onSelect` | `(action, item) => void` | — | Called with the activated command's `data-action` after the dialog closes | | `hotkey` | `string` | — | e.g.…
+```js
+import { initCommandPalette } from '@basenative/components';
+
+const palette = initCommandPalette(document.querySelector('[data-bn="command-palette"]'), {
+  onSelect: action => commands[action](), // after the dialog closes
+  hotkey: 'Mod+K',                         // Meta or Ctrl + K toggles it
+});
+palette.open();        // clears the filter, showModal(), focuses the input
+palette.filter('set'); // returns the visible items
+palette.active();      // data-action of the highlighted command, or null
+palette.close();
+…
 ```
 
 ### Calendar

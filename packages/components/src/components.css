@@ -856,6 +856,8 @@
   background: transparent;
 }
 [data-bn="command-item"]:hover, [data-bn="command-item"][aria-selected="true"] { background: var(--bn-color-surface-muted); }
+/* initCommandPalette() filters by toggling `hidden`; the flex/margin rules above would otherwise win over the UA's display: none. */
+[data-bn="command-item"][hidden], [data-bn="command-group"][hidden] { display: none; }
 [data-bn="command-item"]:focus-visible { box-shadow: var(--bn-focus-ring); outline: none; }
 [data-bn="command-icon"] { flex-shrink: 0; width: 1rem; height: 1rem; color: var(--bn-color-text-muted); }
 [data-bn="command-label"] { flex: 1; }
@@ -959,6 +961,9 @@
   outline: none;
 }
 [data-bn="datagrid-row"]:hover { background: var(--bn-color-surface-subtle); }
+[data-bn="datagrid-row"][aria-selected="true"] { background: var(--bn-color-selected-bg); color: var(--bn-color-selected-text); }
+/* initDataGrid() roves focus between cells; the ring is the same one the sortable header uses. */
+:is([data-bn="datagrid-td"], [data-bn="datagrid-td-select"], [data-bn="datagrid-th-select"]):focus-visible { box-shadow: var(--bn-focus-ring); outline: none; }
 [data-bn="datagrid-td"] {
   padding: var(--bn-space-3) var(--bn-space-4);
   border-bottom: var(--bn-border-width) solid var(--bn-color-border);
@@ -1482,6 +1487,7 @@
   padding: 0;
   margin: 0;
 }
+[data-bn="tree-children"][hidden] { display: none; }
 /* Tree item indentation via data-level */
 [data-bn="tree-item"][data-level="1"] [data-bn="tree-item-content"] { padding-left: var(--bn-space-6); }
 [data-bn="tree-item"][data-level="2"] [data-bn="tree-item-content"] { padding-left: var(--bn-space-10); }

@@ -23,13 +23,13 @@ import { renderTabs, initTabs } from './tabs.js';
 import { renderAccordion } from './accordion.js';
 import { renderBreadcrumb } from './breadcrumb.js';
 import { renderTooltip } from './tooltip.js';
-import { renderDropdownMenu } from './dropdown-menu.js';
-import { renderCommandPalette } from './command-palette.js';
+import { renderDropdownMenu, initDropdownMenu } from './dropdown-menu.js';
+import { renderCommandPalette, initCommandPalette } from './command-palette.js';
 import { renderCombobox } from './combobox.js';
-import { renderMultiselect } from './multiselect.js';
-import { renderDataGrid } from './datagrid.js';
-import { renderTree, renderTreeGrid } from './tree.js';
-import { renderVirtualList } from './virtualizer.js';
+import { renderMultiselect, initMultiselect } from './multiselect.js';
+import { renderDataGrid, initDataGrid } from './datagrid.js';
+import { renderTree, renderTreeGrid, initTree } from './tree.js';
+import { renderVirtualList, initVirtualList, defaultRenderItem } from './virtualizer.js';
 import { renderAvatar } from './avatar.js';
 import { renderCalendar, renderPipelineBlock, renderPipeline, initCalendarDragDrop, initPipelineDragDrop } from './calendar.js';
 import { renderLayoutGrid } from './layout-grid.js';
@@ -2176,7 +2176,8 @@ describe('CommandPalette — hardening', () => {
   it('renders with minimal options', () => {
     const html = renderCommandPalette({ id: 'cp' });
     assert.ok(html.startsWith('<dialog data-bn="command-palette" id="cp">'));
-    assert.ok(html.includes('<div data-bn="command-list" role="listbox"></div>'));
+    assert.ok(html.includes('<div data-bn="command-list" id="cp-list" role="listbox"></div>'));
+    assert.ok(html.includes('role="combobox" aria-expanded="true" aria-autocomplete="list" aria-controls="cp-list"'));
   });
 
   it('renders with all options', () => {
@@ -2253,7 +2254,8 @@ describe('Multiselect — hardening', () => {
     assert.ok(html.includes('<label for="ms" data-bn="label">Tags</label>'));
     assert.ok(html.includes('<span data-bn="tag" data-value="b">B<button type="button" data-bn="tag-remove" aria-label="Remove B">&times;</button></span>'));
     assert.ok(html.includes('data-value="zz">zz<'));
-    assert.ok(html.includes('placeholder="p" autocomplete="off" aria-label="Tags" data-x="1">'));
+    assert.ok(html.includes('placeholder="p" autocomplete="off" aria-label="Tags" list="ms-options" data-x="1">'));
+    assert.ok(html.includes('<datalist id="ms-options"><option value="a"></option><option value="B"></option></datalist>'));
     assert.ok(html.includes('<option value="b" selected>B</option>'));
     assert.ok(html.includes('multiple hidden disabled>'));
   });
@@ -2349,10 +2351,14 @@ describe('Tree — hardening', () => {
     assert.ok(!renderTree({ items: [{ id: 'leaf', label: 'L' }] }).includes('aria-expanded'));
   });
 
-  it('collapsed parents do not render their children', () => {
+  it('collapsed parents render their children in a hidden group so the client can expand them', () => {
     const html = renderTree({ items: [{ id: 'p', label: 'P', children: [{ id: 'c', label: 'Hidden' }] }] });
-    assert.ok(!html.includes('Hidden'));
+    assert.ok(html.includes('<ul data-bn="tree-children" role="group" hidden><li data-bn="tree-item" role="treeitem" tabindex="-1" aria-selected="false" data-node-id="c" data-level="1">'));
+    assert.ok(html.includes('Hidden'));
     assert.ok(html.includes('aria-label="Expand"'));
+    const expanded = renderTree({ items: [{ id: 'p', label: 'P', children: [{ id: 'c', label: 'Shown' }] }], expanded: new Set(['p']) });
+    assert.ok(expanded.includes('<ul data-bn="tree-children" role="group"><li'));
+    assert.ok(!renderTree({ items: [{ id: 'leaf', label: 'L' }] }).includes('tree-children'));
   });
 });
 
@@ -3486,5 +3492,718 @@ describe('components.css contracts', () => {
           `${m} is exempt from the target block because its own rule sizes it, but that declaration is gone`);
       }
     });
+  });
+});
+
+/**
+ * DOM stand-in for the BN-018 client initialisers, in the same shape as the
+ * select-then-place stub above: attribute bags plus a tag name, closest /
+ * querySelector(All) over a tree with attribute and tag selectors, events
+ * that bubble to every ancestor's listener, focus tracked on a shared
+ * document, and the few properties the initialisers read or write (value,
+ * checked, textContent, style, scrollTop, innerHTML, remove, appendChild,
+ * insertAdjacentHTML, the dialog and popover methods).
+ */
+function clientDom() {
+  const doc = {
+    activeElement: null,
+    listeners: new Map(),
+    addEventListener(type, fn) { this.listeners.set(type, fn); },
+    removeEventListener(type, fn) { if (this.listeners.get(type) === fn) this.listeners.delete(type); },
+  };
+  function matchesPart(node, part) {
+    const m = part.trim().match(/^([a-zA-Z]*)((?:\[[^\]]+\])*)$/);
+    if (!m) return false;
+    const [, tag, attrPart] = m;
+    if (tag && node.tag !== tag) return false;
+    const conds = [...attrPart.matchAll(/\[([\w-]+)(?:="([^"]*)")?\]/g)];
+    return conds.every(([, name, value]) => (value === undefined ? node.attrs.has(name) : node.attrs.get(name) === value));
+  }
+  const matches = (node, selector) => selector.split(',').some(part => matchesPart(node, part));
+  function detach(child) {
+    if (!child.parent) return;
+    child.parent.children.splice(child.parent.children.indexOf(child), 1);
+    child.parent = null;
+  }
+  function el(tag, attributes = {}, children = []) {
+    const { text, ...rest } = attributes;
+    const attrs = new Map(Object.entries(rest));
+    const listeners = new Map();
+    const node = {
+      tag, attrs, listeners, children, parent: null, ownerDocument: doc,
+      textContent: text ?? '', value: rest.value ?? '', checked: 'checked' in rest, indeterminate: false, selected: 'selected' in rest,
+      style: {}, scrollTop: 0, clientHeight: 0, focusCount: 0, innerHTML: '', inserted: [],
+      get parentElement() { return node.parent; },
+      hasAttribute: name => attrs.has(name),
+      getAttribute: name => attrs.get(name) ?? null,
+      setAttribute(name, v) { attrs.set(name, String(v)); },
+      removeAttribute(name) { attrs.delete(name); },
+      addEventListener(type, fn) { listeners.set(type, fn); },
+      removeEventListener(type, fn) { if (listeners.get(type) === fn) listeners.delete(type); },
+      matches: selector => matches(node, selector),
+      closest(selector) { let n = node; while (n) { if (n.matches(selector)) return n; n = n.parent; } return null; },
+      querySelectorAll(selector) {
+        const out = [];
+        for (const child of node.children) { if (child.matches(selector)) out.push(child); out.push(...child.querySelectorAll(selector)); }
+        return out;
+      },
+      querySelector(selector) { return node.querySelectorAll(selector)[0] ?? null; },
+      contains(other) { let n = other; while (n) { if (n === node) return true; n = n.parent; } return false; },
+      focus() { node.focusCount += 1; doc.activeElement = node; },
+      appendChild(child) { detach(child); child.parent = node; node.children.push(child); },
+      remove() { detach(node); },
+      insertAdjacentHTML(_where, html) {
+        node.inserted.push(html);
+        const value = html.match(/data-value="([^"]*)"/)?.[1];
+        const label = html.match(/">([^<]*)<button/)?.[1];
+        node.appendChild(el('span', { 'data-bn': 'tag', 'data-value': value, text: label }, [el('button', { 'data-bn': 'tag-remove', type: 'button' })]));
+      },
+      scrollIntoView() {},
+    };
+    for (const child of children) child.parent = node;
+    return node;
+  }
+  /** Dispatch on `target`, bubbling to every ancestor's listener of that type; returns the event so tests can read `prevented`. */
+  function fire(target, type, extra = {}) {
+    const event = { type, target, key: extra.key, prevented: false, preventDefault() { event.prevented = true; }, ...extra };
+    for (let n = target; n; n = n.parent) n.listeners.get(type)?.(event);
+    return event;
+  }
+  return { doc, el, fire };
+}
+
+describe('initCommandPalette', () => {
+  /** The shape renderCommandPalette emits: header input, grouped items, all inside an open <dialog>. */
+  function palette({ open = true, withIds = true } = {}) {
+    const dom = clientDom();
+    const { el } = dom;
+    const item = (id, label) => el('button', { 'data-bn': 'command-item', role: 'option', ...(withIds ? { id: `cp-item-${id}` } : {}), 'data-action': id, type: 'button' }, [el('span', { 'data-bn': 'command-label', text: label })]);
+    const input = el('input', { 'data-bn': 'command-input', role: 'combobox' });
+    const file = el('div', { 'data-bn': 'command-group', 'aria-label': 'File' }, [item('new', 'New file'), item('save', 'Save')]);
+    const view = el('div', { 'data-bn': 'command-group', 'aria-label': 'View' }, [item('settings', 'Settings')]);
+    const dialog = el('dialog', { 'data-bn': 'command-palette', id: 'cp', ...(open ? { open: '' } : {}) }, [
+      el('div', { 'data-bn': 'command-header' }, [input]),
+      el('div', { 'data-bn': 'command-list', role: 'listbox' }, [file, view]),
+    ]);
+    dialog.modalCount = 0;
+    dialog.closeCount = 0;
+    dialog.showModal = () => { dialog.attrs.set('open', ''); dialog.modalCount += 1; };
+    dialog.close = () => { dialog.attrs.delete('open'); dialog.closeCount += 1; };
+    const items = () => dialog.querySelectorAll('[data-bn="command-item"]');
+    const visibleItems = () => items().filter(i => !i.hasAttribute('hidden'));
+    const labels = list => list.map(i => i.querySelector('[data-bn="command-label"]').textContent);
+    const highlighted = () => labels(items().filter(i => i.getAttribute('aria-selected') === 'true'));
+    return { ...dom, dialog, input, file, view, items, visibleItems, labels, highlighted, byAction: a => items().find(i => i.getAttribute('data-action') === a) };
+  }
+
+  it('filters the command list as you type, hiding empty groups and highlighting the first match', () => {
+    const p = palette();
+    initCommandPalette(p.dialog, {});
+    assert.deepEqual(p.highlighted(), ['New file'], 'the first command is highlighted on init');
+    assert.equal(p.input.getAttribute('aria-activedescendant'), 'cp-item-new');
+
+    p.input.value = 'set';
+    p.fire(p.input, 'input');
+    assert.deepEqual(p.labels(p.visibleItems()), ['Settings']);
+    assert.ok(p.file.hasAttribute('hidden'), 'a group with no visible command is hidden');
+    assert.ok(!p.view.hasAttribute('hidden'));
+    assert.deepEqual(p.highlighted(), ['Settings']);
+    assert.equal(p.input.getAttribute('aria-activedescendant'), 'cp-item-settings');
+
+    p.input.value = '  SET ';
+    p.fire(p.input, 'input');
+    assert.deepEqual(p.labels(p.visibleItems()), ['Settings'], 'case and surrounding space do not matter');
+
+    p.input.value = '';
+    p.fire(p.input, 'input');
+    assert.deepEqual(p.labels(p.visibleItems()), ['New file', 'Save', 'Settings']);
+    assert.ok(!p.file.hasAttribute('hidden'));
+    assert.deepEqual(p.highlighted(), ['New file']);
+  });
+
+  it('ArrowDown and ArrowUp move the highlight through the visible commands and wrap', () => {
+    const p = palette();
+    const handle = initCommandPalette(p.dialog, {});
+    assert.ok(p.fire(p.input, 'keydown', { key: 'ArrowDown' }).prevented);
+    assert.deepEqual([p.highlighted(), handle.active()], [['Save'], 'save']);
+    p.fire(p.input, 'keydown', { key: 'ArrowDown' });
+    assert.deepEqual(p.highlighted(), ['Settings']);
+    p.fire(p.input, 'keydown', { key: 'ArrowDown' });
+    assert.deepEqual(p.highlighted(), ['New file'], 'wraps to the top');
+    p.fire(p.input, 'keydown', { key: 'ArrowUp' });
+    assert.deepEqual(p.highlighted(), ['Settings'], 'wraps to the bottom');
+    assert.equal(p.input.getAttribute('aria-activedescendant'), 'cp-item-settings');
+
+    p.input.value = 'n';
+    p.fire(p.input, 'input');
+    assert.deepEqual(p.labels(p.visibleItems()), ['New file', 'Settings']);
+    p.fire(p.input, 'keydown', { key: 'ArrowDown' });
+    assert.deepEqual(p.highlighted(), ['Settings'], 'hidden commands are skipped');
+  });
+
+  it('Enter activates the highlighted command, closes the dialog and reports its action', () => {
+    const p = palette();
+    const picked = [];
+    initCommandPalette(p.dialog, { onSelect: (action, item) => picked.push([action, item.getAttribute('id')]) });
+    p.fire(p.input, 'keydown', { key: 'ArrowDown' });
+    assert.ok(p.fire(p.input, 'keydown', { key: 'Enter' }).prevented);
+    assert.deepEqual(picked, [['save', 'cp-item-save']]);
+    assert.ok(!p.dialog.hasAttribute('open'));
+    assert.equal(p.dialog.closeCount, 1);
+  });
+
+  it('a click on a command activates it', () => {
+    const p = palette();
+    const picked = [];
+    initCommandPalette(p.dialog, { onSelect: action => picked.push(action) });
+    p.fire(p.byAction('settings').querySelector('[data-bn="command-label"]'), 'click');
+    assert.deepEqual(picked, ['settings']);
+    assert.ok(!p.dialog.hasAttribute('open'));
+  });
+
+  it('Escape closes without selecting', () => {
+    const p = palette();
+    const picked = [];
+    const handle = initCommandPalette(p.dialog, { onSelect: action => picked.push(action) });
+    assert.ok(p.fire(p.input, 'keydown', { key: 'Escape' }).prevented);
+    assert.deepEqual([picked, handle.isOpen(), p.dialog.closeCount], [[], false, 1]);
+  });
+
+  it('open() clears the filter, shows the dialog modally and focuses the input', () => {
+    const p = palette({ open: false });
+    const handle = initCommandPalette(p.dialog, {});
+    handle.filter('set');
+    assert.deepEqual(p.labels(p.visibleItems()), ['Settings']);
+    p.input.value = 'set';
+    handle.open();
+    assert.deepEqual([p.dialog.modalCount, handle.isOpen(), p.input.value, p.doc.activeElement], [1, true, '', p.input]);
+    assert.deepEqual(p.labels(p.visibleItems()), ['New file', 'Save', 'Settings']);
+    handle.open();
+    assert.equal(p.dialog.modalCount, 1, 'an open dialog is not shown twice');
+  });
+
+  it('hotkey toggles it from the document, and destroy unbinds every listener', () => {
+    const p = palette({ open: false });
+    const handle = initCommandPalette(p.dialog, { hotkey: 'Mod+K' });
+    assert.deepEqual([...p.dialog.listeners.keys()].sort(), ['click', 'input', 'keydown']);
+    assert.ok(p.doc.listeners.has('keydown'));
+    const press = extra => { const e = { key: 'k', prevented: false, preventDefault() { e.prevented = true; }, ...extra }; p.doc.listeners.get('keydown')(e); return e; };
+    assert.ok(!press({}).prevented, 'a bare k is not the hotkey');
+    assert.equal(handle.isOpen(), false);
+    assert.ok(press({ ctrlKey: true }).prevented);
+    assert.equal(handle.isOpen(), true);
+    assert.ok(press({ metaKey: true, key: 'K' }).prevented);
+    assert.equal(handle.isOpen(), false);
+    handle.destroy();
+    assert.deepEqual([p.dialog.listeners.size, p.doc.listeners.size], [0, 0]);
+  });
+
+  it('gives id-less commands an id so aria-activedescendant can name them', () => {
+    const p = palette({ withIds: false });
+    initCommandPalette(p.dialog, {});
+    assert.deepEqual(p.items().map(i => i.getAttribute('id')), ['cp-item-0', 'cp-item-1', 'cp-item-2']);
+    assert.equal(p.input.getAttribute('aria-activedescendant'), 'cp-item-0');
+  });
+
+  it('renderCommandPalette emits the ids and aria-controls the initialiser relies on', () => {
+    const html = renderCommandPalette({ id: 'cp', commands: [{ label: 'Save', action: 'save', group: 'File' }, { id: 'quit', label: 'Quit' }] });
+    assert.ok(html.includes('<button data-bn="command-item" role="option" id="cp-item-0" data-action="save" type="button">'));
+    assert.ok(html.includes('<button data-bn="command-item" role="option" id="cp-item-1" data-action="quit" type="button">'));
+    assert.ok(html.includes('aria-controls="cp-list"'));
+    assert.ok(html.includes('<div data-bn="command-list" id="cp-list" role="listbox">'));
+  });
+});
+
+describe('initDataGrid', () => {
+  /** The shape renderDataGrid emits for two sortable columns (name sorted asc) and selectable rows. */
+  function grid({ checked = [] } = {}) {
+    const dom = clientDom();
+    const { el } = dom;
+    const th = (key, label, sorted) => el('th', {
+      'data-bn': 'datagrid-th', 'data-key': key, 'data-sortable': '', scope: 'col',
+      ...(sorted ? { 'data-sorted': sorted, 'aria-sort': sorted === 'asc' ? 'ascending' : 'descending' } : {}),
+    }, [el('button', { 'data-bn': 'datagrid-th-button', type: 'button', text: `${label}${sorted ? (sorted === 'asc' ? ' ↑' : ' ↓') : ''}` })]);
+    const selectAll = el('input', { type: 'checkbox', 'data-bn': 'datagrid-select-all' });
+    const header = el('tr', {}, [el('th', { 'data-bn': 'datagrid-th-select' }, [selectAll]), th('name', 'Name', 'asc'), th('total', 'Total')]);
+    const row = (id, name, total) => el('tr', { 'data-bn': 'datagrid-row', 'data-row-id': id }, [
+      el('td', { 'data-bn': 'datagrid-td-select' }, [el('input', { type: 'checkbox', 'data-bn': 'datagrid-row-select', 'data-row-id': id, ...(checked.includes(id) ? { checked: '' } : {}) })]),
+      el('td', { 'data-bn': 'datagrid-td', 'data-key': 'name', text: name }),
+      el('td', { 'data-bn': 'datagrid-td', 'data-key': 'total', text: total }),
+    ]);
+    const tbody = el('tbody', {}, [row('r1', 'Acme', '120'), row('r2', 'Zed', '8'), row('r3', 'Beta', '35')]);
+    const wrapper = el('div', { 'data-bn': 'datagrid' }, [el('div', { 'data-bn': 'datagrid-scroll' }, [el('table', { 'data-bn': 'datagrid-table', role: 'grid' }, [el('thead', {}, [header]), tbody])])]);
+    const ths = () => wrapper.querySelectorAll('[data-bn="datagrid-th"]');
+    const thFor = key => ths().find(t => t.getAttribute('data-key') === key);
+    const buttonFor = key => thFor(key).querySelector('[data-bn="datagrid-th-button"]');
+    const boxFor = id => wrapper.querySelectorAll('[data-bn="datagrid-row-select"]').find(b => b.getAttribute('data-row-id') === id);
+    const order = () => tbody.children.map(r => r.getAttribute('data-row-id'));
+    const cell = (rowIndex, cellIndex) => (rowIndex === 0 ? header : tbody.children[rowIndex - 1]).children[cellIndex];
+    return { ...dom, wrapper, tbody, header, selectAll, ths, thFor, buttonFor, boxFor, order, cell };
+  }
+
+  it('a header click emits { key, dir } and moves the sort indicator, flipping on the next click', () => {
+    const g = grid();
+    const sorts = [];
+    const handle = initDataGrid(g.wrapper, { onSort: s => sorts.push(s) });
+    assert.deepEqual(handle.sortState(), { key: 'name', dir: 'asc' });
+    g.fire(g.buttonFor('total'), 'click');
+    assert.deepEqual(sorts, [{ key: 'total', dir: 'asc' }]);
+    assert.deepEqual([g.thFor('total').getAttribute('data-sorted'), g.thFor('total').getAttribute('aria-sort'), g.buttonFor('total').textContent], ['asc', 'ascending', 'Total ↑']);
+    assert.deepEqual([g.thFor('name').hasAttribute('data-sorted'), g.thFor('name').hasAttribute('aria-sort'), g.buttonFor('name').textContent], [false, false, 'Name']);
+    g.fire(g.buttonFor('total'), 'click');
+    assert.deepEqual(sorts.at(-1), { key: 'total', dir: 'desc' });
+    assert.deepEqual([g.thFor('total').getAttribute('aria-sort'), g.buttonFor('total').textContent], ['descending', 'Total ↓']);
+    assert.deepEqual(g.order(), ['r1', 'r2', 'r3'], 'with onSort the rows are the caller\'s to reorder');
+  });
+
+  it('without onSort the rows are reordered in place, numeric-aware and stable', () => {
+    const g = grid();
+    initDataGrid(g.wrapper);
+    g.fire(g.buttonFor('total'), 'click');
+    assert.deepEqual(g.order(), ['r2', 'r3', 'r1'], '8 < 35 < 120, not "120" < "35" < "8"');
+    g.fire(g.buttonFor('total'), 'click');
+    assert.deepEqual(g.order(), ['r1', 'r3', 'r2']);
+    g.fire(g.buttonFor('name'), 'click');
+    assert.deepEqual(g.order(), ['r1', 'r3', 'r2'], 'name: Acme, Beta, Zed');
+  });
+
+  it('select-all checks every row, row checkboxes keep select-all indeterminate, and every change reports the selection', () => {
+    const g = grid();
+    const selections = [];
+    initDataGrid(g.wrapper, { onSelectionChange: ids => selections.push(ids) });
+    g.selectAll.checked = true;
+    g.fire(g.selectAll, 'change');
+    assert.deepEqual(['r1', 'r2', 'r3'].map(id => g.boxFor(id).checked), [true, true, true]);
+    assert.deepEqual(selections, [['r1', 'r2', 'r3']]);
+    assert.deepEqual(g.tbody.children.map(r => r.getAttribute('aria-selected')), ['true', 'true', 'true']);
+
+    g.boxFor('r2').checked = false;
+    g.fire(g.boxFor('r2'), 'change');
+    assert.deepEqual([g.selectAll.checked, g.selectAll.indeterminate], [false, true], 'some rows selected → indeterminate');
+    assert.deepEqual(selections.at(-1), ['r1', 'r3']);
+    assert.equal(g.tbody.children[1].getAttribute('aria-selected'), 'false');
+
+    g.selectAll.checked = false;
+    g.fire(g.selectAll, 'change');
+    assert.deepEqual([g.selectAll.checked, g.selectAll.indeterminate, selections.at(-1)], [false, false, []]);
+
+    g.boxFor('r1').checked = true;
+    g.fire(g.boxFor('r1'), 'change');
+    g.boxFor('r2').checked = true;
+    g.fire(g.boxFor('r2'), 'change');
+    g.boxFor('r3').checked = true;
+    g.fire(g.boxFor('r3'), 'change');
+    assert.deepEqual([g.selectAll.checked, g.selectAll.indeterminate], [true, false], 'all rows selected by hand → select-all checked');
+  });
+
+  it('reconciles select-all from a server-rendered partial selection on init, without reporting', () => {
+    const g = grid({ checked: ['r1'] });
+    const selections = [];
+    const handle = initDataGrid(g.wrapper, { onSelectionChange: ids => selections.push(ids) });
+    assert.deepEqual([g.selectAll.checked, g.selectAll.indeterminate, selections, handle.selected()], [false, true, [], ['r1']]);
+    assert.equal(g.tbody.children[0].getAttribute('aria-selected'), 'true');
+  });
+
+  it('arrow keys, Home and End rove focus between cells', () => {
+    const g = grid();
+    initDataGrid(g.wrapper);
+    assert.equal(g.cell(0, 0).getAttribute('tabindex'), '0', 'the first header cell is the tab stop');
+    assert.deepEqual([g.cell(0, 1), g.cell(1, 1), g.cell(3, 2)].map(c => c.getAttribute('tabindex')), ['-1', '-1', '-1']);
+
+    assert.ok(g.fire(g.cell(0, 1), 'keydown', { key: 'ArrowDown' }).prevented);
+    assert.equal(g.doc.activeElement, g.cell(1, 1));
+    assert.deepEqual([g.cell(1, 1).getAttribute('tabindex'), g.cell(0, 0).getAttribute('tabindex')], ['0', '-1'], 'the tab stop follows focus');
+    g.fire(g.cell(1, 1), 'keydown', { key: 'ArrowRight' });
+    assert.equal(g.doc.activeElement, g.cell(1, 2));
+    g.fire(g.cell(1, 2), 'keydown', { key: 'ArrowRight' });
+    assert.equal(g.doc.activeElement, g.cell(1, 2), 'no cell to the right: stays put');
+    g.fire(g.cell(1, 2), 'keydown', { key: 'ArrowUp' });
+    assert.equal(g.doc.activeElement, g.cell(0, 2));
+    g.fire(g.cell(0, 2), 'keydown', { key: 'Home' });
+    assert.equal(g.doc.activeElement, g.cell(0, 0));
+    g.fire(g.cell(0, 0), 'keydown', { key: 'End', ctrlKey: true });
+    assert.equal(g.doc.activeElement, g.cell(3, 2));
+    g.fire(g.cell(3, 2), 'keydown', { key: 'Home', ctrlKey: true });
+    assert.equal(g.doc.activeElement, g.cell(0, 0));
+
+    const fromButton = g.fire(g.buttonFor('name'), 'keydown', { key: 'ArrowLeft' });
+    assert.ok(fromButton.prevented, 'arrows work from the sort button inside a header cell');
+    assert.equal(g.doc.activeElement, g.cell(0, 0));
+    assert.ok(!g.fire(g.cell(1, 1), 'keydown', { key: 'a' }).prevented, 'other keys are left alone');
+  });
+
+  it('select(ids) and sort() reflect silently, and destroy unbinds', () => {
+    const g = grid();
+    const calls = [];
+    const handle = initDataGrid(g.wrapper, { onSort: s => calls.push(s), onSelectionChange: ids => calls.push(ids) });
+    handle.select(['r2', 'r3']);
+    assert.deepEqual([g.boxFor('r1').checked, g.boxFor('r2').checked, g.boxFor('r3').checked, g.selectAll.indeterminate], [false, true, true, true]);
+    assert.ok(handle.sort('total', 'desc'));
+    assert.deepEqual(handle.sortState(), { key: 'total', dir: 'desc' });
+    assert.ok(!handle.sort('nope'));
+    assert.deepEqual(calls, []);
+    assert.deepEqual([...g.wrapper.listeners.keys()].sort(), ['change', 'click', 'keydown']);
+    handle.destroy();
+    assert.equal(g.wrapper.listeners.size, 0);
+  });
+});
+
+describe('initTree', () => {
+  /**
+   * The shape renderTree emits: src (expanded) > [index.js, lib (collapsed, its
+   * group hidden) > [util.js]], then README at the top level.
+   */
+  function tree() {
+    const dom = clientDom();
+    const { el } = dom;
+    const content = (label, expandable, expanded) => el('div', { 'data-bn': 'tree-item-content' }, [
+      ...(expandable ? [el('button', { 'data-bn': 'tree-toggle', 'aria-label': expanded ? 'Collapse' : 'Expand', type: 'button', text: expanded ? '▾' : '▸' })] : [el('span', { 'data-bn': 'tree-indent' })]),
+      el('span', { 'data-bn': 'tree-label', text: label }),
+    ]);
+    const item = (id, level, { children = null, expanded = false, tabindex = -1 } = {}) => el('li', {
+      'data-bn': 'tree-item', role: 'treeitem', tabindex: String(tabindex), 'aria-selected': 'false', 'data-node-id': id, 'data-level': String(level),
+      ...(children ? { 'aria-expanded': String(expanded) } : {}),
+    }, [content(id, Boolean(children), expanded), ...(children ? [el('ul', { 'data-bn': 'tree-children', role: 'group', ...(expanded ? {} : { hidden: '' }) }, children)] : [])]);
+    const util = item('util.js', 2);
+    const lib = item('lib', 1, { children: [util] });
+    const index = item('index.js', 1);
+    const src = item('src', 0, { children: [index, lib], expanded: true, tabindex: 0 });
+    const readme = item('README', 0);
+    const root = el('ul', { 'data-bn': 'tree', role: 'tree' }, [src, readme]);
+    const toggleOf = node => node.querySelector('[data-bn="tree-toggle"]');
+    const labelOf = node => node.querySelector('[data-bn="tree-label"]');
+    const groupOf = node => node.querySelector('[data-bn="tree-children"]');
+    const focusable = () => root.querySelectorAll('[data-bn="tree-item"]').filter(i => i.getAttribute('tabindex') === '0').map(i => i.getAttribute('data-node-id'));
+    const selected = () => root.querySelectorAll('[data-bn="tree-item"]').filter(i => i.getAttribute('aria-selected') === 'true').map(i => i.getAttribute('data-node-id'));
+    return { ...dom, root, src, index, lib, util, readme, toggleOf, labelOf, groupOf, focusable, selected };
+  }
+
+  it('the toggle collapses and expands its group, relabels itself and reports', () => {
+    const t = tree();
+    const toggles = [];
+    initTree(t.root, { onToggle: (id, expanded) => toggles.push([id, expanded]) });
+    t.fire(t.toggleOf(t.src), 'click');
+    assert.deepEqual([t.src.getAttribute('aria-expanded'), t.groupOf(t.src).hasAttribute('hidden')], ['false', true]);
+    assert.deepEqual([t.toggleOf(t.src).getAttribute('aria-label'), t.toggleOf(t.src).textContent], ['Expand', '▸']);
+    assert.deepEqual(toggles, [['src', false]]);
+    t.fire(t.toggleOf(t.src), 'click');
+    assert.deepEqual([t.src.getAttribute('aria-expanded'), t.groupOf(t.src).hasAttribute('hidden')], ['true', false]);
+    assert.deepEqual([t.toggleOf(t.src).getAttribute('aria-label'), t.toggleOf(t.src).textContent], ['Collapse', '▾']);
+    assert.deepEqual(toggles, [['src', false], ['src', true]]);
+    assert.deepEqual(t.selected(), [], 'the toggle does not select');
+  });
+
+  it('a click on the row selects the node, moves focus there and reports', () => {
+    const t = tree();
+    const picks = [];
+    initTree(t.root, { onSelect: id => picks.push(id) });
+    t.fire(t.labelOf(t.index), 'click');
+    assert.deepEqual([t.selected(), picks, t.focusable(), t.doc.activeElement], [['index.js'], ['index.js'], ['index.js'], t.index]);
+    assert.ok(t.index.querySelector('[data-bn="tree-item-content"]').hasAttribute('data-selected'));
+    t.fire(t.labelOf(t.readme), 'click');
+    assert.deepEqual(t.selected(), ['README']);
+    assert.ok(!t.index.querySelector('[data-bn="tree-item-content"]').hasAttribute('data-selected'));
+  });
+
+  it('ArrowDown and ArrowUp walk the visible nodes only; Home and End jump', () => {
+    const t = tree();
+    initTree(t.root);
+    assert.deepEqual(t.focusable(), ['src']);
+    assert.ok(t.fire(t.src, 'keydown', { key: 'ArrowDown' }).prevented);
+    assert.equal(t.doc.activeElement, t.index);
+    t.fire(t.index, 'keydown', { key: 'ArrowDown' });
+    assert.equal(t.doc.activeElement, t.lib);
+    t.fire(t.lib, 'keydown', { key: 'ArrowDown' });
+    assert.equal(t.doc.activeElement, t.readme, 'util.js sits in a hidden group and is skipped');
+    assert.deepEqual(t.focusable(), ['README'], 'the roving tabindex follows focus');
+    t.fire(t.readme, 'keydown', { key: 'ArrowDown' });
+    assert.equal(t.doc.activeElement, t.readme, 'no wrap at the end');
+    t.fire(t.readme, 'keydown', { key: 'ArrowUp' });
+    assert.equal(t.doc.activeElement, t.lib);
+    t.fire(t.lib, 'keydown', { key: 'Home' });
+    assert.equal(t.doc.activeElement, t.src);
+    t.fire(t.src, 'keydown', { key: 'End' });
+    assert.equal(t.doc.activeElement, t.readme);
+    assert.ok(!t.fire(t.readme, 'keydown', { key: 'a' }).prevented);
+  });
+
+  it('ArrowRight expands then descends; ArrowLeft collapses then ascends', () => {
+    const t = tree();
+    const toggles = [];
+    initTree(t.root, { onToggle: (id, expanded) => toggles.push([id, expanded]) });
+    t.fire(t.lib, 'keydown', { key: 'ArrowRight' });
+    assert.deepEqual([t.lib.getAttribute('aria-expanded'), t.groupOf(t.lib).hasAttribute('hidden'), toggles], ['true', false, [['lib', true]]]);
+    assert.equal(t.doc.activeElement, null, 'expanding does not move focus');
+    t.fire(t.lib, 'keydown', { key: 'ArrowRight' });
+    assert.equal(t.doc.activeElement, t.util, 'already expanded: move into the first child');
+    t.fire(t.util, 'keydown', { key: 'ArrowRight' });
+    assert.equal(t.doc.activeElement, t.util, 'a leaf has nowhere to go');
+    t.fire(t.util, 'keydown', { key: 'ArrowLeft' });
+    assert.equal(t.doc.activeElement, t.lib, 'a leaf goes to its parent');
+    t.fire(t.lib, 'keydown', { key: 'ArrowLeft' });
+    assert.deepEqual([t.lib.getAttribute('aria-expanded'), toggles.at(-1)], ['false', ['lib', false]]);
+    t.fire(t.lib, 'keydown', { key: 'ArrowLeft' });
+    assert.equal(t.doc.activeElement, t.src, 'collapsed: go to the parent');
+    t.fire(t.src, 'keydown', { key: 'ArrowLeft' });
+    t.fire(t.src, 'keydown', { key: 'ArrowLeft' });
+    assert.equal(t.doc.activeElement, t.src, 'a collapsed top-level node has no parent to go to');
+  });
+
+  it('Enter and Space select; on the toggle button they are left to its native click', () => {
+    const t = tree();
+    const picks = [];
+    initTree(t.root, { onSelect: id => picks.push(id) });
+    assert.ok(t.fire(t.index, 'keydown', { key: 'Enter' }).prevented);
+    assert.ok(t.fire(t.readme, 'keydown', { key: ' ' }).prevented);
+    assert.deepEqual([picks, t.selected()], [['index.js', 'README'], ['README']]);
+    assert.ok(!t.fire(t.toggleOf(t.src), 'keydown', { key: 'Enter' }).prevented);
+    assert.equal(t.src.getAttribute('aria-expanded'), 'true', 'the keydown itself does not toggle; the button\'s click will');
+  });
+
+  it('starts the roving tabindex on the selected node, and expand/collapse/select are silent', () => {
+    const t = tree();
+    t.readme.setAttribute('aria-selected', 'true');
+    const calls = [];
+    const handle = initTree(t.root, { onToggle: (...a) => calls.push(a), onSelect: (...a) => calls.push(a) });
+    assert.deepEqual([t.focusable(), handle.selected()], [['README'], 'README']);
+    assert.ok(handle.collapse('src'));
+    assert.ok(t.groupOf(t.src).hasAttribute('hidden'));
+    assert.ok(!handle.collapse('src'), 'already collapsed');
+    assert.ok(handle.expand('src'));
+    assert.ok(!handle.expand('index.js'), 'a leaf cannot expand');
+    assert.ok(handle.select('index.js'));
+    assert.deepEqual([handle.selected(), t.focusable()], ['index.js', ['index.js']]);
+    assert.ok(!handle.select('nope'));
+    assert.deepEqual(calls, []);
+    assert.deepEqual([...t.root.listeners.keys()].sort(), ['click', 'keydown']);
+    handle.destroy();
+    assert.equal(t.root.listeners.size, 0);
+  });
+});
+
+describe('initMultiselect', () => {
+  /** The shape renderMultiselect emits: tags for the selected values, a search input, and the hidden <select multiple>. */
+  function multiselect({ selected = ['css'] } = {}) {
+    const dom = clientDom();
+    const { el } = dom;
+    const items = [['a11y', 'Accessibility'], ['css', 'CSS'], ['html', 'HTML']];
+    const tag = (value, label) => el('span', { 'data-bn': 'tag', 'data-value': value, text: label }, [el('button', { type: 'button', 'data-bn': 'tag-remove', 'aria-label': `Remove ${label}` })]);
+    const tags = el('div', { 'data-bn': 'multiselect-tags' }, items.filter(([v]) => selected.includes(v)).map(([v, l]) => tag(v, l)));
+    const input = el('input', { type: 'text', 'data-bn': 'multiselect-search', list: 'ms-options' });
+    const select = el('select', { id: 'ms', name: 'tags', multiple: '', hidden: '' }, items.map(([v, l]) => el('option', { value: v, text: l, ...(selected.includes(v) ? { selected: '' } : {}) })));
+    const root = el('div', { 'data-bn': 'multiselect' }, [el('div', { 'data-bn': 'multiselect-container' }, [tags, input]), el('datalist', { id: 'ms-options' }), select]);
+    const option = value => select.children.find(o => o.value === value);
+    const tagValues = () => tags.querySelectorAll('[data-bn="tag"]').map(t => t.getAttribute('data-value'));
+    const removeFor = value => tags.querySelectorAll('[data-bn="tag"]').find(t => t.getAttribute('data-value') === value).querySelector('[data-bn="tag-remove"]');
+    return { ...dom, root, tags, input, select, option, tagValues, removeFor };
+  }
+
+  it('the × deselects the option, removes the tag, focuses the input and reports', () => {
+    const m = multiselect();
+    const changes = [];
+    const handle = initMultiselect(m.root, { onChange: v => changes.push(v) });
+    assert.deepEqual(handle.values(), ['css']);
+    m.fire(m.removeFor('css'), 'click');
+    assert.deepEqual([m.option('css').selected, m.tagValues(), handle.values(), changes, m.doc.activeElement], [false, [], [], [[]], m.input]);
+  });
+
+  it('Backspace on an empty input removes the last selected value; with text it is left alone', () => {
+    const m = multiselect({ selected: ['a11y', 'css'] });
+    const changes = [];
+    initMultiselect(m.root, { onChange: v => changes.push(v) });
+    m.input.value = 'x';
+    assert.ok(!m.fire(m.input, 'keydown', { key: 'Backspace' }).prevented);
+    assert.deepEqual(m.tagValues(), ['a11y', 'css']);
+    m.input.value = '';
+    assert.ok(m.fire(m.input, 'keydown', { key: 'Backspace' }).prevented);
+    assert.deepEqual([m.option('css').selected, m.tagValues(), changes], [false, ['a11y'], [['a11y']]]);
+    m.fire(m.input, 'keydown', { key: 'Backspace' });
+    assert.deepEqual([m.tagValues(), changes.at(-1)], [[], []]);
+    assert.ok(!m.fire(m.input, 'keydown', { key: 'Backspace' }).prevented, 'nothing left to remove');
+  });
+
+  it('Enter or a datalist pick selects the item whose label or value matches, appends its tag and clears the input', () => {
+    const m = multiselect();
+    const changes = [];
+    initMultiselect(m.root, { onChange: v => changes.push(v) });
+    m.input.value = 'html';
+    assert.ok(m.fire(m.input, 'keydown', { key: 'Enter' }).prevented);
+    assert.deepEqual([m.option('html').selected, m.tagValues(), m.input.value, changes], [true, ['css', 'html'], '', [['css', 'html']]]);
+    assert.match(m.tags.inserted[0], /^<span data-bn="tag" data-value="html">HTML<button type="button" data-bn="tag-remove" aria-label="Remove HTML">&times;<\/button><\/span>$/);
+    m.input.value = ' accessibility ';
+    m.fire(m.input, 'change');
+    assert.deepEqual([m.option('a11y').selected, m.tagValues(), changes.at(-1)], [true, ['css', 'html', 'a11y'], ['a11y', 'css', 'html']]);
+    m.input.value = 'nope';
+    assert.ok(!m.fire(m.input, 'keydown', { key: 'Enter' }).prevented, 'no match: the form may submit');
+    assert.deepEqual([m.input.value, changes.length], ['nope', 2]);
+    m.input.value = 'CSS';
+    m.fire(m.input, 'change');
+    assert.deepEqual([changes.length, m.tagValues().length], [2, 3], 'already selected: nothing changes');
+  });
+
+  it('add and remove are silent, values() reads the select, and destroy unbinds', () => {
+    const m = multiselect();
+    const changes = [];
+    const handle = initMultiselect(m.root, { onChange: v => changes.push(v) });
+    assert.ok(handle.add('html'));
+    assert.ok(!handle.add('html'));
+    assert.ok(!handle.add('nope'));
+    assert.deepEqual([handle.values(), m.tagValues()], [['css', 'html'], ['css', 'html']]);
+    assert.ok(handle.remove('css'));
+    assert.ok(!handle.remove('css'));
+    assert.deepEqual([handle.values(), m.tagValues(), changes], [['html'], ['html'], []]);
+    assert.deepEqual([...m.root.listeners.keys()].sort(), ['change', 'click', 'keydown']);
+    handle.destroy();
+    assert.equal(m.root.listeners.size, 0);
+  });
+
+  it('renderMultiselect backs the search input with a datalist of the item labels', () => {
+    const html = renderMultiselect({ name: 'tags', items: ['a11y', { value: 'css', label: 'CSS' }] });
+    assert.ok(html.includes('data-bn="multiselect-search" placeholder="Select items..." autocomplete="off" aria-label="Search" list="bn-multiselect-tags-options">'));
+    assert.ok(html.includes('<datalist id="bn-multiselect-tags-options"><option value="a11y"></option><option value="CSS"></option></datalist>'));
+  });
+});
+
+describe('initVirtualList', () => {
+  /** The shape renderVirtualList emits for 100 rows of 40px in a 200px container. */
+  function list({ total = 100, clientHeight = 200 } = {}) {
+    const dom = clientDom();
+    const { el } = dom;
+    const items = Array.from({ length: total }, (_, i) => `Item ${i}`);
+    const win = el('div', { 'data-bn': 'virtual-window', 'data-item-height': '40', 'data-total': String(total) });
+    const spacer = el('div', { 'data-bn': 'virtual-spacer' }, [win]);
+    const container = el('div', { 'data-bn': 'virtualizer', tabindex: '0', role: 'region' }, [spacer]);
+    container.clientHeight = clientHeight;
+    const indexes = () => [...win.innerHTML.matchAll(/data-index="(\d+)"/g)].map(m => Number(m[1]));
+    return { ...dom, items, win, spacer, container, indexes };
+  }
+
+  it('renders the window for the scroll position and re-slices it on scroll', () => {
+    const v = list();
+    const handle = initVirtualList(v.container, { items: v.items });
+    assert.deepEqual(handle.range(), { start: 0, end: 10 }, 'ceil(200 / 40) + 5 overscan below');
+    assert.deepEqual([v.indexes()[0], v.indexes().at(-1), v.win.style.top], [0, 9, '0px']);
+    assert.ok(v.win.innerHTML.includes('<div data-bn="virtual-item" data-index="9">Item 9</div>'));
+
+    v.container.scrollTop = 2000;
+    v.fire(v.container, 'scroll');
+    assert.deepEqual(handle.range(), { start: 45, end: 60 }, '50 - 5 overscan above; 55 + 5 below');
+    assert.deepEqual([v.indexes()[0], v.indexes().at(-1), v.win.style.top], [45, 59, '1800px']);
+
+    v.container.scrollTop = 3950;
+    v.fire(v.container, 'scroll');
+    assert.deepEqual(handle.range(), { start: 93, end: 100 }, 'clamped to the list');
+  });
+
+  it('uses renderItem and skips the re-render when the range is unchanged', () => {
+    const v = list();
+    let renders = 0;
+    initVirtualList(v.container, { items: v.items, renderItem: (item, i) => { renders += 1; return `<p data-index="${i}">${item.toUpperCase()}</p>`; } });
+    assert.equal(renders, 10);
+    assert.ok(v.win.innerHTML.startsWith('<p data-index="0">ITEM 0</p>'));
+    v.fire(v.container, 'scroll');
+    assert.equal(renders, 10, 'a scroll event that leaves the range as it was is not a re-render');
+    v.container.scrollTop = 5;
+    v.fire(v.container, 'scroll');
+    assert.equal(renders, 21, 'five pixels bring a partial item into view: the window grows by one and is re-rendered');
+  });
+
+  it('scrollTo, setItems and destroy', () => {
+    const v = list();
+    const handle = initVirtualList(v.container, { items: v.items });
+    handle.scrollTo(10);
+    assert.deepEqual([v.container.scrollTop, handle.range()], [400, { start: 5, end: 20 }]);
+    handle.setItems(v.items.slice(0, 12));
+    assert.deepEqual([handle.range(), v.win.getAttribute('data-total'), v.spacer.style.height], [{ start: 5, end: 12 }, '12', '480px']);
+    assert.ok(v.container.listeners.has('scroll'));
+    handle.destroy();
+    assert.equal(v.container.listeners.size, 0);
+  });
+
+  it('refuses to run without the items array, and says why', () => {
+    const v = list();
+    assert.throws(() => initVirtualList(v.container, {}), /options\.items/);
+  });
+
+  it('defaultRenderItem is the markup renderVirtualList uses, escaped', () => {
+    assert.equal(defaultRenderItem('a<b', 3), '<div data-bn="virtual-item" data-index="3">a&lt;b</div>');
+    assert.ok(renderVirtualList({ items: ['a<b'] }).includes(defaultRenderItem('a<b', 0)));
+  });
+});
+
+describe('initDropdownMenu', () => {
+  /** The shape renderDropdownMenu emits: trigger, then the popover menu with an item, a separator and a disabled item. */
+  function dropdown() {
+    const dom = clientDom();
+    const { el, fire } = dom;
+    const rename = el('button', { 'data-bn': 'dropdown-item', role: 'menuitem', 'data-action': 'rename', type: 'button', text: 'Rename' });
+    const copy = el('button', { 'data-bn': 'dropdown-item', role: 'menuitem', 'data-action': 'copy', type: 'button', text: 'Copy' });
+    const del = el('button', { 'data-bn': 'dropdown-item', role: 'menuitem', 'data-action': 'delete', 'aria-disabled': 'true', type: 'button', text: 'Delete' });
+    const menu = el('div', { 'data-bn': 'dropdown-menu', id: 'dd', popover: '', role: 'menu' }, [rename, copy, el('hr', { 'data-bn': 'dropdown-separator', role: 'separator' }), del]);
+    const trigger = el('button', { 'data-bn': 'dropdown-trigger', popovertarget: 'dd', type: 'button', text: 'Actions' });
+    const root = el('div', { 'data-bn': 'dropdown' }, [trigger, menu]);
+    menu.shown = 0;
+    menu.hidden = 0;
+    // The Popover API queues `toggle`; delivering it synchronously here keeps the tests linear.
+    menu.showPopover = () => { menu.shown += 1; fire(menu, 'toggle', { newState: 'open', oldState: 'closed' }); };
+    menu.hidePopover = () => { menu.hidden += 1; fire(menu, 'toggle', { newState: 'closed', oldState: 'open' }); };
+    return { ...dom, root, trigger, menu, rename, copy, del };
+  }
+
+  it('focuses the first item when the popover opens, and the arrows, Home and End move between items with wrap', () => {
+    const d = dropdown();
+    const handle = initDropdownMenu(d.root);
+    assert.equal(handle.isOpen(), false);
+    d.fire(d.menu, 'toggle', { newState: 'open' });
+    assert.deepEqual([handle.isOpen(), d.doc.activeElement], [true, d.rename]);
+    assert.ok(d.fire(d.rename, 'keydown', { key: 'ArrowDown' }).prevented);
+    assert.equal(d.doc.activeElement, d.copy);
+    d.fire(d.copy, 'keydown', { key: 'ArrowDown' });
+    assert.equal(d.doc.activeElement, d.del, 'a disabled item stays in the arrow order');
+    d.fire(d.del, 'keydown', { key: 'ArrowDown' });
+    assert.equal(d.doc.activeElement, d.rename, 'wraps');
+    d.fire(d.rename, 'keydown', { key: 'ArrowUp' });
+    assert.equal(d.doc.activeElement, d.del);
+    d.fire(d.del, 'keydown', { key: 'Home' });
+    assert.equal(d.doc.activeElement, d.rename);
+    d.fire(d.rename, 'keydown', { key: 'End' });
+    assert.equal(d.doc.activeElement, d.del);
+    assert.ok(!d.fire(d.del, 'keydown', { key: 'Tab' }).prevented);
+  });
+
+  it('ArrowDown on the trigger opens the menu on the first item; ArrowUp opens it on the last', () => {
+    const d = dropdown();
+    const handle = initDropdownMenu(d.root);
+    assert.ok(d.fire(d.trigger, 'keydown', { key: 'ArrowDown' }).prevented);
+    assert.deepEqual([d.menu.shown, handle.isOpen(), d.doc.activeElement], [1, true, d.rename]);
+    handle.close();
+    assert.deepEqual([d.menu.hidden, handle.isOpen()], [1, false]);
+    d.fire(d.trigger, 'keydown', { key: 'ArrowUp' });
+    assert.deepEqual([d.menu.shown, d.doc.activeElement], [2, d.del]);
+    d.fire(d.trigger, 'keydown', { key: 'ArrowDown' });
+    assert.deepEqual([d.menu.shown, d.doc.activeElement], [2, d.rename], 'already open: the arrow moves to the first item instead');
+  });
+
+  it('activating an item hides the popover and reports; a disabled item does neither', () => {
+    const d = dropdown();
+    const picked = [];
+    const handle = initDropdownMenu(d.root, { onSelect: (action, item) => picked.push([action, item.textContent]) });
+    handle.open();
+    d.fire(d.copy, 'click');
+    assert.deepEqual([picked, d.menu.hidden, handle.isOpen()], [[['copy', 'Copy']], 1, false]);
+    handle.open();
+    assert.ok(d.fire(d.del, 'click').prevented);
+    assert.deepEqual([picked.length, d.menu.hidden, handle.isOpen()], [1, 1, true]);
+    handle.close();
+    handle.close();
+    assert.equal(d.menu.hidden, 2, 'closing a closed menu is a no-op');
+  });
+
+  it('destroy unbinds the root and the menu', () => {
+    const d = dropdown();
+    const handle = initDropdownMenu(d.root);
+    assert.deepEqual([[...d.root.listeners.keys()].sort(), [...d.menu.listeners.keys()]], [['click', 'keydown'], ['toggle']]);
+    handle.destroy();
+    assert.deepEqual([d.root.listeners.size, d.menu.listeners.size], [0, 0]);
   });
 });

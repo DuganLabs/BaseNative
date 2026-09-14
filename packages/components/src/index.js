@@ -49,17 +49,17 @@ export { renderSkeleton } from './skeleton.js';
 // Combobox
 export { renderCombobox } from './combobox.js';
 
-// Multiselect
-export { renderMultiselect } from './multiselect.js';
+// Multiselect (renderMultiselect for SSR markup, initMultiselect for client-side chip editing)
+export { renderMultiselect, initMultiselect } from './multiselect.js';
 
-// Data Grid
-export { renderDataGrid } from './datagrid.js';
+// Data Grid (renderDataGrid for SSR markup, initDataGrid for client-side sort, selection and cell navigation)
+export { renderDataGrid, initDataGrid } from './datagrid.js';
 
-// Tree & TreeGrid
-export { renderTree, renderTreeGrid } from './tree.js';
+// Tree & TreeGrid (initTree for client-side expand/collapse, selection and APG keys; TreeGrid has no initialiser)
+export { renderTree, renderTreeGrid, initTree } from './tree.js';
 
-// Virtualizer
-export { renderVirtualList } from './virtualizer.js';
+// Virtualizer (renderVirtualList for the first window, initVirtualList to re-slice it on scroll)
+export { renderVirtualList, initVirtualList, defaultRenderItem } from './virtualizer.js';
 
 // Dialog
 export { renderDialog } from './dialog.js';
@@ -82,11 +82,11 @@ export { renderAvatar } from './avatar.js';
 // Tooltip
 export { renderTooltip } from './tooltip.js';
 
-// Dropdown Menu
-export { renderDropdownMenu } from './dropdown-menu.js';
+// Dropdown Menu (renderDropdownMenu for SSR markup, initDropdownMenu for APG menu keys and close-on-select)
+export { renderDropdownMenu, initDropdownMenu } from './dropdown-menu.js';
 
-// Command Palette
-export { renderCommandPalette } from './command-palette.js';
+// Command Palette (renderCommandPalette for SSR markup, initCommandPalette for filter, arrows, Enter, Escape)
+export { renderCommandPalette, initCommandPalette } from './command-palette.js';
 
 // Calendar & Pipeline
 export { renderCalendar, renderPipelineBlock, renderPipeline, initCalendarDragDrop, initPipelineDragDrop } from './calendar.js';

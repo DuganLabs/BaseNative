@@ -345,6 +345,31 @@ export function renderMultiselect(options?: {
   attrs?: string;
 }): string;
 
+export interface MultiselectController {
+  /** Selects `value` in the hidden `<select>` and appends its tag; false when unknown or already selected. No `onChange`. */
+  add(value: string): boolean;
+  /** Deselects `value` and removes its tag; false when unknown or not selected. No `onChange`. */
+  remove(value: string): boolean;
+  /** Selected values, in option order, read from the `<select>`. */
+  values(): string[];
+  destroy(): void;
+}
+
+/**
+ * Wires a rendered `[data-bn="multiselect"]` element. The hidden
+ * `<select multiple>` stays the source of truth: a tag's × deselects its
+ * value and removes the tag; Backspace on an empty search input removes the
+ * last tag; Enter or a `<datalist>` pick selects the item whose label or
+ * value matches the typed text and appends its tag.
+ */
+export function initMultiselect(
+  root: HTMLElement,
+  options?: {
+    /** Called after every user-driven change with the selected values. */
+    onChange?: (values: string[]) => void;
+  }
+): MultiselectController;
+
 // ---------------------------------------------------------------- Data Grid
 
 export interface DataGridColumn<Row = Record<string, unknown>> {
@@ -387,6 +412,43 @@ export function renderDataGrid<Row extends Record<string, unknown> = Record<stri
   attrs?: string;
 }): string;
 
+export interface DataGridSort {
+  key: string;
+  dir: 'asc' | 'desc';
+}
+
+export interface DataGridController {
+  /** Moves the sort indicator to `key` (and, without `onSort`, reorders the rows in place); no `onSort` call. False for an unknown key. */
+  sort(key: string, dir?: 'asc' | 'desc'): boolean;
+  /** The `<th data-sorted>` column, or null. */
+  sortState(): DataGridSort | null;
+  /** Checks exactly these `data-row-id`s and reconciles select-all; no `onSelectionChange` call. */
+  select(ids: Array<string | number>): void;
+  /** `data-row-id` of every checked row. */
+  selected(): string[];
+  destroy(): void;
+}
+
+/**
+ * Wires a rendered `[data-bn="datagrid"]` wrapper: a sortable header's
+ * button sorts by its column (ascending first, flipping on the next click)
+ * and moves `data-sorted` / `aria-sort` / the ↑↓ to that `<th>`; the
+ * select-all checkbox drives the row checkboxes and stays `checked` /
+ * `indeterminate` / clear to match them, with selected `<tr>`s carrying
+ * `aria-selected="true"`; and the arrow keys, Home and End rove focus
+ * between cells. With `onSort` the rows are the caller's to re-render or
+ * re-fetch; without it they are reordered in place by cell text.
+ */
+export function initDataGrid(
+  wrapper: HTMLElement,
+  options?: {
+    /** Called on a header click with the new sort; when given, the rows are not reordered in the DOM. */
+    onSort?: (sort: DataGridSort) => void;
+    /** Called after every checkbox change with the selected `data-row-id`s. */
+    onSelectionChange?: (ids: string[]) => void;
+  }
+): DataGridController;
+
 // ---------------------------------------------------------------- Tree & TreeGrid
 
 export interface TreeNode {
@@ -414,6 +476,33 @@ export function renderTree(options?: {
   id?: string;
   attrs?: string;
 }): string;
+
+export interface TreeController {
+  /** Shows the node's group and sets `aria-expanded="true"`; false when unknown, a leaf, or already expanded. No `onToggle`. */
+  expand(id: string): boolean;
+  /** Hides the node's group and sets `aria-expanded="false"`; false when unknown, a leaf, or already collapsed. No `onToggle`. */
+  collapse(id: string): boolean;
+  /** Reflects `id` as the selected node and moves the roving `tabindex` there; false when unknown. No `onSelect`. */
+  select(id: string): boolean;
+  /** `data-node-id` of the `aria-selected="true"` node, or null. */
+  selected(): string | null;
+  destroy(): void;
+}
+
+/**
+ * Wires a rendered `[data-bn="tree"]` element to the WAI-ARIA APG tree
+ * pattern: the toggle button expands / collapses its `hidden` group, a click
+ * on the row selects, ArrowDown / ArrowUp / Home / End move between visible
+ * nodes, ArrowRight expands or descends, ArrowLeft collapses or ascends,
+ * Enter / Space select, and the roving `tabindex` follows focus.
+ */
+export function initTree(
+  tree: HTMLElement,
+  options?: {
+    onToggle?: (id: string, expanded: boolean, item: HTMLElement) => void;
+    onSelect?: (id: string, item: HTMLElement) => void;
+  }
+): TreeController;
 
 export interface TreeGridColumn {
   key: string;
@@ -457,6 +546,46 @@ export function renderVirtualList<T = unknown>(options?: {
   id?: string;
   attrs?: string;
 }): string;
+
+/** The item markup `renderVirtualList` and `initVirtualList` emit without a `renderItem`: escaped text in `[data-bn="virtual-item"]`. */
+export function defaultRenderItem(item: unknown, index: number): string;
+
+export interface VirtualRange {
+  /** First rendered index, inclusive. */
+  start: number;
+  /** Last rendered index, exclusive. */
+  end: number;
+}
+
+export interface VirtualListController {
+  /** Recomputes the range from `scrollTop` and re-renders the window when it changed. */
+  update(): VirtualRange;
+  range(): VirtualRange;
+  /** Scrolls `index` to the top of the container and updates. */
+  scrollTo(index: number): void;
+  /** Swaps the data, resizes the spacer and re-renders. */
+  setItems(items: unknown[]): void;
+  destroy(): void;
+}
+
+/**
+ * Wires a rendered `[data-bn="virtualizer"]` container: on every scroll the
+ * visible slice of `items` (plus `overscan` each side) is re-rendered into
+ * `[data-bn="virtual-window"]` and the window repositioned with `top`.
+ * `items` is required — only the first window is in the DOM.
+ */
+export function initVirtualList<T = unknown>(
+  container: HTMLElement,
+  options: {
+    items: T[];
+    /** Defaults to {@link defaultRenderItem}. */
+    renderItem?: (item: T, index: number) => string;
+    /** Defaults to the window's `data-item-height`. */
+    itemHeight?: number;
+    /** Extra items rendered above and below the viewport, default 5. */
+    overscan?: number;
+  }
+): VirtualListController;
 
 // ---------------------------------------------------------------- Dialog
 
@@ -670,6 +799,30 @@ export function renderDropdownMenu(options?: {
   attrs?: string;
 }): string;
 
+export interface DropdownMenuController {
+  /** `showPopover()` on the menu; focus moves to the first item when it opens. */
+  open(): void;
+  close(): void;
+  isOpen(): boolean;
+  destroy(): void;
+}
+
+/**
+ * Wires a rendered `[data-bn="dropdown"]` element to the WAI-ARIA APG
+ * menu-button keys the Popover API does not provide: focus moves to the
+ * first item when the popover opens (the last, when opened with ArrowUp on
+ * the trigger), ArrowDown / ArrowUp wrap between items, Home / End jump,
+ * ArrowDown / ArrowUp on the trigger open the menu, and activating an item
+ * hides the popover. Open, Escape and light dismiss stay native.
+ */
+export function initDropdownMenu(
+  root: HTMLElement,
+  options?: {
+    /** Called with the activated item's `data-action` after the popover hides; `aria-disabled` items do not activate. */
+    onSelect?: (action: string, item: HTMLElement) => void;
+  }
+): DropdownMenuController;
+
 // ---------------------------------------------------------------- Command Palette
 
 export interface CommandPaletteCommand {
@@ -693,6 +846,36 @@ export function renderCommandPalette(options?: {
   id?: string;
   attrs?: string;
 }): string;
+
+export interface CommandPaletteController {
+  /** Clears the filter, shows the dialog modally and focuses the input. */
+  open(): void;
+  close(): void;
+  isOpen(): boolean;
+  /** Hides commands whose label does not contain `query` (case-insensitive) and their then-empty groups, highlights the first visible one, and returns the visible items. */
+  filter(query: string): HTMLElement[];
+  /** `data-action` of the highlighted command, or null. */
+  active(): string | null;
+  destroy(): void;
+}
+
+/**
+ * Wires a rendered `[data-bn="command-palette"]` dialog to the keys its
+ * footer names: typing filters the commands by label substring, ArrowDown /
+ * ArrowUp move the highlight (`aria-selected` on the item,
+ * `aria-activedescendant` on the input) through the visible ones with wrap,
+ * Enter or a click activates the highlighted command and closes the dialog,
+ * Escape closes it. With `hotkey`, a document-level keydown toggles it.
+ */
+export function initCommandPalette(
+  dialog: HTMLDialogElement,
+  options?: {
+    /** Called with the activated command's `data-action` after the dialog closes. */
+    onSelect?: (action: string, item: HTMLElement) => void;
+    /** e.g. `'Mod+K'` (Mod is Meta or Ctrl); omitted → no global key. */
+    hotkey?: string;
+  }
+): CommandPaletteController;
 
 // ---------------------------------------------------------------- Calendar
 

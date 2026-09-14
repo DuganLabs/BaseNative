@@ -442,12 +442,6 @@
     "tabs": [
       "@basenative/components#renderTabs"
     ],
-    "tag": [
-      "@basenative/components#renderMultiselect"
-    ],
-    "tag-remove": [
-      "@basenative/components#renderMultiselect"
-    ],
     "textarea": [
       "@basenative/components#renderTextarea"
     ],
@@ -498,9 +492,6 @@
     ],
     "treegrid-row": [
       "@basenative/components#renderTreeGrid"
-    ],
-    "virtual-item": [
-      "@basenative/components#renderVirtualList"
     ],
     "virtual-spacer": [
       "@basenative/components#renderVirtualList"
@@ -1549,16 +1540,12 @@
         "rootTag": "div",
         "primaryContract": "multiselect",
         "contracts": [
-          "tag",
-          "tag-remove",
           "multiselect",
           "multiselect-container",
           "multiselect-tags",
           "multiselect-search"
         ],
-        "dataAttributes": [
-          "value"
-        ]
+        "dataAttributes": []
       },
       "variants": {
         "disabled": {
@@ -2154,13 +2141,11 @@
         "rootTag": "div",
         "primaryContract": "virtualizer",
         "contracts": [
-          "virtual-item",
           "virtualizer",
           "virtual-spacer",
           "virtual-window"
         ],
         "dataAttributes": [
-          "index",
           "item-height",
           "total"
         ]
