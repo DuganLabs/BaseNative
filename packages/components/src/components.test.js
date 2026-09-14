@@ -3119,3 +3119,75 @@ describe('initTabs', () => {
     assert.deepEqual(inner.tabs[0].attrs, { ...inner.tabs[0].attrs, 'aria-selected': 'true', tabindex: '0' }, 'the nested widget is untouched');
   });
 });
+
+// ─── Stylesheet contracts ────────────────────────────────────────────────────
+// node:test has no layout engine, so these pin the declarations the catalogue
+// copy and the accessibility floor depend on. Each one was a live defect.
+
+describe('components.css contracts', () => {
+  const css = readFileSync(new URL('./components.css', import.meta.url), 'utf8');
+
+  it('textarea auto-sizes with field-sizing: content, as the catalogue says', () => {
+    assert.match(css, /\[data-bn="textarea"\][^{]*\{[^}]*field-sizing:\s*content/s);
+  });
+
+  it('select opts into appearance: base-select where the engine supports it', () => {
+    assert.match(css, /@supports\s*\(appearance:\s*base-select\)\s*\{[^}]*\[data-bn="select"\]/s);
+    assert.match(css, /appearance:\s*base-select/);
+  });
+
+  it('pagination lays out an <ol> the same as a <ul>', () => {
+    assert.match(css, /\[data-bn="pagination"\]\s*:is\(ul,\s*ol\)\s*\{/);
+    assert.doesNotMatch(css, /\[data-bn="pagination"\]\s+(?:ul|ol)\s*\{/);
+  });
+
+  it('the virtualizer takes a definite width so a flex parent cannot collapse it', () => {
+    const rule = css.match(/\[data-bn="virtualizer"\]\s*\{[^}]*\}/)[0];
+    assert.match(rule, /inline-size:\s*100%/);
+    assert.doesNotMatch(css, /\[data-bn="virtual-window"\]\s*\{\s*position:\s*relative/,
+      'the inline position:absolute always wins; a relative rule only implies the window is in flow');
+  });
+
+  describe('WCAG 2.5.8 minimum target size', () => {
+    const targetBlock = css.slice(
+      css.indexOf('Minimum target size'),
+      css.indexOf('/* BaseNative Component Styles */'),
+    );
+    const reset = css.match(/:where\(([^)]*)\)\s*\{\s*appearance: none/)[1];
+    const members = [...reset.matchAll(/data-bn="([^"]+)"/g)].map((m) => m[1]);
+    // A component's own rule, i.e. the one after the shared blocks at the top.
+    const componentStart = css.indexOf('/* BaseNative Component Styles */');
+    const ruleFor = (selector) =>
+      css.slice(css.indexOf(`\n${selector} {`, componentStart)).match(/\{([^}]*)\}/)[1];
+
+    // Reset-group members that clear the 24px floor in their own rule rather
+    // than in the target block. Each entry is the declaration that makes it so.
+    const ownFloor = {
+      'dialog-close': (rule) => /width:\s*2rem;\s*height:\s*2rem/.test(rule),
+      'drawer-close': (rule) => /width:\s*2rem;\s*height:\s*2rem/.test(rule),
+      'command-item': (rule) => /padding:\s*var\(--bn-space-2\)\s+var\(--bn-space-3\)/.test(rule),
+      'dropdown-item': (rule) => /padding:\s*var\(--bn-space-2\)\s+var\(--bn-space-3\)/.test(rule),
+    };
+
+    it('alert-dismiss and breadcrumb links resolve the floor from the shared token', () => {
+      for (const token of ['alert-dismiss"]', 'breadcrumb-item"] a']) {
+        assert.ok(targetBlock.includes(`[data-bn="${token}`), `${token} is not in the target-size block`);
+      }
+      assert.match(targetBlock, /min-inline-size:\s*var\(--bn-target-size-min\)/);
+      assert.match(targetBlock, /min-block-size:\s*var\(--bn-target-size-min\)/);
+      assert.match(ruleFor('[data-bn="alert-dismiss"]'), /display:\s*inline-flex/);
+      assert.match(ruleFor('[data-bn="breadcrumb-item"] a'), /padding-inline:\s*var\(--bn-space-1\)/);
+    });
+
+    it('every member of the button-reset group has a target-size floor', () => {
+      assert.ok(members.length >= 7, 'the reset group lost members');
+      for (const m of members) {
+        if (targetBlock.includes(`"${m}"`)) continue;
+        const reason = ownFloor[m];
+        assert.ok(reason, `${m} has no WCAG 2.5.8 target-size floor`);
+        assert.ok(reason(ruleFor(`[data-bn="${m}"]`)),
+          `${m} is exempt from the target block because its own rule sizes it, but that declaration is gone`);
+      }
+    });
+  });
+});

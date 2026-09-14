@@ -657,7 +657,10 @@ setInterval(() => v.set(p => (p + 5) % 105), 200);`),
         {
           caption: 'Pagination',
           layout: 'plain',
-          html: renderPagination({ currentPage: 3, totalPages: 10, baseUrl: '/showcase' }),
+          // baseUrl '#': a real route here would be a full navigation to the same
+          // static page (Pages ignores the query string), which drops the scroll
+          // position. showcase.js takes the clicks over and re-renders the pager.
+          html: renderPagination({ currentPage: 3, totalPages: 10, baseUrl: '#' }),
           code: trim(`renderPagination({ currentPage: 3, totalPages: 10, baseUrl: '/items' })`),
         },
       ],

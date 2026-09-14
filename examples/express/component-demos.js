@@ -664,6 +664,7 @@ renderAccordion({ items: [{ title: '...', content: '...' }] });
 </nav>
 <section data-bn-demo-acc-slot data-demo-display>
 ${renderAccordion({
+  multiple: true,
   items: [
     { title: 'Section one', content: 'Body for section one.' },
     { title: 'Section two', content: 'Body for section two.' },
@@ -672,6 +673,10 @@ ${renderAccordion({
 })}
 </section>`,
         code: code(`
+// multiple: true — without it the group is exclusive (shared name=), so
+// opening each <details> in turn closes the one before it.
+renderAccordion({ multiple: true, items: [...] });
+
 const open = signal(false);
 
 effect(() => {
@@ -1061,7 +1066,7 @@ document.getElementById('confirm').showModal();
     examples: [
       {
         title: 'Modal dialog',
-        description: 'Native <dialog> opened with showModal(). Backdrop click and Escape close it.',
+        description: 'Native <dialog> opened with showModal(). Escape, the × and the footer buttons close it.',
         scripted: 'dialog-open',
         html: `
 ${renderButton('Open dialog', { variant: 'secondary', attrs: `data-bn-demo-dialog-open` })}
@@ -1078,7 +1083,7 @@ ${renderDialog({
 const dialog = renderDialog({ title, content, footer, id: 'd' });
 
 document.getElementById('d').showModal();
-// Native: backdrop click + Escape close it.
+// Native: Escape closes it. Wire [data-bn="dialog-close"] for the × button.
         `),
       },
     ],

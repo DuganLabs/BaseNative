@@ -85,7 +85,8 @@ const TEST_SIGNAL_ITEMS = [
 /**
  * Top-level routes. `ctx(site)` receives host-specific state — today only the
  * task list, which is an in-memory store on the dev server and a fixed
- * snapshot in the static export.
+ * snapshot in the static export. A route marked `internal` is served by the
+ * dev server only and never published.
  */
 export const siteRoutes = [
   {
@@ -162,10 +163,15 @@ export const siteRoutes = [
     ctx: () => getRoadmapPageContext(),
   },
   {
+    // A verification harness for the dev server. `internal` keeps it out of
+    // the static export, the sitemap and the reachability test — nothing in
+    // the nav links to it, and the 404 page promises every published page is
+    // reachable from there.
     path: '/test-signals',
     view: 'test-signals.html',
     title: 'Signal Verification',
     activePage: '',
+    internal: true,
     ctx: () => ({ items: TEST_SIGNAL_ITEMS, itemsJson: JSON.stringify(TEST_SIGNAL_ITEMS) }),
   },
   {

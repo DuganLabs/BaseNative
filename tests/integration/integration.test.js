@@ -13,8 +13,16 @@ import { defineConfig, string, optional } from '../../packages/config/src/index.
 import { createLogger } from '../../packages/logger/src/index.js';
 import { createI18n } from '../../packages/i18n/src/index.js';
 import { createFlagManager, createMemoryProvider } from '../../packages/flags/src/index.js';
-import { checkComparePage } from '../../scripts/check-compare-page.js';
+import { readdirSync, readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { checkComparePage, capabilityProblems, roadmapProblems } from '../../scripts/check-compare-page.js';
 import { computeCompareStats } from '../../scripts/compare-stats.js';
+import { renderRoute, siteRoutes } from '../../examples/express/page.js';
+import { flatComponents } from '../../examples/express/component-catalog.js';
+import { getDemo } from '../../examples/express/component-demos.js';
+import { getShowcaseSections } from '../../examples/express/showcase-data.js';
+import { getRoadmapPageContext } from '../../examples/express/site-data.js';
+import { renderDrawer, renderPagination } from '../../packages/components/src/index.js';
 
 // ─── 1. SSR + Runtime: Context Pipeline ──────────────────────────────────────
 
@@ -347,5 +355,166 @@ describe('/compare tells the truth about this repository', () => {
     assert.equal(stats.corePrimitives, 6, 'the page counts six core primitives');
     assert.equal(stats.hydrationStrategies, 4, 'the page claims four hydration strategies');
     assert.ok(stats.coreLines > 0, 'the reactivity core must be measurable');
+  });
+});
+
+// ─── 13. The rest of the site: published claims match the source ─────────────
+// /compare had the only truth guard on the site; every defect below was a page
+// stating something about the repository that nothing checked.
+
+// Repo-relative, not cwd-relative: nx runs this file from tests/integration and
+// CI from the repository root.
+const repo = (path) => fileURLToPath(new URL(`../../${path}`, import.meta.url));
+
+describe('the capability guard reads prose, not just numbers', () => {
+  it('flags a negative capability claim whose package ships', () => {
+    const problems = capabilityProblems('<li>No HMR — refresh by hand</li>', ['hmr', 'router']);
+    assert.equal(problems.length, 1);
+    assert.match(problems[0], /"No HMR" but packages\/hmr ships/);
+  });
+
+  it('stays quiet when the package does not exist, and when the page never denies it', () => {
+    assert.deepEqual(capabilityProblems('<li>No HMR</li>', ['router']), []);
+    assert.deepEqual(capabilityProblems('<td>HMR (@basenative/hmr)</td>', ['hmr']), []);
+  });
+
+  it('/compare no longer denies HMR while @basenative/hmr ships', () => {
+    const route = siteRoutes.find((r) => r.path === '/compare');
+    const html = renderRoute(route, { tasks: [], hasApi: false });
+    assert.doesNotMatch(html, /\bNo HMR\b/i);
+    assert.match(html, /HMR \(@basenative\/hmr\)/);
+  });
+});
+
+describe('/roadmap derives its readiness tiles', () => {
+  // Recomputed here rather than imported from the helper the page uses: an
+  // expectation produced by the code under test proves nothing.
+  const expected = readdirSync(repo('packages')).filter((d) => {
+    try {
+      return !JSON.parse(readFileSync(repo(`packages/${d}/package.json`), 'utf8')).private;
+    } catch {
+      return false;
+    }
+  }).length;
+
+  it('the Public Packages tile is the number of non-private workspace packages', () => {
+    const tile = getRoadmapPageContext().readinessStats.find((s) => s.label === 'Public Packages');
+    assert.equal(Number(tile.value), expected);
+  });
+
+  it('the milestone tile is the last release stage, not a retyped label', () => {
+    const ctx = getRoadmapPageContext();
+    const tile = ctx.readinessStats.find((s) => s.label === 'Current Milestone');
+    assert.equal(tile.value, ctx.releaseStages.at(-1).milestone);
+  });
+
+  it('no readiness tile is a typed number in site-data.js', () => {
+    const source = readFileSync(repo('examples/express/site-data.js'), 'utf8');
+    const tiles = source.match(/readinessStats:\s*\[([\s\S]*?)\]/)[1];
+    assert.doesNotMatch(tiles, /value:\s*'\d/);
+  });
+
+  it('the guard would catch a page that stopped rendering the count', () => {
+    const problems = roadmapProblems({ publicPackages: expected + 1000 });
+    assert.equal(problems.length, 1);
+    assert.match(problems[0], /roadmap renders without/);
+    assert.deepEqual(roadmapProblems({ publicPackages: expected }), []);
+  });
+});
+
+describe('component catalogue summaries describe shipped behaviour', () => {
+  const summaryOf = (slug) => flatComponents.find((c) => c.slug === slug).summary;
+  const css = readFileSync(repo('packages/components/src/components.css'), 'utf8');
+
+  it('pagination claims only the controls renderPagination emits', () => {
+    const html = renderPagination({ currentPage: 3, totalPages: 10 });
+    for (const control of ['first', 'last']) {
+      if (!new RegExp(`\\b${control}\\b`, 'i').test(summaryOf('pagination'))) continue;
+      assert.match(html, new RegExp(`aria-label="${control} page"`, 'i'),
+        `the pagination summary promises a ${control} control the component does not render`);
+    }
+    assert.match(summaryOf('pagination'), /\bprev\b/i);
+    assert.match(summaryOf('pagination'), /\bnext\b/i);
+  });
+
+  it('drawer claims only the edges the stylesheet positions', () => {
+    const summary = summaryOf('drawer');
+    for (const edge of ['top', 'bottom', 'left', 'right', 'any edge']) {
+      if (!new RegExp(`\\b${edge}\\b`, 'i').test(summary)) continue;
+      assert.notEqual(edge, 'any edge', 'the drawer summary promises every edge');
+      const positioned =
+        edge === 'right' || css.includes(`[data-bn="drawer"][data-position="${edge}"]`);
+      assert.ok(positioned, `the drawer summary promises "${edge}" but no rule positions it`);
+    }
+    assert.match(renderDrawer({ title: 'x', content: 'y', position: 'left' }), /data-position="left"/);
+  });
+
+  it('textarea and select summaries name declarations the stylesheet ships', () => {
+    assert.match(summaryOf('textarea'), /field-sizing: content/);
+    assert.match(css, /\[data-bn="textarea"\][^{]*\{[^}]*field-sizing:\s*content/s);
+    assert.match(summaryOf('select'), /base-select/);
+    assert.match(css, /\[data-bn="select"\][^{]*\{[^}]*appearance:\s*base-select/s);
+  });
+});
+
+describe('component demos do what their controls say', () => {
+  it('the expand-all accordion demo renders a non-exclusive group', () => {
+    const html = getDemo('accordion').examples.find((e) => e.title === 'Expand / collapse all').html;
+    const names = [...html.matchAll(/<details[^>]*\sname="/g)];
+    assert.equal(names.length, 0, 'the expand-all demo must render a non-exclusive accordion');
+    assert.ok(html.includes('<details'), 'the demo renders no accordion at all');
+  });
+
+  it('the dialog demo does not promise backdrop dismissal', () => {
+    const example = getDemo('dialog').examples.find((e) => e.title === 'Modal dialog');
+    assert.doesNotMatch(example.description, /backdrop/i);
+    assert.doesNotMatch(example.code, /backdrop/i);
+  });
+
+  it('no demo on /showcase renders a navigation to a real site route', () => {
+    const all = JSON.stringify(getShowcaseSections());
+    assert.doesNotMatch(all, /href="\/showcase\?/,
+      'a /showcase demo links to a real route — Cloudflare Pages ignores the query string and the click reloads the page');
+  });
+});
+
+describe('/tasks tells the static visitor where their tasks go', () => {
+  const tasksRoute = siteRoutes.find((r) => r.path === '/tasks');
+
+  it('discloses that the static build does not persist, and only there', () => {
+    const staticHtml = renderRoute(tasksRoute, { tasks: [], hasApi: false });
+    assert.match(staticHtml, /not saved to a server/i,
+      '/tasks must disclose that the static build does not persist');
+    const apiHtml = renderRoute(tasksRoute, { tasks: [], hasApi: true });
+    assert.doesNotMatch(apiHtml, /not saved to a server/i,
+      'the disclosure must not appear when the API is live');
+  });
+
+  it('persists to localStorage in the same file as the signals', () => {
+    const view = readFileSync(repo('examples/express/views/tasks.html'), 'utf8');
+    assert.match(view, /localStorage\.getItem/);
+    assert.match(view, /localStorage\.setItem/);
+  });
+});
+
+describe('every published route is reachable from the navigation', () => {
+  const layout = readFileSync(repo('examples/express/views/layout.html'), 'utf8');
+
+  it('links every non-internal route from layout.html', () => {
+    for (const route of siteRoutes) {
+      if (route.internal) continue;
+      assert.ok(
+        layout.includes(`href="${route.path}"`),
+        `${route.path} is published but nothing in layout.html links to it — either link it or mark it internal`,
+      );
+    }
+  });
+
+  it('a route with no nav entry is marked internal, and an internal route has no nav entry', () => {
+    for (const route of siteRoutes) {
+      assert.equal(!route.activePage, Boolean(route.internal),
+        `${route.path}: activePage "${route.activePage}" and internal ${route.internal} disagree`);
+    }
+    assert.ok(siteRoutes.some((r) => r.internal), 'the verification harness is still expected to be internal');
   });
 });

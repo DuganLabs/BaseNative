@@ -102,11 +102,24 @@
    Grows the hit area only, never the visible glyph.
    tree-toggle sits in a roomy tree row with vertical space to spare, so its
    own box can just grow directly (its glyph is text sized by font-size, so
-   the glyph itself does not change). tag-remove sits inside a compact pill
-   and checkbox/radio paint their entire box as the visible glyph — for both,
-   growing the real box would visibly change the control, so instead an
-   invisible ::before hit region is centered on top of the unchanged control. --- */
-[data-bn="tree-toggle"] {
+   the glyph itself does not change). alert-dismiss takes the same route: it
+   sits at the end of an alert row with `margin-left: auto` and vertical room,
+   so a 24×24 box moves nothing visible — its own rule below centres the × in
+   the grown box. breadcrumb-item links are inline text with no padding, so
+   the target was the text line; a block-size floor plus inline padding (in
+   the breadcrumb rule) widens both axes without clipping wrapped crumbs.
+   tag-remove sits inside a compact pill and checkbox/radio paint their
+   entire box as the visible glyph — for both, growing the real box would
+   visibly change the control, so instead an invisible ::before hit region is
+   centered on top of the unchanged control.
+   Members of the button-reset group above that are not listed here already
+   clear the floor in their own rules: dialog-close and drawer-close are a
+   fixed 2rem box; command-item and dropdown-item are full-width rows with
+   --bn-space-2 block padding around a text line. components.test.js checks
+   every member of that group against this block or one of those reasons. --- */
+[data-bn="tree-toggle"],
+[data-bn="alert-dismiss"],
+[data-bn="breadcrumb-item"] a {
   min-inline-size: var(--bn-target-size-min);
   min-block-size: var(--bn-target-size-min);
 }
@@ -216,6 +229,18 @@
      identical, so nothing moves unless the token is set. */
   border-radius: var(--bn-radius-control);
   transition: border-color var(--bn-transition-fast);
+}
+[data-bn="textarea"] {
+  /* Grows with its value; the control-family floor above keeps the starting
+     height. Ignored where unsupported, in which case `rows` still applies. */
+  field-sizing: content;
+  resize: vertical;
+}
+@supports (appearance: base-select) {
+  [data-bn="select"],
+  [data-bn="select"]::picker(select) {
+    appearance: base-select;
+  }
 }
 [data-bn="input"]:hover:not(:disabled), [data-bn="textarea"]:hover:not(:disabled), [data-bn="select"]:hover:not(:disabled) {
   border-color: var(--bn-color-border-control-hover);
@@ -443,6 +468,9 @@
 [data-bn="alert"][data-variant="warning"] { background: var(--bn-color-warning-bg); border-color: var(--bn-color-warning-border); color: var(--bn-color-warning-text); }
 [data-bn="alert"][data-variant="error"] { background: var(--bn-color-error-bg); border-color: var(--bn-color-error-border); color: var(--bn-color-error-text); }
 [data-bn="alert-dismiss"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin-left: auto;
   background: none;
   border: none;
@@ -536,7 +564,7 @@
 [data-bn="table"] tfoot tr:hover { background: transparent; }
 
 /* === Pagination === */
-[data-bn="pagination"] ul {
+[data-bn="pagination"] :is(ul, ol) {
   display: flex;
   list-style: none;
   padding: 0;
@@ -726,6 +754,9 @@
 }
 [data-bn="breadcrumb-item"] { display: inline-flex; align-items: center; gap: var(--bn-space-1); }
 [data-bn="breadcrumb-item"] a {
+  display: inline-flex;
+  align-items: center;
+  padding-inline: var(--bn-space-1);
   color: var(--bn-color-text-link);
   text-decoration: none;
 }
@@ -1458,11 +1489,13 @@
 
 /* === Virtualizer === */
 [data-bn="virtualizer"] {
+  /* The only descendant is the absolutely positioned window, so the box has
+     no intrinsic width and collapses to its borders inside a flex parent. */
+  inline-size: 100%;
   overflow: auto;
   border: var(--bn-border-width) solid var(--bn-color-border);
   border-radius: var(--bn-radius-lg);
 }
-[data-bn="virtual-window"] { position: relative; }
 [data-bn="virtual-item"] {
   padding: var(--bn-space-3) var(--bn-space-4);
   border-bottom: var(--bn-border-width) solid var(--bn-color-border);

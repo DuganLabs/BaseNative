@@ -393,7 +393,7 @@ export const componentCategories = [
         title: 'Pagination',
         tag: 'nav',
         fn: 'renderPagination',
-        summary: 'Page navigation with first, prev, next, last, and ellipsis handling.',
+        summary: 'Page navigation with prev, next, and ellipsis handling.',
         api: [
           { name: 'currentPage', type: 'number', default: '1', description: 'Active page.' },
           { name: 'totalPages', type: 'number', default: '1', description: 'Total page count.' },
@@ -558,7 +558,7 @@ export const componentCategories = [
         title: 'Drawer',
         tag: 'aside',
         fn: 'renderDrawer',
-        summary: 'Side sheet for settings and secondary tasks. Slides in from any edge.',
+        summary: 'Side sheet for settings and secondary tasks. Slides in from the left or right.',
         api: [
           { name: 'title', type: 'string', default: '—', description: 'Drawer title.' },
           { name: 'content', type: 'string', default: '—', description: 'Body HTML.' },
