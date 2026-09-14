@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npx nx serve basenative-example-express",
     "build:pages": "nx bundle basenative-example-express && node scripts/build-pages.js",
-    "deploy": "pnpm build:pages && wrangler pages deploy dist --project-name basenative",
+    "deploy": "pnpm build:pages && wrangler pages deploy dist --project-name basenative --branch main",
     "audit:axe": "node scripts/audit/axe.mjs",
     "audit:observatory": "node scripts/audit/observatory.mjs",
     "audit:ux": "node scripts/audit/laws-of-ux.mjs",
