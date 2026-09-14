@@ -1,13 +1,13 @@
+# MANUAL-ONLY. Every workflow in this org runs on workflow_dispatch and
+# nothing else: no push, no pull_request, no schedule. The owner runs it
+# from the Actions tab when he wants GitHub minutes spent; everything it
+# does also runs on a developer machine via scripts/pipeline.sh (checks)
+# and the deploy scripts, from the same Doppler config. (2026-09-14)
 name: codeql
 
 # CodeQL security scanning. Lightweight: javascript/typescript, weekly + on PR.
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-  schedule:
-    - cron: "0 14 * * 1"   # Mondays 2pm UTC
+  workflow_dispatch:
 
 permissions:
   actions: read

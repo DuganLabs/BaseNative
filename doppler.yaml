@@ -1,0 +1,4 @@
+# Pins `doppler run` to this repo's project and config (basenative/repository).
+setup:
+  project: basenative
+  config: repository
