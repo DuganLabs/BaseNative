@@ -1,5 +1,166 @@
 # @basenative/components
 
+## 0.11.0
+
+### Minor Changes
+
+- aaffbe9: Make calendar events and pipeline cards movable by tap and by keyboard, not
+  only by mouse drag.
+
+  `initCalendarDragDrop` and `initPipelineDragDrop` bound only the HTML5 drag
+  events, so on a phone or tablet nothing could be rescheduled at all (a touch
+  drag fires no `dragstart`), and a keyboard user had no key that picked anything
+  up — a WCAG 2.2 failure under 2.5.7 Dragging Movements and 2.1.1 Keyboard, and
+  in GreenPut the product's only reschedule path.
+
+  Both initialisers now add a select-then-place path beside the drag: one tap or
+  click on an event or card picks it up (`data-picked`; a second tap cancels), one
+  tap or click on a slot or column drops it, through the same `onDrop` /
+  `onCardMove` payload — no consumer change. The same state machine runs from the
+  keyboard: events, cards and pipeline blocks render with `tabindex="0"`; Enter or
+  Space picks up, the arrow keys move the pending target (`data-drop-target`) by
+  `snapMinutes` and by day on the calendar, or by position and column on the
+  pipeline; Enter or Space drops; Escape cancels. Each calendar and pipeline
+  renders one visually hidden instruction node (`[data-bn="calendar-help"]` /
+  `[data-bn="pipeline-help"]`, `<id>-help`) that every movable block is
+  `aria-describedby`, and a polite live region (`[data-bn="calendar-status"]` /
+  `[data-bn="pipeline-status"]`) that announces pick-up, each move and the drop.
+  Calendar events also carry `data-date` / `data-hour` / `data-minute` (their
+  visible start) so the keyboard path begins where the event is. `components.css`
+  styles `[data-picked]` beside `[data-dragging]`, and `bindDrag` accepts any
+  event type, so one `destroy()` still tears every gesture down.
+
+- 5a4f4a1: Ship the client initialisers the catalogue has been describing (BN-018, package half).
+
+  `initCommandPalette`, `initDataGrid`, `initTree`, `initMultiselect`,
+  `initVirtualList` and `initDropdownMenu` join `initTabs` and `initDrawer`:
+  each takes the rendered root element, works off the existing `data-bn` hooks
+  and native ARIA attributes, re-queries them on every interaction, and returns
+  a handle with imperative methods and `destroy()`.
+
+  - **Command palette** — typing filters by label substring (hiding empty
+    groups), ArrowDown / ArrowUp rove `aria-activedescendant`, Enter or a click
+    activates and closes, Escape closes, optional `hotkey: 'Mod+K'` toggles it.
+    `renderCommandPalette` now gives every item an `id` and points the input's
+    `aria-controls` at the list, so the footer's "↑↓ Navigate / ↵ Select / Esc
+    Close" is finally true.
+  - **Data grid** — a header button click emits `{ key, dir }` and moves
+    `data-sorted` / `aria-sort` / the ↑↓ (without `onSort`, the rows are
+    reordered in place, numeric-aware); select-all and the row checkboxes keep
+    each other `checked` / `indeterminate` and emit the selection; arrow keys,
+    Home and End rove focus between cells.
+  - **Tree** — the toggle flips `aria-expanded` and shows / hides the child
+    group, a click on the row selects, and the APG keys (arrows, Home, End,
+    Enter, Space) move the roving `tabindex`. `renderTree` now renders a
+    collapsed node's `[data-bn="tree-children"]` group `hidden` instead of
+    omitting it, so expanding is an attribute flip rather than a round trip.
+  - **Multiselect** — a tag's × deselects in the hidden `<select multiple>`,
+    which stays the source of truth; Backspace on an empty input removes the
+    last tag; Enter or a `<datalist>` pick adds one. `renderMultiselect` now
+    backs the search input with a `<datalist>` of the item labels.
+  - **Virtual list** — re-slices the window on `scroll` from the
+    `data-item-height` already emitted and repositions it via `top`;
+    `scrollTo`, `setItems`, `range`. `defaultRenderItem` is exported.
+  - **Dropdown menu** — Arrow / Home / End between items, ArrowDown / ArrowUp
+    on the trigger open it, activation calls `hidePopover()`.
+
+  Types, `docs/api/components.md` and the source doc comments now agree on all
+  of this; the data grid and tree comments no longer say the wiring is the
+  caller's job.
+
+- d0dff55: Bring checkbox, radio and toggle back into the control family, and give the
+  selection controls their own tokens.
+
+  The three selection controls had drifted out of the design system the text
+  controls belong to. The toggle carried no border at all next to four outlined
+  controls; the three of them were three hardcoded sizes; none had a hover,
+  disabled or invalid treatment, so a disabled checkbox was pixel-identical to a
+  live one while the input beside it correctly dimmed; and an `:indeterminate`
+  checkbox — which the datagrid's select-all reaches on partial selection —
+  rendered as an empty box, indistinguishable from "nothing selected".
+
+  - New tokens: `--bn-color-control-selected` / `--bn-color-on-control-selected`
+    (one selection colour for all three, where checkbox and radio previously
+    painted `--bn-color-accent-600` and the toggle `--bn-color-primary-600`),
+    `--bn-color-border-control-hover`, `--bn-control-indicator-size`,
+    `--bn-radius-indicator`, and the `--bn-toggle-*` geometry derived from the
+    indicator size.
+  - `--bn-color-toggle-track-off` and `--bn-color-toggle-knob` now describe an
+    outlined off state rather than a filled one, matching the unchecked checkbox.
+  - `@basenative/theme` gains `control.indicator`, bridged as
+    `--bn-theme-control-indicator`, so a theme that scales its control height
+    scales the selection controls with it.
+  - The datagrid's select-all and row-select checkboxes join the family. They
+    carry their own `data-bn` names for the grid script, so they had never matched
+    `[data-bn="checkbox"]` and rendered as raw user-agent checkboxes inside an
+    otherwise fully themed table.
+  - `input`, `textarea` and `select` now honour `--bn-radius-control`. They
+    re-declared `--bn-radius-md` after the control primitive had applied it, so a
+    consumer setting the token got a rounded button and a square input.
+
+  Accessibility, in the same pass: the tree's roving `tabindex` moves onto the
+  element carrying `role="treeitem"` rather than a presentational `<div>` inside
+  it, and the virtual list's scroll port is keyboard-reachable and named.
+
+- 2025896: Add `initDrawer(drawer, options)`, the client half of the drawer contract.
+
+  `renderDrawer` marks a closed drawer `inert` and documented that "the client"
+  removes it on open, but nothing shipped did, so an opened drawer's close button
+  could not be clicked, tabbed to or read by assistive technology, and no scrim
+  appeared. `initDrawer` returns `{ open, close, toggle, isOpen, destroy }`:
+  `open()` lifts `inert`, adds `data-open` to the drawer and its overlay and moves
+  focus to the close button (or the panel); `close()` reverses that and returns
+  focus to the element that had it before. The close button, a click on the
+  overlay (unless `dismissible: false`) and Escape all close it. The overlay is
+  found as the drawer's preceding `[data-bn="drawer-overlay"]` sibling — what
+  `renderDrawer` emits — or passed as `options.overlay`.
+
+- 2c40bc7: Ship the two catalogue claims the stylesheet never backed. `[data-bn="textarea"]`
+  now declares `field-sizing: content` and `resize: vertical`, so it grows with its
+  value (the control-family floor keeps the starting height; engines without
+  `field-sizing` still honour `rows`). `[data-bn="select"]` opts into
+  `appearance: base-select` inside `@supports`, for itself and its
+  `::picker(select)`. Both rules had existed only for the demo site's bare
+  elements, scoped away from `[data-bn]`, so the catalogue described behaviour no
+  consumer ever got.
+
+### Patch Changes
+
+- 2c40bc7: WCAG 2.5.8: `alert-dismiss` and breadcrumb links join the minimum-target block.
+  The alert's × was the size of its glyph (~11×18px) and a breadcrumb link was its
+  text line; both now resolve a 24×24 floor from `--bn-target-size-min` without
+  changing what is visible. The block's comment records why `dialog-close`,
+  `drawer-close`, `command-item` and `dropdown-item` clear the floor in their own
+  rules, and the test suite now checks every member of the button-reset group
+  against one or the other.
+- 2025896: Fix calendar event placement for events not on the hour, and the one-row shift
+  of every hour label and drop slot.
+
+  `renderCalendar` emitted a fractional `grid-row` start (`grid-row: 4.5 / span 2`)
+  for any event starting at 09:30, 10:15 or 14:45; the invalid declaration was
+  dropped, and the absolutely positioned block fell back to covering its whole day
+  column and swallowing every click and drag beneath it. Event rows are now
+  integers, and the sub-hour remainder trimmed off the top and bottom of the row
+  span travels in `--bn-calendar-event-rows`, `--bn-calendar-event-lead` and
+  `--bn-calendar-event-trail`, which `components.css` turns into an inset offset —
+  so a 09:30 booking still sits half a row down rather than being rounded onto the
+  hour.
+
+  Hour labels and drop slots were numbered for the outer grid (`+2`, past the
+  header row) but live inside subgrids whose local row 1 already is the first hour
+  row, so every row rendered one hour low, the last two hours shared one band, and
+  the top band had no drop target. All three emissions now use `h - hours.start + 1`:
+  7am is row 1 on the default grid, and a 9:00–11:00 event is `grid-row: 3 / span 2`.
+
+- 2c40bc7: Pagination layout matches `:is(ul, ol)`. Every rule was scoped to `ul`, so a
+  consumer's `<ol>` pager rendered as a browser-default numbered list while its
+  links looked right.
+- 2c40bc7: `[data-bn="virtualizer"]` takes `inline-size: 100%`. Its only descendant is
+  absolutely positioned, so the box had no intrinsic width and collapsed to its
+  two borders inside any flex parent — /components/virtual-list rendered as a
+  2px sliver. The dead `[data-bn="virtual-window"] { position: relative }` rule
+  (always beaten by the inline `position: absolute`) is gone.
+
 ## 0.10.0
 
 ### Minor Changes

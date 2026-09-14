@@ -361,7 +361,7 @@ If `user.handle` (lowercased) is a key in `seedMap`, and the user's current role
 #### parseHandleList(csv, role)
 Parses a comma-separated string (e.g. an env var like `"alice,bob,charlie"`) into a `seedMap` object mapping every trimmed, lowercased handle to the given `role`. **Returns:** `object` — `{ [handle]: role }`
 
-### `@basenative/builder` (v0.1.5)
+### `@basenative/builder` (v0.2.0)
 
 Signal-based drag-and-drop component builder for BaseNative — composes layouts, generates clean BaseNative code
 
@@ -560,7 +560,7 @@ Bind an `Escape` keydown handler at the given root, scoped to that widget, so `E
 #### announce(rootEl, message)
 Announce a transient message to screen readers via the widget's `aria-live="polite"` region (`[data-bn="cb-live"]`). Used internally by `hydrateCombobox` for "N options available" / `Press Enter to create "…"` / "Selected …" hints. Idempot…
 
-### `@basenative/components` (v0.10.0)
+### `@basenative/components` (v0.11.0)
 
 15 semantic HTML UI components rendered as strings (forms, data grids, dialogs, calendar and kanban) with cascade-layer CSS, design tokens, light/dark themes and density scales
 
@@ -3352,7 +3352,7 @@ const projects = await scopedDb.query(ctx, 'projects');
 // Queries: SELECT * FROM projects WHERE org_id = 'acme'
 ```
 
-### `@basenative/theme` (v0.2.0)
+### `@basenative/theme` (v0.3.0)
 
 `@basenative/theme` — the theme layer that drives `@basenative/components`.
 
