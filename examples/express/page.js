@@ -129,7 +129,7 @@ export const siteRoutes = [
     view: 'docs.html',
     title: 'API Docs',
     description:
-      'API reference for @basenative/runtime, @basenative/server, @basenative/router, @basenative/forms, and @basenative/components.',
+      'API reference for the @basenative/runtime primitives (signal, computed, effect, hydrate), the template directives and @basenative/server render(), with links to the generated docs/api reference for router, forms, components and every other package.',
     activePage: 'docs',
     ctx: () => ({}),
   },

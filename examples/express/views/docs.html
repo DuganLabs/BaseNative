@@ -11,7 +11,8 @@
       <mark data-status="active">core</mark>
     </header>
     <p>Creates a reactive value. Call the accessor to read (and track); call <code>.set()</code> to write. Subscribers re-run automatically.</p>
-    <pre tabindex="0" aria-label="Code example: signal(initialValue)"><code><span class="kw">import</span> { signal } <span class="kw">from</span> <span class="str">'basenative'</span>;
+    <p><a href="https://github.com/DuganLabs/BaseNative/blob/main/docs/api/runtime.md#signalinitial" rel="noopener">Full <code>signal()</code> reference in <code>docs/api</code> →</a></p>
+    <pre tabindex="0" aria-label="Code example: signal(initialValue)"><code><span class="kw">import</span> { signal } <span class="kw">from</span> <span class="str">'@basenative/runtime'</span>;
 
 <span class="kw">const</span> count = <span class="fn">signal</span>(<span class="num">0</span>);
 
@@ -32,7 +33,8 @@ count.<span class="fn">peek</span>();     <span class="cmt">// → 6</span></cod
       <mark data-status="active">core</mark>
     </header>
     <p>Derives a new signal from others. Re-evaluates only when its dependencies change.</p>
-    <pre tabindex="0" aria-label="Code example: computed(fn)"><code><span class="kw">import</span> { signal, computed } <span class="kw">from</span> <span class="str">'basenative'</span>;
+    <p><a href="https://github.com/DuganLabs/BaseNative/blob/main/docs/api/runtime.md#computedfn" rel="noopener">Full <code>computed()</code> reference in <code>docs/api</code> →</a></p>
+    <pre tabindex="0" aria-label="Code example: computed(fn)"><code><span class="kw">import</span> { signal, computed } <span class="kw">from</span> <span class="str">'@basenative/runtime'</span>;
 
 <span class="kw">const</span> width = <span class="fn">signal</span>(<span class="num">10</span>);
 <span class="kw">const</span> height = <span class="fn">signal</span>(<span class="num">5</span>);
@@ -49,7 +51,8 @@ width.<span class="fn">set</span>(<span class="num">20</span>);
       <mark data-status="active">core</mark>
     </header>
     <p>Runs a function immediately and re-runs it whenever any signal read inside changes. The returned runner also exposes <code>.dispose()</code>.</p>
-    <pre tabindex="0" aria-label="Code example: effect(fn)"><code><span class="kw">import</span> { signal, effect } <span class="kw">from</span> <span class="str">'basenative'</span>;
+    <p><a href="https://github.com/DuganLabs/BaseNative/blob/main/docs/api/runtime.md#effectfn" rel="noopener">Full <code>effect()</code> reference in <code>docs/api</code> →</a></p>
+    <pre tabindex="0" aria-label="Code example: effect(fn)"><code><span class="kw">import</span> { signal, effect } <span class="kw">from</span> <span class="str">'@basenative/runtime'</span>;
 
 <span class="kw">const</span> name = <span class="fn">signal</span>(<span class="str">'world'</span>);
 
@@ -67,7 +70,8 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
       <mark data-status="idle">dom</mark>
     </header>
     <p>Walks a DOM subtree, binding template directives (<code>@if</code>, <code>@for</code>, <code>@switch</code>) and expression interpolation (<code>{{ }}</code>) to the given context. Hydration diagnostics are available through optional callbacks.</p>
-    <pre tabindex="0" aria-label="Code example: hydrate(root, context)"><code><span class="kw">import</span> { signal, hydrate } <span class="kw">from</span> <span class="str">'basenative'</span>;
+    <p><a href="https://github.com/DuganLabs/BaseNative/blob/main/docs/api/runtime.md#hydrateroot-ctx-options" rel="noopener">Full <code>hydrate()</code> reference in <code>docs/api</code> →</a></p>
+    <pre tabindex="0" aria-label="Code example: hydrate(root, context)"><code><span class="kw">import</span> { signal, hydrate } <span class="kw">from</span> <span class="str">'@basenative/runtime'</span>;
 
 <span class="kw">const</span> items = <span class="fn">signal</span>([<span class="str">'one'</span>, <span class="str">'two'</span>]);
 
@@ -79,7 +83,7 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
 
 <section>
   <h2>Template <em>Directives</em></h2>
-  <p>Control flow lives in native <code>&lt;template&gt;</code> elements. Expressions use a safe subset that favors property access, function calls, and simple operators over arbitrary in-template program bodies.</p>
+  <p>Control flow lives in native <code>&lt;template&gt;</code> elements. Expressions use a safe subset that favors property access, function calls, and simple operators over arbitrary in-template program bodies. The complete directive list, including <code>batch()</code> and <code>registerDirective()</code>, is in the <a href="https://github.com/DuganLabs/BaseNative/blob/main/docs/api/runtime.md#template-directives" rel="noopener"><code>@basenative/runtime</code> reference</a>.</p>
 </section>
 
 <section>
@@ -156,7 +160,8 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
       <mark data-status="idle">server</mark>
     </header>
     <p>Parses an HTML string containing BaseNative directives and returns resolved HTML. Optional render diagnostics and hydratable markers are available through the third argument.</p>
-    <pre tabindex="0" aria-label="Code example: render(html, context, options?)"><code><span class="kw">import</span> { render } <span class="kw">from</span> <span class="str">'basenative/server'</span>;
+    <p><a href="https://github.com/DuganLabs/BaseNative/blob/main/docs/api/server.md#renderhtml-ctx-options" rel="noopener">Full <code>render()</code> reference in <code>docs/api</code> →</a></p>
+    <pre tabindex="0" aria-label="Code example: render(html, context, options?)"><code><span class="kw">import</span> { render } <span class="kw">from</span> <span class="str">'@basenative/server'</span>;
 
 <span class="kw">const</span> html = <span class="fn">render</span>(<span class="str">`
   &lt;template @for="item of items; track item.id"&gt;
@@ -170,4 +175,16 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
 });
 <span class="cmt">// → "&lt;li&gt;Alpha&lt;/li&gt;&lt;li&gt;Beta&lt;/li&gt;"</span></code></pre>
   </article>
+</section>
+
+<section>
+  <h2>Full <em>API reference</em></h2>
+  <p>This page covers the runtime primitives and server render. Every package has a generated reference under <a href="https://github.com/DuganLabs/BaseNative/blob/main/docs/api" rel="noopener"><code>docs/api/</code></a> in the repository; the ones you will reach for first:</p>
+  <ul>
+    <li><a href="https://github.com/DuganLabs/BaseNative/blob/main/docs/api/runtime.md" rel="noopener"><code>@basenative/runtime</code></a> — <code>signal</code>, <code>computed</code>, <code>effect</code>, <code>batch</code>, <code>hydrate</code>, directives, devtools</li>
+    <li><a href="https://github.com/DuganLabs/BaseNative/blob/main/docs/api/server.md" rel="noopener"><code>@basenative/server</code></a> — <code>render</code>, <code>renderToStream</code>, <code>renderToReadableStream</code>, <code>@defer</code></li>
+    <li><a href="https://github.com/DuganLabs/BaseNative/blob/main/docs/api/router.md" rel="noopener"><code>@basenative/router</code></a> — path patterns, <code>resolveRoute</code>, navigation guards</li>
+    <li><a href="https://github.com/DuganLabs/BaseNative/blob/main/docs/api/forms.md" rel="noopener"><code>@basenative/forms</code></a> — <code>createForm</code>, <code>createField</code>, validators</li>
+    <li><a href="https://github.com/DuganLabs/BaseNative/blob/main/docs/api/components.md" rel="noopener"><code>@basenative/components</code></a> — every <code>render*</code> helper; see them live on <a href="/components">/components</a></li>
+  </ul>
 </section>

@@ -24,10 +24,8 @@ stale, fix it in the same PR that discovers it.
 
 ## Serious
 
-- [`BN-029`](BN-029.md) (medium) — /docs advertises the API of five packages, documents two, and every import statement on it names an unpublishable package
-
 ## Annoying
 
 ---
 
-2 open tickets.
+1 open ticket.
