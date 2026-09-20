@@ -46,7 +46,7 @@
     "infra"
   ],
   "dependencies": {
-    "wrangler": "^4.131.0"
+    "wrangler": "^4.133.0"
   },
   "publishConfig": {
     "access": "public"
