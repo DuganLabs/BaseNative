@@ -13,7 +13,8 @@
     "audit": "pnpm audit:axe && pnpm audit:ux",
     "bundle-size": "node scripts/bundle-size.js",
     "version": "changeset version && pnpm install --lockfile-only --ignore-scripts && node scripts/package-inventory.js && node scripts/llms-txt.js",
-    "publish:check": "node scripts/publish-check.mjs"
+    "publish:check": "node scripts/publish-check.mjs",
+    "smoke:npm": "node scripts/npm-smoke.mjs"
   },
   "devDependencies": {
     "@arethetypeswrong/core": "0.18.5",

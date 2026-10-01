@@ -60,6 +60,7 @@ jobs:
         run: node scripts/publish-check.mjs
 
       - name: Create Release Pull Request or Publish
+        id: changesets
         uses: changesets/action@v2
         with:
           publish-script: pnpm exec changeset publish
@@ -68,3 +69,10 @@ jobs:
           # Only for opening the Version Packages pull request. Publishing
           # authenticates through the OIDC token above.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Clean-install smoke test from npmjs.org
+        # Installs the just-published core packages into an empty directory
+        # outside the monorepo and renders a page, so a release that only
+        # works through workspace links fails here, not in a consumer.
+        if: steps.changesets.outputs.published == 'true'
+        run: node scripts/npm-smoke.mjs
