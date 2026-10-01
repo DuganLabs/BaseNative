@@ -10,6 +10,19 @@ export interface DatepickerOptions {
   attrs?: string;
 }
 
+export interface CalendarDay {
+  day: number;
+  date: string;
+}
+
+export interface CalendarMonth {
+  year: number;
+  month: number;
+  monthName: string;
+  weeks: (CalendarDay | null)[][];
+  daysInMonth: number;
+}
+
 export interface TimepickerOptions {
   name?: string;
   label?: string;
@@ -38,5 +51,6 @@ export interface DateRangeOptions {
 }
 
 export function renderDatepicker(options?: DatepickerOptions): string;
+export function generateCalendarMonth(year: number, month: number): CalendarMonth;
 export function renderTimepicker(options?: TimepickerOptions): string;
 export function renderDateRange(options?: DateRangeOptions): string;
