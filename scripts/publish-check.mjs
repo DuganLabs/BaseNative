@@ -13,7 +13,7 @@
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, readdirSync, rmSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, dirname, extname } from 'node:path';
+import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { publint } from 'publint';
 import { formatMessage } from 'publint/utils';
@@ -21,6 +21,7 @@ import { checkPackage, createPackageFromTarballData } from '@arethetypeswrong/co
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const REGISTRY = 'https://registry.npmjs.org/';
+const REPO_URL = 'git+https://github.com/DuganLabs/BaseNative.git';
 
 // Packages that legitimately ship no TypeScript types: they export
 // configuration consumed by a tool, not an API a program calls.
@@ -99,7 +100,8 @@ function checkOne(dir, manifest, privateNames, versions, tmp) {
   const name = manifest.name;
   const pkgDir = join(ROOT, dir);
 
-  if (manifest.private) errors.push('marked "private": true — every package under packages/ is approved for npm');
+  if (manifest.private)
+    errors.push('marked "private": true — every package under packages/ is approved for npm');
 
   // ── metadata ────────────────────────────────────────────────────────────
   const pc = manifest.publishConfig || {};
@@ -107,11 +109,16 @@ function checkOne(dir, manifest, privateNames, versions, tmp) {
   if (pc.registry !== REGISTRY) errors.push(`publishConfig.registry must be "${REGISTRY}"`);
   if (!manifest.license) errors.push('missing "license"');
   if (!manifest.description) errors.push('missing "description"');
-  if (!Array.isArray(manifest.keywords) || manifest.keywords.length === 0) errors.push('missing "keywords"');
+  if (!Array.isArray(manifest.keywords) || manifest.keywords.length === 0)
+    errors.push('missing "keywords"');
   if (!manifest.homepage) errors.push('missing "homepage"');
+  // npm trusted publishing rejects a provenance claim unless repository.url
+  // matches the publishing repo exactly, so the URL is pinned, not just present.
   const repo = manifest.repository;
-  if (!repo || typeof repo !== 'object' || !repo.url || repo.directory !== dir) {
-    errors.push(`"repository" must be an object with url and directory "${dir}"`);
+  if (!repo || typeof repo !== 'object' || repo.url !== REPO_URL || repo.directory !== dir) {
+    errors.push(
+      `"repository" must be { "type": "git", "url": "${REPO_URL}", "directory": "${dir}" }`,
+    );
   }
   if (manifest.sideEffects === undefined) errors.push('"sideEffects" is not declared');
   if (!Array.isArray(manifest.files)) errors.push('"files" allowlist is missing');
@@ -119,29 +126,38 @@ function checkOne(dir, manifest, privateNames, versions, tmp) {
   // ── pack exactly as pnpm publish would ─────────────────────────────────
   const dest = mkdtempSync(join(tmp, 'pack-'));
   execFileSync('pnpm', ['pack', '--pack-destination', dest], { cwd: pkgDir, stdio: 'pipe' });
-  const tarball = join(dest, readdirSync(dest).find((f) => f.endsWith('.tgz')));
+  const tarball = join(
+    dest,
+    readdirSync(dest).find((f) => f.endsWith('.tgz')),
+  );
   const buf = readFileSync(tarball);
   const entries = execFileSync('tar', ['-tzf', tarball], { encoding: 'utf8' })
     .split('\n')
     .filter(Boolean)
     .map((e) => e.replace(/^package\//, ''));
-  const packed = JSON.parse(execFileSync('tar', ['-xzOf', tarball, 'package/package.json'], { encoding: 'utf8' }));
+  const packed = JSON.parse(
+    execFileSync('tar', ['-xzOf', tarball, 'package/package.json'], { encoding: 'utf8' }),
+  );
 
   for (const e of entries) {
     for (const [re, what] of LEAKS) if (re.test(e)) errors.push(`ships ${what}: ${e}`);
   }
   if (!entries.some((e) => /^readme(\.md)?$/i.test(e))) errors.push('tarball has no README');
-  if (!entries.some((e) => /^licen[cs]e(\.md|\.txt)?$/i.test(e))) errors.push('tarball has no LICENSE');
+  if (!entries.some((e) => /^licen[cs]e(\.md|\.txt)?$/i.test(e)))
+    errors.push('tarball has no LICENSE');
 
   // ── dependencies in the packed manifest ────────────────────────────────
   for (const field of ['dependencies', 'peerDependencies', 'optionalDependencies']) {
     for (const [dep, spec] of Object.entries(packed[field] || {})) {
-      if (/^(workspace|link|file|portal):/.test(spec)) errors.push(`${field}.${dep} packs as "${spec}" — not installable from npm`);
+      if (/^(workspace|link|file|portal):/.test(spec))
+        errors.push(`${field}.${dep} packs as "${spec}" — not installable from npm`);
       if (privateNames.has(dep)) errors.push(`${field}.${dep} is a private package`);
       if (versions.has(dep)) {
         const bare = String(spec).replace(/^[\^~=]/, '');
         if (bare !== versions.get(dep) && field !== 'peerDependencies') {
-          errors.push(`${field}.${dep} packs as "${spec}" but the workspace has ${versions.get(dep)}`);
+          errors.push(
+            `${field}.${dep} packs as "${spec}" but the workspace has ${versions.get(dep)}`,
+          );
         }
       }
     }
@@ -151,19 +167,26 @@ function checkOne(dir, manifest, privateNames, versions, tmp) {
 }
 
 async function lint(result) {
-  const { buf, manifest, errors, dir } = result;
+  const { buf, manifest, errors } = result;
   const ab = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
 
-  const { messages, pkg } = await publint({ pack: { tarball: ab }, strict: true, level: 'warning' });
+  const { messages, pkg } = await publint({
+    pack: { tarball: ab },
+    strict: true,
+    level: 'warning',
+  });
   for (const m of messages) {
     if (m.type === 'suggestion') continue;
     errors.push(`publint: ${formatMessage(m, pkg) ?? m.code}`);
   }
 
   const attwPkg = createPackageFromTarballData(new Uint8Array(buf));
-  const res = await checkPackage(attwPkg, { excludeEntrypoints: nonModuleEntrypoints(manifest.exports) });
+  const res = await checkPackage(attwPkg, {
+    excludeEntrypoints: nonModuleEntrypoints(manifest.exports),
+  });
   if (res.types === false) {
-    if (!NO_TYPES_OK.has(manifest.name)) errors.push('ships no TypeScript types (add declarations, or justify it in NO_TYPES_OK)');
+    if (!NO_TYPES_OK.has(manifest.name))
+      errors.push('ships no TypeScript types (add declarations, or justify it in NO_TYPES_OK)');
   } else {
     const seen = new Set();
     for (const p of res.problems || []) {
@@ -171,7 +194,9 @@ async function lint(result) {
       const key = `${p.kind} ${p.entrypoint ?? ''}`;
       if (seen.has(key)) continue;
       seen.add(key);
-      errors.push(`attw: ${p.kind}${p.entrypoint ? ` at "${p.entrypoint}"` : ''}${p.resolutionKind ? ` (${p.resolutionKind})` : ''}`);
+      errors.push(
+        `attw: ${p.kind}${p.entrypoint ? ` at "${p.entrypoint}"` : ''}${p.resolutionKind ? ` (${p.resolutionKind})` : ''}`,
+      );
     }
   }
 }
@@ -180,7 +205,11 @@ async function main() {
   const only = new Set(process.argv.slice(2));
   const all = workspaceManifests();
   const privateNames = new Set([...all.values()].filter((m) => m.private).map((m) => m.name));
-  const versions = new Map([...all.entries()].filter(([d]) => d.startsWith('packages/')).map(([, m]) => [m.name, m.version]));
+  const versions = new Map(
+    [...all.entries()]
+      .filter(([d]) => d.startsWith('packages/'))
+      .map(([, m]) => [m.name, m.version]),
+  );
   const targets = [...all.entries()]
     .filter(([d]) => d.startsWith('packages/'))
     .filter(([d]) => only.size === 0 || only.has(d.slice('packages/'.length)));

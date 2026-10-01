@@ -44,7 +44,7 @@ jobs:
       node-version: "22"
       package-manager: pnpm
       # This repo pins pnpm in each workflow rather than with a
-      # `packageManager` field (ci.yml, release.yml and publish-direct.yml all
+      # `packageManager` field (ci.yml and release.yml both
       # pass `version: 10`). pnpm/action-setup needs one or the other and
       # errors on both, so the version is passed through here.
       pnpm-version: "10"

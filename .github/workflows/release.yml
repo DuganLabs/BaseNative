@@ -16,11 +16,18 @@ env:
 permissions:
   contents: write
   pull-requests: write
-  packages: write
+  # Trusted publishing: npm exchanges this job's GitHub OIDC token for a
+  # one-time publish credential. No npm token exists anywhere — not here, not
+  # in Doppler. npm also attaches a provenance attestation to every version.
+  id-token: write
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    # npm's trusted publisher for every @basenative package names this repo,
+    # this workflow file and the `prd` environment. The environment only admits
+    # the main branch, so nothing but a main-branch release can publish.
+    environment: prd
     steps:
       - uses: actions/checkout@v7
 
@@ -30,12 +37,14 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          # pnpm 10 hands the actual upload to the npm bundled with Node.
+          # Trusted publishing needs npm >= 11.5.1; Node 22 bundles 10.9, Node 24
+          # bundles 11.x. This matches npm's own trusted-publishing example: the
+          # registry-url line writes an .npmrc for npmjs, and npm uses the OIDC
+          # exchange before it would ever fall back to a token. None is set.
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org'
           cache: pnpm
-          # GitHub Packages: open-source projects in DuganLabs publish here
-          # for free; consumers auth with a fine-grained PAT or GITHUB_TOKEN.
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@basenative'
 
       - run: pnpm install --frozen-lockfile
 
@@ -45,14 +54,17 @@ jobs:
       - name: Test
         run: pnpm exec nx run-many --target=test
 
+      - name: Publish gate
+        # Packs every package and refuses leaked files, unreachable types,
+        # workspace links and private dependencies before anything is published.
+        run: node scripts/publish-check.mjs
+
       - name: Create Release Pull Request or Publish
         uses: changesets/action@v2
         with:
           publish-script: pnpm exec changeset publish
           version-script: pnpm run version
         env:
+          # Only for opening the Version Packages pull request. Publishing
+          # authenticates through the OIDC token above.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Changesets reads NODE_AUTH_TOKEN for the publish step. The @basenative
-          # packages live under the basenative org, so this repo's GITHUB_TOKEN can
-          # neither read nor write them — NPM_TOKEN is a PAT with packages:write there.
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || secrets.GITHUB_TOKEN }}
