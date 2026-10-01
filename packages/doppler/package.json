@@ -12,7 +12,7 @@
       "default": "./src/index.js"
     },
     "./required": {
-      "types": "./types/index.d.ts",
+      "types": "./types/required.d.ts",
       "default": "./src/required.js"
     }
   },

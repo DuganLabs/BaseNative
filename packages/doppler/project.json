@@ -6,7 +6,9 @@
       "command": "node --test",
       "inputs": [
         "{projectRoot}/src/**/*.js",
-        "{projectRoot}/test/**/*.js"
+        "{projectRoot}/test/**/*.js",
+        "{projectRoot}/types/**/*",
+        "{projectRoot}/package.json"
       ],
       "options": {
         "cwd": "{projectRoot}"

@@ -9,15 +9,15 @@
       "default": "./src/client.js"
     },
     "./client": {
-      "types": "./types/index.d.ts",
+      "types": "./types/client.d.ts",
       "default": "./src/client.js"
     },
     "./server": {
-      "types": "./types/index.d.ts",
+      "types": "./types/server.d.ts",
       "default": "./src/server.js"
     },
     "./og-redirect": {
-      "types": "./types/index.d.ts",
+      "types": "./types/og-redirect.d.ts",
       "default": "./src/og-redirect.js"
     },
     "./migrations/0001": "./migrations/0001_share_cards.sql"
