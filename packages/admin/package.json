@@ -9,23 +9,23 @@
       "default": "./src/index.js"
     },
     "./roles": {
-      "types": "./types/index.d.ts",
+      "types": "./types/roles.d.ts",
       "default": "./src/roles.js"
     },
     "./queue": {
-      "types": "./types/index.d.ts",
+      "types": "./types/queue.d.ts",
       "default": "./src/queue.js"
     },
     "./audit": {
-      "types": "./types/index.d.ts",
+      "types": "./types/audit.d.ts",
       "default": "./src/audit.js"
     },
     "./handlers": {
-      "types": "./types/index.d.ts",
+      "types": "./types/handlers.d.ts",
       "default": "./src/handlers.js"
     },
     "./components": {
-      "types": "./types/index.d.ts",
+      "types": "./types/components.d.ts",
       "default": "./src/components.js"
     },
     "./migrations/0001": "./migrations/0001_audit_and_roles.sql"

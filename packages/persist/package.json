@@ -9,11 +9,11 @@
       "default": "./src/index.js"
     },
     "./storage": {
-      "types": "./types/index.d.ts",
+      "types": "./types/storage.d.ts",
       "default": "./src/storage.js"
     },
     "./ttl": {
-      "types": "./types/index.d.ts",
+      "types": "./types/ttl.d.ts",
       "default": "./src/ttl.js"
     }
   },
