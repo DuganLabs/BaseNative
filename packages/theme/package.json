@@ -9,19 +9,19 @@
       "default": "./src/index.js"
     },
     "./contrast": {
-      "types": "./types/index.d.ts",
+      "types": "./types/contrast.d.ts",
       "default": "./src/contrast.js"
     },
     "./audit": {
-      "types": "./types/index.d.ts",
+      "types": "./types/audit.d.ts",
       "default": "./src/audit.js"
     },
     "./css": {
-      "types": "./types/index.d.ts",
+      "types": "./types/css.d.ts",
       "default": "./src/css.js"
     },
     "./icons": {
-      "types": "./types/index.d.ts",
+      "types": "./types/icons.d.ts",
       "default": "./src/icons.js"
     },
     "./bridge.css": "./src/bridge.css"
@@ -32,7 +32,13 @@
   },
   "files": [
     "src",
-    "types"
+    "types",
+    "!**/*.test.js",
+    "!**/*.test.mjs",
+    "!src/test-fixtures.js"
+  ],
+  "sideEffects": [
+    "**/*.css"
   ],
   "license": "Apache-2.0",
   "repository": {
@@ -40,7 +46,7 @@
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/theme"
   },
-  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/theme#readme",
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
@@ -52,10 +58,10 @@
     "contrast",
     "accessibility",
     "design-system",
-    "css-custom-properties",
-    "duganlabs"
+    "css-custom-properties"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }
