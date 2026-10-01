@@ -1,6 +1,6 @@
 {
   "name": "@basenative/notify",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Email notifications via SMTP and SendGrid with template rendering",
   "type": "module",
   "main": "src/index.js",
@@ -12,7 +12,7 @@
   },
   "types": "./types/index.d.ts",
   "dependencies": {
-    "@basenative/runtime": "workspace:^0.6.3"
+    "@basenative/runtime": "workspace:^0.6.4"
   },
   "files": [
     "src",
