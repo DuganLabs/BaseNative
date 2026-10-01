@@ -11,13 +11,24 @@
 // never be reused, so these checks run on the packed tarball, not the source.
 
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, readdirSync, rmSync, existsSync } from 'node:fs';
+import {
+  mkdtempSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  realpathSync,
+  rmSync,
+  existsSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, dirname } from 'node:path';
+import { join, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { publint } from 'publint';
 import { formatMessage } from 'publint/utils';
 import { checkPackage, createPackageFromTarballData } from '@arethetypeswrong/core';
+import ts from 'typescript';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const REGISTRY = 'https://registry.npmjs.org/';
@@ -163,7 +174,116 @@ function checkOne(dir, manifest, privateNames, versions, tmp) {
     }
   }
 
-  return { name, dir, errors, buf, manifest, dest };
+  return { name, dir, errors, buf, manifest, dest, tarball, packed };
+}
+
+// ── consumer type check ──────────────────────────────────────────────────
+//
+// attw proves the declarations are reachable; this proves they compile for a
+// real consumer. Each package is installed from its tarball into a scratch
+// project holding only what its packed manifest declares (internal
+// dependencies from their own tarballs, external ones linked from the
+// workspace), every JavaScript subpath is imported, and the program is
+// type-checked strictly under both module modes TypeScript consumers use.
+// `types: []` keeps @types/node out, so a declaration that leans on Node
+// globals, or imports a package it never declared, fails here instead of in
+// someone's editor.
+
+const TS_MODES = [
+  [
+    'nodenext',
+    { module: ts.ModuleKind.NodeNext, moduleResolution: ts.ModuleResolutionKind.NodeNext },
+  ],
+  ['bundler', { module: ts.ModuleKind.ESNext, moduleResolution: ts.ModuleResolutionKind.Bundler }],
+];
+
+function moduleSubpaths(manifest) {
+  const exp = manifest.exports;
+  if (
+    !exp ||
+    typeof exp !== 'object' ||
+    Array.isArray(exp) ||
+    !Object.keys(exp).some((k) => k.startsWith('.'))
+  ) {
+    return ['.'];
+  }
+  const skip = new Set(nonModuleEntrypoints(exp));
+  return Object.keys(exp).filter((k) => !skip.has(k));
+}
+
+function installInto(nm, name, tarballs, packOnDemand, missing) {
+  const target = join(nm, ...name.split('/'));
+  if (existsSync(target)) return;
+  const t = tarballs.get(name) ?? packOnDemand(name);
+  mkdirSync(target, { recursive: true });
+  execFileSync('tar', ['-xzf', t.tarball, '-C', target, '--strip-components=1']);
+  const meta = t.packed.peerDependenciesMeta || {};
+  const wanted = {
+    ...(t.packed.dependencies || {}),
+    ...Object.fromEntries(
+      Object.entries(t.packed.peerDependencies || {}).filter(([d]) => !meta[d]?.optional),
+    ),
+  };
+  for (const dep of Object.keys(wanted)) {
+    if (tarballs.has(dep) || packOnDemand.has(dep)) {
+      installInto(nm, dep, tarballs, packOnDemand, missing);
+      continue;
+    }
+    const linkPath = join(nm, ...dep.split('/'));
+    if (existsSync(linkPath)) continue;
+    const src = [join(ROOT, t.dir, 'node_modules', dep), join(ROOT, 'node_modules', dep)].find(
+      existsSync,
+    );
+    if (!src) {
+      missing.add(`${dep} (declared by ${name}, not installed in the workspace)`);
+      continue;
+    }
+    mkdirSync(dirname(linkPath), { recursive: true });
+    symlinkSync(realpathSync(src), linkPath, 'dir');
+  }
+}
+
+function consumerTypecheck(result, tmp, tarballs, packOnDemand) {
+  const { manifest, errors, name } = result;
+  if (NO_TYPES_OK.has(name)) return;
+  const proj = mkdtempSync(join(tmp, 'consumer-'));
+  const nm = join(proj, 'node_modules');
+  const missing = new Set();
+  installInto(nm, name, tarballs, packOnDemand, missing);
+  for (const m of missing) errors.push(`consumer install: cannot provide ${m}`);
+
+  writeFileSync(join(proj, 'package.json'), '{ "type": "module", "private": true }\n');
+  const entry = join(proj, 'index.ts');
+  writeFileSync(
+    entry,
+    moduleSubpaths(manifest)
+      .map((s, i) => `export * as m${i} from '${s === '.' ? name : `${name}/${s.slice(2)}`}';`)
+      .join('\n') + '\n',
+  );
+
+  for (const [label, mode] of TS_MODES) {
+    const options = {
+      ...mode,
+      target: ts.ScriptTarget.ES2022,
+      lib: ['lib.es2022.d.ts', 'lib.dom.d.ts', 'lib.dom.iterable.d.ts'],
+      types: [],
+      strict: true,
+      noEmit: true,
+      skipLibCheck: false,
+    };
+    const program = ts.createProgram([entry], options);
+    const diags = ts.getPreEmitDiagnostics(program);
+    for (const d of diags.slice(0, 8)) {
+      const msg = ts.flattenDiagnosticMessageText(d.messageText, ' ');
+      let where = '';
+      if (d.file && d.start !== undefined) {
+        const { line } = d.file.getLineAndCharacterOfPosition(d.start);
+        where = `${relative(proj, d.file.fileName).replace(/^node_modules\//, '')}:${line + 1} `;
+      }
+      errors.push(`types (${label}): ${where}TS${d.code} ${msg}`.slice(0, 260));
+    }
+    if (diags.length > 8) errors.push(`types (${label}): …and ${diags.length - 8} more`);
+  }
 }
 
 async function lint(result) {
@@ -215,13 +335,28 @@ async function main() {
     .filter(([d]) => only.size === 0 || only.has(d.slice('packages/'.length)));
 
   const tmp = mkdtempSync(join(tmpdir(), 'bn-publish-check-'));
+  const tarballs = new Map();
+  const byName = new Map(
+    [...all.entries()].filter(([d]) => d.startsWith('packages/')).map(([d, m]) => [m.name, [d, m]]),
+  );
+  // Internal dependencies outside the requested subset are packed on demand,
+  // so `publish-check.mjs auth` still installs auth's real dependency tree.
+  const packOnDemand = (depName) => {
+    const [d, m] = byName.get(depName);
+    const r = checkOne(d, m, privateNames, versions, tmp);
+    tarballs.set(depName, r);
+    return r;
+  };
+  packOnDemand.has = (depName) => byName.has(depName);
   let failed = 0;
   try {
     for (const [dir, manifest] of targets) {
       let r;
       try {
         r = checkOne(dir, manifest, privateNames, versions, tmp);
+        tarballs.set(manifest.name, r);
         await lint(r);
+        consumerTypecheck(r, tmp, tarballs, packOnDemand);
       } catch (e) {
         r = { name: manifest.name, errors: [`check crashed: ${e.message.split('\n')[0]}`] };
       }

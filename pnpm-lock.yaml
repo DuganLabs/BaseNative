@@ -47,6 +47,9 @@ importers:
       publint:
         specifier: 0.3.24
         version: 0.3.24
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
       wrangler:
         specifier: ^4.131.0
         version: 4.131.0
@@ -2450,6 +2453,11 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
   undici-types@8.9.0:
     resolution: {integrity: sha512-KTDyRTYX8sWmKXAikPHHSyc63CRPETMctyjKFupcC6OBLXT3xsN0e9aF7m+mIXutFWpUXuedtowG7iLOzp0kQg==}
 
@@ -4592,6 +4600,8 @@ snapshots:
       mime-types: 3.0.2
 
   typescript@5.6.1-rc: {}
+
+  typescript@5.9.3: {}
 
   undici-types@8.9.0: {}
 
