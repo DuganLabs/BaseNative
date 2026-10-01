@@ -1,11 +1,11 @@
 /**
- * Guards types/index.d.ts against drifting from the runtime modules.
+ * Guards the declaration files against drifting from the runtime modules.
  *
- * Every subpath in package.json points at this one declaration file, which is
- * the shape @basenative/favicon uses. That only works while the file actually
- * declares every value all five modules export — so: every runtime export has
- * a declaration, no declaration names a value nothing exports, and every path
- * the exports map promises exists on disk.
+ * Every JavaScript subpath in package.json has its own declaration file, and
+ * that file must declare exactly the values its subpath exports: no export
+ * without a declaration, and no declaration for a value that subpath does not
+ * export (a consumer would get a clean type-check and a runtime failure). Every
+ * path the exports map promises must exist on disk.
  */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -21,42 +21,64 @@ import * as icons from '../src/icons.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pkgRoot = join(here, '..');
-const dts = readFileSync(join(here, 'index.d.ts'), 'utf8');
 const pkg = JSON.parse(readFileSync(join(pkgRoot, 'package.json'), 'utf8'));
 
-/** Every value any subpath exports, deduped. */
-const runtimeExports = [
-  ...new Set(
-    [index, contrast, audit, css, icons].flatMap((mod) => Object.keys(mod))
-  ),
-].sort();
+/** subpath -> the runtime module that backs it. */
+const modules = {
+  '.': index,
+  './contrast': contrast,
+  './audit': audit,
+  './css': css,
+  './icons': icons,
+};
 
-/** Every value index.d.ts declares — functions, classes and consts, not types. */
-const declaredValues = new Set(
-  [...dts.matchAll(/^export declare (?:function|class|const) ([A-Za-z0-9_$]+)/gm)].map(
+/**
+ * Every value a declaration file exports — functions, classes and consts, plus
+ * names re-exported with `export { a, b } from '...'`, not types.
+ */
+function declaredValues(file) {
+  const dts = readFileSync(join(pkgRoot, file), 'utf8');
+  const direct = [...dts.matchAll(/^export declare (?:function|class|const) ([A-Za-z0-9_$]+)/gm)].map(
     (m) => m[1]
-  )
-);
+  );
+  const reexported = [...dts.matchAll(/^export \{([^}]+)\} from/gm)].flatMap((m) =>
+    m[1]
+      .split(',')
+      .map((n) => n.trim())
+      .filter(Boolean)
+  );
+  return [...direct, ...reexported].sort();
+}
 
-test('every runtime export is declared in index.d.ts', () => {
-  const missing = runtimeExports.filter((name) => !declaredValues.has(name));
-  assert.deepEqual(missing, []);
-});
+for (const [subpath, mod] of Object.entries(modules)) {
+  const entry = pkg.exports[subpath];
+  const runtime = Object.keys(mod).sort();
+  const declared = declaredValues(entry.types);
 
-test('every value declared in index.d.ts is exported by some module', () => {
-  const phantom = [...declaredValues].filter((name) => !runtimeExports.includes(name));
-  assert.deepEqual(phantom, []);
-});
+  test(`${subpath}: every runtime export is declared in ${entry.types}`, () => {
+    assert.deepEqual(
+      runtime.filter((name) => !declared.includes(name)),
+      []
+    );
+  });
 
-test('sanity: the union spans every subpath, not just the root', () => {
-  // A regex that silently matched nothing would pass the two tests above.
-  assert.ok(runtimeExports.length > 30, `only ${runtimeExports.length} exports found`);
-  assert.ok(declaredValues.size > 30, `only ${declaredValues.size} declarations found`);
-  assert.ok(runtimeExports.includes('minifyCss'), 'css subpath');
-  assert.ok(runtimeExports.includes('defineIconSet'), 'icons subpath');
-  assert.ok(runtimeExports.includes('assertThemeContrast'), 'audit subpath');
-  assert.ok(runtimeExports.includes('relativeLuminance'), 'contrast subpath');
-  assert.ok(runtimeExports.includes('defineTheme'), 'root subpath');
+  test(`${subpath}: ${entry.types} declares nothing the subpath does not export`, () => {
+    assert.deepEqual(
+      declared.filter((name) => !runtime.includes(name)),
+      []
+    );
+  });
+
+  test(`${subpath}: sanity, the comparison is not vacuous`, () => {
+    // A regex that silently matched nothing would pass the two tests above.
+    assert.ok(runtime.length > 0, `${subpath} exports nothing`);
+    assert.ok(declared.length > 0, `${entry.types} declares nothing`);
+  });
+}
+
+test('each subpath has its own declaration file', () => {
+  const files = Object.keys(modules).map((subpath) => pkg.exports[subpath].types);
+  assert.equal(new Set(files).size, files.length, 'two subpaths share a declaration file');
 });
 
 test('every path the exports map promises exists', () => {

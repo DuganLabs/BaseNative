@@ -9,15 +9,15 @@
       "default": "./src/index.js"
     },
     "./satori": {
-      "types": "./types/index.d.ts",
+      "types": "./types/satori.d.ts",
       "default": "./src/satori.js"
     },
     "./presets": {
-      "types": "./types/index.d.ts",
+      "types": "./types/presets.d.ts",
       "default": "./src/presets.js"
     },
     "./scene": {
-      "types": "./types/index.d.ts",
+      "types": "./types/scene.d.ts",
       "default": "./src/scene.js"
     }
   },
@@ -31,15 +31,18 @@
   },
   "files": [
     "src",
-    "types"
+    "types",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
   ],
+  "sideEffects": false,
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/og-image"
   },
-  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/og-image#readme",
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
@@ -51,7 +54,6 @@
     "resvg",
     "satori",
     "cloudflare-workers",
-    "workerd",
     "edge"
   ],
   "dependencies": {
@@ -69,6 +71,7 @@
     "satori": "^0.33.4"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

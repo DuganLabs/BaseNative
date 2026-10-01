@@ -18,6 +18,7 @@
     "worker.json",
     "react.json"
   ],
+  "sideEffects": false,
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -35,6 +36,7 @@
     "shared"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

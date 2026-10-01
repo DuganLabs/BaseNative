@@ -9,15 +9,15 @@
       "default": "./src/client.js"
     },
     "./client": {
-      "types": "./types/index.d.ts",
+      "types": "./types/client.d.ts",
       "default": "./src/client.js"
     },
     "./server": {
-      "types": "./types/index.d.ts",
+      "types": "./types/server.d.ts",
       "default": "./src/server.js"
     },
     "./og-redirect": {
-      "types": "./types/index.d.ts",
+      "types": "./types/og-redirect.d.ts",
       "default": "./src/og-redirect.js"
     },
     "./migrations/0001": "./migrations/0001_share_cards.sql"
@@ -26,15 +26,18 @@
   "files": [
     "src",
     "types",
-    "migrations"
+    "migrations",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
   ],
+  "sideEffects": false,
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/share"
   },
-  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/share#readme",
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
@@ -56,6 +59,7 @@
     }
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

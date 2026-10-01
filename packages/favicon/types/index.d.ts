@@ -1,49 +1,31 @@
 // Built with BaseNative — basenative.dev
 
-export type Shape =
-  | 'square'
-  | 'rounded'
-  | 'circle'
-  | 'squircle'
-  | 'shield'
-  | 'diamond';
+import { renderFaviconSvg } from './render.js';
+import { buildManifest } from './manifest.js';
+import { presets, presetList } from './presets.js';
+import type { FaviconSpec } from './render.js';
+import type { ManifestOpts } from './manifest.js';
+import type { Preset } from './presets.js';
 
-export interface Palette {
-  bg: string;
-  fg: string;
-  accent: string;
-}
-export type PaletteInput = string | Partial<Palette>;
+export { renderFaviconSvg, renderMaskableSvg, renderAppleSvg, shape } from './render.js';
+export {
+  monogram,
+  symbol,
+  sigil,
+  wordmark,
+  symbols,
+  sigils,
+  renderGlyph,
+} from './glyphs.js';
+export { resolvePalette, hexToRgb, rgbToHex, luminance, mix, housePalette } from './palette.js';
+export { buildManifest, manifestJson } from './manifest.js';
+export { presets, presetList } from './presets.js';
 
-export type GlyphKind = 'monogram' | 'symbol' | 'sigil' | 'wordmark';
-
-export interface MonogramGlyph {
-  kind: 'monogram';
-  letters: string;
-  weight?: number | string;
-  spacing?: number;
-  accentDot?: boolean;
-  stacked?: boolean;
-}
-export interface SymbolGlyph { kind: 'symbol'; name: string; }
-export interface SigilGlyph { kind: 'sigil'; name: string; }
-export interface WordmarkGlyph { kind: 'wordmark'; text: string; weight?: number | string; }
-export type Glyph = MonogramGlyph | SymbolGlyph | SigilGlyph | WordmarkGlyph;
-
-export interface FaviconSpec {
-  shape: Shape;
-  glyph: Glyph;
-  palette: PaletteInput;
-  themeColor?: string;
-}
-
-export interface Preset extends FaviconSpec {
-  name: string;
-  label?: string;
-}
-
-export const presets: Record<string, Preset>;
-export const presetList: Preset[];
+export type { Palette } from './palette.js';
+export type { FaviconSpec, ShapeName } from './render.js';
+export type { GlyphKind, GlyphSpec, SymbolName, SigilName } from './glyphs.js';
+export type { ManifestOpts } from './manifest.js';
+export type { Preset } from './presets.js';
 
 export interface HtmlTagOpts {
   themeColor?: string;
@@ -54,54 +36,20 @@ export interface HtmlTagOpts {
   sizes?: number[];
 }
 
+/** Builds the recommended `<link>` / `<meta>` tags for a favicon, one tag per array entry. */
 export function htmlTags(opts?: HtmlTagOpts): string[];
-
-export interface ManifestOpts {
-  name: string;
-  shortName?: string;
-  startUrl?: string;
-  display?: 'standalone' | 'fullscreen' | 'minimal-ui' | 'browser';
-  themeColor?: string;
-  backgroundColor?: string;
-  scope?: string;
-  iconBaseHref?: string;
-}
-
-export function buildManifest(opts: ManifestOpts): unknown;
-export function manifestJson(opts: ManifestOpts): string;
 
 export interface FaviconBundle {
   spec: FaviconSpec;
   svg: string;
   apple: string;
   maskable: string;
-  htmlTags(opts?: HtmlTagOpts): string[];
-  manifest(opts: ManifestOpts): string;
+  htmlTags: (opts?: HtmlTagOpts) => string[];
+  manifest: (opts: ManifestOpts) => string;
 }
 
+/** Turns a favicon spec, a preset, or a registered preset name into a ready-to-ship bundle. */
 export function defineFavicon(input: FaviconSpec | Preset | string): FaviconBundle;
-
-export function renderFaviconSvg(spec: FaviconSpec): string;
-export function renderMaskableSvg(spec: FaviconSpec): string;
-export function renderAppleSvg(spec: FaviconSpec): string;
-export function shape(name: Shape, size?: number): string;
-
-// ─── glyphs ─────────────────────────────────────────────────────
-export function monogram(opts: Omit<MonogramGlyph, 'kind'>): MonogramGlyph;
-export function symbol(name: string): SymbolGlyph;
-export function sigil(name: string): SigilGlyph;
-export function wordmark(opts: Omit<WordmarkGlyph, 'kind'>): WordmarkGlyph;
-export const symbols: string[];
-export const sigils: string[];
-export function renderGlyph(glyph: Glyph, palette: Palette): string;
-
-// ─── palette ────────────────────────────────────────────────────
-export function resolvePalette(input: PaletteInput): Palette;
-export function hexToRgb(hex: string): { r: number; g: number; b: number };
-export function rgbToHex(r: number, g: number, b: number): string;
-export function luminance(hex: string): number;
-export function mix(a: string, b: string, t: number): string;
-export const housePalette: Palette;
 
 declare const _default: {
   defineFavicon: typeof defineFavicon;

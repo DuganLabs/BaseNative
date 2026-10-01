@@ -4,7 +4,7 @@ export interface DopplerRunOptions {
   project?: string;
   config?: string;
   cwd?: string;
-  env?: NodeJS.ProcessEnv;
+  env?: Record<string, string | undefined>;
   inherit?: boolean;
   preserveEnv?: boolean;
 }
@@ -12,7 +12,7 @@ export interface DopplerRunOptions {
 export function dopplerRun(
   args: string[],
   opts?: DopplerRunOptions,
-): Promise<{ code: number; signal: NodeJS.Signals | null }>;
+): Promise<{ code: number; signal: string | null }>;
 
 export interface RequireSecretsOptions {
   source?: 'env' | 'doppler';
@@ -42,30 +42,3 @@ export function injectIntoWrangler(args: InjectIntoWranglerArgs): {
   vars: Record<string, string>;
   secrets: Record<string, string>;
 };
-
-// ─── ./required ──────────────────────────────────────────────────
-
-export interface RequiredSecret {
-  name: string;
-  description?: string;
-  required?: boolean;
-}
-
-export interface RequiredSchema {
-  secrets: RequiredSecret[];
-  configs: string[];
-}
-
-export function loadRequired(filePath: string): RequiredSchema;
-export function validateRequired(input: unknown): RequiredSchema;
-export function findMissing(
-  schema: RequiredSchema,
-  env: Record<string, string | undefined>,
-): string[];
-
-export class ValidationError extends Error {
-  readonly name: 'ValidationError';
-  readonly errors: string[];
-  readonly code: 'E_INVALID_REQUIRED';
-  constructor(errors: string[]);
-}
