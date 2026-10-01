@@ -5,7 +5,7 @@
   "type": "module",
   "bin": {
     "bn": "./src/index.js",
-    "create-basenative": "./src/commands/create.js"
+    "create-basenative": "./src/bin/create-basenative.js"
   },
   "exports": {
     ".": {
