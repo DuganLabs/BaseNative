@@ -1,17 +1,5 @@
-export interface CreateOptions {
-  template?: 'minimal' | 'enterprise' | 'api';
-}
-
-export interface DevOptions {
-  port?: string;
-  host?: string;
-}
-
-export interface BuildOptions {
-  outdir?: string;
-}
-
-export interface GenerateOptions {
-  type: 'component' | 'route' | 'page';
-  name: string;
-}
+/**
+ * `@basenative/cli` exports nothing: its `.` entry is the `bn` executable and
+ * runs the CLI when imported. Use the `bn` binary instead.
+ */
+export {};

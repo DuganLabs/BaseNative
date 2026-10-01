@@ -4,7 +4,10 @@
   "description": "Signal-based drag-and-drop component builder for BaseNative \u2014 composes layouts, generates clean BaseNative code",
   "type": "module",
   "exports": {
-    ".": "./src/index.js",
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
     "./builder.css": "./src/builder.css"
   },
   "types": "./types/index.d.ts",
@@ -13,7 +16,17 @@
   },
   "files": [
     "src",
-    "types"
+    "types",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
+  ],
+  "sideEffects": [
+    "./src/builder-element.js",
+    "./src/canvas-element.js",
+    "./src/palette-element.js",
+    "./src/tree-element.js",
+    "./src/inspector-element.js",
+    "**/*.css"
   ],
   "license": "Apache-2.0",
   "repository": {
@@ -21,7 +34,7 @@
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/builder"
   },
-  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/builder#readme",
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
@@ -33,9 +46,10 @@
     "signals",
     "code-generation",
     "no-code",
-    "zero-dependencies"
+    "web-components"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

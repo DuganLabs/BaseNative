@@ -1,26 +1,48 @@
 {
   "name": "@basenative/icons",
   "version": "0.1.0",
-  "description": "Icon system for BaseNative applications",
-  "private": true,
+  "description": "SVG icon set and FOUC-preventing reset stylesheet for BaseNative applications",
   "type": "module",
   "exports": {
-    ".": "./src/index.js",
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
     "./reset.css": "./reset.css",
     "./src/*": "./src/*"
   },
+  "types": "./types/index.d.ts",
+  "files": [
+    "src",
+    "types",
+    "reset.css",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
+  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/icons"
   },
-  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/icons#readme",
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
-  "keywords": ["basenative", "web-components", "signals", "icons", "svg"],
+  "keywords": [
+    "basenative",
+    "icons",
+    "svg",
+    "css-reset"
+  ],
   "scripts": {
-    "test": "node --test test.js"
+    "test": "node --test test.js types/exports.test.js"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

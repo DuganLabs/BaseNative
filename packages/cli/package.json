@@ -8,7 +8,10 @@
     "create-basenative": "./src/commands/create.js"
   },
   "exports": {
-    ".": "./src/index.js",
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
     "./manifest": "./manifest.json"
   },
   "types": "./types/index.d.ts",
@@ -20,7 +23,12 @@
     "types",
     "templates",
     "manifest.json",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
+  ],
+  "sideEffects": [
+    "./src/index.js"
   ],
   "license": "Apache-2.0",
   "repository": {
@@ -28,19 +36,20 @@
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/cli"
   },
-  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/cli#readme",
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
   "keywords": [
     "basenative",
-    "web-components",
-    "signals",
     "cli",
     "scaffolding",
-    "create"
+    "create-app",
+    "generator",
+    "deploy"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }
