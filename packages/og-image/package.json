@@ -9,15 +9,15 @@
       "default": "./src/index.js"
     },
     "./satori": {
-      "types": "./types/index.d.ts",
+      "types": "./types/satori.d.ts",
       "default": "./src/satori.js"
     },
     "./presets": {
-      "types": "./types/index.d.ts",
+      "types": "./types/presets.d.ts",
       "default": "./src/presets.js"
     },
     "./scene": {
-      "types": "./types/index.d.ts",
+      "types": "./types/scene.d.ts",
       "default": "./src/scene.js"
     }
   },

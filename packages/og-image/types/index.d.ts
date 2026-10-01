@@ -1,5 +1,7 @@
 // Built with BaseNative — basenative.dev
 
+import type { Theme } from './scene.js';
+
 /* ─── Runtime detection ─── */
 
 export type RuntimeName = "workerd" | "node" | "deno" | "bun" | "browser" | "unknown";
@@ -79,23 +81,6 @@ export function loadFonts(
 ): Promise<SatoriFont[]>;
 export function fontUrl(cfg: ResolvedFontConfig, weight: number): string;
 export function fontCacheKey(cfg: ResolvedFontConfig, weight: number): string;
-
-/* ─── Theme ─── */
-
-export interface Theme {
-  bg: string;
-  fg: string;
-  accent: string;
-  muted: string;
-  tile?: string;
-  letter?: string;
-  green?: string;
-  yellow?: string;
-  absent?: string;
-  empty?: string;
-}
-
-export const defaultTheme: Required<Theme>;
 
 /* ─── Text measurement and layout ─── */
 
@@ -236,78 +221,15 @@ export function pngHeaders(opts?: {
   maxAge?: number;
 }): Record<string, string>;
 
-/* ─── satori scene DSL (data only; render via "@basenative/og-image/satori") ─── */
-
-export type TileState = "green" | "yellow" | "absent" | "empty";
-
-export interface VNode {
-  type: string;
-  props: { style: Record<string, unknown>; children: any };
-}
-
-export function el(type: string, style: Record<string, unknown>, children: any): VNode;
-export function box(style: Record<string, unknown>, children?: any): VNode;
-export function text(style: Record<string, unknown>, content: string | number): VNode;
-export function tile(state: TileState, opts?: { size?: number; theme?: Theme }): VNode;
-export function tileGrid(
-  rows: TileState[][],
-  opts?: { tileSize?: number; gap?: number; theme?: Theme },
-): VNode;
-export function parseGrid(gridString: string): TileState[][];
-
-export interface BoundScene {
-  theme: Required<Theme>;
-  box: typeof box;
-  text: typeof text;
-  tile: (state: TileState, size?: number) => VNode;
-  tileGrid: (rows: TileState[][], opts?: { tileSize?: number; gap?: number }) => VNode;
-  parseGrid: typeof parseGrid;
-}
-
-export function theme(tokens?: Partial<Theme>): BoundScene;
-
-export function defaultPreset(opts: {
-  title: string;
-  subtitle?: string;
-  accent?: string;
-  brand?: string;
-  theme?: Partial<Theme>;
-}): VNode;
-
-export function articlePreset(opts: {
-  title: string;
-  author?: string;
-  kicker?: string;
-  accent?: string;
-  brand?: string;
-  theme?: Partial<Theme>;
-}): VNode;
-
-export function scoreCardPreset(opts: {
-  title: string;
-  verdict?: string;
-  verdictTone?: "win" | "loss" | "neutral";
-  category?: string;
-  score: number | string;
-  scoreLabel?: string;
-  grid?: string;
-  brand?: string;
-  theme?: Partial<Theme>;
-}): VNode;
-
-export const presets: {
-  default: typeof defaultPreset;
-  article: typeof articlePreset;
-  scoreCard: typeof scoreCardPreset;
-};
-
-/**
- * Render a satori vh-tree. Only available from `@basenative/og-image/satori`,
- * which requires the optional `satori` peer dependency and **throws on
- * Cloudflare Workers** — use `renderCard`/`renderSvg` there.
- */
-export function renderPng(
-  scene: VNode,
-  env?: Record<string, unknown>,
-  opts?: RenderOptions & { height?: number },
-): Promise<Uint8Array>;
+export {
+  defaultTheme,
+  el,
+  box,
+  text,
+  tile,
+  tileGrid,
+  parseGrid,
+  theme,
+} from './scene.js';
+export { defaultPreset, articlePreset, scoreCardPreset, presets } from './presets.js';
+export type { Theme, TileState, VNode, BoundScene } from './scene.js';

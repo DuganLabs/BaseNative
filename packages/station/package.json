@@ -12,23 +12,23 @@
       "default": "./src/index.js"
     },
     "./runner": {
-      "types": "./types/index.d.ts",
+      "types": "./types/runner.d.ts",
       "default": "./src/runner.js"
     },
     "./queue": {
-      "types": "./types/index.d.ts",
+      "types": "./types/queue.d.ts",
       "default": "./src/queue.js"
     },
     "./client": {
-      "types": "./types/index.d.ts",
+      "types": "./types/client.d.ts",
       "default": "./src/client.js"
     },
     "./templates": {
-      "types": "./types/index.d.ts",
+      "types": "./types/templates.d.ts",
       "default": "./src/templates/index.js"
     },
     "./ops": {
-      "types": "./types/index.d.ts",
+      "types": "./types/ops.d.ts",
       "default": "./src/ops.js"
     }
   },
