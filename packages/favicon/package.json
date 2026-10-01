@@ -12,27 +12,27 @@
       "default": "./src/index.js"
     },
     "./presets": {
-      "types": "./types/index.d.ts",
+      "types": "./types/presets.d.ts",
       "default": "./src/presets/dl.js"
     },
     "./render": {
-      "types": "./types/index.d.ts",
+      "types": "./types/render.d.ts",
       "default": "./src/render.js"
     },
     "./glyphs": {
-      "types": "./types/index.d.ts",
+      "types": "./types/glyphs.d.ts",
       "default": "./src/glyphs.js"
     },
     "./palette": {
-      "types": "./types/index.d.ts",
+      "types": "./types/palette.d.ts",
       "default": "./src/palette.js"
     },
     "./manifest": {
-      "types": "./types/index.d.ts",
+      "types": "./types/manifest.d.ts",
       "default": "./src/manifest.js"
     },
     "./png": {
-      "types": "./types/index.d.ts",
+      "types": "./types/png.d.ts",
       "default": "./src/png.js"
     }
   },
