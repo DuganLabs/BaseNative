@@ -4,12 +4,30 @@
   "description": "Request pipeline middleware \u2014 security headers, CORS, rate limiting, CSRF, and adapters",
   "type": "module",
   "exports": {
-    ".": "./src/index.js",
-    "./express": "./src/adapters/express.js",
-    "./cors": "./src/builtins/cors.js",
-    "./rate-limit": "./src/builtins/rate-limit.js",
-    "./csrf": "./src/builtins/csrf.js",
-    "./logger": "./src/builtins/logger.js",
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./express": {
+      "types": "./types/express.d.ts",
+      "default": "./src/adapters/express.js"
+    },
+    "./cors": {
+      "types": "./types/cors.d.ts",
+      "default": "./src/builtins/cors.js"
+    },
+    "./rate-limit": {
+      "types": "./types/rate-limit.d.ts",
+      "default": "./src/builtins/rate-limit.js"
+    },
+    "./csrf": {
+      "types": "./types/csrf.d.ts",
+      "default": "./src/builtins/csrf.js"
+    },
+    "./logger": {
+      "types": "./types/logger.d.ts",
+      "default": "./src/builtins/logger.js"
+    },
     "./security-headers": {
       "types": "./types/security-headers.d.ts",
       "default": "./src/builtins/security-headers.js"
@@ -18,29 +36,32 @@
   "types": "./types/index.d.ts",
   "files": [
     "src",
-    "types"
+    "types",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
   ],
+  "sideEffects": false,
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/middleware"
   },
-  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/middleware#readme",
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
   "keywords": [
     "basenative",
-    "web-components",
-    "signals",
     "middleware",
     "cors",
     "csrf",
     "security-headers",
-    "csp"
+    "csp",
+    "rate-limiting"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

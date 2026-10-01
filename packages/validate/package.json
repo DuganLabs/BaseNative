@@ -4,19 +4,30 @@
   "description": "Structured validation for BaseNative templates \u2014 machine-actionable errors a model can repair from the error object alone",
   "type": "module",
   "exports": {
-    ".": "./src/index.js",
-    "./scan": "./src/scan.js"
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./scan": {
+      "types": "./types/scan.d.ts",
+      "default": "./src/scan.js"
+    }
   },
+  "types": "./types/index.d.ts",
   "files": [
-    "src"
+    "src",
+    "types",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
   ],
+  "sideEffects": false,
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/validate"
   },
-  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/validate#readme",
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
@@ -32,6 +43,7 @@
     "@basenative/runtime": "workspace:^0.6.3"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }
