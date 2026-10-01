@@ -30,15 +30,15 @@ this exact version was published (or unpublished) before and can never be publis
 | `@basenative/db` | 0.3.1 | 0.2.0 | unreleased bump |
 | `@basenative/doppler` | 0.2.2 | — | never published |
 | `@basenative/eslint-config` | 0.2.1 | — | never published |
-| `@basenative/evals` | 0.1.0 | — | private |
+| `@basenative/evals` | 0.1.0 | — | never published |
 | `@basenative/favicon` | 1.0.3 | — | never published |
 | `@basenative/fetch` | 0.4.1 | 0.2.0 | unreleased bump |
 | `@basenative/flags` | 0.4.1 | 0.2.0 | unreleased bump |
-| `@basenative/fonts` | 0.1.0 | — | private |
+| `@basenative/fonts` | 0.1.0 | — | never published |
 | `@basenative/forms` | 1.0.4 | 0.3.0 | unreleased bump |
 | `@basenative/hmr` | 0.2.0 | — | never published |
 | `@basenative/i18n` | 0.4.2 | 0.2.0 | unreleased bump |
-| `@basenative/icons` | 0.1.0 | — | private |
+| `@basenative/icons` | 0.1.0 | — | never published |
 | `@basenative/integrations` | 0.1.1 | — | never published |
 | `@basenative/keyboard` | 1.0.6 | — | never published |
 | `@basenative/logger` | 0.3.1 | 0.2.0 | unreleased bump |
@@ -65,8 +65,8 @@ this exact version was published (or unpublished) before and can never be publis
 
 ## Summary
 
-- **42** publishable, **3** private (`@basenative/evals`, `@basenative/fonts`, `@basenative/icons`)
+- **45** publishable, **0** private (none)
 - **21** have an unreleased version bump waiting to publish
-- **21** have never been published to npmjs
+- **24** have never been published to npmjs
 - **0** have a higher version on npmjs than in this tree (none)
 - **0** are at a version npmjs has already used (none)
