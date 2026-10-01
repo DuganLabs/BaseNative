@@ -86,3 +86,23 @@ export interface ThemeManager {
 export function createRegistry(options?: RegistryOptions): Registry;
 export function createInstaller(options?: InstallerOptions): Installer;
 export function createThemeManager(options?: ThemeManagerOptions): ThemeManager;
+
+/** Package data accepted by `renderPackageCard`. Only `name` is required. */
+export interface PackageCardData {
+  name: string;
+  description?: string;
+  version?: string;
+  author?: string;
+  category?: string;
+  tags?: string[];
+  downloads?: number;
+  /** ISO timestamp. */
+  updatedAt?: string;
+  /** Repository URL; turns the name into a link. */
+  repo?: string;
+}
+
+/** Renders a marketplace package card as an HTML string. */
+export function renderPackageCard(pkg: PackageCardData): string;
+/** CSS for package cards. Include once on the page. */
+export function packageCardStyles(): string;

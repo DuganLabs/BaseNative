@@ -71,3 +71,21 @@ export function deserialize(json: string): Canvas;
 export function exportToHTML(canvas: Canvas, componentMap: Record<string, (props: Record<string, unknown>) => string>): string;
 export function importFromHTML(html: string): Canvas;
 export function createComponentPalette(): ComponentPalette;
+
+/**
+ * The `<bn-canvas>` custom element. Importing this package registers it
+ * (`customElements.define('bn-canvas', ...)`), which is why `sideEffects`
+ * lists the entry module.
+ *
+ * Attributes: `width`, `height`, `grid-size`, `mode`. Events (bubbling
+ * `CustomEvent`s): `bn-canvas-add`, `bn-canvas-remove`, `bn-canvas-move`,
+ * `bn-canvas-select`, `bn-canvas-change`.
+ */
+export class BnCanvas extends HTMLElement {
+  /** Register component types for rendering. */
+  registerComponents(componentMap: Record<string, (props: Record<string, unknown>) => string>): void;
+  /** The underlying canvas state; `null` until the element is connected. */
+  readonly canvas: Canvas | null;
+  /** The currently selected node id; `null` when nothing is selected. */
+  readonly selectedId: string | null;
+}
