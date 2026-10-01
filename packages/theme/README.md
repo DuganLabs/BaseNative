@@ -228,7 +228,7 @@ assertPairings(toCss(theme, { only: 'light', bridge: false }), [
 A reference theme in the exports becomes the de-facto org look, which is the
 exact opposite of the point. So there isn't one. The starter above is a
 **document**, not an import: forking it is an act of authorship. It is kept
-honest by `readme.test.js`, which parses this file, runs `defineTheme` on the
+honest by `starter-guide.test.js`, which parses this file, runs `defineTheme` on the
 block, and asserts its `neutral` and `primary` ramps are byte-identical to
 `@basenative/components/src/tokens.css`. The docs cannot drift from the code and
 the starter cannot quietly become a brand.

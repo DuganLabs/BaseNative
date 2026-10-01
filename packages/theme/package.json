@@ -28,7 +28,7 @@
   },
   "types": "./types/index.d.ts",
   "scripts": {
-    "test": "node --test src/contrast.test.js src/theme.test.js src/audit.test.js src/css.test.js src/icons.test.js src/bridge.test.js src/readme.test.js types/exports.test.js"
+    "test": "node --test src/contrast.test.js src/theme.test.js src/audit.test.js src/css.test.js src/icons.test.js src/bridge.test.js src/starter-guide.test.js types/exports.test.js"
   },
   "files": [
     "src",
