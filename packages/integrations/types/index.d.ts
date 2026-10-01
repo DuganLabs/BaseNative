@@ -57,28 +57,75 @@ export interface OpenPlaidLinkOptions {
   onEvent?: (eventName: string, metadata: unknown) => void;
 }
 
+export interface AccountsResult {
+  accounts: Array<{ id: string; name: string; type: string; subtype: string }>;
+}
+
+export interface CreateTransferParams {
+  accessToken: string;
+  /** Account to transfer from. */
+  accountId: string;
+  type: 'debit' | 'credit';
+  /** Amount in cents. */
+  amount: number;
+  description?: string;
+  /** `'rtp'` requests RTP/FedNow and falls back to ACH when Plaid rejects it. */
+  network?: 'rtp' | 'ach';
+  user?: { name: string; email: string };
+}
+
+export interface TransferResult {
+  transferId: string;
+  status: string;
+  network: string;
+}
+
+export interface TransferStatusResult {
+  transferId: string;
+  status: string;
+  amount: number;
+  network: string;
+}
+
+/** The part of a signal that `createPlaidLink` writes to. */
+export interface SettableSignal {
+  set(value: string): void;
+}
+
+export interface CreatePlaidLinkConfig extends OpenPlaidLinkOptions {
+  /** A signal factory such as `signal` from `@basenative/runtime`; when absent, `linkToken` and `linkStatus` are `null`. */
+  signals?: { signal?: (initial: string) => SettableSignal };
+}
+
+export interface PlaidLinkSession extends PlaidLinkHandler {
+  /** Holds the link token, when a signal factory was supplied. */
+  linkToken: SettableSignal | null;
+  /** Holds `'ready'`, then `'success'` or `'exit'`, when a signal factory was supplied. */
+  linkStatus: SettableSignal | null;
+}
+
 // Client-side Link API
 export function loadPlaidScript(): Promise<void>;
 export function openPlaidLink(options: OpenPlaidLinkOptions): Promise<PlaidLinkHandler>;
-export function createPlaidLink(config: any): Promise<any>;
+export function createPlaidLink(config: CreatePlaidLinkConfig): Promise<PlaidLinkSession>;
 
 // Server-side API
 export interface PlaidClient {
   exchangePublicToken(publicToken: string): Promise<ExchangeResult>;
-  getAccounts(accessToken: string): Promise<any>;
+  getAccounts(accessToken: string): Promise<AccountsResult>;
   getBalance(accessToken: string): Promise<BalancesResult>;
-  createTransfer(params: any): Promise<any>;
-  getTransferStatus(transferId: string): Promise<any>;
+  createTransfer(params: CreateTransferParams): Promise<TransferResult>;
+  getTransferStatus(transferId: string): Promise<TransferStatusResult>;
 }
 
-export function createPlaidClient(config: { clientId: string; secret: string; environment?: string }): PlaidClient;
+export function createPlaidClient(config: { clientId: string; secret: string; environment?: 'sandbox' | 'development' | 'production' }): PlaidClient;
 export function createLinkToken(options: LinkTokenOptions, credentials: PlaidCredentials): Promise<LinkTokenResult>;
 export function exchangePublicToken(publicToken: string, credentials: PlaidCredentials): Promise<ExchangeResult>;
-export function getAccounts(accessToken: string, credentials: PlaidCredentials): Promise<any>;
+export function getAccounts(accessToken: string, credentials: PlaidCredentials): Promise<AccountsResult>;
 export function getBalances(accessToken: string, credentials: PlaidCredentials): Promise<BalancesResult>;
 export function getBalance(accessToken: string, credentials: PlaidCredentials): Promise<BalancesResult>;
-export function createTransfer(params: any, credentials: PlaidCredentials): Promise<any>;
-export function getTransferStatus(transferId: string, credentials: PlaidCredentials): Promise<any>;
+export function createTransfer(params: CreateTransferParams, credentials: PlaidCredentials): Promise<TransferResult>;
+export function getTransferStatus(transferId: string, credentials: PlaidCredentials): Promise<TransferStatusResult>;
 
 // Yield optimization API
 export interface YieldAccount {

@@ -1,4 +1,30 @@
-import type { MiddlewareContext, MiddlewareFn } from '@basenative/middleware';
+/** A cookie as auth writes it onto `ctx.response.cookies`. */
+export interface AuthCookie {
+  value: string;
+  httpOnly?: boolean;
+  sameSite?: 'strict' | 'lax' | 'none';
+  path?: string;
+  secure?: boolean;
+  maxAge?: number;
+}
+
+/**
+ * The part of a middleware context that auth reads and writes. A
+ * `@basenative/middleware` context satisfies it structurally.
+ */
+export interface AuthContext {
+  request: { cookies?: Record<string, string> };
+  response: {
+    status?: number;
+    headers: Record<string, string>;
+    body?: unknown;
+    cookies?: Record<string, AuthCookie>;
+  };
+  state: Record<string, unknown>;
+}
+
+/** A middleware function over `AuthContext`; usable wherever a `@basenative/middleware` function is. */
+export type AuthMiddleware = (ctx: AuthContext, next: () => Promise<void>) => Promise<void> | void;
 
 export interface Session {
   id: string;
@@ -55,18 +81,18 @@ export interface RBAC {
 }
 
 export interface Guard {
-  require(permission: string): MiddlewareFn;
-  requireAny(...permissions: string[]): MiddlewareFn;
-  requireRole(...roleNames: string[]): MiddlewareFn;
+  require(permission: string): AuthMiddleware;
+  requireAny(...permissions: string[]): AuthMiddleware;
+  requireRole(...roleNames: string[]): AuthMiddleware;
 }
 
 export function defineRoles(definition: Record<string, RoleDefinition>): RBAC;
-export function createGuard(rbac: RBAC, options?: { getRoleFromContext?: (ctx: MiddlewareContext) => string | null; onDenied?: (ctx: MiddlewareContext) => void }): Guard;
+export function createGuard(rbac: RBAC, options?: { getRoleFromContext?: (ctx: AuthContext) => string | null | undefined; onDenied?: (ctx: AuthContext) => void }): Guard;
 
-export function sessionMiddleware(sessionManager: SessionManager): MiddlewareFn;
-export function requireAuth(options?: { redirectTo?: string; message?: string }): MiddlewareFn;
-export function login(sessionManager: SessionManager, ctx: MiddlewareContext, user: Record<string, unknown>): Promise<Session>;
-export function logout(sessionManager: SessionManager, ctx: MiddlewareContext): Promise<void>;
+export function sessionMiddleware(sessionManager: SessionManager): AuthMiddleware;
+export function requireAuth(options?: { redirectTo?: string; message?: string }): AuthMiddleware;
+export function login(sessionManager: SessionManager, ctx: AuthContext, user: Record<string, unknown>): Promise<Session>;
+export function logout(sessionManager: SessionManager, ctx: AuthContext): Promise<void>;
 
 export interface AuthResult {
   success: boolean;

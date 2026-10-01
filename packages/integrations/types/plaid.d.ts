@@ -9,6 +9,13 @@ export type {
   PlaidLinkHandler,
   OpenPlaidLinkOptions,
   PlaidClient,
+  AccountsResult,
+  CreateTransferParams,
+  TransferResult,
+  TransferStatusResult,
+  SettableSignal,
+  CreatePlaidLinkConfig,
+  PlaidLinkSession,
 } from './index.js';
 
 export {

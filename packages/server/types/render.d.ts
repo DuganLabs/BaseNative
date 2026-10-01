@@ -8,6 +8,22 @@ export function render(
   options?: RenderOptions,
 ): string;
 
+export interface DeferredSection {
+  /** The `data-bn-defer` id of the placeholder this section fills. */
+  id: string;
+  /** The rendered HTML of the section. */
+  html: string;
+  /** A `<script>` that swaps `html` into the placeholder and fires `bn:defer`. */
+  script: string;
+}
+
+/**
+ * Renders the `@defer` sections collected while `render()` ran. Pass the same
+ * `options` object that was given to `render()`; with no deferred sections the
+ * result is empty.
+ */
+export function resolveDeferred(options: RenderOptions): DeferredSection[];
+
 export interface RenderOptions {
   /** When true, emits hydration marker comments in the output. */
   hydratable?: boolean;
