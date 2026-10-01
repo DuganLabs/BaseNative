@@ -5,7 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./fonts.css",
-    "./src/*": "./src/*"
+    "./fonts.css": "./fonts.css",
+    "./src/*.woff2": "./src/*.woff2"
   },
   "sideEffects": [
     "**/*.css"
