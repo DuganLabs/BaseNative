@@ -12,27 +12,27 @@
       "default": "./src/index.js"
     },
     "./presets": {
-      "types": "./types/index.d.ts",
+      "types": "./types/presets.d.ts",
       "default": "./src/presets/dl.js"
     },
     "./render": {
-      "types": "./types/index.d.ts",
+      "types": "./types/render.d.ts",
       "default": "./src/render.js"
     },
     "./glyphs": {
-      "types": "./types/index.d.ts",
+      "types": "./types/glyphs.d.ts",
       "default": "./src/glyphs.js"
     },
     "./palette": {
-      "types": "./types/index.d.ts",
+      "types": "./types/palette.d.ts",
       "default": "./src/palette.js"
     },
     "./manifest": {
-      "types": "./types/index.d.ts",
+      "types": "./types/manifest.d.ts",
       "default": "./src/manifest.js"
     },
     "./png": {
-      "types": "./types/index.d.ts",
+      "types": "./types/png.d.ts",
       "default": "./src/png.js"
     }
   },
@@ -41,15 +41,18 @@
     "src",
     "types",
     "templates",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
   ],
+  "sideEffects": false,
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/favicon"
   },
-  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/favicon#readme",
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
@@ -67,6 +70,7 @@
     "@resvg/resvg-wasm": "^2.6.2"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

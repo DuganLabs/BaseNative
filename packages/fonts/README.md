@@ -55,4 +55,4 @@ All fonts are in `.woff2` format and use `font-display: swap` for fast initial p
 
 ## License
 
-Apache-2.0
+The package code is Apache-2.0 (`LICENSE`). The font files in `src/` are licensed under the SIL Open Font License 1.1; the license text and each upstream copyright notice are in `OFL.txt`. The `BaseNative-*` files are renamed copies of Inter, Source Serif 4 and JetBrains Mono and stay under the OFL.

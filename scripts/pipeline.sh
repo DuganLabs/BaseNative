@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 # The BaseNative pipeline, on this machine.
 #
-#   scripts/pipeline.sh check     # lint + tests across the monorepo — what ci.yml ran
+#   scripts/pipeline.sh check     # lint + tests + publish gate — what ci.yml ran
 #   scripts/pipeline.sh deploy    # build the docs site and deploy it to Pages — what deploy.yml ran
 #   scripts/pipeline.sh all
 #
 # GitHub Actions in this org are manual-only (workflow_dispatch); this is the
 # same pipeline from the same Doppler config (doppler.yaml → basenative/repository).
-# Publishing packages (release.yml, changesets → GitHub Packages) stays a manual
-# workflow: it needs a write:packages token that lives only in GitHub.
+# Publishing packages (release.yml, changesets → npmjs.org) stays a GitHub
+# workflow on purpose: npm trusted publishing only accepts an OIDC token from a
+# GitHub-hosted runner, so no npm token exists to run it from here. The repo is
+# public, so those runs cost no Actions minutes.
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
@@ -23,6 +25,7 @@ need_doppler() {
 check() {
   echo "── lint"; pnpm exec nx run-many --target=lint
   echo "── test"; pnpm exec nx run-many --target=test
+  echo "── publish gate"; node scripts/publish-check.mjs
 }
 
 deploy() {

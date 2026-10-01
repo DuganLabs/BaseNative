@@ -5,7 +5,9 @@
       "cache": true,
       "command": "node --test",
       "inputs": [
-        "{projectRoot}/src/**/*.js"
+        "{projectRoot}/src/**/*.js",
+        "{projectRoot}/types/**/*",
+        "{projectRoot}/package.json"
       ],
       "options": {
         "cwd": "{projectRoot}"

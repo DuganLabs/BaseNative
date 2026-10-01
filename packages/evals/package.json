@@ -1,28 +1,50 @@
 {
   "name": "@basenative/evals",
   "version": "0.1.0",
-  "private": true,
   "description": "Eval harness measuring whether models actually produce correct BaseNative",
   "type": "module",
   "exports": {
-    ".": "./src/index.js"
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    }
   },
+  "types": "./types/index.d.ts",
   "bin": {
     "bn-evals": "./src/bin.js"
   },
+  "files": [
+    "src",
+    "types",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
+  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/evals"
   },
-  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/evals#readme",
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
   "dependencies": {
-    "@basenative/validate": "workspace:^0.3.0",
+    "@basenative/runtime": "workspace:^0.6.3",
     "@basenative/server": "workspace:^0.6.3",
-    "@basenative/runtime": "workspace:^0.6.3"
+    "@basenative/validate": "workspace:^0.3.0",
+    "happy-dom": "^20.14.3"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "basenative",
+    "evals",
+    "llm",
+    "benchmark",
+    "generative-ui"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

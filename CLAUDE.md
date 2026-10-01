@@ -6,7 +6,7 @@ BaseNative is an open specifications project that delivers a signal-based web ru
 
 **Monorepo**: Nx + pnpm workspace  
 **Package scope**: `@basenative/*`  
-**Node.js version**: 22 in CI (`.github/workflows/ci.yml` also runs 20)  
+**Node.js version**: 22 in CI (`.github/workflows/ci.yml` also runs 20); 24 in `release.yml`, because pnpm 10 publishes through the npm bundled with Node and npm trusted publishing needs npm 11.5.1+  
 **Package manager**: pnpm 10
 
 ---
@@ -24,7 +24,7 @@ BaseNative is an open specifications project that delivers a signal-based web ru
 
 ```
 basenative/
-├── packages/           # 43 @basenative/* packages (3 private: fonts, evals, icons) — see docs/package-inventory.md
+├── packages/           # 45 @basenative/* packages, all public on npmjs.org — see docs/package-inventory.md
 │   ├── runtime/        # CORE: signal(), computed(), effect(), hydrate()
 │   ├── server/         # SSR: render(), renderToStream(), renderToReadableStream()
 │   ├── router/         # SSR-aware path routing
@@ -464,7 +464,7 @@ An abandoned parallel builder implementation is preserved at tag `archive/feat-v
 
 - The eval corpus (`packages/evals/prompts/`, `fixtures/`) — PRD W2. Human-authored only.
 - The launch essay (PRD W5.4) — blocked on eval results that do not exist yet.
-- The registry question: every non-private package is now published to GitHub Packages under the `basenative` org (40 in sync, 3 private as of 2026-09-11 — `docs/package-inventory.md`, generated; re-check that file rather than this count, which will drift again). What remains is a product call: whether to mirror to npmjs, and which packages graduate to 1.0.
+- Which packages graduate to 1.0. (The registry question is decided: 2026-10-01 the owner moved `@basenative/*` from GitHub Packages to npmjs.org, all 45 packages public, published only by `release.yml` through npm trusted publishing in the `prd` environment. `scripts/publish-check.mjs` gates every tarball; `docs/package-inventory.md` is the generated status.)
 
 ---
 

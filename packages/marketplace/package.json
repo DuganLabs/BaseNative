@@ -3,31 +3,40 @@
   "version": "0.2.2",
   "description": "Component registry for BaseNative \u2014 publishing and discovery infrastructure",
   "type": "module",
-  "main": "src/index.js",
-  "types": "types/index.d.ts",
+  "main": "./src/index.js",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    }
+  },
+  "types": "./types/index.d.ts",
   "files": [
     "src",
-    "types"
+    "types",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
   ],
+  "sideEffects": false,
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/marketplace"
   },
-  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/marketplace#readme",
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
   "keywords": [
     "basenative",
-    "web-components",
-    "signals",
     "marketplace",
-    "community",
-    "components"
+    "registry",
+    "components",
+    "community"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

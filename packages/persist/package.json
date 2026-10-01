@@ -9,26 +9,29 @@
       "default": "./src/index.js"
     },
     "./storage": {
-      "types": "./types/index.d.ts",
+      "types": "./types/storage.d.ts",
       "default": "./src/storage.js"
     },
     "./ttl": {
-      "types": "./types/index.d.ts",
+      "types": "./types/ttl.d.ts",
       "default": "./src/ttl.js"
     }
   },
   "types": "./types/index.d.ts",
   "files": [
     "src",
-    "types"
+    "types",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
   ],
+  "sideEffects": false,
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/persist"
   },
-  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/persist#readme",
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
@@ -50,6 +53,7 @@
     }
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

@@ -4,35 +4,63 @@
   "description": "Query builder with SQLite, PostgreSQL, and Cloudflare D1 adapters",
   "type": "module",
   "exports": {
-    ".": "./src/index.js",
-    "./sqlite": "./src/adapters/sqlite.js",
-    "./postgres": "./src/adapters/postgres.js",
-    "./d1": "./src/adapters/d1.js"
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./sqlite": {
+      "types": "./types/sqlite.d.ts",
+      "default": "./src/adapters/sqlite.js"
+    },
+    "./postgres": {
+      "types": "./types/postgres.d.ts",
+      "default": "./src/adapters/postgres.js"
+    },
+    "./d1": {
+      "types": "./types/d1.d.ts",
+      "default": "./src/adapters/d1.js"
+    }
   },
   "types": "./types/index.d.ts",
   "files": [
     "src",
-    "types"
+    "types",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
   ],
+  "sideEffects": false,
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/db"
   },
-  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/db#readme",
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
   "keywords": [
     "basenative",
-    "web-components",
-    "signals",
     "database",
     "query-builder",
-    "sqlite"
+    "sqlite",
+    "postgres",
+    "cloudflare-d1"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "peerDependencies": {
+    "better-sqlite3": "*",
+    "pg": "*"
+  },
+  "peerDependenciesMeta": {
+    "better-sqlite3": {
+      "optional": true
+    },
+    "pg": {
+      "optional": true
+    }
   }
 }

@@ -1,22 +1,20 @@
 // Built with BaseNative — basenative.dev
 
-export interface StorageAdapter {
-  getItem(key: string): Promise<string | null>;
-  setItem(key: string, value: string): Promise<void>;
-  removeItem(key: string): Promise<void>;
-  clear?(): Promise<void>;
-}
+import type { StorageAdapter } from './storage.js';
 
-export function defaultAdapter(opts?: { preferIndexedDb?: boolean }): StorageAdapter;
-export function localStorageAdapter(): StorageAdapter | null;
-export function memoryAdapter(): StorageAdapter;
-export function indexedDbAdapter(opts?: { dbName?: string; store?: string }): StorageAdapter;
+export { wrap, unwrap, fromLegacy } from './ttl.js';
+export {
+  defaultAdapter,
+  localStorageAdapter,
+  memoryAdapter,
+  indexedDbAdapter,
+} from './storage.js';
+
+export type { StorageAdapter } from './storage.js';
+export type { TtlEnvelope } from './ttl.js';
+
 export function setStorageAdapter(a: StorageAdapter | null): void;
 
-export interface TtlEnvelope<T> { v: T; t: number; e: number | null; }
-export function wrap<T>(value: T, ttlSeconds?: number, now?: () => number): TtlEnvelope<T>;
-export function unwrap<T>(envelope: unknown, now?: () => number): T | null;
-export function fromLegacy<T>(legacy: any, defaultTtlSeconds?: number): TtlEnvelope<T> | null;
 
 export function loadPersisted<T = unknown>(key: string, opts?: { legacyTtlSeconds?: number }): Promise<T | null>;
 export function savePersisted<T = unknown>(key: string, value: T, ttlSeconds?: number): Promise<void>;

@@ -138,6 +138,14 @@ export function generateBaseNative(state: BuilderState, options?: CodegenOptions
 export function renderTreeView(state: BuilderState): string;
 export function renderInspector(state: BuilderState, palette: ComponentPalette): string;
 export function escapeHtml(value: unknown): string;
+/** Same escaping as `escapeHtml`, for attribute values. */
+export function escapeAttr(value: unknown): string;
+/** True for a string that is a valid JavaScript identifier (ASCII letters, digits, `_`, `$`; not starting with a digit). */
+export function isValidIdentifier(name: unknown): boolean;
+/** Build the DOM element for a builder node and its children, using `doc` to create elements. */
+export function renderNodeToElement(doc: Document, node: BuilderNode, palette: ComponentPalette): HTMLElement;
+/** HTML for the palette: one section per category, one draggable button per component. */
+export function renderPaletteHTML(palette: ComponentPalette): string;
 
 export class BnBuilder extends HTMLElement {
   state: BuilderState;

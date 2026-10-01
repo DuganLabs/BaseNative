@@ -19,11 +19,11 @@ export interface EmailOptions {
 }
 
 export interface EmailTransport {
-  send(email: EmailOptions): Promise<any>;
+  send(email: EmailOptions): Promise<unknown>;
 }
 
 export interface EmailSender {
-  send(options: EmailOptions): Promise<any>;
+  send(options: EmailOptions): Promise<unknown>;
 }
 
 export function createEmailSender(transport: EmailTransport): EmailSender;

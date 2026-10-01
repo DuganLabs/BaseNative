@@ -55,6 +55,10 @@ jobs:
         if: matrix.node-version == 22
         run: node scripts/llms-txt.js --check
 
+      - name: Publish gate
+        if: matrix.node-version == 22
+        run: node scripts/publish-check.mjs
+
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest

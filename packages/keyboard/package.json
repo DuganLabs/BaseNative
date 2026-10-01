@@ -17,7 +17,12 @@
   },
   "files": [
     "src",
-    "types"
+    "types",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
+  ],
+  "sideEffects": [
+    "**/*.css"
   ],
   "license": "Apache-2.0",
   "repository": {
@@ -25,7 +30,7 @@
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/keyboard"
   },
-  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/keyboard#readme",
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
@@ -33,7 +38,6 @@
     "basenative",
     "keyboard",
     "virtual-keyboard",
-    "mobile",
     "a11y",
     "wcag",
     "qwerty",
@@ -41,6 +45,7 @@
     "signals"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

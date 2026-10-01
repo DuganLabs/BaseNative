@@ -3,21 +3,42 @@
   "version": "0.2.2",
   "description": "No-code template builder for BaseNative components",
   "type": "module",
-  "main": "src/index.js",
-  "types": "types/index.d.ts",
-  "files": ["src", "types"],
+  "main": "./src/index.js",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    }
+  },
+  "types": "./types/index.d.ts",
+  "files": [
+    "src",
+    "types",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
+  ],
+  "sideEffects": [
+    "./src/index.js",
+    "./src/bn-canvas.js"
+  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/visual-builder"
   },
-  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/visual-builder#readme",
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
-  "keywords": ["basenative", "web-components", "signals", "visual-builder", "no-code", "templates"],
+  "keywords": [
+    "basenative",
+    "visual-builder",
+    "no-code",
+    "templates"
+  ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

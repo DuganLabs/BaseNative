@@ -9,6 +9,7 @@
       "default": "./src/render.js"
     },
     "./stream": {
+      "types": "./types/stream.d.ts",
       "default": "./src/stream.js"
     }
   },
@@ -23,27 +24,30 @@
   },
   "files": [
     "src",
-    "types"
+    "types",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
   ],
+  "sideEffects": false,
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/server"
   },
-  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/server#readme",
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
   "keywords": [
     "basenative",
-    "web-components",
-    "signals",
     "ssr",
     "streaming",
-    "server-rendering"
+    "server-rendering",
+    "html-templates"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

@@ -4,34 +4,47 @@
   "description": "Authentication, session management, RBAC, and OAuth2/OIDC for BaseNative apps",
   "type": "module",
   "exports": {
-    ".": "./src/index.js",
-    "./rbac": "./src/rbac.js",
-    "./middleware": "./src/middleware.js"
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./rbac": {
+      "types": "./types/rbac.d.ts",
+      "default": "./src/rbac.js"
+    },
+    "./middleware": {
+      "types": "./types/middleware.d.ts",
+      "default": "./src/middleware.js"
+    }
   },
   "types": "./types/index.d.ts",
   "files": [
     "src",
-    "types"
+    "types",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
   ],
+  "sideEffects": false,
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/auth"
   },
-  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/auth#readme",
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
   "keywords": [
     "basenative",
-    "web-components",
-    "signals",
     "authentication",
+    "sessions",
     "rbac",
-    "oauth"
+    "oauth",
+    "password-hashing"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }
