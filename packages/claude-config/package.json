@@ -17,15 +17,18 @@
     "settings",
     "hooks",
     "src",
-    "CLAUDE.md.tmpl"
+    "CLAUDE.md.tmpl",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
   ],
+  "sideEffects": false,
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/claude-config"
   },
-  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/claude-config#readme",
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
@@ -40,6 +43,7 @@
     "duganlabs"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

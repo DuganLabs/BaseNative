@@ -20,15 +20,18 @@
   "files": [
     "src",
     "types",
-    "templates"
+    "templates",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
   ],
+  "sideEffects": false,
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/doppler"
   },
-  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/doppler#readme",
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
@@ -42,6 +45,7 @@
     "infra"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

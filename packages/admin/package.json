@@ -34,15 +34,18 @@
   "files": [
     "src",
     "types",
-    "migrations"
+    "migrations",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
   ],
+  "sideEffects": false,
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DuganLabs/BaseNative.git",
     "directory": "packages/admin"
   },
-  "homepage": "https://github.com/DuganLabs/BaseNative#readme",
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/admin#readme",
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
@@ -56,6 +59,7 @@
     "review"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }
