@@ -43,6 +43,14 @@ const NO_TYPES_OK = new Map([
   ['@basenative/fonts', 'CSS and font files only'],
 ]);
 
+// Packages whose public API is built on Node's own types. They are
+// type-checked with @types/node present, and must declare it as an optional
+// peer so a consumer's package manager says what they expect. Every other
+// package is checked without it.
+const NODE_TYPES = new Map([
+  ['@basenative/hmr', 'dev-server middleware; its API takes node:http objects'],
+]);
+
 // Files that must never ship. Tests and maps are dead weight that can also
 // expose private code paths; env files can hold secrets.
 const LEAKS = [
@@ -252,6 +260,18 @@ function consumerTypecheck(result, tmp, tarballs, packOnDemand) {
   installInto(nm, name, tarballs, packOnDemand, missing);
   for (const m of missing) errors.push(`consumer install: cannot provide ${m}`);
 
+  const needsNode = NODE_TYPES.has(name);
+  if (needsNode) {
+    if (!result.packed.peerDependencies?.['@types/node']) {
+      errors.push('uses Node types: declare "@types/node" as an optional peerDependency');
+    }
+    const link = join(nm, '@types', 'node');
+    if (!existsSync(link)) {
+      mkdirSync(dirname(link), { recursive: true });
+      symlinkSync(realpathSync(join(ROOT, 'node_modules', '@types', 'node')), link, 'dir');
+    }
+  }
+
   writeFileSync(join(proj, 'package.json'), '{ "type": "module", "private": true }\n');
   const entry = join(proj, 'index.ts');
   writeFileSync(
@@ -266,7 +286,7 @@ function consumerTypecheck(result, tmp, tarballs, packOnDemand) {
       ...mode,
       target: ts.ScriptTarget.ES2022,
       lib: ['lib.es2022.d.ts', 'lib.dom.d.ts', 'lib.dom.iterable.d.ts'],
-      types: [],
+      types: needsNode ? ['node'] : [],
       strict: true,
       noEmit: true,
       skipLibCheck: false,
