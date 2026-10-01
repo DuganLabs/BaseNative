@@ -1,0 +1,26 @@
+export type {
+  PlaidCredentials,
+  LinkTokenOptions,
+  LinkTokenResult,
+  ExchangeResult,
+  PlaidBalance,
+  PlaidAccount,
+  BalancesResult,
+  PlaidLinkHandler,
+  OpenPlaidLinkOptions,
+  PlaidClient,
+} from './index.js';
+
+export {
+  loadPlaidScript,
+  openPlaidLink,
+  createPlaidLink,
+  createPlaidClient,
+  createLinkToken,
+  exchangePublicToken,
+  getAccounts,
+  getBalances,
+  getBalance,
+  createTransfer,
+  getTransferStatus,
+} from './index.js';
