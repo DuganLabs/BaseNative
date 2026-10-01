@@ -1,7 +1,10 @@
+import { readFileSync } from 'node:fs';
 import { TOOLS, TOOL_MAP } from './tools.js';
 
 export const PROTOCOL_VERSION = '2024-11-05';
-export const SERVER_INFO = { name: 'basenative', version: '0.1.0' };
+// Read from the manifest so clients always see the version that is installed.
+const { version } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+export const SERVER_INFO = { name: 'basenative', version };
 
 const parseError = (id, code, message) => ({ jsonrpc: '2.0', id, error: { code, message } });
 const ok = (id, result) => ({ jsonrpc: '2.0', id, result });
