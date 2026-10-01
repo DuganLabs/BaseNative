@@ -36,7 +36,7 @@
     "css-reset"
   ],
   "scripts": {
-    "test": "node --test test.js"
+    "test": "node --test test.js types/exports.test.js"
   },
   "sideEffects": [
     "**/*.css"

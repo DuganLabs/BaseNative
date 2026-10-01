@@ -13,6 +13,11 @@ import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
 
+// The custom-element modules extend HTMLElement at import time, and Node has no
+// DOM. A bare stub lets them load so their export names can be read; every
+// `customElements.define` in them is already guarded by a typeof check.
+globalThis.HTMLElement ??= class HTMLElement {};
+
 const pkgRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pkg = JSON.parse(readFileSync(join(pkgRoot, 'package.json'), 'utf8'));
 

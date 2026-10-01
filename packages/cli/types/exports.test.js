@@ -16,6 +16,13 @@ import { dirname, join } from 'node:path';
 const pkgRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pkg = JSON.parse(readFileSync(join(pkgRoot, 'package.json'), 'utf8'));
 
+/**
+ * Subpaths whose module runs on import (a bin), so it cannot be loaded to read
+ * its exports. The test asserts instead that the source declares no `export`
+ * and that the declaration file declares none either.
+ */
+const runsOnImport = new Set(['.']);
+
 /** Every value a declaration file exports: functions, classes, consts and re-exported names. */
 function declaredValues(file) {
   const dts = readFileSync(join(pkgRoot, file), 'utf8')
@@ -45,7 +52,10 @@ assert.ok(subpaths.length > 0, 'package.json exports no subpath with a types con
 
 for (const [subpath, entry] of subpaths) {
   const declared = declaredValues(entry.types);
-  const runtime = Object.keys(await import(pathToFileURL(join(pkgRoot, entry.default)).href)).sort();
+  const staticOnly = runsOnImport.has(subpath);
+  const runtime = staticOnly
+    ? []
+    : Object.keys(await import(pathToFileURL(join(pkgRoot, entry.default)).href)).sort();
 
   test(`${subpath}: ${entry.types} declares exactly the values ${entry.default} exports`, () => {
     assert.deepEqual(
@@ -59,6 +69,14 @@ for (const [subpath, entry] of subpaths) {
       'declared but not exported at runtime'
     );
   });
+
+  if (staticOnly) {
+    test(`${subpath}: ${entry.default} has no export statement`, () => {
+      const src = readFileSync(join(pkgRoot, entry.default), 'utf8');
+      assert.ok(!/^\s*export[\s{*]/m.test(src), `${entry.default} exports something; declare it`);
+    });
+    continue;
+  }
 
   test(`${subpath}: the comparison is not vacuous`, () => {
     // A parser that silently matched nothing would pass the test above.
