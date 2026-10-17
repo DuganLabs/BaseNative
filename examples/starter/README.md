@@ -44,20 +44,29 @@ Pages are HTML templates processed by `@basenative/server`:
 
 ```html
 <!-- src/pages/counter.html -->
-<output>{{ count }}</output>
+<output>{{ count() }}</output>
 <button @click="increment()">+</button>
 
-@if count > 0
-  Counting up!
-@endif
+<template @if="count() > 0">
+  <p>Counting up!</p>
+</template>
+<template @else>
+  <p>Counter is at zero.</p>
+</template>
 ```
 
-The server renders the initial state:
+Control flow lives on `<template>` elements — `<template @if>` /
+`<template @else>`, `<template @for="item of items; track item.id">`,
+`<template @switch>`. There are no text directives (`@if … @endif` as raw
+text renders literally). Hydrated pages read signals by calling them
+(`{{ count() }}`), so the server passes signals in the render context and
+the same template works on both sides:
 
 ```js
 import { render } from '@basenative/server';
+import { signal } from '@basenative/runtime';
 
-const html = render(template, { count: 0 });
+const html = render(template, { count: signal(0) }, { hydratable: true });
 // → <output>0</output><button>+</button><p>Counter is at zero.</p>
 ```
 
@@ -69,11 +78,17 @@ No DOM is replaced — only affected nodes are updated on state change:
 ```js
 import { hydrate, signal } from '@basenative/runtime';
 
+const count = signal(0);
+
 hydrate(document.querySelector('main'), {
-  count: signal(0),
-  increment() { this.count.set(n => n + 1); },
+  count,
+  increment: () => count.set(n => n + 1),
 });
 ```
+
+Signals are read by calling them (`count()`) and written with
+`count.set(value)` — there is no `.get()`. Handlers close over the signals
+directly; `hydrate()` does not bind `this` in context methods.
 
 ### Adding a new page
 

@@ -4,15 +4,41 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, extname, resolve, relative, sep } from 'node:path';
 import { render } from '@basenative/server';
 import { resolveRoute } from '@basenative/router';
+import { signal, computed } from '@basenative/runtime';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
 const PUBLIC_DIR = join(ROOT, 'public');
+const RUNTIME_DIR = join(ROOT, 'node_modules', '@basenative', 'runtime');
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function readPage(name) {
   return readFileSync(join(__dirname, 'pages', name), 'utf8');
+}
+
+/**
+ * Render a page template. `hydratable: true` is required for the
+ * SSR → hydration pipeline: it makes the server emit the `<!--bn:*-->`
+ * markers the client's hydrate() reconciles against.
+ */
+function renderPage(name, ctx) {
+  return render(readPage(name), ctx, { hydratable: true });
+}
+
+/**
+ * Read a file under the installed @basenative/runtime package, with the
+ * same traversal guard as readPublicFile. public/app.js imports the
+ * runtime from /node_modules/@basenative/runtime/... — without this
+ * route that import 404s and no page can hydrate.
+ */
+function readRuntimeFile(relPath) {
+  const resolved = resolve(RUNTIME_DIR, `.${sep}${relPath}`);
+  const rel = relative(RUNTIME_DIR, resolved);
+  if (rel === '..' || rel.startsWith(`..${sep}`)) {
+    throw new Error('Refusing to read outside the runtime package');
+  }
+  return readFileSync(resolved);
 }
 
 /**
@@ -78,7 +104,7 @@ let nextTodoId = 4;
 // ─── Page handlers ────────────────────────────────────────────────────────────
 
 function handleHome(req, res) {
-  const html = render(readPage('home.html'), {
+  const html = renderPage('home.html', {
     title: 'Welcome to BaseNative',
     features: [
       { name: 'Signals', description: 'Fine-grained reactivity without a virtual DOM' },
@@ -92,8 +118,8 @@ function handleHome(req, res) {
 }
 
 function handleAbout(req, res) {
-  const html = render(readPage('about.html'), {
-    version: '0.3.0',
+  const html = renderPage('about.html', {
+    version: '0.6.4',
     packages: ['runtime', 'server', 'router', 'forms', 'auth', 'db'],
   });
   res.writeHead(200, { 'Content-Type': 'text/html' });
@@ -101,15 +127,23 @@ function handleAbout(req, res) {
 }
 
 function handleCounter(req, res) {
-  const html = render(readPage('counter.html'), { initialCount: 0 });
+  // The counter template reads its signal by calling it ({{ count() }}),
+  // so the render context carries a real signal — the same template then
+  // hydrates unchanged on the client.
+  const html = renderPage('counter.html', { initialCount: 0, count: signal(0) });
   res.writeHead(200, { 'Content-Type': 'text/html' });
   res.end(layout('Counter', html));
 }
 
 function handleTodos(req, res) {
-  const html = render(readPage('todos.html'), {
-    todos,
-    remaining: todos.filter(t => !t.done).length,
+  // Same pattern as the counter: signals in the render context, so the
+  // template's accessor-call expressions ({{ todos() }}, {{ remaining() }})
+  // evaluate identically on the server and after hydration.
+  const todosSignal = signal(todos);
+  const html = renderPage('todos.html', {
+    todos: todosSignal,
+    remaining: computed(() => todosSignal().filter(t => !t.done).length),
+    newTodo: signal(''),
   });
   res.writeHead(200, { 'Content-Type': 'text/html' });
   res.end(layout('Todos', html));
@@ -190,22 +224,48 @@ const routes = [
 
 // ─── Server ───────────────────────────────────────────────────────────────────
 
+function handleRuntimeFile(req, res) {
+  try {
+    const filePath = req.url.replace('/node_modules/@basenative/runtime/', '');
+    const data = readRuntimeFile(filePath);
+    const ext = extname(filePath);
+    res.writeHead(200, {
+      'Content-Type': MIME[ext] ?? 'application/octet-stream',
+      'Cache-Control': 'public, max-age=3600',
+    });
+    res.end(data);
+  } catch {
+    res.writeHead(404);
+    res.end('Not found');
+  }
+}
+
 const server = createServer((req, res) => {
+  if (req.url.startsWith('/node_modules/@basenative/runtime/')) {
+    handleRuntimeFile(req, res);
+    return;
+  }
+
   if (req.url.startsWith('/public/')) {
     handleStaticFile(req, res);
     return;
   }
 
   const url = req.url.split('?')[0];
-  const match = resolveRoute(routes, req.method, url);
+  // resolveRoute(routes, url) matches on path only and always returns a
+  // result object — the matched route (or null) is on .matched, and HTTP
+  // method filtering is the server's job, so resolve within this
+  // method's routes. (The previous call passed req.method as the URL
+  // and read .handler off the result, so every route 500'd.)
+  const match = resolveRoute(routes.filter(r => r.method === req.method), url);
 
-  if (!match) {
+  if (!match.matched) {
     res.writeHead(404, { 'Content-Type': 'text/html' });
     res.end(layout('Not Found', '<h1>404 — Page not found</h1><p><a href="/">Go home</a></p>'));
     return;
   }
 
-  Promise.resolve(match.handler(req, res, match.params)).catch(err => {
+  Promise.resolve(match.matched.handler(req, res, match.params)).catch(err => {
     console.error(err);
     res.writeHead(500);
     res.end('Internal server error');

@@ -5,9 +5,9 @@
 
   <h2>Packages</h2>
   <ul>
-    @for pkg in packages track pkg
+    <template @for="pkg of packages; track pkg">
       <li><code>@basenative/{{ pkg }}</code></li>
-    @endfor
+    </template>
   </ul>
 
   <h2>Design principles</h2>
