@@ -1,24 +1,27 @@
 <!--
   Todo list — server-rendered with live signal updates.
-  Demonstrates @for, @if, API calls, and reactive lists.
+  Demonstrates @for, @if, API calls, and reactive lists. Hydrated pages read
+  signals by calling them ({{ remaining() }}); the server passes signals in
+  the render context so the same template works on both sides. The
+  data-todo-* attributes on each <li> are how the client seeds its initial
+  state from the server-rendered list.
 -->
 <section>
   <h1>Todos</h1>
 
-  <p>
-    @if remaining === 0
-      All done! 🎉
-    @else
-      {{ remaining }} item{{ remaining === 1 ? '' : 's' }} remaining.
-    @endif
-  </p>
+  <template @if="remaining() === 0">
+    <p>All done! 🎉</p>
+  </template>
+  <template @else>
+    <p>{{ remaining() }} item{{ remaining() === 1 ? '' : 's' }} remaining.</p>
+  </template>
 
-  <form @submit.prevent="addTodo(newTodo)">
+  <form @submit="addTodo(newTodo(), $event)">
     <label>
       Add a todo
       <input
         type="text"
-        :value="newTodo"
+        :value="newTodo()"
         @input="newTodo = $event.target.value"
         placeholder="What needs doing?"
         required
@@ -27,12 +30,18 @@
     <button type="submit">Add</button>
   </form>
 
-  @if todos.length === 0
+  <template @if="todos().length === 0">
     <p>No todos yet. Add one above.</p>
-  @else
+  </template>
+  <template @else>
     <ul role="list">
-      @for todo in todos track todo.id
-        <li :class="todo.done ? 'done' : ''">
+      <template @for="todo of todos(); track todo.id">
+        <li
+          :class="todo.done ? 'done' : ''"
+          data-todo-id="{{ todo.id }}"
+          data-todo-text="{{ todo.text }}"
+          data-todo-done="{{ todo.done }}"
+        >
           <label>
             <input
               type="checkbox"
@@ -45,11 +54,11 @@
             &times;
           </button>
         </li>
-      @endfor
+      </template>
     </ul>
 
-    <button @click="clearDone()" :disabled="todos.filter(t => t.done).length === 0">
+    <button @click="clearDone()" :disabled="todos().filter(t => t.done).length === 0">
       Clear completed
     </button>
-  @endif
+  </template>
 </section>

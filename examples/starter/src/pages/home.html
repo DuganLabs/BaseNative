@@ -6,12 +6,12 @@
   </p>
 
   <ul role="list">
-    @for feature in features track feature.name
+    <template @for="feature of features; track feature.name">
       <li>
         <strong>{{ feature.name }}</strong>
         <p>{{ feature.description }}</p>
       </li>
-    @endfor
+    </template>
   </ul>
 
   <nav aria-label="Try an example">

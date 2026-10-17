@@ -3,17 +3,22 @@
  *
  * Each page hydrates the server-rendered HTML with reactive state.
  * Signals update only the DOM nodes that depend on them — no full re-render.
+ *
+ * Signals are read by calling them (count()) and written with
+ * count.set(value) — there is no .get(). Handlers close over the signals
+ * directly instead of relying on `this`, which hydrate() does not bind.
  */
 import { hydrate, signal, computed } from '/node_modules/@basenative/runtime/src/index.js';
 
 // ─── Counter page ─────────────────────────────────────────────────────────────
 if (document.querySelector('[data-page="counter"]') || location.pathname === '/counter') {
-  hydrate(document.querySelector('main'), {
-    count: signal(0),
+  const count = signal(0);
 
-    increment() { this.count.set(n => n + 1); },
-    decrement() { this.count.set(n => n - 1); },
-    reset()     { this.count.set(0); },
+  hydrate(document.querySelector('main'), {
+    count,
+    increment: () => count.set(n => n + 1),
+    decrement: () => count.set(n => n - 1),
+    reset: () => count.set(0),
   });
 }
 
@@ -26,15 +31,19 @@ if (location.pathname === '/todos') {
     done: el.dataset.todoDone === 'true',
   }));
 
+  const todos = signal(initialTodos);
+  const newTodo = signal('');
+  const remaining = computed(() => todos().filter(t => !t.done).length);
+
   hydrate(document.querySelector('main'), {
-    todos: signal(initialTodos),
-    newTodo: signal(''),
+    todos,
+    newTodo,
+    remaining,
 
-    remaining: computed(function() {
-      return this.todos.get().filter(t => !t.done).length;
-    }),
-
-    async addTodo(text) {
+    async addTodo(text, $event) {
+      // The runtime's event binding has no .prevent modifier, so the
+      // form's submit event is passed in and cancelled here.
+      $event?.preventDefault();
       if (!text.trim()) return;
       const res = await fetch('/api/todos', {
         method: 'POST',
@@ -43,8 +52,8 @@ if (location.pathname === '/todos') {
       });
       if (res.ok) {
         const todo = await res.json();
-        this.todos.set(ts => [...ts, todo]);
-        this.newTodo.set('');
+        todos.set(ts => [...ts, todo]);
+        newTodo.set('');
       }
     },
 
@@ -52,21 +61,21 @@ if (location.pathname === '/todos') {
       const res = await fetch(`/api/todos/${id}`, { method: 'PATCH' });
       if (res.ok) {
         const updated = await res.json();
-        this.todos.set(ts => ts.map(t => t.id === id ? updated : t));
+        todos.set(ts => ts.map(t => t.id === id ? updated : t));
       }
     },
 
     async deleteTodo(id) {
       const res = await fetch(`/api/todos/${id}`, { method: 'DELETE' });
       if (res.ok) {
-        this.todos.set(ts => ts.filter(t => t.id !== id));
+        todos.set(ts => ts.filter(t => t.id !== id));
       }
     },
 
     clearDone() {
-      const done = this.todos.get().filter(t => t.done);
+      const done = todos().filter(t => t.done);
       Promise.all(done.map(t => fetch(`/api/todos/${t.id}`, { method: 'DELETE' }))).then(() => {
-        this.todos.set(ts => ts.filter(t => !t.done));
+        todos.set(ts => ts.filter(t => !t.done));
       });
     },
   });
