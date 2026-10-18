@@ -12,12 +12,24 @@ export function createFlagManager(provider, options = {}) {
       const flag = await provider.getFlag(flagName);
       if (!flag) return defaultValue;
 
+      // Percentage rollout — evaluated before the boolean short-circuit
+      // whenever the flag is not explicitly off, so the natural admin-UI
+      // shape { enabled: true, percentage: 10 } means a 10% rollout
+      // instead of silently behaving as 100% (issue #209). An explicit
+      // enabled: false stays an unconditional off unless rules are present
+      // (rules are the allowlist pattern: base off, rule turns it on).
+      if (flag.percentage !== undefined && flag.enabled !== false) {
+        const hash = simpleHash(context.userId ?? context.sessionId ?? 'anonymous');
+        return (hash % 100) < flag.percentage;
+      }
+
       // Simple boolean flag
       if (typeof flag.enabled === 'boolean' && !flag.rules) {
         return flag.enabled;
       }
 
-      // Percentage rollout
+      // Percentage rollout with enabled: false and rules present —
+      // percentage still governs before rules, as before.
       if (flag.percentage !== undefined) {
         const hash = simpleHash(context.userId ?? context.sessionId ?? 'anonymous');
         return (hash % 100) < flag.percentage;
