@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-10-17T19:45:26.909Z",
+  "generatedAt": "2026-10-18T16:12:03.979Z",
   "tokenMethod": "approxTokens = UTF-8 bytes / 4, rounded (stated approximation, same method for all code)",
   "versions": {
-    "basenativeRuntime": "0.6.4 (vendored)",
-    "basenativeServer": "0.6.4 (vendored)",
-    "basenativeRouter": "0.5.2 (vendored, not exercised by these tasks)",
+    "basenativeRuntime": "2.0.1 (published npm tarball)",
+    "basenativeServer": "2.0.1 (published npm tarball)",
+    "basenativeRouter": "2.0.1 (published npm tarball, not exercised by these tasks)",
     "react": "19.3.1",
     "reactDom": "19.3.1",
     "esbuild": "0.25.12",

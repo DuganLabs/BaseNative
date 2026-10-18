@@ -3,6 +3,34 @@
 **Date:** 2026-10-17 · **Node** v24.20.0 · **React** 19.3.1 · **BaseNative** runtime 0.6.4 / server 0.6.4 / router 0.5.2 (vendored)
 **Machine-readable results:** `results.json` · **Full iteration history:** `RUN_LOG.md` · **Agent docs bundle:** `agent-docs/llms.txt`
 
+## Re-verification against the published 2.0.1 packages (2026-10-18)
+
+The original run above used vendored 0.6.4 packages because BaseNative was
+not yet on npm. On 2026-10-18 the identical benchmark — same app code, same
+tests, same measurement script — was re-run against the **published
+@basenative/runtime, @basenative/server and @basenative/router 2.0.1**
+npm tarballs (`results.json` in this folder is now that run's output).
+Outcome: **no measured value changed.**
+
+- Both suites pass 4/4 on 2.0.1, React side unchanged (19.3.1).
+- Lines and tokens are identical (95/114 lines, 827/795 tokens) — the app
+  code did not change, and neither did what it costs to write it.
+- Dependency closures re-derived from the real 2.0.1 `package.json` files:
+  runtime declares zero dependencies; server depends on the runtime and
+  `node-html-parser`. Task closures stay 3 (task 1) and **1** (task 2).
+- React's task-2 bundle rebuilt at exactly **1,181,977 bytes**. The entire
+  BaseNative runtime source tree at 2.0.1 is **78,146 bytes** (was 77,071
+  at 0.6.4 — the 2.0.1 `:value`/`:checked` property-sync fix added code).
+- Fix-iteration counts are the original authoring record; a re-run cannot
+  change them, and none of the 2.0.x changes altered the API surface the
+  tasks exercise (the 2026-10-18 three-LLM trial ran the same patterns
+  against 2.0.0 independently).
+- One number moved in BaseNative's favor outside the tasks themselves:
+  the repo's shipped `llms.txt` is now 6,885 bytes (≈1,721 tokens), down
+  from the 10,360-byte (≈2,590-token) bundle this benchmark used. The
+  amortization verdict is unchanged — at −16 tokens/task there is still
+  no break-even; the smaller file just lowers the one-time cost.
+
 ## The question
 
 Warren's challenge: *confirm, with measurements, whether BaseNative is better
