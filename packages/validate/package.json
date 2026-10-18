@@ -1,6 +1,6 @@
 {
   "name": "@basenative/validate",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Structured validation for BaseNative templates \u2014 machine-actionable errors a model can repair from the error object alone",
   "type": "module",
   "exports": {
@@ -40,7 +40,7 @@
     "generative-ui"
   ],
   "dependencies": {
-    "@basenative/runtime": "workspace:^2.0.0"
+    "@basenative/runtime": "workspace:^2.0.1"
   },
   "publishConfig": {
     "access": "public",

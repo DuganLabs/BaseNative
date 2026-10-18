@@ -1,5 +1,11 @@
 # @basenative/runtime
 
+## 2.0.1
+
+### Patch Changes
+
+- Fix `:value` and `:checked` bindings on form controls: the binding now also mirrors the resolved value onto the element's `value` / `checked` property, not just the attribute. An attribute write only changes a field's default value, so once a user had typed in an input, signal updates — such as clearing the model after a submit — never reached the visible field. Textarea `:value` did not populate the field at all.
+
 ## 2.0.0
 
 ### Major Changes

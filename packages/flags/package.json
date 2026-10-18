@@ -1,6 +1,6 @@
 {
   "name": "@basenative/flags",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Feature flags with percentage rollouts and @feature template directive",
   "type": "module",
   "exports": {
@@ -11,7 +11,7 @@
   },
   "types": "./types/index.d.ts",
   "dependencies": {
-    "@basenative/runtime": "workspace:^2.0.0"
+    "@basenative/runtime": "workspace:^2.0.1"
   },
   "files": [
     "src",

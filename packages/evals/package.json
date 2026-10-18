@@ -1,6 +1,6 @@
 {
   "name": "@basenative/evals",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Eval harness measuring whether models actually produce correct BaseNative",
   "type": "module",
   "exports": {
@@ -30,9 +30,9 @@
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
   "dependencies": {
-    "@basenative/runtime": "workspace:^2.0.0",
-    "@basenative/server": "workspace:^2.0.0",
-    "@basenative/validate": "workspace:^2.0.0",
+    "@basenative/runtime": "workspace:^2.0.1",
+    "@basenative/server": "workspace:^2.0.1",
+    "@basenative/validate": "workspace:^2.0.1",
     "happy-dom": "^21.0.1"
   },
   "sideEffects": false,

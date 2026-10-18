@@ -1,5 +1,11 @@
 # @basenative/cli Changelog
 
+## 2.0.1
+
+### Patch Changes
+
+- @basenative/hmr@2.0.1
+
 ## 2.0.0
 
 ### Patch Changes
