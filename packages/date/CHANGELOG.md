@@ -1,5 +1,12 @@
 # @basenative/date
 
+## 2.0.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @basenative/runtime@2.0.0
+
 ## 0.3.3
 
 ### Patch Changes

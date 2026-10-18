@@ -1,5 +1,16 @@
 # @basenative/server
 
+## 2.0.0
+
+### Major Changes
+
+- Unify all 45 BaseNative packages at 2.0.0 under a changesets fixed group.
+
+### Patch Changes
+
+- Updated dependencies
+  - @basenative/runtime@2.0.0
+
 ## 0.6.4
 
 ### Patch Changes
