@@ -36,8 +36,8 @@ importers:
         specifier: ^17.12.0
         version: 17.12.0
       happy-dom:
-        specifier: ^20.14.3
-        version: 20.14.3
+        specifier: ^21.0.1
+        version: 21.0.1
       nx:
         specifier: ^23.3.0
         version: 23.3.0
@@ -313,8 +313,8 @@ importers:
         specifier: workspace:^0.3.1
         version: link:../validate
       happy-dom:
-        specifier: ^20.14.3
-        version: 20.14.3
+        specifier: ^21.0.1
+        version: 21.0.1
 
   packages/favicon:
     optionalDependencies:
@@ -1949,8 +1949,8 @@ packages:
     resolution: {integrity: sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==}
     engines: {node: '>= 0.4'}
 
-  happy-dom@20.14.3:
-    resolution: {integrity: sha512-0KMb/Eh8rsd+aMNkOk5h8LkAjo9Na1aksnEGmsuZf+GXl6UkAdIi0VbUHU7d59lXhNmawODgwwuCMiZpCxwwCw==}
+  happy-dom@21.0.1:
+    resolution: {integrity: sha512-pRBs/u9fhrncyByOl58DMex0R2uAj6ZPKWIjV5j5yNGZBqLw3P6BTRhlc0DD5b/Ht4/6JYTMuE2LJhUWRC6SGw==}
     engines: {node: '>=20.0.0'}
 
   harfbuzzjs@0.10.0:
@@ -4066,7 +4066,7 @@ snapshots:
 
   gopd@1.2.0: {}
 
-  happy-dom@20.14.3:
+  happy-dom@21.0.1:
     dependencies:
       '@types/node': 26.6.4
       '@types/whatwg-mimetype': 3.0.2

@@ -33,7 +33,7 @@
     "@basenative/runtime": "workspace:^0.6.4",
     "@basenative/server": "workspace:^0.6.4",
     "@basenative/validate": "workspace:^0.3.1",
-    "happy-dom": "^20.14.3"
+    "happy-dom": "^21.0.1"
   },
   "sideEffects": false,
   "keywords": [
