@@ -60,7 +60,7 @@
     "@resvg/resvg-wasm": "^2.6.2"
   },
   "peerDependencies": {
-    "satori": "^0.38.2"
+    "satori": "^0.60.0"
   },
   "peerDependenciesMeta": {
     "satori": {
@@ -68,7 +68,7 @@
     }
   },
   "devDependencies": {
-    "satori": "^0.38.2"
+    "satori": "^0.60.0"
   },
   "publishConfig": {
     "access": "public",
