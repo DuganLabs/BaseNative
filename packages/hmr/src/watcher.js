@@ -9,6 +9,7 @@
  */
 
 import { watch } from 'node:fs';
+import { existsSync } from 'node:fs';
 import { relative, sep } from 'node:path';
 import { assertDevOnly } from './guard.js';
 
@@ -93,6 +94,14 @@ export function createWatcher(options) {
 
   for (const root of roots) {
     try {
+      // fs.watch does not throw for a missing root on every platform: on
+      // Linux it returns a handle whose directory then reports ENOENT
+      // forever, and macOS binds the handle only for it to die silently.
+      // Existence is checked up front so a bad root is one loud warning at
+      // startup — and `watching` stays honest — instead of a silent stall.
+      if (!existsSync(root)) {
+        throw new Error(`ENOENT: no such file or directory, watch '${root}'`);
+      }
       const handle = watch(root, { recursive: true }, (_event, filename) => record(root, filename));
       handle.on('error', (error) => onWarn?.(`stopped watching ${root}`, error));
       handle.unref?.();
