@@ -1,5 +1,12 @@
 # @basenative/flags
 
+## 2.0.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @basenative/runtime@2.0.0
+
 ## 0.4.2
 
 ### Patch Changes

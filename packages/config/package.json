@@ -1,6 +1,6 @@
 {
   "name": "@basenative/config",
-  "version": "0.3.2",
+  "version": "2.0.0",
   "description": "Type-safe environment configuration loading and validation",
   "type": "module",
   "exports": {
