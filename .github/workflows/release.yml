@@ -1,11 +1,17 @@
-# MANUAL-ONLY. Every workflow in this org runs on workflow_dispatch and
-# nothing else: no push, no pull_request, no schedule. The owner runs it
-# from the Actions tab when he wants GitHub minutes spent; everything it
-# does also runs on a developer machine via scripts/pipeline.sh (checks)
-# and the deploy scripts, from the same Doppler config. (2026-09-14)
+# Runs on every push to main (the standard changesets flow) and can still
+# be dispatched by hand. Publishing is direct over npm trusted publishing
+# (OIDC — no npm token exists anywhere). The trust boundary is repo write
+# access: only invited collaborators can land code on main, and only this
+# workflow publishes. Contributor protection for this public repo lives in
+# Settings (read-only default GITHUB_TOKEN, fork-workflow approvals), not
+# in the trigger. Revised 2026-10-17, superseding the 2026-09-14
+# manual-only org rule for this repo.
 name: Release
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
