@@ -1,6 +1,6 @@
 {
   "name": "@basenative/auth-webauthn",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "WebAuthn (passkey) adapter for @basenative/auth \u2014 server, client, and Cloudflare Workers/Pages handlers",
   "type": "module",
   "exports": {

@@ -6,6 +6,22 @@ import { createChildContext } from './scope.js';
 import { isRaw, unwrapRaw, isUrlAttribute, sanitizeUrl } from './shared/escape.js';
 import { getDirective } from './shared/directives.js';
 
+// Attribute bindings write attributes, but two form-control bindings also
+// need the matching IDL property kept in sync. setAttribute('value', ...)
+// only changes an input's *default* value: once a user has typed in the
+// field, signal updates (e.g. clearing the model after a submit) never
+// reach the visible value. A checkbox's checkedness has the same split.
+// Mirror those two onto the property; every other binding stays
+// attribute-only, exactly as render.js writes it on the server.
+function syncFormControlProperty(node, attrName, result) {
+  if (attrName === 'value' && (node.tagName === 'INPUT' || node.tagName === 'TEXTAREA' || node.tagName === 'SELECT')) {
+    const value = result === false || result == null ? '' : String(result);
+    if (node.value !== value) node.value = value;
+  } else if (attrName === 'checked' && node.tagName === 'INPUT') {
+    node.checked = !(result === false || result == null || result === 'false');
+  }
+}
+
 export function bindNode(node, ctx, options) {
   let processed = 0;
 
@@ -65,6 +81,7 @@ export function bindNode(node, ctx, options) {
         const result = evaluate(expr, ctx, options);
         if (result === false || result == null) {
           node.removeAttribute(attrName);
+          syncFormControlProperty(node, attrName, result);
           return;
         }
         const resolved = unwrapRaw(result);
@@ -75,6 +92,7 @@ export function bindNode(node, ctx, options) {
           return;
         }
         node.setAttribute(attrName, resolved);
+        syncFormControlProperty(node, attrName, resolved);
       });
       registerCleanup(node, () => runner.dispose?.());
       node.removeAttribute(attr.name);
