@@ -186,6 +186,60 @@ function coreBuildSteps() {
 /** Round to one decimal, dropping a trailing `.0` so "5 KB" does not read "5.0 KB". */
 const oneDecimal = (value) => String(Math.round(value * 10) / 10);
 
+/** The recorded results of the LLM-authoring benchmark /compare cites. */
+const LLM_BENCHMARK_RESULTS = 'benchmarks/llm/results.json';
+
+/**
+ * The LLM-authoring benchmark (October 2026): one model wrote the same two
+ * apps in BaseNative and in React against identical behavior tests, with
+ * every fix logged. The numbers are read from the committed results file,
+ * never retyped, so the page cannot drift away from the run it cites. A
+ * missing or reshaped results file throws — an unsubstantiated claim must
+ * break the build, not render. The full record (method, per-fix log) sits
+ * beside the results in benchmarks/llm/.
+ */
+function llmBenchmark() {
+  let results;
+  try {
+    results = readJson(LLM_BENCHMARK_RESULTS);
+  } catch {
+    throw new Error(
+      `/compare cites the LLM-authoring benchmark but ${LLM_BENCHMARK_RESULTS} is missing or ` +
+        `unreadable. Restore the recorded results or remove the section — do not let the page ` +
+        `cite a run it cannot show.`,
+    );
+  }
+  const tasks = Object.values(results.tasks || {});
+  const sum = (side, field) =>
+    tasks.reduce((total, task) => total + (task[side]?.[field] ?? NaN), 0);
+  const stats = {
+    benchBnLines: results.totals?.basenativeLinesBothTasks,
+    benchReactLines: results.totals?.reactLinesBothTasks,
+    benchBnTokens: results.totals?.basenativeCodeTokensBothTasks,
+    benchReactTokens: results.totals?.reactCodeTokensBothTasks,
+    benchBnToolingFixes: sum('basenative', 'harnessFixIterations'),
+    benchReactToolingFixes: sum('react', 'harnessFixIterations'),
+    benchBnAppFixes: sum('basenative', 'appCodeFixIterations'),
+    benchReactAppFixes: sum('react', 'appCodeFixIterations'),
+    benchBnDeps: results.tasks?.task2_interactive_reactive?.basenative?.productionDependencyCount,
+    benchReactDeps: results.tasks?.task2_interactive_reactive?.react?.productionDependencyCount,
+    benchDocsTokens: results.agentDocsBundle?.approxTokens,
+    benchBnVersion: String(results.versions?.basenativeRuntime || '').split(' ')[0],
+    benchReactVersion: results.versions?.react,
+  };
+  for (const [key, value] of Object.entries(stats)) {
+    if (value === undefined || value === '' || (typeof value === 'number' && !Number.isFinite(value))) {
+      throw new Error(
+        `/compare cites the LLM-authoring benchmark but ${LLM_BENCHMARK_RESULTS} no longer ` +
+          `yields ${key}. Update llmBenchmark() in scripts/compare-stats.js to match the ` +
+          `recorded results.`,
+      );
+    }
+  }
+  stats.benchDocsTokens = stats.benchDocsTokens.toLocaleString('en-US');
+  return stats;
+}
+
 /**
  * Measure every number /compare asserts about BaseNative.
  *
@@ -193,6 +247,7 @@ const oneDecimal = (value) => String(Math.round(value * 10) / 10);
  * substantiated must break the build, not render.
  */
 export function computeCompareStats() {
+  const benchmark = llmBenchmark();
   const coreLines = countLines(CORE_MODULE);
 
   for (const primitive of CORE_PRIMITIVES) requireExport(primitive.module, primitive.name);
@@ -232,6 +287,7 @@ export function computeCompareStats() {
   const ratio = (competitor) => oneDecimal(COMPETITORS[competitor].runtimeGzipKb / runtimeGzipKb);
 
   return {
+    ...benchmark,
     coreModule: CORE_MODULE,
     coreLines,
     publicPackages: workspacePackages().filter(({ pkg }) => pkg.private !== true).length,
@@ -279,6 +335,19 @@ export const RENDERED_CLAIMS = [
   'reactGzipKb',
   'angularGzipKb',
   'svelteGzipKb',
+  'benchBnLines',
+  'benchReactLines',
+  'benchBnTokens',
+  'benchReactTokens',
+  'benchBnToolingFixes',
+  'benchReactToolingFixes',
+  'benchBnAppFixes',
+  'benchReactAppFixes',
+  'benchBnDeps',
+  'benchReactDeps',
+  'benchDocsTokens',
+  'benchBnVersion',
+  'benchReactVersion',
 ];
 
 /** The view whose every BaseNative number must be a binding, not a literal. */
