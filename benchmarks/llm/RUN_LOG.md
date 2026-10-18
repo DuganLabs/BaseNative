@@ -77,3 +77,18 @@ iterated silently before the first test run.
   step (documented in BENCHMARK.md). After re-linking:
 - `npm test` — BaseNative suite 4/4 pass, React suite 4/4 pass
   (esbuild rebuild included). Final outputs pasted into BENCHMARK.md.
+
+## Re-verification against published 2.0.1 (2026-10-18)
+- Same benchmark copied to a fresh directory; the vendored 0.6.4 links were
+  replaced with the published npm tarballs (@basenative/runtime,
+  @basenative/server, @basenative/router — all 2.0.1). App code, tests and
+  dataset untouched; `npm ci` from the original lockfile (React stays
+  19.3.1, esbuild 0.25.12, jsdom 27.4.0).
+- `npm test` — BaseNative suite 4/4 pass, React suite 4/4 pass.
+- `node measure.mjs` — results.json regenerated: lines 95/114 and tokens
+  827/795 identical; closures re-derived from the 2.0.1 package.json files
+  (runtime: zero deps; server: runtime + node-html-parser) — unchanged.
+- React task-2 bundle rebuilt at exactly 1,181,977 bytes (unchanged).
+  BaseNative runtime source tree: 78,146 bytes at 2.0.1 vs 77,071 at 0.6.4,
+  same measurement method (all .js under src/, concatenated) — the delta
+  is the 2.0.1 :value/:checked property-sync fix.
