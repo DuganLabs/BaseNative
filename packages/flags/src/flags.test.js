@@ -76,6 +76,59 @@ describe('createFlagManager', () => {
   });
 });
 
+describe('boolean + percentage precedence (issue #209)', () => {
+  it('{enabled: true, percentage: 0} enables nobody', async () => {
+    const provider = createMemoryProvider({
+      rollout: { enabled: true, percentage: 0 },
+    });
+    const fm = createFlagManager(provider);
+    for (let i = 0; i < 10; i++) {
+      assert.equal(await fm.isEnabled('rollout', { userId: `user-${i}` }), false);
+    }
+  });
+
+  it('{enabled: true, percentage: 100} enables everybody', async () => {
+    const provider = createMemoryProvider({
+      rollout: { enabled: true, percentage: 100 },
+    });
+    const fm = createFlagManager(provider);
+    for (let i = 0; i < 10; i++) {
+      assert.equal(await fm.isEnabled('rollout', { userId: `user-${i}` }), true);
+    }
+  });
+
+  it('{enabled: true, percentage: 50} rolls out to roughly half, not everyone', async () => {
+    const provider = createMemoryProvider({
+      rollout: { enabled: true, percentage: 50 },
+    });
+    const fm = createFlagManager(provider);
+    let count = 0;
+    for (let i = 0; i < 100; i++) {
+      if (await fm.isEnabled('rollout', { userId: `user-${i}` })) count++;
+    }
+    assert.ok(count > 20 && count < 80, `expected a partial rollout, got ${count}/100`);
+  });
+
+  it('{enabled: false, percentage: 100} stays off for everyone', async () => {
+    const provider = createMemoryProvider({
+      off: { enabled: false, percentage: 100 },
+    });
+    const fm = createFlagManager(provider);
+    for (let i = 0; i < 10; i++) {
+      assert.equal(await fm.isEnabled('off', { userId: `user-${i}` }), false);
+    }
+  });
+
+  it('{enabled: false, rules} still lets a matching rule turn the flag on', async () => {
+    const provider = createMemoryProvider({
+      beta: { enabled: false, rules: [{ userIds: ['alice'], value: true }] },
+    });
+    const fm = createFlagManager(provider);
+    assert.equal(await fm.isEnabled('beta', { userId: 'alice' }), true);
+    assert.equal(await fm.isEnabled('beta', { userId: 'mallory' }), false);
+  });
+});
+
 describe('memoryProvider', () => {
   it('stores and retrieves flags', async () => {
     const provider = createMemoryProvider({ test: { enabled: true } });
