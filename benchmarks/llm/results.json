@@ -1,0 +1,159 @@
+{
+  "generatedAt": "2026-10-17T19:45:26.909Z",
+  "tokenMethod": "approxTokens = UTF-8 bytes / 4, rounded (stated approximation, same method for all code)",
+  "versions": {
+    "basenativeRuntime": "0.6.4 (vendored)",
+    "basenativeServer": "0.6.4 (vendored)",
+    "basenativeRouter": "0.5.2 (vendored, not exercised by these tasks)",
+    "react": "19.3.1",
+    "reactDom": "19.3.1",
+    "esbuild": "0.25.12",
+    "jsdom": "27.4.0",
+    "nodeHtmlParser": "9.0.4",
+    "node": "v24.20.0"
+  },
+  "sharedInputs": "shared/products.json (excluded from both sides — identical input)",
+  "tasks": {
+    "task1_ssr_catalog": {
+      "basenative": {
+        "files": 2,
+        "lines": 36,
+        "bytes": 1258,
+        "approxTokens": 315,
+        "handWrittenFilesList": [
+          "basenative/task1/catalog.js",
+          "basenative/task1/catalog.html"
+        ],
+        "directImports": [
+          "@basenative/server"
+        ],
+        "productionDependencyClosure": [
+          "@basenative/server",
+          "@basenative/runtime",
+          "node-html-parser"
+        ],
+        "productionDependencyCount": 3,
+        "buildStepRequired": false,
+        "testsPassed": "3/3",
+        "appCodeFixIterations": 0,
+        "harnessFixIterations": 0,
+        "firstPassSuccess": true
+      },
+      "react": {
+        "files": 1,
+        "lines": 44,
+        "bytes": 1252,
+        "approxTokens": 313,
+        "handWrittenFilesList": [
+          "react/task1/catalog.jsx"
+        ],
+        "directImports": [
+          "react",
+          "react-dom/server"
+        ],
+        "productionDependencyClosure": [
+          "react",
+          "react-dom",
+          "scheduler"
+        ],
+        "productionDependencyCount": 3,
+        "buildStepRequired": true,
+        "buildToolingNote": "JSX cannot run in Node directly; esbuild bundle step required before tests/render (see reactBuildToolingOneTime).",
+        "testsPassed": "3/3",
+        "appCodeFixIterations": 0,
+        "harnessFixIterations": 2,
+        "harnessFixNote": "R-1: React SSR inserts <!-- --> text-separator comments (\"$<!-- -->49\"); the shared price assertion needed a documented normalization in the React test. R-5: esbuild ESM bundling of CJS react-dom/server failed with \"Dynamic require of util is not supported\" once renderToString moved into the bundled entry; fixed by externalizing react/react-dom in react/build.mjs.",
+        "firstPassSuccess": false
+      }
+    },
+    "task2_interactive_reactive": {
+      "basenative": {
+        "files": 1,
+        "lines": 59,
+        "bytes": 2049,
+        "approxTokens": 512,
+        "handWrittenFilesList": [
+          "basenative/task2/app.js"
+        ],
+        "directImports": [
+          "@basenative/runtime"
+        ],
+        "productionDependencyClosure": [
+          "@basenative/runtime"
+        ],
+        "productionDependencyCount": 1,
+        "buildStepRequired": false,
+        "testsPassed": "1/1 (13 behavior assertions)",
+        "implementationNote": "Final implementation is the declarative template + hydrate() path (v2). The v1 direct-DOM-binding version (69 lines / 2186 bytes / ~547 tokens) is preserved in RUN_LOG.md.",
+        "appCodeFixIterations": 1,
+        "appFixNote": "BN-1 (in v1): diamond subscription — an effect reading both a signal and a computed derived from it ran twice per change; the fix (subscribe to the computed, read the source with .peek()) is carried into v2, which then passed on its first run.",
+        "harnessFixIterations": 0,
+        "firstPassSuccess": false
+      },
+      "react": {
+        "files": 1,
+        "lines": 70,
+        "bytes": 1927,
+        "approxTokens": 482,
+        "handWrittenFilesList": [
+          "react/task2/app.jsx"
+        ],
+        "directImports": [
+          "react",
+          "react-dom/client"
+        ],
+        "productionDependencyClosure": [
+          "react",
+          "react-dom",
+          "scheduler"
+        ],
+        "productionDependencyCount": 3,
+        "buildStepRequired": true,
+        "buildToolingNote": "JSX + react-dom/client bundled by esbuild before the jsdom test could import it.",
+        "testsPassed": "1/1 (13 behavior assertions)",
+        "appCodeFixIterations": 0,
+        "harnessFixIterations": 2,
+        "harnessFixNote": "R-2: Node 24 getter-only global navigator broke jsdom global setup. R-3: React 19 mount effect + setState settle asynchronously — test needed an act()+macrotask settle before asserting; BaseNative effects are synchronous and needed none.",
+        "firstPassSuccess": false
+      }
+    }
+  },
+  "reactBuildToolingOneTime": {
+    "files": 1,
+    "lines": 27,
+    "bytes": 904,
+    "approxTokens": 226,
+    "handWrittenFilesList": [
+      "react/build.mjs"
+    ],
+    "note": "One-time hand-written build script React needed in this repo; BaseNative needed no equivalent. Counted once in the amortization, not per task."
+  },
+  "agentDocsBundle": {
+    "files": 1,
+    "lines": 189,
+    "bytes": 10360,
+    "approxTokens": 2590,
+    "handWrittenFilesList": [
+      "agent-docs/llms.txt"
+    ],
+    "note": "One-time LLM context cost for BaseNative. React needs no equivalent (its API is in model weights)."
+  },
+  "amortization": {
+    "docsBundleTokens": 2590,
+    "reactOneTimeBuildToolingTokens": 226,
+    "netOneTimeCostTokens": 2364,
+    "perTaskCodeTokenSaving": {
+      "task1": -2,
+      "task2": -30,
+      "average": -16
+    },
+    "breakEvenTasks": null,
+    "explanation": "No break-even exists at this task size: the average per-task code-token saving is -16 (negative — BaseNative code was slightly LARGER than React code on these two small tasks), so the one-time docs cost of 2364 net tokens is never recovered through per-task code-size savings. The docs bundle pays off through avoided syntax errors and zero build/tooling friction (see BENCHMARK.md), not through smaller code. Larger, template-heavy tasks may change the per-task sign; these two tasks do not show it."
+  },
+  "totals": {
+    "basenativeCodeTokensBothTasks": 827,
+    "reactCodeTokensBothTasks": 795,
+    "basenativeLinesBothTasks": 95,
+    "reactLinesBothTasks": 114
+  }
+}

@@ -151,6 +151,65 @@
 </section>
 
 <section>
+  <h2>Written by <em>an LLM</em></h2>
+  <p>The claim above — less for AI tools to hallucinate — was measured, not assumed. An LLM wrote the same two apps twice, in BaseNative {{ stats.benchBnVersion }} and in React {{ stats.benchReactVersion }}: a server-rendered catalog and an interactive counter-and-list page, sharing one dataset, with identical behavior tests on both sides and every fix logged. Both implementations passed every test. What differed was the path.</p>
+
+  <article>
+    <header><h3>The same two tasks, both frameworks</h3></header>
+    <div data-bn-table-scroll tabindex="0" role="region" aria-label="LLM authoring benchmark">
+      <table data-compare-table>
+        <thead>
+          <tr>
+            <th scope="col">Measure</th>
+            <th scope="col">BaseNative</th>
+            <th scope="col">React</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Build and tooling fixes before tests passed</th>
+            <td data-tone="win" data-claim>{{ stats.benchBnToolingFixes }}</td>
+            <td data-tone="cost" data-claim>{{ stats.benchReactToolingFixes }}</td>
+          </tr>
+          <tr>
+            <th scope="row">App-code fixes</th>
+            <td data-tone="cost" data-claim>{{ stats.benchBnAppFixes }}</td>
+            <td data-tone="win" data-claim>{{ stats.benchReactAppFixes }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Production dependencies (interactive task)</th>
+            <td data-tone="win" data-claim>{{ stats.benchBnDeps }}</td>
+            <td data-tone="even" data-claim>{{ stats.benchReactDeps }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Hand-written lines (both tasks)</th>
+            <td data-tone="win" data-claim>{{ stats.benchBnLines }}</td>
+            <td data-tone="even" data-claim>{{ stats.benchReactLines }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Approx. code tokens (both tasks)</th>
+            <td data-tone="cost" data-claim>{{ stats.benchBnTokens }}</td>
+            <td data-tone="win" data-claim>{{ stats.benchReactTokens }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p data-compare-note data-claim>
+      The code-size hypothesis failed: fewer lines, slightly more tokens, because HTML templates
+      carry closing tags. The {{ stats.benchDocsTokens }}-token <code>llms.txt</code> that teaches a
+      model the BaseNative API has no break-even through code savings at this task size; what it
+      buys is avoided errors. The run's only app-code bug was BaseNative's — an effect subscribed
+      to both a signal and a computed derived from it fired twice per change — and the fix is now
+      documented in that file.
+    </p>
+    <p data-compare-note>
+      Full method, results and the fix-by-fix log:
+      <a href="https://github.com/DuganLabs/BaseNative/blob/main/docs/blog/2026-10-llm-benchmark.md">the benchmark write-up</a>.
+    </p>
+  </article>
+</section>
+
+<section>
   <h2>Counter: the same app, <em>four ways</em></h2>
   <p>A reactive counter shows each framework's mental model. BaseNative uses plain HTML with signal expressions — no compilation, no special file format.</p>
   {{ counterTabs }}
