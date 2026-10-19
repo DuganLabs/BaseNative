@@ -1,6 +1,6 @@
 {
   "name": "@basenative/upload",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "File upload handling with R2 and S3 adapter support",
   "type": "module",
   "exports": {

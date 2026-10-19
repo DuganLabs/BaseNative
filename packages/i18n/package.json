@@ -1,6 +1,6 @@
 {
   "name": "@basenative/i18n",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "ICU message formatting, locale detection, and @t template directive",
   "type": "module",
   "exports": {
@@ -11,7 +11,7 @@
   },
   "types": "./types/index.d.ts",
   "dependencies": {
-    "@basenative/runtime": "workspace:^2.0.1"
+    "@basenative/runtime": "workspace:^2.1.0"
   },
   "files": [
     "src",
