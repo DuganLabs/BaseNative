@@ -9,6 +9,6 @@
     "@basenative/router": "workspace:*",
     "@basenative/forms": "workspace:*",
     "@basenative/components": "workspace:*",
-    "express": "^5.1.0"
+    "express": "^5.3.0"
   }
 }
