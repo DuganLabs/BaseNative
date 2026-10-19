@@ -51,11 +51,35 @@ Icons live in `src/` as plain `.svg` files. Each SVG is sized for inline use and
 
 | File | Description |
 |------|-------------|
+| `activity.svg` | Pulse / activity feed |
+| `bar-chart.svg` | Bar chart / reports |
+| `calendar.svg` | Calendar / scheduled jobs |
 | `check.svg` | Checkmark / confirmation |
 | `chevron-down.svg` | Downward chevron for dropdowns |
+| `chevron-left.svg` | Left chevron / back |
+| `chevron-right.svg` | Right chevron / forward |
+| `clock.svg` | Clock / time |
+| `dashboard.svg` | Dashboard grid / today view |
+| `file-text.svg` | Document / estimate |
+| `mail.svg` | Envelope / email |
+| `map-pin.svg` | Location pin |
+| `megaphone.svg` | Megaphone / campaigns |
+| `menu.svg` | Hamburger menu |
+| `message-square.svg` | Chat bubble with message lines |
 | `minus.svg` | Minus / remove / collapse |
+| `package.svg` | Box / inventory |
+| `phone.svg` | Telephone handset |
+| `plug.svg` | Plug / plugins and integrations |
 | `plus.svg` | Plus / add / expand |
 | `remove.svg` | X / close / dismiss |
+| `search.svg` | Magnifying glass / search |
+| `settings.svg` | Gear / settings |
+| `shield.svg` | Shield / trust and protection |
+| `star.svg` | Star / reviews and ratings |
+| `trending-up.svg` | Rising chart / opportunities |
+| `truck.svg` | Truck / vehicles |
+| `user-plus.svg` | Person with plus / new lead |
+| `users.svg` | People / customers |
 
 ## Styling
 

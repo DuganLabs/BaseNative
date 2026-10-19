@@ -1,14 +1,14 @@
 {
   "$schema": "https://basenative.dev/schemas/component-index.json",
   "generatedBy": "scripts/llms-txt.js (scripts/component-index.js)",
-  "generatedOn": "2026-10-18",
+  "generatedOn": "2026-10-19",
   "contract": "Generated from source. Never hand-edit: `node scripts/llms-txt.js --check` fails CI when this file disagrees with packages/*/src. `variants` is the set of values a stylesheet actually declares a rule for, so a value outside it renders unstyled rather than erroring.",
   "counts": {
-    "components": 66,
-    "renderFunctions": 60,
+    "components": 79,
+    "renderFunctions": 73,
     "customElements": 6,
-    "styledContracts": 177,
-    "componentsWithVariants": 18
+    "styledContracts": 215,
+    "componentsWithVariants": 20
   },
   "stylesheets": [
     "packages/builder/src/builder.css",
@@ -56,6 +56,9 @@
     ],
     "alert-dismiss": [
       "@basenative/components#renderAlert"
+    ],
+    "app-main": [
+      "@basenative/components#renderAppShell"
     ],
     "avatar": [
       "@basenative/components#renderAvatar"
@@ -199,6 +202,10 @@
     "command-shortcut": [
       "@basenative/components#renderCommandPalette"
     ],
+    "container": [
+      "@basenative/components#renderHero",
+      "@basenative/components#renderSiteFooter"
+    ],
     "datagrid": [
       "@basenative/components#renderDataGrid"
     ],
@@ -313,6 +320,60 @@
     "dropdown-trigger": [
       "@basenative/components#renderDropdownMenu"
     ],
+    "faq-item": [
+      "@basenative/components#renderFaqItem"
+    ],
+    "faq-list": [
+      "@basenative/components#renderFaq"
+    ],
+    "feature-card": [
+      "@basenative/components#renderFeatureCard"
+    ],
+    "feature-icon": [
+      "@basenative/components#renderFeatureCard"
+    ],
+    "feature-tag": [
+      "@basenative/components#renderFeatureCard"
+    ],
+    "field": [
+      "@basenative/components#renderField"
+    ],
+    "field-error": [
+      "@basenative/components#renderField"
+    ],
+    "field-help": [
+      "@basenative/components#renderField"
+    ],
+    "footer-bottom": [
+      "@basenative/components#renderSiteFooter"
+    ],
+    "footer-brand": [
+      "@basenative/components#renderSiteFooter"
+    ],
+    "footer-inner": [
+      "@basenative/components#renderSiteFooter"
+    ],
+    "footer-legal": [
+      "@basenative/components#renderSiteFooter"
+    ],
+    "hero": [
+      "@basenative/components#renderHero"
+    ],
+    "hero-actions": [
+      "@basenative/components#renderHero"
+    ],
+    "hero-badge": [
+      "@basenative/components#renderHero"
+    ],
+    "hero-content": [
+      "@basenative/components#renderHero"
+    ],
+    "hero-social-proof": [
+      "@basenative/components#renderHero"
+    ],
+    "hero-visual": [
+      "@basenative/components#renderHero"
+    ],
     "input": [
       "@basenative/components#renderInput"
     ],
@@ -334,6 +395,9 @@
     "layout-grid": [
       "@basenative/components#renderLayoutGrid"
     ],
+    "lead": [
+      "@basenative/components#renderHero"
+    ],
     "multiselect": [
       "@basenative/components#renderMultiselect"
     ],
@@ -345,6 +409,22 @@
     ],
     "multiselect-tags": [
       "@basenative/components#renderMultiselect"
+    ],
+    "nav-cta": [
+      "@basenative/components#renderSiteHeader"
+    ],
+    "nav-logo": [
+      "@basenative/components#renderSiteHeader"
+    ],
+    "nav-menu": [
+      "@basenative/components#renderSiteHeader",
+      "@basenative/components#renderSiteNav"
+    ],
+    "nav-toggle": [
+      "@basenative/components#renderSiteHeader"
+    ],
+    "page-hero": [
+      "@basenative/components#renderHero"
     ],
     "pagination": [
       "@basenative/components#renderPagination"
@@ -397,6 +477,9 @@
     "pkg-tags": [
       "@basenative/marketplace#renderPackageCard"
     ],
+    "pricing-cards": [
+      "@basenative/components#renderPricingCards"
+    ],
     "progress": [
       "@basenative/components#renderProgress"
     ],
@@ -412,14 +495,39 @@
     "select": [
       "@basenative/components#renderSelect"
     ],
+    "site-footer": [
+      "@basenative/components#renderSiteFooter"
+    ],
+    "site-header": [
+      "@basenative/components#renderSiteHeader"
+    ],
+    "site-nav": [
+      "@basenative/components#renderSiteHeader",
+      "@basenative/components#renderSiteNav"
+    ],
     "skeleton": [
       "@basenative/components#renderSkeleton"
+    ],
+    "skip-link": [
+      "@basenative/components#renderAppShell"
     ],
     "spinner": [
       "@basenative/components#renderSpinner"
     ],
     "sr-only": [
       "@basenative/components#renderTable"
+    ],
+    "stat-card": [
+      "@basenative/components#renderStatCard"
+    ],
+    "stat-growth": [
+      "@basenative/components#renderStatCard"
+    ],
+    "stat-label": [
+      "@basenative/components#renderStatCard"
+    ],
+    "stat-value": [
+      "@basenative/components#renderStatCard"
     ],
     "tab": [
       "@basenative/components#renderTabs"
@@ -850,6 +958,29 @@
       "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"alert\"> markup"
     },
     {
+      "id": "@basenative/components#renderAppShell",
+      "name": "renderAppShell",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/site-chrome.js",
+      "signature": "renderAppShell(options)",
+      "purpose": "The minimal page shell: skip link, header slot, <main> and footer slot — the skeleton every property's layout…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "a",
+        "primaryContract": "skip-link",
+        "contracts": [
+          "skip-link",
+          "app-main"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <a> with your own classes, or literal <a data-bn=\"skip-link\"> markup"
+    },
+    {
       "id": "@basenative/components#renderAvatar",
       "name": "renderAvatar",
       "kind": "render-function",
@@ -1017,6 +1148,16 @@
             "packages/components/src/components.css"
           ],
           "emittedByRenderer": true
+        },
+        "full": {
+          "contract": "button",
+          "values": [],
+          "openPatterns": [],
+          "matchesAnyValue": true,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": false
         }
       },
       "inertAxes": [],
@@ -1481,6 +1622,148 @@
       "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"dropdown-menu\"> markup"
     },
     {
+      "id": "@basenative/components#renderFaq",
+      "name": "renderFaq",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/marketing.js",
+      "signature": "renderFaq(options)",
+      "purpose": "FAQ list — a <dl data-bn=\"faq-list\"> of renderFaqItem entries.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "dl",
+        "primaryContract": "faq-list",
+        "contracts": [
+          "faq-list"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <dl> with your own classes, or literal <dl data-bn=\"faq-list\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderFaqItem",
+      "name": "renderFaqItem",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/marketing.js",
+      "signature": "renderFaqItem(options)",
+      "purpose": "One FAQ entry: a question and its answer as a definition-list pair inside the faq-item wrapper — the shape Gr…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "faq-item",
+        "contracts": [
+          "faq-item"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"faq-item\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderFeatureCard",
+      "name": "renderFeatureCard",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/marketing.js",
+      "signature": "renderFeatureCard(options)",
+      "purpose": "Feature card — icon, optional tag, title and description, for feature grids. The icon is a markup slot (an SV…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "article",
+        "primaryContract": "feature-card",
+        "contracts": [
+          "feature-icon",
+          "feature-tag",
+          "feature-card"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <article> with your own classes, or literal <article data-bn=\"feature-card\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderField",
+      "name": "renderField",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/internal/field.js",
+      "signature": "renderField({ id, label, control, helpText, error })",
+      "purpose": "Shared field wrapper for input, textarea and select: label, the control markup, then optional help and error…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "field",
+        "contracts": [
+          "field",
+          "field-help",
+          "field-error"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"field\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderFormField",
+      "name": "renderFormField",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/field.js",
+      "signature": "renderFormField(options)",
+      "purpose": "Compose one form field from a named built-in control (or pre-rendered control markup) plus the shared field o…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": null,
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "hand-written markup for this element"
+    },
+    {
+      "id": "@basenative/components#renderHero",
+      "name": "renderHero",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/marketing.js",
+      "signature": "renderHero(options)",
+      "purpose": "Hero — the opening section of a marketing page.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "section",
+        "primaryContract": "hero",
+        "contracts": [
+          "lead",
+          "page-hero",
+          "container",
+          "hero-badge",
+          "hero-actions",
+          "hero-social-proof",
+          "hero-visual",
+          "hero",
+          "hero-content"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <section> with your own classes, or literal <section data-bn=\"hero\"> markup"
+    },
+    {
       "id": "@basenative/components#renderInput",
       "name": "renderInput",
       "kind": "render-function",
@@ -1711,6 +1994,48 @@
       "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"pipeline-block\"> markup"
     },
     {
+      "id": "@basenative/components#renderPricingCard",
+      "name": "renderPricingCard",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/marketing.js",
+      "signature": "renderPricingCard(options)",
+      "purpose": "Pricing card — one plan: optional badge, name, price, tagline, a check-marked feature list and a call to acti…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": null,
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "hand-written markup for this element"
+    },
+    {
+      "id": "@basenative/components#renderPricingCards",
+      "name": "renderPricingCards",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/marketing.js",
+      "signature": "renderPricingCards(options)",
+      "purpose": "The pricing card list: a <ul data-bn=\"pricing-cards\"> with one <li data-bn=\"pricing-card\"> per plan — the exa…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "ul",
+        "primaryContract": "pricing-cards",
+        "contracts": [
+          "pricing-cards"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <ul> with your own classes, or literal <ul data-bn=\"pricing-cards\"> markup"
+    },
+    {
       "id": "@basenative/components#renderProgress",
       "name": "renderProgress",
       "kind": "render-function",
@@ -1777,6 +2102,94 @@
       "inertAxes": [],
       "styled": true,
       "useInsteadOf": "a bare <select> with your own classes, or literal <select data-bn=\"select\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderSiteFooter",
+      "name": "renderSiteFooter",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/site-chrome.js",
+      "signature": "renderSiteFooter(options)",
+      "purpose": "Site footer: brand block, grouped link columns and a legal bar, in the shape GreenPut's layout template estab…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "footer",
+        "primaryContract": "site-footer",
+        "contracts": [
+          "footer-brand",
+          "footer-bottom",
+          "container",
+          "footer-legal",
+          "site-footer",
+          "footer-inner"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <footer> with your own classes, or literal <footer data-bn=\"site-footer\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderSiteHeader",
+      "name": "renderSiteHeader",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/site-chrome.js",
+      "signature": "renderSiteHeader(options)",
+      "purpose": "Site header: brand link, nav toggle and the primary nav menu, in the shape GreenPut's layout template establi…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "header",
+        "primaryContract": "site-header",
+        "contracts": [
+          "nav-cta",
+          "site-header",
+          "site-nav",
+          "nav-logo",
+          "nav-toggle",
+          "nav-menu"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {
+        "open": {
+          "contract": "site-header",
+          "values": [],
+          "openPatterns": [],
+          "matchesAnyValue": true,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": false
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <header> with your own classes, or literal <header data-bn=\"site-header\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderSiteNav",
+      "name": "renderSiteNav",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/site-chrome.js",
+      "signature": "renderSiteNav(options)",
+      "purpose": "A standalone labelled nav list — the header's menu without the header around it, for secondary navigation (si…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "nav",
+        "primaryContract": "site-nav",
+        "contracts": [
+          "site-nav",
+          "nav-menu"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <nav> with your own classes, or literal <nav data-bn=\"site-nav\"> markup"
     },
     {
       "id": "@basenative/components#renderSkeleton",
@@ -1852,6 +2265,47 @@
       "inertAxes": [],
       "styled": true,
       "useInsteadOf": "a bare <span> with your own classes, or literal <span data-bn=\"spinner\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderStatCard",
+      "name": "renderStatCard",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/marketing.js",
+      "signature": "renderStatCard(options)",
+      "purpose": "Stat card — a value, its label, and an optional trend indicator, in the shape dashboards and marketing proof…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "div",
+        "primaryContract": "stat-card",
+        "contracts": [
+          "stat-growth",
+          "stat-card",
+          "stat-value",
+          "stat-label"
+        ],
+        "dataAttributes": [
+          "trend"
+        ]
+      },
+      "variants": {
+        "stat-growth.trend": {
+          "contract": "stat-growth",
+          "values": [
+            "down",
+            "up"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": true
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"stat-card\"> markup"
     },
     {
       "id": "@basenative/components#renderTable",

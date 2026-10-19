@@ -20,4 +20,5 @@ export {
   initDropdownMenu,
   initCalendarDragDrop,
   initPipelineDragDrop,
+  initSiteHeader,
 } from '../../packages/components/src/index.js';

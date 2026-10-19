@@ -936,6 +936,14 @@ function listDirectives() {
 }
 
 // ../../packages/runtime/src/bind.js
+function syncFormControlProperty(node, attrName, result) {
+  if (attrName === "value" && (node.tagName === "INPUT" || node.tagName === "TEXTAREA" || node.tagName === "SELECT")) {
+    const value = result === false || result == null ? "" : String(result);
+    if (node.value !== value) node.value = value;
+  } else if (attrName === "checked" && node.tagName === "INPUT") {
+    node.checked = !(result === false || result == null || result === "false");
+  }
+}
 function bindNode(node, ctx, options) {
   let processed = 0;
   if (node.nodeType === Node.TEXT_NODE) {
@@ -988,6 +996,7 @@ function bindNode(node, ctx, options) {
         const result = evaluate(expr, ctx, options);
         if (result === false || result == null) {
           node.removeAttribute(attrName);
+          syncFormControlProperty(node, attrName, result);
           return;
         }
         const resolved = unwrapRaw(result);
@@ -996,6 +1005,7 @@ function bindNode(node, ctx, options) {
           return;
         }
         node.setAttribute(attrName, resolved);
+        syncFormControlProperty(node, attrName, resolved);
       });
       registerCleanup(node, () => runner.dispose?.());
       node.removeAttribute(attr.name);
@@ -3263,6 +3273,64 @@ function initPipelineDragDrop(container, callbacks = {}) {
     keydown
   });
 }
+
+// ../../packages/components/src/site-chrome.js
+function initSiteHeader(root, options = {}) {
+  const { onToggle } = options;
+  const doc = root.ownerDocument ?? (typeof document === "undefined" ? null : document);
+  const toggleBtn = () => root.querySelector('[data-bn="nav-toggle"]');
+  const isOpen = () => root.hasAttribute("data-open");
+  function apply(open2) {
+    if (open2) root.setAttribute("data-open", "");
+    else root.removeAttribute("data-open");
+    const btn2 = toggleBtn();
+    if (btn2) btn2.setAttribute("aria-expanded", open2 ? "true" : "false");
+    if (onToggle) onToggle(open2);
+  }
+  function open() {
+    if (!isOpen()) apply(true);
+  }
+  function close() {
+    if (isOpen()) apply(false);
+  }
+  function toggle() {
+    apply(!isOpen());
+  }
+  function onToggleClick() {
+    toggle();
+  }
+  function onDocumentClick(event) {
+    if (!isOpen()) return;
+    const target = event.target;
+    const inside = target === root || typeof root.contains === "function" && root.contains(target);
+    if (!inside) close();
+  }
+  function onDocumentKeydown(event) {
+    if (!isOpen() || event.key !== "Escape") return;
+    close();
+    const btn2 = toggleBtn();
+    if (btn2 && typeof btn2.focus === "function") btn2.focus();
+  }
+  const btn = toggleBtn();
+  if (btn) btn.addEventListener("click", onToggleClick);
+  if (doc) {
+    doc.addEventListener("click", onDocumentClick);
+    doc.addEventListener("keydown", onDocumentKeydown);
+  }
+  return {
+    open,
+    close,
+    toggle,
+    destroy() {
+      const current = toggleBtn();
+      if (current) current.removeEventListener("click", onToggleClick);
+      if (doc) {
+        doc.removeEventListener("click", onDocumentClick);
+        doc.removeEventListener("keydown", onDocumentKeydown);
+      }
+    }
+  };
+}
 export {
   batch,
   browserFeatures,
@@ -3297,6 +3365,7 @@ export {
   initDropdownMenu,
   initMultiselect,
   initPipelineDragDrop,
+  initSiteHeader,
   initTabs,
   initTree,
   initVirtualList,

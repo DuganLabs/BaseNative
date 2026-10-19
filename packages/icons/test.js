@@ -7,7 +7,37 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const srcDir = join(__dirname, 'src');
 
-const EXPECTED_ICONS = ['check', 'chevron-down', 'minus', 'plus', 'remove'];
+const EXPECTED_ICONS = [
+  'activity',
+  'bar-chart',
+  'calendar',
+  'check',
+  'chevron-down',
+  'chevron-left',
+  'chevron-right',
+  'clock',
+  'dashboard',
+  'file-text',
+  'mail',
+  'map-pin',
+  'megaphone',
+  'menu',
+  'message-square',
+  'minus',
+  'package',
+  'phone',
+  'plug',
+  'plus',
+  'remove',
+  'search',
+  'settings',
+  'shield',
+  'star',
+  'trending-up',
+  'truck',
+  'user-plus',
+  'users',
+];
 
 describe('icon files', () => {
   test('src directory exists', () => {
@@ -132,5 +162,33 @@ describe('SVG semantic correctness', () => {
     const content = readFileSync(join(srcDir, 'remove.svg'), 'utf8');
     const lines = content.match(/<line/g);
     assert.ok(lines && lines.length === 2, 'remove/X should have 2 diagonal lines');
+  });
+
+  test('dashboard icon is four panels (rects)', () => {
+    const content = readFileSync(join(srcDir, 'dashboard.svg'), 'utf8');
+    const rects = content.match(/<rect/g);
+    assert.ok(rects && rects.length === 4, 'dashboard should have 4 panel rects');
+  });
+
+  test('search icon pairs a circle with a handle line', () => {
+    const content = readFileSync(join(srcDir, 'search.svg'), 'utf8');
+    assert.ok(content.includes('<circle'), 'search should use a circle for the lens');
+    assert.ok(content.includes('<line'), 'search should use a line for the handle');
+  });
+
+  test('star icon is a polygon', () => {
+    const content = readFileSync(join(srcDir, 'star.svg'), 'utf8');
+    assert.ok(content.includes('<polygon'), 'star should use a polygon element');
+  });
+
+  test('settings icon pairs a centre circle with spokes', () => {
+    const content = readFileSync(join(srcDir, 'settings.svg'), 'utf8');
+    assert.ok(content.includes('<circle'), 'settings should have a centre circle');
+    assert.ok(content.includes('<path'), 'settings should draw its spokes as a path');
+  });
+
+  test('message-square icon carries text lines inside the bubble', () => {
+    const content = readFileSync(join(srcDir, 'message-square.svg'), 'utf8');
+    assert.ok(content.includes('M8 9h8'), 'message-square should include its message lines');
   });
 });

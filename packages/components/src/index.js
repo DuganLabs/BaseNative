@@ -22,6 +22,10 @@ export { renderToggle } from './toggle.js';
 // Select
 export { renderSelect } from './select.js';
 
+// Field (the label + control + help + error unit, plus the composer that
+// builds the unit from a named built-in control or pre-rendered markup)
+export { renderField, renderFormField } from './field.js';
+
 // Alert
 export { renderAlert } from './alert.js';
 
@@ -96,3 +100,24 @@ export { createCalendarState, createPipelineState, eventsCollide, updateEvent, g
 
 // Layout Grid (Visual Builder)
 export { renderLayoutGrid, layoutGridStyles } from './layout-grid.js';
+
+// Site Chrome (header, nav, footer and the app shell; initSiteHeader wires
+// the narrow-viewport nav toggle)
+export {
+  renderSiteNav,
+  renderSiteHeader,
+  initSiteHeader,
+  renderSiteFooter,
+  renderAppShell,
+} from './site-chrome.js';
+
+// Marketing (hero, pricing cards, feature card, stat card, FAQ)
+export {
+  renderHero,
+  renderPricingCard,
+  renderPricingCards,
+  renderFeatureCard,
+  renderStatCard,
+  renderFaqItem,
+  renderFaq,
+} from './marketing.js';

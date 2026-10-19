@@ -133,6 +133,56 @@ export function renderSelect(options?: {
   attrs?: string;
 }): string;
 
+// ---------------------------------------------------------------- Field
+
+/**
+ * The field shell: a `<div data-bn="field">` holding the label, the
+ * control markup, and the help / error spans (`<id>-help`, `<id>-error`)
+ * that the built-in controls' `aria-describedby` points at. `control` is
+ * an HTML slot: not escaped.
+ */
+export function renderField(options: {
+  id: string;
+  label?: string;
+  /** Pre-rendered control markup. */
+  control: string;
+  helpText?: string;
+  error?: string;
+}): string;
+
+/**
+ * Compose one field from a named built-in control — every other option
+ * forwards to that control's renderer — or wrap `controlHtml` in the
+ * field shell. For `checkbox` / `radio` / `toggle`, `helpText` and
+ * `error` render in the shell around the control (no second label).
+ */
+export function renderFormField(options: {
+  /** Which built-in control to render; ignored when `controlHtml` is given. Default `'input'`. */
+  control?: 'input' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'toggle';
+  /** Pre-rendered control markup (HTML slot: not escaped), wrapped in the field shell. */
+  controlHtml?: string;
+  name: string;
+  label?: string;
+  /** Input type, default `'text'` (control: 'input'). */
+  type?: string;
+  /** Select / radio items (control: 'select' | 'radio'). */
+  items?: SelectItem[];
+  selected?: string;
+  placeholder?: string;
+  value?: string;
+  /** Textarea rows, default `3` (control: 'textarea'). */
+  rows?: number;
+  checked?: boolean;
+  required?: boolean;
+  disabled?: boolean;
+  helpText?: string;
+  error?: string;
+  /** Element id; defaults to `name`. */
+  id?: string;
+  /** Forwarded to the control renderer (spliced onto its outermost element). */
+  attrs?: string;
+}): string;
+
 // ---------------------------------------------------------------- Alert
 
 /** `content` is an HTML slot: not escaped. Prefer `options.text`, which is escaped and wins over `content`. */
@@ -1166,3 +1216,261 @@ export function renderLayoutGrid(options?: {
 
 /** CSS rules for `[data-bn="layout-grid"]` / `[data-bn="layout-cell"]`. */
 export function layoutGridStyles(): string;
+
+// ---------------------------------------------------------------- Site Chrome
+
+export interface SiteNavItem {
+  /** Escaped text. */
+  label: string;
+  /** Escaped attribute. */
+  href: string;
+  /** The current page's item; its link gets `aria-current="page"`. */
+  current?: boolean;
+}
+
+export interface SiteBrand {
+  /** Escaped text, rendered beside the logo. */
+  name?: string;
+  /** HTML slot (an SVG mark): not escaped. */
+  logo?: string;
+}
+
+export interface SiteHeaderBrand extends SiteBrand {
+  /** Default `'/'`. */
+  href?: string;
+  /** The logo link's `aria-label`; defaults to `"<name> home"`. */
+  label?: string;
+}
+
+/** A standalone labelled nav list: `<nav data-bn="site-nav">` around a `<ul data-bn="nav-menu">`. */
+export function renderSiteNav(options?: {
+  items?: SiteNavItem[];
+  /** The nav's `aria-label`. Default `'Primary'`. */
+  label?: string;
+  id?: string;
+  attrs?: string;
+}): string;
+
+/**
+ * Site header: brand link, nav toggle button and the primary nav menu.
+ * The menu's trailing `actions` slot renders as the `nav-cta` item.
+ */
+export function renderSiteHeader(options?: {
+  brand?: SiteHeaderBrand;
+  items?: SiteNavItem[];
+  /** HTML slot (button-styled anchors): not escaped. */
+  actions?: string;
+  /** The nav's `aria-label`. Default `'Primary'`. */
+  navLabel?: string;
+  /** Default `site-header-<n>`; the menu id derives from it. */
+  id?: string;
+  attrs?: string;
+}): string;
+
+export interface SiteHeaderController {
+  open(): void;
+  close(): void;
+  toggle(): void;
+  destroy(): void;
+}
+
+/**
+ * Wires a rendered site header's nav toggle: click toggles `data-open` on
+ * the header root and `aria-expanded` on the button; Escape closes and
+ * refocuses the toggle; an outside click closes.
+ */
+export function initSiteHeader(
+  root: HTMLElement,
+  options?: {
+    onToggle?: (open: boolean) => void;
+  }
+): SiteHeaderController;
+
+export interface SiteFooterLink {
+  /** Escaped text. */
+  label: string;
+  /** Escaped attribute. */
+  href: string;
+  /** Adds `rel="noopener noreferrer"`. */
+  external?: boolean;
+}
+
+export interface SiteFooterColumn {
+  /** Escaped text; rendered as the column's `<h2>`. */
+  heading: string;
+  /** The column nav's `aria-label`; defaults to the heading. */
+  label?: string;
+  links: SiteFooterLink[];
+}
+
+/** Site footer: brand block, grouped link columns and a legal bar. */
+export function renderSiteFooter(options?: {
+  brand?: SiteBrand & {
+    /** Escaped text under the brand. */
+    tagline?: string;
+  };
+  columns?: SiteFooterColumn[];
+  legal?: {
+    /** Escaped text (the copyright line). */
+    text?: string;
+    links?: SiteFooterLink[];
+  };
+  attrs?: string;
+}): string;
+
+/**
+ * The minimal page shell: skip link, header slot, `<main>` and footer
+ * slot. The slots are HTML: not escaped.
+ */
+export function renderAppShell(options?: {
+  header?: string;
+  main?: string;
+  footer?: string;
+  /** Escaped text. Default `'Skip to main content'`. */
+  skipText?: string;
+  /** The `<main>` id the skip link targets. Default `'main-content'`. */
+  mainId?: string;
+  /** Spliced onto the `<main>`. */
+  attrs?: string;
+}): string;
+
+// ---------------------------------------------------------------- Marketing
+
+/**
+ * Hero — the opening section of a marketing page. `variant: 'page'`
+ * renders the compact page hero (root contract `page-hero`, heading and
+ * lead only). `heading` / `lead` are HTML slots: not escaped;
+ * `headingText` / `leadText` are escaped and win when present.
+ */
+export function renderHero(options?: {
+  /** Escaped text in the pill above the heading. */
+  badge?: string;
+  heading?: string;
+  headingText?: string;
+  lead?: string;
+  leadText?: string;
+  /** HTML slot (button-styled anchors): not escaped. */
+  actions?: string;
+  /** Escaped text (the social-proof line). */
+  proof?: string;
+  /** HTML slot beside the copy: not escaped. */
+  visual?: string;
+  variant?: 'default' | 'page' | (string & {});
+  /** Default `hero-<n>`; the heading id derives from it. */
+  id?: string;
+  attrs?: string;
+}): string;
+
+export interface PricingPlan {
+  /** Escaped text. */
+  name?: string;
+  /** Escaped text in the badge above the name. */
+  badge?: string;
+  /** Escaped text. */
+  priceLabel?: string;
+  /** Escaped text after the price (e.g. a per-period note). */
+  priceNote?: string;
+  /** Escaped text. */
+  tagline?: string;
+  /** Escaped text entries, rendered with a check glyph. */
+  features?: string[];
+  featured?: boolean;
+  cta?: {
+    /** Escaped text. */
+    label: string;
+    /** Escaped attribute. */
+    href: string;
+    /** Default `'primary'` when featured, `'ghost'` otherwise. */
+    variant?: string;
+  };
+  attrs?: string;
+}
+
+/** Pricing card: one plan as an `<article data-bn="pricing-card">`. All copy is escaped text. */
+export function renderPricingCard(options?: {
+  /** Escaped text. */
+  name?: string;
+  /** Escaped text in the badge above the name. */
+  badge?: string;
+  /** Escaped text. */
+  priceLabel?: string;
+  /** Escaped text after the price (e.g. a per-period note). */
+  priceNote?: string;
+  /** Escaped text. */
+  tagline?: string;
+  /** Escaped text entries, rendered with a check glyph. */
+  features?: string[];
+  featured?: boolean;
+  cta?: {
+    /** Escaped text. */
+    label: string;
+    /** Escaped attribute. */
+    href: string;
+    /** Default `'primary'` when featured, `'ghost'` otherwise. */
+    variant?: string;
+  };
+  attrs?: string;
+}): string;
+
+/** The pricing card list: `<ul data-bn="pricing-cards">` with one `<li>` card per plan. */
+export function renderPricingCards(options?: {
+  plans?: PricingPlan[];
+  attrs?: string;
+}): string;
+
+/**
+ * Feature card — icon slot, optional tag, title and description for
+ * feature grids. Title and text are escaped; `body` is an HTML slot
+ * that replaces the text paragraph.
+ */
+export function renderFeatureCard(options?: {
+  /** HTML slot inside the icon frame: not escaped. */
+  icon?: string;
+  /** Escaped text above the title. */
+  tag?: string;
+  /** Escaped text. */
+  title?: string;
+  /** Escaped text description. */
+  text?: string;
+  /** HTML slot replacing the text paragraph: not escaped. */
+  body?: string;
+  attrs?: string;
+}): string;
+
+/** Stat card — value, label and an optional trend indicator. All text is escaped. */
+export function renderStatCard(options?: {
+  value?: string;
+  label?: string;
+  /** Escaped text (e.g. `"+12%"`); renders the trend span when present. */
+  trendText?: string;
+  /** Default `'up'`. */
+  trend?: 'up' | 'down' | (string & {});
+  attrs?: string;
+}): string;
+
+export interface FaqItem {
+  /** Escaped text. */
+  question?: string;
+  /** HTML slot: not escaped. */
+  answer?: string;
+  /** Escaped text; replaces `answer` when present. */
+  answerText?: string;
+  attrs?: string;
+}
+
+/** One FAQ entry: a `<dt>`/`<dd>` pair inside a `faq-item` wrapper, for use inside a `<dl>`. */
+export function renderFaqItem(options?: {
+  /** Escaped text. */
+  question?: string;
+  /** HTML slot: not escaped. */
+  answer?: string;
+  /** Escaped text; replaces `answer` when present. */
+  answerText?: string;
+  attrs?: string;
+}): string;
+
+/** FAQ list: a `<dl data-bn="faq-list">` of FAQ items. */
+export function renderFaq(options?: {
+  items?: FaqItem[];
+  attrs?: string;
+}): string;

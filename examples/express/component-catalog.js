@@ -206,6 +206,47 @@ export const componentCategories = [
           },
         ],
       },
+      {
+        slug: 'field',
+        title: 'Field',
+        tag: 'div',
+        fn: 'renderField',
+        summary:
+          'The form-field unit: label, control, help text and error composed as one piece of markup, with the help/error ids the controls’ aria-describedby points at.',
+        api: [
+          { name: 'id', type: 'string', default: '—', description: 'Field id; help and error ids derive from it.' },
+          { name: 'label', type: 'string', default: "''", description: 'Visible label (escaped text).' },
+          { name: 'control', type: 'string', default: '—', description: 'Pre-rendered control markup (HTML slot).' },
+          { name: 'helpText', type: 'string', default: "''", description: 'Hint under the control (escaped text).' },
+          { name: 'error', type: 'string', default: "''", description: 'Error message with role="alert" (escaped text).' },
+        ],
+      },
+      {
+        slug: 'form-field',
+        title: 'Form Field',
+        tag: 'div',
+        fn: 'renderFormField',
+        summary:
+          'Compose a whole field in one call: name a built-in control (input, textarea, select, checkbox, radio, toggle) or pass pre-rendered markup, plus the shared label, help and error options.',
+        api: [
+          {
+            name: 'control',
+            type: "'input' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'toggle'",
+            default: "'input'",
+            description: 'Which built-in control to render.',
+          },
+          { name: 'name', type: 'string', default: '—', description: 'Field name; also the default field id.' },
+          { name: 'label', type: 'string', default: "''", description: 'Field label (escaped text).' },
+          { name: 'helpText', type: 'string', default: "''", description: 'Hint under the control (escaped text).' },
+          { name: 'error', type: 'string', default: "''", description: 'Error message (escaped text).' },
+          {
+            name: 'controlHtml',
+            type: 'string',
+            default: '—',
+            description: 'Pre-rendered control markup, wrapped in the field shell instead of a named control.',
+          },
+        ],
+      },
     ],
   },
   {
@@ -367,6 +408,20 @@ export const componentCategories = [
           },
         ],
       },
+      {
+        slug: 'app-shell',
+        title: 'App Shell',
+        tag: 'main',
+        fn: 'renderAppShell',
+        summary:
+          'The minimal page shell: skip link, header slot, main landmark and footer slot, with the skip link and the main id kept in sync by construction.',
+        api: [
+          { name: 'header', type: 'string', default: "''", description: 'Header HTML slot (e.g. renderSiteHeader output).' },
+          { name: 'main', type: 'string', default: "''", description: 'Page body HTML slot.' },
+          { name: 'footer', type: 'string', default: "''", description: 'Footer HTML slot (e.g. renderSiteFooter output).' },
+          { name: 'mainId', type: 'string', default: "'main-content'", description: 'The main element’s id; the skip link targets it.' },
+        ],
+      },
     ],
   },
   {
@@ -425,6 +480,77 @@ export const componentCategories = [
             type: 'string',
             default: "'command-palette'",
             description: 'Element id used by showModal().',
+          },
+        ],
+      },
+      {
+        slug: 'site-header',
+        title: 'Site Header',
+        tag: 'header',
+        fn: 'renderSiteHeader',
+        summary:
+          'Brand link, nav toggle and primary nav menu; initSiteHeader wires the toggle (aria-expanded, Escape and outside-click close) for narrow viewports.',
+        api: [
+          {
+            name: 'brand',
+            type: '{ name?, logo?, href?, label? }',
+            default: '{}',
+            description: 'Brand name (escaped text) and logo mark (HTML slot).',
+          },
+          {
+            name: 'items',
+            type: '{ label, href, current? }[]',
+            default: '[]',
+            description: 'Nav items; the current one gets aria-current="page".',
+          },
+          {
+            name: 'actions',
+            type: 'string',
+            default: "''",
+            description: 'Call-to-action HTML rendered as the menu’s trailing item.',
+          },
+        ],
+      },
+      {
+        slug: 'site-nav',
+        title: 'Site Nav',
+        tag: 'nav',
+        fn: 'renderSiteNav',
+        summary: 'A standalone labelled nav list — the header’s menu contract without the header around it.',
+        api: [
+          {
+            name: 'items',
+            type: '{ label, href, current? }[]',
+            default: '[]',
+            description: 'Nav items; the current one gets aria-current="page".',
+          },
+          { name: 'label', type: 'string', default: "'Primary'", description: 'The nav’s aria-label.' },
+        ],
+      },
+      {
+        slug: 'site-footer',
+        title: 'Site Footer',
+        tag: 'footer',
+        fn: 'renderSiteFooter',
+        summary: 'Brand block, grouped link columns as labelled navs, and a legal bar with copyright line.',
+        api: [
+          {
+            name: 'brand',
+            type: '{ name?, logo?, tagline? }',
+            default: '{}',
+            description: 'Brand name, logo mark (HTML slot) and tagline.',
+          },
+          {
+            name: 'columns',
+            type: '{ heading, label?, links }[]',
+            default: '[]',
+            description: 'Link columns; each renders as a nav with an h2 heading.',
+          },
+          {
+            name: 'legal',
+            type: '{ text?, links? }',
+            default: '—',
+            description: 'Copyright line and legal links for the bottom bar.',
           },
         ],
       },
@@ -621,6 +747,97 @@ export const componentCategories = [
             type: "'top-right' | 'top-left' | 'bottom-right' | 'bottom-left'",
             default: "'top-right'",
             description: 'Container corner.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'marketing',
+    title: 'Marketing & Content',
+    summary:
+      'The content shapes marketing pages are built from — hero, pricing, feature and stat cards, and FAQ — with copy as escaped data.',
+    components: [
+      {
+        slug: 'hero',
+        title: 'Hero',
+        tag: 'section',
+        fn: 'renderHero',
+        summary:
+          'Opening section of a marketing page: badge, heading, lead, actions, social proof and an optional visual; the page variant renders the compact heading-and-lead hero for interior pages.',
+        api: [
+          { name: 'badge', type: 'string', default: "''", description: 'Pill text above the heading (escaped).' },
+          { name: 'heading', type: 'string', default: "''", description: 'Heading HTML slot; headingText is the escaped alternative.' },
+          { name: 'lead', type: 'string', default: "''", description: 'Lead paragraph HTML slot; leadText is the escaped alternative.' },
+          { name: 'actions', type: 'string', default: "''", description: 'Call-to-action HTML (button-styled anchors).' },
+          { name: 'visual', type: 'string', default: "''", description: 'Visual HTML beside the copy.' },
+          {
+            name: 'variant',
+            type: "'default' | 'page'",
+            default: "'default'",
+            description: 'The page variant renders the compact page-hero shape.',
+          },
+        ],
+      },
+      {
+        slug: 'pricing-card',
+        title: 'Pricing Card',
+        tag: 'article',
+        fn: 'renderPricingCard',
+        summary:
+          'One plan: badge, name, price, tagline, check-marked features and a CTA; a featured plan is stamped and its CTA turns primary. renderPricingCards renders the whole list.',
+        api: [
+          { name: 'name', type: 'string', default: '—', description: 'Plan name (escaped text).' },
+          { name: 'priceLabel', type: 'string', default: '—', description: 'Price text (escaped).' },
+          { name: 'features', type: 'string[]', default: '[]', description: 'Feature lines (escaped text).' },
+          { name: 'featured', type: 'boolean', default: 'false', description: 'Stamps data-featured and defaults the CTA to primary.' },
+          {
+            name: 'cta',
+            type: '{ label, href, variant? }',
+            default: '—',
+            description: 'Call-to-action link rendered as a full-width button.',
+          },
+        ],
+      },
+      {
+        slug: 'feature-card',
+        title: 'Feature Card',
+        tag: 'article',
+        fn: 'renderFeatureCard',
+        summary: 'Icon, tag, title and description for feature grids; the description is escaped text or a body HTML slot.',
+        api: [
+          { name: 'icon', type: 'string', default: "''", description: 'Icon HTML slot inside the icon frame.' },
+          { name: 'tag', type: 'string', default: "''", description: 'Eyebrow text above the title (escaped).' },
+          { name: 'title', type: 'string', default: '—', description: 'Card title (escaped text).' },
+          { name: 'text', type: 'string', default: "''", description: 'Description (escaped text); body is the HTML-slot alternative.' },
+        ],
+      },
+      {
+        slug: 'stat-card',
+        title: 'Stat Card',
+        tag: 'div',
+        fn: 'renderStatCard',
+        summary: 'A value, its label and an optional up/down trend indicator, for dashboards and proof sections.',
+        api: [
+          { name: 'value', type: 'string', default: '—', description: 'The stat value (escaped text).' },
+          { name: 'label', type: 'string', default: '—', description: 'The stat label (escaped text).' },
+          { name: 'trendText', type: 'string', default: "''", description: 'Trend text (e.g. "+12%"); renders the trend span when present.' },
+          { name: 'trend', type: "'up' | 'down'", default: "'up'", description: 'Trend direction stamped as data-trend.' },
+        ],
+      },
+      {
+        slug: 'faq',
+        title: 'FAQ',
+        tag: 'dl',
+        fn: 'renderFaq',
+        summary:
+          'A definition-list FAQ: each item is a question/answer pair in a faq-item wrapper; renderFaqItem renders a single entry.',
+        api: [
+          {
+            name: 'items',
+            type: '{ question, answer?, answerText? }[]',
+            default: '[]',
+            description: 'Question (escaped) with an HTML answer slot or escaped answerText.',
           },
         ],
       },

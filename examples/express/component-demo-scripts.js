@@ -14,6 +14,7 @@ export const demoInitialisers = {
   'virtual-list': 'initVirtualList',
   'dropdown-menu': 'initDropdownMenu',
   drawer: 'initDrawer',
+  'site-header': 'initSiteHeader',
 };
 
 export function getDemoScripts(slug) {
@@ -286,6 +287,12 @@ export function getDemoScripts(slug) {
       document.querySelector('[data-bn-demo-dialog-cancel]')?.addEventListener('click', () => dlg?.close());
       document.querySelector('[data-bn-demo-dialog-confirm]')?.addEventListener('click', () => dlg?.close());
       dlg?.querySelector('[data-bn="dialog-close"]')?.addEventListener('click', () => dlg.close());
+    `,
+    'site-header': `
+      const siteHeader = document.querySelector('[data-bn="site-header"]');
+      if (siteHeader) {
+        initSiteHeader(siteHeader);
+      }
     `,
     drawer: `
       const drawer = document.getElementById('demo-drawer-page');

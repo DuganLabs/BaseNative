@@ -41,6 +41,18 @@ import {
   renderTree,
   renderVirtualList,
   renderToastContainer,
+  renderField,
+  renderFormField,
+  renderSiteNav,
+  renderSiteHeader,
+  renderSiteFooter,
+  renderAppShell,
+  renderHero,
+  renderPricingCard,
+  renderPricingCards,
+  renderFeatureCard,
+  renderStatCard,
+  renderFaq,
 } from '../../packages/components/src/index.js';
 
 const code = (s) => s.replace(/^\n+/, '').replace(/\n+$/, '');
@@ -1336,6 +1348,408 @@ ${renderToastContainer('top-right')}`,
 import { showToast } from '@basenative/components';
 
 showToast({ message: 'Saved.', variant: 'success' });
+        `),
+      },
+    ],
+  }),
+
+  field: () => ({
+    quickstart: code(`
+import { renderField } from '@basenative/components';
+
+renderField({
+  id: 'email',
+  label: 'Email',
+  control: '<input id="email" name="email" type="email" />',
+  helpText: 'We never share it.',
+});
+    `),
+    examples: [
+      {
+        title: 'Label, control, help and error as one unit',
+        description:
+          'The shell wraps any pre-rendered control; the help and error spans carry the ids the control’s aria-describedby names.',
+        html: renderField({
+          id: 'demo-email',
+          label: 'Email',
+          control:
+            '<input data-bn="input" id="demo-email" name="demo-email" type="email" aria-describedby="demo-email-help demo-email-error" aria-invalid="true" />',
+          helpText: 'We never share it.',
+          error: 'Enter a valid address.',
+        }),
+        code: code(`
+renderField({
+  id: 'email',
+  label: 'Email',
+  control: '<input data-bn="input" id="email" name="email" type="email" aria-describedby="email-help email-error" aria-invalid="true" />',
+  helpText: 'We never share it.',
+  error: 'Enter a valid address.',
+})
+        `),
+      },
+    ],
+  }),
+
+  'form-field': () => ({
+    quickstart: code(`
+import { renderFormField } from '@basenative/components';
+
+renderFormField({ control: 'input', name: 'email', label: 'Email', type: 'email', required: true });
+    `),
+    examples: [
+      {
+        title: 'Named controls, one call each',
+        description:
+          'The composer forwards every other option to the named control’s renderer, so help text, errors and aria wiring behave exactly as the control documents.',
+        html: [
+          renderFormField({
+            control: 'select',
+            name: 'demo-plan',
+            label: 'Plan',
+            items: ['Starter', 'Growth'],
+            helpText: 'You can change this later.',
+          }),
+          renderFormField({ control: 'checkbox', name: 'demo-tos', label: 'I agree to the terms' }),
+          renderFormField({
+            control: 'checkbox',
+            name: 'demo-alerts',
+            label: 'Email me alerts',
+            error: 'Alerts need an address first.',
+          }),
+        ].join('\n'),
+        code: code(`
+renderFormField({
+  control: 'select',
+  name: 'plan',
+  label: 'Plan',
+  items: ['Starter', 'Growth'],
+  helpText: 'You can change this later.',
+})
+renderFormField({ control: 'checkbox', name: 'tos', label: 'I agree to the terms' })
+renderFormField({
+  control: 'checkbox',
+  name: 'alerts',
+  label: 'Email me alerts',
+  error: 'Alerts need an address first.',
+})
+        `),
+      },
+    ],
+  }),
+
+  'site-header': () => ({
+    quickstart: code(`
+import { renderSiteHeader, initSiteHeader } from '@basenative/components';
+
+const header = renderSiteHeader({
+  brand: { name: 'Acme' },
+  items: [{ label: 'Features', href: '#features' }, { label: 'Pricing', href: '#pricing', current: true }],
+});
+    `),
+    examples: [
+      {
+        title: 'Brand, menu and call to action',
+        description:
+          'The current item carries aria-current="page". On narrow viewports the menu collapses behind the toggle; initSiteHeader wires it (the demo page initialises it for you).',
+        html: renderSiteHeader({
+          id: 'demo-header',
+          brand: { name: 'Acme' },
+          items: [
+            { label: 'Features', href: '#features' },
+            { label: 'Pricing', href: '#pricing', current: true },
+            { label: 'About', href: '#about' },
+          ],
+          actions: '<a href="#start" data-bn="button" data-variant="primary">Get Started</a>',
+        }),
+        code: code(`
+renderSiteHeader({
+  brand: { name: 'Acme' },
+  items: [
+    { label: 'Features', href: '#features' },
+    { label: 'Pricing', href: '#pricing', current: true },
+    { label: 'About', href: '#about' },
+  ],
+  actions: '<a href="#start" data-bn="button" data-variant="primary">Get Started</a>',
+})
+        `),
+      },
+    ],
+  }),
+
+  'site-nav': () => ({
+    quickstart: code(`
+import { renderSiteNav } from '@basenative/components';
+
+renderSiteNav({ label: 'Section', items: [{ label: 'Overview', href: '#overview', current: true }] });
+    `),
+    examples: [
+      {
+        title: 'Standalone labelled nav',
+        description: 'The header’s menu contract on its own, for sidebars and section navs.',
+        html: renderSiteNav({
+          label: 'Section',
+          items: [
+            { label: 'Overview', href: '#overview', current: true },
+            { label: 'Details', href: '#details' },
+            { label: 'Reviews', href: '#reviews' },
+          ],
+        }),
+        code: code(`
+renderSiteNav({
+  label: 'Section',
+  items: [
+    { label: 'Overview', href: '#overview', current: true },
+    { label: 'Details', href: '#details' },
+    { label: 'Reviews', href: '#reviews' },
+  ],
+})
+        `),
+      },
+    ],
+  }),
+
+  'site-footer': () => ({
+    quickstart: code(`
+import { renderSiteFooter } from '@basenative/components';
+
+renderSiteFooter({
+  brand: { name: 'Acme', tagline: 'Tools for the trades.' },
+  columns: [{ heading: 'Product', links: [{ label: 'Features', href: '#features' }] }],
+  legal: { text: '© 2026 Acme', links: [{ label: 'Privacy', href: '#privacy' }] },
+});
+    `),
+    examples: [
+      {
+        title: 'Brand, columns and legal bar',
+        description: 'Each column is a labelled nav with an h2 heading; external links get rel="noopener noreferrer".',
+        html: renderSiteFooter({
+          brand: { name: 'Acme', tagline: 'Tools for the trades.' },
+          columns: [
+            {
+              heading: 'Product',
+              links: [
+                { label: 'Features', href: '#features' },
+                { label: 'Pricing', href: '#pricing' },
+              ],
+            },
+            {
+              heading: 'Company',
+              links: [
+                { label: 'About', href: '#about' },
+                { label: 'GitHub', href: 'https://example.com', external: true },
+              ],
+            },
+          ],
+          legal: { text: '© 2026 Acme. All rights reserved.', links: [{ label: 'Privacy', href: '#privacy' }, { label: 'Terms', href: '#terms' }] },
+        }),
+        code: code(`
+renderSiteFooter({
+  brand: { name: 'Acme', tagline: 'Tools for the trades.' },
+  columns: [
+    { heading: 'Product', links: [{ label: 'Features', href: '#features' }, { label: 'Pricing', href: '#pricing' }] },
+    { heading: 'Company', links: [{ label: 'About', href: '#about' }, { label: 'GitHub', href: 'https://example.com', external: true }] },
+  ],
+  legal: { text: '© 2026 Acme. All rights reserved.', links: [{ label: 'Privacy', href: '#privacy' }, { label: 'Terms', href: '#terms' }] },
+})
+        `),
+      },
+    ],
+  }),
+
+  'app-shell': () => ({
+    quickstart: code(`
+import { renderAppShell, renderSiteHeader, renderSiteFooter } from '@basenative/components';
+
+renderAppShell({ header: renderSiteHeader({ brand: { name: 'Acme' } }), main: '<p>Page body</p>', footer: renderSiteFooter({}) });
+    `),
+    examples: [
+      {
+        title: 'Skip link, header, main, footer',
+        description:
+          'The shell owns the skip link and the main landmark’s id, so the two can never drift apart.',
+        html: renderAppShell({
+          header: renderSiteHeader({ id: 'demo-shell-header', brand: { name: 'Acme' }, items: [{ label: 'Home', href: '#home', current: true }] }),
+          main: '<p>Page body goes in the main landmark.</p>',
+          footer: renderSiteFooter({ legal: { text: '© 2026 Acme' } }),
+        }),
+        code: code(`
+renderAppShell({
+  header: renderSiteHeader({ brand: { name: 'Acme' }, items: [{ label: 'Home', href: '#home', current: true }] }),
+  main: '<p>Page body goes in the main landmark.</p>',
+  footer: renderSiteFooter({ legal: { text: '© 2026 Acme' } }),
+})
+        `),
+      },
+    ],
+  }),
+
+  hero: () => ({
+    quickstart: code(`
+import { renderHero } from '@basenative/components';
+
+renderHero({ badge: 'Now in beta', headingText: 'Run the whole shop from one place', leadText: 'Leads, scheduling and payments in a single dashboard.' });
+    `),
+    examples: [
+      {
+        title: 'Full hero with actions and proof',
+        description: 'Badge, heading, lead, actions and the social-proof line; the visual slot sits beside the copy on wide viewports.',
+        html: renderHero({
+          id: 'demo-hero',
+          badge: 'Now in beta',
+          heading: 'The operating system<br />for trade contractors',
+          leadText: 'Manage leads, schedule jobs and get paid — from one dashboard.',
+          actions:
+            '<a href="#start" data-bn="button" data-variant="primary" data-size="lg">Get Started</a> <a href="#features" data-bn="button" data-variant="ghost" data-size="lg">See how it works</a>',
+          proof: 'Built with working contractors.',
+          visual: renderStatCard({ value: '1,248', label: 'Jobs booked', trendText: '+12%', trend: 'up' }),
+        }),
+        code: code(`
+renderHero({
+  badge: 'Now in beta',
+  heading: 'The operating system<br />for trade contractors',
+  leadText: 'Manage leads, schedule jobs and get paid — from one dashboard.',
+  actions: '<a href="#start" data-bn="button" data-variant="primary" data-size="lg">Get Started</a>',
+  proof: 'Built with working contractors.',
+})
+        `),
+      },
+      {
+        title: 'Page hero',
+        description: 'The compact variant that opens interior pages: heading and lead only.',
+        html: renderHero({ variant: 'page', id: 'demo-page-hero', headingText: 'Features', leadText: 'Everything you need to run the business.' }),
+        code: code(`
+renderHero({ variant: 'page', headingText: 'Features', leadText: 'Everything you need to run the business.' })
+        `),
+      },
+    ],
+  }),
+
+  'pricing-card': () => ({
+    quickstart: code(`
+import { renderPricingCards } from '@basenative/components';
+
+renderPricingCards({ plans: [{ name: 'Core', priceLabel: '$49', features: ['One seat'], cta: { label: 'Start', href: '#start' } }] });
+    `),
+    examples: [
+      {
+        title: 'Plan list with a featured plan',
+        description:
+          'renderPricingCards renders the list shape; a featured plan is stamped data-featured and its CTA turns primary. All plan copy is escaped text.',
+        html: renderPricingCards({
+          plans: [
+            {
+              name: 'Pass-through',
+              priceLabel: 'At cost',
+              tagline: 'Infrastructure billed at vendor cost.',
+              features: ['No markup', 'No monthly minimum'],
+              cta: { label: 'See the rates', href: '#rates' },
+            },
+            {
+              name: 'Lead delivery',
+              badge: 'Core model',
+              priceLabel: 'Per delivered lead',
+              priceNote: 'priced per trade',
+              tagline: 'You pay for booked jobs, not bought leads.',
+              features: ['Qualified and scheduled', 'Tracked to outcome', 'Pauses when your schedule is full'],
+              featured: true,
+              cta: { label: 'Get Started', href: '#start' },
+            },
+          ],
+        }),
+        code: code(`
+renderPricingCards({
+  plans: [
+    { name: 'Pass-through', priceLabel: 'At cost', features: ['No markup'], cta: { label: 'See the rates', href: '#rates' } },
+    {
+      name: 'Lead delivery',
+      badge: 'Core model',
+      priceLabel: 'Per delivered lead',
+      features: ['Qualified and scheduled', 'Tracked to outcome'],
+      featured: true,
+      cta: { label: 'Get Started', href: '#start' },
+    },
+  ],
+})
+        `),
+      },
+    ],
+  }),
+
+  'feature-card': () => ({
+    quickstart: code(`
+import { renderFeatureCard } from '@basenative/components';
+
+renderFeatureCard({ title: 'Booked, not bought', text: 'Jobs land directly in the schedule.' });
+    `),
+    examples: [
+      {
+        title: 'Icon, tag, title and text',
+        description: 'The icon is a markup slot in a framed tile; title and text are escaped.',
+        html: renderFeatureCard({
+          icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+          tag: 'Scheduling',
+          title: 'Booked, not bought',
+          text: 'Qualified jobs land directly in the shop’s schedule.',
+        }),
+        code: code(`
+renderFeatureCard({
+  tag: 'Scheduling',
+  title: 'Booked, not bought',
+  text: 'Qualified jobs land directly in the shop’s schedule.',
+})
+        `),
+      },
+    ],
+  }),
+
+  'stat-card': () => ({
+    quickstart: code(`
+import { renderStatCard } from '@basenative/components';
+
+renderStatCard({ value: '1,248', label: 'Jobs booked', trendText: '+12%', trend: 'up' });
+    `),
+    examples: [
+      {
+        title: 'Value, label and trend',
+        description: 'The trend span renders only when trendText is given; its direction is stamped as data-trend.',
+        html: [
+          renderStatCard({ value: '1,248', label: 'Jobs booked', trendText: '+12%', trend: 'up' }),
+          renderStatCard({ value: '3.1%', label: 'No-show rate', trendText: '-0.4%', trend: 'down' }),
+          renderStatCard({ value: '42', label: 'Open estimates' }),
+        ].join('\n'),
+        code: code(`
+renderStatCard({ value: '1,248', label: 'Jobs booked', trendText: '+12%', trend: 'up' })
+renderStatCard({ value: '3.1%', label: 'No-show rate', trendText: '-0.4%', trend: 'down' })
+renderStatCard({ value: '42', label: 'Open estimates' })
+        `),
+      },
+    ],
+  }),
+
+  faq: () => ({
+    quickstart: code(`
+import { renderFaq } from '@basenative/components';
+
+renderFaq({ items: [{ question: 'What does it cost?', answerText: 'One price per delivered lead.' }] });
+    `),
+    examples: [
+      {
+        title: 'Question and answer pairs',
+        description:
+          'A definition list: questions are escaped text; answers are an HTML slot, or escaped answerText when the answer is data.',
+        html: renderFaq({
+          items: [
+            { question: 'What does it cost?', answerText: 'One price per delivered lead, the same whatever door the job came through.' },
+            { question: 'When am I charged?', answer: 'When a qualified job is placed into your schedule. See <a href="#pricing">pricing</a>.' },
+          ],
+        }),
+        code: code(`
+renderFaq({
+  items: [
+    { question: 'What does it cost?', answerText: 'One price per delivered lead.' },
+    { question: 'When am I charged?', answer: 'When a qualified job is placed into your schedule.' },
+  ],
+})
         `),
       },
     ],
