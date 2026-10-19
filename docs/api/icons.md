@@ -16,11 +16,35 @@ npm install @basenative/icons
 
 | File | Icon |
 |------|------|
-| `check.svg` | Checkmark |
-| `chevron-down.svg` | Down chevron (dropdown indicator) |
-| `minus.svg` | Minus / remove |
-| `plus.svg` | Plus / add |
-| `remove.svg` | X / close |
+| `activity.svg` | Pulse / activity feed |
+| `bar-chart.svg` | Bar chart / reports |
+| `calendar.svg` | Calendar / scheduled jobs |
+| `check.svg` | Checkmark / confirmation |
+| `chevron-down.svg` | Downward chevron for dropdowns |
+| `chevron-left.svg` | Left chevron / back |
+| `chevron-right.svg` | Right chevron / forward |
+| `clock.svg` | Clock / time |
+| `dashboard.svg` | Dashboard grid / today view |
+| `file-text.svg` | Document / estimate |
+| `mail.svg` | Envelope / email |
+| `map-pin.svg` | Location pin |
+| `megaphone.svg` | Megaphone / campaigns |
+| `menu.svg` | Hamburger menu |
+| `message-square.svg` | Chat bubble with message lines |
+| `minus.svg` | Minus / remove / collapse |
+| `package.svg` | Box / inventory |
+| `phone.svg` | Telephone handset |
+| `plug.svg` | Plug / plugins and integrations |
+| `plus.svg` | Plus / add / expand |
+| `remove.svg` | X / close / dismiss |
+| `search.svg` | Magnifying glass / search |
+| `settings.svg` | Gear / settings |
+| `shield.svg` | Shield / trust and protection |
+| `star.svg` | Star / reviews and ratings |
+| `trending-up.svg` | Rising chart / opportunities |
+| `truck.svg` | Truck / vehicles |
+| `user-plus.svg` | Person with plus / new lead |
+| `users.svg` | People / customers |
 
 ## Usage
 
@@ -67,7 +91,7 @@ Icons are sized via `width`/`height` attributes or CSS. They inherit `currentCol
 
 ## Adding Icons
 
-This package ships a minimal set. For a full icon library, consider:
+This package ships a core set — the glyphs product UI reaches for daily. For a full icon library, consider:
 - [Heroicons](https://heroicons.com/) — MIT licensed
 - [Lucide](https://lucide.dev/) — ISC licensed
 - [Phosphor](https://phosphoricons.com/) — MIT licensed

@@ -624,12 +624,12 @@ describe('the site bundle ships every client initialiser the package exports', (
     .map((name) => name.trim().split(/\s+as\s+/).pop())
     .filter(Boolean);
 
-  it('the package exports the ten initialisers the catalogue relies on', () => {
+  it('the package exports the eleven initialisers the catalogue relies on', () => {
     assert.deepEqual(
       shipped.sort(),
       [
         'initCalendarDragDrop', 'initCommandPalette', 'initDataGrid', 'initDrawer', 'initDropdownMenu',
-        'initMultiselect', 'initPipelineDragDrop', 'initTabs', 'initTree', 'initVirtualList',
+        'initMultiselect', 'initPipelineDragDrop', 'initSiteHeader', 'initTabs', 'initTree', 'initVirtualList',
       ],
     );
   });

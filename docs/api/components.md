@@ -1,6 +1,6 @@
 # @basenative/components API
 
-Every function in this package is a pure `render*` helper that returns an HTML string (or a small state helper for toasts, calendars and pipelines). Markup is semantic HTML tagged with `data-bn="…"` attributes; there is no client-side JavaScript except the opt-in initialisers — `initTabs`, `initDrawer`, `initCommandPalette`, `initDataGrid`, `initTree`, `initMultiselect`, `initVirtualList`, `initDropdownMenu` and the drag-and-drop initialisers — each of which takes the rendered root element, works off the `data-bn` hooks and native ARIA attributes, re-queries them on every interaction, and returns a handle with `destroy()`.
+Every function in this package is a pure `render*` helper that returns an HTML string (or a small state helper for toasts, calendars and pipelines). Markup is semantic HTML tagged with `data-bn="…"` attributes; there is no client-side JavaScript except the opt-in initialisers — `initTabs`, `initDrawer`, `initCommandPalette`, `initDataGrid`, `initTree`, `initMultiselect`, `initVirtualList`, `initDropdownMenu`, `initSiteHeader` and the drag-and-drop initialisers — each of which takes the rendered root element, works off the `data-bn` hooks and native ARIA attributes, re-queries them on every interaction, and returns a handle with `destroy()`.
 
 All `render*` functions accept an `attrs` option unless the table says otherwise: a raw string of extra HTML attributes spliced verbatim into the outermost element (for example `attrs: 'data-testid="save" aria-describedby="hint"'`). Content options (`content`, `body`, `title`, `label`, …) are inserted as HTML, not escaped, unless noted.
 
@@ -227,6 +227,55 @@ renderSelect({
 Renders `<div data-bn="field">` with `<label>`, `<select data-bn="select">…</select>` and optional `[data-bn="field-help"]` and `[data-bn="field-error"]`.
 
 Accessibility: `aria-invalid="true"` when `error` is set; `aria-describedby` lists the help (`{id}-help`) and/or error (`{id}-error`) ids, same as Input.
+
+## Field
+
+`renderField(options)` → `string`
+
+The form-field unit as a public component: label, control, help text and error composed as one piece of markup. This is the same shell Input, Textarea and Select compose internally, exported so any other control — a composite widget, a framework-rendered input, a one-off control — gets the identical contract instead of a local rebuild.
+
+```js
+renderField({
+  id: 'email',
+  label: 'Email',
+  control: '<input data-bn="input" id="email" name="email" type="email" aria-describedby="email-help" />',
+  helpText: 'We never share it.',
+})
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `id` | `string` | — | Field id; the help span is `{id}-help`, the error span `{id}-error` |
+| `label` | `string` | — | `<label for>`; escaped. Omitted when empty |
+| `control` | `string` | — | Pre-rendered control markup (HTML slot: not escaped) |
+| `helpText` | `string` | `''` | Help line, id `{id}-help`; escaped |
+| `error` | `string` | `''` | Error line with `role="alert"`, id `{id}-error`; escaped |
+
+Renders `<div data-bn="field">` with the label, the control markup verbatim, and the optional `[data-bn="field-help"]` / `[data-bn="field-error"]` spans. The control is responsible for pointing its own `aria-describedby` at the ids (the built-in controls do).
+
+## Form Field
+
+`renderFormField(options)` → `string`
+
+Compose a whole field in one call: name a built-in control and every other option forwards to that control's renderer, so control-specific options (`type`, `items`, `rows`, `checked`, `selected`, …) behave exactly as documented for the control itself.
+
+```js
+renderFormField({ control: 'input', name: 'email', label: 'Email', type: 'email', helpText: 'We never share it.' })
+renderFormField({ control: 'select', name: 'plan', label: 'Plan', items: ['Free', 'Pro'] })
+renderFormField({ controlHtml: '<input id="legacy" />', name: 'legacy', label: 'Legacy', error: 'Required' })
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `control` | `'input' \| 'textarea' \| 'select' \| 'checkbox' \| 'radio' \| 'toggle'` | `'input'` | Which built-in control to render; ignored when `controlHtml` is given |
+| `controlHtml` | `string` | — | Pre-rendered control markup, wrapped in the Field shell |
+| `name` | `string` | — | Field name; also the default field id |
+| `label` | `string` | — | Field label (the group legend for `radio`); escaped |
+| `helpText` | `string` | `''` | Escaped |
+| `error` | `string` | `''` | Escaped |
+| … | | | Every other option forwards to the control's renderer |
+
+`input` / `textarea` / `select` accept label, helpText and error natively and wire `aria-describedby` themselves. `checkbox` / `radio` / `toggle` carry their label inline and have no help/error channel, so when `helpText` or `error` is given the composer wraps their markup in the Field shell (without a second label) and the help/error spans render inside the same `[data-bn="field"]` container. An unknown `control` name throws a `TypeError`.
 
 ## Combobox
 
@@ -1342,6 +1391,219 @@ renderLayoutGrid({
 | `editable` | `boolean` | `false` | Adds `draggable="true"` to every cell |
 
 Renders `<div data-bn="layout-grid" id="layout-grid" style="display:grid;grid-template-columns:repeat(12,1fr);gap:1rem">` containing `<div data-bn="layout-cell" data-cell-id="hero" style="grid-column: span 12; grid-row: span 1; min-height: 4rem" draggable="true">…</div>` per cell. This component uses inline `style` for its grid geometry and is not covered by `components.css`; inject `layoutGridStyles()` into a `<style>` tag. `attrs` is not supported.
+
+## Site Nav
+
+`renderSiteNav(options)` → `string`
+
+A standalone labelled nav list — the site header's menu contract without the header around it, for secondary navigation (sidebars, section navs).
+
+```js
+renderSiteNav({
+  label: 'Section',
+  items: [
+    { label: 'Overview', href: '/overview', current: true },
+    { label: 'Details', href: '/details' },
+  ],
+})
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `items` | `Array<{ label, href, current? }>` | `[]` | Labels are escaped text, hrefs escaped attributes; the `current` item's link gets `aria-current="page"` |
+| `label` | `string` | `'Primary'` | The nav's `aria-label`; escaped |
+| `id` | `string` | — | Emitted as the `<nav>`'s id when present |
+| `attrs` | `string` | `''` | Extra attributes on the `<nav>` |
+
+Renders `<nav data-bn="site-nav" aria-label="…"><ul data-bn="nav-menu">…</ul></nav>`.
+
+## Site Header
+
+`renderSiteHeader(options)` → `string`; `initSiteHeader(root, options?)` → `{ open, close, toggle, destroy }`
+
+The site header: brand link, nav toggle and the primary nav menu. On wide viewports the menu is a row; on narrow ones it collapses behind the toggle button and `initSiteHeader` wires the behaviour — click toggles (`data-open` on the header root, `aria-expanded` on the button), Escape closes and returns focus to the toggle, and a click outside the header closes it. `options.onToggle(open)` fires after each state change.
+
+```js
+renderSiteHeader({
+  brand: { name: 'Greenput' },
+  items: [{ label: 'Features', href: '/features' }, { label: 'Pricing', href: '/pricing', current: true }],
+  actions: '<a href="/start" data-bn="button" data-variant="primary">Get Started</a>',
+})
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `brand.name` | `string` | `''` | Escaped text beside the logo |
+| `brand.logo` | `string` | `''` | HTML slot (an SVG mark): not escaped |
+| `brand.href` | `string` | `'/'` | |
+| `brand.label` | `string` | `'<name> home'` | The logo link's `aria-label` |
+| `items` | `Array<{ label, href, current? }>` | `[]` | As Site Nav |
+| `actions` | `string` | `''` | HTML slot rendered as the menu's trailing `<li data-bn="nav-cta">` item |
+| `navLabel` | `string` | `'Primary'` | The nav's `aria-label`; escaped |
+| `id` | `string` | `nextId('site-header')` | The menu id derives from it (`{id}-menu`) |
+| `attrs` | `string` | `''` | Extra attributes on the `<header>` |
+
+Renders `<header data-bn="site-header">` wrapping `<nav data-bn="site-nav">` with `<a data-bn="nav-logo">`, `<button data-bn="nav-toggle" aria-expanded="false" aria-controls="{id}-menu">` and `<ul id="{id}-menu" data-bn="nav-menu">`. The toggle is a real button — keyboard-operable and announced — not a checkbox hack.
+
+## Site Footer
+
+`renderSiteFooter(options)` → `string`
+
+Site footer: brand block, grouped link columns and a legal bar. Each column renders as a `<nav aria-label>` with an `<h2>` heading, so the link groups are navigable landmarks.
+
+```js
+renderSiteFooter({
+  brand: { name: 'Greenput', tagline: 'The operating system for trade contractors.' },
+  columns: [{ heading: 'Product', links: [{ label: 'Features', href: '/features' }] }],
+  legal: { text: '© 2026 Greenput', links: [{ label: 'Privacy', href: '/privacy' }] },
+})
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `brand` | `{ name?, logo?, tagline? }` | `{}` | Name and tagline are escaped text; `logo` is an HTML slot |
+| `columns` | `Array<{ heading, label?, links: Array<{ label, href, external? }> }>` | `[]` | `label` is the column nav's `aria-label` (defaults to the heading); `external` links get `rel="noopener noreferrer"` |
+| `legal.text` | `string` | `''` | The copyright line; escaped |
+| `legal.links` | `Array<{ label, href, external? }>` | `[]` | Rendered in the `<nav data-bn="footer-legal">` |
+| `attrs` | `string` | `''` | Extra attributes on the `<footer>` |
+
+Renders `<footer data-bn="site-footer">` with `<div data-bn="footer-inner">` (brand + columns) and, when `legal` is given, `<div data-bn="footer-bottom">` holding a `[data-bn="container"]` row.
+
+## App Shell
+
+`renderAppShell(options)` → `string`
+
+The minimal page shell: skip link, header slot, `<main>` and footer slot. The shell owns the skip link and the main landmark's id so the two can never drift apart.
+
+```js
+renderAppShell({
+  header: renderSiteHeader({ brand: { name: 'Greenput' } }),
+  main: '<p>Page body</p>',
+  footer: renderSiteFooter({ legal: { text: '© 2026 Greenput' } }),
+})
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `header` | `string` | `''` | HTML slot: not escaped |
+| `main` | `string` | `''` | HTML slot: not escaped |
+| `footer` | `string` | `''` | HTML slot: not escaped |
+| `skipText` | `string` | `'Skip to main content'` | Escaped |
+| `mainId` | `string` | `'main-content'` | The `<main>` id the skip link targets |
+| `attrs` | `string` | `''` | Extra attributes on the `<main>` |
+
+## Hero
+
+`renderHero(options)` → `string`
+
+The opening section of a marketing page. Two shapes: the default hero (badge, heading, lead, actions, social proof, optional visual beside the copy) and the compact page hero (`variant: 'page'`, root contract `page-hero`) that opens interior pages with just a heading and a lead. The section is labelled by its own heading, whose id derives from the hero id.
+
+```js
+renderHero({
+  badge: 'Now in beta',
+  heading: 'The Operating System<br />for Trade Contractors',
+  leadText: 'Manage leads, schedule jobs and get paid — from one dashboard.',
+  actions: '<a href="/start" data-bn="button" data-variant="primary" data-size="lg">Get Started</a>',
+  proof: 'Built with working contractors.',
+})
+renderHero({ variant: 'page', headingText: 'Features', leadText: 'Everything you need to run the business.' })
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `badge` | `string` | `''` | Escaped text in the pill above the heading |
+| `heading` | `string` | `''` | HTML slot: not escaped |
+| `headingText` | `string` | — | Escaped text; wins over `heading` |
+| `lead` | `string` | `''` | HTML slot: not escaped |
+| `leadText` | `string` | — | Escaped text; wins over `lead` |
+| `actions` | `string` | `''` | HTML slot (button-styled anchors): not escaped |
+| `proof` | `string` | `''` | Escaped text (the social-proof line) |
+| `visual` | `string` | `''` | HTML slot beside the copy: not escaped |
+| `variant` | `'default' \| 'page'` | `'default'` | |
+| `id` | `string` | `nextId('hero')` | The heading id derives from it (`{id}-heading`) |
+| `attrs` | `string` | `''` | Extra attributes on the `<section>` |
+
+## Pricing Card
+
+`renderPricingCard(options)` → `string`; `renderPricingCards(options)` → `string`
+
+One plan: optional badge, name, price, tagline, a check-marked feature list and a call to action. A `featured` plan is stamped `data-featured` and its CTA defaults to the primary variant (ghost otherwise). All copy is escaped text; the CTA href is an escaped attribute. `renderPricingCards({ plans })` renders the list shape — a `<ul data-bn="pricing-cards">` with one `<li data-bn="pricing-card">` per plan — from the same per-plan options.
+
+```js
+renderPricingCard({
+  name: 'Lead Delivery',
+  badge: 'Core revenue model',
+  priceLabel: 'Per delivered lead',
+  tagline: 'You pay for booked jobs, not bought leads.',
+  features: ['Qualified and scheduled', 'Tracked to outcome'],
+  featured: true,
+  cta: { label: 'Get Started', href: '/start' },
+})
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `name` | `string` | `''` | Plan name (`<h3>`) |
+| `badge` | `string` | `''` | Pill above the name |
+| `priceLabel` | `string` | `''` | The price, in `<strong>` inside `[data-bn="plan-price"]` |
+| `priceNote` | `string` | `''` | Note after the price (e.g. a per-period note) |
+| `tagline` | `string` | `''` | |
+| `features` | `string[]` | `[]` | Rendered with a check glyph in `[data-bn="plan-features"]` |
+| `featured` | `boolean` | `false` | Stamps `data-featured=""` |
+| `cta` | `{ label, href, variant? }` | — | Anchor rendered as a full-width (`data-full`) button |
+| `attrs` | `string` | `''` | Extra attributes on the card |
+
+## Feature Card
+
+`renderFeatureCard(options)` → `string`
+
+Icon, optional tag, title and description for feature grids.
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `icon` | `string` | `''` | HTML slot inside the `[data-bn="feature-icon"]` frame: not escaped |
+| `tag` | `string` | `''` | Escaped eyebrow text above the title |
+| `title` | `string` | `''` | Escaped text (`<h3>`) |
+| `text` | `string` | `''` | Escaped description |
+| `body` | `string` | `''` | HTML slot replacing the text paragraph: not escaped |
+| `attrs` | `string` | `''` | Extra attributes on the `<article>` |
+
+## Stat Card
+
+`renderStatCard(options)` → `string`
+
+A value, its label and an optional trend indicator.
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `value` | `string` | `''` | Escaped text in `[data-bn="stat-value"]` |
+| `label` | `string` | `''` | Escaped text in `[data-bn="stat-label"]` |
+| `trendText` | `string` | `''` | Escaped text; renders the `[data-bn="stat-growth"]` span when present |
+| `trend` | `'up' \| 'down'` | `'up'` | Stamped as `data-trend` on the trend span |
+| `attrs` | `string` | `''` | Extra attributes on the wrapper |
+
+## FAQ
+
+`renderFaq(options)` → `string`; `renderFaqItem(options)` → `string`
+
+A definition-list FAQ: each entry is a question/answer pair in a `[data-bn="faq-item"]` wrapper. The question is escaped text; the answer is an HTML slot (answers carry links and emphasis), with `answerText` as the escaped alternative that wins when present.
+
+```js
+renderFaq({
+  items: [
+    { question: 'What does it cost?', answerText: 'One price per delivered lead.' },
+    { question: 'When am I charged?', answer: 'When a qualified job is placed into your schedule.' },
+  ],
+})
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `items` | `Array<{ question, answer?, answerText?, attrs? }>` | `[]` | For `renderFaq` |
+| `question` | `string` | `''` | Escaped text (`<dt>`) |
+| `answer` | `string` | `''` | HTML slot (`<dd>`): not escaped |
+| `answerText` | `string` | — | Escaped text; wins over `answer` |
+| `attrs` | `string` | `''` | Extra attributes on the `<dl>` (or the item wrapper for `renderFaqItem`) |
 
 ## Design Tokens
 

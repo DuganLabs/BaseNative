@@ -33,6 +33,23 @@ import { renderVirtualList, initVirtualList, defaultRenderItem } from './virtual
 import { renderAvatar } from './avatar.js';
 import { renderCalendar, renderPipelineBlock, renderPipeline, initCalendarDragDrop, initPipelineDragDrop } from './calendar.js';
 import { renderLayoutGrid } from './layout-grid.js';
+import { renderField as renderPublicField, renderFormField } from './field.js';
+import {
+  renderSiteNav,
+  renderSiteHeader,
+  initSiteHeader,
+  renderSiteFooter,
+  renderAppShell,
+} from './site-chrome.js';
+import {
+  renderHero,
+  renderPricingCard,
+  renderPricingCards,
+  renderFeatureCard,
+  renderStatCard,
+  renderFaqItem,
+  renderFaq,
+} from './marketing.js';
 import { createCalendarState } from './calendar-state.js';
 import { createToaster, showToast, dismissToast } from './toast.js';
 import { nextId, resetIds } from './ids.js';
@@ -4205,5 +4222,478 @@ describe('initDropdownMenu', () => {
     assert.deepEqual([[...d.root.listeners.keys()].sort(), [...d.menu.listeners.keys()]], [['click', 'keydown'], ['toggle']]);
     handle.destroy();
     assert.deepEqual([d.root.listeners.size, d.menu.listeners.size], [0, 0]);
+  });
+});
+
+describe('Field — public', () => {
+  it('the package exports renderField and renderFormField', () => {
+    assert.equal(typeof api.renderField, 'function');
+    assert.equal(typeof api.renderFormField, 'function');
+    assert.equal(api.renderField, renderPublicField, 'the export is the public module, not a copy');
+  });
+
+  it('renderField renders the label, control, help and error as one unit', () => {
+    const html = renderPublicField({
+      id: 'email',
+      label: 'Email',
+      control: '<input id="email" />',
+      helpText: 'We never share it.',
+      error: 'Required',
+    });
+    assert.ok(html.startsWith('<div data-bn="field">'));
+    assert.ok(html.includes('<label for="email">Email</label>'));
+    assert.ok(html.includes('<input id="email" />'), 'the control slot is inserted verbatim');
+    assert.ok(html.includes('<span data-bn="field-help" id="email-help">We never share it.</span>'));
+    assert.ok(html.includes('<span data-bn="field-error" id="email-error" role="alert">Required</span>'));
+  });
+
+  it('renderFormField defaults to an input and matches renderInput', () => {
+    const options = { name: 'email', label: 'Email', type: 'email', helpText: 'Hint', error: 'Bad' };
+    assert.equal(renderFormField(options), renderInput(options));
+    assert.equal(renderFormField({ control: 'input', ...options }), renderInput(options));
+  });
+
+  it('renderFormField renders textarea and select through their own renderers', () => {
+    const area = renderFormField({ control: 'textarea', name: 'bio', label: 'Bio', rows: 4 });
+    assert.ok(area.includes('<textarea'));
+    assert.ok(area.includes('rows="4"'));
+    const select = renderFormField({
+      control: 'select',
+      name: 'plan',
+      label: 'Plan',
+      items: ['Free', 'Pro'],
+      helpText: 'Pick one',
+    });
+    assert.ok(select.includes('<select'));
+    assert.ok(select.includes('aria-describedby="plan-help"'), 'the select wires its own describedby');
+  });
+
+  it('renderFormField leaves checkbox and toggle bare without help or error', () => {
+    const box = renderFormField({ control: 'checkbox', name: 'tos', label: 'Agree' });
+    assert.equal(box, renderCheckbox({ name: 'tos', label: 'Agree' }));
+    assert.ok(!box.includes('data-bn="field"'));
+    const toggle = renderFormField({ control: 'toggle', name: 'dark', label: 'Dark mode' });
+    assert.equal(toggle, renderToggle({ name: 'dark', label: 'Dark mode' }));
+  });
+
+  it('renderFormField wraps checkbox, toggle and radio in the shell when help or error is given', () => {
+    const box = renderFormField({ control: 'checkbox', name: 'tos', label: 'Agree', error: 'Required' });
+    assert.ok(box.startsWith('<div data-bn="field">'));
+    assert.ok(box.includes('data-bn="checkbox"'), 'the control renders inside the shell');
+    assert.ok(box.includes('<span data-bn="field-error" id="tos-error" role="alert">Required</span>'));
+    assert.equal((box.match(/<label/g) || []).length, 1, 'no second label beside the checkbox label');
+
+    const radio = renderFormField({
+      control: 'radio',
+      name: 'size',
+      label: 'Size',
+      items: ['S', 'M'],
+      helpText: 'Fits true to size',
+    });
+    assert.ok(radio.includes('<fieldset data-bn="radio-group">'));
+    assert.ok(radio.includes('<span data-bn="field-help" id="size-help">Fits true to size</span>'));
+  });
+
+  it('renderFormField wraps pre-rendered control markup', () => {
+    const html = renderFormField({
+      controlHtml: '<input id="custom" />',
+      name: 'custom',
+      label: 'Custom',
+      helpText: 'Built elsewhere',
+    });
+    assert.ok(html.includes('<label for="custom">Custom</label>'));
+    assert.ok(html.includes('<input id="custom" />'));
+    assert.ok(html.includes('id="custom-help"'));
+  });
+
+  it('renderFormField rejects an unknown control name', () => {
+    assert.throws(() => renderFormField({ control: 'wysiwyg', name: 'x' }), /unknown control/);
+  });
+
+  it('renderFormField escapes label, help and error through the composer', () => {
+    assertEscaped(renderFormField({ name: 'x', label: XSS, helpText: XSS, error: XSS }));
+    assertEscaped(renderFormField({ control: 'checkbox', name: 'x', label: XSS, error: XSS }));
+  });
+});
+
+describe('SiteNav', () => {
+  const items = [
+    { label: 'Features', href: '/features' },
+    { label: 'Pricing', href: '/pricing', current: true },
+  ];
+
+  it('renders a labelled nav list with aria-current on the current item only', () => {
+    const html = renderSiteNav({ items });
+    assert.ok(html.startsWith('<nav data-bn="site-nav" aria-label="Primary">'));
+    assert.ok(html.includes('<ul data-bn="nav-menu">'));
+    assert.ok(html.includes('<li><a href="/features">Features</a></li>'));
+    assert.ok(html.includes('<li><a href="/pricing" aria-current="page">Pricing</a></li>'));
+  });
+
+  it('escapes item labels and hrefs', () => {
+    assertEscaped(renderSiteNav({ items: [{ label: XSS, href: XSS }] }));
+  });
+});
+
+describe('SiteHeader', () => {
+  it('renders brand, toggle and menu in the site-header contract', () => {
+    const html = renderSiteHeader({
+      id: 'site',
+      brand: { name: 'Greenput', logo: '<svg></svg>' },
+      items: [{ label: 'Features', href: '/features' }],
+      actions: '<a href="/start">Get Started</a>',
+    });
+    assert.ok(html.startsWith('<header data-bn="site-header" id="site">'));
+    assert.ok(html.includes('<nav data-bn="site-nav" aria-label="Primary">'));
+    assert.ok(
+      html.includes('<a data-bn="nav-logo" href="/" aria-label="Greenput home"><svg></svg><strong>Greenput</strong></a>')
+    );
+    assert.ok(html.includes('data-bn="nav-toggle"'));
+    assert.ok(html.includes('aria-expanded="false"'));
+    assert.ok(html.includes('aria-controls="site-menu"'), 'the toggle controls the menu it names');
+    assert.ok(html.includes('<ul id="site-menu" data-bn="nav-menu">'));
+    assert.ok(html.includes('<li data-bn="nav-cta"><a href="/start">Get Started</a></li>'));
+  });
+
+  it('omits the CTA item when no actions are given', () => {
+    assert.ok(!renderSiteHeader({ brand: { name: 'X' } }).includes('nav-cta'));
+  });
+
+  it('escapes the brand name', () => {
+    assertEscaped(renderSiteHeader({ brand: { name: XSS } }));
+  });
+});
+
+describe('initSiteHeader', () => {
+  function fakeDocument() {
+    const listeners = new Map();
+    return {
+      listeners,
+      activeElement: null,
+      addEventListener(type, fn) { listeners.set(type, fn); },
+      removeEventListener(type, fn) { if (listeners.get(type) === fn) listeners.delete(type); },
+      dispatch(type, event = {}) { listeners.get(type)?.({ preventDefault() {}, ...event }); },
+    };
+  }
+
+  function fakeElement(doc, bn, { children = [] } = {}) {
+    const attrs = new Map();
+    const listeners = new Map();
+    const el = {
+      bn,
+      attrs,
+      listeners,
+      ownerDocument: doc,
+      parent: null,
+      focusCount: 0,
+      hasAttribute: name => attrs.has(name),
+      getAttribute: name => attrs.get(name) ?? null,
+      setAttribute(name, value) { attrs.set(name, value); },
+      removeAttribute(name) { attrs.delete(name); },
+      addEventListener(type, fn) { listeners.set(type, fn); },
+      removeEventListener(type, fn) { if (listeners.get(type) === fn) listeners.delete(type); },
+      dispatch(type, event = {}) { listeners.get(type)?.({ target: el, preventDefault() {}, ...event }); },
+      focus() { el.focusCount++; doc.activeElement = el; },
+      matches: selector => selector === `[data-bn="${bn}"]`,
+      contains(target) {
+        let node = target;
+        while (node) {
+          if (node === el) return true;
+          node = node.parent;
+        }
+        return false;
+      },
+      querySelector(selector) {
+        for (const child of children) {
+          if (child.matches(selector)) return child;
+          const nested = child.querySelector(selector);
+          if (nested) return nested;
+        }
+        return null;
+      },
+    };
+    for (const child of children) child.parent = el;
+    return el;
+  }
+
+  function setup() {
+    const doc = fakeDocument();
+    const toggle = fakeElement(doc, 'nav-toggle');
+    toggle.setAttribute('aria-expanded', 'false');
+    const menu = fakeElement(doc, 'nav-menu');
+    const nav = fakeElement(doc, 'site-nav', { children: [toggle, menu] });
+    const header = fakeElement(doc, 'site-header', { children: [nav] });
+    const outside = fakeElement(doc, 'button');
+    return { doc, header, toggle, menu, outside };
+  }
+
+  it('the toggle button opens and closes the menu', () => {
+    const { header, toggle } = setup();
+    initSiteHeader(header);
+    toggle.dispatch('click');
+    assert.ok(header.hasAttribute('data-open'));
+    assert.equal(toggle.getAttribute('aria-expanded'), 'true');
+    toggle.dispatch('click');
+    assert.ok(!header.hasAttribute('data-open'));
+    assert.equal(toggle.getAttribute('aria-expanded'), 'false');
+  });
+
+  it('open, close and toggle drive the same state and report through onToggle', () => {
+    const { header, toggle } = setup();
+    const seen = [];
+    const handle = initSiteHeader(header, { onToggle: open => seen.push(open) });
+    handle.open();
+    handle.open();
+    handle.close();
+    handle.toggle();
+    assert.deepEqual(seen, [true, false, true], 'a no-op open does not re-report');
+    assert.ok(header.hasAttribute('data-open'));
+    assert.equal(toggle.getAttribute('aria-expanded'), 'true');
+  });
+
+  it('Escape closes the menu and returns focus to the toggle', () => {
+    const { doc, header, toggle } = setup();
+    const handle = initSiteHeader(header);
+    handle.open();
+    doc.dispatch('keydown', { key: 'Escape' });
+    assert.ok(!header.hasAttribute('data-open'));
+    assert.equal(doc.activeElement, toggle);
+    assert.equal(toggle.focusCount, 1);
+  });
+
+  it('a click outside closes the menu; a click inside does not', () => {
+    const { doc, header, menu, outside } = setup();
+    const handle = initSiteHeader(header);
+    handle.open();
+    doc.dispatch('click', { target: menu });
+    assert.ok(header.hasAttribute('data-open'), 'inside clicks keep the menu open');
+    doc.dispatch('click', { target: outside });
+    assert.ok(!header.hasAttribute('data-open'));
+  });
+
+  it('destroy unbinds the toggle and the document', () => {
+    const { doc, header, toggle } = setup();
+    const handle = initSiteHeader(header);
+    handle.destroy();
+    assert.equal(toggle.listeners.size, 0);
+    assert.equal(doc.listeners.size, 0);
+    toggle.dispatch('click');
+    assert.ok(!header.hasAttribute('data-open'));
+  });
+});
+
+describe('SiteFooter', () => {
+  it('renders brand, link columns and the legal bar', () => {
+    const html = renderSiteFooter({
+      brand: { name: 'Greenput', tagline: 'The operating system for trade contractors.' },
+      columns: [
+        {
+          heading: 'Product',
+          label: 'Footer product navigation',
+          links: [
+            { label: 'Features', href: '/features' },
+            { label: 'GitHub', href: 'https://github.com/DuganLabs', external: true },
+          ],
+        },
+      ],
+      legal: { text: '© 2026 Greenput', links: [{ label: 'Privacy', href: '/privacy' }] },
+    });
+    assert.ok(html.startsWith('<footer data-bn="site-footer">'));
+    assert.ok(html.includes('<div data-bn="footer-brand">'));
+    assert.ok(html.includes('The operating system for trade contractors.'));
+    assert.ok(html.includes('<nav aria-label="Footer product navigation">'));
+    assert.ok(html.includes('<h2>Product</h2>'));
+    assert.ok(html.includes('<a href="https://github.com/DuganLabs" rel="noopener noreferrer">GitHub</a>'));
+    assert.ok(html.includes('<div data-bn="footer-bottom">'));
+    assert.ok(html.includes('<div data-bn="container">'));
+    assert.ok(html.includes('<p>© 2026 Greenput</p>'));
+    assert.ok(html.includes('<nav aria-label="Legal" data-bn="footer-legal"><a href="/privacy">Privacy</a></nav>'));
+  });
+
+  it('omits the legal bar when no legal content is given', () => {
+    assert.ok(!renderSiteFooter({ brand: { name: 'X' } }).includes('footer-bottom'));
+  });
+
+  it('escapes headings, labels and the legal text', () => {
+    const html = renderSiteFooter({
+      columns: [{ heading: XSS, links: [{ label: XSS, href: '/x' }] }],
+      legal: { text: XSS },
+    });
+    assertEscaped(html);
+  });
+});
+
+describe('AppShell', () => {
+  it('renders the skip link, header, main and footer in order', () => {
+    const html = renderAppShell({ header: '<header>H</header>', main: '<p>Body</p>', footer: '<footer>F</footer>' });
+    assert.ok(html.startsWith('<a data-bn="skip-link" href="#main-content">Skip to main content</a>'));
+    assert.ok(html.includes('<main id="main-content" data-bn="app-main"><p>Body</p></main>'));
+    assert.ok(html.indexOf('<header>H</header>') < html.indexOf('<main'));
+    assert.ok(html.indexOf('<footer>F</footer>') > html.indexOf('</main>'));
+  });
+
+  it('the skip link always targets the main id it renders', () => {
+    const html = renderAppShell({ mainId: 'content', skipText: 'Skip to content' });
+    assert.ok(html.includes('<a data-bn="skip-link" href="#content">Skip to content</a>'));
+    assert.ok(html.includes('<main id="content"'));
+  });
+});
+
+describe('Hero', () => {
+  it('renders the full hero: badge, heading, lead, actions, proof and visual', () => {
+    const html = renderHero({
+      id: 'hero',
+      badge: 'Now in beta',
+      heading: 'The Operating System<br />for Trade Contractors',
+      leadText: 'Tools to run the business.',
+      actions: '<a href="/start">Get Started</a>',
+      proof: 'Built with working contractors.',
+      visual: '<div>Preview</div>',
+    });
+    assert.ok(html.startsWith('<section data-bn="hero" id="hero" aria-labelledby="hero-heading">'));
+    assert.ok(html.includes('<p data-bn="hero-badge"><span>Now in beta</span></p>'));
+    assert.ok(html.includes('<h1 id="hero-heading">The Operating System<br />for Trade Contractors</h1>'));
+    assert.ok(html.includes('<p data-bn="lead">Tools to run the business.</p>'));
+    assert.ok(html.includes('<div data-bn="hero-actions"><a href="/start">Get Started</a></div>'));
+    assert.ok(html.includes('<p data-bn="hero-social-proof">Built with working contractors.</p>'));
+    assert.ok(html.includes('<div data-bn="hero-visual"><div>Preview</div></div>'));
+  });
+
+  it('omits the optional blocks when they are not given', () => {
+    const html = renderHero({ headingText: 'Hello' });
+    assert.ok(!html.includes('hero-badge'));
+    assert.ok(!html.includes('hero-actions'));
+    assert.ok(!html.includes('hero-visual'));
+    assert.ok(!html.includes('data-bn="lead"'));
+  });
+
+  it('headingText and leadText are escaped and win over the slots', () => {
+    assertEscaped(renderHero({ heading: '<b>slot</b>', headingText: XSS, leadText: XSS }));
+  });
+
+  it('the page variant renders the compact page-hero shape', () => {
+    const html = renderHero({ variant: 'page', id: 'ph', headingText: 'Features', leadText: 'All of them.' });
+    assert.ok(html.startsWith('<section data-bn="page-hero" id="ph" aria-labelledby="ph-heading">'));
+    assert.ok(html.includes('<h1 id="ph-heading">Features</h1>'));
+    assert.ok(html.includes('<p data-bn="lead">All of them.</p>'));
+    assert.ok(!html.includes('hero-content'));
+    assert.ok(!html.includes('hero-visual'));
+  });
+});
+
+describe('PricingCard', () => {
+  const plan = {
+    name: 'Lead Delivery',
+    badge: 'Core revenue model',
+    priceLabel: 'Per delivered lead',
+    priceNote: 'priced per trade vertical',
+    tagline: 'You pay for booked jobs, not bought leads.',
+    features: ['Qualified and scheduled', 'Tracked to outcome'],
+    cta: { label: 'Get Started', href: '/start' },
+  };
+
+  it('renders the plan with badge, price, tagline, features and CTA', () => {
+    const html = renderPricingCard(plan);
+    assert.ok(html.startsWith('<article data-bn="pricing-card">'));
+    assert.ok(html.includes('<p data-bn="plan-badge">Core revenue model</p>'));
+    assert.ok(html.includes('<h3>Lead Delivery</h3>'));
+    assert.ok(html.includes('<p data-bn="plan-price"><strong>Per delivered lead</strong>'));
+    assert.ok(html.includes('<span data-bn="plan-price-note">priced per trade vertical</span>'));
+    assert.ok(html.includes('<p data-bn="plan-tagline">You pay for booked jobs, not bought leads.</p>'));
+    assert.ok(html.includes('<ul data-bn="plan-features">'));
+    assert.ok(html.includes('Qualified and scheduled'));
+    assert.ok(html.includes('<a href="/start" data-bn="button" data-variant="ghost" data-full>Get Started</a>'));
+    assert.ok(!html.includes('data-featured'), 'an unfeatured plan carries no featured stamp');
+  });
+
+  it('a featured plan is stamped and its CTA defaults to primary', () => {
+    const html = renderPricingCard({ ...plan, featured: true });
+    assert.ok(html.includes('<article data-bn="pricing-card" data-featured="">'));
+    assert.ok(html.includes('data-variant="primary"'));
+  });
+
+  it('escapes plan copy', () => {
+    assertEscaped(renderPricingCard({ name: XSS, priceLabel: XSS, features: [XSS] }));
+  });
+
+  it('renderPricingCards renders the list shape with one li per plan', () => {
+    const html = renderPricingCards({ plans: [plan, { ...plan, name: 'Platform' }] });
+    assert.ok(html.startsWith('<ul data-bn="pricing-cards">'));
+    assert.equal((html.match(/<li data-bn="pricing-card"/g) || []).length, 2);
+    assert.ok(html.includes('<h3>Platform</h3>'));
+  });
+});
+
+describe('FeatureCard', () => {
+  it('renders icon, tag, title and text', () => {
+    const html = renderFeatureCard({
+      icon: '<svg></svg>',
+      tag: 'Scheduling',
+      title: 'Booked, not bought',
+      text: 'Jobs land in the schedule.',
+    });
+    assert.ok(html.startsWith('<article data-bn="feature-card">'));
+    assert.ok(html.includes('<div data-bn="feature-icon" aria-hidden="true"><svg></svg></div>'));
+    assert.ok(html.includes('<p data-bn="feature-tag">Scheduling</p>'));
+    assert.ok(html.includes('<h3>Booked, not bought</h3>'));
+    assert.ok(html.includes('<p>Jobs land in the schedule.</p>'));
+  });
+
+  it('the body slot replaces the text paragraph', () => {
+    const html = renderFeatureCard({ title: 'T', text: 'plain', body: '<p><em>rich</em></p>' });
+    assert.ok(html.includes('<p><em>rich</em></p>'));
+    assert.ok(!html.includes('plain'));
+  });
+
+  it('escapes the title and text', () => {
+    assertEscaped(renderFeatureCard({ title: XSS, text: XSS }));
+  });
+});
+
+describe('StatCard', () => {
+  it('renders value and label without a trend span by default', () => {
+    const html = renderStatCard({ value: '1,248', label: 'Jobs booked' });
+    assert.ok(html.startsWith('<div data-bn="stat-card">'));
+    assert.ok(html.includes('<span data-bn="stat-value">1,248</span>'));
+    assert.ok(html.includes('<span data-bn="stat-label">Jobs booked</span>'));
+    assert.ok(!html.includes('stat-growth'));
+  });
+
+  it('renders the trend with its direction', () => {
+    const up = renderStatCard({ value: '10', label: 'L', trendText: '+12%' });
+    assert.ok(up.includes('<span data-bn="stat-growth" data-trend="up">+12%</span>'));
+    const down = renderStatCard({ value: '10', label: 'L', trendText: '-3%', trend: 'down' });
+    assert.ok(down.includes('data-trend="down"'));
+  });
+
+  it('escapes value, label and trend text', () => {
+    assertEscaped(renderStatCard({ value: XSS, label: XSS, trendText: XSS }));
+  });
+});
+
+describe('Faq', () => {
+  it('renderFaqItem renders the dt/dd pair inside the faq-item wrapper', () => {
+    const html = renderFaqItem({ question: 'What does it cost?', answerText: 'One price per delivered lead.' });
+    assert.equal(
+      html,
+      '<div data-bn="faq-item"><dt>What does it cost?</dt><dd>One price per delivered lead.</dd></div>'
+    );
+  });
+
+  it('the answer slot is markup; answerText is escaped and wins', () => {
+    const slot = renderFaqItem({ question: 'Q', answer: '<a href="/pricing">Pricing</a>' });
+    assert.ok(slot.includes('<dd><a href="/pricing">Pricing</a></dd>'));
+    assertEscaped(renderFaqItem({ question: XSS, answer: '<b>slot</b>', answerText: XSS }));
+  });
+
+  it('renderFaq renders the dl with one item per entry', () => {
+    const html = renderFaq({
+      items: [
+        { question: 'One?', answerText: 'First.' },
+        { question: 'Two?', answerText: 'Second.' },
+      ],
+    });
+    assert.ok(html.startsWith('<dl data-bn="faq-list">'));
+    assert.equal((html.match(/data-bn="faq-item"/g) || []).length, 2);
   });
 });

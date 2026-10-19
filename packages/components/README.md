@@ -1,10 +1,10 @@
 # @basenative/components
 
-> 32 modules of semantic UI components rendered as HTML strings — no framework, no client JavaScript required beyond three opt-in initialisers
+> 35 modules of semantic UI components rendered as HTML strings — no framework, no client JavaScript required beyond the opt-in initialisers
 
 Part of the [BaseNative](https://github.com/DuganLabs/basenative) ecosystem — a signal-based web runtime over native HTML.
 
-The package exports 48 symbols from 32 source modules (re-exported through `src/index.js`): 34 `render*` helpers, the toast queue (`createToaster`, `showToast`, `dismissToast`, `renderToastContainer`), the tabs, calendar and pipeline client-side initialisers (`initTabs`, `initCalendarDragDrop`, `initPipelineDragDrop`), state stores and helpers, and two small utilities (`buttonVariants`, `layoutGridStyles`). Full reference with options tables, rendered markup and accessibility notes: [docs/api/components.md](../../docs/api/components.md). Type declarations ship in `types/index.d.ts`.
+The package exports 62 symbols from 35 source modules (re-exported through `src/index.js`): 47 `render*` helpers, the toast queue (`createToaster`, `showToast`, `dismissToast`, `renderToastContainer`), the tabs, calendar, pipeline and site-header client-side initialisers (`initTabs`, `initCalendarDragDrop`, `initPipelineDragDrop`, `initSiteHeader`), state stores and helpers, and two small utilities (`buttonVariants`, `layoutGridStyles`). Full reference with options tables, rendered markup and accessibility notes: [docs/api/components.md](../../docs/api/components.md). Type declarations ship in `types/index.d.ts`.
 
 ## Install
 
@@ -116,6 +116,8 @@ All components are pure functions that return an HTML string. See [docs/api/comp
 - `renderRadioGroup(options)` — Group of radio inputs in a `<fieldset>`.
 - `renderToggle(options)` — Toggle/switch input (`role="switch"`).
 - `renderSelect(options)` — `<select>` with option list.
+- `renderField(options)` — The field unit as a public component: label, pre-rendered control, help text and error composed in one `[data-bn="field"]` shell — the same contract the built-in controls render internally, for any other control.
+- `renderFormField(options)` — Compose a whole field in one call: name a built-in control (`input`, `textarea`, `select`, `checkbox`, `radio`, `toggle`) or pass pre-rendered `controlHtml`, and label/help/error come along.
 - `renderCombobox(options)` — `<input>` + `<datalist>` combobox.
 - `renderMultiselect(options)` — Multi-value select with removable tags.
 
@@ -145,6 +147,17 @@ All components are pure functions that return an HTML string. See [docs/api/comp
 - `renderDropdownMenu(options)` — Popover-API dropdown menu.
 - `renderCommandPalette(options)` — Keyboard-driven command palette.
 - `renderLayoutGrid(options)` / `layoutGridStyles()` — Drag-and-drop CSS grid canvas for the visual builder, plus its CSS.
+- `renderSiteNav(options)` — Standalone labelled nav list; the current item's link carries `aria-current="page"`.
+- `renderSiteHeader(options)` — Site header: brand link, real-button nav toggle and primary nav menu; `initSiteHeader(root, { onToggle? })` wires the narrow-viewport toggle (Escape closes and refocuses, outside click closes) and returns `{ open, close, toggle, destroy }`.
+- `renderSiteFooter(options)` — Site footer: brand block, link columns as labelled navs with `<h2>` headings, and a legal bar.
+- `renderAppShell(options)` — Minimal page shell: skip link, header slot, `<main>` landmark and footer slot, with the skip target owned by the shell.
+
+### Marketing & Content
+- `renderHero(options)` — Marketing hero: badge, heading, lead, actions, social proof and an optional visual; `variant: 'page'` renders the compact heading-and-lead page hero. Copy is escaped text (`headingText`/`leadText`) or trusted HTML slots.
+- `renderPricingCard(options)` / `renderPricingCards(options)` — One plan (badge, price, tagline, check-marked features, CTA; `featured` stamps the card and turns the CTA primary), or the whole plan list.
+- `renderFeatureCard(options)` — Icon, tag, title and description for feature grids.
+- `renderStatCard(options)` — Value, label and optional up/down trend indicator.
+- `renderFaq(options)` / `renderFaqItem(options)` — Definition-list FAQ; questions are escaped, answers are HTML slots or escaped `answerText`.
 
 ### Scheduling
 - `renderCalendar(options)` — Week view with hourly drop zones and draggable events. Buckets by the local calendar date of each parsed timestamp (or `timeZone`), marks today (`now`), derives the hour range from the events, and repeats multi-day events per day.
