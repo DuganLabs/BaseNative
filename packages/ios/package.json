@@ -1,0 +1,57 @@
+{
+  "bugs": {
+    "url": "https://github.com/DuganLabs/BaseNative/issues"
+  },
+  "description": "The iOS platform layer for BaseNative — Liquid Glass material, system colour, type, layout and motion foundation tokens as CSS custom properties, in light and dark",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./css": {
+      "types": "./types/css.d.ts",
+      "default": "./src/css.js"
+    },
+    "./tokens": {
+      "types": "./types/tokens.d.ts",
+      "default": "./src/tokens.js"
+    },
+    "./tokens.css": "./src/tokens.css"
+  },
+  "files": [
+    "src",
+    "types",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
+  ],
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/ios#readme",
+  "keywords": [
+    "basenative",
+    "ios",
+    "design-tokens",
+    "liquid-glass",
+    "css-custom-properties",
+    "design-system",
+    "dark-mode"
+  ],
+  "license": "Apache-2.0",
+  "name": "@basenative/ios",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "directory": "packages/ios",
+    "type": "git",
+    "url": "git+https://github.com/DuganLabs/BaseNative.git"
+  },
+  "scripts": {
+    "test": "node --test src/tokens.test.js src/css.test.js src/index.test.js types/exports.test.js"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "type": "module",
+  "types": "./types/index.d.ts",
+  "version": "0.1.0"
+}
