@@ -9,7 +9,12 @@ on:
   workflow_dispatch:
 
 env:
-  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  # Dependabot guard (owner decision, 2026-10-19): a run triggered by
+  # dependabot[bot] gets an empty token, so Nx executes fully local and
+  # can never consume Nx Cloud credits. Dependabot version updates are
+  # disabled entirely (no .github/dependabot.yml); this is belt-and-braces
+  # so no bot actor can engage Nx Cloud even if a PR trigger is added later.
+  NX_CLOUD_ACCESS_TOKEN: ${{ github.actor == 'dependabot[bot]' && '' || secrets.NX_CLOUD_ACCESS_TOKEN }}
 
 jobs:
   test:
