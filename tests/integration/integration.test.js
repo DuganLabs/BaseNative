@@ -799,3 +799,19 @@ describe('/showcase runs the package initialisers rather than its own copies', (
     assert.doesNotMatch(showcase, /drawer-close|drawer-overlay|inert/);
   });
 });
+
+describe('the builder bundle registers the elements /builder needs', () => {
+  // Regression guard: builder-entry.js once reached esbuild as a bare
+  // side-effect import and the bundle came out as the entry shim alone
+  // (580 bytes, no registration) — /builder rendered an empty page in
+  // production. The bundle is a committed build output; pin that it
+  // carries the element registrations.
+  const bundle = readFileSync(repo('examples/express/public/builder.js'), 'utf8');
+
+  it('contains the builder package, not just the entry shim', () => {
+    assert.ok(bundle.length > 10000, 'builder bundle should contain the builder package');
+    for (const tag of ['bn-builder', 'bn-builder-palette', 'bn-builder-canvas']) {
+      assert.ok(bundle.includes(tag), `builder bundle should register ${tag}`);
+    }
+  });
+});

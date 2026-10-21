@@ -1309,16 +1309,16 @@ if (typeof customElements !== "undefined" && !customElements.get(TAG2)) {
 
 // ../../packages/builder/src/inspector-element.js
 var TAG3 = "bn-builder-inspector";
-function coerce(prop, raw2) {
+function coerce(prop, raw) {
   if (prop.kind === "number") {
-    if (raw2 === "" || raw2 == null) return void 0;
-    const n = Number(raw2);
+    if (raw === "" || raw == null) return void 0;
+    const n = Number(raw);
     return Number.isNaN(n) ? void 0 : n;
   }
   if (prop.kind === "boolean") {
-    return Boolean(raw2);
+    return Boolean(raw);
   }
-  return raw2 === "" ? void 0 : raw2;
+  return raw === "" ? void 0 : raw;
 }
 var BnBuilderInspector = class extends HTMLElement {
   constructor() {
@@ -1391,8 +1391,8 @@ var BnBuilderInspector = class extends HTMLElement {
       this.state.setBinding(nodeId, propName, ref ? { ref } : null);
       return;
     }
-    const raw2 = target.type === "checkbox" ? target.checked : target.value;
-    const value = coerce(prop, raw2);
+    const raw = target.type === "checkbox" ? target.checked : target.value;
+    const value = coerce(prop, raw);
     this.state.updateProps(nodeId, { [propName]: value });
   }
 };
@@ -1501,6 +1501,7 @@ if (typeof customElements !== "undefined") {
 }
 
 // builder-entry.js
+if (typeof window !== "undefined") window.__BnBuilder = BnBuilder;
 var ready = (fn) => document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", fn, { once: true }) : fn();
 ready(() => {
   const builder = document.querySelector("[data-bn-builder-root]");
