@@ -3049,7 +3049,7 @@
       "kind": "render-function",
       "package": "@basenative/visual-builder",
       "file": "packages/visual-builder/src/renderer.js",
-      "signature": "renderNode(node, componentMap)",
+      "signature": "renderNode(root, componentMap)",
       "purpose": "renderNode(node, componentMap) - Render a single node and its children",
       "deprecated": false,
       "emits": {

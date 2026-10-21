@@ -527,7 +527,7 @@ renderCanvas(canvas, componentMap) - Renders canvas nodes to HTML
 - variants: none declared
 - use instead of: hand-written markup for this element
 
-### `renderNode(node, componentMap)`
+### `renderNode(root, componentMap)`
 renderNode(node, componentMap) - Render a single node and its children
 `packages/visual-builder/src/renderer.js`
 - variants: none declared
