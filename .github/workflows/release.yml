@@ -1,11 +1,16 @@
 # Runs on every push to main (the standard changesets flow) and can still
 # be dispatched by hand. Publishing is direct over npm trusted publishing
-# (OIDC — no npm token exists anywhere). The trust boundary is repo write
-# access: only invited collaborators can land code on main, and only this
-# workflow publishes. Contributor protection for this public repo lives in
-# Settings (read-only default GITHUB_TOKEN, fork-workflow approvals), not
-# in the trigger. Revised 2026-10-17, superseding the 2026-09-14
-# manual-only org rule for this repo.
+# (OIDC). One scoped exception: npm cannot OIDC-publish a package that has
+# never existed on the registry — a trusted publisher can only be
+# configured on a package page, and the first publish creates the page —
+# so scripts/publish-release.mjs first-publishes registry-absent packages
+# with a granular token (the NPM_BOOTSTRAP_TOKEN secret, no provenance)
+# and hands everything else to the OIDC lane. The trust boundary is repo
+# write access: only invited collaborators can land code on main, and only
+# this workflow publishes. Contributor protection for this public repo
+# lives in Settings (read-only default GITHUB_TOKEN, fork-workflow
+# approvals), not in the trigger. Revised 2026-10-20, superseding the
+# 2026-09-14 manual-only org rule for this repo.
 name: Release
 
 on:
@@ -23,8 +28,10 @@ permissions:
   contents: write
   pull-requests: write
   # Trusted publishing: npm exchanges this job's GitHub OIDC token for a
-  # one-time publish credential. No npm token exists anywhere — not here, not
-  # in Doppler. npm also attaches a provenance attestation to every version.
+  # one-time publish credential, and npm attaches a provenance attestation
+  # to every version published that way. The only token anywhere is the
+  # bootstrap fallback described above: scoped to first publishes, used by
+  # the publish script only, and never presented to the OIDC lane.
   id-token: write
 
 jobs:
@@ -69,12 +76,19 @@ jobs:
         id: changesets
         uses: changesets/action@v2
         with:
-          publish-script: pnpm exec changeset publish
+          # The publish script owns the two lanes described at the top of
+          # this file: registry-absent packages are bootstrapped with the
+          # token below; everything else is published by `changeset
+          # publish` over OIDC. The token travels as NPM_BOOTSTRAP_TOKEN —
+          # never NODE_AUTH_TOKEN — so npm itself only ever sees it inside
+          # the bootstrap lane's child processes.
+          publish-script: node scripts/publish-release.mjs
           version-script: pnpm run version
         env:
           # Only for opening the Version Packages pull request. Publishing
           # authenticates through the OIDC token above.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_BOOTSTRAP_TOKEN: ${{ secrets.NPM_BOOTSTRAP_TOKEN }}
 
       - name: Clean-install smoke test from npmjs.org
         # Installs the just-published core packages into an empty directory
