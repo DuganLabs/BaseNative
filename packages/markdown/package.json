@@ -1,6 +1,6 @@
 {
   "name": "@basenative/markdown",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Zero-dependency ES module markdown parser and SSR-safe HTML renderer",
   "type": "module",
   "exports": {

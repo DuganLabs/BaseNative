@@ -1,5 +1,19 @@
 # @basenative/components
 
+## 2.3.0
+
+### Minor Changes
+
+- 1e00b2f: App nav grows the two pieces a real phone-class surface needs. A material surface: the bar and rail now read `--bn-material-bg` / `--bn-material-backdrop` / `--bn-material-shadow` (opaque by default), so a platform token layer such as `@basenative/ios`'s glass ladder can glass them without component CSS changing. And a More overflow: pass `overflow` to `renderAppNav` and items past the bar's capacity (default 4) leave the phone-class bar for a More button and its sheet — the iOS tab-bar pattern, never a cram of wrapped labels — while the rail shows everything and hides the sheet; `initAppNav` wires the sheet's toggle (Escape and outside-click close, focus returns to the button). Also adds `renderListGroup`, the inset grouped list: a section heading, fact and link rows on one raised surface with hairline separators inset to the label edge, and an explanatory footer.
+
+### Patch Changes
+
+- 376c91b: App nav clearance now reserves the bar's full footprint: the phone-class page padding and the new scroll-padding include the bar's top border alongside its height token and the safe-area inset (the border was previously unreserved, leaving the last pixel row of a page under the bar), the More sheet's offset accounts for the same border, and at the unfolded class fragment targets clear the rail through scroll-padding-inline-start instead of the block-end reservation.
+- 1dba9a9: Catalog review fixes. The app nav's keyboard sync is hardened: `initAppNav` now re-syncs on focus (the earliest keyboard signal, plus a settle pass), tracks the largest visual-viewport inset measured while a text-entry control holds focus — iOS reports the viewport in stages during a keyboard opening, and trusting the last report could leave the bar sunk back into the keyboard for the whole episode — and clears only when the keyboard is fully gone. Tooltips are placed with `position-area` and `position-try` span fallbacks, so a tooltip at a screen edge re-centres into the half that has room instead of painting off-screen or crushing into a sliver; the tooltip trigger joins the shared button-reset group (it previously rendered with user-agent button chrome) and the 24px target-size floor, and reads as plain text with a dotted underline. Dropdown menus gain flip position-try fallbacks for edge triggers. Avatars carry a `data-tone` (a stable hash of the name, 0–7) with a lit, ringed disc per tone, replacing the identical flat grey disc for every person. On coarse pointers the control-height ladder's default rung is 44px (2.75rem). Pipeline card titles/subtitles and calendar event titles no longer break words mid-word (`overflow-wrap: anywhere` removed). The drawer can no longer cover a sub-320px viewport edge to edge.
+- 4c3dd72: Design pass over the catalog's visual layer. Combobox and multiselect labels (`[data-bn="label"]`) are styled at last — they previously matched no rule in the sheet and rendered as small grey user-agent text beside the field family's labels. The app nav is keyboard-aware: a new `--bn-app-nav-visual-inset` token carries the strip of the layout viewport covered by an on-screen keyboard (measured by `initAppNav` through `window.visualViewport`, pinch-zoom excluded), and the bar's and More sheet's bottom offsets read it, so the bar rides on top of the keyboard whole instead of floating mid-screen with its labels sliced; the rail posture pins the offset out. Card, dialog and drawer inline padding steps down from `--bn-space-6` to `--bn-space-5`, the hero's block padding dials in at phone widths, the skeleton shimmer is a theme-relative mix instead of a fixed grey stop, and the dropdown's anchor name is scoped to its wrapper so multi-dropdown pages pair each menu with its own trigger.
+- @basenative/forms@2.3.0
+  - @basenative/runtime@2.3.0
+
 ## 2.2.0
 
 ### Minor Changes

@@ -1,5 +1,13 @@
 # @basenative/mcp
 
+## 2.3.0
+
+### Patch Changes
+
+- @basenative/runtime@2.3.0
+  - @basenative/server@2.3.0
+  - @basenative/validate@2.3.0
+
 ## 2.2.0
 
 ### Patch Changes

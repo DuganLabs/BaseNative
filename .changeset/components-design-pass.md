@@ -1,5 +1,0 @@
----
-'@basenative/components': patch
----
-
-Design pass over the catalog's visual layer. Combobox and multiselect labels (`[data-bn="label"]`) are styled at last — they previously matched no rule in the sheet and rendered as small grey user-agent text beside the field family's labels. The app nav is keyboard-aware: a new `--bn-app-nav-visual-inset` token carries the strip of the layout viewport covered by an on-screen keyboard (measured by `initAppNav` through `window.visualViewport`, pinch-zoom excluded), and the bar's and More sheet's bottom offsets read it, so the bar rides on top of the keyboard whole instead of floating mid-screen with its labels sliced; the rail posture pins the offset out. Card, dialog and drawer inline padding steps down from `--bn-space-6` to `--bn-space-5`, the hero's block padding dials in at phone widths, the skeleton shimmer is a theme-relative mix instead of a fixed grey stop, and the dropdown's anchor name is scoped to its wrapper so multi-dropdown pages pair each menu with its own trigger.
