@@ -526,6 +526,20 @@ describe('every published route is reachable from the navigation', () => {
     }
   });
 
+  it('carries the shell-critical nav CSS inline, independent of the cached stylesheet chain', () => {
+    // Pages' assets are cached for hours while the HTML is revalidated
+    // per visit; a returning visitor with a pre-app-nav components.css
+    // must still get a styled shell (the 2026-10-20 phone incident).
+    // page.js inlines the App Nav + List Group sections for that reason.
+    const html = renderRoute(siteRoutes[0], { tasks: [], hasApi: false });
+    assert.ok(html.includes('<style data-bn-critical="shell">'), 'the shell-critical style block renders');
+    const style = html.slice(html.indexOf('<style data-bn-critical="shell">'), html.indexOf('</style>', html.indexOf('<style data-bn-critical="shell">')));
+    assert.ok(style.includes('[data-bn="app-nav"]'), 'the app nav rules are inlined');
+    assert.ok(style.includes('position: fixed'), 'the bar positioning is inlined');
+    assert.ok(style.includes('[data-bn="app-nav-sheet"]'), 'the More sheet rules are inlined');
+    assert.ok(style.includes('[data-bn="list-group"]'), 'the grouped list rules are inlined');
+  });
+
   it('a route with no nav entry is marked internal, and an internal route has no nav entry', () => {
     for (const route of siteRoutes) {
       assert.equal(!route.activePage, Boolean(route.internal),

@@ -36,6 +36,13 @@
 <link rel="stylesheet" href="/theme.css">
 <link rel="stylesheet" href="/styles.css">
 <link rel="stylesheet" href="/ios.css">
+<style data-bn-critical="shell">
+  /* Shell-critical rules (app nav + grouped list), generated from
+     packages/components/src/components.css by page.js — see
+     shellCriticalCss there for why the shell's styles ride the HTML
+     instead of depending on the cached @import chain. */
+  <!--APP_NAV_CSS-->
+</style>
 <style data-bn-critical>
   /* Critical layout — unlayered, plain selectors, no nesting.
      Wins over external @layer rules so first paint is correct
@@ -135,9 +142,16 @@
   <script type="module">
     // The app nav's only behaviour: the phone-class More sheet. The
     // postures themselves are one media query — nothing to wire there.
-    import { initAppNav } from '/basenative.js';
-    const appNav = document.querySelector('[data-bn="app-nav"]');
-    if (appNav) initAppNav(appNav);
+    // Loaded defensively: /basenative.js is a cacheable asset, and a
+    // copy from before initAppNav existed must not take the page down
+    // with a failed named import — the sheet just stays inert until
+    // the cached bundle ages out.
+    import('/basenative.js')
+      .then((m) => {
+        const appNav = document.querySelector('[data-bn="app-nav"]');
+        if (appNav && typeof m.initAppNav === 'function') m.initAppNav(appNav);
+      })
+      .catch(() => {});
   </script>
 </body>
 </html>

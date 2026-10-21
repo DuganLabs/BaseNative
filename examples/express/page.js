@@ -27,6 +27,37 @@ import { getShowcaseContext } from './showcase-data.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const read = (file) => readFileSync(join(__dirname, file), 'utf-8');
 
+/**
+ * The shell-critical CSS, sliced out of the catalog's components.css at
+ * render time: the App Nav section and the List Group section, verbatim
+ * (comments stripped), inlined into every page by the layout.
+ *
+ * Why this exists: components.css reaches the browser through an
+ * @import chain under /bn-css/, and Cloudflare Pages serves those
+ * assets with a multi-hour cache lifetime while the HTML itself is
+ * revalidated on every visit. A returning visitor can therefore hold a
+ * components.css from before the app nav existed next to today's HTML
+ * — and the shell renders as a raw list of links (seen on a real phone,
+ * 2026-10-20, while every fresh-profile check passed). The shell is
+ * not allowed to depend on that race: its rules ride the HTML, which
+ * is always fresh. components.css stays the single source the slice is
+ * cut from — when it is fresh too, the same rules arrive twice with
+ * identical values and nothing changes.
+ */
+function shellCriticalCss() {
+  const css = read('../../packages/components/src/components.css');
+  const slice = (from, to) => {
+    const start = css.indexOf(from);
+    const end = to ? css.indexOf(to, start) : css.length;
+    if (start === -1 || end === -1) return '';
+    return css.slice(start, end);
+  };
+  const sections =
+    slice('/* === List Group ===', '/* === Combobox ===') +
+    slice('/* === App Nav ===', '} /* end @layer components */');
+  return sections.replace(/\/\*[\s\S]*?\*\//g, '').trim();
+}
+
 export const SITE_URL = 'https://basenative.com';
 export const DEFAULT_DESCRIPTION =
   'BaseNative — a signal-based runtime over native HTML. Zero build step. Zero deps in core. Semantic by construction.';
@@ -78,6 +109,7 @@ export function renderPage(viewFile, ctx, opts) {
     .replace(/<!--DESCRIPTION-->/g, escapeAttr(description))
     .replace(/<!--OG_TITLE-->/g, escapeAttr(ogTitle))
     .replace(/<!--OG_URL-->/g, escapeAttr(SITE_URL + path))
+    .replace('<!--APP_NAV_CSS-->', () => shellCriticalCss())
     .replace('<!--APP_NAV-->', appNav)
     .replace('<!--CONTENT-->', content)
     .replace('<!--SCRIPTS-->', scripts);
