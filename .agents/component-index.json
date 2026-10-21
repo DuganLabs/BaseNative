@@ -7,7 +7,7 @@
     "components": 81,
     "renderFunctions": 75,
     "customElements": 6,
-    "styledContracts": 233,
+    "styledContracts": 235,
     "componentsWithVariants": 20
   },
   "stylesheets": [
@@ -80,6 +80,9 @@
       "@basenative/components#renderAppNav"
     ],
     "app-nav-more": [
+      "@basenative/components#renderAppNav"
+    ],
+    "app-nav-more-cell": [
       "@basenative/components#renderAppNav"
     ],
     "app-nav-sheet": [
@@ -1029,6 +1032,7 @@
           "app-nav-icon",
           "app-nav-label",
           "app-nav-actions",
+          "app-nav-more-cell",
           "app-nav-more",
           "app-nav-sheet",
           "app-nav-sheet-list",

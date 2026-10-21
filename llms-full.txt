@@ -725,14 +725,7 @@ renderTable({
 `numeric: true` emits `data-numeric` on the `<th>` and every cell in the column, and implies `align: 'end'`. The CSS gives those cells `font-variant-numeric: tabular-nums lining-nums` and `white-space: nowrap`, so digits sit on a fixed gri…
 
 #### Responsive stacking
-`labelCells: true` stamps `data-label` with the column's label on every body and footer cell. A stacked layout for narrow viewports can then hide `<thead>` and recover the heading in CSS, without the renderer knowing anything about the bre…
-```css
-@container (max-width: 32rem) {
-  [data-bn="table"] thead { display: none; }
-  [data-bn="table"] td { display: grid; grid-template-columns: 1fr 1fr; }
-  [data-bn="table"] td::before { content: attr(data-label); }
-}
-```
+Stacking ships with the component; it is not a recipe the caller wires up. The `[data-bn="table-container"]` wrapper is a named container (`container-name: table`), and in `states.css` a `@container table (max-width: 40rem)` block restacks…
 
 ### Data Grid
 `renderDataGrid(options)` → `string`. Sortable, selectable, paginated grid with a scroll region and a "Showing x–y of z" footer. Pair with `initDataGrid` on the client for sorting, selection and arrow-key navigation. | Option | Type | Defa…

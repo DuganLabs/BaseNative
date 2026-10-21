@@ -285,6 +285,7 @@ export function renderAppNav(options = {}) {
   const actionsHtml = actions ? `<div data-bn="app-nav-actions">${actions}</div>` : '';
 
   let overflowHtml = '';
+  let moreCellHtml = '';
   if (hasOverflow) {
     const sheetId = id ? `${id}-sheet` : nextId('app-nav-sheet');
     const moreLabel = overflow.label ?? 'More';
@@ -296,14 +297,20 @@ export function renderAppNav(options = {}) {
       .slice(after)
       .map((item) => `<li>${itemHtml(item)}</li>`)
       .join('');
+    /* The More button is a cell of the bar, not an appendage to it: it
+       renders inside the list, in a cell of its own, so the bar's cells
+       are equal width and the edge insets are symmetric. As a bare flex
+       child of the <nav> it sized to its content (45px against 85px
+       cells) and shoved every destination off-centre. */
+    moreCellHtml =
+      `<li data-bn="app-nav-more-cell"><button type="button" data-bn="app-nav-more" aria-expanded="false" aria-haspopup="true" aria-controls="${escapeAttr(sheetId)}">${moreIconHtml}<span data-bn="app-nav-label">${escapeText(moreLabel)}</span></button></li>`;
     overflowHtml =
-      `<button type="button" data-bn="app-nav-more" aria-expanded="false" aria-haspopup="true" aria-controls="${escapeAttr(sheetId)}">${moreIconHtml}<span data-bn="app-nav-label">${escapeText(moreLabel)}</span></button>` +
       `<div data-bn="app-nav-sheet" id="${escapeAttr(sheetId)}" hidden><ul data-bn="app-nav-sheet-list">${sheetItems}</ul></div>`;
   }
 
   const idAttr = id ? ` id="${escapeAttr(id)}"` : '';
 
-  return `<nav data-bn="app-nav" aria-label="${escapeAttr(label)}"${idAttr}${attrsSuffix(attrs)}>${brandHtml}<ul data-bn="app-nav-list">${itemsHtml}</ul>${actionsHtml}${overflowHtml}</nav>`;
+  return `<nav data-bn="app-nav" aria-label="${escapeAttr(label)}"${idAttr}${attrsSuffix(attrs)}>${brandHtml}<ul data-bn="app-nav-list">${itemsHtml}${moreCellHtml}</ul>${actionsHtml}${overflowHtml}</nav>`;
 }
 
 /**

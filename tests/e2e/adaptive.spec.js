@@ -1,0 +1,191 @@
+import { test, expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { renderTable, renderAppNav } from '../../packages/components/src/index.js';
+
+/*
+ * Adaptive-component layout contracts, asserted on real geometry.
+ *
+ * The unit suite asserts markup and stylesheet text; these specs assert
+ * what a phone actually renders, because the defects they guard against
+ * — a table whose values sit behind an unaffordanced sideways scroll or
+ * clip outright, a nav bar whose More control is a content-sized stub
+ * shoved against one edge — are invisible to string assertions. The
+ * fixtures deliberately carry the hostile content: long prose and a
+ * long unbroken token, the cell content that broke the table in the
+ * wild.
+ */
+
+const SRC = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'packages', 'components', 'src');
+const CSS = ['layers.css', 'reset.css', 'tokens.css', 'theme.css', 'layout.css', 'components.css', 'states.css']
+  .map((file) => readFileSync(join(SRC, file), 'utf8'))
+  .join('\n');
+
+async function renderComponent(page, html) {
+  await page.setContent(`<!doctype html><html><head><style>${CSS}</style></head><body>${html}</body></html>`);
+}
+
+const LONG_TOKEN = 'unbroken-token-that-refuses-to-wrap-and-would-force-any-container-wide-open-0123456789abcdef';
+
+function proseTable(labelCells) {
+  return renderTable({
+    caption: 'Posture',
+    columns: [
+      { key: 'measure', label: 'Measure' },
+      { key: 'basenative', label: 'BaseNative' },
+      { key: 'react', label: 'React 19' },
+      { key: 'angular', label: 'Angular 20' },
+      { key: 'ref', label: 'Reference' },
+    ],
+    rows: [
+      {
+        measure: 'A stored template (CMS, database, model output) renders as-is',
+        basenative: 'Yes — interpreted against a scope, prototype access blocklisted',
+        react: 'No — it must go through the build first',
+        angular: 'No — it must go through the build first',
+        ref: LONG_TOKEN,
+      },
+      {
+        measure: 'eval / Function constructor in shipped code',
+        basenative: '0',
+        react: '0 — after its compiler runs',
+        angular: '0 — after AOT compilation',
+        ref: 'docs/api/components.md#responsive-stacking',
+      },
+    ],
+    labelCells,
+  });
+}
+
+test.describe('Table — narrow-width contract', () => {
+  for (const width of [390, 320]) {
+    test(`stacks with nothing clipped at ${width}px, long unbroken content included`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 844 });
+      await renderComponent(page, proseTable(true));
+
+      const geometry = await page.evaluate(() => {
+        const container = document.querySelector('[data-bn="table-container"]');
+        const thead = document.querySelector('[data-bn="table"] thead');
+        const cells = [...document.querySelectorAll('[data-bn="table"] tbody td')];
+        const firstRowCells = [...document.querySelectorAll('[data-bn="table"] tbody tr:first-child td')];
+        return {
+          containerClient: container.clientWidth,
+          containerScroll: container.scrollWidth,
+          theadHeight: thead.getBoundingClientRect().height,
+          // scrollWidth alone misses this defect class: a value can paint
+          // past its cell's edge without registering as scroll overflow.
+          // Measure the rendered text itself against the cell box.
+          cells: cells.map((td) => {
+            const box = td.getBoundingClientRect();
+            const range = document.createRange();
+            range.selectNodeContents(td);
+            const text = range.getBoundingClientRect();
+            return { left: text.left - box.left, right: text.right - box.right };
+          }),
+          stackedLines: new Set(firstRowCells.map((td) => Math.round(td.getBoundingClientRect().y))).size,
+        };
+      });
+
+      expect(geometry.containerScroll).toBeLessThanOrEqual(geometry.containerClient + 1);
+      for (const cell of geometry.cells) {
+        expect(cell.left).toBeGreaterThanOrEqual(-1);
+        expect(cell.right).toBeLessThanOrEqual(1);
+      }
+      expect(geometry.theadHeight).toBeLessThanOrEqual(1);
+      expect(geometry.stackedLines).toBeGreaterThan(1);
+    });
+  }
+
+  test('stays a table where the container fits it (1280px)', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await renderComponent(page, proseTable(true));
+
+    const geometry = await page.evaluate(() => {
+      const thead = document.querySelector('[data-bn="table"] thead');
+      const firstRowCells = [...document.querySelectorAll('[data-bn="table"] tbody tr:first-child td')];
+      return {
+        theadHeight: thead.getBoundingClientRect().height,
+        rowLines: new Set(firstRowCells.map((td) => Math.round(td.getBoundingClientRect().y))).size,
+      };
+    });
+
+    expect(geometry.theadHeight).toBeGreaterThan(10);
+    expect(geometry.rowLines).toBe(1);
+  });
+});
+
+const ICON = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg>';
+const NAV_ITEMS = [
+  { label: 'Home', href: '/', icon: ICON, current: true },
+  { label: 'Compare', href: '/compare', icon: ICON },
+  { label: 'Components', href: '/components', icon: ICON },
+  { label: 'Docs', href: '/docs', icon: ICON },
+  { label: 'Playground', href: '/playground', icon: ICON },
+  { label: 'Builder', href: '/builder', icon: ICON },
+];
+
+test.describe('App nav — bar geometry', () => {
+  test('equal cells and symmetric edge insets at 390px, More included', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await renderComponent(page, renderAppNav({ items: NAV_ITEMS, overflow: {}, brand: {} }));
+
+    const geometry = await page.evaluate(() => {
+      const nav = document.querySelector('[data-bn="app-nav"]');
+      const navBox = nav.getBoundingClientRect();
+      const cells = [...nav.querySelectorAll('[data-bn="app-nav-list"] > li')]
+        .filter((li) => li.getClientRects().length)
+        .map((li) => {
+          const box = li.getBoundingClientRect();
+          const icon = li.querySelector('[data-bn="app-nav-icon"]');
+          const iconBox = icon ? icon.getBoundingClientRect() : null;
+          return { width: box.width, iconLeft: iconBox ? iconBox.x - navBox.x : null, iconRight: iconBox ? navBox.x + navBox.width - (iconBox.x + iconBox.width) : null };
+        });
+      return { cells };
+    });
+
+    expect(geometry.cells.length).toBe(5);
+    const widths = geometry.cells.map((c) => c.width);
+    expect(Math.max(...widths) - Math.min(...widths)).toBeLessThanOrEqual(1);
+    const first = geometry.cells[0];
+    const last = geometry.cells[geometry.cells.length - 1];
+    expect(Math.abs(first.iconLeft - last.iconRight)).toBeLessThanOrEqual(1);
+
+    // Equal cells must not be bought with ellipsized labels: the whole
+    // standard label set fits its cell at this width.
+    const ellipsized = await page.evaluate(() =>
+      [...document.querySelectorAll('[data-bn="app-nav-label"]')]
+        .filter((el) => el.getClientRects().length)
+        .filter((el) => el.scrollWidth > el.clientWidth + 1)
+        .map((el) => el.textContent),
+    );
+    expect(ellipsized).toEqual([]);
+  });
+
+  test('rail at 1280px: More cell hidden, overflow items restored, inline insets symmetric', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await renderComponent(page, renderAppNav({ items: NAV_ITEMS, overflow: {}, brand: {} }));
+
+    const geometry = await page.evaluate(() => {
+      const nav = document.querySelector('[data-bn="app-nav"]');
+      const navBox = nav.getBoundingClientRect();
+      const moreCell = nav.querySelector('[data-bn="app-nav-more-cell"]');
+      const visibleItems = [...nav.querySelectorAll('[data-bn="app-nav-list"] > li > a')].filter(
+        (a) => a.getClientRects().length,
+      );
+      const firstLink = visibleItems[0].getBoundingClientRect();
+      return {
+        direction: getComputedStyle(nav).flexDirection,
+        moreCellVisible: moreCell ? moreCell.getClientRects().length > 0 : false,
+        visibleCount: visibleItems.length,
+        leftInset: firstLink.x - navBox.x,
+        rightInset: navBox.x + navBox.width - (firstLink.x + firstLink.width),
+      };
+    });
+
+    expect(geometry.direction).toBe('column');
+    expect(geometry.moreCellVisible).toBe(false);
+    expect(geometry.visibleCount).toBe(6);
+    expect(Math.abs(geometry.leftInset - geometry.rightInset)).toBeLessThanOrEqual(1);
+  });
+});

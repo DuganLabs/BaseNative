@@ -536,7 +536,17 @@
 [data-bn="toast-container"][data-position="bottom-left"] { bottom: 0; left: 0; }
 
 /* === Table === */
-[data-bn="table-container"] { overflow-x: auto; }
+/* The container is the table's measure: it is a named container so the
+   shipped stylesheet can restack the table against the width it actually
+   has (states.css, @container table) instead of the viewport. overflow-x
+   stays as the fallback for a table whose cells carry no data-label
+   (renderTable with labelCells: false) — such a table scrolls when
+   narrow; it never clips. */
+[data-bn="table-container"] {
+  overflow-x: auto;
+  container-type: inline-size;
+  container-name: table;
+}
 [data-bn="table"] {
   width: 100%;
   border-collapse: collapse;
@@ -2574,6 +2584,11 @@ a[data-bn="list-group-row"][aria-current="page"] {
 [data-bn="app-nav-list"] li {
   display: flex;
   flex: 1;
+  /* Cells are equal width by contract, so a long label must never push
+     its cell wider (flex items default to a min-content floor): the
+     label ellipsises inside its cell instead — the tab-bar behaviour —
+     rather than unbalancing the bar and its edge insets. */
+  min-inline-size: 0;
 }
 [data-bn="app-nav-list"] a {
   display: flex;
@@ -2583,10 +2598,21 @@ a[data-bn="list-group-row"][aria-current="page"] {
   justify-content: center;
   gap: var(--bn-space-1);
   min-block-size: var(--bn-size-app-nav-bar);
-  padding: var(--bn-space-1) var(--bn-space-2);
+  min-inline-size: 0;
+  /* No inline padding: the cell is the hit area and the content is
+     centred in it, so side padding only steals label room — at five
+     cells across a phone it is the difference between "Components"
+     fitting its cell and ellipsising. */
+  padding: var(--bn-space-1) 0;
   color: var(--bn-color-text-muted);
   font-size: var(--bn-font-size-xs);
   text-decoration: none;
+}
+[data-bn="app-nav-label"] {
+  max-inline-size: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 [data-bn="app-nav-list"] a:hover {
   color: var(--bn-color-text);
@@ -2629,6 +2655,14 @@ a[data-bn="list-group-row"][aria-current="page"] {
 }
 [data-bn="app-nav-more"]:hover {
   color: var(--bn-color-text);
+}
+/* The button fills its list cell (renderAppNav renders it inside the
+   list, in a cell of its own), so its hit area and centred content sit
+   in the same geometry as every destination cell — including the
+   anchors' zero inline padding, so its label gets the full cell too. */
+[data-bn="app-nav-list"] [data-bn="app-nav-more"] {
+  flex: 1;
+  padding-inline: 0;
 }
 /* The More sheet: a material panel floating above the bar, holding the
    overflow destinations as icon-and-label rows. It carries the same
@@ -2750,6 +2784,7 @@ body:has(> [data-bn="app-nav"]) {
   [data-bn="app-nav-list"] li[data-bn-overflow] {
     display: flex;
   }
+  [data-bn="app-nav-list"] li[data-bn="app-nav-more-cell"],
   [data-bn="app-nav-more"],
   [data-bn="app-nav-sheet"] {
     display: none;

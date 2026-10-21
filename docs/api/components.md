@@ -448,7 +448,7 @@ renderTable({
 | `emptyMessage` | `string` | `'No data'` | Single full-width row when `rows` is empty (`render` is not consulted) |
 | `emptyContent` | `string` | `''` | HTML slot used instead of `emptyMessage` — for an empty state with its own call to action. Not escaped |
 | `caption` | `string` | `''` | `<caption>` |
-| `labelCells` | `boolean` | `false` | Stamp `data-label="<column label>"` on every body and footer cell — what a responsive stacked table needs once the `<thead>` is hidden |
+| `labelCells` | `boolean` | `true` | Stamp `data-label="<column label>"` on every body and footer cell — the shipped stylesheet's stacked presentation heads each cell with it at narrow container widths; `false` opts out (the table then scrolls horizontally when narrow) |
 | `attrs` | `string` | `''` | Spliced onto the `[data-bn="table-container"]` wrapper |
 
 Column options: `key`, `label`, `sortable`, `align`, `numeric`, `render(value, row)`
@@ -470,17 +470,9 @@ The heading is marked alongside its cells deliberately: a left-aligned `Amount` 
 
 ### Responsive stacking
 
-`labelCells: true` stamps `data-label` with the column's label on every body and footer cell. A stacked layout for narrow viewports can then hide `<thead>` and recover the heading in CSS, without the renderer knowing anything about the breakpoint:
+Stacking ships with the component; it is not a recipe the caller wires up. The `[data-bn="table-container"]` wrapper is a named container (`container-name: table`), and in `states.css` a `@container table (max-width: 40rem)` block restacks the table against the width it actually has: each row becomes a block, each cell a line headed by its own `data-label`, and long unbroken content wraps instead of clipping. The renderer knows nothing about the breakpoint — the transform is keyed to the container, so the same table stacks in a phone-width card and stays a table in a wide one.
 
-```css
-@container (max-width: 32rem) {
-  [data-bn="table"] thead { display: none; }
-  [data-bn="table"] td { display: grid; grid-template-columns: 1fr 1fr; }
-  [data-bn="table"] td::before { content: attr(data-label); }
-}
-```
-
-It is opt-in because the attribute is dead weight in every table that is not stacked, and a table's markup should not grow an attribute nobody reads. `<thead>` stays in the DOM either way, so the accessibility tree is unchanged at every width — the transform is purely presentational.
+That is why `labelCells` defaults to `true`: the labels are the contract the stack reads, and a table that cannot reflow is broken at the widths it will actually be given. A column with no visible `label` stamps its `srLabel` as the `data-label` instead, so an actions column still gets a heading. Pass `labelCells: false` to opt out — cells carry no labels, the stack cannot name them, and the container falls back to horizontal scrolling when narrow. `<thead>` stays in the DOM either way (the stacked presentation only clips it out of the layout), so the accessibility tree is unchanged at every width and the transform is purely presentational.
 
 ## Data Grid
 

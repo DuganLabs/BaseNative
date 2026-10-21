@@ -759,9 +759,28 @@ describe('Table — numeric columns, alignment, labels and footer', () => {
     assert.equal(cellWith(html, '$25,730').attr('data-label'), 'Principal');
   });
 
-  it('leaves every cell unlabelled while labelCells is off, footer included', () => {
+  it('labels every body and footer cell by default — the stacked presentation reads them', () => {
     const html = renderTable({ columns, rows: money, footer: total });
+    assert.equal(cellWith(html, 'Chase Sapphire').attr('data-label'), 'Liability');
+    assert.equal(cellWith(html, '$18,420').attr('data-label'), 'Principal');
+    assert.equal(cellWith(html, 'Total').attr('data-label'), 'Liability');
+    assert.equal(cellWith(html, '$25,730').attr('data-label'), 'Principal');
+  });
+
+  it('leaves every cell unlabelled while labelCells is off, footer included', () => {
+    const html = renderTable({ columns, rows: money, footer: total, labelCells: false });
     assert.ok(!html.includes('data-label'));
+  });
+
+  it('ships the stacked presentation in the stylesheet: named container, container query, data-label headings', () => {
+    const base = readFileSync(new URL('./components.css', import.meta.url), 'utf8');
+    const states = readFileSync(new URL('./states.css', import.meta.url), 'utf8');
+    assert.ok(base.includes('container-name: table'), 'the table container is a named container');
+    assert.ok(
+      states.includes('@container table (max-width: 40rem)'),
+      'the stack is keyed to the table container, not the viewport'
+    );
+    assert.ok(states.includes('content: attr(data-label)'), 'stacked cells are headed by their data-label');
   });
 
   it('renders a footer row as th scope=row plus cells, using the same render hooks', () => {
@@ -1592,6 +1611,14 @@ describe('Table — cell hooks', () => {
     assert.equal(cellWith(html, '1').attr('data-label'), undefined);
   });
 
+  it('stamps the srLabel when a column has no visible label, so the stack can still head the cell', () => {
+    const html = renderTable({
+      columns: [{ key: 'a', label: '', srLabel: 'Row actions' }],
+      rows: [{ a: 'x' }],
+    });
+    assert.equal(cellWith(html, 'x').attr('data-label'), 'Row actions');
+  });
+
   it('cellAttrs is spliced onto the cell, as a string or per row', () => {
     const html = renderTable({
       columns: [
@@ -1605,7 +1632,11 @@ describe('Table — cell hooks', () => {
   });
 
   it('a cellAttrs function returning nothing adds no stray space', () => {
-    const html = renderTable({ columns: [{ key: 'a', label: 'A', cellAttrs: () => undefined }], rows: [{ a: 1 }] });
+    const html = renderTable({
+      columns: [{ key: 'a', label: 'A', cellAttrs: () => undefined }],
+      rows: [{ a: 1 }],
+      labelCells: false,
+    });
     assert.equal(cellWith(html, '1').attrs, '');
   });
 
@@ -4605,6 +4636,18 @@ describe('AppNav', () => {
       assert.ok(html.includes('<span data-bn="app-nav-label">More</span>'), 'the button is labelled More');
     });
 
+    it('renders the More button inside the list, in a cell of its own', () => {
+      const html = renderAppNav({ items: many, overflow: {}, id: 'site-nav' });
+      assert.ok(
+        html.includes('<li data-bn="app-nav-more-cell"><button type="button" data-bn="app-nav-more"'),
+        'the button sits in a list cell, so every bar cell is equal width and the edge insets are symmetric'
+      );
+      assert.ok(
+        html.indexOf('data-bn="app-nav-sheet"') > html.indexOf('</ul>'),
+        'the sheet stays outside the list'
+      );
+    });
+
     it('the sheet lists exactly the overflow items, with their icons and current state', () => {
       const html = renderAppNav({
         items: [
@@ -4654,6 +4697,11 @@ describe('AppNav', () => {
         rail.includes('li[data-bn-overflow]'),
         'the rail restores the overflow items to the list'
       );
+      assert.ok(
+        base.includes('[data-bn="app-nav-list"] [data-bn="app-nav-more"]'),
+        'the button fills its list cell at phone class'
+      );
+      assert.ok(rail.includes('[data-bn="app-nav-more-cell"]'), 'the rail hides the More cell');
     });
   });
 });
