@@ -3334,6 +3334,18 @@ function initSiteHeader(root, options = {}) {
 function initAppNav(root, options = {}) {
   const { onToggle } = options;
   const doc = root.ownerDocument ?? (typeof document === "undefined" ? null : document);
+  const view = doc?.defaultView ?? null;
+  const vv = view?.visualViewport ?? null;
+  let syncViewportInset = null;
+  if (vv && typeof vv.addEventListener === "function" && root.style && typeof root.style.setProperty === "function") {
+    syncViewportInset = () => {
+      const inset = vv.scale > 1.01 ? 0 : Math.max(0, Math.round(view.innerHeight - vv.height - vv.offsetTop));
+      root.style.setProperty("--bn-app-nav-visual-inset", `${inset}px`);
+    };
+    vv.addEventListener("resize", syncViewportInset);
+    vv.addEventListener("scroll", syncViewportInset);
+    syncViewportInset();
+  }
   const moreBtn = () => root.querySelector('[data-bn="app-nav-more"]');
   const sheet = () => root.querySelector('[data-bn="app-nav-sheet"]');
   const isOpen = () => root.hasAttribute("data-open");
@@ -3389,6 +3401,13 @@ function initAppNav(root, options = {}) {
       if (doc) {
         doc.removeEventListener("click", onDocumentClick);
         doc.removeEventListener("keydown", onDocumentKeydown);
+      }
+      if (vv && syncViewportInset && typeof vv.removeEventListener === "function") {
+        vv.removeEventListener("resize", syncViewportInset);
+        vv.removeEventListener("scroll", syncViewportInset);
+        if (typeof root.style.removeProperty === "function") {
+          root.style.removeProperty("--bn-app-nav-visual-inset");
+        }
       }
     }
   };

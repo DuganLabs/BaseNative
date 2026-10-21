@@ -356,6 +356,17 @@
     container-name: page;
   }
 
+  /* Phone gutters are dialed in, not flooded: the desktop 24px page
+     gutter stacked on top of the article card's own 24px padding left a
+     ~300px content column on a 390px phone, mostly void (Warren,
+     2026-10-20). Both insets step down at phone widths; the desktop
+     rhythm is untouched. */
+  @media (max-width: 48rem) {
+    main {
+      padding: var(--space-xl) var(--space-md) var(--space-3xl);
+    }
+  }
+
   body > footer {
     border-block-start: var(--border-width) solid var(--border);
     padding: var(--space-lg);
@@ -486,6 +497,11 @@
     container-type: inline-size;
     container-name: card;
   }
+  @media (max-width: 48rem) {
+    article {
+      padding: var(--space-md);
+    }
+  }
   article:hover {
     border-color: var(--border-accent);
     box-shadow: var(--shadow-card);
@@ -518,12 +534,31 @@
     margin-block-end: 0;
   }
 
-  article p code {
-    font-size: var(--font-size-base);
-    color: var(--accent);
-    padding: var(--space-xs) var(--space-sm);
+  /* -- Inline code in prose --
+     The box an inline <code> paints has to fit INSIDE the line it sits
+     in. The old rule padded it --space-xs on the block axis at full text
+     size: the painted box stood taller than the paragraph's line pitch,
+     so when prose wrapped, the boxes collided with the lines above and
+     below (seen on the docs pages, 2026-10-20). The discipline: type a
+     step down (0.875em), block-axis padding a whisper (0.08em — enough
+     to lift the background off the glyphs, never enough to reach the
+     neighbouring line), and box-decoration-break: clone so a fragment
+     that itself wraps gets its own complete box — padding and radius on
+     every line instead of sliced edges where the break fell.
+     line-height stays inherited, so the line box never inflates. */
+  p code,
+  li code,
+  dd code,
+  dt code,
+  figcaption code,
+  blockquote code {
+    font-size: 0.875em;
+    padding: 0.08em 0.35em;
     background: var(--surface-2);
+    color: var(--accent);
     border-radius: var(--radius-sm);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
   }
 
   /* -- Lists -- */
@@ -1040,6 +1075,7 @@
     border-radius: var(--radius-md);
     padding: var(--space-lg);
     overflow-x: auto;
+    max-inline-size: 100%;
     margin-block-start: var(--space-sm);
   }
 
@@ -2250,6 +2286,8 @@
       background: var(--surface-2);
       padding: 0.1em 0.4em;
       border-radius: var(--radius-sm);
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
     }
   }
 
@@ -2535,6 +2573,8 @@
       background: var(--surface-2);
       padding: 0.1em 0.35em;
       border-radius: var(--radius-sm);
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
     }
   }
 
@@ -2553,7 +2593,7 @@
 
   [data-bn-component-hero] {
     display: block;
-    margin-block: var(--space-xl) var(--space-2xl);
+    margin-block: var(--space-lg) var(--space-xl);
     background: none;
     border: none;
     padding: 0;
@@ -2568,18 +2608,49 @@
     }
   }
 
+  /* The meta block is a spec strip, not a section: three short facts.
+     At phone widths it stacks as compact label/value rows with hairlines
+     (the grouped-list pattern) instead of three airy grid cells that ate
+     a third of the first screen; the grid returns when there is room
+     for the columns to sit side by side. */
   [data-bn-component-meta] {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-    gap: var(--space-md);
-    margin-block-start: var(--space-lg);
-    padding-block: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    margin-block-start: var(--space-md);
+    padding-block: var(--space-sm);
     border-block: var(--border-width) solid var(--border);
 
     & > div {
       display: flex;
-      flex-direction: column;
-      gap: var(--space-xs);
+      flex-direction: row;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--space-md);
+      padding-block: var(--space-xs);
+    }
+
+    & > div + div {
+      border-block-start: var(--border-width) solid var(--border);
+    }
+
+    @media (min-width: 40rem) {
+      & {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+        gap: var(--space-md);
+        padding-block: var(--space-md);
+      }
+
+      & > div {
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: var(--space-xs);
+        padding-block: 0;
+      }
+
+      & > div + div {
+        border-block-start: none;
+      }
     }
 
     & dt {
@@ -2621,7 +2692,7 @@
     & > h3 {
       font-family: var(--font-family);
       font-stretch: var(--font-serif);
-      font-size: var(--font-size-2xl);
+      font-size: var(--font-size-xl);
       font-weight: var(--font-weight-normal);
       letter-spacing: var(--letter-spacing-tight);
       margin-block-end: var(--space-xs);
@@ -2638,7 +2709,7 @@
   [data-bn-component-quickstart],
   [data-bn-component-examples],
   [data-bn-component-api] {
-    margin-block-end: var(--space-2xl);
+    margin-block-end: var(--space-xl);
   }
 
   [data-bn-component-quickstart] > [data-bn-code-block] {
@@ -2649,8 +2720,8 @@
 
   /* Per example block. */
   [data-bn-component-example] {
-    margin-block-end: var(--space-2xl);
-    padding-block-end: var(--space-xl);
+    margin-block-end: var(--space-xl);
+    padding-block-end: var(--space-lg);
     border-block-end: var(--border-width) solid var(--border);
 
     &:last-of-type {
@@ -2668,7 +2739,7 @@
       & > h4 {
         font-family: var(--font-family);
         font-stretch: var(--font-serif);
-        font-size: var(--font-size-xl);
+        font-size: var(--font-size-lg);
         font-weight: var(--font-weight-normal);
         color: var(--text-0);
         letter-spacing: var(--letter-spacing-tight);
@@ -2688,11 +2759,20 @@
   [data-bn-component-split] {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--space-md);
+    gap: var(--space-sm);
+
+    /* Grid items default to min-inline-size: auto, which lets a wide
+       <pre> hold the column open past the card edge on engines that
+       resolve it strictly (the code block then clips instead of
+       scrolling). The pane must always be allowed to shrink. */
+    & > * {
+      min-inline-size: 0;
+    }
 
     @container page-component (min-width: 48rem) {
       & {
         grid-template-columns: 1fr 1fr;
+        gap: var(--space-md);
       }
     }
   }
@@ -2716,7 +2796,7 @@
       color: var(--text-2);
       text-transform: uppercase;
       letter-spacing: var(--letter-spacing-wider);
-      padding: var(--space-sm) var(--space-md);
+      padding: var(--space-xs) var(--space-md);
       background: var(--surface-2);
       border-block-end: var(--border-width) solid var(--border);
     }
@@ -2726,23 +2806,17 @@
     & > output {
       display: flex;
       flex-wrap: wrap;
-      gap: var(--space-md);
+      gap: var(--space-sm);
       align-items: center;
-      padding: var(--space-xl);
+      padding: var(--space-md);
       flex: 1;
-      background-color: var(--surface-inset);
-      background-image:
-        linear-gradient(45deg, var(--surface-1) 25%, transparent 25%),
-        linear-gradient(-45deg, var(--surface-1) 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, var(--surface-1) 75%),
-        linear-gradient(-45deg, transparent 75%, var(--surface-1) 75%);
-      background-size: 24px 24px;
-      background-position:
-        0 0,
-        0 12px,
-        12px -12px,
-        12px 0;
-      min-block-size: 8rem;
+      /* A flat page surface, NOT the transparency checkerboard this used
+         to paint: the grid read as an image-editor canvas — a wireframe
+         placeholder — and made finished components look unfinished no
+         matter how well they were built (Warren, 2026-10-20). The demo
+         now sits on the same grouped surface a real page would give it. */
+      background: var(--surface-0);
+      min-inline-size: 0;
 
       /* When the preview contains a form-style demo, drop the row layout
          so labels and fields stack vertically. */
@@ -2753,6 +2827,49 @@
         align-items: stretch;
         gap: var(--space-md);
       }
+    }
+
+    /* Block-level demos take the full row. In the flex tray above they
+       shrink-wrapped to their longest word — a card collapsed into a
+       one-letter-wide column thousands of pixels tall, tables and alerts
+       floated at ragged content widths. Inline demos (buttons, badges,
+       avatars, selection controls) keep the tray; anything that is a
+       surface, a list or a form in its own right spans the pane. */
+    &
+      > output
+      > :where(
+        [data-bn='card'],
+        [data-bn='feature-card'],
+        [data-bn='pricing-cards'],
+        [data-bn='stat-card'],
+        [data-bn='hero'],
+        [data-bn='alert'],
+        [data-bn='accordion'],
+        [data-bn='tabs'],
+        [data-bn='table-container'],
+        [data-bn='datagrid'],
+        [data-bn='tree'],
+        [data-bn='virtualizer'],
+        [data-bn='list-group'],
+        [data-bn='faq-list'],
+        [data-bn='breadcrumb'],
+        [data-bn='pagination'],
+        [data-bn='field'],
+        [data-bn='radio-group'],
+        [data-bn='combobox'],
+        [data-bn='multiselect'],
+        [data-bn='site-header'],
+        [data-bn='site-nav'],
+        [data-bn='site-footer'],
+        [data-bn='app-main'],
+        [data-bn='calendar'],
+        [data-bn='pipeline'],
+        [data-bn='layout-grid'],
+        [data-bn='progress'],
+        [data-bn='skeleton']
+      ) {
+      flex: 1 1 100%;
+      min-inline-size: 0;
     }
   }
 
@@ -3298,11 +3415,14 @@
     display: none;
   }
 
-  /* Tooltip: anchored popover with arrow */
+  /* Tooltip: anchored popover with arrow.
+     SURFACE ONLY, for the same reason as the dropdown rule below: this
+     rule used to declare `position: fixed; inset: auto; margin: 0`,
+     which reset the component's anchored insets to auto and left the
+     tooltip stranded at the viewport's top-left corner, half off-screen
+     (seen on the catalog page, 2026-10-20). The component owns the
+     geometry; the site re-skins the surface. */
   [data-bn='tooltip'] {
-    position: fixed;
-    inset: auto;
-    margin: 0;
     padding: var(--space-xs) var(--space-sm);
     background: var(--surface-3);
     color: var(--text-0);
@@ -3319,11 +3439,15 @@
     display: none;
   }
 
-  /* Dropdown menu: popover with anchored position */
+  /* Dropdown menu: popover with anchored position.
+     SURFACE ONLY — this rule used to also declare `position: fixed;
+     inset: auto; margin: 0`, which silently defeated the component's
+     own positioning in BOTH of its paths (the anchored insets where
+     anchor positioning is supported, the wrapper-relative insets in
+     the fallback): the menu opened at the viewport's top-left corner,
+     detached from its trigger (seen on the catalog page, 2026-10-20).
+     Geometry belongs to the component; the site re-skins the surface. */
   [data-bn='dropdown-menu'] {
-    position: fixed;
-    inset: auto;
-    margin: 0;
     min-inline-size: 12rem;
     padding: var(--space-xs);
     background: var(--surface-2);

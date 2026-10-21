@@ -218,6 +218,18 @@
   font-size: var(--bn-font-size-xs);
   color: var(--bn-color-error-fg);
 }
+/* The standalone label combobox and multiselect render when they are not
+   wrapped in a field. It previously matched NO rule in this sheet, so the
+   two controls shipped with a user-agent label — visibly smaller and
+   greyer than the field label every sibling control gets. Same voice as
+   [data-bn="field"] label, on its own block with the field's gap under it. */
+[data-bn="label"] {
+  display: block;
+  margin-block-end: var(--bn-space-1);
+  font-size: var(--bn-font-size-sm);
+  font-weight: var(--bn-font-weight-medium);
+  color: var(--bn-color-text);
+}
 
 /* === Input & Textarea === */
 [data-bn="input"], [data-bn="textarea"], [data-bn="select"] {
@@ -618,13 +630,13 @@
   overflow: hidden;
 }
 [data-bn="card-header"] {
-  padding: var(--bn-space-4) var(--bn-space-6);
+  padding: var(--bn-space-4) var(--bn-space-5);
   border-bottom: 1px solid var(--bn-color-border);
   font-weight: var(--bn-font-weight-semibold);
 }
-[data-bn="card-body"] { padding: var(--bn-space-4) var(--bn-space-6); }
+[data-bn="card-body"] { padding: var(--bn-space-4) var(--bn-space-5); }
 [data-bn="card-footer"] {
-  padding: var(--bn-space-4) var(--bn-space-6);
+  padding: var(--bn-space-4) var(--bn-space-5);
   border-top: 1px solid var(--bn-color-border);
   background: var(--bn-color-surface-subtle);
 }
@@ -662,7 +674,10 @@
 
 /* === Skeleton === */
 [data-bn="skeleton"] {
-  background: linear-gradient(90deg, var(--bn-color-surface-muted) 25%, var(--bn-color-border-control) 50%, var(--bn-color-surface-muted) 75%);
+  /* The sheen is a whisper of the text color across the muted surface —
+     theme-relative, so it stays a shimmer on dark instead of the solid
+     mid-grey slab a fixed grey stop paints there. */
+  background: linear-gradient(90deg, var(--bn-color-surface-muted) 25%, color-mix(in srgb, var(--bn-color-surface-muted) 78%, var(--bn-color-text) 22%) 50%, var(--bn-color-surface-muted) 75%);
   background-size: 200% 100%;
   animation: bn-shimmer 1.5s infinite;
   border-radius: var(--bn-radius-md);
@@ -1099,7 +1114,7 @@ a[data-bn="list-group-row"][aria-current="page"] {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--bn-space-4) var(--bn-space-6);
+  padding: var(--bn-space-4) var(--bn-space-5);
   border-bottom: var(--bn-border-width) solid var(--bn-color-border);
 }
 [data-bn="dialog-title"] {
@@ -1121,7 +1136,7 @@ a[data-bn="list-group-row"][aria-current="page"] {
 }
 [data-bn="dialog-close"]:hover { background: var(--bn-color-surface-muted); color: var(--bn-color-text); }
 [data-bn="dialog-close"]:focus-visible { box-shadow: var(--bn-focus-ring); outline: none; }
-[data-bn="dialog-body"] { padding: var(--bn-space-4) var(--bn-space-6); }
+[data-bn="dialog-body"] { padding: var(--bn-space-4) var(--bn-space-5); }
 [data-bn="dialog-description"] {
   margin: 0 0 var(--bn-space-3);
   font-size: var(--bn-font-size-sm);
@@ -1131,7 +1146,7 @@ a[data-bn="list-group-row"][aria-current="page"] {
   display: flex;
   justify-content: flex-end;
   gap: var(--bn-space-2);
-  padding: var(--bn-space-4) var(--bn-space-6);
+  padding: var(--bn-space-4) var(--bn-space-5);
   border-top: var(--bn-border-width) solid var(--bn-color-border);
 }
 
@@ -1176,7 +1191,7 @@ a[data-bn="list-group-row"][aria-current="page"] {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--bn-space-4) var(--bn-space-6);
+  padding: var(--bn-space-4) var(--bn-space-5);
   border-bottom: var(--bn-border-width) solid var(--bn-color-border);
 }
 [data-bn="drawer-title"] {
@@ -1197,7 +1212,7 @@ a[data-bn="list-group-row"][aria-current="page"] {
 }
 [data-bn="drawer-close"]:hover { background: var(--bn-color-surface-muted); color: var(--bn-color-text); }
 [data-bn="drawer-close"]:focus-visible { box-shadow: var(--bn-focus-ring); outline: none; }
-[data-bn="drawer-body"] { padding: var(--bn-space-4) var(--bn-space-6); flex: 1; overflow-y: auto; }
+[data-bn="drawer-body"] { padding: var(--bn-space-4) var(--bn-space-5); flex: 1; overflow-y: auto; }
 
 /* === Dropdown Menu === */
 [data-bn="dropdown"] { position: relative; display: inline-flex; }
@@ -1262,6 +1277,16 @@ a[data-bn="list-group-row"][aria-current="page"] {
    default to only one open at a time (popover="auto" light-dismiss), so a
    single shared anchor-name is safe in practice. */
 @supports (anchor-name: --bn-anchor) {
+  [data-bn="dropdown"] {
+    /* Scope the shared anchor name to each wrapper's subtree, so on a
+       page with several dropdowns every menu pairs with its OWN trigger
+       when the name resolves. (The catalog page's detached menus in
+       Oct 2026 traced to the site sheet resetting the menu's insets,
+       not to this — but unscoped, the pairing depends on the engine's
+       tie-break among same-named anchors.) Engines without anchor-scope
+       keep the wrapper-relative fallback above. */
+    anchor-scope: --bn-dropdown-trigger;
+  }
   [data-bn="dropdown-trigger"] { anchor-name: --bn-dropdown-trigger; }
   [data-bn="dropdown-menu"] {
     position: fixed;
@@ -2159,6 +2184,13 @@ a[data-bn="list-group-row"][aria-current="page"] {
   padding-block: var(--bn-space-16);
   background: var(--bn-color-surface);
 }
+/* A hero breathes on a desktop; on a phone the same block padding is
+   mostly void above the fold. Dial it in at phone widths. */
+@media (max-width: 48rem) {
+  [data-bn="hero"] { padding-block: var(--bn-space-10); }
+  [data-bn="page-hero"] { padding-block: var(--bn-space-8); }
+  [data-bn="hero-content"] { gap: var(--bn-space-4); }
+}
 [data-bn="page-hero"] {
   padding-block: var(--bn-space-12) var(--bn-space-10);
   background: var(--bn-color-surface-subtle);
@@ -2401,7 +2433,13 @@ a[data-bn="list-group-row"][aria-current="page"] {
 [data-bn="app-nav"] {
   position: fixed;
   inset-inline: 0;
-  bottom: 0;
+  /* NOT a bare 0: with a software keyboard up, the visual viewport is
+     shorter than the layout viewport this resolves against, and the bar
+     ends up floating mid-screen with its lower half under the keyboard.
+     initAppNav keeps --bn-app-nav-visual-inset equal to the covered
+     strip, so the bar sits exactly on top of the keyboard instead. The
+     fallback keeps every non-initAppNav consumer at today's geometry. */
+  bottom: var(--bn-app-nav-visual-inset, 0px);
   z-index: var(--bn-z-nav);
   display: flex;
   align-items: stretch;
@@ -2490,7 +2528,8 @@ a[data-bn="list-group-row"][aria-current="page"] {
   inset-inline: var(--bn-space-2);
   bottom: calc(
     var(--bn-size-app-nav-bar) + env(safe-area-inset-bottom, 0px) +
-      var(--bn-border-width) + var(--bn-space-2)
+      var(--bn-border-width) + var(--bn-space-2) +
+      var(--bn-app-nav-visual-inset, 0px)
   );
   background: var(--bn-material-bg);
   -webkit-backdrop-filter: var(--bn-material-backdrop);
@@ -2545,6 +2584,9 @@ body:has(> [data-bn="app-nav"]) {
 @media (spanning: single-fold-vertical), (min-width: 58.6875rem) {
   [data-bn="app-nav"] {
     top: 0;
+    /* The rail spans the full block axis; the keyboard inset is a
+       phone-class concern and must never lift the rail's foot. */
+    bottom: 0;
     inset-inline-start: 0;
     inset-inline-end: auto;
     inline-size: var(--bn-size-nav-rail);

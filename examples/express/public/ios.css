@@ -230,6 +230,22 @@ article:hover {
   border-color: transparent;
 }
 
+/* Phone widths dial the card inset in one step: the page gutter and the
+   card padding stack, and together they were spending ~30% of a 390px
+   screen on margin before any content appeared (Warren, 2026-10-20).
+   The zero-padding heading zones above keep their higher-specificity
+   rules and are untouched by this. */
+@media (max-width: 48rem) {
+  article,
+  main > section {
+    padding: var(--bn-ios-space-4);
+  }
+  main > section[data-hero],
+  main > section[data-bn-page-hero] {
+    padding-inline: var(--bn-ios-space-4);
+  }
+}
+
 /* The stats section is a heading zone too; its tiles are the cards. */
 main > section[data-stats] {
   background: transparent;
@@ -291,6 +307,11 @@ pre {
   font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
   font-size: var(--bn-ios-font-footnote-size);
   line-height: var(--bn-ios-font-footnote-leading);
+  /* This sheet re-declares pre last, so the scroll guarantee is stated
+     here too: a long line scrolls inside the block, it never pushes
+     the block past the card edge and clips. */
+  overflow-x: auto;
+  max-inline-size: 100%;
 }
 code {
   font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
@@ -418,6 +439,18 @@ button:not([data-bn])[data-variant='outline']:hover {
    components carry data-bn and are excluded. */
 main a:where(:not([data-bn]):not([role='button']):not([data-bn-cta])) {
   color: var(--bn-ios-color-orange);
+}
+
+/* Pagination's links are plain <a> inside the [data-bn] nav, so the
+   prose tint above reaches them — and on the current page it painted
+   the digit the same orange as the component's own current-page fill,
+   leaving an empty orange square. Component-owned links keep the
+   component's ink; the current page keeps its on-fill foreground. */
+[data-bn='pagination'] a {
+  color: var(--bn-color-text);
+}
+[data-bn='pagination'] a[aria-current='page'] {
+  color: var(--bn-color-on-primary);
 }
 
 /* Filter chips are a segmented choice, not primary actions: neutral
