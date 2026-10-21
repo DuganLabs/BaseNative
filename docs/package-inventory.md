@@ -17,57 +17,57 @@ this exact version was published (or unpublished) before and can never be publis
 
 | Package | Local | npmjs | State |
 |---|---|---|---|
-| `@basenative/admin` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/auth` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/auth-webauthn` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/builder` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/claude-config` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/cli` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/combobox` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/components` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/config` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/date` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/db` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/doppler` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/eslint-config` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/evals` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/favicon` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/fetch` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/flags` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/fonts` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/forms` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/hmr` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/i18n` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/icons` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/integrations` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/ios` | 0.2.0 | 0.2.0 | in sync |
-| `@basenative/keyboard` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/logger` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/markdown` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/marketplace` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/mcp` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/middleware` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/notify` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/og-image` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/persist` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/realtime` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/router` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/runtime` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/server` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/share` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/station` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/tenant` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/theme` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/tsconfig` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/upload` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/validate` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/visual-builder` | 2.2.0 | 2.2.0 | in sync |
-| `@basenative/wrangler-preset` | 2.2.0 | 2.2.0 | in sync |
+| `@basenative/admin` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/auth` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/auth-webauthn` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/builder` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/claude-config` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/cli` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/combobox` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/components` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/config` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/date` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/db` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/doppler` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/eslint-config` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/evals` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/favicon` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/fetch` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/flags` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/fonts` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/forms` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/hmr` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/i18n` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/icons` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/integrations` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/ios` | 2.3.0 | 0.2.0 | unreleased bump |
+| `@basenative/keyboard` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/logger` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/markdown` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/marketplace` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/mcp` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/middleware` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/notify` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/og-image` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/persist` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/realtime` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/router` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/runtime` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/server` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/share` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/station` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/tenant` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/theme` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/tsconfig` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/upload` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/validate` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/visual-builder` | 2.3.0 | 2.2.0 | unreleased bump |
+| `@basenative/wrangler-preset` | 2.3.0 | 2.2.0 | unreleased bump |
 
 ## Summary
 
 - **46** publishable, **0** private (none)
-- **0** have an unreleased version bump waiting to publish
+- **46** have an unreleased version bump waiting to publish
 - **0** have never been published to npmjs
 - **0** have a higher version on npmjs than in this tree (none)
-- **46** are at a version npmjs has already used (`@basenative/admin` 2.2.0, `@basenative/auth` 2.2.0, `@basenative/auth-webauthn` 2.2.0, `@basenative/builder` 2.2.0, `@basenative/claude-config` 2.2.0, `@basenative/cli` 2.2.0, `@basenative/combobox` 2.2.0, `@basenative/components` 2.2.0, `@basenative/config` 2.2.0, `@basenative/date` 2.2.0, `@basenative/db` 2.2.0, `@basenative/doppler` 2.2.0, `@basenative/eslint-config` 2.2.0, `@basenative/evals` 2.2.0, `@basenative/favicon` 2.2.0, `@basenative/fetch` 2.2.0, `@basenative/flags` 2.2.0, `@basenative/fonts` 2.2.0, `@basenative/forms` 2.2.0, `@basenative/hmr` 2.2.0, `@basenative/i18n` 2.2.0, `@basenative/icons` 2.2.0, `@basenative/integrations` 2.2.0, `@basenative/ios` 0.2.0, `@basenative/keyboard` 2.2.0, `@basenative/logger` 2.2.0, `@basenative/markdown` 2.2.0, `@basenative/marketplace` 2.2.0, `@basenative/mcp` 2.2.0, `@basenative/middleware` 2.2.0, `@basenative/notify` 2.2.0, `@basenative/og-image` 2.2.0, `@basenative/persist` 2.2.0, `@basenative/realtime` 2.2.0, `@basenative/router` 2.2.0, `@basenative/runtime` 2.2.0, `@basenative/server` 2.2.0, `@basenative/share` 2.2.0, `@basenative/station` 2.2.0, `@basenative/tenant` 2.2.0, `@basenative/theme` 2.2.0, `@basenative/tsconfig` 2.2.0, `@basenative/upload` 2.2.0, `@basenative/validate` 2.2.0, `@basenative/visual-builder` 2.2.0, `@basenative/wrangler-preset` 2.2.0)
+- **0** are at a version npmjs has already used (none)

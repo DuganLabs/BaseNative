@@ -1,6 +1,6 @@
 {
   "name": "@basenative/fonts",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Self-hosted web fonts for BaseNative — the BaseNative Sans, Serif and Mono families plus Inter, JetBrains Mono, Source Serif 4 and DM Serif Display as woff2, with a ready-made @font-face stylesheet",
   "type": "module",
   "exports": {
