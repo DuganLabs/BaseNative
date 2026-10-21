@@ -43,6 +43,19 @@ export interface MotionPreset {
   readonly timing: string;
 }
 
+/**
+ * The fold geometry: the segment count, the viewport-segment env()
+ * expressions (with their single-pane fallbacks), and the crease
+ * clearance kept between content and the fold.
+ */
+export interface FoldTokens {
+  readonly segments: number;
+  readonly segmentWidth: string;
+  readonly segmentHeight: string;
+  readonly secondSegmentLeft: string;
+  readonly creaseSafeMargin: string;
+}
+
 /** Whether a token group's values are published by Apple or estimated here. */
 export type ProvenanceSource = 'documented' | 'estimate';
 
@@ -60,4 +73,6 @@ export declare const RADII: Readonly<Record<string, string>>;
 export declare const SPACING: Readonly<Record<number, string>>;
 export declare const SAFE_AREA: Readonly<Record<string, string>>;
 export declare const LAYOUT: Readonly<Record<string, string>>;
+export declare const BREAKPOINTS: Readonly<Record<string, number>>;
+export declare const FOLD: FoldTokens;
 export declare const MOTION: Readonly<Record<string, MotionPreset>>;

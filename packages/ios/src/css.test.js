@@ -14,6 +14,8 @@ import {
   GLASS_MATERIALS,
   RADII,
   SPACING,
+  BREAKPOINTS,
+  FOLD,
   MOTION,
 } from './tokens.js';
 
@@ -109,4 +111,19 @@ test('glass, radii, spacing and motion all reach the sheet', () => {
   }
   assert.ok(css.includes('--bn-ios-safe-bottom: env(safe-area-inset-bottom, 0px);'));
   assert.ok(css.includes('--bn-ios-scroll-edge-fade:'));
+});
+
+test('breakpoints and fold geometry reach the sheet', () => {
+  for (const [key, value] of Object.entries(BREAKPOINTS)) {
+    const name = key
+      .replace(/([a-zA-Z])(\d)/g, '$1-$2')
+      .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+      .toLowerCase();
+    assert.ok(css.includes(`--bn-ios-breakpoint-${name}: ${value}px;`), `missing ${name}`);
+  }
+  assert.ok(css.includes(`--bn-ios-fold-segments: ${FOLD.segments};`));
+  assert.ok(css.includes(`--bn-ios-fold-segment-width: ${FOLD.segmentWidth};`));
+  assert.ok(css.includes(`--bn-ios-fold-segment-height: ${FOLD.segmentHeight};`));
+  assert.ok(css.includes(`--bn-ios-fold-second-segment-left: ${FOLD.secondSegmentLeft};`));
+  assert.ok(css.includes(`--bn-ios-fold-crease-safe-margin: ${FOLD.creaseSafeMargin};`));
 });

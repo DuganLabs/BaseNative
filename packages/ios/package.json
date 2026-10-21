@@ -12,6 +12,10 @@
       "types": "./types/css.d.ts",
       "default": "./src/css.js"
     },
+    "./posture": {
+      "types": "./types/posture.d.ts",
+      "default": "./src/posture.js"
+    },
     "./tokens": {
       "types": "./types/tokens.d.ts",
       "default": "./src/tokens.js"
@@ -46,7 +50,7 @@
     "url": "git+https://github.com/DuganLabs/BaseNative.git"
   },
   "scripts": {
-    "test": "node --test src/tokens.test.js src/css.test.js src/index.test.js types/exports.test.js"
+    "test": "node --test src/tokens.test.js src/css.test.js src/posture.test.js src/index.test.js types/exports.test.js"
   },
   "sideEffects": [
     "**/*.css"

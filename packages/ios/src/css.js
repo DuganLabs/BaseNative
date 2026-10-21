@@ -36,6 +36,8 @@ import {
   SPACING,
   SAFE_AREA,
   LAYOUT,
+  BREAKPOINTS,
+  FOLD,
   MOTION,
 } from './tokens.js';
 
@@ -136,6 +138,18 @@ function rootBlock() {
     if (key === 'scrollEdge') continue;
     lines.push(decl(kebab(key), value));
   }
+  lines.push('');
+  lines.push('    /* Breakpoints — the named size-class stops, as min-widths */');
+  for (const [key, value] of Object.entries(BREAKPOINTS)) {
+    lines.push(decl(`breakpoint-${kebab(key)}`, `${value}px`));
+  }
+  lines.push('');
+  lines.push('    /* Fold — the viewport segments, supplied by the device at runtime */');
+  lines.push(decl('fold-segments', String(FOLD.segments)));
+  lines.push(decl('fold-segment-width', FOLD.segmentWidth));
+  lines.push(decl('fold-segment-height', FOLD.segmentHeight));
+  lines.push(decl('fold-second-segment-left', FOLD.secondSegmentLeft));
+  lines.push(decl('fold-crease-safe-margin', FOLD.creaseSafeMargin));
   lines.push('');
   lines.push('    /* Motion — duration, curve, and the composed shorthand */');
   for (const [key, preset] of Object.entries(MOTION)) {

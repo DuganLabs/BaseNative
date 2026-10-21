@@ -3,9 +3,10 @@
  *
  * One declaration file per subpath, each describing exactly what that
  * subpath exports at runtime: `.` -> index.d.ts, `/tokens` ->
- * tokens.d.ts, `/css` -> css.d.ts. `types/exports.test.js` asserts each
- * file and its runtime module cannot drift apart. The `/tokens.css`
- * subpath is a stylesheet and declares nothing.
+ * tokens.d.ts, `/css` -> css.d.ts, `/posture` -> posture.d.ts.
+ * `types/exports.test.js` asserts each file and its runtime module
+ * cannot drift apart. The `/tokens.css` subpath is a stylesheet and
+ * declares nothing.
  */
 
 export {
@@ -23,9 +24,12 @@ export {
   SPACING,
   SAFE_AREA,
   LAYOUT,
+  BREAKPOINTS,
+  FOLD,
   MOTION,
 } from './tokens.js';
 export { tokensCss } from './css.js';
+export { POSTURE_MEDIA, postureCss } from './posture.js';
 
 export type {
   SchemeColor,
@@ -33,5 +37,7 @@ export type {
   GlassAppearance,
   GlassMaterial,
   MotionPreset,
+  FoldTokens,
   ProvenanceSource,
 } from './tokens.js';
+export type { PostureMedia } from './posture.js';
