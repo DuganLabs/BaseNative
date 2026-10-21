@@ -15,9 +15,11 @@
  * `app-nav-icon` and `app-nav-label` hooks.
  *
  * Everything here is a pure render function except initSiteHeader, the
- * one piece of behaviour chrome needs: the narrow-viewport nav toggle.
- * renderAppNav needs no behaviour at all: its two modes are one
- * element under two media queries, so a posture change loses nothing.
+ * one piece of behaviour chrome needs (the narrow-viewport nav toggle),
+ * and initAppNav — which exists only for the app nav's optional More
+ * sheet. renderAppNav's two postures need no behaviour at all: they are
+ * one element under two media queries, so a posture change loses
+ * nothing.
  */
 import { escapeAttr, escapeText } from '@basenative/runtime/shared/escape';
 import { nextId } from './ids.js';
@@ -26,6 +28,10 @@ import { attrsSuffix } from './internal/attrs.js';
 /** Hamburger glyph for the nav toggle, drawn on the icons package's 24-unit grid. */
 const MENU_ICON =
   '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
+
+/** Ellipsis glyph for the app nav's More button, on the same 24-unit grid. */
+const MORE_ICON =
+  '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
 
 /**
  * The <li> run for a nav item list. The item flagged `current` gets
@@ -202,12 +208,20 @@ export function initSiteHeader(root, options = {}) {
  * rail: brand at the top, icon-and-label rows, the actions slot at the
  * foot, content scrolling beside it.
  *
- * The adaptation is CSS alone (components.css, "App Nav"), so there is
- * deliberately no init function and no second markup variant: the DOM
- * never changes when the class does, which is what a fold is — the
- * same page, mid-task, opened wider. Focus, scroll position,
- * aria-current and any state the page holds survive it untouched
- * because nothing re-renders.
+ * The adaptation is CSS alone (components.css, "App Nav") — no second
+ * markup variant: the DOM never changes when the class does, which is
+ * what a fold is — the same page, mid-task, opened wider. Focus,
+ * scroll position, aria-current and any state the page holds survive
+ * it untouched because nothing re-renders.
+ *
+ * A phone-class bar holds a handful of destinations, never a cram:
+ * pass `overflow` and every item past `overflow.after` (default 4)
+ * leaves the bar and is reached through a More button and its sheet
+ * instead — the iOS tab-bar pattern. The rail is under no such
+ * pressure, so there the button and sheet are not displayed and the
+ * list shows everything. The sheet is the one piece of behaviour in
+ * the pattern: initAppNav wires its toggle. Without the option (or
+ * with few enough items) the output is exactly the plain nav.
  *
  * The bar is fixed in both modes; the clearance contract lives with
  * the CSS: a page that renders the nav as a direct child of
@@ -224,13 +238,26 @@ export function initSiteHeader(root, options = {}) {
  *   icon is an HTML slot (an SVG glyph): not escaped; pass trusted markup only
  * @param {string} [options.actions]  HTML slot rendered after the items (the rail's foot;
  *   hidden at phone class); not escaped
+ * @param {object} [options.overflow]  The phone-class More overflow; omitted = no overflow
+ * @param {number} [options.overflow.after=4]  Items that stay in the bar; the rest go to the sheet
+ * @param {string} [options.overflow.label='More']  The More button's label; escaped text
+ * @param {string} [options.overflow.icon]  HTML slot for the More glyph; not escaped. Defaults
+ *   to an ellipsis; pass '' for no glyph
  * @param {string} [options.label='Primary']  The nav's aria-label; escaped text
  * @param {string} [options.id]     Emitted as the <nav>'s id when present
  * @param {string} [options.attrs]  Raw attribute markup appended to the <nav>; not escaped
  * @returns {string}
  */
 export function renderAppNav(options = {}) {
-  const { brand = {}, items = [], actions = '', label = 'Primary', id, attrs = '' } = options;
+  const {
+    brand = {},
+    items = [],
+    actions = '',
+    label = 'Primary',
+    id,
+    attrs = '',
+    overflow,
+  } = options;
 
   const brandName = brand.name ?? '';
   const brandLabel = brand.label ?? (brandName ? `${brandName} home` : 'Home');
@@ -239,18 +266,135 @@ export function renderAppNav(options = {}) {
       ? `<a data-bn="app-nav-brand" href="${escapeAttr(brand.href ?? '/')}" aria-label="${escapeAttr(brandLabel)}">${brand.logo ?? ''}${brandName ? `<strong>${escapeText(brandName)}</strong>` : ''}</a>`
       : '';
 
+  const itemHtml = (item) => {
+    const current = item.current ? ' aria-current="page"' : '';
+    const icon = item.icon ? `<span data-bn="app-nav-icon" aria-hidden="true">${item.icon}</span>` : '';
+    return `<a href="${escapeAttr(item.href)}"${current}>${icon}<span data-bn="app-nav-label">${escapeText(item.label)}</span></a>`;
+  };
+
+  const after = overflow ? (overflow.after ?? 4) : items.length;
+  const hasOverflow = overflow != null && items.length > after;
+
   const itemsHtml = items
-    .map((item) => {
-      const current = item.current ? ' aria-current="page"' : '';
-      const icon = item.icon ? `<span data-bn="app-nav-icon" aria-hidden="true">${item.icon}</span>` : '';
-      return `<li><a href="${escapeAttr(item.href)}"${current}>${icon}<span data-bn="app-nav-label">${escapeText(item.label)}</span></a></li>`;
+    .map((item, index) => {
+      const marker = hasOverflow && index >= after ? ' data-bn-overflow' : '';
+      return `<li${marker}>${itemHtml(item)}</li>`;
     })
     .join('');
 
   const actionsHtml = actions ? `<div data-bn="app-nav-actions">${actions}</div>` : '';
+
+  let overflowHtml = '';
+  if (hasOverflow) {
+    const sheetId = id ? `${id}-sheet` : nextId('app-nav-sheet');
+    const moreLabel = overflow.label ?? 'More';
+    const moreIcon = overflow.icon ?? MORE_ICON;
+    const moreIconHtml = moreIcon
+      ? `<span data-bn="app-nav-icon" aria-hidden="true">${moreIcon}</span>`
+      : '';
+    const sheetItems = items
+      .slice(after)
+      .map((item) => `<li>${itemHtml(item)}</li>`)
+      .join('');
+    overflowHtml =
+      `<button type="button" data-bn="app-nav-more" aria-expanded="false" aria-haspopup="true" aria-controls="${escapeAttr(sheetId)}">${moreIconHtml}<span data-bn="app-nav-label">${escapeText(moreLabel)}</span></button>` +
+      `<div data-bn="app-nav-sheet" id="${escapeAttr(sheetId)}" hidden><ul data-bn="app-nav-sheet-list">${sheetItems}</ul></div>`;
+  }
+
   const idAttr = id ? ` id="${escapeAttr(id)}"` : '';
 
-  return `<nav data-bn="app-nav" aria-label="${escapeAttr(label)}"${idAttr}${attrsSuffix(attrs)}>${brandHtml}<ul data-bn="app-nav-list">${itemsHtml}</ul>${actionsHtml}</nav>`;
+  return `<nav data-bn="app-nav" aria-label="${escapeAttr(label)}"${idAttr}${attrsSuffix(attrs)}>${brandHtml}<ul data-bn="app-nav-list">${itemsHtml}</ul>${actionsHtml}${overflowHtml}</nav>`;
+}
+
+/**
+ * Wire a rendered app nav's More sheet: the button toggles it
+ * (data-open on the nav root, aria-expanded on the button, the sheet's
+ * hidden attribute lifted), Escape closes it and returns focus to the
+ * button, and a click outside the nav closes it. A click on a sheet
+ * link is left to the link — on a multi-page site it navigates, and a
+ * routed shell can close through the returned handle or onToggle.
+ *
+ * The nav's postures need no wiring at all (the fold is one media
+ * query), so a nav rendered without `overflow` has nothing to wire and
+ * this is a no-op handle over it.
+ *
+ * @param {Element} root  The <nav data-bn="app-nav"> element (or an ancestor of it)
+ * @param {object} [options]
+ * @param {(open: boolean) => void} [options.onToggle]  Called after each open-state change
+ * @returns {{ open: () => void, close: () => void, toggle: () => void, destroy: () => void }}
+ */
+export function initAppNav(root, options = {}) {
+  const { onToggle } = options;
+  const doc = root.ownerDocument ?? (typeof document === 'undefined' ? null : document);
+
+  const moreBtn = () => root.querySelector('[data-bn="app-nav-more"]');
+  const sheet = () => root.querySelector('[data-bn="app-nav-sheet"]');
+  const isOpen = () => root.hasAttribute('data-open');
+
+  function apply(open) {
+    if (open) root.setAttribute('data-open', '');
+    else root.removeAttribute('data-open');
+    const btn = moreBtn();
+    if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    const panel = sheet();
+    if (panel) {
+      if (open) panel.removeAttribute('hidden');
+      else panel.setAttribute('hidden', '');
+    }
+    if (onToggle) onToggle(open);
+  }
+
+  function open() {
+    if (!isOpen()) apply(true);
+  }
+
+  function close() {
+    if (isOpen()) apply(false);
+  }
+
+  function toggle() {
+    apply(!isOpen());
+  }
+
+  function onMoreClick() {
+    toggle();
+  }
+
+  function onDocumentClick(event) {
+    if (!isOpen()) return;
+    const target = event.target;
+    const inside =
+      target === root || (typeof root.contains === 'function' && root.contains(target));
+    if (!inside) close();
+  }
+
+  function onDocumentKeydown(event) {
+    if (!isOpen() || event.key !== 'Escape') return;
+    close();
+    const btn = moreBtn();
+    if (btn && typeof btn.focus === 'function') btn.focus();
+  }
+
+  const btn = moreBtn();
+  if (btn) btn.addEventListener('click', onMoreClick);
+  if (doc) {
+    doc.addEventListener('click', onDocumentClick);
+    doc.addEventListener('keydown', onDocumentKeydown);
+  }
+
+  return {
+    open,
+    close,
+    toggle,
+    destroy() {
+      const current = moreBtn();
+      if (current) current.removeEventListener('click', onMoreClick);
+      if (doc) {
+        doc.removeEventListener('click', onDocumentClick);
+        doc.removeEventListener('keydown', onDocumentKeydown);
+      }
+    },
+  };
 }
 
 /**

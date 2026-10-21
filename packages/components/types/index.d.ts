@@ -1296,20 +1296,83 @@ export interface AppNavItem extends SiteNavItem {
  * bar at phone class (icons over labels; brand and actions hidden) and a
  * fixed side rail at the unfolded class — spanning a vertical fold, or
  * a viewport at least 939px wide (brand at the top, icon-and-label
- * rows, the `actions` slot at the foot). The adaptation is CSS alone,
- * so there is no init: the DOM never changes across the fold and no
- * state is lost. Pages that render it as a direct child of
- * `[data-bn="page"]` or `body` get their scroll clearance from the same
- * CSS rules.
+ * rows, the `actions` slot at the foot). The adaptation is CSS alone:
+ * the DOM never changes across the fold and no state is lost. Pages
+ * that render it as a direct child of `[data-bn="page"]` or `body` get
+ * their scroll clearance from the same CSS rules.
+ *
+ * With `overflow`, items past `overflow.after` (default 4) leave the
+ * phone-class bar and are reached through a More button and its sheet
+ * (wire it with initAppNav); the rail shows everything and hides the
+ * button and sheet. Without it the output is the plain nav.
  */
 export function renderAppNav(options?: {
   brand?: SiteHeaderBrand;
   items?: AppNavItem[];
   /** HTML slot (the rail's foot; hidden at phone class): not escaped. */
   actions?: string;
+  overflow?: {
+    /** Items that stay in the bar. Default 4. */
+    after?: number;
+    /** The More button's label. Default `'More'`. */
+    label?: string;
+    /** HTML slot for the More glyph: not escaped. Defaults to an ellipsis; `''` for none. */
+    icon?: string;
+  };
   /** The nav's `aria-label`. Default `'Primary'`. */
   label?: string;
   id?: string;
+  attrs?: string;
+}): string;
+
+export interface AppNavController {
+  open(): void;
+  close(): void;
+  toggle(): void;
+  destroy(): void;
+}
+
+/**
+ * Wires a rendered app nav's More sheet: the button toggles `data-open`
+ * on the nav root, `aria-expanded` on the button and the sheet's
+ * `hidden` attribute; Escape closes and refocuses the button; an
+ * outside click closes. A nav without overflow has nothing to wire.
+ */
+export function initAppNav(
+  root: HTMLElement,
+  options?: {
+    onToggle?: (open: boolean) => void;
+  }
+): AppNavController;
+
+export interface ListGroupItem {
+  /** Escaped text. */
+  label: string;
+  /** Escaped attribute. When present the row is a link and grows a chevron. */
+  href?: string;
+  /** Escaped text on the row's trailing edge. */
+  value?: string;
+  /** HTML slot (an SVG glyph): not escaped. */
+  icon?: string;
+  /** With an href, marks the row `aria-current="page"`. */
+  current?: boolean;
+}
+
+/**
+ * List group: the inset grouped list — an optional section heading
+ * (h2/h3/h4), rows on one raised surface with hairline separators inset
+ * to the label edge, and an optional explanatory footer.
+ */
+export function renderListGroup(options?: {
+  /** Section heading: escaped text. */
+  header?: string;
+  /** The heading's level. Default 2. */
+  headingLevel?: 2 | 3 | 4;
+  /** Explanatory text under the surface: escaped text. */
+  footer?: string;
+  items?: ListGroupItem[];
+  /** The section's `aria-label`, used when no header is given. */
+  label?: string;
   attrs?: string;
 }): string;
 

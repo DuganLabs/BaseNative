@@ -21,4 +21,5 @@ export {
   initCalendarDragDrop,
   initPipelineDragDrop,
   initSiteHeader,
+  initAppNav,
 } from '../../packages/components/src/index.js';

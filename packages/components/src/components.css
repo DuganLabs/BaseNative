@@ -774,6 +774,96 @@
   user-select: none;
 }
 
+/* === List Group ===
+   The inset grouped list (renderListGroup in list-group.js): a raised
+   surface holding fact and link rows, hairline separators inset to the
+   rows' leading edge so they read as one surface, not a stack of cards.
+   The component owns the geometry; the surface and ink come from the
+   same core tokens everything else reads, so a platform layer restyles
+   it by re-pointing tokens, never by overriding these rules. */
+[data-bn="list-group"] {
+  margin: 0;
+}
+[data-bn="list-group-header"] {
+  margin: 0 0 var(--bn-space-2);
+  padding-inline: var(--bn-space-4);
+  font-size: var(--bn-font-size-sm);
+  font-weight: var(--bn-font-weight-semibold);
+  letter-spacing: var(--bn-letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--bn-color-text-muted);
+}
+[data-bn="list-group-rows"] {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--bn-color-surface-card);
+  border: var(--bn-border-width) solid var(--bn-color-border);
+  border-radius: var(--bn-radius-container);
+  overflow: hidden;
+}
+/* The separator starts where the labels start, not at the surface edge:
+   after the first row, the row's own leading padding becomes a margin,
+   so the hairline is inset by exactly the label inset while every
+   row's label stays on the same vertical line. */
+[data-bn="list-group-rows"] > li + li [data-bn="list-group-row"] {
+  border-block-start: var(--bn-border-width) solid var(--bn-color-border);
+  margin-inline-start: var(--bn-space-4);
+  padding-inline-start: 0;
+}
+[data-bn="list-group-row"] {
+  display: flex;
+  align-items: center;
+  gap: var(--bn-space-3);
+  min-block-size: var(--bn-control-height-lg);
+  padding: var(--bn-space-2) var(--bn-space-4);
+  color: var(--bn-color-text);
+  font-size: var(--bn-font-size-base);
+  text-decoration: none;
+}
+/* The highlight spans the whole row even where the separator is inset,
+   so it lives on the <li>, not on the row the separator insets. */
+[data-bn="list-group-rows"] > li:has(> a[data-bn="list-group-row"]:hover) {
+  background: var(--bn-color-surface-muted);
+}
+a[data-bn="list-group-row"]:focus-visible {
+  box-shadow: var(--bn-focus-ring);
+  outline: none;
+}
+a[data-bn="list-group-row"][aria-current="page"] {
+  color: var(--bn-color-primary-600);
+  font-weight: var(--bn-font-weight-semibold);
+}
+[data-bn="list-group-icon"] {
+  display: inline-flex;
+  flex: none;
+  color: var(--bn-color-text-muted);
+}
+[data-bn="list-group-icon"] svg {
+  inline-size: var(--bn-space-5);
+  block-size: var(--bn-space-5);
+}
+[data-bn="list-group-label"] {
+  flex: 1;
+  min-inline-size: 0;
+}
+[data-bn="list-group-value"] {
+  flex: none;
+  color: var(--bn-color-text-muted);
+  font-size: var(--bn-font-size-sm);
+}
+[data-bn="list-group-chevron"] {
+  display: inline-flex;
+  flex: none;
+  color: var(--bn-color-text-subtle);
+}
+[data-bn="list-group-footer"] {
+  margin: var(--bn-space-2) 0 0;
+  padding-inline: var(--bn-space-4);
+  font-size: var(--bn-font-size-sm);
+  color: var(--bn-color-text-muted);
+}
+
 /* === Combobox === */
 [data-bn="combobox"] { position: relative; }
 [data-bn="combobox-input"] {
@@ -2301,7 +2391,13 @@
    and after. The clearance rules below are the other half of the
    contract: a page that renders the nav as a direct child of
    [data-bn="page"] (or of body) reserves exactly the bar's footprint,
-   sized by the same tokens that size the bar. */
+   sized by the same tokens that size the bar.
+   The surface is a material (--bn-material-*): opaque by default, and
+   glass wherever a platform token layer points those tokens at a real
+   material. And a bar holds only so many destinations: with
+   renderAppNav's `overflow`, items past the bar's capacity are marked
+   data-bn-overflow, hidden at phone class, and reached through the
+   More button's sheet — never crammed, wrapped or clipped. */
 [data-bn="app-nav"] {
   position: fixed;
   inset-inline: 0;
@@ -2309,7 +2405,10 @@
   z-index: var(--bn-z-nav);
   display: flex;
   align-items: stretch;
-  background: var(--bn-color-surface);
+  background: var(--bn-material-bg);
+  -webkit-backdrop-filter: var(--bn-material-backdrop);
+  backdrop-filter: var(--bn-material-backdrop);
+  box-shadow: var(--bn-material-shadow);
   border-block-start: var(--bn-border-width) solid var(--bn-color-border);
   padding-block-end: env(safe-area-inset-bottom, 0px);
 }
@@ -2356,6 +2455,74 @@
 }
 [data-bn="app-nav-actions"] {
   display: none;
+}
+/* Overflow: items past the bar's capacity (marked by renderAppNav when
+   `overflow` is passed) leave the phone-class bar — they are reached
+   through the More sheet below. The rail shows every item, so the
+   marker only hides at this class. */
+[data-bn="app-nav-list"] li[data-bn-overflow] {
+  display: none;
+}
+[data-bn="app-nav-more"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--bn-space-1);
+  min-block-size: var(--bn-size-app-nav-bar);
+  padding: var(--bn-space-1) var(--bn-space-2);
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: var(--bn-font-size-xs);
+  color: var(--bn-color-text-muted);
+  cursor: pointer;
+}
+[data-bn="app-nav-more"]:hover {
+  color: var(--bn-color-text);
+}
+/* The More sheet: a material panel floating above the bar, holding the
+   overflow destinations as icon-and-label rows. It carries the same
+   material tokens as the bar itself, so a platform layer that glasses
+   the bar glasses the sheet with it. */
+[data-bn="app-nav-sheet"] {
+  position: fixed;
+  inset-inline: var(--bn-space-2);
+  bottom: calc(
+    var(--bn-size-app-nav-bar) + env(safe-area-inset-bottom, 0px) + var(--bn-space-2)
+  );
+  background: var(--bn-material-bg);
+  -webkit-backdrop-filter: var(--bn-material-backdrop);
+  backdrop-filter: var(--bn-material-backdrop);
+  box-shadow: var(--bn-material-shadow);
+  border: var(--bn-border-width) solid var(--bn-color-border);
+  border-radius: var(--bn-radius-modal);
+  padding: var(--bn-space-2);
+}
+[data-bn="app-nav-sheet-list"] {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--bn-space-1);
+}
+[data-bn="app-nav-sheet-list"] a {
+  display: flex;
+  align-items: center;
+  gap: var(--bn-space-3);
+  padding: var(--bn-space-2) var(--bn-space-3);
+  border-radius: var(--bn-radius-md);
+  color: var(--bn-color-text);
+  font-size: var(--bn-font-size-base);
+  text-decoration: none;
+}
+[data-bn="app-nav-sheet-list"] a:hover {
+  background: var(--bn-color-surface-muted);
+}
+[data-bn="app-nav-sheet-list"] a[aria-current="page"] {
+  background: var(--bn-color-surface-muted);
+  font-weight: var(--bn-font-weight-semibold);
 }
 [data-bn="page"]:has(> [data-bn="app-nav"]),
 body:has(> [data-bn="app-nav"]) {
@@ -2410,6 +2577,16 @@ body:has(> [data-bn="app-nav"]) {
     gap: var(--bn-space-2);
     margin-block-start: auto;
     padding: var(--bn-space-3) var(--bn-space-4);
+  }
+  /* The rail has room for every destination: overflow items return to
+     the list, and the More button and its sheet — phone-class only —
+     are never displayed, whatever state initAppNav left them in. */
+  [data-bn="app-nav-list"] li[data-bn-overflow] {
+    display: flex;
+  }
+  [data-bn="app-nav-more"],
+  [data-bn="app-nav-sheet"] {
+    display: none;
   }
   [data-bn="page"]:has(> [data-bn="app-nav"]),
   body:has(> [data-bn="app-nav"]) {

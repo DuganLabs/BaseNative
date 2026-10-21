@@ -938,6 +938,19 @@ renderAccordion({
 renderBreadcrumb({ items: [{ label: 'Home', href: '/' }, { label: 'Projects', href: '/projects' }, { label: 'Alpha' }] })
 ```
 
+### List Group
+`renderListGroup(options)` → `string` The inset grouped list — the shape platform settings and index pages are built from (the iOS grouped list is the reference form), for rows that are facts and links rather than data. An optional section…
+```js
+renderListGroup({
+  header: 'Packages',
+  footer: 'Every package has a generated reference.',
+  items: [
+    { label: '@basenative/runtime', href: '/docs/runtime', value: 'core' },
+    { label: 'Version', value: '2.2.0' },
+  ],
+})
+```
+
 ### Tooltip
 `renderTooltip(options)` → `string`. Popover-API tooltip: a trigger `<button>` with `popovertarget` followed by a `popover` span. Per the HTML spec, only button-like elements (`<button>`, and `<input type="button|submit|reset|image">`) can…
 ```js
@@ -1102,7 +1115,7 @@ renderSiteHeader({
 ```
 
 ### App Nav
-`renderAppNav(options)` → `string` The primary nav for app-shaped surfaces — one nav whose layout follows the size class, in the pattern the iPhone Duo's app demos established. At phone class it is a fixed bottom bar: icon over label, bran…
+`renderAppNav(options)` → `string`; `initAppNav(root, options?)` → `{ open, close, toggle, destroy }` The primary nav for app-shaped surfaces — one nav whose layout follows the size class, in the pattern the iPhone Duo's app demos establis…
 ```js
 renderAppNav({
   brand: { name: 'GreenPut' },

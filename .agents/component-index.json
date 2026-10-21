@@ -4,10 +4,10 @@
   "generatedOn": "2026-10-21",
   "contract": "Generated from source. Never hand-edit: `node scripts/llms-txt.js --check` fails CI when this file disagrees with packages/*/src. `variants` is the set of values a stylesheet actually declares a rule for, so a value outside it renders unstyled rather than erroring.",
   "counts": {
-    "components": 80,
-    "renderFunctions": 74,
+    "components": 81,
+    "renderFunctions": 75,
     "customElements": 6,
-    "styledContracts": 220,
+    "styledContracts": 232,
     "componentsWithVariants": 20
   },
   "stylesheets": [
@@ -77,6 +77,15 @@
       "@basenative/components#renderAppNav"
     ],
     "app-nav-list": [
+      "@basenative/components#renderAppNav"
+    ],
+    "app-nav-more": [
+      "@basenative/components#renderAppNav"
+    ],
+    "app-nav-sheet": [
+      "@basenative/components#renderAppNav"
+    ],
+    "app-nav-sheet-list": [
       "@basenative/components#renderAppNav"
     ],
     "avatar": [
@@ -416,6 +425,33 @@
     ],
     "lead": [
       "@basenative/components#renderHero"
+    ],
+    "list-group": [
+      "@basenative/components#renderListGroup"
+    ],
+    "list-group-chevron": [
+      "@basenative/components#renderListGroup"
+    ],
+    "list-group-footer": [
+      "@basenative/components#renderListGroup"
+    ],
+    "list-group-header": [
+      "@basenative/components#renderListGroup"
+    ],
+    "list-group-icon": [
+      "@basenative/components#renderListGroup"
+    ],
+    "list-group-label": [
+      "@basenative/components#renderListGroup"
+    ],
+    "list-group-row": [
+      "@basenative/components#renderListGroup"
+    ],
+    "list-group-rows": [
+      "@basenative/components#renderListGroup"
+    ],
+    "list-group-value": [
+      "@basenative/components#renderListGroup"
     ],
     "multiselect": [
       "@basenative/components#renderMultiselect"
@@ -993,6 +1029,9 @@
           "app-nav-icon",
           "app-nav-label",
           "app-nav-actions",
+          "app-nav-more",
+          "app-nav-sheet",
+          "app-nav-sheet-list",
           "app-nav",
           "app-nav-list"
         ],
@@ -1855,6 +1894,36 @@
       "inertAxes": [],
       "styled": true,
       "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"layout-grid\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderListGroup",
+      "name": "renderListGroup",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/list-group.js",
+      "signature": "renderListGroup(options)",
+      "purpose": "List group — an inset grouped list with an optional section header and footer.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "section",
+        "primaryContract": "list-group",
+        "contracts": [
+          "list-group-icon",
+          "list-group-value",
+          "list-group-label",
+          "list-group-row",
+          "list-group-chevron",
+          "list-group-header",
+          "list-group-footer",
+          "list-group",
+          "list-group-rows"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <section> with your own classes, or literal <section data-bn=\"list-group\"> markup"
     },
     {
       "id": "@basenative/components#renderMultiselect",

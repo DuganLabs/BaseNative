@@ -109,9 +109,14 @@ export {
   renderSiteHeader,
   initSiteHeader,
   renderAppNav,
+  initAppNav,
   renderSiteFooter,
   renderAppShell,
 } from './site-chrome.js';
+
+// List Group (the inset grouped list: section header, fact/link rows,
+// hairline separators inset to the label edge)
+export { renderListGroup } from './list-group.js';
 
 // Marketing (hero, pricing cards, feature card, stat card, FAQ)
 export {
