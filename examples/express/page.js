@@ -28,9 +28,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const read = (file) => readFileSync(join(__dirname, file), 'utf-8');
 
 /**
- * The shell-critical CSS, sliced out of the catalog's components.css at
- * render time: the App Nav section and the List Group section, verbatim
- * (comments stripped), inlined into every page by the layout.
+ * The shell-critical CSS, sliced out of the catalog's sources at render
+ * time and inlined into every page by the layout: the token definitions
+ * the shell depends on (from tokens.css) plus the App Nav and List
+ * Group sections of components.css, verbatim (comments stripped).
  *
  * Why this exists: components.css reaches the browser through an
  * @import chain under /bn-css/, and Cloudflare Pages serves those
@@ -40,22 +41,73 @@ const read = (file) => readFileSync(join(__dirname, file), 'utf-8');
  * — and the shell renders as a raw list of links (seen on a real phone,
  * 2026-10-20, while every fresh-profile check passed). The shell is
  * not allowed to depend on that race: its rules ride the HTML, which
- * is always fresh. components.css stays the single source the slice is
- * cut from — when it is fresh too, the same rules arrive twice with
- * identical values and nothing changes.
+ * is always fresh. The package files stay the single source the slice
+ * is cut from — when they are fresh too, the same rules arrive twice
+ * with identical values and nothing changes.
+ *
+ * The tokens ride along because the first version of this slice (PR
+ * #275) inlined the rules but not the values they compute from: every
+ * shell property is a var(--bn-*) whose definition lives in tokens.css,
+ * behind the same stale cache. With a pre-app-nav tokens.css the bar
+ * still rendered — but its z-index computed to auto (page content
+ * painted over it), its height token was missing, and the clearance
+ * rule's calc() was invalid, so the page reserved no space for the
+ * bar at all: the last screenful of every page sat trapped underneath
+ * it (seen on the same phone after the #275 reload). So the slice now
+ * carries the full dependency closure of the tokens the two sections
+ * reference, declarations verbatim from tokens.css in source order.
+ * They are emitted inside `@layer tokens` — the layer tokens.css
+ * itself declares — so the site's unlayered sheets (theme.css,
+ * ios.css) keep re-pointing them exactly as they do when the chain is
+ * fresh; only the staleness is removed.
  */
 function shellCriticalCss() {
+  const strip = (text) => text.replace(/\/\*[\s\S]*?\*\//g, '');
   const css = read('../../packages/components/src/components.css');
   const slice = (from, to) => {
     const start = css.indexOf(from);
     const end = to ? css.indexOf(to, start) : css.length;
     if (start === -1 || end === -1) return '';
-    return css.slice(start, end);
+    return strip(css.slice(start, end));
   };
   const sections =
     slice('/* === List Group ===', '/* === Combobox ===') +
     slice('/* === App Nav ===', '} /* end @layer components */');
-  return sections.replace(/\/\*[\s\S]*?\*\//g, '').trim();
+
+  // Every --bn-* declaration in tokens.css, in source order (a token
+  // declared twice keeps both lines; the later wins, as in the sheet).
+  const declarations = [];
+  const byName = new Map();
+  for (const match of strip(read('../../packages/components/src/tokens.css')).matchAll(
+    /(--bn-[a-z0-9-]+)\s*:\s*([^;{}]+);/g,
+  )) {
+    const entry = { name: match[1], value: match[2].trim() };
+    declarations.push(entry);
+    if (!byName.has(entry.name)) byName.set(entry.name, []);
+    byName.get(entry.name).push(entry);
+  }
+  // The closure: tokens the sections reference, plus whatever those
+  // tokens' own values reference, transitively.
+  const refsOf = (text) => [...text.matchAll(/var\(\s*(--bn-[a-z0-9-]+)/g)].map((m) => m[1]);
+  const needed = new Set(refsOf(sections));
+  for (let grew = true; grew; ) {
+    grew = false;
+    for (const name of [...needed]) {
+      for (const entry of byName.get(name) ?? []) {
+        for (const ref of refsOf(entry.value)) {
+          if (!needed.has(ref)) {
+            needed.add(ref);
+            grew = true;
+          }
+        }
+      }
+    }
+  }
+  const tokenLines = declarations
+    .filter((entry) => needed.has(entry.name))
+    .map((entry) => `    ${entry.name}: ${entry.value};`);
+  const tokens = `@layer tokens {\n  :root {\n${tokenLines.join('\n')}\n  }\n}\n`;
+  return (tokens + sections).trim();
 }
 
 export const SITE_URL = 'https://basenative.com';

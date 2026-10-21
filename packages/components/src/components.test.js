@@ -4549,9 +4549,20 @@ describe('AppNav', () => {
       rail.includes('padding-inline-start: var(--bn-size-nav-rail)'),
       'the clearance reserves exactly the rail width'
     );
+    const flat = section.replace(/\s+/g, ' ');
     assert.ok(
-      section.includes('padding-block-end: calc(var(--bn-size-app-nav-bar)'),
-      'the phone-class clearance reserves exactly the bar height plus the safe area'
+      flat.includes(
+        'padding-block-end: calc( var(--bn-size-app-nav-bar) + env(safe-area-inset-bottom, 0px) + var(--bn-border-width) )'
+      ),
+      'the phone-class clearance reserves the bar height, the safe area and the bar border'
+    );
+    assert.ok(
+      flat.includes('scroll-padding-block-end: calc( var(--bn-size-app-nav-bar)'),
+      'fragment jumps land the same distance clear of the bar as the page end does'
+    );
+    assert.ok(
+      rail.includes('scroll-padding-inline-start: var(--bn-size-nav-rail)'),
+      'at the rail, fragment targets clear the rail width instead'
     );
   });
 
