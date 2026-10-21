@@ -57,7 +57,8 @@ function renderCell(tag, col, row, { labelCells = false, scope = '' } = {}) {
       : value != null
         ? escapeText(String(value))
         : '';
-  const label = labelCells && col.label ? ` data-label="${escapeAttr(col.label)}"` : '';
+  const labelText = col.label || col.srLabel;
+  const label = labelCells && labelText ? ` data-label="${escapeAttr(labelText)}"` : '';
   const extra = typeof col.cellAttrs === 'function' ? col.cellAttrs(value, row) : col.cellAttrs;
   return `<${tag}${scope}${label}${columnAttrs(col)}${attrsSuffix(extra)}>${cell ?? ''}</${tag}>`;
 }
@@ -79,11 +80,17 @@ function renderCell(tag, col, row, { labelCells = false, scope = '' } = {}) {
  *     (a test hook, an `aria-*`). Pass a function to vary it per row.
  *
  * `labelCells` stamps `data-label="<column label>"` on every body and footer
- * cell. That is what a responsive stacked table needs: hide the `<thead>`
- * under a container query and render each cell's own heading from
- * `content: attr(data-label)`. It stays opt-in so the default markup is
- * unchanged; `<thead>` is never removed, so the accessibility tree is
- * identical at every width and the transform is purely presentational.
+ * cell (a column with no visible label stamps its `srLabel` instead). It is
+ * ON by default, because the labels are the table's narrow-width contract:
+ * the shipped stylesheet stacks the table under its own container query —
+ * past 40rem of container width the columns stop being readable as columns,
+ * so each row becomes a block and each cell a line headed by its own
+ * `data-label`. A table that cannot reflow is broken at phone width, so the
+ * adaptive behaviour is not an opt-in extra. Pass `labelCells: false` to opt
+ * out; the cells then carry no labels and the container falls back to
+ * horizontal scrolling when narrow. Either way `<thead>` is never removed,
+ * so the accessibility tree is identical at every width and the transform
+ * is purely presentational.
  *
  * `column.srLabel` gives an accessible name to a column with no visible
  * label — a row-actions column, typically. Without it the header renders as
@@ -101,7 +108,7 @@ function renderCell(tag, col, row, { labelCells = false, scope = '' } = {}) {
  * @param {string} [options.emptyMessage] - Message when rows is empty
  * @param {string} [options.emptyContent] - HTML slot used instead of emptyMessage; not escaped
  * @param {string} [options.caption] - Table caption
- * @param {boolean} [options.labelCells] - Stamp `data-label` on every body and footer cell
+ * @param {boolean} [options.labelCells] - Stamp `data-label` on every body and footer cell (default true; false opts out of the stacked narrow-width presentation)
  * @param {string} [options.attrs] - Raw attribute markup appended to the container; not escaped
  */
 export function renderTable(options = {}) {
@@ -112,7 +119,7 @@ export function renderTable(options = {}) {
     emptyMessage = 'No data',
     emptyContent = '',
     caption = '',
-    labelCells = false,
+    labelCells = true,
     attrs = '',
   } = options;
 

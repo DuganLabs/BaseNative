@@ -16,6 +16,91 @@
     [data-bn="form-grid"] { max-width: 100%; }
   }
 
+  /* Container Queries — Table
+     A table is measured by its container, not the viewport: past 40rem
+     of container width a multi-column table stops being readable as
+     columns — values end up behind a sideways scroll with no
+     affordance, or clipped outright. So the table restacks against its
+     own width: each row becomes a block, each labelled cell a line
+     headed by its own data-label (renderTable stamps it by default).
+     The <thead> leaves the layout but stays in the tree, so the
+     accessibility semantics are identical at every width. Long
+     unbroken cell content wraps instead of forcing the row wide.
+     Cells without a data-label — a table that opted out with
+     labelCells: false — keep the container's horizontal scroll. */
+  @container table (max-width: 40rem) {
+    [data-bn="table"] {
+      display: block;
+      inline-size: 100%;
+    }
+    [data-bn="table"] caption {
+      display: block;
+    }
+    [data-bn="table"] thead {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    [data-bn="table"] tbody,
+    [data-bn="table"] tfoot {
+      display: block;
+    }
+    [data-bn="table"] tr {
+      display: block;
+      padding-block: var(--bn-space-3);
+      border-bottom: var(--bn-border-width) solid var(--bn-color-border);
+      background: none;
+    }
+    [data-bn="table"] tbody tr:last-child,
+    [data-bn="table"] tfoot tr:last-child {
+      border-bottom: 0;
+    }
+    [data-bn="table"] tfoot tr:first-child {
+      border-top: 3px double var(--bn-color-border-strong);
+    }
+    [data-bn="table"] th,
+    [data-bn="table"] td {
+      display: block;
+      padding: var(--bn-space-1) 0;
+      border-top: 0;
+      border-bottom: 0;
+      overflow-wrap: anywhere;
+      /* The stack only works if cell content can wrap: a nowrap carried
+         in from a consumer stylesheet (a wide-table convention, e.g. for
+         row headings) would otherwise pin the value track open, paint
+         the text past the cell's edge and force the whole table wide
+         again. The [data-numeric] reset below is the same defence,
+         narrower: this one states it for every stacked cell. */
+      white-space: normal;
+    }
+    /* A grid line, not a flex line: the value is an anonymous item, and
+       a flex item's automatic minimum size lets long values paint past
+       the cell's edge instead of wrapping. A minmax(0, 1fr) track
+       constrains the value to the space the label leaves, so it wraps. */
+    [data-bn="table"] td[data-label],
+    [data-bn="table"] th[data-label] {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: baseline;
+      gap: var(--bn-space-4);
+      text-align: end;
+    }
+    [data-bn="table"] td[data-label]::before,
+    [data-bn="table"] th[data-label]::before {
+      content: attr(data-label);
+      color: var(--bn-color-text-muted);
+      font-weight: var(--bn-font-weight-medium);
+      text-align: start;
+      flex-shrink: 0;
+    }
+    [data-bn="table"] [data-numeric] {
+      white-space: normal;
+    }
+  }
+
   /* Reduced Motion */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {

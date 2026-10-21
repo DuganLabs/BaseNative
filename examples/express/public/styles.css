@@ -2840,7 +2840,12 @@
        one-letter-wide column thousands of pixels tall, tables and alerts
        floated at ragged content widths. Inline demos (buttons, badges,
        avatars, selection controls) keep the tray; anything that is a
-       surface, a list or a form in its own right spans the pane. */
+       surface, a list or a form in its own right spans the pane. A
+       scripted demo that wraps its component in a slot section (the
+       table filter does) needs the same full row: the slot is the flex
+       item, and if it shrink-wraps, a size container inside it (the
+       table's, since @basenative/components keyed its stack to one)
+       has no definite size to measure and collapses to zero. */
     &
       > output
       > :where(
@@ -2872,10 +2877,20 @@
         [data-bn='pipeline'],
         [data-bn='layout-grid'],
         [data-bn='progress'],
-        [data-bn='skeleton']
+        [data-bn='skeleton'],
+        section[data-demo-display]
       ) {
       flex: 1 1 100%;
       min-inline-size: 0;
+    }
+
+    /* In the column layout (the :has() variants above) flex-basis speaks
+       to the vertical axis, so the rule above cannot give a slot section
+       its width — and a wrapping flex line sizes to content, which for a
+       slot holding a size container is zero. The slot's inline size has
+       to be definite in its own right. */
+    & > output > section[data-demo-display] {
+      inline-size: 100%;
     }
   }
 

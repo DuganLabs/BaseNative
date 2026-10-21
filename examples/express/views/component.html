@@ -72,8 +72,8 @@
       <h3>Options</h3>
       <p>Arguments accepted by <code>{{ component.fn }}()</code>.</p>
     </header>
-    <div data-bn-table-scroll tabindex="0" role="region" aria-label="{{ component.fn }} option reference">
-    <table>
+    <div data-bn="table-container">
+    <table data-bn="table">
       <caption data-bn-visually-hidden>
         {{ component.fn }} option reference
       </caption>
@@ -88,10 +88,10 @@
       <tbody>
         <template @for="row of component.api; track row.name">
           <tr>
-            <th scope="row"><code>{{ row.name }}</code></th>
-            <td><code>{{ row.type }}</code></td>
-            <td><code>{{ row.default }}</code></td>
-            <td>{{ row.description }}</td>
+            <th data-label="Option" scope="row"><code>{{ row.name }}</code></th>
+            <td data-label="Type"><code>{{ row.type }}</code></td>
+            <td data-label="Default"><code>{{ row.default }}</code></td>
+            <td data-label="Description">{{ row.description }}</td>
           </tr>
         </template>
       </tbody>
