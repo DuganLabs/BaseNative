@@ -263,6 +263,8 @@ export const UPSTREAM_OWNED = Object.freeze({
   '--bn-z-modal': 'stacking order',
   '--bn-z-toast': 'stacking order',
   '--bn-calendar-cols': 'per-instance geometry knob',
+  '--bn-app-nav-visual-inset':
+    'runtime geometry — written by initAppNav from window.visualViewport so the bar clears the on-screen keyboard; measured, not themed',
   '--bn-calendar-hours': 'per-instance geometry knob',
   '--bn-calendar-event-rows': 'per-instance geometry knob, set inline by renderCalendar',
   '--bn-calendar-event-lead': 'per-instance geometry knob, set inline by renderCalendar',

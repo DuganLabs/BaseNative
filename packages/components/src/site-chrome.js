@@ -314,6 +314,12 @@ export function renderAppNav(options = {}) {
  * link is left to the link — on a multi-page site it navigates, and a
  * routed shell can close through the returned handle or onToggle.
  *
+ * It also keeps the bar clear of the on-screen keyboard: the bar is
+ * fixed against the layout viewport while the keyboard shrinks the
+ * visual one, so the covered strip is measured through visualViewport
+ * and written to --bn-app-nav-visual-inset on the nav root, which the
+ * bar's and sheet's bottom offsets in components.css read.
+ *
  * The nav's postures need no wiring at all (the fold is one media
  * query), so a nav rendered without `overflow` has nothing to wire and
  * this is a no-op handle over it.
@@ -326,6 +332,37 @@ export function renderAppNav(options = {}) {
 export function initAppNav(root, options = {}) {
   const { onToggle } = options;
   const doc = root.ownerDocument ?? (typeof document === 'undefined' ? null : document);
+
+  /* Keyboard sync. The bar is position:fixed against the layout
+     viewport, but a software keyboard shrinks the VISUAL viewport — on
+     iOS the bar then floats mid-screen with its labels sliced by the
+     keyboard. Track the visual viewport and keep the covered strip in
+     --bn-app-nav-visual-inset (read by the bar's and the sheet's bottom
+     offsets in components.css), so the bar rides on top of the keyboard,
+     whole. Pinch-zoom also shrinks the visual viewport without covering
+     anything, so a scaled viewport reports no inset. Guarded to a no-op
+     wherever there is no visualViewport or no style to write to (tests,
+     SSR-adjacent hosts). */
+  const view = doc?.defaultView ?? null;
+  const vv = view?.visualViewport ?? null;
+  let syncViewportInset = null;
+  if (
+    vv &&
+    typeof vv.addEventListener === 'function' &&
+    root.style &&
+    typeof root.style.setProperty === 'function'
+  ) {
+    syncViewportInset = () => {
+      const inset =
+        vv.scale > 1.01
+          ? 0
+          : Math.max(0, Math.round(view.innerHeight - vv.height - vv.offsetTop));
+      root.style.setProperty('--bn-app-nav-visual-inset', `${inset}px`);
+    };
+    vv.addEventListener('resize', syncViewportInset);
+    vv.addEventListener('scroll', syncViewportInset);
+    syncViewportInset();
+  }
 
   const moreBtn = () => root.querySelector('[data-bn="app-nav-more"]');
   const sheet = () => root.querySelector('[data-bn="app-nav-sheet"]');
@@ -392,6 +429,13 @@ export function initAppNav(root, options = {}) {
       if (doc) {
         doc.removeEventListener('click', onDocumentClick);
         doc.removeEventListener('keydown', onDocumentKeydown);
+      }
+      if (vv && syncViewportInset && typeof vv.removeEventListener === 'function') {
+        vv.removeEventListener('resize', syncViewportInset);
+        vv.removeEventListener('scroll', syncViewportInset);
+        if (typeof root.style.removeProperty === 'function') {
+          root.style.removeProperty('--bn-app-nav-visual-inset');
+        }
       }
     },
   };

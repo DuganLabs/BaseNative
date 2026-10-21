@@ -4784,6 +4784,45 @@ describe('initAppNav', () => {
     assert.ok(nav.hasAttribute('data-open'), 'state still tracks without a button or sheet');
     handle.destroy();
   });
+
+  it('keeps the bar clear of the on-screen keyboard through the visual viewport', () => {
+    const doc = fakeDocument();
+    const vvListeners = new Map();
+    const vv = {
+      height: 844,
+      offsetTop: 0,
+      scale: 1,
+      addEventListener(type, fn) { vvListeners.set(type, fn); },
+      removeEventListener(type, fn) { if (vvListeners.get(type) === fn) vvListeners.delete(type); },
+      dispatch(type) { vvListeners.get(type)?.(); },
+    };
+    doc.defaultView = { innerHeight: 844, visualViewport: vv };
+    const nav = fakeElement(doc, 'app-nav');
+    const props = new Map();
+    nav.style = {
+      setProperty(name, value) { props.set(name, value); },
+      removeProperty(name) { props.delete(name); },
+    };
+    const handle = initAppNav(nav);
+    assert.equal(props.get('--bn-app-nav-visual-inset'), '0px', 'no keyboard: no inset');
+    vv.height = 508; // the keyboard covers the layout viewport's lower 336px
+    vv.dispatch('resize');
+    assert.equal(
+      props.get('--bn-app-nav-visual-inset'),
+      '336px',
+      'the covered strip becomes the bar offset'
+    );
+    vv.scale = 1.6; // pinch-zoom also shrinks the visual viewport, covering nothing
+    vv.dispatch('scroll');
+    assert.equal(props.get('--bn-app-nav-visual-inset'), '0px', 'pinch-zoom reports no inset');
+    vv.scale = 1;
+    vv.height = 844;
+    vv.dispatch('resize');
+    assert.equal(props.get('--bn-app-nav-visual-inset'), '0px', 'keyboard dismissed: inset clears');
+    handle.destroy();
+    assert.equal(vvListeners.size, 0, 'destroy unbinds the visual viewport');
+    assert.ok(!props.has('--bn-app-nav-visual-inset'), 'destroy removes the inset');
+  });
 });
 
 describe('ListGroup', () => {

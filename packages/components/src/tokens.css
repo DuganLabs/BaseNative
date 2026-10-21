@@ -250,6 +250,17 @@
        same tokens, so the bar and the space a page reserves for it cannot drift. */
     --bn-size-app-nav-bar: 3.5rem;
     --bn-size-nav-rail: 15rem;
+    /* The on-screen keyboard's bite out of the layout viewport. A fixed
+       bottom bar positioned with `bottom: 0` resolves against the LAYOUT
+       viewport, but the keyboard shrinks the VISUAL viewport — so on a
+       phone the bar lands mid-screen, clipped by the keyboard (seen on a
+       real phone, 2026-10-20: filter input focused, tab bar floating with
+       its labels sliced). initAppNav measures the gap through
+       window.visualViewport and writes it here; the bar and its sheet
+       read it as their bottom offset, so the bar rides on top of the
+       keyboard, whole. 0 whenever no keyboard is up (and for every
+       consumer that never runs initAppNav). */
+    --bn-app-nav-visual-inset: 0px;
 
     /* Material — the surface treatment a platform layer can restyle without
        touching component CSS: a background, a backdrop filter and a composed
