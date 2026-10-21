@@ -102,11 +102,13 @@ export { createCalendarState, createPipelineState, eventsCollide, updateEvent, g
 export { renderLayoutGrid, layoutGridStyles } from './layout-grid.js';
 
 // Site Chrome (header, nav, footer and the app shell; initSiteHeader wires
-// the narrow-viewport nav toggle)
+// the narrow-viewport nav toggle; renderAppNav is the adaptive app nav —
+// bottom bar at phone class, fixed side rail at the unfolded class)
 export {
   renderSiteNav,
   renderSiteHeader,
   initSiteHeader,
+  renderAppNav,
   renderSiteFooter,
   renderAppShell,
 } from './site-chrome.js';

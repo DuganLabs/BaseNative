@@ -245,6 +245,11 @@
     /* Minimum interactive target size — WCAG 2.5.8 (24×24 CSS px). Applied as a hit-area
        floor via min-inline-size/min-block-size; never changes a control's visible glyph. */
     --bn-target-size-min: 1.5rem;
+    /* App nav footprints: the bottom bar's height at phone class and the side rail's
+       width at the unfolded class. The clearance rules in components.css read the
+       same tokens, so the bar and the space a page reserves for it cannot drift. */
+    --bn-size-app-nav-bar: 3.5rem;
+    --bn-size-nav-rail: 15rem;
 
     /* Border */
     --bn-border-width: 1px;
@@ -317,6 +322,7 @@
     --bn-scrim: rgb(0 0 0 / 0.4);
 
     /* Z-index */
+    --bn-z-nav: 900;
     --bn-z-dropdown: 1000;
     --bn-z-modal: 1100;
     --bn-z-toast: 1200;

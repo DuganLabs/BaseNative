@@ -1445,6 +1445,39 @@ renderSiteHeader({
 
 Renders `<header data-bn="site-header">` wrapping `<nav data-bn="site-nav">` with `<a data-bn="nav-logo">`, `<button data-bn="nav-toggle" aria-expanded="false" aria-controls="{id}-menu">` and `<ul id="{id}-menu" data-bn="nav-menu">`. The toggle is a real button — keyboard-operable and announced — not a checkbox hack.
 
+## App Nav
+
+`renderAppNav(options)` → `string`
+
+The primary nav for app-shaped surfaces — one nav whose layout follows the size class, in the pattern the iPhone Duo's app demos established. At phone class it is a fixed bottom bar: icon over label, brand and `actions` hidden. At the unfolded class — the viewport spanning a vertical fold (`spanning: single-fold-vertical`), or at least 939px wide (58.6875rem, the Duo inner display's short edge; `@basenative/ios`'s `duoInner` breakpoint) — the same element is a fixed side rail: brand at the top, icon-and-label rows, the `actions` slot at the foot, content scrolling beside it.
+
+The adaptation is CSS alone (the "App Nav" section of `components.css`), so there is no init function and no second markup variant to keep in sync: the DOM never changes when the class does, which is what a fold is. Focus, scroll position and `aria-current` survive unfolding untouched because nothing re-renders. The bar is fixed in both modes; a page that renders the nav as a direct child of `[data-bn="page"]` (or of `body`) gets its scroll clearance from the same CSS rules, sized by the `--bn-size-app-nav-bar` / `--bn-size-nav-rail` tokens the bar itself reads.
+
+```js
+renderAppNav({
+  brand: { name: 'GreenPut' },
+  items: [
+    { label: 'Home', href: '/', icon: '<svg>…</svg>', current: true },
+    { label: 'Jobs', href: '/jobs', icon: '<svg>…</svg>' },
+  ],
+  actions: '<a href="/start" data-bn="button" data-variant="primary">Get Started</a>',
+})
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `brand.name` | `string` | `''` | Escaped text beside the logo (rail mode only) |
+| `brand.logo` | `string` | `''` | HTML slot (an SVG mark): not escaped |
+| `brand.href` | `string` | `'/'` | |
+| `brand.label` | `string` | `'<name> home'` | The logo link's `aria-label` |
+| `items` | `Array<{ label, href, icon?, current? }>` | `[]` | Labels are escaped text, hrefs escaped attributes; `icon` is an HTML slot (an SVG glyph): not escaped; the `current` item's link gets `aria-current="page"` |
+| `actions` | `string` | `''` | HTML slot rendered after the items (the rail's foot; hidden at phone class) |
+| `label` | `string` | `'Primary'` | The nav's `aria-label`; escaped |
+| `id` | `string` | — | Emitted as the `<nav>`'s id when present |
+| `attrs` | `string` | `''` | Extra attributes on the `<nav>` |
+
+Renders `<nav data-bn="app-nav">` with an optional `<a data-bn="app-nav-brand">`, a `<ul data-bn="app-nav-list">` (each link holds a `<span data-bn="app-nav-icon">` when the item has an icon, and a `<span data-bn="app-nav-label">`), and an optional `<div data-bn="app-nav-actions">`.
+
 ## Site Footer
 
 `renderSiteFooter(options)` → `string`

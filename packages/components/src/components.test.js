@@ -35,6 +35,7 @@ import { renderCalendar, renderPipelineBlock, renderPipeline, initCalendarDragDr
 import { renderLayoutGrid } from './layout-grid.js';
 import { renderField as renderPublicField, renderFormField } from './field.js';
 import {
+  renderAppNav,
   renderSiteNav,
   renderSiteHeader,
   initSiteHeader,
@@ -4479,6 +4480,77 @@ describe('initSiteHeader', () => {
     assert.equal(doc.listeners.size, 0);
     toggle.dispatch('click');
     assert.ok(!header.hasAttribute('data-open'));
+  });
+});
+
+describe('AppNav', () => {
+  const items = [
+    { label: 'Home', href: '/', icon: '<svg data-glyph="home"></svg>', current: true },
+    { label: 'Jobs', href: '/jobs', icon: '<svg data-glyph="jobs"></svg>' },
+    { label: 'Settings', href: '/settings' },
+  ];
+
+  it('renders one nav: brand, icon-and-label items, aria-current on the current item only', () => {
+    const html = renderAppNav({
+      brand: { name: 'GreenPut', logo: '<svg data-glyph="mark"></svg>' },
+      items,
+      actions: '<a href="/start">Get started</a>',
+    });
+    assert.ok(html.startsWith('<nav data-bn="app-nav" aria-label="Primary">'));
+    assert.ok(
+      html.includes(
+        '<a data-bn="app-nav-brand" href="/" aria-label="GreenPut home"><svg data-glyph="mark"></svg><strong>GreenPut</strong></a>'
+      )
+    );
+    assert.ok(
+      html.includes(
+        '<li><a href="/" aria-current="page"><span data-bn="app-nav-icon" aria-hidden="true"><svg data-glyph="home"></svg></span><span data-bn="app-nav-label">Home</span></a></li>'
+      )
+    );
+    assert.ok(html.includes('<div data-bn="app-nav-actions"><a href="/start">Get started</a></div>'));
+  });
+
+  it('is a single element for both postures — the fold never re-renders it', () => {
+    const html = renderAppNav({ brand: { name: 'X' }, items });
+    assert.equal(html.match(/data-bn="app-nav"/g).length, 1, 'one nav element, not a bar and a rail');
+    assert.equal(html.match(/data-bn="app-nav-list"/g).length, 1, 'one list, never duplicated per mode');
+    assert.ok(!html.includes('app-nav-bar'), 'no separate bottom-bar variant in the markup');
+    assert.ok(!html.includes('app-nav-rail'), 'no separate side-rail variant in the markup');
+  });
+
+  it('omits the brand, the actions and the icon span when they are not given', () => {
+    const html = renderAppNav({ items: [{ label: 'Jobs', href: '/jobs' }] });
+    assert.ok(!html.includes('app-nav-brand'));
+    assert.ok(!html.includes('app-nav-actions'));
+    assert.ok(!html.includes('app-nav-icon'));
+    assert.ok(html.includes('<li><a href="/jobs"><span data-bn="app-nav-label">Jobs</span></a></li>'));
+  });
+
+  it('escapes labels, hrefs and the brand name; the icon slot is trusted markup', () => {
+    assertEscaped(renderAppNav({ brand: { name: XSS }, items: [{ label: XSS, href: XSS }] }));
+    const html = renderAppNav({ items: [{ label: 'A', href: '/a', icon: '<svg></svg>' }] });
+    assert.ok(html.includes('<span data-bn="app-nav-icon" aria-hidden="true"><svg></svg></span>'));
+  });
+
+  it('ships both postures in components.css: fixed bottom bar, fixed side rail when unfolded', () => {
+    const css = readFileSync(new URL('./components.css', import.meta.url), 'utf8');
+    const section = css.slice(css.indexOf('=== App Nav ==='));
+    assert.ok(section.includes('[data-bn="app-nav"]'), 'the app-nav rules exist');
+    assert.ok(section.includes('position: fixed'), 'the nav is fixed in both postures');
+    assert.ok(
+      section.includes('@media (spanning: single-fold-vertical), (min-width: 58.6875rem)'),
+      'the unfolded class triggers on spanning a vertical fold or at 939px (58.6875rem, the Duo inner class)'
+    );
+    const rail = section.slice(section.indexOf('@media (spanning: single-fold-vertical)'));
+    assert.ok(rail.includes('inline-size: var(--bn-size-nav-rail)'), 'the rail is the token width');
+    assert.ok(
+      rail.includes('padding-inline-start: var(--bn-size-nav-rail)'),
+      'the clearance reserves exactly the rail width'
+    );
+    assert.ok(
+      section.includes('padding-block-end: calc(var(--bn-size-app-nav-bar)'),
+      'the phone-class clearance reserves exactly the bar height plus the safe area'
+    );
   });
 });
 

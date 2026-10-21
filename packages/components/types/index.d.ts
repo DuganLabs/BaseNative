@@ -1286,6 +1286,33 @@ export function initSiteHeader(
   }
 ): SiteHeaderController;
 
+export interface AppNavItem extends SiteNavItem {
+  /** HTML slot (an SVG glyph, shown in both modes): not escaped. */
+  icon?: string;
+}
+
+/**
+ * App navigation: one `<nav data-bn="app-nav">` that is a fixed bottom
+ * bar at phone class (icons over labels; brand and actions hidden) and a
+ * fixed side rail at the unfolded class — spanning a vertical fold, or
+ * a viewport at least 939px wide (brand at the top, icon-and-label
+ * rows, the `actions` slot at the foot). The adaptation is CSS alone,
+ * so there is no init: the DOM never changes across the fold and no
+ * state is lost. Pages that render it as a direct child of
+ * `[data-bn="page"]` or `body` get their scroll clearance from the same
+ * CSS rules.
+ */
+export function renderAppNav(options?: {
+  brand?: SiteHeaderBrand;
+  items?: AppNavItem[];
+  /** HTML slot (the rail's foot; hidden at phone class): not escaped. */
+  actions?: string;
+  /** The nav's `aria-label`. Default `'Primary'`. */
+  label?: string;
+  id?: string;
+  attrs?: string;
+}): string;
+
 export interface SiteFooterLink {
   /** Escaped text. */
   label: string;

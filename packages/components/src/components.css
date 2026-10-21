@@ -2286,4 +2286,136 @@
   line-height: var(--bn-line-height-relaxed);
 }
 
+/* === App Nav ===
+   One nav, two postures (renderAppNav in site-chrome.js). At phone class
+   it is a fixed bottom bar — icon over label, the destinations a thumb
+   reaches; brand and actions are put away. At the unfolded class it is a
+   fixed side rail — brand at the top, icon-and-label rows, actions at the
+   foot, content scrolling beside it. The unfolded class has two triggers
+   on one query: spanning a vertical fold (a foldable opened flat), and a
+   plain width of 58.6875rem — 939px, the Duo inner display's short edge
+   (@basenative/ios's duoInner breakpoint; components.css cannot import
+   the token package, so the value is pinned here and in appNav tests).
+   Because the switch is a media query over one element, unfolding loses
+   nothing: focus, scroll and aria-current are the same node's before
+   and after. The clearance rules below are the other half of the
+   contract: a page that renders the nav as a direct child of
+   [data-bn="page"] (or of body) reserves exactly the bar's footprint,
+   sized by the same tokens that size the bar. */
+[data-bn="app-nav"] {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: var(--bn-z-nav);
+  display: flex;
+  align-items: stretch;
+  background: var(--bn-color-surface);
+  border-block-start: var(--bn-border-width) solid var(--bn-color-border);
+  padding-block-end: env(safe-area-inset-bottom, 0px);
+}
+[data-bn="app-nav-brand"] {
+  display: none;
+}
+[data-bn="app-nav-list"] {
+  display: flex;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-bn="app-nav-list"] li {
+  display: flex;
+  flex: 1;
+}
+[data-bn="app-nav-list"] a {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--bn-space-1);
+  min-block-size: var(--bn-size-app-nav-bar);
+  padding: var(--bn-space-1) var(--bn-space-2);
+  color: var(--bn-color-text-muted);
+  font-size: var(--bn-font-size-xs);
+  text-decoration: none;
+}
+[data-bn="app-nav-list"] a:hover {
+  color: var(--bn-color-text);
+}
+[data-bn="app-nav-list"] a[aria-current="page"] {
+  color: var(--bn-color-primary-600);
+  font-weight: var(--bn-font-weight-semibold);
+}
+[data-bn="app-nav-icon"] {
+  display: inline-flex;
+}
+[data-bn="app-nav-icon"] svg {
+  inline-size: var(--bn-space-6);
+  block-size: var(--bn-space-6);
+}
+[data-bn="app-nav-actions"] {
+  display: none;
+}
+[data-bn="page"]:has(> [data-bn="app-nav"]),
+body:has(> [data-bn="app-nav"]) {
+  padding-block-end: calc(var(--bn-size-app-nav-bar) + env(safe-area-inset-bottom, 0px));
+}
+
+@media (spanning: single-fold-vertical), (min-width: 58.6875rem) {
+  [data-bn="app-nav"] {
+    top: 0;
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+    inline-size: var(--bn-size-nav-rail);
+    flex-direction: column;
+    border-block-start: none;
+    border-inline-end: var(--bn-border-width) solid var(--bn-color-border);
+    padding-block-end: var(--bn-space-4);
+  }
+  [data-bn="app-nav-brand"] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--bn-space-2);
+    padding: var(--bn-space-4) var(--bn-space-4) var(--bn-space-2);
+    color: var(--bn-color-text);
+    font-weight: var(--bn-font-weight-semibold);
+    text-decoration: none;
+  }
+  [data-bn="app-nav-list"] {
+    flex: none;
+    flex-direction: column;
+    gap: var(--bn-space-1);
+    padding: var(--bn-space-2);
+  }
+  [data-bn="app-nav-list"] li {
+    flex: none;
+  }
+  [data-bn="app-nav-list"] a {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--bn-space-3);
+    min-block-size: 0;
+    padding: var(--bn-space-2) var(--bn-space-3);
+    border-radius: var(--bn-radius-md);
+    font-size: var(--bn-font-size-sm);
+  }
+  [data-bn="app-nav-list"] a[aria-current="page"] {
+    background: var(--bn-color-surface-muted);
+    color: var(--bn-color-text);
+  }
+  [data-bn="app-nav-actions"] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bn-space-2);
+    margin-block-start: auto;
+    padding: var(--bn-space-3) var(--bn-space-4);
+  }
+  [data-bn="page"]:has(> [data-bn="app-nav"]),
+  body:has(> [data-bn="app-nav"]) {
+    padding-block-end: 0;
+    padding-inline-start: var(--bn-size-nav-rail);
+  }
+}
+
 } /* end @layer components */
