@@ -27,6 +27,7 @@
       "@basenative/i18n",
       "@basenative/icons",
       "@basenative/integrations",
+      "@basenative/ios",
       "@basenative/keyboard",
       "@basenative/logger",
       "@basenative/markdown",
@@ -55,5 +56,5 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@basenative/ios"]
+  "ignore": []
 }
