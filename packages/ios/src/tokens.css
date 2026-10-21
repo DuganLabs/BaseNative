@@ -99,6 +99,22 @@
     --bn-ios-margin-wide: 1.25rem;
     --bn-ios-hairline: 0.5px;
 
+    /* Breakpoints — the named size-class stops, as min-widths */
+    --bn-ios-breakpoint-watch: 100px;
+    --bn-ios-breakpoint-phone: 390px;
+    --bn-ios-breakpoint-duo-cover: 446px;
+    --bn-ios-breakpoint-tablet: 768px;
+    --bn-ios-breakpoint-duo-inner: 939px;
+    --bn-ios-breakpoint-desktop: 1024px;
+    --bn-ios-breakpoint-wide: 1600px;
+
+    /* Fold — the viewport segments, supplied by the device at runtime */
+    --bn-ios-fold-segments: 2;
+    --bn-ios-fold-segment-width: env(viewport-segment-width 0 0, 100vw);
+    --bn-ios-fold-segment-height: env(viewport-segment-height 0 0, 100vh);
+    --bn-ios-fold-second-segment-left: env(viewport-segment-left 1 0, 100vw);
+    --bn-ios-fold-crease-safe-margin: 1rem;
+
     /* Motion — duration, curve, and the composed shorthand */
     --bn-ios-motion-spring-duration: 550ms;
     --bn-ios-motion-spring-timing: cubic-bezier(0.32, 0.72, 0, 1);

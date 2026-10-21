@@ -1,10 +1,11 @@
 /**
  * The iOS foundation tokens, as data.
  *
- * One file, five groups, in the order `css.js` emits them: colours, type,
- * glass, layout, motion. Colours carry a `{ light, dark }` pair and nothing
- * else in the file carries a scheme — geometry, type metrics and springs
- * are the same on both appearances, exactly as they are on the platform.
+ * One file, six groups, in the order `css.js` emits them: colours, type,
+ * glass, layout, fold, motion. Colours carry a `{ light, dark }` pair and
+ * nothing else in the file carries a scheme — geometry, type metrics and
+ * springs are the same on both appearances, exactly as they are on the
+ * platform.
  *
  * Every value here is an original transcription of a published iOS design
  * value or an estimate made where Apple publishes no web equivalent. Which
@@ -44,6 +45,8 @@ export const PROVENANCE = Object.freeze({
   radii: 'estimate',
   spacing: 'documented',
   layout: 'estimate',
+  breakpoints: 'estimate',
+  fold: 'documented',
   motion: 'estimate',
 });
 
@@ -289,6 +292,64 @@ export const LAYOUT = Object.freeze({
   marginWide: '1.25rem',
   hairline: '0.5px',
   scrollEdge: '1.25rem',
+});
+
+/* --------------------------------------------------------------------- fold */
+
+/**
+ * The size-class boundaries the catalog adapts across, as min-widths in
+ * CSS pixels, ascending. One component serves the whole continuum — the
+ * scope's ~100px (watch) to 1000px+ (TV/desktop) — and these are the
+ * named stops along it, not device detections: a layout asks which class
+ * it is in, never which device it is on.
+ *
+ * The two Duo stops are the foldable's classes. `duoCover` is the
+ * 5.4-inch cover display — a wide phone class. `duoInner` is the
+ * 7.6-inch inner display's short edge (939px): at or above it, in either
+ * orientation, an unfolded Duo is in the room, and the `spanning` media
+ * feature (see `posture.js`) says whether the viewport actually crosses
+ * the fold. Width alone must never be read as "unfolded" — an iPad is
+ * this wide too.
+ *
+ * Estimates: Apple announces the Duo's physical geometry (5.4in and
+ * 7.6in diagonals, a 1878×2670 inner panel at ~430ppi, one ~1.42:1
+ * aspect shared by both displays) but publishes no CSS-pixel values, so
+ * the stops are derived — the cover at its @3 logical width (≈446px),
+ * the inner at its @2 logical size (939×1335). Hardware refines them;
+ * the names are the contract.
+ */
+export const BREAKPOINTS = Object.freeze({
+  watch: 100,
+  phone: 390,
+  duoCover: 446,
+  tablet: 768,
+  duoInner: 939,
+  desktop: 1024,
+  wide: 1600,
+});
+
+/**
+ * The fold's geometry, read from the device at runtime through the CSS
+ * viewport-segment environment variables — the one set of tokens whose
+ * values the hardware itself supplies, like the safe-area insets.
+ *
+ * The Duo is a single vertical fold: two segments side by side. Every
+ * expression carries a fallback for the screens that are not folded, so
+ * the tokens are safe to consume unconditionally: on a flat display the
+ * one segment is the whole viewport (`segmentWidth` resolves to 100vw)
+ * and the second segment starts off-screen (`secondSegmentLeft`
+ * resolves to 100vw), which is exactly the single-pane truth.
+ *
+ * `creaseSafeMargin` is the working clearance kept between content and
+ * the crease — the one estimate in the group, set to the 16pt spacing
+ * step until hardware says otherwise.
+ */
+export const FOLD = Object.freeze({
+  segments: 2,
+  segmentWidth: 'env(viewport-segment-width 0 0, 100vw)',
+  segmentHeight: 'env(viewport-segment-height 0 0, 100vh)',
+  secondSegmentLeft: 'env(viewport-segment-left 1 0, 100vw)',
+  creaseSafeMargin: '1rem',
 });
 
 /* ------------------------------------------------------------------- motion */

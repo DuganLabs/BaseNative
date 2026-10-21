@@ -16,6 +16,8 @@ import {
   SPACING,
   SAFE_AREA,
   LAYOUT,
+  BREAKPOINTS,
+  FOLD,
   MOTION,
 } from './tokens.js';
 
@@ -148,10 +150,58 @@ test('motion presets are well-formed duration + curve pairs', () => {
   }
 });
 
+test('the breakpoints are the named size-class stops, ascending', () => {
+  assert.deepEqual(Object.keys(BREAKPOINTS), [
+    'watch',
+    'phone',
+    'duoCover',
+    'tablet',
+    'duoInner',
+    'desktop',
+    'wide',
+  ]);
+  const stops = Object.values(BREAKPOINTS);
+  for (let i = 1; i < stops.length; i++) {
+    assert.ok(stops[i] > stops[i - 1], `stops must ascend (${stops})`);
+  }
+  // The Duo stops are the foldable's two classes, and they bracket the
+  // phone and tablet classes the Duo sits between.
+  assert.ok(BREAKPOINTS.duoCover > BREAKPOINTS.phone, 'the cover is a wide phone');
+  assert.ok(BREAKPOINTS.duoCover < BREAKPOINTS.tablet, 'the cover is not a tablet');
+  assert.ok(BREAKPOINTS.duoInner > BREAKPOINTS.tablet, 'the inner display opens past tablet');
+  assert.ok(BREAKPOINTS.duoInner < BREAKPOINTS.wide, 'the inner display is not a desktop');
+});
+
+test('the fold geometry reads the device segments, with single-pane fallbacks', () => {
+  assert.deepEqual(Object.keys(FOLD), [
+    'segments',
+    'segmentWidth',
+    'segmentHeight',
+    'secondSegmentLeft',
+    'creaseSafeMargin',
+  ]);
+  assert.equal(FOLD.segments, 2, 'the Duo is a single vertical fold: two segments');
+  assert.match(FOLD.segmentWidth, /^env\(viewport-segment-width 0 0, /, 'first segment width');
+  assert.match(FOLD.segmentHeight, /^env\(viewport-segment-height 0 0, /, 'first segment height');
+  assert.match(
+    FOLD.secondSegmentLeft,
+    /^env\(viewport-segment-left 1 0, /,
+    'the second segment starts where the hinge ends',
+  );
+  // On a flat display the fallbacks must tell the single-pane truth: the
+  // one segment is the whole viewport, the second starts off-screen.
+  assert.ok(FOLD.segmentWidth.endsWith('100vw)'), 'flat fallback: segment is the viewport');
+  assert.ok(FOLD.segmentHeight.endsWith('100vh)'), 'flat fallback: segment is the viewport');
+  assert.ok(FOLD.secondSegmentLeft.endsWith('100vw)'), 'flat fallback: no second segment');
+  assert.match(FOLD.creaseSafeMargin, /^\d+(\.\d+)?rem$/, 'the crease clearance is a length');
+});
+
 test('provenance covers every group, and is only ever documented or estimate', () => {
   assert.deepEqual(Object.keys(PROVENANCE).sort(), [
     'backgroundColors',
+    'breakpoints',
     'fillColors',
+    'fold',
     'fontFamilies',
     'glass',
     'labelColors',

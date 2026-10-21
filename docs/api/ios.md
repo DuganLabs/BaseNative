@@ -63,6 +63,15 @@ import { SYSTEM_COLORS, tokensCss } from '@basenative/ios';
 - `SPACING` — the 8pt spacing grid, steps 1–8.
 - `SAFE_AREA` — the four device insets as `env()` values.
 - `LAYOUT` — `margin`, `marginWide`, `hairline`, `scrollEdge`.
+- `BREAKPOINTS` — the named size-class stops as min-widths in CSS px,
+  ascending: `watch` (100), `phone` (390), `duoCover` (446, the Duo's
+  5.4-inch cover display class), `tablet` (768), `duoInner` (939, the
+  7.6-inch inner display's short edge), `desktop` (1024), `wide`
+  (1600).
+- `FOLD` — the fold geometry the device reports at runtime: `segments`
+  (2), `segmentWidth` / `segmentHeight` / `secondSegmentLeft` as
+  `env(viewport-segment-*)` expressions with single-pane fallbacks, and
+  `creaseSafeMargin`, the clearance kept between content and the fold.
 - `MOTION` — the presets `spring`, `springBouncy`, `springStiff`,
   `fade`, each a `{ duration, timing }` pair.
 - `PROVENANCE` — per group, whether its values are `documented`
@@ -80,3 +89,16 @@ import { SYSTEM_COLORS, tokensCss } from '@basenative/ios';
 
 The same stylesheet as a static file, generated from the data by
 `generate.js`; importing it is the zero-JS route.
+
+### Fold posture — `@basenative/ios/posture`
+
+- `POSTURE_MEDIA` — the posture media queries as strings:
+  `singlePane` (`(spanning: none)`), `spanningVertical`
+  (`(spanning: single-fold-vertical)`), and the Duo width classes
+  `duoCover` / `duoInner`, derived from the `duoInner` breakpoint so
+  the two meet exactly at its edge.
+- `postureCss()` — the posture utility sheet, in `@layer layout`:
+  `.bn-ios-panes` (one column folded; when spanning, a two-column grid
+  whose columns are the device segments and whose gap is the hinge),
+  `.bn-ios-pane` (keeps the crease safe margin on the fold-facing
+  sides), and `.bn-ios-crease-avoid` (never wider than one segment).

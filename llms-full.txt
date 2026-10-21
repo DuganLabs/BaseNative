@@ -2211,6 +2211,9 @@ Source: `packages/ios/src` · Docs: `docs/api/ios.md`
 #### Stylesheet file — `@basenative/ios/tokens.css`
 The same stylesheet as a static file, generated from the data by `generate.js`; importing it is the zero-JS route.
 
+#### Fold posture — `@basenative/ios/posture`
+- `POSTURE_MEDIA` — the posture media queries as strings: `singlePane` (`(spanning: none)`), `spanningVertical` (`(spanning: single-fold-vertical)`), and the Duo width classes `duoCover` / `duoInner`, derived from the `duoInner` breakpoint…
+
 ### `@basenative/keyboard` (v2.1.0)
 
 Accessible mobile-first on-screen virtual keyboard primitive — layout-agnostic, signal-driven key state coloring, themable

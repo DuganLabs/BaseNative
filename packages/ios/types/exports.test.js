@@ -16,6 +16,7 @@ import { dirname, join } from 'node:path';
 import * as index from '../src/index.js';
 import * as tokens from '../src/tokens.js';
 import * as css from '../src/css.js';
+import * as posture from '../src/posture.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pkgRoot = join(here, '..');
@@ -26,6 +27,7 @@ const modules = {
   '.': index,
   './tokens': tokens,
   './css': css,
+  './posture': posture,
 };
 
 /**

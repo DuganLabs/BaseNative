@@ -9,7 +9,7 @@
     },
     "test": {
       "cache": true,
-      "command": "node --test src/tokens.test.js src/css.test.js src/index.test.js types/exports.test.js",
+      "command": "node --test src/tokens.test.js src/css.test.js src/posture.test.js src/index.test.js types/exports.test.js",
       "inputs": [
         "{projectRoot}/src/**/*.js",
         "{projectRoot}/src/**/*.css",
