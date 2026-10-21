@@ -92,3 +92,23 @@ iterated silently before the first test run.
   BaseNative runtime source tree: 78,146 bytes at 2.0.1 vs 77,071 at 0.6.4,
   same measurement method (all .js under src/, concatenated) — the delta
   is the 2.0.1 :value/:checked property-sync fix.
+
+## Re-verification against published 2.1.0 (2026-10-20)
+- Same benchmark copied to a fresh directory; the BaseNative side was
+  installed from the published npm tarballs (@basenative/runtime,
+  @basenative/server, @basenative/router — all 2.1.0). App code, tests and
+  dataset untouched. React stays 19.3.1 (still the current release on
+  npm at the re-run date), esbuild 0.25.12, jsdom 27.4.0, Node v24.20.0.
+- `npm test` — BaseNative suite 4/4 pass, React suite 4/4 pass.
+- `node measure.mjs` — results.json regenerated: lines 95/114 and tokens
+  827/795 identical; fix-iteration counts are the original authoring
+  record and do not change on a re-run; closures re-derived from the
+  2.1.0 package.json files (runtime: zero deps; server: runtime +
+  node-html-parser; router: runtime) — unchanged.
+- React task-2 bundle rebuilt at exactly 1,181,977 bytes (unchanged).
+  BaseNative runtime source tree: 78,146 bytes at 2.1.0 — byte-identical
+  to 2.0.1, same measurement method (all .js under src/, concatenated);
+  the 2.1.0 release did not change the runtime package's source.
+- Sole environment delta: node-html-parser installed at 9.0.5 (9.0.4 in
+  the 2.0.1 run), inside the server's declared ^9.0.4 range. No measured
+  value moved.

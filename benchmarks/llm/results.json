@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-10-18T16:12:03.979Z",
+  "generatedAt": "2026-10-20T23:48:48.803Z",
   "tokenMethod": "approxTokens = UTF-8 bytes / 4, rounded (stated approximation, same method for all code)",
   "versions": {
-    "basenativeRuntime": "2.0.1 (published npm tarball)",
-    "basenativeServer": "2.0.1 (published npm tarball)",
-    "basenativeRouter": "2.0.1 (published npm tarball, not exercised by these tasks)",
+    "basenativeRuntime": "2.1.0 (published npm tarball)",
+    "basenativeServer": "2.1.0 (published npm tarball)",
+    "basenativeRouter": "2.1.0 (published npm tarball, not exercised by these tasks)",
     "react": "19.3.1",
     "reactDom": "19.3.1",
     "esbuild": "0.25.12",
     "jsdom": "27.4.0",
-    "nodeHtmlParser": "9.0.4",
+    "nodeHtmlParser": "9.0.5",
     "node": "v24.20.0"
   },
   "sharedInputs": "shared/products.json (excluded from both sides — identical input)",

@@ -5,7 +5,7 @@
 -->
 <section data-hero>
   <h2>How BaseNative <em>compares</em></h2>
-  <p>An honest look at BaseNative alongside React, Angular, and Svelte. Where it wins, where it doesn't, and why that matters.</p>
+  <p>BaseNative is a small runtime for the web platform itself: valid HTML templates that stay data instead of becoming code, no build step, no dependencies, nothing to eval — so a page can be generated, stored in a CMS or database, and served under a strict CSP. An honest look alongside React, Angular, and Svelte: where it wins, where it doesn't, and why that matters.</p>
 </section>
 
 <section data-stats>
@@ -41,25 +41,25 @@
           <tr>
             <th scope="col">Measure</th>
             <th scope="col">BaseNative</th>
-            <th scope="col">React 19</th>
-            <th scope="col">Angular 19</th>
-            <th scope="col">Svelte 5</th>
+            <th scope="col">{{ stats.reactLabel }}</th>
+            <th scope="col">{{ stats.angularLabel }}</th>
+            <th scope="col">{{ stats.svelteLabel }}</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <th scope="row">Runtime size (min+gz)</th>
-            <td data-tone="even" data-claim>{{ stats.runtimeGzipKb }} KB</td>
+            <td data-tone="win" data-claim>{{ stats.runtimeGzipKb }} KB</td>
             <td data-tone="cost" data-claim>~{{ stats.reactGzipKb }} KB</td>
             <td data-tone="cost" data-claim>~{{ stats.angularGzipKb }} KB</td>
-            <td data-tone="win" data-claim>~{{ stats.svelteGzipKb }} KB</td>
+            <td data-tone="even" data-claim>~{{ stats.svelteGzipKb }} KB</td>
           </tr>
           <tr>
             <th scope="row">Core production deps</th>
             <td data-tone="win" data-claim>{{ stats.runtimeProdDeps }}</td>
-            <td data-tone="even">2 (react, react-dom)</td>
-            <td data-tone="cost">6+ (zone.js, rxjs, …)</td>
-            <td data-tone="win">0</td>
+            <td data-tone="even" data-claim>{{ stats.reactDeps }}</td>
+            <td data-tone="cost" data-claim>{{ stats.angularDeps }}</td>
+            <td data-tone="win" data-claim>{{ stats.svelteDeps }}</td>
           </tr>
           <tr>
             <th scope="row">Build step</th>
@@ -71,9 +71,9 @@
           <tr>
             <th scope="row">Runtime source you can read</th>
             <td data-tone="win" data-claim>{{ stats.runtimeSourceLines }} lines</td>
-            <td data-tone="even">~80K lines</td>
-            <td data-tone="even">~300K+ lines</td>
-            <td data-tone="even">~15K lines</td>
+            <td data-tone="even" data-claim>~{{ stats.reactSourceLines }} lines</td>
+            <td data-tone="even" data-claim>~{{ stats.angularSourceLines }} lines</td>
+            <td data-tone="even" data-claim>~{{ stats.svelteSourceLines }} lines</td>
           </tr>
         </tbody>
       </table>
@@ -81,9 +81,12 @@
     <p data-compare-note data-claim>
       BaseNative's runtime is measured by <code>scripts/bundle-size.js</code> — the same
       gzipped build CI holds to a {{ stats.runtimeBudgetKb }} KB budget — so this row is the
-      number the package actually ships, not a target. Competitor figures are published
-      production builds, min+gzip. Svelte is smaller than BaseNative; that is the honest
-      result, and the tradeoff is the compiler it needs to get there.
+      number the package actually ships, not a target. Competitor figures are what a
+      minimal hello-world app ships through each framework's own production pipeline,
+      min+gzip, measured {{ stats.competitorsChecked }} against {{ stats.competitorVersions }}.
+      Svelte has no fixed runtime — its compiler ships only what the app uses — and at
+      hello-world scale that lands level with BaseNative's whole runtime; the tradeoff
+      is the compiler it needs to get there, and a figure that grows with the app.
     </p>
     <p data-compare-note data-claim>
       "Zero dependencies" is a claim about <code>@basenative/runtime</code>, and only about
@@ -98,64 +101,54 @@
 </section>
 
 <section>
-  <h2>API <em>surface</em></h2>
-  <p>Fewer primitives means less to learn, less to break, and less for AI tools to hallucinate. BaseNative's entire reactivity model fits on a whiteboard.</p>
+  <h2>Templates are <em>data</em></h2>
+  <p>BaseNative expressions are interpreted by a hand-written parser — a tokenizer, a recursive-descent grammar, a scope object. There is no <code>eval</code> and no <code>Function</code> constructor anywhere in the shipped runtime or server; the count is taken from source on every build, and it is {{ stats.unsafeEvalUses }}. A BaseNative page runs under <code>script-src 'self'</code> with no <code>'unsafe-eval'</code> — and unlike the compiled frameworks, that does not depend on a build having happened first.</p>
+  <p>Because a template is never compiled into code, a template is data. It can live in a CMS, come out of a database, or be written by a model, and rendering it cannot turn it into an injection: the parser interprets a deliberate subset — property access, calls into the provided scope, operators, ternaries — and blocklists prototype access. React, Angular and Svelte are safe the opposite way: their templates become code at build time, which is exactly why a template has to go through the build before it can run at all.</p>
 
   <article>
-    <header><h3>Concepts and model</h3></header>
-    <div data-bn-table-scroll tabindex="0" role="region" aria-label="API surface comparison">
+    <header><h3>What that posture costs and buys</h3></header>
+    <div data-bn-table-scroll tabindex="0" role="region" aria-label="Template and CSP posture comparison">
       <table data-compare-table>
         <thead>
           <tr>
             <th scope="col">Measure</th>
             <th scope="col">BaseNative</th>
-            <th scope="col">React 19</th>
-            <th scope="col">Angular 19</th>
-            <th scope="col">Svelte 5</th>
+            <th scope="col">{{ stats.reactLabel }}</th>
+            <th scope="col">{{ stats.angularLabel }}</th>
+            <th scope="col">{{ stats.svelteLabel }}</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <th scope="row">Core concepts to learn</th>
-            <td data-tone="win" data-claim>{{ stats.corePrimitives }}</td>
-            <td data-tone="cost">15+ hooks</td>
-            <td data-tone="cost">30+ concepts</td>
-            <td data-tone="win">~8 runes</td>
+            <th scope="row">eval / Function constructor in shipped code</th>
+            <td data-tone="win" data-claim>{{ stats.unsafeEvalUses }}</td>
+            <td data-tone="even">0 — after its compiler runs</td>
+            <td data-tone="even">0 — after AOT compilation</td>
+            <td data-tone="even">0 — after its compiler runs</td>
           </tr>
           <tr>
-            <th scope="row">Reactivity model</th>
-            <td data-tone="even">Signals (push)</td>
-            <td data-tone="even">Virtual DOM (pull)</td>
-            <td data-tone="even">Signals (push)</td>
-            <td data-tone="even">Runes/compiler (push)</td>
+            <th scope="row">Template stays data at runtime</th>
+            <td data-tone="win">Yes — parsed, never compiled to code</td>
+            <td data-tone="cost">No — JSX compiles to JavaScript</td>
+            <td data-tone="cost">No — templates compile at build time</td>
+            <td data-tone="cost">No — .svelte compiles to JavaScript</td>
           </tr>
           <tr>
-            <th scope="row">Template syntax</th>
-            <td data-tone="win">Valid HTML</td>
-            <td data-tone="cost">JSX (not HTML)</td>
-            <td data-tone="even">Extended HTML</td>
-            <td data-tone="even">Custom (.svelte)</td>
-          </tr>
-          <tr>
-            <th scope="row">TypeScript</th>
-            <td data-tone="even">Optional</td>
-            <td data-tone="even">Optional</td>
-            <td data-tone="cost">Required</td>
-            <td data-tone="even">Optional</td>
+            <th scope="row">A stored template (CMS, database, model output) renders as-is</th>
+            <td data-tone="win">Yes — interpreted against a scope, prototype access blocklisted</td>
+            <td data-tone="cost">No — it must go through the build first</td>
+            <td data-tone="cost">No — it must go through the build first</td>
+            <td data-tone="cost">No — it must go through the build first</td>
           </tr>
         </tbody>
       </table>
     </div>
-    <p data-compare-note data-claim>The {{ stats.corePrimitives }} primitives are {{ stats.corePrimitiveNames }} — counted from the modules that export them.</p>
   </article>
-</section>
 
-<section>
-  <h2>Written by <em>an LLM</em></h2>
-  <p>The claim above — less for AI tools to hallucinate — was measured, not assumed. An LLM wrote the same two apps twice, in BaseNative {{ stats.benchBnVersion }} and in React {{ stats.benchReactVersion }}: a server-rendered catalog and an interactive counter-and-list page, sharing one dataset, with identical behavior tests on both sides and every fix logged. Both implementations passed every test. What differed was the path.</p>
+  <p>The narrow, measured version of that claim: an LLM wrote the same two apps twice, in BaseNative {{ stats.benchBnVersion }} and in React {{ stats.benchReactVersion }} — a server-rendered catalog and an interactive counter-and-list page, sharing one dataset, with identical behavior tests on both sides and every fix logged. With no build pipeline in the way, the BaseNative side needed no tooling fixes at all. Both implementations passed every test. What differed was the path, and the code-size hypothesis failed in public:</p>
 
-  <article>
-    <header><h3>The same two tasks, both frameworks</h3></header>
+<article>
+    <header><h3>An LLM wrote the same two apps in both</h3></header>
     <div data-bn-table-scroll tabindex="0" role="region" aria-label="LLM authoring benchmark">
       <table data-compare-table>
         <thead>
@@ -203,9 +196,67 @@
       documented in that file.
     </p>
     <p data-compare-note>
+      First run in October 2026, against BaseNative 0.6.4. Re-verified
+      {{ stats.benchRunDate }} against the published {{ stats.benchBnVersion }} packages,
+      with React still at {{ stats.benchReactVersion }} — no measured value changed.
+    </p>
+    <p data-compare-note>
       Full method, results and the fix-by-fix log:
       <a href="https://github.com/DuganLabs/BaseNative/blob/main/docs/blog/2026-10-llm-benchmark.md">the benchmark write-up</a>.
     </p>
+  </article>
+</section>
+
+<section>
+  <h2>API <em>surface</em></h2>
+  <p>Fewer primitives means less to learn and less to break. BaseNative's entire reactivity model fits on a whiteboard.</p>
+
+  <article>
+    <header><h3>Concepts and model</h3></header>
+    <div data-bn-table-scroll tabindex="0" role="region" aria-label="API surface comparison">
+      <table data-compare-table>
+        <thead>
+          <tr>
+            <th scope="col">Measure</th>
+            <th scope="col">BaseNative</th>
+            <th scope="col">{{ stats.reactLabel }}</th>
+            <th scope="col">{{ stats.angularLabel }}</th>
+            <th scope="col">{{ stats.svelteLabel }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Core concepts to learn</th>
+            <td data-tone="win" data-claim>{{ stats.corePrimitives }}</td>
+            <td data-tone="cost">15+ hooks</td>
+            <td data-tone="cost">30+ concepts</td>
+            <td data-tone="win">~8 runes</td>
+          </tr>
+          <tr>
+            <th scope="row">Reactivity model</th>
+            <td data-tone="even">Signals (push)</td>
+            <td data-tone="even">Virtual DOM (pull)</td>
+            <td data-tone="even">Signals (push)</td>
+            <td data-tone="even">Runes/compiler (push)</td>
+          </tr>
+          <tr>
+            <th scope="row">Template syntax</th>
+            <td data-tone="win">Valid HTML</td>
+            <td data-tone="cost">JSX (not HTML)</td>
+            <td data-tone="even">Extended HTML</td>
+            <td data-tone="even">Custom (.svelte)</td>
+          </tr>
+          <tr>
+            <th scope="row">TypeScript</th>
+            <td data-tone="even">Optional</td>
+            <td data-tone="even">Optional</td>
+            <td data-tone="cost">Required</td>
+            <td data-tone="even">Optional</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p data-compare-note data-claim>The {{ stats.corePrimitives }} primitives are {{ stats.corePrimitiveNames }} — counted from the modules that export them.</p>
   </article>
 </section>
 
@@ -217,7 +268,7 @@
 
 <section>
   <h2>SSR and <em>hydration</em></h2>
-  <p data-claim>BaseNative includes server rendering and {{ stats.hydrationStrategies }} built-in lazy hydration strategies out of the box. Most frameworks require extra packages or custom implementations for selective hydration.</p>
+  <p data-claim>BaseNative includes server rendering and {{ stats.hydrationStrategies }} built-in lazy hydration strategies out of the box. Most frameworks require extra packages or custom implementations for selective hydration. Server and client interpret the same expressions through the same shared parser, so the markup the server renders is the markup the client hydrates — there is no second template dialect to drift.</p>
 
   <article>
     <header><h3>Rendering and hydration</h3></header>
@@ -227,9 +278,9 @@
           <tr>
             <th scope="col">Measure</th>
             <th scope="col">BaseNative</th>
-            <th scope="col">React 19</th>
-            <th scope="col">Angular 19</th>
-            <th scope="col">Svelte 5</th>
+            <th scope="col">{{ stats.reactLabel }}</th>
+            <th scope="col">{{ stats.angularLabel }}</th>
+            <th scope="col">{{ stats.svelteLabel }}</th>
           </tr>
         </thead>
         <tbody>
@@ -237,7 +288,7 @@
             <th scope="row">SSR built-in</th>
             <td data-tone="win">Yes</td>
             <td data-tone="cost">Via Next.js / manual</td>
-            <td data-tone="win">Yes (Universal)</td>
+            <td data-tone="win">Yes (built-in SSR)</td>
             <td data-tone="cost">Via SvelteKit</td>
           </tr>
           <tr>
@@ -279,16 +330,16 @@
           <tr>
             <th scope="col">Measure</th>
             <th scope="col">BaseNative</th>
-            <th scope="col">React 19</th>
-            <th scope="col">Angular 19</th>
-            <th scope="col">Svelte 5</th>
+            <th scope="col">{{ stats.reactLabel }}</th>
+            <th scope="col">{{ stats.angularLabel }}</th>
+            <th scope="col">{{ stats.svelteLabel }}</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <th scope="row">Time to first render</th>
             <td data-tone="win">Open HTML file</td>
-            <td data-tone="cost">npx create-react-app</td>
+            <td data-tone="cost">npm create vite@latest</td>
             <td data-tone="cost">ng new + ng serve</td>
             <td data-tone="cost">npx sv create</td>
           </tr>
@@ -308,7 +359,7 @@
           </tr>
           <tr>
             <th scope="row">Component model</th>
-            <td data-tone="cost">None (vanilla DOM)</td>
+            <td data-tone="even">Semantic HTML — W3C primitives are the component model</td>
             <td data-tone="win">Components + hooks</td>
             <td data-tone="win">Components + DI</td>
             <td data-tone="win">Components</td>
@@ -340,19 +391,20 @@
         <li>CSP-safe without compilation</li>
         <li>Valid HTML templates that work without JS</li>
         <li data-claim>{{ stats.smallerThanReact }}× smaller than React, {{ stats.smallerThanAngular }}× smaller than Angular</li>
-        <li data-claim>AI-friendly: {{ stats.corePrimitives }} primitives to learn, not a framework to memorise</li>
+        <li>No lock-in: the component model is semantic HTML itself — walk away and your markup is still just HTML</li>
       </ul>
     </article>
 
     <article data-compare-card="cost">
       <header><h3>Where others win</h3></header>
       <ul role="list" data-compare-list="cost">
-        <li>No component model — composition is vanilla DOM</li>
+        <li>The component model is the platform itself — semantic HTML composed as native DOM, with no framework component layer (or component library ecosystem) on top</li>
         <li>Ecosystem of one — no third-party component libs</li>
         <li>Runtime expression parsing has overhead vs compiled output</li>
-        <li>Svelte is smaller and has the better-polished DX</li>
+        <li>Svelte has the better-polished DX and the mature compiler toolchain</li>
         <li>No React DevTools, no Angular CLI, no Svelte inspector</li>
         <li>Solo-maintained — bus factor of one</li>
+        <li>Almost nobody has heard of it — hiring and onboarding start from zero</li>
       </ul>
     </article>
   </div>
