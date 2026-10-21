@@ -540,6 +540,27 @@ describe('every published route is reachable from the navigation', () => {
     assert.ok(style.includes('[data-bn="list-group"]'), 'the grouped list rules are inlined');
   });
 
+  it('the inlined shell CSS is self-contained: every token it uses, it defines', () => {
+    // PR #275 inlined the shell's rules but not the tokens they compute
+    // from — those still came from the cached tokens.css, so a visitor
+    // holding a pre-app-nav copy got a bar whose z-index computed to
+    // auto and a clearance calc that was invalid outright: content
+    // painted over the bar and the page reserved no space for it.
+    // The invariant that prevents the whole class: within the shell
+    // block, every var(--bn-*) reference resolves to a definition in
+    // the same block.
+    const html = renderRoute(siteRoutes[0], { tasks: [], hasApi: false });
+    const style = html.slice(html.indexOf('<style data-bn-critical="shell">'), html.indexOf('</style>', html.indexOf('<style data-bn-critical="shell">')));
+    const defined = new Set([...style.matchAll(/(--bn-[a-z0-9-]+)\s*:/g)].map((m) => m[1]));
+    const referenced = new Set([...style.matchAll(/var\(\s*(--bn-[a-z0-9-]+)/g)].map((m) => m[1]));
+    const missing = [...referenced].filter((name) => !defined.has(name));
+    assert.deepEqual(missing, [], `shell CSS references tokens it does not define: ${missing.join(', ')}`);
+    // The two whose absence broke the phone shell, pinned to the
+    // values tokens.css declares.
+    assert.ok(style.includes('--bn-z-nav: 900'), 'the nav stacking token is inlined');
+    assert.ok(style.includes('--bn-size-app-nav-bar: 3.5rem'), 'the bar height token is inlined');
+  });
+
   it('a route with no nav entry is marked internal, and an internal route has no nav entry', () => {
     for (const route of siteRoutes) {
       assert.equal(!route.activePage, Boolean(route.internal),

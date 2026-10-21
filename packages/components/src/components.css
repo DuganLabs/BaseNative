@@ -2489,7 +2489,8 @@ a[data-bn="list-group-row"][aria-current="page"] {
   position: fixed;
   inset-inline: var(--bn-space-2);
   bottom: calc(
-    var(--bn-size-app-nav-bar) + env(safe-area-inset-bottom, 0px) + var(--bn-space-2)
+    var(--bn-size-app-nav-bar) + env(safe-area-inset-bottom, 0px) +
+      var(--bn-border-width) + var(--bn-space-2)
   );
   background: var(--bn-material-bg);
   -webkit-backdrop-filter: var(--bn-material-backdrop);
@@ -2524,9 +2525,21 @@ a[data-bn="list-group-row"][aria-current="page"] {
   background: var(--bn-color-surface-muted);
   font-weight: var(--bn-font-weight-semibold);
 }
+/* Clearance, the other half of the contract above: the page reserves
+   the bar's full footprint — its height token, the safe-area inset the
+   bar itself pads for, and the bar's top border — so the last content
+   scrolls fully clear of the bar, and scroll padding keeps fragment
+   targets the same distance from the bar when a jump lands on them. */
 [data-bn="page"]:has(> [data-bn="app-nav"]),
 body:has(> [data-bn="app-nav"]) {
-  padding-block-end: calc(var(--bn-size-app-nav-bar) + env(safe-area-inset-bottom, 0px));
+  padding-block-end: calc(
+    var(--bn-size-app-nav-bar) + env(safe-area-inset-bottom, 0px) + var(--bn-border-width)
+  );
+}
+:root:has(> body > [data-bn="app-nav"]) {
+  scroll-padding-block-end: calc(
+    var(--bn-size-app-nav-bar) + env(safe-area-inset-bottom, 0px) + var(--bn-border-width)
+  );
 }
 
 @media (spanning: single-fold-vertical), (min-width: 58.6875rem) {
@@ -2592,6 +2605,12 @@ body:has(> [data-bn="app-nav"]) {
   body:has(> [data-bn="app-nav"]) {
     padding-block-end: 0;
     padding-inline-start: var(--bn-size-nav-rail);
+  }
+  /* The rail takes the inline edge instead: fragment targets clear it
+     the same way, and the block-end reservation goes away. */
+  :root:has(> body > [data-bn="app-nav"]) {
+    scroll-padding-block-end: 0;
+    scroll-padding-inline-start: var(--bn-size-nav-rail);
   }
 }
 
