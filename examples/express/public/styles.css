@@ -2340,8 +2340,9 @@
     }
   }
 
-  /* -- /components category TOC -- */
-  [data-bn-component-toc] {
+  /* -- /components category TOC + /docs contents nav -- */
+  [data-bn-component-toc],
+  [data-bn-docs-toc] {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-xs);
@@ -2372,6 +2373,11 @@
         color: var(--accent);
       }
     }
+  }
+
+  /* -- /docs anchored sections clear the sticky contents nav -- */
+  [data-bn-docs-toc] ~ section {
+    scroll-margin-block-start: var(--space-2xl);
   }
 
   /* -- /components category section -- */

@@ -236,12 +236,33 @@ export const siteRoutes = [
     ctx: () => getHomePageContext(),
   },
   {
-    path: '/tasks',
-    view: 'tasks.html',
-    title: 'Tasks',
-    description: 'Live task list demonstrating signal-based hydration over server-rendered HTML.',
-    activePage: 'tasks',
-    ctx: ({ tasks, hasApi }) => getTasksPageContext(tasks, hasApi),
+    path: '/compare',
+    view: 'compare.html',
+    title: 'Compare',
+    description:
+      'How BaseNative compares to React, Angular and Svelte — bundle size, build requirements, API surface, hydration, and the tradeoffs that come with them.',
+    ogTitle: 'BaseNative vs React, Angular, Svelte',
+    activePage: 'compare',
+    scripts: '<script type="module" src="/compare.js"></script>',
+    ctx: () => getComparePageContext(),
+  },
+  {
+    path: '/components',
+    view: 'components.html',
+    title: 'Components',
+    description: `${flatComponents.length} semantic, server-rendered components built on native HTML primitives. No virtual DOM.`,
+    ogTitle: 'BaseNative Components — Semantic by Construction',
+    activePage: 'components',
+    ctx: () => getComponentsPageContext(),
+  },
+  {
+    path: '/docs',
+    view: 'docs.html',
+    title: 'API Docs',
+    description:
+      'API reference for the @basenative/runtime primitives (signal, computed, effect, hydrate), the template directives and @basenative/server render(), with links to the generated docs/api reference for router, forms, components and every other package.',
+    activePage: 'docs',
+    ctx: () => getDocsPageContext(),
   },
   {
     path: '/playground',
@@ -262,33 +283,13 @@ export const siteRoutes = [
     ctx: () => ({}),
   },
   {
-    path: '/docs',
-    view: 'docs.html',
-    title: 'API Docs',
-    description:
-      'API reference for the @basenative/runtime primitives (signal, computed, effect, hydrate), the template directives and @basenative/server render(), with links to the generated docs/api reference for router, forms, components and every other package.',
-    activePage: 'docs',
-    ctx: () => getDocsPageContext(),
-  },
-  {
-    path: '/components',
-    view: 'components.html',
-    title: 'Components',
-    description: `${flatComponents.length} semantic, server-rendered components built on native HTML primitives. No virtual DOM.`,
-    ogTitle: 'BaseNative Components — Semantic by Construction',
-    activePage: 'components',
-    ctx: () => getComponentsPageContext(),
-  },
-  {
-    path: '/compare',
-    view: 'compare.html',
-    title: 'Compare',
-    description:
-      'How BaseNative compares to React, Angular and Svelte — bundle size, build requirements, API surface, hydration, and the tradeoffs that come with them.',
-    ogTitle: 'BaseNative vs React, Angular, Svelte',
-    activePage: 'compare',
-    scripts: '<script type="module" src="/compare.js"></script>',
-    ctx: () => getComparePageContext(),
+    path: '/showcase',
+    view: 'showcase.html',
+    title: 'Showcase',
+    description: `Live gallery of all ${flatComponents.length} BaseNative components — every section is a real server render, not a mockup.`,
+    ogTitle: 'BaseNative Showcase — Live Component Gallery',
+    activePage: 'showcase',
+    ctx: () => ({ ...getShowcaseContext(), categories: componentCategories }),
   },
   {
     path: '/roadmap',
@@ -298,6 +299,14 @@ export const siteRoutes = [
       'BaseNative release plan, trust blockers, browser policy, and workflow parity tracking.',
     activePage: 'roadmap',
     ctx: () => getRoadmapPageContext(),
+  },
+  {
+    path: '/tasks',
+    view: 'tasks.html',
+    title: 'Tasks',
+    description: 'Live task list demonstrating signal-based hydration over server-rendered HTML.',
+    activePage: 'tasks',
+    ctx: ({ tasks, hasApi }) => getTasksPageContext(tasks, hasApi),
   },
   {
     // A verification harness for the dev server. `internal` keeps it out of
@@ -310,15 +319,6 @@ export const siteRoutes = [
     activePage: '',
     internal: true,
     ctx: () => ({ items: TEST_SIGNAL_ITEMS, itemsJson: JSON.stringify(TEST_SIGNAL_ITEMS) }),
-  },
-  {
-    path: '/showcase',
-    view: 'showcase.html',
-    title: 'Showcase',
-    description: `Live gallery of all ${flatComponents.length} BaseNative components — every section is a real server render, not a mockup.`,
-    ogTitle: 'BaseNative Showcase — Live Component Gallery',
-    activePage: 'showcase',
-    ctx: () => ({ ...getShowcaseContext(), categories: componentCategories }),
   },
 ];
 

@@ -5,14 +5,14 @@ import { componentCategories, flatComponents } from './component-catalog.js';
 
 export const navPages = [
   'home',
-  'tasks',
-  'playground',
-  'docs',
+  'compare',
   'components',
+  'docs',
+  'playground',
+  'builder',
   'showcase',
   'roadmap',
-  'builder',
-  'compare',
+  'tasks',
 ];
 
 /** One nav glyph: a 24-unit-grid stroke SVG, the icons package's convention. */
@@ -20,10 +20,14 @@ const glyph = (paths) =>
   `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
 
 /**
- * The app nav's destinations, in bar order: the four that stay in the
- * phone-class bar first (Home, Components, Showcase, Docs), then the
- * ones the More sheet carries. The rail reads the same list top to
- * bottom. `page` is the route's activePage key.
+ * The app nav's destinations, in travel order: the four that stay in
+ * the phone-class bar first — Home (what it is), Compare (why it
+ * wins), Components (the proof), Docs (how to use it / reference) —
+ * then the ones the More sheet carries, also in travel order:
+ * Playground (try it), Builder (build with it), Showcase (the catalog
+ * as one live gallery), Roadmap (status), Tasks (the demo app). The
+ * rail reads the same list top to bottom. `page` is the route's
+ * activePage key.
  */
 const appNavSpec = [
   {
@@ -31,6 +35,12 @@ const appNavSpec = [
     label: 'Home',
     href: '/',
     icon: glyph('<path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/>'),
+  },
+  {
+    page: 'compare',
+    label: 'Compare',
+    href: '/compare',
+    icon: glyph('<path d="M3 20h18"/><path d="M6 20v-9"/><path d="M12 20V5"/><path d="M18 20v-6"/>'),
   },
   {
     page: 'components',
@@ -41,25 +51,11 @@ const appNavSpec = [
     ),
   },
   {
-    page: 'showcase',
-    label: 'Showcase',
-    href: '/showcase',
-    icon: glyph('<path d="M12 4l1.8 4.6 4.7 1.4-4.7 1.4L12 16l-1.8-4.6L5.5 10l4.7-1.4L12 4z"/>'),
-  },
-  {
     page: 'docs',
     label: 'Docs',
     href: '/docs',
     icon: glyph(
       '<path d="M12 6c-1.5-1.5-3.5-2-7-2v14c3.5 0 5.5.5 7 2 1.5-1.5 3.5-2 7-2V4c-3.5 0-5.5.5-7 2z"/><path d="M12 6v14"/>',
-    ),
-  },
-  {
-    page: 'builder',
-    label: 'Builder',
-    href: '/builder',
-    icon: glyph(
-      '<path d="M5 7h14M5 12h14M5 17h14"/><circle cx="10" cy="7" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="8" cy="17" r="2"/>',
     ),
   },
   {
@@ -71,16 +67,18 @@ const appNavSpec = [
     ),
   },
   {
-    page: 'tasks',
-    label: 'Tasks',
-    href: '/tasks',
-    icon: glyph('<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 5-5.5"/>'),
+    page: 'builder',
+    label: 'Builder',
+    href: '/builder',
+    icon: glyph(
+      '<path d="M5 7h14M5 12h14M5 17h14"/><circle cx="10" cy="7" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="8" cy="17" r="2"/>',
+    ),
   },
   {
-    page: 'compare',
-    label: 'Compare',
-    href: '/compare',
-    icon: glyph('<path d="M3 20h18"/><path d="M6 20v-9"/><path d="M12 20V5"/><path d="M18 20v-6"/>'),
+    page: 'showcase',
+    label: 'Showcase',
+    href: '/showcase',
+    icon: glyph('<path d="M12 4l1.8 4.6 4.7 1.4-4.7 1.4L12 16l-1.8-4.6L5.5 10l4.7-1.4L12 4z"/>'),
   },
   {
     page: 'roadmap',
@@ -89,6 +87,12 @@ const appNavSpec = [
     icon: glyph(
       '<circle cx="12" cy="10" r="3"/><path d="M12 21.5s-6.5-5.4-6.5-11a6.5 6.5 0 0 1 13 0c0 5.6-6.5 11-6.5 11z"/>',
     ),
+  },
+  {
+    page: 'tasks',
+    label: 'Tasks',
+    href: '/tasks',
+    icon: glyph('<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 5-5.5"/>'),
   },
 ];
 
