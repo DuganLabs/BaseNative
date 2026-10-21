@@ -51,7 +51,7 @@
     [data-bn="table"] tr {
       display: block;
       padding-block: var(--bn-space-3);
-      border-bottom: 1px solid var(--bn-color-border);
+      border-bottom: var(--bn-border-width) solid var(--bn-color-border);
       background: none;
     }
     [data-bn="table"] tbody tr:last-child,
