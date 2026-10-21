@@ -23,32 +23,66 @@ const read = (...parts) => readFileSync(join(root, ...parts), 'utf-8');
 const readJson = (...parts) => JSON.parse(read(...parts));
 
 /**
- * Competitor runtime sizes, min+gzip, in KB.
+ * Competitor figures, re-measured 2026-10-20.
  *
  * These are the only figures on the page that cannot come from this
- * repository. They are recorded here with their source and the date they were
- * checked so they can be re-verified, and every ratio the page shows is
- * computed from them against BaseNative's *measured* size — so a ratio can
- * never drift away from the runtime it is comparing.
+ * repository. Each is the JavaScript a minimal hello-world app actually
+ * ships, measured through the framework's own production pipeline on one
+ * machine (Node v24.20.0), min+gzip:
+ *
+ *   React   — a createRoot hello-world bundled with esbuild from the
+ *             production builds of react + react-dom (the client renderer
+ *             included; the often-quoted smaller figure measures the
+ *             react-dom API package without it).
+ *   Angular — the default app @angular/cli scaffolds (zoneless by
+ *             default in 22), production build, initial JS.
+ *   Svelte  — a minimal counter app built with Vite; Svelte has no fixed
+ *             runtime, its compiler ships only what the app uses, so the
+ *             figure is the shipped bundle of that app.
+ *
+ * The dependency counts are the production dependencies of that same
+ * hello-world app, and the source-line counts are the shipped,
+ * unminified production runtime source a reader can open (React: the
+ * react, react-dom/client and scheduler production files; Angular: the
+ * fesm bundles of @angular/core, common, platform-browser and router;
+ * Svelte: src/internal/client in the published package).
+ *
+ * Every side carries the date it was checked, and computeCompareStats()
+ * refuses to render when the dates differ — a refresh must re-measure
+ * all three sides or none, so the page can never pair a fresh BaseNative
+ * number with a stale competitor number. Every ratio the page shows is
+ * computed from these figures against BaseNative's *measured* size.
  */
 export const COMPETITORS = {
   react: {
+    name: 'React',
     label: 'React 19',
-    runtimeGzipKb: 44,
-    source: 'react@19 + react-dom@19 production ESM builds, min+gzip',
-    checked: '2026-09-11',
+    version: '19.3.1',
+    runtimeGzipKb: 67.5,
+    sourceLines: '20K',
+    deps: '2 (react, react-dom)',
+    source: 'react@19.3.1 + react-dom@19.3.1 hello-world (createRoot), esbuild production bundle, min+gzip',
+    checked: '2026-10-20',
   },
   angular: {
-    label: 'Angular 19',
-    runtimeGzipKb: 130,
-    source: 'Angular 19 hello-world production AOT bundle, min+gzip',
-    checked: '2026-09-11',
+    name: 'Angular',
+    label: 'Angular 22',
+    version: '22.2.3',
+    runtimeGzipKb: 65.7,
+    sourceLines: '51K',
+    deps: '8 (@angular/* ×6, rxjs, tslib)',
+    source: '@angular/cli@22.2.3 default new app (zoneless), production build initial JS, min+gzip',
+    checked: '2026-10-20',
   },
   svelte: {
+    name: 'Svelte',
     label: 'Svelte 5',
-    runtimeGzipKb: 5,
-    source: 'Svelte 5 client runtime shipped with a compiled app, min+gzip',
-    checked: '2026-09-11',
+    version: '5.57.2',
+    runtimeGzipKb: 9.9,
+    sourceLines: '16K',
+    deps: '0',
+    source: 'svelte@5.57.2 minimal counter app, Vite production build, min+gzip',
+    checked: '2026-10-20',
   },
 };
 
@@ -183,6 +217,35 @@ function coreBuildSteps() {
   return 0;
 }
 
+/**
+ * `eval` and `Function`-constructor uses in the shipped runtime and server
+ * source — the page's CSP claim, counted rather than asserted.
+ *
+ * BaseNative's expression language is interpreted by a hand-written parser,
+ * so a template can be data (from a CMS, a database, a model) without ever
+ * becoming code, and pages run under a strict CSP with no 'unsafe-eval'.
+ * That claim is exactly as strong as this count: if a future change ever
+ * reaches for eval, the count moves and the build breaks instead of the
+ * page quietly lying.
+ */
+function unsafeEvalUses() {
+  const pattern = /\beval\s*\(|\bnew\s+Function\b|\bFunction\s*\(/g;
+  let count = 0;
+  for (const pkg of ['runtime', 'server']) {
+    for (const file of sourceFiles(join(root, 'packages', pkg, 'src'))) {
+      count += (readFileSync(file, 'utf-8').match(pattern) || []).length;
+    }
+  }
+  if (count !== 0) {
+    throw new Error(
+      `/compare claims BaseNative needs no 'unsafe-eval', but the shipped runtime and ` +
+        `server source contain ${count} eval/Function-constructor use(s). Remove them, ` +
+        `or rewrite the claim — do not let the page keep saying zero.`,
+    );
+  }
+  return count;
+}
+
 /** Round to one decimal, dropping a trailing `.0` so "5 KB" does not read "5.0 KB". */
 const oneDecimal = (value) => String(Math.round(value * 10) / 10);
 
@@ -226,6 +289,7 @@ function llmBenchmark() {
     benchDocsTokens: results.agentDocsBundle?.approxTokens,
     benchBnVersion: String(results.versions?.basenativeRuntime || '').split(' ')[0],
     benchReactVersion: results.versions?.react,
+    benchRunDate: String(results.generatedAt || '').slice(0, 10),
   };
   for (const [key, value] of Object.entries(stats)) {
     if (value === undefined || value === '' || (typeof value === 'number' && !Number.isFinite(value))) {
@@ -286,6 +350,21 @@ export function computeCompareStats() {
 
   const ratio = (competitor) => oneDecimal(COMPETITORS[competitor].runtimeGzipKb / runtimeGzipKb);
 
+  // A competitor refresh must land all three sides together. If one entry
+  // was re-measured and the others were not, the page would pair a fresh
+  // number with stale ones — the exact failure this file exists to prevent.
+  const checkedDates = new Set(Object.values(COMPETITORS).map((c) => c.checked));
+  if (checkedDates.size !== 1) {
+    throw new Error(
+      `/compare's competitor figures were checked on different dates ` +
+        `(${[...checkedDates].join(', ')}). Re-measure React, Angular and Svelte ` +
+        `together and give them one checked date in COMPETITORS (scripts/compare-stats.js).`,
+    );
+  }
+  const competitorVersions = Object.values(COMPETITORS)
+    .map((c) => `${c.name} ${c.version}`)
+    .join(' · ');
+
   return {
     ...benchmark,
     coreModule: CORE_MODULE,
@@ -309,6 +388,18 @@ export function computeCompareStats() {
     reactGzipKb: oneDecimal(COMPETITORS.react.runtimeGzipKb),
     angularGzipKb: oneDecimal(COMPETITORS.angular.runtimeGzipKb),
     svelteGzipKb: oneDecimal(COMPETITORS.svelte.runtimeGzipKb),
+    reactLabel: COMPETITORS.react.label,
+    angularLabel: COMPETITORS.angular.label,
+    svelteLabel: COMPETITORS.svelte.label,
+    reactSourceLines: COMPETITORS.react.sourceLines,
+    angularSourceLines: COMPETITORS.angular.sourceLines,
+    svelteSourceLines: COMPETITORS.svelte.sourceLines,
+    reactDeps: COMPETITORS.react.deps,
+    angularDeps: COMPETITORS.angular.deps,
+    svelteDeps: COMPETITORS.svelte.deps,
+    competitorVersions,
+    competitorsChecked: [...checkedDates][0],
+    unsafeEvalUses: unsafeEvalUses(),
   };
 }
 
@@ -348,6 +439,19 @@ export const RENDERED_CLAIMS = [
   'benchDocsTokens',
   'benchBnVersion',
   'benchReactVersion',
+  'benchRunDate',
+  'reactLabel',
+  'angularLabel',
+  'svelteLabel',
+  'reactSourceLines',
+  'angularSourceLines',
+  'svelteSourceLines',
+  'reactDeps',
+  'angularDeps',
+  'svelteDeps',
+  'competitorVersions',
+  'competitorsChecked',
+  'unsafeEvalUses',
 ];
 
 /** The view whose every BaseNative number must be a binding, not a literal. */

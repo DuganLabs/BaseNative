@@ -31,6 +31,31 @@ Outcome: **no measured value changed.**
   amortization verdict is unchanged — at −16 tokens/task there is still
   no break-even; the smaller file just lowers the one-time cost.
 
+## Re-verification against the published 2.1.0 packages (2026-10-20)
+
+The identical benchmark was re-run again against the **published
+@basenative/runtime, @basenative/server and @basenative/router 2.1.0**
+npm tarballs (`results.json` in this folder is now that run's output).
+React stays 19.3.1 — still the current release on npm at the re-run
+date. Outcome: **no measured value changed.**
+
+- Both suites pass 4/4 on 2.1.0.
+- Lines and tokens are identical (95/114 lines, 827/795 tokens), as are
+  the fix-iteration counts (the original authoring record) and the
+  dependency closures (3 for task 1, **1** for task 2), re-derived from
+  the 2.1.0 `package.json` files: the runtime declares zero
+  dependencies; the server depends on the runtime and
+  `node-html-parser`; the router depends on the runtime.
+- React's task-2 bundle rebuilt at exactly **1,181,977 bytes**. The
+  BaseNative runtime source tree is **78,146 bytes** — byte-identical
+  to 2.0.1; the 2.1.0 release did not change the runtime package's
+  source.
+- Sole environment delta: `node-html-parser` installed at 9.0.5 (9.0.4
+  in the 2.0.1 run), inside the server's declared `^9.0.4` range.
+- The repo's shipped `llms.txt` is now 7,041 bytes (≈1,760 tokens), up
+  slightly from 6,885 at 2.0.1 as the docs grew; the amortization
+  verdict is unchanged.
+
 ## The question
 
 Warren's challenge: *confirm, with measurements, whether BaseNative is better
