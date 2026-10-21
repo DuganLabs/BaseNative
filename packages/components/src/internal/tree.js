@@ -23,15 +23,68 @@
  */
 export function renderNodes(items, options, level = 0) {
   const { getId, expanded, render, renderCollapsed = false } = options;
-  return items
-    .map((node, index) => {
-      const nodeId = getId(node);
-      const hasChildren = Boolean(node.children && node.children.length > 0);
-      const isExpanded = hasChildren && expanded.has(nodeId);
-      const children = hasChildren && (isExpanded || renderCollapsed) ? renderNodes(node.children, options, level + 1) : '';
-      return render({ node, nodeId, hasChildren, isExpanded, level, children, index });
-    })
-    .join('');
+
+  // Iterative post-order walk. A node's markup embeds its children's markup,
+  // so children render before their parent; the original recursive walk got
+  // that ordering from the call stack and overflowed it (RangeError) at
+  // roughly 3,000 levels of nesting. An explicit frame stack keeps the same
+  // order and output with depth bounded by memory instead.
+  const stack = [{ items, level, next: 0, parts: [], pending: null }];
+  let result = '';
+
+  while (stack.length > 0) {
+    const frame = stack[stack.length - 1];
+
+    if (frame.pending !== null) {
+      // The frame pushed for this node's children just finished and
+      // `result` holds their markup; render the node around it.
+      const { node, nodeId, hasChildren, isExpanded, index } = frame.pending;
+      frame.pending = null;
+      frame.parts.push(
+        render({
+          node,
+          nodeId,
+          hasChildren,
+          isExpanded,
+          level: frame.level,
+          children: result,
+          index,
+        }),
+      );
+      result = '';
+      continue;
+    }
+
+    if (frame.next >= frame.items.length) {
+      result = frame.parts.join('');
+      stack.pop();
+      continue;
+    }
+
+    const index = frame.next;
+    frame.next += 1;
+    const node = frame.items[index];
+    const nodeId = getId(node);
+    const hasChildren = Boolean(node.children && node.children.length > 0);
+    const isExpanded = hasChildren && expanded.has(nodeId);
+
+    if (hasChildren && (isExpanded || renderCollapsed)) {
+      frame.pending = { node, nodeId, hasChildren, isExpanded, index };
+      stack.push({
+        items: node.children,
+        level: frame.level + 1,
+        next: 0,
+        parts: [],
+        pending: null,
+      });
+    } else {
+      frame.parts.push(
+        render({ node, nodeId, hasChildren, isExpanded, level: frame.level, children: '', index }),
+      );
+    }
+  }
+
+  return result;
 }
 
 /** `0` for the node that is first in document order (roving-tabindex entry point), `-1` otherwise. */
