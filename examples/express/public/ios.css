@@ -1,0 +1,512 @@
+/* ios.css — the site's iOS adoption layer.
+ *
+ * basenative.com renders in the iOS design language by consuming the
+ * real @basenative/ios tokens (served from /bn-ios/tokens.css, loaded
+ * before this sheet): this file is the bridge that points the site's
+ * semantic tokens and the component catalog's core tokens at the iOS
+ * values, then applies the platform's surface grammar — grouped
+ * surfaces, the Dynamic Type hierarchy with the large-title pattern,
+ * semantic label colors, and Liquid Glass on the app nav through the
+ * catalog's --bn-material-* tokens. Nothing here invents a value the
+ * token package owns; where a choice had to be made it is noted.
+ *
+ * Loaded last, unlayered, so it wins the ties it is meant to win over
+ * theme.css and the layered styles.css. */
+
+/* ── Token bridge ─────────────────────────────────────────────────── */
+:root {
+  color-scheme: dark;
+
+  /* The stretch-axis voice (serif/mono instances of one variable font)
+     is the old brand treatment; iOS speaks in weights of one grotesque.
+     Neutralise the axes and let the type rules below set the scale. */
+  --font-serif: normal;
+  --font-mono: normal;
+
+  /* Type scale — the site scale re-pointed at the Dynamic Type ladder. */
+  --font-size-xs: var(--bn-ios-font-caption-1-size);
+  --font-size-sm: var(--bn-ios-font-footnote-size);
+  --font-size-base: var(--bn-ios-font-body-size);
+  --font-size-lg: var(--bn-ios-font-title-3-size);
+  --font-size-xl: var(--bn-ios-font-title-2-size);
+  --font-size-hero: var(--bn-ios-font-large-title-size);
+
+  /* Radii — the site ladder re-pointed at the iOS ladder. */
+  --radius-sm: var(--bn-ios-radius-sm);
+  --radius-md: var(--bn-ios-radius-lg);
+  --radius-lg: var(--bn-ios-radius-xl);
+
+  /* Surfaces & ink — the site tokens, from the iOS semantic colors.
+     The site is dark-only (data-theme="dark"), so these resolve to the
+     package's dark values. */
+  --surface-0: var(--bn-ios-color-bg-grouped);
+  --surface-1: var(--bn-ios-color-bg-grouped-secondary);
+  --surface-2: var(--bn-ios-color-bg-grouped-tertiary);
+  --surface-3: var(--bn-ios-color-gray-4);
+  --text-0: var(--bn-ios-color-label);
+  --text-1: var(--bn-ios-color-label-secondary);
+  --text-2: var(--bn-ios-color-label-tertiary);
+  --accent: var(--bn-ios-color-orange);
+  --accent-strong: var(--bn-ios-color-orange);
+  --accent-dim: rgb(255 159 10 / 0.16);
+  --border: var(--bn-ios-color-separator);
+  --border-strong: var(--bn-ios-color-separator-opaque);
+  --border-accent: var(--bn-ios-color-separator-opaque);
+  --focus: var(--bn-ios-color-orange);
+  --danger: var(--bn-ios-color-red);
+  --success: var(--bn-ios-color-green);
+  /* Grouped surfaces sit flat on the grouped background; no lift. */
+  --shadow-card: none;
+  --shadow-btn: none;
+
+  /* The same re-pointing for the core tokens the component catalog
+     reads, so catalog components (buttons, the grouped list, the app
+     nav itself) land in the same language. */
+  --bn-color-surface: var(--bn-ios-color-bg-grouped);
+  --bn-color-surface-card: var(--bn-ios-color-bg-grouped-secondary);
+  --bn-color-surface-raised: var(--bn-ios-color-bg-grouped-secondary);
+  --bn-color-surface-muted: var(--bn-ios-color-bg-grouped-tertiary);
+  --bn-color-surface-inset: var(--bn-ios-color-bg-grouped);
+  --bn-color-surface-control: var(--bn-ios-color-bg-grouped-tertiary);
+  --bn-color-text: var(--bn-ios-color-label);
+  --bn-color-text-muted: var(--bn-ios-color-label-secondary);
+  --bn-color-text-subtle: var(--bn-ios-color-label-tertiary);
+  --bn-color-border: var(--bn-ios-color-separator);
+  --bn-color-border-strong: var(--bn-ios-color-separator-opaque);
+  --bn-color-border-focus: var(--bn-ios-color-orange);
+  --bn-color-text-link: var(--bn-ios-color-orange);
+  --bn-color-primary-600: var(--bn-ios-color-orange);
+  --bn-radius-container: var(--bn-ios-radius-xl);
+  --bn-radius-modal: var(--bn-ios-radius-2xl);
+
+  /* Liquid Glass for the app nav (bar, rail and More sheet): the
+     catalog's material tokens pointed at the package's regular glass —
+     tint, backdrop and the composed highlight-plus-shadow. */
+  --bn-material-bg: var(--bn-ios-glass-regular-tint);
+  --bn-material-backdrop: var(--bn-ios-glass-regular-backdrop);
+  --bn-material-shadow:
+    var(--bn-ios-glass-regular-highlight), var(--bn-ios-glass-regular-shadow);
+}
+
+/* ── Base ─────────────────────────────────────────────────────────── */
+html {
+  background: var(--bn-ios-color-bg-grouped);
+}
+
+body {
+  background: var(--bn-ios-color-bg-grouped);
+  color: var(--bn-ios-color-label);
+  font: var(--bn-ios-font-body);
+  letter-spacing: var(--bn-ios-font-body-tracking);
+}
+
+/* An ambient warm glow at the top of the page: depth for the eye, and
+   something real for the glass bar to refract as content scrolls. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 auto;
+  block-size: 55vh;
+  background: radial-gradient(
+    65% 100% at 50% 0%,
+    rgb(255 149 0 / 0.09),
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+::selection {
+  background: rgb(255 159 10 / 0.3);
+}
+
+/* ── Type: the Dynamic Type hierarchy ─────────────────────────────── */
+/* The emphasized large title — UIKit's navigation presentation of the
+   large-title style is its bold variant, so the weight is set beside
+   the package's size/leading/tracking. Page-leading titles only: the
+   hero of a page, or the first section's heading. */
+[data-hero] > h2,
+[data-bn-page-hero] h2,
+main > section:first-of-type > h2 {
+  font: var(--bn-ios-font-large-title);
+  font-weight: 700;
+  letter-spacing: var(--bn-ios-font-large-title-tracking);
+}
+
+section > h2 {
+  font: var(--bn-ios-font-title-1);
+  font-weight: 700;
+  letter-spacing: var(--bn-ios-font-title-1-tracking);
+}
+
+h3 {
+  font: var(--bn-ios-font-title-3);
+  letter-spacing: var(--bn-ios-font-title-3-tracking);
+}
+
+/* Heading emphasis is the tint word, never italics. */
+h2 em,
+h3 em {
+  font-style: normal;
+  color: var(--bn-ios-color-orange);
+}
+
+/* Section intros read as secondary body copy, not display type. */
+section > p {
+  font: var(--bn-ios-font-body);
+  letter-spacing: var(--bn-ios-font-body-tracking);
+  color: var(--bn-ios-color-label-secondary);
+}
+
+[data-bn-lede] {
+  font: var(--bn-ios-font-title-3);
+  letter-spacing: var(--bn-ios-font-title-3-tracking);
+  color: var(--bn-ios-color-label-secondary);
+}
+
+[data-bn-eyebrow] {
+  font: var(--bn-ios-font-caption-1);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--bn-ios-color-label-secondary);
+}
+
+/* ── Grouped surfaces ─────────────────────────────────────────────── */
+/* A section is one grouped card on the grouped background — raised
+   secondary surface, iOS corner radius, no border (the surface step
+   does the separating on black). */
+main > section {
+  background: var(--bn-ios-color-bg-grouped-secondary);
+  border: none;
+  border-radius: var(--bn-ios-radius-2xl);
+  padding: var(--bn-ios-space-5);
+  margin-block-end: var(--bn-ios-space-5);
+}
+
+/* Heroes are not cards: they are the head of the stack — transparent,
+   with their text inset to the same line the cards' text sits on. */
+main > section[data-hero],
+main > section[data-bn-page-hero] {
+  background: transparent;
+  border-radius: 0;
+  padding-inline: var(--bn-ios-space-5);
+  text-align: start;
+}
+[data-hero] nav {
+  justify-content: flex-start;
+}
+[data-hero] > p {
+  text-align: start;
+  margin-inline: 0;
+}
+
+/* The showcase's root is one <article> around the whole gallery: it is
+   a page, not a card, so it carries no surface; its header is a hero. */
+article[data-bn-showcase] {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+}
+[data-bn-showcase-header] h2 {
+  font: var(--bn-ios-font-large-title);
+  font-weight: 700;
+  letter-spacing: var(--bn-ios-font-large-title-tracking);
+}
+
+/* A section whose children are cards of their own (docs entries, code
+   walkthroughs) is a heading zone, not a card around cards: the
+   articles carry the grouped surface instead. */
+main > section:has(> article) {
+  background: transparent;
+  padding: 0;
+}
+article {
+  background: var(--bn-ios-color-bg-grouped-secondary);
+  border: none;
+  border-radius: var(--bn-ios-radius-2xl);
+  padding: var(--bn-ios-space-5);
+}
+article:hover {
+  border-color: transparent;
+}
+
+/* The stats section is a heading zone too; its tiles are the cards. */
+main > section[data-stats] {
+  background: transparent;
+  padding: 0;
+}
+ul[role='list'][data-stat-grid] > li {
+  background: var(--bn-ios-color-bg-grouped-secondary);
+  border: none;
+  border-radius: var(--bn-ios-radius-xl);
+}
+ul[role='list'][data-stat-grid] strong {
+  font: var(--bn-ios-font-title-2);
+  font-weight: 700;
+  color: var(--bn-ios-color-label);
+  overflow-wrap: normal;
+}
+ul[role='list'][data-stat-grid] span {
+  font: var(--bn-ios-font-caption-1);
+  letter-spacing: 0.05em;
+  color: var(--bn-ios-color-label-secondary);
+}
+
+/* Plain lists inside a grouped card become grouped rows: hairline
+   separators, comfortable row padding — the shape the catalog's
+   grouped list formalises, applied to the hand-authored lists. The
+   old treatment gave every row its own bordered mini-card; grouped
+   rows share the card's surface instead. */
+section ul[role='list']:not([data-stat-grid]) > li {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding-block: var(--bn-ios-space-3);
+  border-block-start: 1px solid var(--bn-ios-color-separator);
+}
+section ul[role='list']:not([data-stat-grid]) > li:first-child {
+  border-block-start: none;
+  padding-block-start: 0;
+}
+section ul[role='list'] > li > time {
+  font: var(--bn-ios-font-footnote);
+  color: var(--bn-ios-color-label-tertiary);
+}
+
+/* Status chips: neutral pills in the fill color, footnote ink. */
+mark[data-status] {
+  background: var(--bn-ios-color-fill-tertiary);
+  color: var(--bn-ios-color-label);
+  font: var(--bn-ios-font-footnote);
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--bn-ios-radius-pill);
+}
+
+/* ── Code ─────────────────────────────────────────────────────────── */
+pre {
+  background: var(--bn-ios-color-bg-grouped-tertiary);
+  border: none;
+  border-radius: var(--bn-ios-radius-xl);
+  font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
+  font-size: var(--bn-ios-font-footnote-size);
+  line-height: var(--bn-ios-font-footnote-leading);
+}
+code {
+  font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
+}
+p code,
+li code,
+td code {
+  background: var(--bn-ios-color-fill-tertiary);
+  color: var(--bn-ios-color-label);
+  border-radius: var(--bn-ios-radius-xs);
+}
+/* Docs article headers are API signatures: mono, label ink, headline
+   size — a card's title line, not a display heading. */
+article > header h3 {
+  font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
+  font-size: var(--bn-ios-font-headline-size);
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--bn-ios-color-label);
+}
+
+/* ── Tables: grouped rows under a caption-style header ────────────── */
+table:not([data-bn]) th {
+  font: var(--bn-ios-font-caption-1);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--bn-ios-color-label-secondary);
+}
+table:not([data-bn]) th,
+table:not([data-bn]) td {
+  border-color: var(--bn-ios-color-separator);
+  padding: var(--bn-ios-space-3);
+}
+[data-bn-table-scroll] {
+  border-radius: var(--bn-ios-radius-lg);
+}
+
+/* ── Controls ─────────────────────────────────────────────────────── */
+/* Buttons are capsules. The filled tint (black ink on the orange —
+   the pairing that clears contrast) is reserved for primary actions:
+   link-buttons, primary CTAs and the submit-equivalent button beside
+   an input in a controls row. Plain content buttons sit in the
+   neutral fill; toggles fill when pressed; destructive actions take
+   the red tint. */
+button:not([data-bn]) {
+  font: var(--bn-ios-font-headline);
+  letter-spacing: var(--bn-ios-font-headline-tracking);
+  background: var(--bn-ios-color-fill-tertiary);
+  color: var(--bn-ios-color-label);
+  border: none;
+  border-radius: var(--bn-ios-radius-pill);
+  padding: var(--bn-ios-space-3) var(--bn-ios-space-5);
+}
+button:not([data-bn]):hover {
+  background: var(--bn-ios-color-fill-secondary);
+  color: var(--bn-ios-color-label);
+}
+a[role='button'],
+nav[data-controls]:has(> input) > button:not([data-bn]) {
+  font: var(--bn-ios-font-headline);
+  letter-spacing: var(--bn-ios-font-headline-tracking);
+  background: var(--bn-ios-color-orange);
+  color: #000;
+  border: none;
+  border-radius: var(--bn-ios-radius-pill);
+  padding: var(--bn-ios-space-3) var(--bn-ios-space-5);
+}
+a[role='button']:hover,
+nav[data-controls]:has(> input) > button:not([data-bn]):hover {
+  background: var(--bn-ios-color-orange);
+  color: #000;
+  opacity: 0.85;
+}
+button[aria-pressed='true']:not([data-bn]) {
+  background: var(--bn-ios-color-orange);
+  color: #000;
+}
+button[data-variant='danger']:not([data-bn]) {
+  background: rgb(255 69 58 / 0.16);
+  color: var(--bn-ios-color-red);
+}
+button[data-variant='danger']:not([data-bn]):hover {
+  background: rgb(255 69 58 / 0.24);
+  color: var(--bn-ios-color-red);
+}
+a[role='button'][data-variant='outline'],
+button:not([data-bn])[data-variant='outline'] {
+  background: rgb(255 159 10 / 0.16);
+  color: var(--bn-ios-color-orange);
+  border: none;
+}
+a[role='button'][data-variant='outline']:hover,
+button:not([data-bn])[data-variant='outline']:hover {
+  background: rgb(255 159 10 / 0.24);
+  color: var(--bn-ios-color-orange);
+  opacity: 1;
+}
+/* The page-hero CTAs share the same two treatments. */
+[data-bn-cta='primary'] {
+  font: var(--bn-ios-font-headline);
+  background: var(--bn-ios-color-orange);
+  color: #000;
+  border: none;
+  border-radius: var(--bn-ios-radius-pill);
+  padding: var(--bn-ios-space-3) var(--bn-ios-space-5);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+[data-bn-cta='secondary'] {
+  font: var(--bn-ios-font-headline);
+  background: rgb(255 159 10 / 0.16);
+  color: var(--bn-ios-color-orange);
+  border: none;
+  border-radius: var(--bn-ios-radius-pill);
+  padding: var(--bn-ios-space-3) var(--bn-ios-space-5);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Plain content links take the tint, as iOS links do. Scoped to <main>
+   so the app nav and footer keep their own treatments; catalog
+   components carry data-bn and are excluded. */
+main a:where(:not([data-bn]):not([role='button']):not([data-bn-cta])) {
+  color: var(--bn-ios-color-orange);
+}
+
+/* Filter chips are a segmented choice, not primary actions: neutral
+   fill until pressed, the filled tint when pressed. */
+button[data-bn-component-filter] {
+  font: var(--bn-ios-font-subheadline);
+  background: var(--bn-ios-color-fill-tertiary);
+  color: var(--bn-ios-color-label);
+  border: none;
+  border-radius: var(--bn-ios-radius-pill);
+  padding: var(--bn-ios-space-2) var(--bn-ios-space-4);
+}
+button[data-bn-component-filter]:hover {
+  background: var(--bn-ios-color-fill-secondary);
+  color: var(--bn-ios-color-label);
+  opacity: 1;
+}
+button[data-bn-component-filter][aria-pressed='true'] {
+  background: var(--bn-ios-color-orange);
+  color: #000;
+}
+button[data-bn-component-reset] {
+  font: var(--bn-ios-font-subheadline);
+  background: rgb(255 159 10 / 0.16);
+  color: var(--bn-ios-color-orange);
+  border: none;
+  border-radius: var(--bn-ios-radius-pill);
+  padding: var(--bn-ios-space-2) var(--bn-ios-space-4);
+}
+
+/* Text controls sit in the tertiary grouped surface, borderless. */
+input:not([data-bn]),
+textarea:not([data-bn]),
+select:not([data-bn]) {
+  background: var(--bn-ios-color-bg-grouped-tertiary);
+  color: var(--bn-ios-color-label);
+  border: 1px solid transparent;
+  border-radius: var(--bn-ios-radius-lg);
+  font: var(--bn-ios-font-body);
+}
+
+/* Component meta labels: caption ink at the secondary level — small
+   text stays at the level that clears contrast. */
+[data-bn-component-meta] dt {
+  color: var(--bn-ios-color-label-secondary);
+}
+
+/* ── Footer: quiet text on the grouped background ─────────────────── */
+body > footer,
+body > [data-bn-site-footer] {
+  border-block-start: none;
+  font: var(--bn-ios-font-footnote);
+  color: var(--bn-ios-color-label-tertiary);
+}
+body > footer p,
+body > [data-bn-site-footer] p {
+  font: var(--bn-ios-font-footnote);
+  color: var(--bn-ios-color-label-tertiary);
+}
+body > [data-bn-site-footer] nav a {
+  font: var(--bn-ios-font-footnote);
+  color: var(--bn-ios-color-label-secondary);
+}
+body > [data-bn-site-footer] nav a:hover {
+  color: var(--bn-ios-color-orange);
+}
+
+/* ── The app nav in the site's language ───────────────────────────── */
+/* The bar's current destination is the tint, at tab-bar weight; the
+   rail's brand is the headline; the rail foot's action is a tinted
+   button like any other secondary action. The More sheet floats over
+   busy content, so it takes the thick glass — the bar keeps the
+   regular material a tab bar uses. The tokens are re-pointed on the
+   sheet element; the component reads its local values. */
+[data-bn='app-nav-sheet'] {
+  --bn-material-bg: var(--bn-ios-glass-thick-tint);
+  --bn-material-shadow:
+    var(--bn-ios-glass-thick-highlight), var(--bn-ios-glass-thick-shadow);
+}
+[data-bn='app-nav-brand'] strong {
+  font: var(--bn-ios-font-headline);
+  letter-spacing: var(--bn-ios-font-headline-tracking);
+}
+[data-bn='app-nav-actions'] a {
+  font: var(--bn-ios-font-headline);
+  background: rgb(255 159 10 / 0.16);
+  color: var(--bn-ios-color-orange);
+  border-radius: var(--bn-ios-radius-pill);
+  padding: var(--bn-ios-space-2) var(--bn-ios-space-4);
+  text-align: center;
+  text-decoration: none;
+}

@@ -507,14 +507,21 @@ describe('/tasks tells the static visitor where their tasks go', () => {
 });
 
 describe('every published route is reachable from the navigation', () => {
-  const layout = readFileSync(repo('examples/express/views/layout.html'), 'utf8');
-
-  it('links every non-internal route from layout.html', () => {
+  // The shell's nav is rendered by renderAppNav from the route table's
+  // page data (page.js), not hand-written in layout.html — so reachability
+  // is asserted on rendered pages, which is the stronger claim anyway:
+  // it proves the link a visitor gets, in the bar or the More sheet.
+  it('links every non-internal route from the rendered navigation', () => {
     for (const route of siteRoutes) {
       if (route.internal) continue;
+      const html = renderRoute(route, { tasks: [], hasApi: false });
       assert.ok(
-        layout.includes(`href="${route.path}"`),
-        `${route.path} is published but nothing in layout.html links to it — either link it or mark it internal`,
+        html.includes('data-bn="app-nav"'),
+        `${route.path} renders without the app nav shell`,
+      );
+      assert.ok(
+        html.includes(`href="${route.path}"`),
+        `${route.path} is published but the rendered navigation does not link to it — either link it or mark it internal`,
       );
     }
   });

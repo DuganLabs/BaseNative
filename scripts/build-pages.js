@@ -123,6 +123,7 @@ console.log('  404.html');
 // Copy static assets
 cpSync(join(express, 'public', 'styles.css'), join(dist, 'styles.css'));
 cpSync(join(express, 'public', 'theme.css'), join(dist, 'theme.css'));
+cpSync(join(express, 'public', 'ios.css'), join(dist, 'ios.css'));
 cpSync(join(express, 'public', 'basenative.js'), join(dist, 'basenative.js'));
 cpSync(join(express, 'public', 'showcase.js'), join(dist, 'showcase.js'));
 cpSync(join(express, 'public', 'builder.js'), join(dist, 'builder.js'));
@@ -158,6 +159,11 @@ for (const file of [
 ]) {
   cpSync(join(componentSrc, file), join(bnCssDir, file));
 }
+
+// Copy the iOS platform tokens (served as /bn-ios/ in Express, must exist in dist)
+const bnIosDir = join(dist, 'bn-ios');
+mkdirSync(bnIosDir, { recursive: true });
+cpSync(join(root, 'packages', 'ios', 'src', 'tokens.css'), join(bnIosDir, 'tokens.css'));
 
 // Copy builder CSS (served as /bn-builder-css/ in Express, must exist in dist)
 const bnBuilderCssDir = join(dist, 'bn-builder-css');

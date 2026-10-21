@@ -1,5 +1,5 @@
 import { escapeAttr, escapeText, raw } from '@basenative/runtime/shared/escape';
-import { renderTabs } from '../../packages/components/src/index.js';
+import { renderListGroup, renderTabs } from '../../packages/components/src/index.js';
 import { computeCompareStats } from '../../scripts/compare-stats.js';
 import { componentCategories, flatComponents } from './component-catalog.js';
 
@@ -14,6 +14,126 @@ export const navPages = [
   'builder',
   'compare',
 ];
+
+/** One nav glyph: a 24-unit-grid stroke SVG, the icons package's convention. */
+const glyph = (paths) =>
+  `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+
+/**
+ * The app nav's destinations, in bar order: the four that stay in the
+ * phone-class bar first (Home, Components, Showcase, Docs), then the
+ * ones the More sheet carries. The rail reads the same list top to
+ * bottom. `page` is the route's activePage key.
+ */
+const appNavSpec = [
+  {
+    page: 'home',
+    label: 'Home',
+    href: '/',
+    icon: glyph('<path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/>'),
+  },
+  {
+    page: 'components',
+    label: 'Components',
+    href: '/components',
+    icon: glyph(
+      '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+    ),
+  },
+  {
+    page: 'showcase',
+    label: 'Showcase',
+    href: '/showcase',
+    icon: glyph('<path d="M12 4l1.8 4.6 4.7 1.4-4.7 1.4L12 16l-1.8-4.6L5.5 10l4.7-1.4L12 4z"/>'),
+  },
+  {
+    page: 'docs',
+    label: 'Docs',
+    href: '/docs',
+    icon: glyph(
+      '<path d="M12 6c-1.5-1.5-3.5-2-7-2v14c3.5 0 5.5.5 7 2 1.5-1.5 3.5-2 7-2V4c-3.5 0-5.5.5-7 2z"/><path d="M12 6v14"/>',
+    ),
+  },
+  {
+    page: 'builder',
+    label: 'Builder',
+    href: '/builder',
+    icon: glyph(
+      '<path d="M5 7h14M5 12h14M5 17h14"/><circle cx="10" cy="7" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="8" cy="17" r="2"/>',
+    ),
+  },
+  {
+    page: 'playground',
+    label: 'Playground',
+    href: '/playground',
+    icon: glyph(
+      '<rect x="4" y="4" width="16" height="16" rx="4"/><path d="M10.5 8.8v6.4L15.8 12z" fill="currentColor" stroke="none"/>',
+    ),
+  },
+  {
+    page: 'tasks',
+    label: 'Tasks',
+    href: '/tasks',
+    icon: glyph('<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 5-5.5"/>'),
+  },
+  {
+    page: 'compare',
+    label: 'Compare',
+    href: '/compare',
+    icon: glyph('<path d="M3 20h18"/><path d="M6 20v-9"/><path d="M12 20V5"/><path d="M18 20v-6"/>'),
+  },
+  {
+    page: 'roadmap',
+    label: 'Roadmap',
+    href: '/roadmap',
+    icon: glyph(
+      '<circle cx="12" cy="10" r="3"/><path d="M12 21.5s-6.5-5.4-6.5-11a6.5 6.5 0 0 1 13 0c0 5.6-6.5 11-6.5 11z"/>',
+    ),
+  },
+];
+
+/** renderAppNav items for the shell, with `current` set from the active page. */
+export function getAppNavItems(activePage = '') {
+  return appNavSpec.map(({ page, ...item }) => ({
+    ...item,
+    current: page === activePage,
+  }));
+}
+
+/**
+ * The docs page's "Full API reference" list, rendered as a grouped list
+ * (renderListGroup from the one catalog) instead of a hand-rolled <ul>.
+ * Every link and description is the text the list has always carried.
+ */
+export function getDocsPageContext() {
+  const apiRefs = [
+    {
+      label: '@basenative/runtime — signal, computed, effect, batch, hydrate, directives, devtools',
+      href: 'https://github.com/DuganLabs/BaseNative/blob/main/docs/api/runtime.md',
+    },
+    {
+      label: '@basenative/server — render, renderToStream, renderToReadableStream, @defer',
+      href: 'https://github.com/DuganLabs/BaseNative/blob/main/docs/api/server.md',
+    },
+    {
+      label: '@basenative/router — path patterns, resolveRoute, navigation guards',
+      href: 'https://github.com/DuganLabs/BaseNative/blob/main/docs/api/router.md',
+    },
+    {
+      label: '@basenative/forms — createForm, createField, validators',
+      href: 'https://github.com/DuganLabs/BaseNative/blob/main/docs/api/forms.md',
+    },
+    {
+      label: '@basenative/components — every render* helper; see them live on /components',
+      href: 'https://github.com/DuganLabs/BaseNative/blob/main/docs/api/components.md',
+    },
+  ];
+  return {
+    // Assembled from hand-authored data by the catalog's own renderer —
+    // the same raw() trust assertion the other assembled contexts make.
+    apiRefs: raw(renderListGroup({ label: 'Full API reference by package', items: apiRefs })),
+  };
+}
 
 // Deriving the stats bundles the runtime with esbuild to weigh it; both the
 // home page and /compare read through this one cache rather than paying it
