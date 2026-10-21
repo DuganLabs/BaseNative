@@ -996,6 +996,34 @@ Renders:
 </nav>
 ```
 
+## List Group
+
+`renderListGroup(options)` → `string`
+
+The inset grouped list — the shape platform settings and index pages are built from (the iOS grouped list is the reference form), for rows that are facts and links rather than data. An optional section heading and explanatory footer frame one raised surface; rows with an `href` are links and grow a chevron, rows without one are facts and can carry a `value` on the trailing edge. Hairline separators are inset to the label edge, so the rows read as one surface, not a stack of cards.
+
+```js
+renderListGroup({
+  header: 'Packages',
+  footer: 'Every package has a generated reference.',
+  items: [
+    { label: '@basenative/runtime', href: '/docs/runtime', value: 'core' },
+    { label: 'Version', value: '2.2.0' },
+  ],
+})
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `header` | `string` | — | Section heading; escaped text |
+| `headingLevel` | `2 \| 3 \| 4` | `2` | The heading's level |
+| `footer` | `string` | — | Explanatory text under the surface; escaped |
+| `items` | `Array<{ label, href?, value?, icon?, current? }>` | `[]` | `label`/`value` are escaped text, `href` an escaped attribute, `icon` an HTML slot (an SVG glyph): not escaped; `current` (with an `href`) marks the row `aria-current="page"` |
+| `label` | `string` | — | The section's `aria-label`, used when no header is given |
+| `attrs` | `string` | `''` | Extra attributes on the `<section>` |
+
+Renders `<section data-bn="list-group">` with an optional `<h2 data-bn="list-group-header">` (level per `headingLevel`), a `<ul data-bn="list-group-rows">` whose rows are `<a data-bn="list-group-row">` (links, with `<span data-bn="list-group-chevron">`) or `<span data-bn="list-group-row">` (facts), each holding `<span data-bn="list-group-label">` and an optional `<span data-bn="list-group-value">`, and an optional `<p data-bn="list-group-footer">`.
+
 ## Tooltip
 
 `renderTooltip(options)` → `string`. Popover-API tooltip: a trigger `<button>` with `popovertarget` followed by a `popover` span.
@@ -1447,11 +1475,13 @@ Renders `<header data-bn="site-header">` wrapping `<nav data-bn="site-nav">` wit
 
 ## App Nav
 
-`renderAppNav(options)` → `string`
+`renderAppNav(options)` → `string`; `initAppNav(root, options?)` → `{ open, close, toggle, destroy }`
 
 The primary nav for app-shaped surfaces — one nav whose layout follows the size class, in the pattern the iPhone Duo's app demos established. At phone class it is a fixed bottom bar: icon over label, brand and `actions` hidden. At the unfolded class — the viewport spanning a vertical fold (`spanning: single-fold-vertical`), or at least 939px wide (58.6875rem, the Duo inner display's short edge; `@basenative/ios`'s `duoInner` breakpoint) — the same element is a fixed side rail: brand at the top, icon-and-label rows, the `actions` slot at the foot, content scrolling beside it.
 
-The adaptation is CSS alone (the "App Nav" section of `components.css`), so there is no init function and no second markup variant to keep in sync: the DOM never changes when the class does, which is what a fold is. Focus, scroll position and `aria-current` survive unfolding untouched because nothing re-renders. The bar is fixed in both modes; a page that renders the nav as a direct child of `[data-bn="page"]` (or of `body`) gets its scroll clearance from the same CSS rules, sized by the `--bn-size-app-nav-bar` / `--bn-size-nav-rail` tokens the bar itself reads.
+The adaptation is CSS alone (the "App Nav" section of `components.css`), so there is no second markup variant to keep in sync: the DOM never changes when the class does, which is what a fold is. Focus, scroll position and `aria-current` survive unfolding untouched because nothing re-renders. The bar is fixed in both modes; a page that renders the nav as a direct child of `[data-bn="page"]` (or of `body`) gets its scroll clearance from the same CSS rules, sized by the `--bn-size-app-nav-bar` / `--bn-size-nav-rail` tokens the bar itself reads. The surface itself is a material — it reads the `--bn-material-bg` / `--bn-material-backdrop` / `--bn-material-shadow` tokens, opaque by default, so a platform token layer (e.g. `@basenative/ios`'s glass ladder) can glass the bar and rail without touching component CSS.
+
+A phone-class bar holds a handful of destinations, never a cram. Pass `overflow` and every item past `overflow.after` (default 4) is marked `data-bn-overflow` and leaves the bar; a More button (`<button data-bn="app-nav-more">`, an ellipsis glyph unless `overflow.icon` says otherwise) opens a sheet (`<div data-bn="app-nav-sheet">`) listing exactly those items. `initAppNav` wires the sheet — click toggles (`data-open` on the nav root, `aria-expanded` on the button, the sheet's `hidden` lifted), Escape closes and returns focus to the button, a click outside closes; `options.onToggle(open)` fires after each change. The rail is under no capacity pressure, so there the button and sheet are never displayed, open or not, and every item is back in the list. Without `overflow` — or with few enough items — the output is exactly the plain nav and there is nothing to wire.
 
 ```js
 renderAppNav({
@@ -1472,11 +1502,12 @@ renderAppNav({
 | `brand.label` | `string` | `'<name> home'` | The logo link's `aria-label` |
 | `items` | `Array<{ label, href, icon?, current? }>` | `[]` | Labels are escaped text, hrefs escaped attributes; `icon` is an HTML slot (an SVG glyph): not escaped; the `current` item's link gets `aria-current="page"` |
 | `actions` | `string` | `''` | HTML slot rendered after the items (the rail's foot; hidden at phone class) |
+| `overflow` | `{ after?, label?, icon? }` | — | The phone-class More overflow: `after` (default `4`) items stay in the bar, the rest move to the More sheet; `label` (default `'More'`) is escaped text; `icon` is an HTML slot (an SVG glyph): not escaped, defaults to an ellipsis, `''` for none |
 | `label` | `string` | `'Primary'` | The nav's `aria-label`; escaped |
-| `id` | `string` | — | Emitted as the `<nav>`'s id when present |
+| `id` | `string` | — | Emitted as the `<nav>`'s id when present; the sheet's id derives from it (`{id}-sheet`) |
 | `attrs` | `string` | `''` | Extra attributes on the `<nav>` |
 
-Renders `<nav data-bn="app-nav">` with an optional `<a data-bn="app-nav-brand">`, a `<ul data-bn="app-nav-list">` (each link holds a `<span data-bn="app-nav-icon">` when the item has an icon, and a `<span data-bn="app-nav-label">`), and an optional `<div data-bn="app-nav-actions">`.
+Renders `<nav data-bn="app-nav">` with an optional `<a data-bn="app-nav-brand">`, a `<ul data-bn="app-nav-list">` (each link holds a `<span data-bn="app-nav-icon">` when the item has an icon, and a `<span data-bn="app-nav-label">`), an optional `<div data-bn="app-nav-actions">`, and — with `overflow` and more items than it keeps — a `<button data-bn="app-nav-more" aria-expanded="false" aria-haspopup="true" aria-controls="{sheet-id}">` plus a `<div data-bn="app-nav-sheet" id="{sheet-id}" hidden>` holding a `<ul data-bn="app-nav-sheet-list">` of the overflow items.
 
 ## Site Footer
 

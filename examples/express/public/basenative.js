@@ -3331,6 +3331,68 @@ function initSiteHeader(root, options = {}) {
     }
   };
 }
+function initAppNav(root, options = {}) {
+  const { onToggle } = options;
+  const doc = root.ownerDocument ?? (typeof document === "undefined" ? null : document);
+  const moreBtn = () => root.querySelector('[data-bn="app-nav-more"]');
+  const sheet = () => root.querySelector('[data-bn="app-nav-sheet"]');
+  const isOpen = () => root.hasAttribute("data-open");
+  function apply(open2) {
+    if (open2) root.setAttribute("data-open", "");
+    else root.removeAttribute("data-open");
+    const btn2 = moreBtn();
+    if (btn2) btn2.setAttribute("aria-expanded", open2 ? "true" : "false");
+    const panel = sheet();
+    if (panel) {
+      if (open2) panel.removeAttribute("hidden");
+      else panel.setAttribute("hidden", "");
+    }
+    if (onToggle) onToggle(open2);
+  }
+  function open() {
+    if (!isOpen()) apply(true);
+  }
+  function close() {
+    if (isOpen()) apply(false);
+  }
+  function toggle() {
+    apply(!isOpen());
+  }
+  function onMoreClick() {
+    toggle();
+  }
+  function onDocumentClick(event) {
+    if (!isOpen()) return;
+    const target = event.target;
+    const inside = target === root || typeof root.contains === "function" && root.contains(target);
+    if (!inside) close();
+  }
+  function onDocumentKeydown(event) {
+    if (!isOpen() || event.key !== "Escape") return;
+    close();
+    const btn2 = moreBtn();
+    if (btn2 && typeof btn2.focus === "function") btn2.focus();
+  }
+  const btn = moreBtn();
+  if (btn) btn.addEventListener("click", onMoreClick);
+  if (doc) {
+    doc.addEventListener("click", onDocumentClick);
+    doc.addEventListener("keydown", onDocumentKeydown);
+  }
+  return {
+    open,
+    close,
+    toggle,
+    destroy() {
+      const current = moreBtn();
+      if (current) current.removeEventListener("click", onMoreClick);
+      if (doc) {
+        doc.removeEventListener("click", onDocumentClick);
+        doc.removeEventListener("keydown", onDocumentKeydown);
+      }
+    }
+  };
+}
 export {
   batch,
   browserFeatures,
@@ -3358,6 +3420,7 @@ export {
   hydrateOnIdle,
   hydrateOnInteraction,
   hydrateOnMedia,
+  initAppNav,
   initCalendarDragDrop,
   initCommandPalette,
   initDataGrid,

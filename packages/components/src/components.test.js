@@ -36,12 +36,14 @@ import { renderLayoutGrid } from './layout-grid.js';
 import { renderField as renderPublicField, renderFormField } from './field.js';
 import {
   renderAppNav,
+  initAppNav,
   renderSiteNav,
   renderSiteHeader,
   initSiteHeader,
   renderSiteFooter,
   renderAppShell,
 } from './site-chrome.js';
+import { renderListGroup } from './list-group.js';
 import {
   renderHero,
   renderPricingCard,
@@ -4551,6 +4553,287 @@ describe('AppNav', () => {
       section.includes('padding-block-end: calc(var(--bn-size-app-nav-bar)'),
       'the phone-class clearance reserves exactly the bar height plus the safe area'
     );
+  });
+
+  it('surfaces are material tokens, so a platform layer can glass the bar', () => {
+    const css = readFileSync(new URL('./components.css', import.meta.url), 'utf8');
+    const section = css.slice(css.indexOf('=== App Nav ==='));
+    assert.ok(section.includes('background: var(--bn-material-bg)'), 'the bar background is the material token');
+    assert.ok(
+      section.includes('backdrop-filter: var(--bn-material-backdrop)'),
+      'the bar backdrop is the material token'
+    );
+    assert.ok(
+      section.includes('box-shadow: var(--bn-material-shadow)'),
+      'the bar shadow is the material token'
+    );
+  });
+
+  describe('overflow', () => {
+    const many = [
+      { label: 'Home', href: '/', current: true },
+      { label: 'Components', href: '/components' },
+      { label: 'Showcase', href: '/showcase' },
+      { label: 'Docs', href: '/docs' },
+      { label: 'Builder', href: '/builder' },
+      { label: 'Tasks', href: '/tasks' },
+    ];
+
+    it('marks items past the bar capacity and renders a More button and sheet', () => {
+      const html = renderAppNav({ items: many, overflow: {}, id: 'site-nav' });
+      assert.equal(html.match(/data-bn-overflow/g).length, 2, 'two items past the default capacity of 4');
+      assert.ok(html.includes('<li data-bn-overflow><a href="/builder">'), 'the fifth item is marked');
+      assert.ok(html.includes('<li data-bn-overflow><a href="/tasks">'), 'the sixth item is marked');
+      assert.ok(
+        html.includes(
+          '<button type="button" data-bn="app-nav-more" aria-expanded="false" aria-haspopup="true" aria-controls="site-nav-sheet">'
+        ),
+        'the More button controls the sheet it names'
+      );
+      assert.ok(html.includes('<div data-bn="app-nav-sheet" id="site-nav-sheet" hidden>'), 'the sheet starts hidden');
+      assert.ok(html.includes('<span data-bn="app-nav-label">More</span>'), 'the button is labelled More');
+    });
+
+    it('the sheet lists exactly the overflow items, with their icons and current state', () => {
+      const html = renderAppNav({
+        items: [
+          { label: 'Home', href: '/' },
+          { label: 'Docs', href: '/docs' },
+          { label: 'Tasks', href: '/tasks', icon: '<svg data-glyph="tasks"></svg>', current: true },
+        ],
+        overflow: { after: 2 },
+      });
+      const sheet = html.slice(html.indexOf('data-bn="app-nav-sheet"'));
+      assert.ok(sheet.includes('<a href="/tasks" aria-current="page">'), 'the overflow item keeps aria-current');
+      assert.ok(sheet.includes('<svg data-glyph="tasks"></svg>'), 'the overflow item keeps its icon');
+      assert.ok(!sheet.includes('href="/docs"'), 'bar items are not repeated in the sheet');
+      assert.equal(html.match(/data-bn="app-nav-list"/g).length, 1, 'still one list for the two postures');
+    });
+
+    it('honours a custom capacity, label and glyph, and escapes the label', () => {
+      const html = renderAppNav({
+        items: many,
+        overflow: { after: 5, label: XSS, icon: '<svg data-glyph="dots"></svg>' },
+      });
+      assert.equal(html.match(/data-bn-overflow/g).length, 1, 'one item past a capacity of 5');
+      assert.ok(html.includes('<svg data-glyph="dots"></svg>'), 'the custom glyph renders');
+      assertEscaped(html);
+    });
+
+    it('renders no overflow chrome when the items fit, or when overflow is not passed', () => {
+      const fits = renderAppNav({ items, overflow: {} });
+      assert.ok(!fits.includes('app-nav-more'), 'no More button when three items fit the bar');
+      assert.ok(!fits.includes('data-bn-overflow'), 'nothing is marked when everything fits');
+      const plain = renderAppNav({ items: many });
+      assert.ok(!plain.includes('app-nav-more'), 'no More button without the option');
+      assert.ok(!plain.includes('app-nav-sheet'), 'no sheet without the option');
+    });
+
+    it('hides the overflow at phone class and restores it in the rail, in CSS', () => {
+      const css = readFileSync(new URL('./components.css', import.meta.url), 'utf8');
+      const section = css.slice(css.indexOf('=== App Nav ==='));
+      const base = section.slice(0, section.indexOf('@media (spanning: single-fold-vertical)'));
+      assert.ok(base.includes('[data-bn="app-nav-list"] li[data-bn-overflow]'), 'the marker rule exists');
+      assert.ok(base.includes('[data-bn="app-nav-more"]'), 'the button is styled');
+      assert.ok(base.includes('[data-bn="app-nav-sheet"]'), 'the sheet is styled');
+      const rail = section.slice(section.indexOf('@media (spanning: single-fold-vertical)'));
+      assert.ok(rail.includes('[data-bn="app-nav-more"]'), 'the rail addresses the More button');
+      assert.ok(rail.includes('[data-bn="app-nav-sheet"]'), 'the rail addresses the sheet');
+      assert.ok(
+        rail.includes('li[data-bn-overflow]'),
+        'the rail restores the overflow items to the list'
+      );
+    });
+  });
+});
+
+describe('initAppNav', () => {
+  function fakeDocument() {
+    const listeners = new Map();
+    return {
+      listeners,
+      activeElement: null,
+      addEventListener(type, fn) { listeners.set(type, fn); },
+      removeEventListener(type, fn) { if (listeners.get(type) === fn) listeners.delete(type); },
+      dispatch(type, event = {}) { listeners.get(type)?.({ preventDefault() {}, ...event }); },
+    };
+  }
+
+  function fakeElement(doc, bn, { children = [] } = {}) {
+    const attrs = new Map();
+    const listeners = new Map();
+    const el = {
+      bn,
+      attrs,
+      listeners,
+      ownerDocument: doc,
+      parent: null,
+      focusCount: 0,
+      hasAttribute: name => attrs.has(name),
+      getAttribute: name => attrs.get(name) ?? null,
+      setAttribute(name, value) { attrs.set(name, value); },
+      removeAttribute(name) { attrs.delete(name); },
+      addEventListener(type, fn) { listeners.set(type, fn); },
+      removeEventListener(type, fn) { if (listeners.get(type) === fn) listeners.delete(type); },
+      dispatch(type, event = {}) { listeners.get(type)?.({ target: el, preventDefault() {}, ...event }); },
+      focus() { el.focusCount++; doc.activeElement = el; },
+      matches: selector => selector === `[data-bn="${bn}"]`,
+      contains(target) {
+        let node = target;
+        while (node) {
+          if (node === el) return true;
+          node = node.parent;
+        }
+        return false;
+      },
+      querySelector(selector) {
+        for (const child of children) {
+          if (child.matches(selector)) return child;
+          const nested = child.querySelector(selector);
+          if (nested) return nested;
+        }
+        return null;
+      },
+    };
+    for (const child of children) child.parent = el;
+    return el;
+  }
+
+  function setup() {
+    const doc = fakeDocument();
+    const more = fakeElement(doc, 'app-nav-more');
+    more.setAttribute('aria-expanded', 'false');
+    const sheet = fakeElement(doc, 'app-nav-sheet');
+    sheet.setAttribute('hidden', '');
+    const nav = fakeElement(doc, 'app-nav', { children: [more, sheet] });
+    const outside = fakeElement(doc, 'button');
+    return { doc, nav, more, sheet, outside };
+  }
+
+  it('the More button opens and closes the sheet', () => {
+    const { nav, more, sheet } = setup();
+    initAppNav(nav);
+    more.dispatch('click');
+    assert.ok(nav.hasAttribute('data-open'));
+    assert.equal(more.getAttribute('aria-expanded'), 'true');
+    assert.ok(!sheet.hasAttribute('hidden'), 'opening lifts the sheet hidden attribute');
+    more.dispatch('click');
+    assert.ok(!nav.hasAttribute('data-open'));
+    assert.equal(more.getAttribute('aria-expanded'), 'false');
+    assert.ok(sheet.hasAttribute('hidden'), 'closing restores the sheet hidden attribute');
+  });
+
+  it('open, close and toggle drive the same state and report through onToggle', () => {
+    const { nav } = setup();
+    const seen = [];
+    const handle = initAppNav(nav, { onToggle: open => seen.push(open) });
+    handle.open();
+    handle.open();
+    handle.close();
+    handle.toggle();
+    assert.deepEqual(seen, [true, false, true], 'a no-op open does not re-report');
+    assert.ok(nav.hasAttribute('data-open'));
+  });
+
+  it('Escape closes the sheet and returns focus to the More button', () => {
+    const { doc, nav, more } = setup();
+    const handle = initAppNav(nav);
+    handle.open();
+    doc.dispatch('keydown', { key: 'Escape' });
+    assert.ok(!nav.hasAttribute('data-open'));
+    assert.equal(doc.activeElement, more);
+    assert.equal(more.focusCount, 1);
+  });
+
+  it('an outside click closes the sheet; an inside click keeps it open', () => {
+    const { doc, nav, more, outside } = setup();
+    const handle = initAppNav(nav);
+    handle.open();
+    doc.dispatch('click', { target: more });
+    assert.ok(nav.hasAttribute('data-open'), 'inside clicks keep the sheet open');
+    doc.dispatch('click', { target: outside });
+    assert.ok(!nav.hasAttribute('data-open'), 'outside clicks close it');
+  });
+
+  it('destroy unbinds the button and the document', () => {
+    const { doc, nav, more } = setup();
+    const handle = initAppNav(nav);
+    handle.destroy();
+    assert.equal(more.listeners.size, 0);
+    assert.equal(doc.listeners.size, 0);
+    more.dispatch('click');
+    assert.ok(!nav.hasAttribute('data-open'));
+  });
+
+  it('is a no-op handle over a nav rendered without overflow', () => {
+    const doc = fakeDocument();
+    const nav = fakeElement(doc, 'app-nav');
+    const handle = initAppNav(nav);
+    handle.open();
+    assert.ok(nav.hasAttribute('data-open'), 'state still tracks without a button or sheet');
+    handle.destroy();
+  });
+});
+
+describe('ListGroup', () => {
+  it('renders a headed group: link rows with chevrons, fact rows with values', () => {
+    const html = renderListGroup({
+      header: 'Packages',
+      footer: 'Every package has a generated reference.',
+      items: [
+        { label: '@basenative/runtime', href: '/docs/runtime', value: 'core' },
+        { label: 'Version', value: '2.2.0' },
+      ],
+    });
+    assert.ok(html.startsWith('<section data-bn="list-group">'));
+    assert.ok(html.includes('<h2 data-bn="list-group-header">Packages</h2>'));
+    assert.ok(html.includes('<ul data-bn="list-group-rows">'));
+    assert.ok(
+      html.includes('<a data-bn="list-group-row" href="/docs/runtime">'),
+      'an href makes the row a link'
+    );
+    assert.ok(html.includes('data-bn="list-group-chevron"'), 'link rows grow a chevron');
+    assert.ok(
+      html.includes('<span data-bn="list-group-value">core</span>'),
+      'the value rides the trailing edge'
+    );
+    assert.ok(
+      html.includes('<span data-bn="list-group-row">'),
+      'a row without an href is a fact, not a link'
+    );
+    assert.ok(html.includes('<p data-bn="list-group-footer">Every package has a generated reference.</p>'));
+  });
+
+  it('honours the heading level, marks the current row, and labels an unheaded group', () => {
+    const html = renderListGroup({
+      headingLevel: 3,
+      header: 'Related',
+      items: [{ label: 'Button', href: '/components/button', current: true }],
+    });
+    assert.ok(html.includes('<h3 data-bn="list-group-header">Related</h3>'));
+    assert.ok(html.includes('aria-current="page"'), 'the current row is announced');
+
+    const bare = renderListGroup({ label: 'Settings', items: [{ label: 'Theme', value: 'Dark' }] });
+    assert.ok(bare.includes('<section data-bn="list-group" aria-label="Settings">'));
+    assert.ok(!bare.includes('list-group-header'), 'no header element without a header');
+    assert.ok(!bare.includes('list-group-footer'), 'no footer without a footer');
+  });
+
+  it('renders the icon slot and escapes labels, values and hrefs', () => {
+    const html = renderListGroup({
+      header: XSS,
+      items: [{ label: XSS, href: XSS, value: XSS, icon: '<svg></svg>' }],
+    });
+    assert.ok(html.includes('<span data-bn="list-group-icon" aria-hidden="true"><svg></svg></span>'));
+    assertEscaped(html);
+  });
+
+  it('ships the grouped surface in components.css: raised rows, inset separators', () => {
+    const css = readFileSync(new URL('./components.css', import.meta.url), 'utf8');
+    const section = css.slice(css.indexOf('=== List Group ==='), css.indexOf('=== Combobox ==='));
+    assert.ok(section.includes('background: var(--bn-color-surface-card)'), 'rows sit on the raised surface');
+    assert.ok(section.includes('[data-bn="list-group-rows"]'), 'the rows surface is styled');
+    assert.ok(section.includes('margin-inline-start: var(--bn-space-4)'), 'separators inset to the label edge');
   });
 });
 

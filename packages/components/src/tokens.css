@@ -251,6 +251,18 @@
     --bn-size-app-nav-bar: 3.5rem;
     --bn-size-nav-rail: 15rem;
 
+    /* Material — the surface treatment a platform layer can restyle without
+       touching component CSS: a background, a backdrop filter and a composed
+       shadow (edge highlight first, drop shadow second). The defaults are
+       "no material" — the plain surface colour, no backdrop, no shadow —
+       so a consumer that never sets them renders exactly as before. A
+       platform token layer (e.g. @basenative/ios's glass ladder) or app
+       CSS points them at real material values; the theme bridge leaves
+       them alone for the same reason it leaves the type scale alone. */
+    --bn-material-bg: var(--bn-color-surface);
+    --bn-material-backdrop: none;
+    --bn-material-shadow: none;
+
     /* Border */
     --bn-border-width: 1px;
     --bn-border-width-thick: 2px;
