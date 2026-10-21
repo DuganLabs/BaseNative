@@ -270,6 +270,8 @@ export const UPSTREAM_OWNED = Object.freeze({
   '--bn-calendar-event-lead': 'per-instance geometry knob, set inline by renderCalendar',
   '--bn-calendar-event-trail': 'per-instance geometry knob, set inline by renderCalendar',
   '--bn-calendar-event-color': 'derived upstream from bridged colour tokens',
+  '--bn-avatar-tone':
+    'per-instance identity colour — set by components.css from renderAvatar\'s data-tone (a stable hash of the person\'s name); identity, not theme',
   '--bn-calendar-event-bg': 'derived upstream from bridged colour tokens',
   '--bn-calendar-today-bg': 'derived upstream from bridged colour tokens',
   '--bn-calendar-today-header-bg': 'derived upstream from bridged colour tokens',

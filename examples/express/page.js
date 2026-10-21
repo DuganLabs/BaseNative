@@ -4,7 +4,8 @@
  * for a route, so the layout substitution, the route table, the per-component
  * page context and the not-found page live here rather than in either caller.
  */
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { render } from '@basenative/server';
@@ -26,6 +27,47 @@ import { getShowcaseContext } from './showcase-data.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const read = (file) => readFileSync(join(__dirname, file), 'utf-8');
+
+/**
+ * A content version for the site's own code assets, stamped onto every
+ * stylesheet/script URL the layout emits (`/basenative.js?v=…`,
+ * `/styles.css?v=…`, the /bn-css chain, …).
+ *
+ * Why: Cloudflare serves those assets with a multi-hour cache lifetime
+ * on unversioned URLs, while the HTML revalidates immediately — the
+ * same asymmetry the shell-critical CSS above exists to defeat, one
+ * layer down. It bit the app nav's keyboard sync (PR #278): the fix
+ * shipped, the HTML was fresh, but a phone holding the pre-fix module
+ * in a restored tab (module maps do not revalidate on restore) kept
+ * running the old initAppNav and the bar stayed sliced under the
+ * keyboard. A URL that changes when the bytes change cannot be served
+ * stale: any deploy that touches the bundle, the site's sheets or the
+ * package CSS mints a new version, and every page points at it. The
+ * hash covers the bundle, the site's public sheets and every
+ * packages/components/src stylesheet (the /bn-css chain's sources).
+ */
+let assetVersion = null;
+function getAssetVersion() {
+  if (assetVersion) return assetVersion;
+  const hash = createHash('sha256');
+  for (const file of ['public/basenative.js', 'public/styles.css', 'public/ios.css', 'public/theme.css']) {
+    try {
+      hash.update(read(file));
+    } catch {
+      /* an asset that is absent in some host mints no weaker version */
+    }
+  }
+  try {
+    const cssDir = join(__dirname, '../../packages/components/src');
+    for (const name of readdirSync(cssDir).filter((n) => n.endsWith('.css')).sort()) {
+      hash.update(readFileSync(join(cssDir, name), 'utf-8'));
+    }
+  } catch {
+    /* same reasoning as above */
+  }
+  assetVersion = hash.digest('hex').slice(0, 10);
+  return assetVersion;
+}
 
 /**
  * The shell-critical CSS, sliced out of the catalog's sources at render
@@ -156,6 +198,7 @@ export function renderPage(viewFile, ctx, opts) {
       '<a href="https://github.com/DuganLabs/BaseNative" rel="noopener">GitHub</a>',
     overflow: {},
   });
+  const version = getAssetVersion();
   return layout
     .replace(/<!--TITLE-->/g, escapeAttr(title))
     .replace(/<!--DESCRIPTION-->/g, escapeAttr(description))
@@ -164,7 +207,10 @@ export function renderPage(viewFile, ctx, opts) {
     .replace('<!--APP_NAV_CSS-->', () => shellCriticalCss())
     .replace('<!--APP_NAV-->', appNav)
     .replace('<!--CONTENT-->', content)
-    .replace('<!--SCRIPTS-->', scripts);
+    .replace('<!--SCRIPTS-->', scripts)
+    .replace(/((?:href|src)=")(\/[^"]+\.(?:css|js))"/g, `$1$2?v=${version}"`)
+    .replaceAll(`'/basenative.js'`, `'/basenative.js?v=${version}'`)
+    .replaceAll(`"/basenative.js"`, `"/basenative.js?v=${version}"`);
 }
 
 const TEST_SIGNAL_ITEMS = [

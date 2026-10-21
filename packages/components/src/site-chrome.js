@@ -346,21 +346,74 @@ export function initAppNav(root, options = {}) {
   const view = doc?.defaultView ?? null;
   const vv = view?.visualViewport ?? null;
   let syncViewportInset = null;
+  let onFocusIn = null;
+  let onFocusOut = null;
   if (
     vv &&
     typeof vv.addEventListener === 'function' &&
     root.style &&
     typeof root.style.setProperty === 'function'
   ) {
+    /* iOS reports the visual viewport in stages while the keyboard
+       opens, and the form-assistant bar can join after the last resize
+       event — a sync that trusts the final event of an opening can
+       under-report the covered strip and leave the bar sliced for the
+       whole episode. While a text-entry control holds focus the inset
+       may therefore only grow: keep the largest measured value until
+       the keyboard is fully gone (a measured inset of 0) or focus
+       leaves text entry, and re-sync on focus itself — the earliest
+       reliable keyboard signal — plus a beat later, once iOS has
+       settled. */
+    let heldInset = 0;
+    const textEntryFocused = () => {
+      const el = doc?.activeElement;
+      if (!el || el === doc?.body) return false;
+      if (el.isContentEditable) return true;
+      if (el.tagName === 'TEXTAREA') return true;
+      if (el.tagName !== 'INPUT') return false;
+      const type = (el.getAttribute?.('type') ?? 'text').toLowerCase();
+      return ![
+        'checkbox',
+        'radio',
+        'button',
+        'submit',
+        'reset',
+        'file',
+        'hidden',
+        'range',
+        'color',
+        'image',
+      ].includes(type);
+    };
     syncViewportInset = () => {
-      const inset =
+      const measured =
         vv.scale > 1.01
           ? 0
           : Math.max(0, Math.round(view.innerHeight - vv.height - vv.offsetTop));
-      root.style.setProperty('--bn-app-nav-visual-inset', `${inset}px`);
+      if (measured === 0) heldInset = 0;
+      else if (textEntryFocused()) heldInset = Math.max(heldInset, measured);
+      else heldInset = measured;
+      root.style.setProperty('--bn-app-nav-visual-inset', `${heldInset}px`);
     };
     vv.addEventListener('resize', syncViewportInset);
     vv.addEventListener('scroll', syncViewportInset);
+    onFocusIn = () => {
+      syncViewportInset();
+      if (typeof view.requestAnimationFrame === 'function') {
+        view.requestAnimationFrame(syncViewportInset);
+      }
+      if (typeof view.setTimeout === 'function') view.setTimeout(syncViewportInset, 350);
+    };
+    onFocusOut = () => {
+      if (typeof view.setTimeout === 'function') view.setTimeout(syncViewportInset, 50);
+    };
+    if (typeof doc?.addEventListener === 'function') {
+      doc.addEventListener('focusin', onFocusIn);
+      doc.addEventListener('focusout', onFocusOut);
+    }
+    if (typeof view.addEventListener === 'function') {
+      view.addEventListener('resize', syncViewportInset);
+    }
     syncViewportInset();
   }
 
@@ -435,6 +488,15 @@ export function initAppNav(root, options = {}) {
         vv.removeEventListener('scroll', syncViewportInset);
         if (typeof root.style.removeProperty === 'function') {
           root.style.removeProperty('--bn-app-nav-visual-inset');
+        }
+      }
+      if (syncViewportInset) {
+        if (doc && typeof doc.removeEventListener === 'function') {
+          if (onFocusIn) doc.removeEventListener('focusin', onFocusIn);
+          if (onFocusOut) doc.removeEventListener('focusout', onFocusOut);
+        }
+        if (view && typeof view.removeEventListener === 'function') {
+          view.removeEventListener('resize', syncViewportInset);
         }
       }
     },

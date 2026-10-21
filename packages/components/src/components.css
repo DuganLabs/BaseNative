@@ -58,6 +58,22 @@
   border-radius: var(--bn-radius-control);
 }
 
+/* Coarse pointers: on a touch-first device the ladder's default rung
+   grows to the 44px platform touch-target size (sm and lg shift by the
+   same step, keeping the ladder's rhythm); fine pointers keep the
+   denser desktop ladder. The adaptation lives here, not in tokens.css:
+   the token defaults stay the canonical values @basenative/theme pins
+   against, and the components layer — the ladder's consumer — re-points
+   them for the pointer it is actually running under, the same way a
+   platform layer re-points them for its platform. */
+@media (pointer: coarse) {
+  :root {
+    --bn-control-height-sm: 2.25rem;
+    --bn-control-height: 2.75rem;
+    --bn-control-height-lg: 3.25rem;
+  }
+}
+
 /* --- Visually hidden -----------------------------------------------------
    An accessible name with no visible box. reset.css carries the same recipe as
    a `.visually-hidden` class, but consumers whose house style forbids CSS
@@ -93,7 +109,8 @@
   [data-bn="tree-toggle"],
   [data-bn="dialog-close"],
   [data-bn="drawer-close"],
-  [data-bn="alert-dismiss"]
+  [data-bn="alert-dismiss"],
+  [data-bn="tooltip-trigger"]
 ) {
   appearance: none;
   border: none;
@@ -117,6 +134,9 @@
    entire box as the visible glyph — for both, growing the real box would
    visibly change the control, so instead an invisible ::before hit region is
    centered on top of the unchanged control.
+   tooltip-trigger is an inline text button whose line box measured 21px —
+   under the floor — so it takes the direct route too: the min-block-size
+   grows its box to 24px without moving the text it wraps.
    Members of the button-reset group above that are not listed here already
    clear the floor in their own rules: dialog-close and drawer-close are a
    fixed 2rem box; command-item and dropdown-item are full-width rows with
@@ -124,6 +144,7 @@
    every member of that group against this block or one of those reasons. --- */
 [data-bn="tree-toggle"],
 [data-bn="alert-dismiss"],
+[data-bn="tooltip-trigger"],
 [data-bn="breadcrumb-item"] a {
   min-inline-size: var(--bn-target-size-min);
   min-block-size: var(--bn-target-size-min);
@@ -748,12 +769,34 @@
   height: 2.5rem;
   border-radius: var(--bn-radius-full);
   overflow: hidden;
-  background: var(--bn-color-border-strong);
+  /* The disc: a tone colour (below) lit from the top, with an inset ring
+     so the edge reads as a finished object on any surface — the previous
+     treatment was one flat grey for every person in the catalog. */
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bn-avatar-tone, var(--bn-color-border-strong)) 84%, #fff 16%),
+    var(--bn-avatar-tone, var(--bn-color-border-strong))
+  );
+  box-shadow:
+    inset 0 0 0 1px rgb(0 0 0 / 0.1),
+    inset 0 1px 0 rgb(255 255 255 / 0.16);
   color: var(--bn-color-text);
   font-weight: var(--bn-font-weight-semibold);
   font-size: var(--bn-font-size-sm);
   flex-shrink: 0;
 }
+/* Identity tones: data-tone is renderAvatar's stable hash of the name,
+   so a person is the same colour in every list. Each tone is deep enough
+   for white initials at small sizes in both themes. */
+[data-bn="avatar"][data-tone] { color: #fff; }
+[data-bn="avatar"][data-tone="0"] { --bn-avatar-tone: #5b5bd6; }
+[data-bn="avatar"][data-tone="1"] { --bn-avatar-tone: #0e7c66; }
+[data-bn="avatar"][data-tone="2"] { --bn-avatar-tone: #9a3412; }
+[data-bn="avatar"][data-tone="3"] { --bn-avatar-tone: #a21caf; }
+[data-bn="avatar"][data-tone="4"] { --bn-avatar-tone: #1d6fb8; }
+[data-bn="avatar"][data-tone="5"] { --bn-avatar-tone: #b91c1c; }
+[data-bn="avatar"][data-tone="6"] { --bn-avatar-tone: #6d28d9; }
+[data-bn="avatar"][data-tone="7"] { --bn-avatar-tone: #3f6212; }
 [data-bn="avatar"][data-size="sm"] { width: 2rem; height: 2rem; font-size: var(--bn-font-size-xs); }
 [data-bn="avatar"][data-size="lg"] { width: 3rem; height: 3rem; font-size: var(--bn-font-size-base); }
 [data-bn="avatar"][data-size="xl"] { width: 4rem; height: 4rem; font-size: var(--bn-font-size-lg); }
@@ -1162,6 +1205,10 @@ a[data-bn="list-group-row"][aria-current="page"] {
   box-shadow: var(--bn-shadow-modal);
   flex-direction: column;
   width: 20rem;
+  /* Never wider than the screen minus a scrim strip: at a 320px-class
+     viewport the fixed 20rem would cover the whole display and leave
+     no visible way out but the close button. */
+  max-inline-size: calc(100vw - var(--bn-space-10));
   transform: translateX(100%);
   transition: transform 300ms var(--bn-ease-out-expo);
 }
@@ -1295,6 +1342,12 @@ a[data-bn="list-group-row"][aria-current="page"] {
     inset-inline-start: anchor(--bn-dropdown-trigger start);
     inset-inline-end: auto;
     inset-block-end: auto;
+    /* A menu anchored at a screen edge otherwise paints off-screen: the
+       flip tactics mirror the anchor() insets (and the gap margin) to
+       the side with room — inline first (a right-edge trigger's menu
+       re-anchors to the trigger's end edge), then block (a bottom-edge
+       trigger's menu opens upward), then both. */
+    position-try-fallbacks: flip-inline, flip-block, flip-inline flip-block;
   }
   [data-bn="dropdown-menu"][data-position^="top"] {
     inset-block-start: auto;
@@ -1485,11 +1538,20 @@ a[data-bn="list-group-row"][aria-current="page"] {
   position: relative;
   display: inline-block;
   cursor: default;
+  font: inherit;
+  color: inherit;
+  text-decoration: underline dotted;
+  text-underline-offset: 0.2em;
 }
 [data-bn="tooltip"] {
   position: absolute;
   z-index: var(--bn-z-dropdown);
-  max-width: 20rem;
+  max-width: min(20rem, calc(100vw - var(--bn-space-4)));
+  /* The inline margins are the edge clearance the position-try fit check
+     measures against: without them a shifted tooltip lands flush
+     against the viewport edge. Position variants override the gap-side
+     margin below; this sets both, the variant re-states its own side. */
+  margin-inline: var(--bn-space-2);
   padding: var(--bn-space-2) var(--bn-space-3);
   background: var(--bn-color-surface-inverse);
   color: var(--bn-color-text-inverse);
@@ -1533,29 +1595,76 @@ a[data-bn="list-group-row"][aria-current="page"] {
   [data-bn="tooltip"] {
     position: fixed;
     position-anchor: --bn-tooltip-trigger;
-    /* [popover]'s UA stylesheet sets inset: 0 (all four sides). Only two sides
-       are meant to be anchored here — the other two must be released to auto,
-       or the box is over-constrained and the browser silently keeps the UA
-       default (0) for one of them instead of the anchored value. */
-    inset-block-start: auto;
-    inset-inline-end: auto;
-    inset-block-end: anchor(--bn-tooltip-trigger start);
-    inset-inline-start: anchor(--bn-tooltip-trigger center);
+    /* Placed by position-area, not by the anchor() inset recipe this
+       block used before (inline-start at the anchor's centre plus the
+       base rule's -50% translate). That recipe had no answer when half
+       the box crossed a viewport edge — measured on the catalog page
+       (Oct 2026): a top tooltip at a left-hand trigger painted
+       off-screen, and at a right-hand trigger WebKit crushed the box
+       into a sliver the trigger's own width. The area model centres
+       the box on the trigger within its tile, and the position-try
+       spans below re-centre it inside the half of the screen that has
+       room before flip-block/flip-inline give up and use the other
+       side. The trigger gap stays the base rule's margin. inset:auto
+       releases both the [popover] UA inset:0 and the fallback insets;
+       translate:none retires the fallback's centring shift. */
+    inset: auto;
+    translate: none;
+    position-area: top;
+    justify-self: anchor-center;
+    position-try-fallbacks:
+      --bn-tip-top-span-right, --bn-tip-top-span-left, flip-block;
+  }
+  @position-try --bn-tip-top-span-right {
+    position-area: top span-right;
+    justify-self: anchor-center;
+  }
+  @position-try --bn-tip-top-span-left {
+    position-area: top span-left;
+    justify-self: anchor-center;
   }
   [data-bn="tooltip"][data-position="bottom"] {
-    inset-block-end: auto;
-    inset-block-start: anchor(--bn-tooltip-trigger end);
+    position-area: bottom;
+    position-try-fallbacks:
+      --bn-tip-bottom-span-right, --bn-tip-bottom-span-left, flip-block;
+  }
+  @position-try --bn-tip-bottom-span-right {
+    position-area: bottom span-right;
+    justify-self: anchor-center;
+  }
+  @position-try --bn-tip-bottom-span-left {
+    position-area: bottom span-left;
+    justify-self: anchor-center;
   }
   [data-bn="tooltip"][data-position="left"] {
-    inset-block-end: auto;
-    inset-block-start: anchor(--bn-tooltip-trigger center);
-    inset-inline-start: auto;
-    inset-inline-end: anchor(--bn-tooltip-trigger start);
+    position-area: left;
+    justify-self: end;
+    align-self: anchor-center;
+    position-try-fallbacks:
+      --bn-tip-left-span-bottom, --bn-tip-left-span-top, flip-inline;
+  }
+  @position-try --bn-tip-left-span-bottom {
+    position-area: left span-bottom;
+    align-self: anchor-center;
+  }
+  @position-try --bn-tip-left-span-top {
+    position-area: left span-top;
+    align-self: anchor-center;
   }
   [data-bn="tooltip"][data-position="right"] {
-    inset-block-end: auto;
-    inset-block-start: anchor(--bn-tooltip-trigger center);
-    inset-inline-start: anchor(--bn-tooltip-trigger end);
+    position-area: right;
+    justify-self: start;
+    align-self: anchor-center;
+    position-try-fallbacks:
+      --bn-tip-right-span-bottom, --bn-tip-right-span-top, flip-inline;
+  }
+  @position-try --bn-tip-right-span-bottom {
+    position-area: right span-bottom;
+    align-self: anchor-center;
+  }
+  @position-try --bn-tip-right-span-top {
+    position-area: right span-top;
+    align-self: anchor-center;
   }
 }
 
@@ -1770,7 +1879,6 @@ a[data-bn="list-group-row"][aria-current="page"] {
 }
 [data-bn="calendar-event-title"] {
   font-weight: var(--bn-font-weight-semibold);
-  overflow-wrap: anywhere;
   word-break: break-word;
   line-height: var(--bn-line-height-tight);
   display: -webkit-box;
@@ -1827,6 +1935,12 @@ a[data-bn="list-group-row"][aria-current="page"] {
 [data-bn="pipeline"] {
   display: grid;
   grid-auto-flow: column;
+  /* Columns hold a readable width and the board scrolls sideways —
+     without a track size, implicit columns shrink to the cards'
+     min-content and titles crush into a few characters per line on
+     phone-class viewports. (The column rule below carried the width
+     as a flex-basis from the board's flexbox days; grid ignores it.) */
+  grid-auto-columns: min(18rem, 100%);
   gap: var(--bn-space-4);
   overflow-x: auto;
   padding: var(--bn-space-3);
@@ -1842,7 +1956,6 @@ a[data-bn="list-group-row"][aria-current="page"] {
 }
 
 [data-bn="pipeline-column"] {
-  flex: 0 0 min(100%, 20rem);
   display: flex;
   flex-direction: column;
   gap: var(--bn-space-2);
@@ -1920,7 +2033,6 @@ a[data-bn="list-group-row"][aria-current="page"] {
   font-weight: var(--bn-font-weight-medium);
   font-size: var(--bn-font-size-sm);
   color: var(--bn-color-text);
-  overflow-wrap: anywhere;
   word-break: break-word;
   line-height: var(--bn-line-height-snug, 1.35);
 }
@@ -1928,7 +2040,6 @@ a[data-bn="list-group-row"][aria-current="page"] {
 [data-bn="pipeline-card-subtitle"] {
   font-size: var(--bn-font-size-xs);
   color: var(--bn-color-text-muted);
-  overflow-wrap: anywhere;
   word-break: break-word;
 }
 

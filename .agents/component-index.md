@@ -112,6 +112,7 @@ The minimal page shell: skip link, header slot, <main> and footer slot — the s
 ### `renderAvatar(options)`
 Avatar — user avatar with image, initials, or icon fallback.
 `packages/components/src/avatar.js` · emits `<span data-bn="avatar">` + 2 more contract(s)
+- tone: `0|1|2|3|4|5|6|7` — open set, a rule matches beyond the listed values
 - size: `lg|sm|xl`
 - shape: `square`
 - use instead of: a bare <span> with your own classes, or literal <span data-bn="avatar"> markup
