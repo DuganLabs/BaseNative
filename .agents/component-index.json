@@ -1088,6 +1088,25 @@
         ]
       },
       "variants": {
+        "tone": {
+          "contract": "avatar",
+          "values": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": true,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": false
+        },
         "size": {
           "contract": "avatar",
           "values": [
