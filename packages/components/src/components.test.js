@@ -781,6 +781,10 @@ describe('Table — numeric columns, alignment, labels and footer', () => {
       'the stack is keyed to the table container, not the viewport'
     );
     assert.ok(states.includes('content: attr(data-label)'), 'stacked cells are headed by their data-label');
+    assert.ok(
+      /\[data-bn="table"\] th,\s*\[data-bn="table"\] td \{[^}]*white-space: normal/.test(states),
+      'stacked cells reset white-space, so a consumer nowrap cannot pin a cell open'
+    );
   });
 
   it('renders a footer row as th scope=row plus cells, using the same render hooks', () => {

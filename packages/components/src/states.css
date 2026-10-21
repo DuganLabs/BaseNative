@@ -68,6 +68,13 @@
       border-top: 0;
       border-bottom: 0;
       overflow-wrap: anywhere;
+      /* The stack only works if cell content can wrap: a nowrap carried
+         in from a consumer stylesheet (a wide-table convention, e.g. for
+         row headings) would otherwise pin the value track open, paint
+         the text past the cell's edge and force the whole table wide
+         again. The [data-numeric] reset below is the same defence,
+         narrower: this one states it for every stacked cell. */
+      white-space: normal;
     }
     /* A grid line, not a flex line: the value is an anonymous item, and
        a flex item's automatic minimum size lets long values paint past

@@ -17,16 +17,34 @@ import { renderTable, renderAppNav } from '../../packages/components/src/index.j
  * wild.
  */
 
-const SRC = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'packages', 'components', 'src');
-const CSS = ['layers.css', 'reset.css', 'tokens.css', 'theme.css', 'layout.css', 'components.css', 'states.css']
+const SRC = join(
+  dirname(fileURLToPath(import.meta.url)),
+  '..',
+  '..',
+  'packages',
+  'components',
+  'src',
+);
+const CSS = [
+  'layers.css',
+  'reset.css',
+  'tokens.css',
+  'theme.css',
+  'layout.css',
+  'components.css',
+  'states.css',
+]
   .map((file) => readFileSync(join(SRC, file), 'utf8'))
   .join('\n');
 
 async function renderComponent(page, html) {
-  await page.setContent(`<!doctype html><html><head><style>${CSS}</style></head><body>${html}</body></html>`);
+  await page.setContent(
+    `<!doctype html><html><head><style>${CSS}</style></head><body>${html}</body></html>`,
+  );
 }
 
-const LONG_TOKEN = 'unbroken-token-that-refuses-to-wrap-and-would-force-any-container-wide-open-0123456789abcdef';
+const LONG_TOKEN =
+  'unbroken-token-that-refuses-to-wrap-and-would-force-any-container-wide-open-0123456789abcdef';
 
 function proseTable(labelCells) {
   return renderTable({
@@ -60,7 +78,9 @@ function proseTable(labelCells) {
 
 test.describe('Table — narrow-width contract', () => {
   for (const width of [390, 320]) {
-    test(`stacks with nothing clipped at ${width}px, long unbroken content included`, async ({ page }) => {
+    test(`stacks with nothing clipped at ${width}px, long unbroken content included`, async ({
+      page,
+    }) => {
       await page.setViewportSize({ width, height: 844 });
       await renderComponent(page, proseTable(true));
 
@@ -68,7 +88,9 @@ test.describe('Table — narrow-width contract', () => {
         const container = document.querySelector('[data-bn="table-container"]');
         const thead = document.querySelector('[data-bn="table"] thead');
         const cells = [...document.querySelectorAll('[data-bn="table"] tbody td')];
-        const firstRowCells = [...document.querySelectorAll('[data-bn="table"] tbody tr:first-child td')];
+        const firstRowCells = [
+          ...document.querySelectorAll('[data-bn="table"] tbody tr:first-child td'),
+        ];
         return {
           containerClient: container.clientWidth,
           containerScroll: container.scrollWidth,
@@ -83,7 +105,8 @@ test.describe('Table — narrow-width contract', () => {
             const text = range.getBoundingClientRect();
             return { left: text.left - box.left, right: text.right - box.right };
           }),
-          stackedLines: new Set(firstRowCells.map((td) => Math.round(td.getBoundingClientRect().y))).size,
+          stackedLines: new Set(firstRowCells.map((td) => Math.round(td.getBoundingClientRect().y)))
+            .size,
         };
       });
 
@@ -103,7 +126,9 @@ test.describe('Table — narrow-width contract', () => {
 
     const geometry = await page.evaluate(() => {
       const thead = document.querySelector('[data-bn="table"] thead');
-      const firstRowCells = [...document.querySelectorAll('[data-bn="table"] tbody tr:first-child td')];
+      const firstRowCells = [
+        ...document.querySelectorAll('[data-bn="table"] tbody tr:first-child td'),
+      ];
       return {
         theadHeight: thead.getBoundingClientRect().height,
         rowLines: new Set(firstRowCells.map((td) => Math.round(td.getBoundingClientRect().y))).size,
@@ -112,6 +137,53 @@ test.describe('Table — narrow-width contract', () => {
 
     expect(geometry.theadHeight).toBeGreaterThan(10);
     expect(geometry.rowLines).toBe(1);
+  });
+
+  test('a consumer nowrap on row headings cannot pin a stacked cell open', async ({ page }) => {
+    // The failure this guards: a wide-table stylesheet that keeps row
+    // headings on one line (the site's own compare-table rule did) meets
+    // markup in the component contract. The stack resets white-space, so
+    // the heading wraps like any other cell instead of painting past its
+    // box and forcing the container into a sideways scroll.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await renderComponent(
+      page,
+      `<div data-bn="table-container"><table data-bn="table" data-hostile>
+        <thead><tr><th scope="col">Measure</th><th scope="col">BaseNative</th><th scope="col">React 19</th></tr></thead>
+        <tbody><tr>
+          <th scope="row" data-label="Measure">A stored template (CMS, database, model output) renders as-is</th>
+          <td data-label="BaseNative">Yes — interpreted against a scope, prototype access blocklisted</td>
+          <td data-label="React 19">No — it must go through the build first</td>
+        </tr></tbody>
+      </table></div>`,
+    );
+    await page.addStyleTag({
+      content: '@layer components { [data-hostile] th[scope="row"] { white-space: nowrap; } }',
+    });
+
+    const geometry = await page.evaluate(() => {
+      const container = document.querySelector('[data-bn="table-container"]');
+      const heading = document.querySelector('[data-bn="table"] tbody th');
+      const cells = [
+        ...document.querySelectorAll('[data-bn="table"] tbody th, [data-bn="table"] tbody td'),
+      ].map((c) => {
+        const box = c.getBoundingClientRect();
+        const range = document.createRange();
+        range.selectNodeContents(c);
+        return range.getBoundingClientRect().right - box.right;
+      });
+      return {
+        containerClient: container.clientWidth,
+        containerScroll: container.scrollWidth,
+        headingHeight: heading.getBoundingClientRect().height,
+        overhangs: cells,
+      };
+    });
+
+    expect(geometry.containerScroll).toBeLessThanOrEqual(geometry.containerClient + 1);
+    for (const overhang of geometry.overhangs) expect(overhang).toBeLessThanOrEqual(1);
+    // The long heading wrapped onto a second line rather than overflowing.
+    expect(geometry.headingHeight).toBeGreaterThan(40);
   });
 });
 
@@ -139,7 +211,11 @@ test.describe('App nav — bar geometry', () => {
           const box = li.getBoundingClientRect();
           const icon = li.querySelector('[data-bn="app-nav-icon"]');
           const iconBox = icon ? icon.getBoundingClientRect() : null;
-          return { width: box.width, iconLeft: iconBox ? iconBox.x - navBox.x : null, iconRight: iconBox ? navBox.x + navBox.width - (iconBox.x + iconBox.width) : null };
+          return {
+            width: box.width,
+            iconLeft: iconBox ? iconBox.x - navBox.x : null,
+            iconRight: iconBox ? navBox.x + navBox.width - (iconBox.x + iconBox.width) : null,
+          };
         });
       return { cells };
     });
@@ -162,7 +238,9 @@ test.describe('App nav — bar geometry', () => {
     expect(ellipsized).toEqual([]);
   });
 
-  test('rail at 1280px: More cell hidden, overflow items restored, inline insets symmetric', async ({ page }) => {
+  test('rail at 1280px: More cell hidden, overflow items restored, inline insets symmetric', async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await renderComponent(page, renderAppNav({ items: NAV_ITEMS, overflow: {}, brand: {} }));
 
@@ -187,5 +265,72 @@ test.describe('App nav — bar geometry', () => {
     expect(geometry.moreCellVisible).toBe(false);
     expect(geometry.visibleCount).toBe(6);
     expect(Math.abs(geometry.leftInset - geometry.rightInset)).toBeLessThanOrEqual(1);
+  });
+});
+
+/*
+ * The contract on the real pages. The fixtures above prove the component;
+ * these prove the consumers that were actually broken — the site's content
+ * tables (compare, roadmap) are hand-written markup in the same contract,
+ * so the shipped stylesheet stacks them too, and the catalog's own demos
+ * must not collapse the way a size container does inside a shrink-wrapped
+ * ancestor. Served by the dev server in playwright.config.
+ */
+test.describe('Site tables — the contract on real pages', () => {
+  async function tableGeometry(page) {
+    return page.evaluate(() =>
+      [...document.querySelectorAll('[data-bn="table"]')].map((t) => {
+        const container = t.closest('[data-bn="table-container"]');
+        const cells = [...t.querySelectorAll('tbody th, tbody td')];
+        return {
+          containerClient: container ? container.clientWidth : 0,
+          containerScroll: container ? container.scrollWidth : 0,
+          theadHeight: t.querySelector('thead')?.getBoundingClientRect().height ?? 0,
+          unlabelled: cells.filter((c) => !c.hasAttribute('data-label')).length,
+          overhangs: cells.map((c) => {
+            const box = c.getBoundingClientRect();
+            const range = document.createRange();
+            range.selectNodeContents(c);
+            return range.getBoundingClientRect().right - box.right;
+          }),
+        };
+      }),
+    );
+  }
+
+  for (const [path, count] of [
+    ['/compare', 6],
+    ['/roadmap', 7],
+  ]) {
+    test(`${path} at 390px: every table stacked, labelled, nothing clipped`, async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto(path);
+      const tables = await tableGeometry(page);
+      expect(tables.length).toBe(count);
+      for (const t of tables) {
+        expect(t.containerScroll).toBeLessThanOrEqual(t.containerClient + 1);
+        expect(t.theadHeight).toBeLessThanOrEqual(1);
+        expect(t.unlabelled).toBe(0);
+        for (const overhang of t.overhangs) expect(overhang).toBeLessThanOrEqual(1);
+      }
+    });
+  }
+
+  test('/components/table at 390px: no demo table collapses to zero width', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/components/table');
+    const geometry = await page.evaluate(() =>
+      [...document.querySelectorAll('[data-bn="table-container"]')].map((c) => ({
+        width: c.getBoundingClientRect().width,
+        rowHeights: [...c.querySelectorAll('tbody tr')].map(
+          (r) => r.getBoundingClientRect().height,
+        ),
+      })),
+    );
+    expect(geometry.length).toBeGreaterThanOrEqual(3);
+    for (const c of geometry) {
+      expect(c.width).toBeGreaterThan(100);
+      for (const h of c.rowHeights) expect(h).toBeLessThan(200);
+    }
   });
 });
