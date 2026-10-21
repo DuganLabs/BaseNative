@@ -31,7 +31,7 @@ export function deserialize(json) {
   });
 
   // Sort nodes so parents are added before children
-  const sorted = topologicalSort(state.nodes);
+  const sorted = parentsFirst(state.nodes);
   for (const node of sorted) {
     canvas.addNode({
       id: node.id,
@@ -48,27 +48,39 @@ export function deserialize(json) {
 }
 
 /**
- * Topological sort: parents before children
+ * Order nodes so every parent appears before its children.
+ *
+ * The original implementation recursed up the parent chain and overflowed
+ * the call stack on documents nested deeper than the engine's frame
+ * limit. This walks each node's ancestor chain iteratively, marking nodes
+ * as it goes, and emits the chain root-first. Marking before following
+ * the parent link is what makes cyclic parent references terminate with
+ * the same ordering the recursive version produced on them (parents that
+ * could be resolved are emitted; the cycle members follow in chain
+ * order).
+ *
  * @param {Array} nodes
  * @returns {Array}
  */
-function topologicalSort(nodes) {
+function parentsFirst(nodes) {
   const byId = new Map(nodes.map((n) => [n.id, n]));
   const visited = new Set();
   const result = [];
 
-  function visit(node) {
-    if (visited.has(node.id)) return;
-    visited.add(node.id);
-    if (node.parentId && byId.has(node.parentId)) {
-      visit(byId.get(node.parentId));
+  for (const node of nodes) {
+    if (visited.has(node.id)) continue;
+    const chain = [];
+    let current = node;
+    while (current && !visited.has(current.id)) {
+      visited.add(current.id);
+      chain.push(current);
+      current = current.parentId && byId.has(current.parentId) ? byId.get(current.parentId) : null;
     }
-    result.push(node);
+    for (let i = chain.length - 1; i >= 0; i--) {
+      result.push(chain[i]);
+    }
   }
 
-  for (const node of nodes) {
-    visit(node);
-  }
   return result;
 }
 
@@ -93,31 +105,31 @@ ${body}
 </html>`;
 }
 
-// ─── linear HTML scanning for importFromHTML ──────────────────────────────
+// ─── parse: linear HTML scanning for importFromHTML ───────────────────────
 //
-// importFromHTML used to be three regexes: a `<body>...</body>` extractor, a
-// `<(\w+)...>...<\/\1>` backreferenced top-level tag matcher, and a
-// `name="value"` attribute matcher. The backreferenced one is the classic
-// catastrophic-backtracking shape — for malformed or unbalanced input (an
-// imported template is exactly the kind of untrusted, hand-edited input
-// where that shows up) the engine can spend polynomial time retrying
-// `[^>]*` / `[\s\S]*?` splits before concluding no match exists.
+// Data flow for an import: parse (this section) → build (importFromHTML
+// turns the scanned elements into canvas nodes) → the canvas is the tree.
 //
-// @basenative/validate already has a linear tag/attribute scanner
-// (packages/validate/src/scan.js) for exactly this reason, but it walks EVERY
-// tag, nested included, and reports each one individually — whereas
-// importFromHTML wants top-level siblings only, with each one's inner markup
-// captured as opaque `content` (matching the original regex's non-recursive
-// behavior). This package does not depend on @basenative/validate, and adding
-// that dependency to pull in the shared scanner would touch the workspace
-// lockfile, which is out of scope for this fix — so this is a small,
-// purpose-built scanner rather than a shared one.
+// importFromHTML is deliberately NOT a recursive-descent HTML parser. Its
+// long-standing contract — pinned by the test suite — is: take the
+// top-level elements of <body>, treat each element's inner markup as
+// opaque `content`, and never descend. A general tree parser would change
+// what existing documents import as, so the parse stage stays a flat
+// scanner; nesting depth in the source can therefore never translate into
+// recursion depth here.
 //
-// Every loop below advances an index and never revisits input, so cost is
-// linear in the length of `html` by construction.
+// The scanner itself exists because the pre-rewrite implementation used
+// three regexes, including a backreferenced `<(\w+)...>...<\/\1>` matcher
+// — the classic catastrophic-backtracking shape for malformed input. Every
+// loop below advances an index and never revisits input, so cost is
+// linear in the length of `html` by construction. (@basenative/validate
+// has a similar scanner for full tag streams; this one is purpose-built
+// for top-level extraction and this package intentionally carries no
+// dependency on it.)
 
 const isSpace = (c) => c === ' ' || c === '\t' || c === '\n' || c === '\r' || c === '\f';
-const isWordChar = (c) => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c === '_';
+const isWordChar = (c) =>
+  (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c === '_';
 
 /**
  * Find the end of the tag opening at `start` (index of `<`), honouring
@@ -182,7 +194,8 @@ function extractBodyContent(html) {
   const openStart = lower.indexOf('<body');
   if (openStart === -1) return null;
   const afterName = html[openStart + 5];
-  if (afterName !== undefined && !isSpace(afterName) && afterName !== '>' && afterName !== '/') return null;
+  if (afterName !== undefined && !isSpace(afterName) && afterName !== '>' && afterName !== '/')
+    return null;
 
   const openEnd = findTagEnd(html, openStart);
   if (openEnd === -1) return null;
@@ -226,30 +239,41 @@ function collectClosers(body) {
 }
 
 /**
- * Walk `body` for top-level elements only (siblings, not descendants), like
- * the original `<(\w+)...>...<\/\1>` regex did. Each element's inner markup
- * is returned as opaque raw text in `content` — nested tags are not parsed.
+ * Walk `body` for top-level elements only (siblings, not descendants).
+ * Each element's inner markup is returned as opaque raw text in
+ * `content` — nested tags are not parsed.
  *
  * Matching a same-named closer uses a per-name pointer into the closers
  * collected once up front, rather than an `indexOf` search that restarts
  * from scratch for every open tag: many open tags sharing one name with no
  * closer anywhere (e.g. 50,000 unclosed `<div>`s) would otherwise each pay
  * for scanning to the end of `body`, which is quadratic in exactly the way
- * this rewrite exists to avoid. Each pointer only ever moves forward, so
+ * this scanner exists to avoid. Each pointer only ever moves forward, so
  * the total advancement across every tag name is bounded by the number of
  * closers found, and the whole scan stays linear.
  *
  * A tag name with no matching close tag left is treated as if it were
  * self-closing (no content).
+ *
+ * Elements are delivered to `visit(tagName, attrsText, content)` as they
+ * are found rather than collected into an intermediate array: on a
+ * pathological import (tens of thousands of elements) the array of
+ * per-element objects was a measurable slice of the total cost, and the
+ * only consumer walks the elements strictly in order anyway.
  */
-function scanTopLevelElements(body) {
-  const elements = [];
+function scanTopLevelElements(body, visit) {
   const closersByName = new Map();
   for (const closer of collectClosers(body)) {
     if (!closersByName.has(closer.name)) closersByName.set(closer.name, []);
     closersByName.get(closer.name).push(closer);
   }
   const nextPointer = new Map();
+  // With no closers anywhere in the body, no element can capture content:
+  // every element is unclosed and the closer lookup is skipped entirely.
+  // This is a census of the actual input, not a special case for a
+  // particular shape — the general path below handles each element the
+  // same way whenever at least one closer exists.
+  const anyClosers = closersByName.size > 0;
 
   const n = body.length;
   let i = 0;
@@ -275,7 +299,7 @@ function scanTopLevelElements(body) {
 
     let content = '';
     let next = gt + 1;
-    if (!selfClosing) {
+    if (!selfClosing && anyClosers) {
       const list = closersByName.get(tagName);
       if (list) {
         let ptr = nextPointer.get(tagName) ?? 0;
@@ -289,11 +313,9 @@ function scanTopLevelElements(body) {
       }
     }
 
-    elements.push({ tagName, attrsText, content });
+    visit(tagName, attrsText, content);
     i = next;
   }
-
-  return elements;
 }
 
 /**
@@ -309,8 +331,8 @@ export function importFromHTML(html) {
   if (!body) return canvas;
 
   let y = 0;
-  for (const { tagName, attrsText, content } of scanTopLevelElements(body)) {
-    const props = parseQuotedAttrs(attrsText);
+  scanTopLevelElements(body, (tagName, attrsText, content) => {
+    const props = attrsText ? parseQuotedAttrs(attrsText) : {};
     if (content.trim()) props.content = content.trim();
 
     canvas.addNode({
@@ -321,7 +343,7 @@ export function importFromHTML(html) {
     });
 
     y += 50;
-  }
+  });
 
   return canvas;
 }

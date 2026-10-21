@@ -3,7 +3,7 @@
   "targets": {
     "test": {
       "cache": true,
-      "command": "node --test",
+      "command": "node --test --test-concurrency=1",
       "inputs": [
         "{projectRoot}/src/**/*.js"
       ],
