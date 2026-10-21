@@ -8,10 +8,16 @@
  * contracts below (`site-header`, `site-nav`, `nav-menu`, `site-footer`,
  * `footer-inner`, `skip-link`) are the ones GreenPut's templates already
  * use, so a property can adopt these renderers without renaming the
- * hooks its CSS and tests are written against.
+ * hooks its CSS and tests are written against. The app-shaped surfaces
+ * get one more: `app-nav`, the adaptive primary nav — a bottom bar at
+ * phone class, a fixed side rail when the viewport opens up (a Duo
+ * unfolded, or any wide layout) — with its `app-nav-list`,
+ * `app-nav-icon` and `app-nav-label` hooks.
  *
  * Everything here is a pure render function except initSiteHeader, the
  * one piece of behaviour chrome needs: the narrow-viewport nav toggle.
+ * renderAppNav needs no behaviour at all: its two modes are one
+ * element under two media queries, so a posture change loses nothing.
  */
 import { escapeAttr, escapeText } from '@basenative/runtime/shared/escape';
 import { nextId } from './ids.js';
@@ -182,6 +188,69 @@ export function initSiteHeader(root, options = {}) {
       }
     },
   };
+}
+
+/**
+ * App navigation: the primary nav for app-shaped surfaces, in the
+ * pattern the iPhone Duo's app demos established — one nav whose
+ * layout follows the size class it finds itself in.
+ *
+ * At phone class it is a fixed bottom bar: icon over label, brand and
+ * actions put away, the destinations a thumb reaches. At the unfolded
+ * class — the Duo spanning its fold, or any viewport at least the
+ * inner display's short edge wide — the same element is a fixed side
+ * rail: brand at the top, icon-and-label rows, the actions slot at the
+ * foot, content scrolling beside it.
+ *
+ * The adaptation is CSS alone (components.css, "App Nav"), so there is
+ * deliberately no init function and no second markup variant: the DOM
+ * never changes when the class does, which is what a fold is — the
+ * same page, mid-task, opened wider. Focus, scroll position,
+ * aria-current and any state the page holds survive it untouched
+ * because nothing re-renders.
+ *
+ * The bar is fixed in both modes; the clearance contract lives with
+ * the CSS: a page that renders the nav as a direct child of
+ * [data-bn="page"] (or of body) gets its scroll clearance from the
+ * same rules, sized by the same tokens.
+ *
+ * @param {object} [options]
+ * @param {object} [options.brand]
+ * @param {string} [options.brand.name]   Escaped text, rendered beside the logo in rail mode
+ * @param {string} [options.brand.logo]   HTML slot (an SVG mark): not escaped; pass trusted markup only
+ * @param {string} [options.brand.href='/']
+ * @param {string} [options.brand.label]  The logo link's aria-label; defaults to "<name> home"
+ * @param {Array<{label: string, href: string, icon?: string, current?: boolean}>} [options.items]
+ *   icon is an HTML slot (an SVG glyph): not escaped; pass trusted markup only
+ * @param {string} [options.actions]  HTML slot rendered after the items (the rail's foot;
+ *   hidden at phone class); not escaped
+ * @param {string} [options.label='Primary']  The nav's aria-label; escaped text
+ * @param {string} [options.id]     Emitted as the <nav>'s id when present
+ * @param {string} [options.attrs]  Raw attribute markup appended to the <nav>; not escaped
+ * @returns {string}
+ */
+export function renderAppNav(options = {}) {
+  const { brand = {}, items = [], actions = '', label = 'Primary', id, attrs = '' } = options;
+
+  const brandName = brand.name ?? '';
+  const brandLabel = brand.label ?? (brandName ? `${brandName} home` : 'Home');
+  const brandHtml =
+    brandName || brand.logo
+      ? `<a data-bn="app-nav-brand" href="${escapeAttr(brand.href ?? '/')}" aria-label="${escapeAttr(brandLabel)}">${brand.logo ?? ''}${brandName ? `<strong>${escapeText(brandName)}</strong>` : ''}</a>`
+      : '';
+
+  const itemsHtml = items
+    .map((item) => {
+      const current = item.current ? ' aria-current="page"' : '';
+      const icon = item.icon ? `<span data-bn="app-nav-icon" aria-hidden="true">${item.icon}</span>` : '';
+      return `<li><a href="${escapeAttr(item.href)}"${current}>${icon}<span data-bn="app-nav-label">${escapeText(item.label)}</span></a></li>`;
+    })
+    .join('');
+
+  const actionsHtml = actions ? `<div data-bn="app-nav-actions">${actions}</div>` : '';
+  const idAttr = id ? ` id="${escapeAttr(id)}"` : '';
+
+  return `<nav data-bn="app-nav" aria-label="${escapeAttr(label)}"${idAttr}${attrsSuffix(attrs)}>${brandHtml}<ul data-bn="app-nav-list">${itemsHtml}</ul>${actionsHtml}</nav>`;
 }
 
 /**

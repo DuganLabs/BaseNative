@@ -1,13 +1,13 @@
 {
   "$schema": "https://basenative.dev/schemas/component-index.json",
   "generatedBy": "scripts/llms-txt.js (scripts/component-index.js)",
-  "generatedOn": "2026-10-20",
+  "generatedOn": "2026-10-21",
   "contract": "Generated from source. Never hand-edit: `node scripts/llms-txt.js --check` fails CI when this file disagrees with packages/*/src. `variants` is the set of values a stylesheet actually declares a rule for, so a value outside it renders unstyled rather than erroring.",
   "counts": {
-    "components": 79,
-    "renderFunctions": 73,
+    "components": 80,
+    "renderFunctions": 74,
     "customElements": 6,
-    "styledContracts": 215,
+    "styledContracts": 220,
     "componentsWithVariants": 20
   },
   "stylesheets": [
@@ -60,6 +60,24 @@
     ],
     "app-main": [
       "@basenative/components#renderAppShell"
+    ],
+    "app-nav": [
+      "@basenative/components#renderAppNav"
+    ],
+    "app-nav-actions": [
+      "@basenative/components#renderAppNav"
+    ],
+    "app-nav-brand": [
+      "@basenative/components#renderAppNav"
+    ],
+    "app-nav-icon": [
+      "@basenative/components#renderAppNav"
+    ],
+    "app-nav-label": [
+      "@basenative/components#renderAppNav"
+    ],
+    "app-nav-list": [
+      "@basenative/components#renderAppNav"
     ],
     "avatar": [
       "@basenative/components#renderAvatar"
@@ -957,6 +975,33 @@
       "inertAxes": [],
       "styled": true,
       "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"alert\"> markup"
+    },
+    {
+      "id": "@basenative/components#renderAppNav",
+      "name": "renderAppNav",
+      "kind": "render-function",
+      "package": "@basenative/components",
+      "file": "packages/components/src/site-chrome.js",
+      "signature": "renderAppNav(options)",
+      "purpose": "App navigation: the primary nav for app-shaped surfaces, in the pattern the iPhone Duo's app demos establishe…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "nav",
+        "primaryContract": "app-nav",
+        "contracts": [
+          "app-nav-brand",
+          "app-nav-icon",
+          "app-nav-label",
+          "app-nav-actions",
+          "app-nav",
+          "app-nav-list"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <nav> with your own classes, or literal <nav data-bn=\"app-nav\"> markup"
     },
     {
       "id": "@basenative/components#renderAppShell",
