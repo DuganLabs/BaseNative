@@ -4823,6 +4823,70 @@ describe('initAppNav', () => {
     assert.equal(vvListeners.size, 0, 'destroy unbinds the visual viewport');
     assert.ok(!props.has('--bn-app-nav-visual-inset'), 'destroy removes the inset');
   });
+
+  it('holds the largest inset while a text field is focused, against a late under-report', () => {
+    const doc = fakeDocument();
+    const vvListeners = new Map();
+    const vv = {
+      height: 844,
+      offsetTop: 0,
+      scale: 1,
+      addEventListener(type, fn) { vvListeners.set(type, fn); },
+      removeEventListener(type, fn) { if (vvListeners.get(type) === fn) vvListeners.delete(type); },
+      dispatch(type) { vvListeners.get(type)?.(); },
+    };
+    doc.defaultView = { innerHeight: 844, visualViewport: vv };
+    const nav = fakeElement(doc, 'app-nav');
+    const props = new Map();
+    nav.style = {
+      setProperty(name, value) { props.set(name, value); },
+      removeProperty(name) { props.delete(name); },
+    };
+    const field = fakeElement(doc, 'input');
+    field.tagName = 'INPUT';
+    initAppNav(nav);
+    field.focus();
+    vv.height = 508; // keyboard fully open: 336px covered
+    vv.dispatch('resize');
+    assert.equal(props.get('--bn-app-nav-visual-inset'), '336px');
+    vv.height = 560; // a later stage under-reports (assistant bar not yet counted)
+    vv.dispatch('scroll');
+    assert.equal(
+      props.get('--bn-app-nav-visual-inset'),
+      '336px',
+      'while typing, the inset may only grow — the bar cannot sink back into the keyboard'
+    );
+    vv.height = 844; // keyboard dismissed
+    vv.dispatch('resize');
+    assert.equal(props.get('--bn-app-nav-visual-inset'), '0px', 'a measured zero always clears the hold');
+  });
+
+  it('re-syncs on focusin, before any visual-viewport event fires', () => {
+    const doc = fakeDocument();
+    const vv = {
+      height: 844,
+      offsetTop: 0,
+      scale: 1,
+      addEventListener() {},
+      removeEventListener() {},
+    };
+    doc.defaultView = { innerHeight: 844, visualViewport: vv };
+    const nav = fakeElement(doc, 'app-nav');
+    const props = new Map();
+    nav.style = {
+      setProperty(name, value) { props.set(name, value); },
+      removeProperty(name) { props.delete(name); },
+    };
+    initAppNav(nav);
+    assert.equal(props.get('--bn-app-nav-visual-inset'), '0px');
+    vv.height = 508; // the keyboard opened without a vv event reaching the page
+    doc.dispatch('focusin');
+    assert.equal(
+      props.get('--bn-app-nav-visual-inset'),
+      '336px',
+      'focus is the earliest keyboard signal — the bar moves with it'
+    );
+  });
 });
 
 describe('ListGroup', () => {

@@ -11,6 +11,11 @@ import { attrsSuffix } from './internal/attrs.js';
  * role, so screen readers announce it once. Without `src` the wrapper is
  * role="img" with an aria-label and shows escaped initials.
  *
+ * The initials fallback also carries a `data-tone` (0–7): a stable hash of
+ * the name picks one of eight disc colours, so a person reads as the same
+ * colour everywhere they appear — the flat sheet of identical grey discs
+ * this replaces gave a list of people no visual identity at all.
+ *
  * @param {object} [options]
  * @param {string} [options.src]
  * @param {string} [options.alt]
@@ -35,11 +40,18 @@ export function renderAvatar(options = {}) {
     return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
   }
 
+  function toneForName(name) {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
+    return hash % 8;
+  }
+
   const wrapperStart = `<span data-bn="avatar" data-size="${escapeAttr(size)}" data-shape="${escapeAttr(shape)}"`;
 
   if (src) {
     return `${wrapperStart}${attrsSuffix(attrs)}><img src="${escapeAttr(src)}" alt="${escapeAttr(alt || name || '')}" data-bn="avatar-img"></span>`;
   }
 
-  return `${wrapperStart} role="img" aria-label="${escapeAttr(alt || name || 'Avatar')}"${attrsSuffix(attrs)}><span data-bn="avatar-initials">${escapeText(getInitials(name))}</span></span>`;
+  const tone = name ? ` data-tone="${toneForName(name)}"` : '';
+  return `${wrapperStart}${tone} role="img" aria-label="${escapeAttr(alt || name || 'Avatar')}"${attrsSuffix(attrs)}><span data-bn="avatar-initials">${escapeText(getInitials(name))}</span></span>`;
 }
