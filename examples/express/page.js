@@ -9,14 +9,15 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { render } from '@basenative/server';
 import { raw } from '@basenative/runtime/shared/escape';
-import { renderBreadcrumb } from '../../packages/components/src/index.js';
+import { renderAppNav, renderBreadcrumb } from '../../packages/components/src/index.js';
 import {
+  getAppNavItems,
   getComparePageContext,
   getComponentsPageContext,
+  getDocsPageContext,
   getHomePageContext,
   getRoadmapPageContext,
   getTasksPageContext,
-  navPages,
 } from './site-data.js';
 import { componentCategories, flatComponents, findComponent } from './component-catalog.js';
 import { getDemo } from './component-demos.js';
@@ -60,20 +61,26 @@ export function renderPage(viewFile, ctx, opts) {
   const layout = read('views/layout.html');
   const view = read(`views/${viewFile}`);
   const content = render(view, ctx);
-  let html = layout
+  // The shell's primary navigation is the catalog's app nav — one <nav>
+  // that is the phone-class bottom bar and the unfolded side rail under
+  // a media query. Nine destinations overflow the bar, so the bar keeps
+  // four and the rest ride the More sheet (renderAppNav's overflow).
+  const appNav = renderAppNav({
+    id: 'site-nav',
+    brand: { name: 'BaseNative', href: '/' },
+    items: getAppNavItems(activePage),
+    actions:
+      '<a href="https://github.com/DuganLabs/BaseNative" rel="noopener">GitHub</a>',
+    overflow: {},
+  });
+  return layout
     .replace(/<!--TITLE-->/g, escapeAttr(title))
     .replace(/<!--DESCRIPTION-->/g, escapeAttr(description))
     .replace(/<!--OG_TITLE-->/g, escapeAttr(ogTitle))
     .replace(/<!--OG_URL-->/g, escapeAttr(SITE_URL + path))
+    .replace('<!--APP_NAV-->', appNav)
     .replace('<!--CONTENT-->', content)
     .replace('<!--SCRIPTS-->', scripts);
-  for (const page of navPages) {
-    html = html.replace(
-      `<!--${page.toUpperCase()}_ARIA-->`,
-      activePage === page ? 'aria-current="page"' : '',
-    );
-  }
-  return html;
 }
 
 const TEST_SIGNAL_ITEMS = [
@@ -131,7 +138,7 @@ export const siteRoutes = [
     description:
       'API reference for the @basenative/runtime primitives (signal, computed, effect, hydrate), the template directives and @basenative/server render(), with links to the generated docs/api reference for router, forms, components and every other package.',
     activePage: 'docs',
-    ctx: () => ({}),
+    ctx: () => getDocsPageContext(),
   },
   {
     path: '/components',

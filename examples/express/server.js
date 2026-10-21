@@ -28,6 +28,7 @@ app.use(
 app.use(express.json());
 app.use(express.static(join(__dirname, 'public')));
 app.use('/bn-css', express.static(join(pkgRoot, 'packages', 'components', 'src')));
+app.use('/bn-ios', express.static(join(pkgRoot, 'packages', 'ios', 'src')));
 app.use('/fonts', express.static(join(pkgRoot, 'packages', 'fonts')));
 app.use('/icons', express.static(join(pkgRoot, 'packages', 'icons', 'src')));
 app.use('/bn-builder-css', express.static(join(pkgRoot, 'packages', 'builder', 'src')));
