@@ -144,7 +144,8 @@ test.describe('design system gates', () => {
               const style = document.createElement('style');
               style.setAttribute('data-bn-snapshot-font', '');
               style.textContent =
-                'html, body, body * { font-family: "Liberation Sans", sans-serif !important; }';
+                'html, body, body * { font-family: "Liberation Sans", sans-serif !important; }' +
+                'body[data-active="components"] span[aria-hidden="true"] { display: none !important; }';
               document.documentElement.appendChild(style);
             }
             if (document.readyState === 'loading')
