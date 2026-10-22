@@ -8,6 +8,38 @@ import { test, expect } from '@playwright/test';
 
 const THEMES = ['light', 'dark'];
 
+function contrastOnWhite(color) {
+  const match = color.match(/rgba?\(([^)]+)\)/);
+  if (!match) return 0;
+  const parts = match[1].split(',').map((part) => parseFloat(part));
+  const alpha = parts.length > 3 ? parts[3] : 1;
+  const rgb = parts.slice(0, 3).map((channel) => channel * alpha + 255 * (1 - alpha));
+  const lin = rgb.map((channel) => {
+    const s = channel / 255;
+    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+  });
+  const L = 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2];
+  return 1.05 / (L + 0.05);
+}
+
+function contrastOnDark(color) {
+  const match = color.match(/rgba?\(([^)]+)\)/);
+  if (!match) return 0;
+  const parts = match[1].split(',').map((part) => parseFloat(part));
+  const alpha = parts.length > 3 ? parts[3] : 1;
+  const bg = [44, 44, 46];
+  const rgb = parts.slice(0, 3).map((channel, index) => channel * alpha + bg[index] * (1 - alpha));
+  const lin = [...rgb, ...bg].map((channel) => {
+    const s = channel / 255;
+    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+  });
+  const L1 = 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2];
+  const L2 = 0.2126 * lin[3] + 0.7152 * lin[4] + 0.0722 * lin[5];
+  const lighter = Math.max(L1, L2);
+  const darker = Math.min(L1, L2);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
 async function open(page, width, theme) {
   await page.setViewportSize({ width, height: 900 });
   await page.emulateMedia({ colorScheme: theme, reducedMotion: 'reduce' });
@@ -18,13 +50,15 @@ test.describe('home shell', () => {
   for (const theme of THEMES) {
     test(`phone tab bar clears content (${theme})`, async ({ page }) => {
       await open(page, 320, theme);
-      const problems = await page.evaluate(() => {
-        const bar = document.querySelector('body > [data-bn="bn-tab-bar"]');
-        const scroller = document.querySelector('main');
-        document.documentElement.style.scrollBehavior = 'auto';
-        scroller.style.scrollBehavior = 'auto';
-        const found = [];
-        function hits(where) {
+      for (const where of ['top', 'middle', 'bottom']) {
+        const result = await page.evaluate((place) => {
+          const bar = document.querySelector('body > [data-bn="bn-tab-bar"]');
+          const scroller = document.querySelector('main');
+          document.documentElement.style.scrollBehavior = 'auto';
+          scroller.style.scrollBehavior = 'auto';
+          const max = scroller.scrollHeight - scroller.clientHeight;
+          scroller.scrollTop = place === 'top' ? 0 : place === 'bottom' ? max : max / 2;
+          const found = [];
           const b = bar.getBoundingClientRect();
           const view = scroller.getBoundingClientRect();
           for (const el of scroller.querySelectorAll('h1, h2, p, li, pre, a, [data-bn]')) {
@@ -41,19 +75,26 @@ test.describe('home shell', () => {
             const y = Math.max(vy, b.top);
             const rt = Math.min(vr, b.right);
             const bt = Math.min(vb, b.bottom);
-            if (rt - x > 1 && bt - y > 1) {
-              found.push(`${where} ${el.getAttribute('data-bn') || el.tagName}`);
-            }
+            if (rt - x > 1 && bt - y > 1)
+              found.push(`${place} ${el.getAttribute('data-bn') || el.tagName}`);
           }
-        }
-        scroller.scrollTop = 0;
-        hits('top');
-        scroller.scrollTop = scroller.scrollHeight;
-        hits('bottom');
-        scroller.scrollTop = 0;
-        return found.slice(0, 8);
-      });
-      expect(problems).toEqual([]);
+          return {
+            problems: found.slice(0, 8),
+            barTop: b.top,
+            barBottom: b.bottom,
+            inner: window.innerHeight,
+          };
+        }, where);
+        expect(result.problems).toEqual([]);
+        expect(result.barBottom).toBeGreaterThan(result.inner - 3);
+        expect(result.barBottom).toBeLessThan(result.inner + 3);
+        expect(result.barTop).toBeGreaterThan(result.inner - 80);
+        const png = await page.screenshot({ fullPage: false });
+        await test.info().attach(`home-${theme}-320-${where}`, {
+          body: png,
+          contentType: 'image/png',
+        });
+      }
     });
 
     test(`desktop reading column (${theme})`, async ({ page }) => {
@@ -64,20 +105,29 @@ test.describe('home shell', () => {
         const a = article.getBoundingClientRect();
         const m = main.getBoundingClientRect();
         const h1 = getComputedStyle(document.querySelector('h1'));
+        const hero = document.querySelector('[data-bn="bn-hero"]');
+        const nav = hero.querySelector('nav').getBoundingClientRect();
+        const hr = hero.getBoundingClientRect();
+        const pad =
+          parseFloat(getComputedStyle(main).paddingLeft) +
+          parseFloat(getComputedStyle(main).paddingRight);
         return {
           width: a.width,
-          centerDelta: Math.abs((a.left + a.right) / 2 - (m.left + m.right) / 2),
+          room: m.width - pad,
           h1: parseFloat(h1.fontSize),
           weight: parseInt(h1.fontWeight, 10),
           columns: getComputedStyle(article).gridTemplateColumns,
+          heroColumns: getComputedStyle(hero).gridTemplateColumns,
+          navInRight: nav.left > hr.left + hr.width * 0.45,
         };
       });
-      expect(box.width).toBeGreaterThanOrEqual(720);
-      expect(box.width).toBeLessThanOrEqual(880);
-      expect(box.centerDelta).toBeLessThan(24);
+      expect(box.width).toBeGreaterThan(box.room - 8);
+      expect(box.width).toBeGreaterThan(900);
       expect(box.h1).toBeGreaterThanOrEqual(26);
       expect(box.weight).toBeGreaterThanOrEqual(700);
       expect(box.columns).not.toBe('none');
+      expect(box.heroColumns).not.toBe('none');
+      expect(box.navInRight).toBe(true);
     });
 
     test(`type scale (${theme})`, async ({ page }) => {
@@ -106,11 +156,19 @@ test.describe('home shell', () => {
         title: parseFloat(
           getComputedStyle(document.querySelector('[data-bn="bn-list-title"]')).fontSize,
         ),
+        detail: parseFloat(
+          getComputedStyle(document.querySelector('[data-bn="bn-list-detail"]')).fontSize,
+        ),
+        detailColor: getComputedStyle(document.querySelector('[data-bn="bn-list-detail"]')).color,
       }));
       expect(desk.platform).toBe('macos');
-      expect(desk.body).toBeGreaterThanOrEqual(13);
+      expect(desk.body).toBeGreaterThanOrEqual(15);
       expect(desk.h1).toBeGreaterThanOrEqual(26);
-      expect(desk.title).toBeGreaterThanOrEqual(13);
+      expect(desk.title).toBeGreaterThanOrEqual(15);
+      expect(desk.detail).toBeGreaterThanOrEqual(15);
+      const contrast =
+        theme === 'dark' ? contrastOnDark(desk.detailColor) : contrastOnWhite(desk.detailColor);
+      expect(contrast).toBeGreaterThanOrEqual(4.5);
     });
 
     test(`liquid glass, tiles, and backdrop (${theme})`, async ({ page }) => {
@@ -150,24 +208,70 @@ test.describe('home shell', () => {
     });
 
     test(`grouped footer (${theme})`, async ({ page }) => {
-      await open(page, 320, theme);
+      await open(page, 1280, theme);
       const foot = await page.evaluate(() => {
         const footer = document.querySelector('main > [data-bn-site-footer]');
+        const main = document.querySelector('main');
         const link = footer.querySelector('a');
-        const ul = footer.querySelector('ul');
+        const style = getComputedStyle(footer);
+        const pad =
+          parseFloat(getComputedStyle(main).paddingLeft) +
+          parseFloat(getComputedStyle(main).paddingRight);
         return {
-          rows: getComputedStyle(ul).flexDirection,
-          height: link.getBoundingClientRect().height,
+          columns: style.gridTemplateColumns.split(' ').filter(Boolean).length,
+          width: footer.getBoundingClientRect().width,
+          room: main.getBoundingClientRect().width - pad,
+          height: footer.getBoundingClientRect().height,
           size: parseFloat(getComputedStyle(link).fontSize),
-          fill: getComputedStyle(footer).backgroundColor,
-          blur: getComputedStyle(footer).backdropFilter,
+          fill: style.backgroundColor,
+          shadow: style.boxShadow,
         };
       });
-      expect(foot.rows).toBe('column');
-      expect(foot.height).toBeGreaterThanOrEqual(44);
-      expect(foot.size).toBeGreaterThanOrEqual(17);
-      expect(foot.fill).not.toBe('rgba(0, 0, 0, 0)');
-      expect(foot.blur).toContain('blur');
+      expect(foot.columns).toBeGreaterThanOrEqual(3);
+      expect(foot.width).toBeGreaterThan(foot.room - 8);
+      expect(foot.height).toBeLessThan(220);
+      expect(foot.size).toBeGreaterThanOrEqual(15);
+      expect(foot.fill).toBe('rgba(0, 0, 0, 0)');
+      expect(foot.shadow).toBe('none');
+    });
+
+    test(`list tiles at phone width (${theme})`, async ({ page }) => {
+      await open(page, 320, theme);
+      const tiles = await page.evaluate(() =>
+        [...document.querySelectorAll('[data-bn="bn-list-row"] [data-bn="bn-symbol-tile"]')].map(
+          (tile) => {
+            const rect = tile.getBoundingClientRect();
+            return {
+              width: rect.width,
+              height: rect.height,
+              fill: getComputedStyle(tile).backgroundColor,
+            };
+          },
+        ),
+      );
+      expect(tiles.length).toBeGreaterThanOrEqual(10);
+      for (const tile of tiles) {
+        expect(tile.width).toBeGreaterThanOrEqual(28);
+        expect(tile.width).toBeLessThanOrEqual(30);
+        expect(tile.height).toBeGreaterThanOrEqual(28);
+        expect(tile.fill).not.toBe('rgba(0, 0, 0, 0)');
+      }
+    });
+
+    test(`phone hero buttons stay proportional (${theme})`, async ({ page }) => {
+      await open(page, 320, theme);
+      const buttons = await page.evaluate(() =>
+        [...document.querySelectorAll('[data-bn="bn-hero"] [data-bn="bn-button"]')].map(
+          (button) => {
+            const rect = button.getBoundingClientRect();
+            return { top: rect.top, height: rect.height, width: rect.width };
+          },
+        ),
+      );
+      expect(buttons.length).toBeGreaterThanOrEqual(2);
+      expect(Math.max(...buttons.map((button) => button.height))).toBeLessThanOrEqual(46);
+      expect(Math.abs(buttons[0].top - buttons[1].top)).toBeLessThan(8);
+      expect(Math.max(...buttons.map((button) => button.width))).toBeLessThan(280);
     });
   }
 });
