@@ -9,12 +9,9 @@ on:
   workflow_dispatch:
 
 env:
-  # Dependabot guard (owner decision, 2026-10-19): a run triggered by
-  # dependabot[bot] gets an empty token, so Nx executes fully local and
-  # can never consume Nx Cloud credits. Dependabot version updates are
-  # disabled entirely (no .github/dependabot.yml); this is belt-and-braces
-  # so no bot actor can engage Nx Cloud even if a PR trigger is added later.
-  NX_CLOUD_ACCESS_TOKEN: ${{ github.actor == 'dependabot[bot]' && '' || secrets.NX_CLOUD_ACCESS_TOKEN }}
+  # Comma-separated commit author emails (case-insensitive) that may use
+  # Nx Cloud. Everyone else runs fully local. Resolved before any nx command.
+  NX_CLOUD_ALLOWED_AUTHORS: warrendugan@gmail.com
 
 jobs:
   test:
@@ -26,6 +23,26 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Resolve Nx Cloud author
+        id: nx-cloud
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PUSH_AUTHOR_EMAIL: ${{ github.event.head_commit.author.email }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: bash scripts/nx-cloud-access.sh
+
+      - name: Expose Nx Cloud token
+        if: steps.nx-cloud.outputs.allowed == 'true'
+        env:
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+        run: |
+          {
+            printf '%s\n' 'NX_CLOUD_ACCESS_TOKEN<<NX_CLOUD_TOKEN_END'
+            printf '%s\n' "$NX_CLOUD_ACCESS_TOKEN"
+            printf '%s\n' 'NX_CLOUD_TOKEN_END'
+          } >> "$GITHUB_ENV"
+
       - uses: pnpm/action-setup@v6
         with:
           version: 10
@@ -34,6 +51,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: pnpm
+
+      - name: Nx Cloud allow list
+        if: matrix.node-version == 22
+        run: node --test scripts/nx-cloud-access.test.js
 
       - run: pnpm install --frozen-lockfile
 
@@ -70,6 +91,26 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v7
+
+      - name: Resolve Nx Cloud author
+        id: nx-cloud
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PUSH_AUTHOR_EMAIL: ${{ github.event.head_commit.author.email }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: bash scripts/nx-cloud-access.sh
+
+      - name: Expose Nx Cloud token
+        if: steps.nx-cloud.outputs.allowed == 'true'
+        env:
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+        run: |
+          {
+            printf '%s\n' 'NX_CLOUD_ACCESS_TOKEN<<NX_CLOUD_TOKEN_END'
+            printf '%s\n' "$NX_CLOUD_ACCESS_TOKEN"
+            printf '%s\n' 'NX_CLOUD_TOKEN_END'
+          } >> "$GITHUB_ENV"
 
       - uses: pnpm/action-setup@v6
         with:
