@@ -416,6 +416,7 @@ export function renderBnPopover(options = {}) {
   const popId = idOf('popover', options.id);
   const popover = options.inline ? '' : ' popover="auto"';
   const aside = `<aside data-bn="bn-popover" id="${escapeAttr(popId)}"${popover}${opt('data-force', options.force)}><p>${escapeHtml(options.body || '')}</p></aside>`;
+  // The inline catalog panel has no popover attribute. The live popover stays an aside.
   const inlinePanel = `<div data-bn="bn-popover" id="${escapeAttr(popId)}"${popover}${opt('data-present', 'inline')}${opt('data-force', options.force)}><p>${escapeHtml(options.body || '')}</p></div>`;
   const button = `<button data-bn="bn-popover-button" type="button" popovertarget="${escapeAttr(popId)}"${opt('data-force', options.force)}>${escapeHtml(options.label || 'More')}</button>`;
   return button + (options.inline ? inlinePanel : aside);
@@ -441,6 +442,7 @@ export function renderBnPageControl(options = {}) {
     (_, index) =>
       `<button data-bn="bn-page-dot" type="button" role="radio" aria-checked="${index === current ? 'true' : 'false'}" aria-label="${escapeAttr(`Page ${index + 1}`)}"${opt('disabled', options.disabled)}></button>`,
   ).join('');
+  // No native radiogroup element. The dots are radio buttons inside this group.
   return `<div data-bn="bn-page-control" role="radiogroup" aria-label="${escapeAttr(options.label || 'Pages')}"${opt('id', options.id)}${opt('data-force', options.force)}>${dots}</div>`;
 }
 
