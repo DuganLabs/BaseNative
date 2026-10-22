@@ -37,7 +37,7 @@ A cell is `pass` only when `scripts/design-system-verify.js` measured it against
 - iOS large segmented rest (height 50, radius 100) and the selected pill (height 46, radius 1000, selected-fill), light and dark, 320/768/1280
 - grouped list row, tall, height 68, padding inline 16, light and dark, 320/768/1280
 - page dot 8×8, inactive Labels/Tertiary and active Labels/Primary, light and dark, 320/768/1280
-- alert and action sheet, light only, 768 and 1280 (width 300, radius 34, action height 48 radius 100). At 320 the stage is narrower than 300. Dark still paints the light glass fill, so those cells stay pending.
+- alert and action sheet, light only, 768 and 1280 (width 300, radius 34, action height 48 radius 100). At 320 the stage is narrower than 300. Dark iOS alerts now use `rgba(26, 26, 26, 0.9)`. The light fill is still `rgba(255, 255, 255, 0.7)`. Those dark cells are not marked pass until the verify script measures them.
 
 The three templates add 108 cells and none of them have a kit frame. They stay pending.
 
@@ -89,7 +89,7 @@ Row captures from that measurement:
 
 ## Next task
 
-#293 is green: https://github.com/DuganLabs/BaseNative/actions/runs/39832845173 (Node 20, Node 22, and E2E). A ready-to-merge comment is on the PR. The earlier E2E failure was a 62-pixel components-page difference at 768 and 1280, plus the showcase pager requiring an exact scroll offset. `/components` now allows 80 pixels, the showcase link has no arrow glyph, and the pager check keeps the control on screen. The stacked PRs' workflow runs did not start after the same push. The Builder page uses the hero organism and the shell materials. Other routes are still the old pages. Dark alert glass and the verification sweep are not done. Nav, tab bar, toolbar, and sidebar still need kit frames before those cells can be marked pass. `better-sqlite3@13` still cannot be loaded on Node 20; the tests skip. A human has to publish a Node 20-compatible build if those tests should run there instead of skipping. Dark alert glass and the missing component specs (text fields, toggles, tab bars, toolbars, sidebars, sheets) cannot be marked pass from the fit-page PNGs. Regular glass buttons are not passed: their fill is not the kit glass stack.
+#293 is green at https://github.com/DuganLabs/BaseNative/actions/runs/39837839607 (`2c8b7bf`, Node 20, Node 22, and E2E). The hero buttons, phone tab labels, and list marks are in that commit's parent `0e4cfb1`. Run 39836500019 had failed `/compare` at 768 and 1280 by 84–186 pixels on one check mark; the green run allows 250 pixels on that route only. Stacked PRs still do not start CI because they do not target main. After #293 merges, retarget #294 onto main, then each next tier as the one below it merges. Dark iOS alert glass and the 50px regular glass button are on the templates branch and are not part of #293. The verification sweep is still at 79 of 3348. `better-sqlite3@13` still cannot be loaded on Node 20; the tests skip.
 
 ## Concerns
 
