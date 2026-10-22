@@ -123,6 +123,15 @@ test('tab bar overflow is a tab, not a disclosure', () => {
   assert.match(html, /href="\/docs"/);
 });
 
+test('atom hosts can force hover, pressed, and focus for the catalog', () => {
+  resetIds();
+  assert.match(ui.renderBnSwitch({ label: 'On', force: 'hover' }), /data-force="hover"/);
+  assert.match(ui.renderBnSymbol({ mark: 'A', force: 'active' }), /data-force="active"/);
+  assert.match(ui.renderBnField({ label: 'Name', force: 'focus' }), /data-force="focus"/);
+  assert.match(ui.renderBnSearch({ disabled: true }), /disabled/);
+  assert.match(ui.renderBnPageControl({ count: 2, disabled: true }), /disabled/);
+});
+
 test('alert, switch, segmented, and page control expose their roles', () => {
   resetIds();
   assert.match(ui.renderBnAlert({ title: 'T' }), /role="alertdialog"/);
@@ -130,6 +139,25 @@ test('alert, switch, segmented, and page control expose their roles', () => {
   assert.match(ui.renderBnSegmented({ segments: [] }), /role="radiogroup"/);
   assert.match(ui.renderBnPageControl({ count: 2, current: 0 }), /aria-checked="true"/);
   assert.match(ui.renderBnButton('Add', { labelStyle: 'icon', text: 'Add' }), /aria-label="Add"/);
+});
+
+test('a grouped list keeps one accent and at most one semantic hue', () => {
+  resetIds();
+  const html = ui.renderBnList({
+    grouped: true,
+    rows: [
+      { title: 'One', tint: 'purple', mark: 'A' },
+      { title: 'Warn', tint: 'orange', mark: '!', semantic: true },
+      { title: 'Stop', tint: 'red', mark: 'R', semantic: true },
+    ],
+  });
+  assert.match(html, /data-tint="blue"/);
+  assert.match(
+    html,
+    /data-semantic="true"[^>]*data-tint="orange"|data-tint="orange"[^>]*data-semantic="true"/,
+  );
+  assert.equal(html.includes('data-tint="purple"'), false);
+  assert.equal(html.includes('data-tint="red"'), false);
 });
 
 test('attrs rejects class and style', async () => {

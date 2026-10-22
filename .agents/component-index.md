@@ -814,7 +814,8 @@ Switch. iOS size is the HIG 51×31 control; macOS uses Toggle (Switch) tokens.
 ### `renderBnSymbol(options)`
 Settings-style symbol tile. `mark` is text, never markup.
 `packages/platform/src/components.js` · emits `<i data-bn="bn-symbol-tile">`
-- tint: `brown|cyan|green|indigo|mint|orange|pink|purple|red|teal|yellow`
+- semantic: `true`
+- tint: `green|orange|red`
 - use instead of: a bare <i> with your own classes, or literal <i data-bn="bn-symbol-tile"> markup
 
 ### `renderBnTabBar(options)`

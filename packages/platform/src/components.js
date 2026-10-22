@@ -48,18 +48,35 @@ function tintOf(value) {
   return TINTS.includes(value) ? value : 'blue';
 }
 
+const SEMANTIC_TINTS = ['red', 'orange', 'green'];
+
+/**
+ * A grouped list keeps one accent. A second hue is allowed only when the
+ * row is marked semantic and the tint is red, orange, or green.
+ */
+function listTile(row, hue) {
+  const requested = tintOf(row.tint);
+  const meaningful = row.semantic === true && SEMANTIC_TINTS.includes(requested);
+  if (meaningful && (hue.kept === null || hue.kept === requested)) {
+    hue.kept = requested;
+    return { tint: requested, semantic: true };
+  }
+  return { tint: 'blue', semantic: false };
+}
+
 /**
  * Settings-style symbol tile. `mark` is text, never markup.
  * @param {object} [options]
  */
 export function renderBnSymbol(options = {}) {
-  return `<i data-bn="bn-symbol-tile" data-tint="${escapeAttr(tintOf(options.tint))}" aria-hidden="true">${escapeHtml(options.mark || '')}</i>`;
+  const semantic = options.semantic ? ' data-semantic="true"' : '';
+  return `<i data-bn="bn-symbol-tile" data-tint="${escapeAttr(tintOf(options.tint))}" aria-hidden="true"${semantic}${opt('data-force', options.force)}>${escapeHtml(options.mark || '')}</i>`;
 }
 
 /** Count or status badge. Default tint is the system red badge. */
 export function renderBnBadge(label = '', options = {}) {
   const tint = options.tint ? tintOf(options.tint) : 'red';
-  return `<b data-bn="bn-badge" data-tint="${escapeAttr(tint)}">${escapeHtml(options.text ?? label)}</b>`;
+  return `<b data-bn="bn-badge" data-tint="${escapeAttr(tint)}"${opt('data-force', options.force)}>${escapeHtml(options.text ?? label)}</b>`;
 }
 
 /**
@@ -148,40 +165,40 @@ export function renderBnSwitch(options = {}) {
 export function renderBnCheckbox(options = {}) {
   const inputId = idOf('checkbox', options.id);
   const mixed = options.mixed ? ' data-mixed="true" aria-checked="mixed"' : '';
-  return `<label data-bn="bn-checkbox"><input type="checkbox" id="${escapeAttr(inputId)}"${opt('checked', options.checked && !options.mixed)}${opt('disabled', options.disabled)}${mixed}>${escapeHtml(options.label || '')}</label>`;
+  return `<label data-bn="bn-checkbox"${opt('data-force', options.force)}><input type="checkbox" id="${escapeAttr(inputId)}"${opt('checked', options.checked && !options.mixed)}${opt('disabled', options.disabled)}${mixed}>${escapeHtml(options.label || '')}</label>`;
 }
 
 /** Radio. macOS size comes from Radio Button tokens. */
 export function renderBnRadio(options = {}) {
   const inputId = idOf('radio', options.id);
-  return `<label data-bn="bn-radio"><input type="radio" name="${escapeAttr(options.name || 'bn-radio')}" id="${escapeAttr(inputId)}"${opt('checked', options.checked)}${opt('disabled', options.disabled)}>${escapeHtml(options.label || '')}</label>`;
+  return `<label data-bn="bn-radio"${opt('data-force', options.force)}><input type="radio" name="${escapeAttr(options.name || 'bn-radio')}" id="${escapeAttr(inputId)}"${opt('checked', options.checked)}${opt('disabled', options.disabled)}>${escapeHtml(options.label || '')}</label>`;
 }
 
 /** Slider. macOS knob and track insets come from Slider tokens. */
 export function renderBnSlider(options = {}) {
-  return `<label data-bn="bn-slider">${escapeHtml(options.label || '')}<input type="range"${opt('id', options.id)} min="${escapeAttr(options.min ?? 0)}" max="${escapeAttr(options.max ?? 100)}" value="${escapeAttr(options.value ?? 50)}"${opt('disabled', options.disabled)}></label>`;
+  return `<label data-bn="bn-slider"${opt('data-force', options.force)}>${escapeHtml(options.label || '')}<input type="range"${opt('id', options.id)} min="${escapeAttr(options.min ?? 0)}" max="${escapeAttr(options.max ?? 100)}" value="${escapeAttr(options.value ?? 50)}"${opt('disabled', options.disabled)}></label>`;
 }
 
 /** Dial, a range input. Knob size is Dial tokens on macOS. */
 export function renderBnDial(options = {}) {
-  return `<label data-bn="bn-dial">${escapeHtml(options.label || '')}<input type="range"${opt('id', options.id)} min="${escapeAttr(options.min ?? 0)}" max="${escapeAttr(options.max ?? 100)}" value="${escapeAttr(options.value ?? 25)}"${opt('aria-valuetext', options.valueText)}></label>`;
+  return `<label data-bn="bn-dial"${opt('data-force', options.force)}>${escapeHtml(options.label || '')}<input type="range"${opt('id', options.id)} min="${escapeAttr(options.min ?? 0)}" max="${escapeAttr(options.max ?? 100)}" value="${escapeAttr(options.value ?? 25)}"${opt('disabled', options.disabled)}${opt('aria-valuetext', options.valueText)}></label>`;
 }
 
 /** Stepper: a number input between decrement and increment buttons. */
 export function renderBnStepper(options = {}) {
   const inputId = idOf('stepper', options.id);
-  return `<fieldset data-bn="bn-stepper"><legend>${escapeHtml(options.label || 'Value')}</legend><button data-bn="bn-stepper-dec" type="button" aria-controls="${escapeAttr(inputId)}">−</button><input type="number" id="${escapeAttr(inputId)}" value="${escapeAttr(options.value ?? 0)}"${opt('min', options.min)}${opt('max', options.max)} aria-label="${escapeAttr(options.label || 'Value')}"><button data-bn="bn-stepper-inc" type="button" aria-controls="${escapeAttr(inputId)}">+</button></fieldset>`;
+  return `<fieldset data-bn="bn-stepper"${opt('data-force', options.force)}${opt('disabled', options.disabled)}><legend>${escapeHtml(options.label || 'Value')}</legend><button data-bn="bn-stepper-dec" type="button" aria-controls="${escapeAttr(inputId)}"${opt('disabled', options.disabled)}>−</button><input type="number" id="${escapeAttr(inputId)}" value="${escapeAttr(options.value ?? 0)}"${opt('min', options.min)}${opt('max', options.max)} aria-label="${escapeAttr(options.label || 'Value')}"${opt('disabled', options.disabled)}><button data-bn="bn-stepper-inc" type="button" aria-controls="${escapeAttr(inputId)}"${opt('disabled', options.disabled)}>+</button></fieldset>`;
 }
 
 /** Determinate progress when value is set. */
 export function renderBnProgress(options = {}) {
   const known = options.value != null;
-  return `<progress data-bn="bn-progress"${opt('id', options.id)}${known ? ` value="${escapeAttr(options.value)}"` : ''} max="${escapeAttr(options.max ?? 1)}" aria-label="${escapeAttr(options.label || 'Progress')}">${known ? '' : escapeHtml(options.label || '')}</progress>`;
+  return `<progress data-bn="bn-progress"${opt('id', options.id)}${opt('data-force', options.force)}${known ? ` value="${escapeAttr(options.value)}"` : ''} max="${escapeAttr(options.max ?? 1)}" aria-label="${escapeAttr(options.label || 'Progress')}">${known ? '' : escapeHtml(options.label || '')}</progress>`;
 }
 
 /** Indeterminate progress. */
 export function renderBnSpinner(options = {}) {
-  return `<progress data-bn="bn-spinner"${opt('id', options.id)} aria-label="${escapeAttr(options.label || 'Loading')}"></progress>`;
+  return `<progress data-bn="bn-spinner"${opt('id', options.id)}${opt('data-force', options.force)} aria-label="${escapeAttr(options.label || 'Loading')}"></progress>`;
 }
 
 /** Text field. macOS insets come from Fields tokens. */
@@ -190,13 +207,13 @@ export function renderBnField(options = {}) {
   const control = options.multiline
     ? `<textarea data-bn="bn-field-control" id="${escapeAttr(inputId)}"${opt('placeholder', options.placeholder)}${opt('disabled', options.disabled)}>${escapeHtml(options.value || '')}</textarea>`
     : `<input data-bn="bn-field-control" type="${escapeAttr(options.type || 'text')}" id="${escapeAttr(inputId)}"${opt('placeholder', options.placeholder)}${opt('value', options.value)}${opt('disabled', options.disabled)}>`;
-  return `<label data-bn="bn-field">${escapeHtml(options.label || '')}${control}</label>`;
+  return `<label data-bn="bn-field"${opt('data-force', options.force)}>${escapeHtml(options.label || '')}${control}</label>`;
 }
 
 /** Search field inside a search element. */
 export function renderBnSearch(options = {}) {
   const inputId = idOf('search', options.id);
-  return `<search data-bn="bn-search" role="search"><label for="${escapeAttr(inputId)}">${escapeHtml(options.label || 'Search')}</label><input type="search" id="${escapeAttr(inputId)}"${opt('placeholder', options.placeholder || 'Search')}${opt('value', options.value)}></search>`;
+  return `<search data-bn="bn-search" role="search"${opt('data-force', options.force)}><label for="${escapeAttr(inputId)}">${escapeHtml(options.label || 'Search')}</label><input type="search" id="${escapeAttr(inputId)}"${opt('placeholder', options.placeholder || 'Search')}${opt('value', options.value)}${opt('disabled', options.disabled)}></search>`;
 }
 
 /** Combo box: text input plus datalist. macOS only in the kits. */
@@ -214,7 +231,7 @@ export function renderBnCombobox(options = {}) {
 
 /** Colour well, a native colour input. macOS size is Color Well tokens. */
 export function renderBnColorWell(options = {}) {
-  return `<label data-bn="bn-color-well">${escapeHtml(options.label || 'Color')}<input type="color"${opt('id', options.id)} value="${escapeAttr(options.value || '#0088ff')}"></label>`;
+  return `<label data-bn="bn-color-well"${opt('data-force', options.force)}>${escapeHtml(options.label || 'Color')}<input type="color"${opt('id', options.id)} value="${escapeAttr(options.value || '#0088ff')}"${opt('disabled', options.disabled)}></label>`;
 }
 
 /**
@@ -270,7 +287,18 @@ export function renderBnDatePicker(options = {}) {
 
 /** List. Regular rows are 52px with 16px side padding. A label or footer wraps the group. */
 export function renderBnList(options = {}) {
-  const rows = (options.rows || []).map((row) => renderBnListRow(row)).join('');
+  const hue = { kept: null };
+  const rows = (options.rows || [])
+    .map((row) => {
+      const source = typeof row === 'string' ? { title: row } : { ...row };
+      if (source.mark || source.tint) {
+        const paint = listTile(source, hue);
+        source.tint = paint.tint;
+        source.semantic = paint.semantic;
+      }
+      return renderBnListRow(source);
+    })
+    .join('');
   const ul = `<ul data-bn="bn-list"${opt('data-grouped', options.grouped ? 'true' : null)}${opt('id', options.id)}>${rows}</ul>`;
   if (!options.label && !options.footer) return ul;
   const head = options.label
@@ -293,6 +321,7 @@ export function renderBnListRow(options = {}) {
       ? renderBnSymbol({
           tint: row.tint,
           mark: row.mark || String(row.title || '').slice(0, 1),
+          semantic: row.semantic,
         })
       : '';
   const image = row.image
@@ -430,9 +459,9 @@ export function renderBnPageControl(options = {}) {
   const dots = Array.from(
     { length: count },
     (_, index) =>
-      `<button data-bn="bn-page-dot" type="button" role="radio" aria-checked="${index === current ? 'true' : 'false'}" aria-label="${escapeAttr(`Page ${index + 1}`)}"></button>`,
+      `<button data-bn="bn-page-dot" type="button" role="radio" aria-checked="${index === current ? 'true' : 'false'}" aria-label="${escapeAttr(`Page ${index + 1}`)}"${opt('disabled', options.disabled)}></button>`,
   ).join('');
-  return `<nav data-bn="bn-page-control" role="radiogroup" aria-label="${escapeAttr(options.label || 'Pages')}"${opt('id', options.id)}>${dots}</nav>`;
+  return `<nav data-bn="bn-page-control" role="radiogroup" aria-label="${escapeAttr(options.label || 'Pages')}"${opt('id', options.id)}${opt('data-force', options.force)}>${dots}</nav>`;
 }
 
 /** Three dots, the same box as the other tab symbols. Not a disclosure mark. */
@@ -580,7 +609,7 @@ export function renderBnEmptyState(options = {}) {
  * (kit grid 256, radius 66.56). No Apple artwork.
  */
 export function renderBnAppIcon(options = {}) {
-  return `<figure data-bn="bn-app-icon" role="img" aria-label="${escapeAttr(options.label || 'App')}"${opt('id', options.id)}><figcaption>${escapeHtml(options.monogram || '')}</figcaption></figure>`;
+  return `<figure data-bn="bn-app-icon" role="img" aria-label="${escapeAttr(options.label || 'App')}"${opt('id', options.id)}${opt('data-force', options.force)}><figcaption>${escapeHtml(options.monogram || '')}</figcaption></figure>`;
 }
 
 /** Widget card. A titled article. The Widgets page fit did not yield a pixel size. */

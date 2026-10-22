@@ -35,6 +35,29 @@
     --bn-content-leading: 22px;
     --bn-content-secondary: rgba(60, 60, 67, 0.88);
     --bn-list-surface: rgba(255, 255, 255, 0.94);
+    /* Elevation scale. Card radius 22 minus the 16px pad is the 6px inner.
+       Buttons use the capsule. Organisms reference these, not raw shadows,
+       radii, or z-index. scripts/platform-token-lint.js rejects the raw ones. */
+    --bn-elev-0: none;
+    --bn-elev-1: 0 1px 1px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.06);
+    --bn-elev-2: 0 1px 2px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.1);
+    --bn-elev-3: 0 2px 8px rgba(0, 0, 0, 0.08), 0 18px 48px rgba(0, 0, 0, 0.16);
+    --bn-radius-card: var(--bn-plat-radius-22);
+    --bn-radius-pad: var(--bn-len-16);
+    --bn-radius-inner: var(--bn-plat-radius-6);
+    --bn-radius-capsule: var(--bn-plat-radius-1000);
+    --bn-radius-circle: 50%;
+    --bn-radius-icon-factor: 0.26;
+    --bn-z-base: 0;
+    --bn-z-sticky: 10;
+    --bn-z-nav: 20;
+    --bn-z-overlay: 30;
+    --bn-z-modal: 40;
+    --bn-z-toast: 50;
+    --bn-title-large: 28px;
+    --bn-title-large-leading: 34px;
+    --bn-button-secondary-fill: var(--bn-plat-color-fills-tertiary);
+    --bn-button-secondary-label: var(--bn-plat-color-accents-blue);
     /* BEGIN METRICS */
     --bn-blur-16: 16px;
     --bn-plat-swatch-0000000f: #0000000f;
@@ -174,5 +197,7 @@
       inset -1px 0 rgba(54, 226, 255, 0.18);
     --bn-content-secondary: rgba(235, 235, 245, 0.92);
     --bn-list-surface: rgba(44, 44, 46, 0.94);
+    --bn-button-secondary-fill: rgb(72, 72, 74);
+    --bn-button-secondary-label: rgb(255, 255, 255);
   }
 }
