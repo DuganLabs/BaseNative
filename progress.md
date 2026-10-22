@@ -89,7 +89,7 @@ Row captures from that measurement:
 
 ## Next task
 
-Watch the density CI runs. Comment ready to merge only after Node 22 and E2E are green. Builder stays the first full page recomposition. Nav, tab bar, toolbar, and sidebar still need kit frames before those cells can be marked pass. `better-sqlite3@13` still cannot be loaded on Node 20; the tests skip. A human has to publish a Node 20-compatible build if those tests should run there instead of skipping. Dark alert glass and the missing component specs (text fields, toggles, tab bars, toolbars, sidebars, sheets) cannot be marked pass from the fit-page PNGs. Regular glass buttons are not passed: their fill is not the kit glass stack.
+#293 Node 20 and Node 22 passed on https://github.com/DuganLabs/BaseNative/actions/runs/39831253277 after the component index regeneration. E2E on that run is the remaining check. Comment ready to merge only after it is green. The Builder page hero is the hero organism, and the builder surface uses the same list material, 15px content text, and 13px section labels as the shell. Other routes are still the old pages. Nav, tab bar, toolbar, and sidebar still need kit frames before those cells can be marked pass. `better-sqlite3@13` still cannot be loaded on Node 20; the tests skip. A human has to publish a Node 20-compatible build if those tests should run there instead of skipping. Dark alert glass and the missing component specs (text fields, toggles, tab bars, toolbars, sidebars, sheets) cannot be marked pass from the fit-page PNGs. Regular glass buttons are not passed: their fill is not the kit glass stack.
 
 ## Concerns
 
