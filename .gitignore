@@ -32,6 +32,10 @@ playwright-report/
 
 .claude/settings.local.json
 
+# Written by scripts/publish-release.mjs so the post-publish smoke test
+# can skip versions that were staged and are not on the registry yet.
+.publish-release-state.json
+
 # Secrets — nx-cloud.env holds NX_CLOUD_ACCESS_TOKEN and is read from the
 # workspace root by nx and nx-mcp. The pre-commit secret scanner has no
 # pattern for Nx Cloud tokens (they are opaque), so exclusion is the control.

@@ -1,6 +1,6 @@
 # Release Process
 
-BaseNative uses [Changesets](https://github.com/changesets/changesets) for version management.
+BaseNative uses [Changesets](https://github.com/changesets/changesets) for version management. Every public package publishes to **https://registry.npmjs.org**. The generated status is [`docs/package-inventory.md`](package-inventory.md).
 
 ## Adding a Changeset
 
@@ -10,60 +10,44 @@ After making a change that affects users:
 pnpm exec changeset
 ```
 
-Select the affected packages, choose the bump type (patch/minor/major), and write a summary.
+Select the affected packages, choose the bump type (patch/minor/major), and write a summary. Do not add a changeset for a release-tooling-only change.
 
 ## Releasing
 
-1. Changesets accumulate on `main` via PRs
-2. The release workflow (`.github/workflows/release.yml`) creates a "Version Packages" PR automatically
-3. Merging that PR triggers:
-   - Version bumps in all affected `package.json` files
-   - `CHANGELOG.md` updates
-   - `changeset publish`, which the workflow points at **GitHub Packages**
-     (`registry-url: https://npm.pkg.github.com` before publish) — **not**
-     npmjs.org. See the README's Quick Start and
-     [`docs/package-inventory.md`](package-inventory.md) for why, and for
-     which older `0.2.x`/`0.3.x` versions still sit on npmjs.org from before
-     this move (stale, not maintained there).
+1. Changesets accumulate on `main` via PRs.
+2. The release workflow (`.github/workflows/release.yml`) opens a "Version Packages" PR.
+3. Merging that PR runs the `prd` environment job, which versions the packages and runs `node scripts/publish-release.mjs`.
 
-## Manual Release (if needed)
+Publishing has two lanes:
 
-```bash
-# Version packages
-pnpm exec changeset version
+- **Trusted publishing (OIDC).** Packages that already have a trusted publisher for this repo, `.github/workflows/release.yml`, and the `prd` environment are published by `changeset publish` with provenance. No npm token is on that lane.
+- **Stage-only bootstrap.** `NPM_BOOTSTRAP_TOKEN` is a granular **stage-only** token. It can run `npm stage publish`. It cannot `npm publish`: a direct publish fails with `EOTP` (the registry asks for 2FA) or `E_STAGE_REQUIRED`. Bypass-2FA tokens are not used. npm removes direct publish with those tokens in January 2027.
 
-# Review changes
-git diff
+The stage lane runs for any package OIDC cannot publish. That is a brand-new package (a trusted publisher can only be added on a package page, and the first publish creates the page) and an existing package that does not have a trusted publisher yet. The script runs `pnpm pack` first, so `workspace:` ranges are rewritten to real versions, checks the packed manifest contains no `workspace:` string, then runs `npm stage publish` on that tarball. The dist-tag matches `pnpm publish`: `latest` for a stable version, and the prerelease identifier (`1.2.3-beta.1` → `beta`) otherwise. A version that is already staged is left staged; the job does not treat that as an error.
 
-# Commit and push
-git add .
-git commit -m "chore: version packages"
-git push
+The job succeeds when every publishable package is either on the registry or staged. It fails only on a real error.
 
-# Publish — same registry as CI (GitHub Packages, not npmjs.org)
-npm config set @basenative:registry https://npm.pkg.github.com/
-pnpm exec changeset publish
+Staged versions are not installable. The log lists each staged package and its stage id, then:
+
+```text
+Approve at https://www.npmjs.com/settings/warrendugan/staged-packages (Staged Packages) with 2FA.
 ```
 
-## Package Visibility
+Staging a package that has never existed also publishes a public placeholder, `0.0.0-stage`. The staged version itself stays private until it is approved.
 
-Every `@basenative/*` package publishes to GitHub Packages except three private
-asset/tooling packages. This list is a summary — for the authoritative, current
-per-package version and sync state (40 packages published, 3 private, 21 with a stale
-npmjs mirror), see the generated
-[`docs/package-inventory.md`](package-inventory.md).
+After the first approval, add a trusted publisher for each staged package on npmjs.com (the package's settings: this repo, `.github/workflows/release.yml`, environment `prd`). Adding a trusted publisher needs interactive 2FA, so the owner does it in the browser. The next release of that package then publishes over OIDC.
 
-| Package | Registry | Notes |
-|---------|-----|-------|
-| `@basenative/runtime` | GitHub Packages | Zero production dependencies |
-| `@basenative/server` | GitHub Packages | Depends on `node-html-parser` |
-| `@basenative/router` | GitHub Packages | Depends on `runtime` |
-| `@basenative/forms` | GitHub Packages | Depends on `runtime` |
-| `@basenative/components` | GitHub Packages | Depends on `runtime` + `forms` |
-| `@basenative/fonts` | private | Asset package |
-| `@basenative/icons` | private | Asset package |
-| `@basenative/evals` | private | Eval harness; hand-authored corpus, not for external consumption |
+The clean-install smoke test runs against the public registry after a publish. It skips any core package whose version was only staged.
+
+## Manual approval
+
+Do not `npm publish` with the stage-only token. Approve from the Staged Packages page above, or from a machine where you can enter 2FA:
+
+```bash
+npm stage list
+npm stage approve <stage-id> --otp <code>
+```
 
 ---
 
-_Last verified against the code: 2026-09-11._
+_Last verified against the code: 2026-10-22._

@@ -2,6 +2,16 @@
   "name": "basenative-design-system",
   "projectType": "library",
   "targets": {
+    "test": {
+      "cache": true,
+      "command": "node --test scripts/publish-release.test.js scripts/npm-smoke.test.js",
+      "inputs": [
+        "{workspaceRoot}/scripts/publish-release.mjs",
+        "{workspaceRoot}/scripts/publish-release.test.js",
+        "{workspaceRoot}/scripts/npm-smoke.mjs",
+        "{workspaceRoot}/scripts/npm-smoke.test.js"
+      ]
+    },
     "lint": {
       "cache": true,
       "command": "pnpm exec eslint scripts && node scripts/ds-lint.js",
