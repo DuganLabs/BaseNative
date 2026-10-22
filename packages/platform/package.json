@@ -1,0 +1,74 @@
+{
+  "bugs": {
+    "url": "https://github.com/DuganLabs/BaseNative/issues"
+  },
+  "description": "Apple iOS, iPadOS, and macOS 27 kit tokens and semantic controls for BaseNative — colour, type, materials, and data-bn controls that do not restyle @basenative/components",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./catalog": {
+      "types": "./types/catalog.d.ts",
+      "default": "./src/catalog.js"
+    },
+    "./components": {
+      "types": "./types/components.d.ts",
+      "default": "./src/components.js"
+    },
+    "./components.css": "./src/components.css",
+    "./css": {
+      "types": "./types/css.d.ts",
+      "default": "./src/css.js"
+    },
+    "./platform": {
+      "types": "./types/platform.d.ts",
+      "default": "./src/platform.js"
+    },
+    "./tokens": {
+      "types": "./types/tokens.d.ts",
+      "default": "./src/tokens.js"
+    },
+    "./tokens.css": "./src/tokens.css"
+  },
+  "files": [
+    "src",
+    "types",
+    "data",
+    "catalog",
+    "!**/*.test.js",
+    "!**/*.test.mjs"
+  ],
+  "homepage": "https://github.com/DuganLabs/BaseNative/tree/main/packages/platform#readme",
+  "keywords": [
+    "basenative",
+    "ios",
+    "ipados",
+    "macos",
+    "design-tokens",
+    "liquid-glass",
+    "css-custom-properties",
+    "design-system",
+    "dark-mode"
+  ],
+  "license": "Apache-2.0",
+  "name": "@basenative/platform",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "directory": "packages/platform",
+    "type": "git",
+    "url": "git+https://github.com/DuganLabs/BaseNative.git"
+  },
+  "scripts": {
+    "test": "node --test src/tokens.test.js src/components.test.js src/platform.test.js types/exports.test.js"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "type": "module",
+  "types": "./types/index.d.ts",
+  "version": "2.0.0"
+}

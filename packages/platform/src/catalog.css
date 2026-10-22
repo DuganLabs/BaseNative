@@ -1,0 +1,73 @@
+/**
+ * Catalog chrome only. Component appearance stays in components.css.
+ */
+[data-bn='bn-catalog'] {
+  margin: 0;
+  font-family: var(--bn-plat-font-family);
+  background: #e7e7ea;
+  color: #1d1d1f;
+}
+
+[data-bn='bn-catalog-header'] {
+  padding: 32px 24px 8px;
+}
+
+[data-bn='bn-catalog-header'] h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+
+[data-bn='bn-catalog-stage'] {
+  margin: 16px;
+  padding: 20px;
+  border-radius: 16px;
+  background: var(--bn-plat-color-bg, #fff);
+  color: var(--bn-plat-color-label, #000);
+}
+
+[data-bn='bn-catalog-heading'] {
+  margin: 0 0 16px;
+  font-size: 22px;
+}
+
+[data-bn='bn-catalog-row'] {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 20px;
+}
+
+[data-bn='bn-catalog-label'] {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 590;
+  color: var(--bn-plat-color-label-secondary, rgba(60, 60, 67, 0.6));
+}
+
+[data-bn='bn-catalog-demo'] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+[data-bn='bn-catalog-type'] {
+  margin: 0;
+  font-size: var(--bn-plat-font-large-title-size);
+  line-height: var(--bn-plat-font-large-title-leading);
+  letter-spacing: var(--bn-plat-font-large-title-tracking);
+  font-weight: var(--bn-plat-font-large-title-weight);
+}
+
+[data-bn='bn-catalog-quiet'] {
+  margin: 0;
+  color: var(--bn-plat-color-label-secondary);
+  font-size: var(--bn-plat-font-body-size);
+}
+
+[data-bn='bn-catalog-verify'] {
+  max-width: 70ch;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
