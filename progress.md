@@ -4,9 +4,9 @@ Session date: 2026-10-22
 
 ## Tier
 
-Atoms, on `cursor/apple27-atoms-98aa`, stacked on the tokens branch.
+Atoms, on `cursor/apple27-atoms-98aa`, retargeted onto main after #293 merged as `318f5cc`.
 
-Tokens PR: https://github.com/DuganLabs/BaseNative/pull/293
+Production findings folded into the organisms and tokens on this branch: one blue tile per grouped list (a second hue only when a row is semantic red, orange, or green), a single floating tab-bar capsule, macOS content at 15px and a 28px large title, hero actions under the copy, two top backdrop glows, and one elevation scale. `tests/e2e/shell-home.spec.js` is 38 tests. CI on the retarget is the gate; this note is not a ready-to-merge claim.
 
 The catalog route renders organisms so `/design-system` can show every control the matrix names. Pages are not recomposed. Atom hosts now render rest, hover, pressed, focus, and disabled in an Atom states stage (`data-force`).
 

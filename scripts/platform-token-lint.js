@@ -18,6 +18,7 @@ import { stripComments, parseDeclarations } from './lib/css-model.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const COMPONENTS = join(ROOT, 'packages/platform/src/components.css');
+const SHELL = join(ROOT, 'examples/express/public/platform-shell.css');
 const MATERIALS = join(ROOT, 'packages/platform/src/materials.css');
 const BEGIN = '/* BEGIN METRICS */';
 const END = '/* END METRICS */';
@@ -128,6 +129,49 @@ function writeMetrics(tokens) {
   writeFileSync(MATERIALS, materials.slice(0, start) + block + materials.slice(end + END.length));
 }
 
+function stripVars(value) {
+  let out = '';
+  for (let i = 0; i < value.length; i += 1) {
+    if (value.startsWith('var(', i)) {
+      let depth = 0;
+      for (; i < value.length; i += 1) {
+        if (value[i] === '(') depth += 1;
+        else if (value[i] === ')') {
+          depth -= 1;
+          if (depth === 0) break;
+        }
+      }
+      continue;
+    }
+    out += value[i];
+  }
+  return out;
+}
+
+/**
+ * Organisms use the elevation scale in materials.css. A raw box-shadow,
+ * border-radius, or z-index outside that token file is a violation.
+ * `none` and `0` are resets. Fallbacks inside var() stay, because the
+ * inlined shell has to lay out when the token sheet is stale.
+ */
+export function findElevationViolations(css) {
+  const stripped = stripComments(css).code;
+  const found = [];
+  for (const decl of parseDeclarations(stripped)) {
+    if (decl.prop.startsWith('--')) continue;
+    if (!['box-shadow', 'border-radius', 'z-index'].includes(decl.prop)) continue;
+    const bare = stripVars(decl.value)
+      .replace(/\b0(?:\.0+)?(?:px)?\b/g, '')
+      .replace(/\b(?:inset|none)\b/g, '');
+    if (!/[\d%#]|rgba?\(|hsla?\(/.test(bare)) continue;
+    {
+      const line = css.slice(0, decl.valueOffset).split('\n').length;
+      found.push({ prop: decl.prop, raw: decl.value.trim(), line });
+    }
+  }
+  return found;
+}
+
 function main() {
   const css = readFileSync(COMPONENTS, 'utf8');
   const violations = findViolations(css);
@@ -147,15 +191,26 @@ function main() {
     console.log(`platform-token-lint: moved ${tokens.size} tokens`);
     return;
   }
-  if (violations.length === 0) {
+  const elevation = [COMPONENTS, SHELL].flatMap((file) =>
+    findElevationViolations(readFileSync(file, 'utf8')).map((hit) => ({ file, ...hit })),
+  );
+  if (violations.length === 0 && elevation.length === 0) {
     console.log('platform-token-lint: components.css has no raw colour or length');
     return;
   }
-  console.error(`platform-token-lint: ${violations.length} raw values in components.css`);
-  for (const hit of violations.slice(0, 40)) {
-    console.error(`  ${hit.line}: ${hit.prop}: ${hit.raw} → ${hit.name}`);
+  if (elevation.length) {
+    console.error(`platform-token-lint: ${elevation.length} raw elevation values`);
+    for (const hit of elevation.slice(0, 40)) {
+      console.error(`  ${hit.file}:${hit.line}: ${hit.prop}: ${hit.raw}`);
+    }
   }
-  if (violations.length > 40) console.error(`  … ${violations.length - 40} more`);
+  if (violations.length) {
+    console.error(`platform-token-lint: ${violations.length} raw values in components.css`);
+    for (const hit of violations.slice(0, 40)) {
+      console.error(`  ${hit.line}: ${hit.prop}: ${hit.raw} → ${hit.name}`);
+    }
+    if (violations.length > 40) console.error(`  … ${violations.length - 40} more`);
+  }
   process.exit(1);
 }
 

@@ -141,6 +141,25 @@ test('alert, switch, segmented, and page control expose their roles', () => {
   assert.match(ui.renderBnButton('Add', { labelStyle: 'icon', text: 'Add' }), /aria-label="Add"/);
 });
 
+test('a grouped list keeps one accent and at most one semantic hue', () => {
+  resetIds();
+  const html = ui.renderBnList({
+    grouped: true,
+    rows: [
+      { title: 'One', tint: 'purple', mark: 'A' },
+      { title: 'Warn', tint: 'orange', mark: '!', semantic: true },
+      { title: 'Stop', tint: 'red', mark: 'R', semantic: true },
+    ],
+  });
+  assert.match(html, /data-tint="blue"/);
+  assert.match(
+    html,
+    /data-semantic="true"[^>]*data-tint="orange"|data-tint="orange"[^>]*data-semantic="true"/,
+  );
+  assert.equal(html.includes('data-tint="purple"'), false);
+  assert.equal(html.includes('data-tint="red"'), false);
+});
+
 test('attrs rejects class and style', async () => {
   const { attrs } = await import('./html.js');
   assert.throws(() => attrs({ class: 'x' }), /cannot set class/);

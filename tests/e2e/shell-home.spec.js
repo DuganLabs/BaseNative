@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * Shared shell gates. The phone tab bar stays in the safe area and does not
- * cover content at rest. Home type, the macOS reading column, Liquid Glass,
- * the code sample, and the grouped footer are measured, not guessed.
+ * Shared shell gates. The phone tab bar is one floating capsule. Content
+ * scrolls beneath it, and the footer can scroll clear of it. Home type,
+ * the macOS reading column, Liquid Glass, the code sample, and the grouped
+ * footer are measured, not guessed.
  */
 
 const THEMES = ['light', 'dark'];
@@ -85,10 +86,8 @@ test.describe('home shell', () => {
             inner: window.innerHeight,
           };
         }, where);
-        expect(result.problems).toEqual([]);
-        expect(result.barBottom).toBeGreaterThan(result.inner - 3);
-        expect(result.barBottom).toBeLessThan(result.inner + 3);
-        expect(result.barTop).toBeGreaterThan(result.inner - 80);
+        expect(result.barBottom).toBeLessThan(result.inner - 4);
+        expect(result.barTop).toBeGreaterThan(result.inner - 96);
         const png = await page.screenshot({ fullPage: false });
         await test.info().attach(`home-${theme}-320-${where}`, {
           body: png,
@@ -117,17 +116,19 @@ test.describe('home shell', () => {
           h1: parseFloat(h1.fontSize),
           weight: parseInt(h1.fontWeight, 10),
           columns: getComputedStyle(article).gridTemplateColumns,
-          heroColumns: getComputedStyle(hero).gridTemplateColumns,
-          navInRight: nav.left > hr.left + hr.width * 0.45,
+          ledeBottom: hero.querySelector('p:last-of-type').getBoundingClientRect().bottom,
+          navTop: nav.top,
+          navLeft: nav.left,
+          heroLeft: hr.left,
         };
       });
       expect(box.width).toBeGreaterThan(box.room - 8);
       expect(box.width).toBeGreaterThan(900);
-      expect(box.h1).toBeGreaterThanOrEqual(26);
+      expect(box.h1).toBeGreaterThanOrEqual(28);
       expect(box.weight).toBeGreaterThanOrEqual(700);
       expect(box.columns).not.toBe('none');
-      expect(box.heroColumns).not.toBe('none');
-      expect(box.navInRight).toBe(true);
+      expect(box.navTop).toBeGreaterThanOrEqual(box.ledeBottom - 4);
+      expect(box.navLeft).toBeLessThan(box.heroLeft + 48);
     });
 
     test(`type scale (${theme})`, async ({ page }) => {
@@ -163,7 +164,7 @@ test.describe('home shell', () => {
       }));
       expect(desk.platform).toBe('macos');
       expect(desk.body).toBeGreaterThanOrEqual(15);
-      expect(desk.h1).toBeGreaterThanOrEqual(26);
+      expect(desk.h1).toBeGreaterThanOrEqual(28);
       expect(desk.title).toBeGreaterThanOrEqual(15);
       expect(desk.detail).toBeGreaterThanOrEqual(15);
       const contrast =
@@ -393,5 +394,169 @@ test.describe('home shell', () => {
       expect(card.blur).toContain('blur');
       expect(card.background).toContain('0.94');
     });
+
+    test(`phone code card wraps the import line (${theme})`, async ({ page }) => {
+      await open(page, 320, theme);
+      const sample = await page.evaluate(() => {
+        const pre = document.querySelector('body[data-active="home"] pre');
+        const code = pre.querySelector('code');
+        const style = getComputedStyle(pre);
+        return {
+          wrap: style.whiteSpace,
+          scroll: pre.scrollWidth,
+          client: pre.clientWidth,
+          text: code.textContent.includes("from '@basenative/runtime'"),
+        };
+      });
+      expect(sample.wrap).toContain('pre-wrap');
+      expect(sample.text).toBe(true);
+      expect(sample.scroll).toBeLessThanOrEqual(sample.client + 1);
+    });
+
+    test(`grouped lists use at most two tile hues (${theme})`, async ({ page }) => {
+      await open(page, 1280, theme);
+      const hues = await page.evaluate(() =>
+        [...document.querySelectorAll('[data-bn="bn-list"][data-grouped="true"]')].map((list) => [
+          ...new Set(
+            [...list.querySelectorAll('[data-bn="bn-symbol-tile"]')].map(
+              (tile) => getComputedStyle(tile).backgroundColor,
+            ),
+          ),
+        ]),
+      );
+      expect(hues.length).toBeGreaterThanOrEqual(2);
+      for (const group of hues) expect(group.length).toBeLessThanOrEqual(2);
+    });
+
+    test(`backdrop keeps one or two subtle hues (${theme})`, async ({ page }) => {
+      await open(page, 1280, theme);
+      const glow = await page.evaluate(() => getComputedStyle(document.body).backgroundImage);
+      const count = glow.match(/radial-gradient/g)?.length ?? 0;
+      expect(count).toBeGreaterThan(0);
+      expect(count).toBeLessThanOrEqual(2);
+      expect(glow).not.toContain('255, 45, 85');
+      expect(glow).not.toContain('255, 55, 95');
+    });
+
+    test(`secondary button meets AA (${theme})`, async ({ page }) => {
+      await open(page, 1280, theme);
+      const button = await page.evaluate(() => {
+        const hero = document.querySelector('[data-bn="bn-hero"]');
+        const docs = [...hero.querySelectorAll('[data-bn="bn-button"]')].find((el) =>
+          el.textContent.includes('docs'),
+        );
+        const style = getComputedStyle(docs);
+        return {
+          color: style.color,
+          bg: style.backgroundColor,
+          surface: getComputedStyle(hero).backgroundColor,
+        };
+      });
+      const contrast = compositeContrast(button.color, button.bg, button.surface, theme);
+      expect(contrast).toBeGreaterThanOrEqual(4.5);
+    });
+
+    test(`phone tab bar is a single floating surface (${theme})`, async ({ page }) => {
+      await open(page, 390, theme);
+      const bar = await page.evaluate(() => {
+        const tab = document.querySelector('body > [data-bn="bn-tab-bar"]');
+        const main = document.querySelector('main');
+        const style = getComputedStyle(tab);
+        const rect = tab.getBoundingClientRect();
+        main.style.scrollBehavior = 'auto';
+        main.scrollTop = main.scrollHeight;
+        const footer = document.querySelector('main > [data-bn-site-footer]');
+        return {
+          left: rect.left,
+          right: rect.right,
+          bottom: rect.bottom,
+          radius: parseFloat(style.borderTopLeftRadius),
+          border: style.borderTopWidth,
+          pad: parseFloat(getComputedStyle(document.body).paddingBottom),
+          mainBottom: main.getBoundingClientRect().bottom,
+          inner: window.innerWidth,
+          height: window.innerHeight,
+          footerBottom: footer.getBoundingClientRect().bottom,
+          barTop: tab.getBoundingClientRect().top,
+          mask: getComputedStyle(main).maskImage || getComputedStyle(main).webkitMaskImage,
+        };
+      });
+      expect(bar.left).toBeGreaterThanOrEqual(8);
+      expect(bar.right).toBeLessThanOrEqual(bar.inner - 8);
+      expect(bar.bottom).toBeLessThan(bar.height - 4);
+      expect(bar.radius).toBeGreaterThanOrEqual(24);
+      expect(parseFloat(bar.border)).toBe(0);
+      expect(bar.pad).toBe(0);
+      expect(bar.mainBottom).toBeGreaterThan(bar.height - 2);
+      expect(bar.footerBottom).toBeLessThanOrEqual(bar.barTop + 1);
+      expect(bar.mask).toContain('gradient');
+    });
+
+    test(`nested surfaces do not share bounds (${theme})`, async ({ page }) => {
+      await open(page, 390, theme);
+      const doubled = await page.evaluate(() => {
+        function paints(el) {
+          const style = getComputedStyle(el);
+          const bg = style.backgroundColor;
+          const match = bg.match(/rgba?\(([^)]+)\)/);
+          const parts = match ? match[1].split(',').map((part) => parseFloat(part)) : [];
+          const alpha = parts.length > 3 ? parts[3] : match ? 1 : 0;
+          const bordered =
+            parseFloat(style.borderTopWidth) > 0 &&
+            style.borderTopStyle !== 'none' &&
+            style.borderTopColor !== 'rgba(0, 0, 0, 0)';
+          return alpha > 0.04 || bordered;
+        }
+        const hits = [];
+        for (const el of document.querySelectorAll('[data-bn]')) {
+          const parent = el.parentElement?.closest('[data-bn]');
+          if (!parent || !paints(el) || !paints(parent)) continue;
+          const a = el.getBoundingClientRect();
+          const b = parent.getBoundingClientRect();
+          if (a.width < 8 || a.height < 8) continue;
+          const same =
+            Math.abs(a.left - b.left) < 4 &&
+            Math.abs(a.right - b.right) < 4 &&
+            Math.abs(a.top - b.top) < 4 &&
+            Math.abs(a.bottom - b.bottom) < 4;
+          if (same) hits.push(`${el.getAttribute('data-bn')} in ${parent.getAttribute('data-bn')}`);
+        }
+        return hits.slice(0, 8);
+      });
+      expect(doubled).toEqual([]);
+    });
   }
 });
+
+function compositeContrast(text, fill, surface, theme) {
+  function parse(color) {
+    const match = color.match(/rgba?\(([^)]+)\)/);
+    if (!match) return { r: 0, g: 0, b: 0, a: 0 };
+    const parts = match[1].split(',').map((part) => parseFloat(part));
+    return { r: parts[0], g: parts[1], b: parts[2], a: parts.length > 3 ? parts[3] : 1 };
+  }
+  function over(fg, bg) {
+    const a = fg.a + bg.a * (1 - fg.a);
+    if (a === 0) return { r: 0, g: 0, b: 0, a: 0 };
+    return {
+      r: (fg.r * fg.a + bg.r * bg.a * (1 - fg.a)) / a,
+      g: (fg.g * fg.a + bg.g * bg.a * (1 - fg.a)) / a,
+      b: (fg.b * fg.a + bg.b * bg.a * (1 - fg.a)) / a,
+      a,
+    };
+  }
+  function lum(rgb) {
+    const lin = [rgb.r, rgb.g, rgb.b].map((channel) => {
+      const s = channel / 255;
+      return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2];
+  }
+  const page = theme === 'dark' ? { r: 44, g: 44, b: 46, a: 1 } : { r: 255, g: 255, b: 255, a: 1 };
+  const ground = over(parse(surface), page);
+  const button = over(parse(fill), ground);
+  const ink = over(parse(text), button);
+  const lighter = Math.max(lum(ink), lum(button));
+  const darker = Math.min(lum(ink), lum(button));
+  return (lighter + 0.05) / (darker + 0.05);
+}

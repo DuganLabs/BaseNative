@@ -48,12 +48,29 @@ function tintOf(value) {
   return TINTS.includes(value) ? value : 'blue';
 }
 
+const SEMANTIC_TINTS = ['red', 'orange', 'green'];
+
+/**
+ * A grouped list keeps one accent. A second hue is allowed only when the
+ * row is marked semantic and the tint is red, orange, or green.
+ */
+function listTile(row, hue) {
+  const requested = tintOf(row.tint);
+  const meaningful = row.semantic === true && SEMANTIC_TINTS.includes(requested);
+  if (meaningful && (hue.kept === null || hue.kept === requested)) {
+    hue.kept = requested;
+    return { tint: requested, semantic: true };
+  }
+  return { tint: 'blue', semantic: false };
+}
+
 /**
  * Settings-style symbol tile. `mark` is text, never markup.
  * @param {object} [options]
  */
 export function renderBnSymbol(options = {}) {
-  return `<i data-bn="bn-symbol-tile" data-tint="${escapeAttr(tintOf(options.tint))}" aria-hidden="true"${opt('data-force', options.force)}>${escapeHtml(options.mark || '')}</i>`;
+  const semantic = options.semantic ? ' data-semantic="true"' : '';
+  return `<i data-bn="bn-symbol-tile" data-tint="${escapeAttr(tintOf(options.tint))}" aria-hidden="true"${semantic}${opt('data-force', options.force)}>${escapeHtml(options.mark || '')}</i>`;
 }
 
 /** Count or status badge. Default tint is the system red badge. */
@@ -270,7 +287,18 @@ export function renderBnDatePicker(options = {}) {
 
 /** List. Regular rows are 52px with 16px side padding. A label or footer wraps the group. */
 export function renderBnList(options = {}) {
-  const rows = (options.rows || []).map((row) => renderBnListRow(row)).join('');
+  const hue = { kept: null };
+  const rows = (options.rows || [])
+    .map((row) => {
+      const source = typeof row === 'string' ? { title: row } : { ...row };
+      if (source.mark || source.tint) {
+        const paint = listTile(source, hue);
+        source.tint = paint.tint;
+        source.semantic = paint.semantic;
+      }
+      return renderBnListRow(source);
+    })
+    .join('');
   const ul = `<ul data-bn="bn-list"${opt('data-grouped', options.grouped ? 'true' : null)}${opt('id', options.id)}>${rows}</ul>`;
   if (!options.label && !options.footer) return ul;
   const head = options.label
@@ -293,6 +321,7 @@ export function renderBnListRow(options = {}) {
       ? renderBnSymbol({
           tint: row.tint,
           mark: row.mark || String(row.title || '').slice(0, 1),
+          semantic: row.semantic,
         })
       : '';
   const image = row.image
