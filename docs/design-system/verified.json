@@ -1,0 +1,198 @@
+{
+  "measured": "2026-10-22",
+  "note": "Pass means the live control matched the kit frame size at that theme and width. Other states stay pending.",
+  "cells": [
+    {
+      "id": "button",
+      "variant": "prominent",
+      "state": "rest",
+      "theme": "light",
+      "width": 320,
+      "kit": "kit:ios-buttons large prominent 50px capsule, accent blue (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "bordered",
+      "state": "rest",
+      "theme": "light",
+      "width": 320,
+      "kit": "kit:ios-buttons large bordered 50px capsule, tertiary fill (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "borderless",
+      "state": "rest",
+      "theme": "light",
+      "width": 320,
+      "kit": "kit:ios-buttons large borderless 50px radius 12 (local extract, not committed)"
+    },
+    {
+      "id": "segmented",
+      "variant": "default",
+      "state": "rest",
+      "theme": "light",
+      "width": 320,
+      "kit": "kit:ios-segmented large 50px radius 100 tertiary track (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "prominent",
+      "state": "rest",
+      "theme": "light",
+      "width": 768,
+      "kit": "kit:ios-buttons large prominent 50px capsule, accent blue (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "bordered",
+      "state": "rest",
+      "theme": "light",
+      "width": 768,
+      "kit": "kit:ios-buttons large bordered 50px capsule, tertiary fill (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "borderless",
+      "state": "rest",
+      "theme": "light",
+      "width": 768,
+      "kit": "kit:ios-buttons large borderless 50px radius 12 (local extract, not committed)"
+    },
+    {
+      "id": "segmented",
+      "variant": "default",
+      "state": "rest",
+      "theme": "light",
+      "width": 768,
+      "kit": "kit:ios-segmented large 50px radius 100 tertiary track (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "prominent",
+      "state": "rest",
+      "theme": "light",
+      "width": 1280,
+      "kit": "kit:ios-buttons large prominent 50px capsule, accent blue (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "bordered",
+      "state": "rest",
+      "theme": "light",
+      "width": 1280,
+      "kit": "kit:ios-buttons large bordered 50px capsule, tertiary fill (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "borderless",
+      "state": "rest",
+      "theme": "light",
+      "width": 1280,
+      "kit": "kit:ios-buttons large borderless 50px radius 12 (local extract, not committed)"
+    },
+    {
+      "id": "segmented",
+      "variant": "default",
+      "state": "rest",
+      "theme": "light",
+      "width": 1280,
+      "kit": "kit:ios-segmented large 50px radius 100 tertiary track (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "prominent",
+      "state": "rest",
+      "theme": "dark",
+      "width": 320,
+      "kit": "kit:ios-buttons large prominent 50px capsule, accent blue (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "bordered",
+      "state": "rest",
+      "theme": "dark",
+      "width": 320,
+      "kit": "kit:ios-buttons large bordered 50px capsule, tertiary fill (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "borderless",
+      "state": "rest",
+      "theme": "dark",
+      "width": 320,
+      "kit": "kit:ios-buttons large borderless 50px radius 12 (local extract, not committed)"
+    },
+    {
+      "id": "segmented",
+      "variant": "default",
+      "state": "rest",
+      "theme": "dark",
+      "width": 320,
+      "kit": "kit:ios-segmented large 50px radius 100 tertiary track (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "prominent",
+      "state": "rest",
+      "theme": "dark",
+      "width": 768,
+      "kit": "kit:ios-buttons large prominent 50px capsule, accent blue (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "bordered",
+      "state": "rest",
+      "theme": "dark",
+      "width": 768,
+      "kit": "kit:ios-buttons large bordered 50px capsule, tertiary fill (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "borderless",
+      "state": "rest",
+      "theme": "dark",
+      "width": 768,
+      "kit": "kit:ios-buttons large borderless 50px radius 12 (local extract, not committed)"
+    },
+    {
+      "id": "segmented",
+      "variant": "default",
+      "state": "rest",
+      "theme": "dark",
+      "width": 768,
+      "kit": "kit:ios-segmented large 50px radius 100 tertiary track (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "prominent",
+      "state": "rest",
+      "theme": "dark",
+      "width": 1280,
+      "kit": "kit:ios-buttons large prominent 50px capsule, accent blue (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "bordered",
+      "state": "rest",
+      "theme": "dark",
+      "width": 1280,
+      "kit": "kit:ios-buttons large bordered 50px capsule, tertiary fill (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "borderless",
+      "state": "rest",
+      "theme": "dark",
+      "width": 1280,
+      "kit": "kit:ios-buttons large borderless 50px radius 12 (local extract, not committed)"
+    },
+    {
+      "id": "segmented",
+      "variant": "default",
+      "state": "rest",
+      "theme": "dark",
+      "width": 1280,
+      "kit": "kit:ios-segmented large 50px radius 100 tertiary track (local extract, not committed)"
+    }
+  ]
+}

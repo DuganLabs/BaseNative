@@ -4,26 +4,34 @@ Session date: 2026-10-22
 
 ## Tier
 
-Atoms, on `cursor/apple27-atoms-98aa`, stacked on the tokens branch.
+Molecules, on `cursor/apple27-molecules-98aa`, stacked on the atoms branch.
 
 Tokens PR: https://github.com/DuganLabs/BaseNative/pull/293
 
-The catalog route renders organisms so `/design-system` can show every control the matrix names. Pages are not recomposed. Atom hosts now render rest, hover, pressed, focus, and disabled in an Atom states stage (`data-force`).
+Atoms PR: https://github.com/DuganLabs/BaseNative/pull/294
+
+The molecules pull request is opened from this branch. Pages are not recomposed. The molecules tier is not a pass: most of its cells are rendered and still pending.
 
 ## Coverage
 
-- Cells: 3240 (58 components × variants × 6 states × light/dark × 320/768/1280)
-- Verified (gate-passed): 0%
-- Rendered on `/design-system` but not marked pass: 44.3%
-- Source: `docs/design-system/coverage.json`, checked by `node scripts/design-system-coverage.js --check`
+- Cells: 3240
+- Verified: 0.7% (24 cells)
+- Rendered: 54.6%
+- Source: `docs/design-system/coverage.json`, fed by `docs/design-system/verified.json`
 
-No cell is `pass`. Molecule and organism hover, pressed, and focus-visible are still gaps. Scrollbar chrome, the refraction shader, the date wheel, and the full color-picker chrome are gaps.
+A cell is `pass` only when `scripts/design-system-verify.js` measured it against the kit frame. The 24 passes are the iOS large prominent, bordered, and borderless buttons (height 50, capsule or radius 12, accent blue `rgb(0, 136, 255)`, bordered fill `rgba(118, 118, 128, 0.12)`) and the iOS large segmented control (height 50, radius 100), each at light and dark and at 320, 768, and 1280. Hover, pressed, focus, and disabled stay pending. Kit PNGs are not in the repo.
+
+Row captures from that measurement:
+
+- `/opt/cursor/artifacts/design-system/molecules/ios-buttons-row-light-1280.png`
+- `/opt/cursor/artifacts/design-system/molecules/ios-segmented-row-light-1280.png`
+- `/opt/cursor/artifacts/design-system/molecules/molecule-states-light-1280.png`
 
 ## Deploy
 
 #292 is merged as `0e769bc0`. Deploy to Cloudflare Pages succeeded: https://github.com/DuganLabs/BaseNative/actions/runs/39805537732
 
-The Pages production deployment serves the #290 home page (title "Home — BaseNative", `BN_EFFECT_LOOP`, `npm install @basenative/runtime`, Runtime 2.3.2). Apex `https://basenative.com/` returned Cloudflare's "Just a moment..." challenge (HTTP 403) from this runner, so the screenshots are of `https://basenative-docs.pages.dev/`, the environment URL the deploy published.
+`https://basenative-docs.pages.dev/` serves the #290 home page. Apex `https://basenative.com/` returned Cloudflare's challenge (HTTP 403) from this runner.
 
 - `/opt/cursor/artifacts/production/home-light-320.png`
 - `/opt/cursor/artifacts/production/home-light-768.png`
@@ -35,30 +43,30 @@ The Pages production deployment serves the #290 home page (title "Home — BaseN
 
 ## Blocked
 
-- Page recomposition. Organisms those pages use are not 100% verified.
-- Apex screenshots of basenative.com. The custom domain challenged this runner. The Pages deployment above is the content that deploy published.
-- Axe `color-contrast` and `page-has-heading-one` on unrebuilt routes. Named in `tests/e2e/design-system.spec.js` (`AXE_DEBT`). New rule ids fail. Node counts are not frozen.
-- Catalog ARIA still open on `/design-system`: `aria-allowed-role`, `aria-dialog-name`, `heading-order`, `landmark-complementary-is-top-level`, `landmark-unique`, `scrollable-region-focusable`. Menu parent and select name were fixed in the renderers.
-- WebGL/SVG refraction from nikdelvin/liquid-glass is not ported. Extra DOM would break the semantic-HTML axiom.
+- Page recomposition. Organisms and templates are not verified.
+- Apex screenshots of basenative.com. The custom domain challenged this runner.
+- Axe `color-contrast` and `page-has-heading-one` on unrebuilt routes. Named in `tests/e2e/design-system.spec.js` (`AXE_DEBT`).
+- Catalog ARIA on `/design-system`: `aria-allowed-role`, `aria-dialog-name`, `heading-order`, `landmark-complementary-is-top-level`, `landmark-unique`, `scrollable-region-focusable`.
+- WebGL/SVG refraction is not ported. Extra DOM would break the semantic-HTML axiom.
+- CI on #293 and #294 is not green yet. The latest failure before the lint follow-up was Node 22 `no-useless-assignment` in `packages/db/src/adapters/sqlite.js` (run 39807471919). The initializer is removed (`ad4277f` on tokens, `f22bf7e` on atoms). That rerun is not confirmed in this note.
 
 ## Next task
 
-Molecules tier: popup, pulldown, segmented, menu, and the other molecules get the same forced hover, pressed, and focus treatment. Contrast on `/design-system` is still open. Pages stay unrebuilt until organisms pass.
+Organisms tier: forced states on the organism hosts, catalog ARIA that belongs to those hosts, and kit measurements for the controls a page actually uses. Builder stays last, after templates.
 
 ## Concerns
 
-- Axe debt is an allowlist of rule ids, not a count cap. A route can gain more contrast nodes without failing.
-- `@media (max-width: 767px)` stays a literal. `var()` is not valid in a classic media condition. The token lint only scans declarations.
-- The overflow gate looks at `[data-bn^="bn-"]` only. Unrebuilt page tables stay out of this tier.
-- Selected sidebar contrast and the 60 design-system contrast nodes are still open.
-- Runtime gzip budget was not re-measured in this session. Platform CSS is not in the runtime bundle. Do not treat that as a new measurement.
-- Tokens CI https://github.com/DuganLabs/BaseNative/actions/runs/39804167799 failed because `nx-cloud-access.test.js` inherited `GITHUB_ENV` on the runner. The refusal test now deletes those variables (`6f03239` on the tokens branch, `f6200fa` on atoms).
-- Run https://github.com/DuganLabs/BaseNative/actions/runs/39805077689 failed on Node 20: `db.test.js` SIGSEGV inside `better-sqlite3`, and the 50,000-tag scan took 343ms against a 200ms budget. Node 22 was cancelled. Fix is `402ed94` on the tokens branch and `8328c4f` on atoms: probe the native addon in a child process, and set the scan budget to 2000ms (quadratic is still past that). The rerun after that push is not confirmed green in this note.
+- Verified coverage is 24 of 3240 cells. Rendering a state is not a pass.
+- The shell sets `data-bn-platform` on the document. At 1280 that is macOS, and those rules were painting the iOS catalog stages. Nested iOS button and segmented rules now win. Other macOS overrides (switch, field, stepper, menu) still paint iOS stages at 1280.
+- `better-sqlite3@13` engines require Node >= 22. On Node 20 `new Database()` SIGSEGV's after a successful import (runs 39805077689 and 39806233360). The adapter refuses that addon from the engines field and only constructs it after a child process opens a database. Node 20 db tests pass locally (44). CI has not confirmed the lint fix yet.
+- The 50,000-tag scan passed on run 39806233360 after the 2000ms budget. That budget is the quarantine, not an algorithm change.
+- Compare screenshots at 768 and 1280 differed by one code-sample glyph band and were regenerated. Home and the other routes matched.
+- Axe debt is rule ids, not a count cap. `@media (max-width: 767px)` stays a literal. The overflow gate looks at `[data-bn^="bn-"]` only.
 
 ## Deviations
 
-- Organisms shipped in the tokens PR so the catalog can render them. That is earlier than “one tier per PR”. Pages still inherit; nothing was spot-fixed per route.
-- Atom hover, pressed, and focus are `data-force` on the host, the same channel buttons already used. They are rendered, not verified.
-- Shared footer text uses `--text-0` so the site chrome clears the contrast sample. The rule lives in `examples/express/public/styles.css` because that footer is site chrome, not a platform organism.
-- CI (`.github/workflows/ci.yml`) runs on `pull_request` as well as `workflow_dispatch`, so the Playwright and lint gates can block a merge. The 2026-09-14 manual-only policy still applies to the other workflows. Deploy-on-push stays in PR 292.
+- Organisms shipped in the tokens PR so the catalog can render them. Pages still inherit.
+- Atom and molecule hover, pressed, and focus are `data-force` on the host. Rendered, not verified, except the four rest variants named above.
+- Shared footer text uses `--text-0` in `examples/express/public/styles.css`.
+- CI runs on `pull_request` as well as `workflow_dispatch`. The 2026-09-14 manual-only policy still applies to the other workflows.
 - Apple kits were comparison only. MIT texts are in `NOTICE`.

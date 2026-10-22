@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'docs/design-system/coverage.json');
+const VERIFIED = join(ROOT, 'docs/design-system/verified.json');
 const THEMES = ['light', 'dark'];
 const WIDTHS = [320, 768, 1280];
 const STATES = ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'selected'];
@@ -181,7 +182,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnPopupButton',
     variants: ['menu', 'native'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Menu or native select. Label stays one line.'],
   },
   {
@@ -189,7 +190,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnPulldownButton',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Opens a menu. Label stays one line.'],
   },
   {
@@ -197,7 +198,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnSegmented',
     variants: ['default'],
-    rendered: ['rest', 'selected'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'selected'],
     acceptance: ['Segments share one height. Selected segment is distinct.'],
   },
   {
@@ -205,7 +206,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnCombobox',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Field plus suggestions. No overflow.'],
   },
   {
@@ -229,7 +230,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnList',
     variants: ['grouped', 'symbol-tile'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Inset grouped surface, separator, title ellipsis. Detail may wrap.'],
   },
   {
@@ -237,7 +238,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnMenu',
     variants: ['inline'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: [...depth, 'Items stay one line.'],
   },
   {
@@ -253,7 +254,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnTooltip',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Tip stays on one line.'],
   },
   {
@@ -261,7 +262,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnPopover',
     variants: ['inline'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: [...depth],
   },
   {
@@ -269,7 +270,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnDisclosure',
     variants: ['open', 'closed'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Uses details/summary.'],
   },
   {
@@ -277,7 +278,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnIndexBar',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Letters stay one column, one line each.'],
   },
   {
@@ -285,7 +286,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnMetric',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Value and label each stay one line. Equal height inside a card grid.'],
   },
   {
@@ -515,7 +516,25 @@ function referenceImage(theme, width, rendered) {
   return `tests/e2e/design-system.spec.js-snapshots/design-system-${theme}-${width}-linux.png`;
 }
 
+function verifiedKey(id, cell) {
+  return [id, cell.variant, cell.state, cell.theme, cell.width].join('|');
+}
+
+function loadVerified() {
+  try {
+    const doc = JSON.parse(readFileSync(VERIFIED, 'utf8'));
+    const keys = new Map();
+    for (const cell of doc.cells || []) {
+      keys.set(verifiedKey(cell.id, cell), cell.kit || null);
+    }
+    return keys;
+  } catch {
+    return new Map();
+  }
+}
+
 export function buildCoverage() {
+  const verified = loadVerified();
   const components = COMPONENTS.map((component) => {
     const cells = [];
     for (const variant of component.variants) {
@@ -523,13 +542,15 @@ export function buildCoverage() {
         for (const theme of THEMES) {
           for (const width of WIDTHS) {
             const rendered = component.rendered.includes(state);
+            const kit = verified.get(verifiedKey(component.id, { variant, state, theme, width }));
+            const passed = rendered && kit;
             cells.push({
               variant,
               state,
               theme,
               width,
-              status: rendered ? 'pending' : 'gap',
-              referenceImage: referenceImage(theme, width, rendered),
+              status: passed ? 'pass' : rendered ? 'pending' : 'gap',
+              referenceImage: passed ? kit : referenceImage(theme, width, rendered),
               acceptance: component.acceptance,
             });
           }
@@ -563,7 +584,7 @@ export function buildCoverage() {
       pending,
       gap,
       verifiedPercent: all.length ? Math.round((pass / all.length) * 1000) / 10 : 0,
-      renderedPercent: all.length ? Math.round((pending / all.length) * 1000) / 10 : 0,
+      renderedPercent: all.length ? Math.round(((pending + pass) / all.length) * 1000) / 10 : 0,
     },
     components,
   };

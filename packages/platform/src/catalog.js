@@ -157,6 +157,57 @@ function atomStates() {
     .join('');
 }
 
+function moleculeStates() {
+  const columns = [
+    ['Rest', {}],
+    ['Hover', { force: 'hover' }],
+    ['Pressed', { force: 'active' }],
+    ['Focus', { force: 'focus' }],
+    ['Disabled', { force: 'disabled', disabled: true }],
+  ];
+  return columns
+    .map(([label, state]) =>
+      row(
+        label,
+        [
+          renderBnPopupButton({
+            label: 'Options',
+            native: true,
+            items: [{ label: 'One', value: '1' }],
+            ...state,
+          }),
+          renderBnPulldownButton({ label: 'Actions', items: [{ label: 'Copy' }], ...state }),
+          renderBnSegmented({
+            size: 'large',
+            segments: [
+              { label: 'Days', value: 'd', selected: true },
+              { label: 'Weeks', value: 'w' },
+            ],
+            ...state,
+          }),
+          renderBnCombobox({ label: 'City', items: [{ label: 'One' }], ...state }),
+          renderBnList({
+            grouped: true,
+            rows: [{ title: 'Row', detail: 'Detail' }],
+            force: state.force,
+          }),
+          renderBnMenu({
+            inline: true,
+            label: 'Menu',
+            items: [{ label: 'Copy', force: state.force }],
+            force: state.force,
+          }),
+          renderBnPopover({ inline: true, label: 'More', body: 'Note', ...state }),
+          renderBnTooltip({ label: 'Info', tip: 'Hint', ...state }),
+          renderBnDisclosure({ label: 'Details', body: 'Body', open: true, ...state }),
+          renderBnIndexBar({ letters: ['A', 'B'], ...state }),
+          renderBnMetric({ value: '12', label: 'Items', ...state }),
+        ].join(''),
+      ),
+    )
+    .join('');
+}
+
 function iosBody() {
   return [
     row('Buttons', buttons()),
@@ -504,6 +555,7 @@ export function catalogBody() {
 </header>
 ${stage('Materials', 'data-bn-platform="ios" data-theme="light"', row('Liquid Glass', ['ultrathin', 'thin', 'sm', 'medium', 'lg', 'thick', 'ultrathick', 'opaque'].map((name) => renderBnMaterial({ name, label: name })).join('')))}
 ${stage('Atom states', 'data-bn-platform="ios" data-theme="light"', atomStates())}
+${stage('Molecule states', 'data-bn-platform="ios" data-theme="light"', moleculeStates())}
 ${stage('Organisms', 'data-bn-platform="ios" data-theme="light"', organismRows())}
 ${stage('iOS light', 'data-bn-platform="ios" data-theme="light"', iosBody())}
 ${stage('iOS dark', 'data-bn-platform="ios" data-theme="dark"', iosBody())}
