@@ -124,17 +124,17 @@ export function renderBnPopupButton(options = {}) {
           `<option value="${escapeAttr(item.value)}"${opt('selected', item.selected)}>${escapeHtml(item.label)}</option>`,
       )
       .join('');
-    return `<select data-bn="bn-popup-button" aria-label="${escapeAttr(options.label || 'Options')}"${opt('id', options.id)}${opt('disabled', options.disabled)}>${items}</select>`;
+    return `<select data-bn="bn-popup-button" aria-label="${escapeAttr(options.label || 'Options')}"${opt('id', options.id)}${opt('disabled', options.disabled)}${opt('data-force', options.force)}>${items}</select>`;
   }
   const menuId = idOf('popup-menu', options.menuId);
-  const button = `<button data-bn="bn-popup-button" type="button" popovertarget="${escapeAttr(menuId)}"${opt('id', options.id)}${opt('disabled', options.disabled)}>${escapeHtml(options.label || 'Options')}${glyph('▾')}</button>`;
+  const button = `<button data-bn="bn-popup-button" type="button" popovertarget="${escapeAttr(menuId)}"${opt('id', options.id)}${opt('disabled', options.disabled)}${opt('data-force', options.force)}>${escapeHtml(options.label || 'Options')}${glyph('▾')}</button>`;
   return `${button}${renderBnMenu({ id: menuId, items: options.items || [], label: options.label || 'Options' })}`;
 }
 
 /** Pull-down button opening a popover menu. */
 export function renderBnPulldownButton(options = {}) {
   const menuId = idOf('pulldown-menu', options.menuId);
-  const button = `<button data-bn="bn-pulldown-button" type="button" popovertarget="${escapeAttr(menuId)}"${opt('id', options.id)}>${escapeHtml(options.label || 'Actions')}${glyph('▾')}</button>`;
+  const button = `<button data-bn="bn-pulldown-button" type="button" popovertarget="${escapeAttr(menuId)}"${opt('id', options.id)}${opt('disabled', options.disabled)}${opt('data-force', options.force)}>${escapeHtml(options.label || 'Actions')}${glyph('▾')}</button>`;
   return `${button}${renderBnMenu({ id: menuId, items: options.items || [], label: options.label || 'Actions' })}`;
 }
 
@@ -150,7 +150,7 @@ export function renderBnSegmented(options = {}) {
         `<label data-bn="bn-segment"${opt('data-selected', segment.selected ? 'true' : null)}><input type="radio" name="${escapeAttr(name)}" value="${escapeAttr(segment.value)}"${opt('checked', segment.selected)}>${escapeHtml(segment.label)}</label>`,
     )
     .join('');
-  return `<fieldset data-bn="bn-segmented" data-size="${escapeAttr(options.size || 'large')}" role="radiogroup" aria-label="${escapeAttr(options.label || 'Segments')}"${opt('id', options.id)}>${radios}</fieldset>`;
+  return `<fieldset data-bn="bn-segmented" data-size="${escapeAttr(options.size || 'large')}" role="radiogroup" aria-label="${escapeAttr(options.label || 'Segments')}"${opt('id', options.id)}${opt('disabled', options.disabled)}${opt('data-force', options.force)}>${radios}</fieldset>`;
 }
 
 /** Switch. iOS size is the HIG 51×31 control; macOS uses Toggle (Switch) tokens. */
@@ -213,7 +213,7 @@ export function renderBnField(options = {}) {
 /** Search field inside a search element. */
 export function renderBnSearch(options = {}) {
   const inputId = idOf('search', options.id);
-  return `<search data-bn="bn-search" role="search"${opt('data-force', options.force)}><label for="${escapeAttr(inputId)}">${escapeHtml(options.label || 'Search')}</label><input type="search" id="${escapeAttr(inputId)}"${opt('placeholder', options.placeholder || 'Search')}${opt('value', options.value)}${opt('disabled', options.disabled)}></search>`;
+  return `<search data-bn="bn-search" role="search" aria-label="${escapeAttr(options.label || 'Search')}"${opt('data-force', options.force)}><label for="${escapeAttr(inputId)}">${escapeHtml(options.label || 'Search')}</label><input type="search" id="${escapeAttr(inputId)}"${opt('placeholder', options.placeholder || 'Search')}${opt('value', options.value)}${opt('disabled', options.disabled)}></search>`;
 }
 
 /** Combo box: text input plus datalist. macOS only in the kits. */
@@ -226,7 +226,7 @@ export function renderBnCombobox(options = {}) {
         `<option value="${escapeAttr(item.value || item.label)}">${escapeHtml(item.label)}</option>`,
     )
     .join('');
-  return `<label data-bn="bn-combobox">${escapeHtml(options.label || '')}<input type="text" id="${escapeAttr(inputId)}" list="${escapeAttr(listId)}"${opt('value', options.value)}><datalist id="${escapeAttr(listId)}">${items}</datalist></label>`;
+  return `<label data-bn="bn-combobox"${opt('data-force', options.force)}>${escapeHtml(options.label || '')}<input type="text" id="${escapeAttr(inputId)}" list="${escapeAttr(listId)}"${opt('value', options.value)}${opt('disabled', options.disabled)}><datalist id="${escapeAttr(listId)}">${items}</datalist></label>`;
 }
 
 /** Colour well, a native colour input. macOS size is Color Well tokens. */
@@ -260,7 +260,7 @@ export function renderBnColorPicker(options = {}) {
         `<li><button data-bn="bn-color-swatch" type="button" data-color="${escapeAttr(color)}" aria-label="${escapeAttr(color)}"></button></li>`,
     )
     .join('');
-  return `<button data-bn="bn-color-well" type="button" commandfor="${escapeAttr(dialogId)}" command="show-modal" aria-haspopup="dialog">${escapeHtml(options.label || 'Color')}</button><dialog data-bn="bn-color-picker" id="${escapeAttr(dialogId)}"${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}><p data-bn="bn-color-picker-title">${escapeHtml(options.label || 'Color')}</p><ul data-bn="bn-color-grid">${swatches}</ul></dialog>`;
+  return `<button data-bn="bn-color-well" type="button" commandfor="${escapeAttr(dialogId)}" command="show-modal" aria-haspopup="dialog"${opt('data-force', options.force)}>${escapeHtml(options.label || 'Color')}</button><dialog data-bn="bn-color-picker" id="${escapeAttr(dialogId)}"${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('data-force', options.force)}><p data-bn="bn-color-picker-title">${escapeHtml(options.label || 'Color')}</p><ul data-bn="bn-color-grid">${swatches}</ul></dialog>`;
 }
 
 /**
@@ -282,7 +282,7 @@ export function renderBnDatePicker(options = {}) {
       return `<li><button data-bn="bn-date-chip" type="button" commandfor="${escapeAttr(dialogId)}" command="show-modal">${escapeHtml(label)}</button></li>`;
     })
     .join('');
-  return `<menu data-bn="bn-date-chips">${chips}</menu><dialog data-bn="bn-date-picker" id="${escapeAttr(dialogId)}" aria-label="Date"${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}><table data-bn="bn-date-grid"><caption>${escapeHtml(options.month || 'June')}</caption><tr>${cells}</tr></table></dialog>`;
+  return `<menu data-bn="bn-date-chips">${chips}</menu><dialog data-bn="bn-date-picker" id="${escapeAttr(dialogId)}" aria-label="Date"${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('data-force', options.force)}><table data-bn="bn-date-grid"><caption>${escapeHtml(options.month || 'June')}</caption><tr>${cells}</tr></table></dialog>`;
 }
 
 /** List. Regular rows are 52px with 16px side padding. A label or footer wraps the group. */
@@ -299,7 +299,7 @@ export function renderBnList(options = {}) {
       return renderBnListRow(source);
     })
     .join('');
-  const ul = `<ul data-bn="bn-list"${opt('data-grouped', options.grouped ? 'true' : null)}${opt('id', options.id)}>${rows}</ul>`;
+  const ul = `<ul data-bn="bn-list"${opt('data-grouped', options.grouped ? 'true' : null)}${opt('id', options.id)}${opt('data-force', options.force)}>${rows}</ul>`;
   if (!options.label && !options.footer) return ul;
   const head = options.label
     ? `<h2 data-bn="bn-list-header">${escapeHtml(options.label)}</h2>`
@@ -340,7 +340,7 @@ export function renderBnIndexBar(options = {}) {
   const items = letters
     .map((letter) => `<li><a href="#${escapeAttr(letter)}">${escapeHtml(letter)}</a></li>`)
     .join('');
-  return `<nav data-bn="bn-index-bar" aria-label="${escapeAttr(options.label || 'Index')}"${opt('id', options.id)}><ol>${items}</ol></nav>`;
+  return `<nav data-bn="bn-index-bar" aria-label="${escapeAttr(options.label || 'Index')}"${opt('id', options.id)}${opt('data-force', options.force)}><ol>${items}</ol></nav>`;
 }
 
 /** Table. Alternating and selected colours are macOS tokens. */
@@ -352,7 +352,7 @@ export function renderBnTable(options = {}) {
         `<tr${opt('data-selected', index === options.selected ? 'true' : null)}>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`,
     )
     .join('');
-  return `<table data-bn="bn-table"${opt('id', options.id)}><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
+  return `<table data-bn="bn-table"${opt('id', options.id)}${opt('data-force', options.force)}><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
 }
 
 /** Menu of menuitem buttons. The menu element is the popover. */
@@ -363,7 +363,7 @@ export function renderBnMenu(options = {}) {
     .map((item) => `<li role="none">${renderBnMenuItem(item)}</li>`)
     .join('');
   const popover = options.inline ? '' : ' popover="auto"';
-  return `<menu data-bn="${escapeAttr(contract)}" id="${escapeAttr(menuId)}" role="menu" aria-label="${escapeAttr(options.label || 'Menu')}"${popover}${opt('data-present', options.inline ? 'inline' : null)}>${items}</menu>`;
+  return `<menu data-bn="${escapeAttr(contract)}" id="${escapeAttr(menuId)}" role="menu" aria-label="${escapeAttr(options.label || 'Menu')}"${popover}${opt('data-present', options.inline ? 'inline' : null)}${opt('data-force', options.force)}>${items}</menu>`;
 }
 
 /** One menu item. */
@@ -393,7 +393,8 @@ export function renderBnActionSheet(options = {}) {
         `<li><button data-bn="bn-action" type="button" data-role="${escapeAttr(action.role || 'none')}">${escapeHtml(action.label)}</button></li>`,
     )
     .join('');
-  return `<dialog data-bn="bn-action-sheet"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}><h2 data-bn="bn-action-title">${escapeHtml(options.title || '')}</h2><p data-bn="bn-action-message">${escapeHtml(options.message || '')}</p>${actionMenu(actions, 'bn-action-list')}</dialog>`;
+  const titleId = options.titleId || idOf('action-title', options.id);
+  return `<dialog data-bn="bn-action-sheet" aria-labelledby="${escapeAttr(titleId)}"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('data-force', options.force)}><h2 data-bn="bn-action-title" id="${escapeAttr(titleId)}">${escapeHtml(options.title || 'Actions')}</h2><p data-bn="bn-action-message">${escapeHtml(options.message || '')}</p>${actionMenu(actions, 'bn-action-list')}</dialog>`;
 }
 
 /** Share sheet. Width and radii are Activity View dimension tokens. No Apple artwork. */
@@ -404,7 +405,7 @@ export function renderBnShareSheet(options = {}) {
         `<li><button data-bn="bn-share-action" type="button"><i data-bn="bn-share-glyph" aria-hidden="true">${escapeHtml(action.glyph || '•')}</i><b>${escapeHtml(action.label)}</b></button></li>`,
     )
     .join('');
-  return `<dialog data-bn="bn-share-sheet" aria-label="${escapeAttr(options.label || 'Share')}"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}><menu data-bn="bn-share-row">${actions}</menu><button data-bn="bn-share-close" type="button">${escapeHtml(options.closeLabel || 'Close')}</button></dialog>`;
+  return `<dialog data-bn="bn-share-sheet" aria-label="${escapeAttr(options.label || 'Share')}"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('data-force', options.force)}><menu data-bn="bn-share-row">${actions}</menu><button data-bn="bn-share-close" type="button">${escapeHtml(options.closeLabel || 'Close')}</button></dialog>`;
 }
 
 /** Alert dialog. Same glass metrics as the action sheet. */
@@ -415,7 +416,8 @@ export function renderBnAlert(options = {}) {
         `<li><button data-bn="bn-action" type="button" data-role="${escapeAttr(action.role || 'default')}">${escapeHtml(action.label)}</button></li>`,
     )
     .join('');
-  return `<dialog data-bn="bn-alert" role="alertdialog"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('aria-labelledby', options.titleId)}><h2 data-bn="bn-alert-title"${opt('id', options.titleId)}>${escapeHtml(options.title || '')}</h2><p data-bn="bn-alert-message">${escapeHtml(options.message || '')}</p>${actionMenu(actions, 'bn-action-list')}</dialog>`;
+  const titleId = options.titleId || idOf('alert-title', options.id);
+  return `<dialog data-bn="bn-alert" role="alertdialog" aria-labelledby="${escapeAttr(titleId)}"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('data-force', options.force)}><h2 data-bn="bn-alert-title" id="${escapeAttr(titleId)}">${escapeHtml(options.title || 'Alert')}</h2><p data-bn="bn-alert-message">${escapeHtml(options.message || '')}</p>${actionMenu(actions, 'bn-action-list')}</dialog>`;
 }
 
 /** Dialog. Centered title, message, and a trailing action row on macOS. */
@@ -426,30 +428,42 @@ export function renderBnDialog(options = {}) {
         `<li><button data-bn="bn-action" type="button">${escapeHtml(action.label)}</button></li>`,
     )
     .join('');
-  return `<dialog data-bn="bn-dialog"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('aria-label', options.label)}><h2 data-bn="bn-dialog-title">${escapeHtml(options.title || '')}</h2><p>${escapeHtml(options.message || '')}</p>${actionMenu(actions, 'bn-action-list')}</dialog>`;
+  const titleId = options.titleId || idOf('dialog-title', options.id);
+  const name = options.label
+    ? ` aria-label="${escapeAttr(options.label)}"`
+    : ` aria-labelledby="${escapeAttr(titleId)}"`;
+  return `<dialog data-bn="bn-dialog"${name}${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('data-force', options.force)}><h2 data-bn="bn-dialog-title" id="${escapeAttr(titleId)}">${escapeHtml(options.title || 'Dialog')}</h2><p>${escapeHtml(options.message || '')}</p>${actionMenu(actions, 'bn-action-list')}</dialog>`;
 }
 
 /** Sheet. Top and bottom radii and the grabber are dimension tokens. */
 export function renderBnSheet(options = {}) {
-  return `<dialog data-bn="bn-sheet" aria-label="${escapeAttr(options.label || 'Sheet')}"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}><hr data-bn="bn-grabber"><h2 data-bn="bn-sheet-title">${escapeHtml(options.title || '')}</h2><p data-bn="bn-sheet-body">${escapeHtml(options.body || '')}</p></dialog>`;
+  const open = `<dialog data-bn="bn-sheet" aria-label="${escapeAttr(options.label || options.title || 'Sheet')}"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('data-force', options.force)}><hr data-bn="bn-grabber"><h2 data-bn="bn-sheet-title">${escapeHtml(options.title || '')}</h2>`;
+  const text = `<p data-bn="bn-sheet-body">${escapeHtml(options.body || '')}</p>`;
+  const composed = `<section data-bn="bn-sheet-body">${options.content || ''}</section>`;
+  return `${open}${options.content ? composed : text}</dialog>`;
 }
 
 /** Popover. Corner radius is the popover dimension token. The aside is the popover. */
 export function renderBnPopover(options = {}) {
   const popId = idOf('popover', options.id);
   const popover = options.inline ? '' : ' popover="auto"';
-  return `<button data-bn="bn-popover-button" type="button" popovertarget="${escapeAttr(popId)}">${escapeHtml(options.label || 'More')}</button><aside data-bn="bn-popover" id="${escapeAttr(popId)}"${popover}${opt('data-present', options.inline ? 'inline' : null)}><p>${escapeHtml(options.body || '')}</p></aside>`;
+  const aside = `<aside data-bn="bn-popover" id="${escapeAttr(popId)}"${popover}${opt('data-force', options.force)}><p>${escapeHtml(options.body || '')}</p></aside>`;
+  // The inline catalog panel has no popover attribute. The live popover stays an aside.
+  const inlinePanel = `<div data-bn="bn-popover" id="${escapeAttr(popId)}"${popover}${opt('data-present', 'inline')}${opt('data-force', options.force)}><p>${escapeHtml(options.body || '')}</p></div>`;
+  const button = `<button data-bn="bn-popover-button" type="button" popovertarget="${escapeAttr(popId)}"${opt('data-force', options.force)}>${escapeHtml(options.label || 'More')}</button>`;
+  return button + (options.inline ? inlinePanel : aside);
 }
 
 /** Tooltip, a hint popover. Inner stroke colour is a macOS token. */
 export function renderBnTooltip(options = {}) {
   const tipId = idOf('tip', options.id);
-  return `<button data-bn="bn-tooltip-button" type="button" popovertarget="${escapeAttr(tipId)}">${escapeHtml(options.label || 'Info')}</button><p data-bn="bn-tooltip" id="${escapeAttr(tipId)}" popover="hint">${escapeHtml(options.tip || '')}</p>`;
+  const present = options.inline ? ' data-present="inline"' : ' popover="hint"';
+  return `<button data-bn="bn-tooltip-button" type="button" popovertarget="${escapeAttr(tipId)}"${opt('data-force', options.force)}>${escapeHtml(options.label || 'Info')}</button><p data-bn="bn-tooltip" id="${escapeAttr(tipId)}"${present}${opt('data-force', options.force)}>${escapeHtml(options.tip || '')}</p>`;
 }
 
 /** Notification, a status region. A floating card with title and message. */
 export function renderBnNotification(options = {}) {
-  return `<output data-bn="bn-notification" role="status"${opt('id', options.id)}><strong data-bn="bn-notification-title">${escapeHtml(options.title || '')}</strong><p>${escapeHtml(options.message || '')}</p></output>`;
+  return `<output data-bn="bn-notification" role="status"${opt('id', options.id)}${opt('data-force', options.force)}><strong data-bn="bn-notification-title">${escapeHtml(options.title || '')}</strong><p>${escapeHtml(options.message || '')}</p></output>`;
 }
 
 /** Page control. Dots are 8×8. Active is Labels/Primary, inactive Labels/Tertiary. */
@@ -461,7 +475,8 @@ export function renderBnPageControl(options = {}) {
     (_, index) =>
       `<button data-bn="bn-page-dot" type="button" role="radio" aria-checked="${index === current ? 'true' : 'false'}" aria-label="${escapeAttr(`Page ${index + 1}`)}"${opt('disabled', options.disabled)}></button>`,
   ).join('');
-  return `<nav data-bn="bn-page-control" role="radiogroup" aria-label="${escapeAttr(options.label || 'Pages')}"${opt('id', options.id)}${opt('data-force', options.force)}>${dots}</nav>`;
+  // No native radiogroup element. The dots are radio buttons inside this group.
+  return `<div data-bn="bn-page-control" role="radiogroup" aria-label="${escapeAttr(options.label || 'Pages')}"${opt('id', options.id)}${opt('data-force', options.force)}>${dots}</div>`;
 }
 
 /** Three dots, the same box as the other tab symbols. Not a disclosure mark. */
@@ -495,14 +510,14 @@ export function renderBnTabBar(options = {}) {
   const moreLabel = options.moreLabel || 'More';
   const moreCurrent = rest.some((tab) => tab.current);
   const more = rest.length
-    ? `<button data-bn="bn-tab" type="button" popovertarget="${escapeAttr(moreId)}" aria-haspopup="menu"${opt('aria-current', moreCurrent ? 'page' : null)}>${glyph(TAB_ELLIPSIS)}${tabLabel(moreLabel)}</button><menu data-bn="bn-tab-more" id="${escapeAttr(moreId)}" popover="auto" aria-label="${escapeAttr(moreLabel)}">${rest
+    ? `<button data-bn="bn-tab" id="${escapeAttr(moreId)}-btn" type="button" popovertarget="${escapeAttr(moreId)}" aria-haspopup="menu"${opt('aria-current', moreCurrent ? 'page' : null)}>${glyph(TAB_ELLIPSIS)}${tabLabel(moreLabel)}</button><menu data-bn="bn-tab-more" id="${escapeAttr(moreId)}" popover="auto" anchor="${escapeAttr(moreId)}-btn" aria-label="${escapeAttr(moreLabel)}">${rest
         .map(
           (tab) =>
             `<li><a data-bn="bn-menu-item" href="${escapeAttr(tab.href || '#')}"${opt('aria-current', tab.current ? 'page' : null)}>${escapeHtml(tab.label)}</a></li>`,
         )
         .join('')}</menu>`
     : '';
-  return `<nav data-bn="bn-tab-bar" aria-label="${escapeAttr(options.label || 'Tabs')}"${opt('id', options.id)}>${links}${more}</nav>`;
+  return `<nav data-bn="bn-tab-bar" aria-label="${escapeAttr(options.label || 'Tabs')}"${opt('id', options.id)}${opt('data-force', options.force)}>${links}${more}</nav>`;
 }
 
 /** Toolbar. A menu of commands; each item's li is display:contents. */
@@ -513,7 +528,7 @@ export function renderBnToolbar(options = {}) {
         `<li><button data-bn="bn-toolbar-item" type="button">${escapeHtml(item.label)}</button></li>`,
     )
     .join('');
-  return `<menu data-bn="bn-toolbar" aria-label="${escapeAttr(options.label || 'Toolbar')}"${opt('id', options.id)}>${items}</menu>`;
+  return `<menu data-bn="bn-toolbar" aria-label="${escapeAttr(options.label || 'Toolbar')}"${opt('id', options.id)}${opt('data-force', options.force)}>${items}</menu>`;
 }
 
 function sidebarLink(item) {
@@ -534,12 +549,16 @@ export function renderBnSidebar(options = {}) {
       return `<section>${heading}<ul>${items}</ul></section>`;
     })
     .join('');
-  return `<aside data-bn="bn-sidebar"${opt('id', options.id)}><nav aria-label="${escapeAttr(options.label || 'Sidebar')}">${body}</nav></aside>`;
+  const attrs = `${opt('id', options.id)}${opt('data-force', options.force)}`;
+  const inner = `<nav aria-label="${escapeAttr(options.label || 'Sidebar')}">${body}</nav>`;
+  const aside = `<aside data-bn="bn-sidebar"${attrs}>${inner}</aside>`;
+  if (options.inline) return `<section data-bn="bn-sidebar"${attrs}>${inner}</section>`;
+  return aside;
 }
 
 /** Window frame. Background is the macOS window-background token on that platform. */
 export function renderBnWindow(options = {}) {
-  return `<section data-bn="bn-window"${opt('id', options.id)}><header data-bn="bn-window-titlebar"><h2>${escapeHtml(options.title || '')}</h2></header><section data-bn="bn-window-body"><p>${escapeHtml(options.body || '')}</p></section></section>`;
+  return `<section data-bn="bn-window"${opt('id', options.id)}${opt('data-force', options.force)}><header data-bn="bn-window-titlebar"><h2>${escapeHtml(options.title || '')}</h2></header><section data-bn="bn-window-body">${options.content ? options.content : `<p>${escapeHtml(options.body || '')}</p>`}</section></section>`;
 }
 
 /** Menu bar. iOS status-bar height is a dimension token. The macOS bar is 24px. */
@@ -556,23 +575,23 @@ export function renderBnMenubar(options = {}) {
       return `<button data-bn="bn-menubar-item" type="button">${escapeHtml(item.label)}</button>`;
     })
     .join('');
-  return `<header data-bn="bn-menubar"${opt('id', options.id)}>${app}${items}</header>`;
+  return `<header data-bn="bn-menubar"${opt('id', options.id)}${opt('data-force', options.force)}>${app}${items}</header>`;
 }
 
 /** Disclosure, native details and summary. */
 export function renderBnDisclosure(options = {}) {
-  return `<details data-bn="bn-disclosure"${opt('id', options.id)}${opt('open', options.open)}><summary>${escapeHtml(options.label || 'Details')}</summary><p>${escapeHtml(options.body || '')}</p></details>`;
+  return `<details data-bn="bn-disclosure"${opt('id', options.id)}${opt('open', options.open)}${opt('data-force', options.force)}><summary>${escapeHtml(options.label || 'Details')}</summary><p>${escapeHtml(options.body || '')}</p></details>`;
 }
 
 /** Form of fields. macOS spacing follows the control-size tokens. */
 export function renderBnForm(options = {}) {
   const fields = (options.fields || []).map((field) => renderBnField(field)).join('');
-  return `<form data-bn="bn-form"${opt('id', options.id)}>${fields}${renderBnButton(options.submitLabel || 'Submit', { variant: 'prominent', size: 'large', type: 'submit' })}</form>`;
+  return `<form data-bn="bn-form"${opt('id', options.id)}${opt('data-force', options.force)}>${fields}${renderBnButton(options.submitLabel || 'Submit', { variant: 'prominent', size: 'large', type: 'submit' })}</form>`;
 }
 
 /** Group box, native fieldset and legend. */
 export function renderBnGroup(options = {}) {
-  return `<fieldset data-bn="bn-group"${opt('id', options.id)}><legend>${escapeHtml(options.label || '')}</legend><p>${escapeHtml(options.body || '')}</p></fieldset>`;
+  return `<fieldset data-bn="bn-group"${opt('id', options.id)}${opt('data-force', options.force)}><legend>${escapeHtml(options.label || '')}</legend><p>${escapeHtml(options.body || '')}</p></fieldset>`;
 }
 
 /** Image well: a file input that accepts images. */
@@ -581,12 +600,30 @@ export function renderBnImageWell(options = {}) {
   const img = options.src
     ? `<img data-bn="bn-image-well-preview" src="${escapeAttr(options.src)}" alt="${escapeAttr(options.alt || '')}">`
     : '';
-  return `<label data-bn="bn-image-well">${escapeHtml(options.label || 'Image')}<input type="file" id="${escapeAttr(inputId)}" accept="image/*">${img}</label>`;
+  return `<label data-bn="bn-image-well"${opt('data-force', options.force)}>${escapeHtml(options.label || 'Image')}<input type="file" id="${escapeAttr(inputId)}" accept="image/*"${opt('disabled', options.disabled)}>${img}</label>`;
 }
 
 /** Scroll region. macOS scrollbar colour is Miscellaneous/Scrollbar. */
 export function renderBnScroll(options = {}) {
-  return `<section data-bn="bn-scroll" tabindex="0"${opt('id', options.id)}><p>${escapeHtml(options.body || '')}</p></section>`;
+  return `<section data-bn="bn-scroll" tabindex="0"${opt('id', options.id)}${opt('data-force', options.force)}><p>${escapeHtml(options.body || '')}</p></section>`;
+}
+
+/**
+ * Overlay scrollbar. A range control, so the thumb is a real widget.
+ * Vertical is the default. Horizontal is aria-orientation="horizontal".
+ */
+export function renderBnScrollbar(options = {}) {
+  const orientation = options.orientation === 'horizontal' ? 'horizontal' : 'vertical';
+  const value = options.value == null ? 40 : options.value;
+  return `<input data-bn="bn-scrollbar" type="range" aria-orientation="${escapeAttr(orientation)}" aria-label="${escapeAttr(options.label || 'Scroll position')}" min="0" max="100" value="${escapeAttr(String(value))}"${opt('id', options.id)}${opt('disabled', options.disabled)}${opt('data-force', options.force)}>`;
+}
+
+/**
+ * Refraction swatch. Blur, saturation, sheen, and the brand stage glow
+ * stand in for a displacement shader. The host is a figure.
+ */
+export function renderBnRefraction(options = {}) {
+  return `<figure data-bn="bn-refraction"${opt('id', options.id)}${opt('data-force', options.force)}><figcaption>${escapeHtml(options.label || 'Refraction')}</figcaption><p>${escapeHtml(options.body || 'Light bends through the glass.')}</p></figure>`;
 }
 
 /** Keyboard accessory bar. Key size follows the captured iPhone key (about 50×43, radius 8.5). */
@@ -594,14 +631,14 @@ export function renderBnInputAccessory(options = {}) {
   const keys = (options.keys || ['ABC', 'space', 'return'])
     .map((key) => `<li><button data-bn="bn-key" type="button">${escapeHtml(key)}</button></li>`)
     .join('');
-  return `<menu data-bn="bn-input-accessory" aria-label="${escapeAttr(options.label || 'Input accessory')}"${opt('id', options.id)}>${keys}</menu>`;
+  return `<menu data-bn="bn-input-accessory" aria-label="${escapeAttr(options.label || 'Input accessory')}"${opt('id', options.id)}${opt('data-force', options.force)}>${keys}</menu>`;
 }
 
 /** Empty state. Side and bottom padding 36, title semibold 22, description medium 22. */
 export function renderBnEmptyState(options = {}) {
   const kind = options.kind || 'title';
   const symbol = kind === 'title' ? '' : '<i data-bn="bn-empty-symbol" aria-hidden="true"></i>';
-  return `<section data-bn="bn-empty-state" data-kind="${escapeAttr(kind)}"${opt('id', options.id)}>${symbol}<h2 data-bn="bn-empty-title">${escapeHtml(options.title || '')}</h2><p data-bn="bn-empty-description">${escapeHtml(options.description || '')}</p></section>`;
+  return `<section data-bn="bn-empty-state" data-kind="${escapeAttr(kind)}"${opt('id', options.id)}${opt('data-force', options.force)}>${symbol}<h2 data-bn="bn-empty-title">${escapeHtml(options.title || '')}</h2><p data-bn="bn-empty-description">${escapeHtml(options.description || '')}</p></section>`;
 }
 
 /**
@@ -614,7 +651,7 @@ export function renderBnAppIcon(options = {}) {
 
 /** Widget card. A titled article. The Widgets page fit did not yield a pixel size. */
 export function renderBnWidget(options = {}) {
-  return `<article data-bn="bn-widget"${opt('id', options.id)}><h2 data-bn="bn-widget-title">${escapeHtml(options.title || '')}</h2><p>${escapeHtml(options.body || '')}</p></article>`;
+  return `<article data-bn="bn-widget"${opt('id', options.id)}${opt('data-force', options.force)}><h2 data-bn="bn-widget-title">${escapeHtml(options.title || '')}</h2><p>${escapeHtml(options.body || '')}</p></article>`;
 }
 
 /**
@@ -623,7 +660,7 @@ export function renderBnWidget(options = {}) {
  */
 export function renderBnMaterial(options = {}) {
   const name = options.name || 'medium';
-  return `<figure data-bn="bn-material" data-material="${escapeAttr(name)}"${opt('id', options.id)}><figcaption>${escapeHtml(options.label || name)}</figcaption></figure>`;
+  return `<figure data-bn="bn-material" data-material="${escapeAttr(name)}"${opt('id', options.id)}${opt('data-force', options.force)}><figcaption>${escapeHtml(options.label || name)}</figcaption></figure>`;
 }
 
 /** Metric tile. Equal height comes from the card grid, not from the page. */
@@ -631,7 +668,7 @@ export function renderBnMetric(options = {}) {
   const detail = options.detail
     ? `<p data-bn="bn-metric-detail">${escapeHtml(options.detail)}</p>`
     : '';
-  return `<article data-bn="bn-metric"${opt('id', options.id)}><p data-bn="bn-metric-value">${escapeHtml(String(options.value ?? ''))}</p><h3 data-bn="bn-metric-label">${escapeHtml(options.label || '')}</h3>${detail}</article>`;
+  return `<article data-bn="bn-metric"${opt('id', options.id)}${opt('data-force', options.force)}><p data-bn="bn-metric-value">${escapeHtml(String(options.value ?? ''))}</p><h3 data-bn="bn-metric-label">${escapeHtml(options.label || '')}</h3>${detail}</article>`;
 }
 
 /**
@@ -643,7 +680,6 @@ export function renderBnNavBar(options = {}) {
   const back = options.back
     ? `<a data-bn="bn-nav-back" href="${escapeAttr(options.back.href || '/')}">${escapeHtml(options.back.label || 'Back')}</a>`
     : '';
-  const title = large ? '' : `<h1 data-bn="bn-nav-title">${escapeHtml(options.title || '')}</h1>`;
   const trailing = (options.trailing || [])
     .map((item) => {
       const control = item.href
@@ -658,13 +694,17 @@ export function renderBnNavBar(options = {}) {
   const menu = trailing
     ? `<menu data-bn="bn-nav-trailing" aria-label="Actions">${trailing}</menu>`
     : '';
-  const largeTitle = large
-    ? `<h1 data-bn="bn-large-title">${escapeHtml(options.title || '')}</h1>`
-    : '';
   const subtitle = options.subtitle
     ? `<p data-bn="bn-nav-subtitle">${escapeHtml(options.subtitle)}</p>`
     : '';
-  return `<header data-bn="bn-nav-bar" data-large="${large ? 'true' : 'false'}"${opt('id', options.id)}><nav aria-label="${escapeAttr(options.label || 'Navigation')}">${back}${title}${menu}</nav>${largeTitle}${subtitle}</header>`;
+  const heading = options.heading === 'h2' ? 'h2' : 'h1';
+  const title = large
+    ? ''
+    : `<${heading} data-bn="bn-nav-title">${escapeHtml(options.title || '')}</${heading}>`;
+  const largeTitle = large
+    ? `<${heading} data-bn="bn-large-title">${escapeHtml(options.title || '')}</${heading}>`
+    : '';
+  return `<header data-bn="bn-nav-bar" data-large="${large ? 'true' : 'false'}"${opt('id', options.id)}${opt('data-force', options.force)}><nav aria-label="${escapeAttr(options.label || 'Navigation')}">${back}${title}${menu}</nav>${largeTitle}${subtitle}</header>`;
 }
 
 /** Inspector. Sections are field groups, not a second sidebar component. */
@@ -675,7 +715,11 @@ export function renderBnInspector(options = {}) {
       return `<section><h3>${escapeHtml(section.label || '')}</h3>${fields}</section>`;
     })
     .join('');
-  return `<aside data-bn="bn-inspector"${opt('id', options.id)}><header><h2>${escapeHtml(options.title || 'Inspector')}</h2></header>${sections}</aside>`;
+  const attrs = ` aria-label="${escapeAttr(options.title || 'Inspector')}"${opt('id', options.id)}${opt('data-force', options.force)}`;
+  const inner = `<header><h2>${escapeHtml(options.title || 'Inspector')}</h2></header>${sections}`;
+  const aside = `<aside data-bn="bn-inspector"${attrs}>${inner}</aside>`;
+  if (options.inline) return `<section data-bn="bn-inspector"${attrs}>${inner}</section>`;
+  return aside;
 }
 
 /** Card grid of metric tiles and widget cards. Rows share one height. */
@@ -687,7 +731,7 @@ export function renderBnCardGrid(options = {}) {
       return `<li>${body}</li>`;
     })
     .join('');
-  return `<ul data-bn="bn-card-grid"${opt('id', options.id)}>${cards}</ul>`;
+  return `<ul data-bn="bn-card-grid"${opt('id', options.id)}${opt('data-force', options.force)}>${cards}</ul>`;
 }
 
 /**
@@ -711,7 +755,8 @@ export function renderBnHero(options = {}) {
   const nav = actions
     ? `<nav aria-label="${escapeAttr(options.label || 'Primary')}">${actions}</nav>`
     : '';
-  return `<header data-bn="bn-hero"${opt('id', options.id)}>${eyebrow}<h1>${escapeHtml(options.title || '')}</h1>${lede}${nav}</header>`;
+  const heading = options.heading === 'h2' ? 'h2' : 'h1';
+  return `<header data-bn="bn-hero"${opt('id', options.id)}${opt('data-force', options.force)}>${eyebrow}<${heading}>${escapeHtml(options.title || '')}</${heading}>${lede}${nav}</header>`;
 }
 
 /**
@@ -743,5 +788,5 @@ export function renderBnDock(options = {}) {
       return `<li><a data-bn="bn-dock-item" href="${escapeAttr(item.href || '#')}"${current}>${escapeHtml(item.label || '')}</a></li>`;
     })
     .join('');
-  return `<nav data-bn="bn-dock" aria-label="${escapeAttr(options.label || 'Dock')}"${opt('id', options.id)}><ul>${items}</ul></nav>`;
+  return `<nav data-bn="bn-dock" aria-label="${escapeAttr(options.label || 'Dock')}"${opt('id', options.id)}${opt('data-force', options.force)}><ul>${items}</ul></nav>`;
 }

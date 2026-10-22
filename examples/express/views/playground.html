@@ -1,18 +1,29 @@
-<section>
-  <h2>Signals <em>Playground</em></h2>
-  <p>Experiment with reactive signals, computed values, and live DOM updates — all running client-side with zero build tools.</p>
-</section>
+<header data-bn="bn-hero">
+  <p data-bn="bn-hero-eyebrow">Playground</p>
+  <h1>Signals <em>Playground</em></h1>
+  <p data-bn="bn-hero-lede">
+    Experiment with reactive signals, computed values, and live DOM updates — all running
+    client-side with zero build tools.
+  </p>
+</header>
 
 <section data-playground>
   <article>
     <header>
       <h3>Counter</h3>
     </header>
-    <p>A reactive counter driven by <code>signal()</code> — click to increment or decrement and watch the DOM update instantly.</p>
+    <p>
+      A reactive counter driven by <code>signal()</code> — click to increment or decrement and watch
+      the DOM update instantly.
+    </p>
     <output data-counter-output>0</output>
     <nav data-controls aria-label="Counter controls">
-      <button data-action="decrement"><img src="/icons/minus.svg" alt="Decrement" width="16" height="16"></button>
-      <button data-action="increment"><img src="/icons/plus.svg" alt="Increment" width="16" height="16"></button>
+      <button data-action="decrement">
+        <img src="/icons/minus.svg" alt="Decrement" width="16" height="16" />
+      </button>
+      <button data-action="increment">
+        <img src="/icons/plus.svg" alt="Increment" width="16" height="16" />
+      </button>
       <button data-action="reset">Reset</button>
     </nav>
   </article>
@@ -21,9 +32,12 @@
     <header>
       <h3>Computed &amp; Effects</h3>
     </header>
-    <p>Type your name below. A <code>computed()</code> signal derives a greeting, and an <code>effect()</code> logs each change.</p>
+    <p>
+      Type your name below. A <code>computed()</code> signal derives a greeting, and an
+      <code>effect()</code> logs each change.
+    </p>
     <nav data-controls aria-label="Greeting controls">
-      <input type="text" placeholder="Your name..." data-name-input aria-label="Your name">
+      <input type="text" placeholder="Your name..." data-name-input aria-label="Your name" />
     </nav>
     <output data-greeting-output>Hello, stranger</output>
     <aside data-effect-log>
@@ -39,11 +53,11 @@
     <p>Two-way binding via signals. Change one and the other updates reactively.</p>
     <nav data-controls aria-label="Temperature inputs">
       <label>
-        <input type="text" placeholder="°C" data-celsius-input>
+        <input type="text" placeholder="°C" data-celsius-input />
         <abbr>Celsius</abbr>
       </label>
       <label>
-        <input type="text" placeholder="°F" data-fahrenheit-input>
+        <input type="text" placeholder="°F" data-fahrenheit-input />
         <abbr>Fahrenheit</abbr>
       </label>
     </nav>
@@ -54,9 +68,12 @@
     <header>
       <h3>Dynamic List</h3>
     </header>
-    <p>Add and remove items to see <code>@for</code> re-render reactively. Uses <code>@empty</code> for the empty state.</p>
+    <p>
+      Add and remove items to see <code>@for</code> re-render reactively. Uses
+      <code>@empty</code> for the empty state.
+    </p>
     <nav data-controls aria-label="Dynamic list controls">
-      <input type="text" placeholder="Add an item..." data-list-input aria-label="Add an item">
+      <input type="text" placeholder="Add an item..." data-list-input aria-label="Add an item" />
       <button data-action="add-item">Add</button>
     </nav>
     <ul role="list" data-dynamic-list></ul>
@@ -64,135 +81,142 @@
 </section>
 
 <script type="module">
-import { signal, computed, effect } from '/basenative.js';
+  import { signal, computed, effect } from '/basenative.js';
 
-// -- Counter --
-const count = signal(0);
-const counterOutput = document.querySelector('[data-counter-output]');
+  // -- Counter --
+  const count = signal(0);
+  const counterOutput = document.querySelector('[data-counter-output]');
 
-effect(() => {
-  const n = count();
-  counterOutput.textContent = n;
-  counterOutput.dataset.status = n > 0 ? 'active' : n < 0 ? 'error' : 'idle';
-});
+  effect(() => {
+    const n = count();
+    counterOutput.textContent = n;
+    counterOutput.dataset.status = n > 0 ? 'active' : n < 0 ? 'error' : 'idle';
+  });
 
-document.querySelector('[data-action="increment"]').addEventListener('click', () => count.set(c => c + 1));
-document.querySelector('[data-action="decrement"]').addEventListener('click', () => count.set(c => c - 1));
-document.querySelector('[data-action="reset"]').addEventListener('click', () => count.set(0));
+  document
+    .querySelector('[data-action="increment"]')
+    .addEventListener('click', () => count.set((c) => c + 1));
+  document
+    .querySelector('[data-action="decrement"]')
+    .addEventListener('click', () => count.set((c) => c - 1));
+  document.querySelector('[data-action="reset"]').addEventListener('click', () => count.set(0));
 
-// -- Computed greeting --
-const name = signal('');
-const greeting = computed(() => {
-  const n = name();
-  return n ? `Hello, ${n}` : 'Hello, stranger';
-});
+  // -- Computed greeting --
+  const name = signal('');
+  const greeting = computed(() => {
+    const n = name();
+    return n ? `Hello, ${n}` : 'Hello, stranger';
+  });
 
-const greetingOutput = document.querySelector('[data-greeting-output]');
-const logList = document.querySelector('[data-log-list]');
-const nameInput = document.querySelector('[data-name-input]');
-let logCount = 0;
+  const greetingOutput = document.querySelector('[data-greeting-output]');
+  const logList = document.querySelector('[data-log-list]');
+  const nameInput = document.querySelector('[data-name-input]');
+  let logCount = 0;
 
-nameInput.addEventListener('input', () => name.set(nameInput.value));
+  nameInput.addEventListener('input', () => name.set(nameInput.value));
 
-effect(() => {
-  greetingOutput.textContent = greeting();
-});
+  effect(() => {
+    greetingOutput.textContent = greeting();
+  });
 
-effect(() => {
-  const g = greeting();
-  logCount++;
-  const li = document.createElement('li');
-  li.textContent = `#${logCount}: ${g}`;
-  logList.prepend(li);
-  if (logList.children.length > 8) logList.lastElementChild.remove();
-});
-
-// -- Temperature converter --
-const celsius = signal('');
-const fahrenheit = signal('');
-const tempOutput = document.querySelector('[data-temp-output]');
-const celsiusInput = document.querySelector('[data-celsius-input]');
-const fahrenheitInput = document.querySelector('[data-fahrenheit-input]');
-let tempSource = null;
-
-celsiusInput.addEventListener('input', () => {
-  tempSource = 'c';
-  const raw = celsiusInput.value;
-  celsius.set(raw);
-  if (raw.trim() === '') {
-    fahrenheit.set('');
-  } else {
-    const c = parseFloat(raw);
-    fahrenheit.set(isNaN(c) ? null : String(((c * 9) / 5 + 32).toFixed(1)));
-  }
-});
-
-fahrenheitInput.addEventListener('input', () => {
-  tempSource = 'f';
-  const raw = fahrenheitInput.value;
-  fahrenheit.set(raw);
-  if (raw.trim() === '') {
-    celsius.set('');
-  } else {
-    const f = parseFloat(raw);
-    celsius.set(isNaN(f) ? null : String((((f - 32) * 5) / 9).toFixed(1)));
-  }
-});
-
-// `null` marks the paired field as invalid (as opposed to '' — not yet
-// typed) so a non-numeric entry clears the other field and reports why,
-// instead of echoing the raw text next to a stale converted value.
-effect(() => {
-  const c = celsius(), f = fahrenheit();
-  if (tempSource === 'c') {
-    fahrenheitInput.value = f == null ? '' : f;
-    tempOutput.textContent =
-      c.trim() === '' ? 'Enter a temperature' : f == null ? 'Enter a number' : `${c}°C = ${f}°F`;
-  } else if (tempSource === 'f') {
-    celsiusInput.value = c == null ? '' : c;
-    tempOutput.textContent =
-      f.trim() === '' ? 'Enter a temperature' : c == null ? 'Enter a number' : `${f}°F = ${c}°C`;
-  }
-});
-
-// -- Dynamic list --
-const items = signal([]);
-const listEl = document.querySelector('[data-dynamic-list]');
-const listInput = document.querySelector('[data-list-input]');
-
-document.querySelector('[data-action="add-item"]').addEventListener('click', addItem);
-listInput.addEventListener('keydown', e => { if (e.key === 'Enter') addItem(); });
-
-function addItem() {
-  const text = listInput.value.trim();
-  if (!text) return;
-  items.set(prev => [...prev, { id: Date.now(), text }]);
-  listInput.value = '';
-  listInput.focus();
-}
-
-effect(() => {
-  const list = items();
-  listEl.innerHTML = '';
-  if (list.length === 0) {
+  effect(() => {
+    const g = greeting();
+    logCount++;
     const li = document.createElement('li');
-    li.textContent = 'No items yet — add one above';
-    li.dataset.status = 'idle';
-    listEl.append(li);
-    return;
+    li.textContent = `#${logCount}: ${g}`;
+    logList.prepend(li);
+    if (logList.children.length > 8) logList.lastElementChild.remove();
+  });
+
+  // -- Temperature converter --
+  const celsius = signal('');
+  const fahrenheit = signal('');
+  const tempOutput = document.querySelector('[data-temp-output]');
+  const celsiusInput = document.querySelector('[data-celsius-input]');
+  const fahrenheitInput = document.querySelector('[data-fahrenheit-input]');
+  let tempSource = null;
+
+  celsiusInput.addEventListener('input', () => {
+    tempSource = 'c';
+    const raw = celsiusInput.value;
+    celsius.set(raw);
+    if (raw.trim() === '') {
+      fahrenheit.set('');
+    } else {
+      const c = parseFloat(raw);
+      fahrenheit.set(isNaN(c) ? null : String(((c * 9) / 5 + 32).toFixed(1)));
+    }
+  });
+
+  fahrenheitInput.addEventListener('input', () => {
+    tempSource = 'f';
+    const raw = fahrenheitInput.value;
+    fahrenheit.set(raw);
+    if (raw.trim() === '') {
+      celsius.set('');
+    } else {
+      const f = parseFloat(raw);
+      celsius.set(isNaN(f) ? null : String((((f - 32) * 5) / 9).toFixed(1)));
+    }
+  });
+
+  // `null` marks the paired field as invalid (as opposed to '' — not yet
+  // typed) so a non-numeric entry clears the other field and reports why,
+  // instead of echoing the raw text next to a stale converted value.
+  effect(() => {
+    const c = celsius(),
+      f = fahrenheit();
+    if (tempSource === 'c') {
+      fahrenheitInput.value = f == null ? '' : f;
+      tempOutput.textContent =
+        c.trim() === '' ? 'Enter a temperature' : f == null ? 'Enter a number' : `${c}°C = ${f}°F`;
+    } else if (tempSource === 'f') {
+      celsiusInput.value = c == null ? '' : c;
+      tempOutput.textContent =
+        f.trim() === '' ? 'Enter a temperature' : c == null ? 'Enter a number' : `${f}°F = ${c}°C`;
+    }
+  });
+
+  // -- Dynamic list --
+  const items = signal([]);
+  const listEl = document.querySelector('[data-dynamic-list]');
+  const listInput = document.querySelector('[data-list-input]');
+
+  document.querySelector('[data-action="add-item"]').addEventListener('click', addItem);
+  listInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') addItem();
+  });
+
+  function addItem() {
+    const text = listInput.value.trim();
+    if (!text) return;
+    items.set((prev) => [...prev, { id: Date.now(), text }]);
+    listInput.value = '';
+    listInput.focus();
   }
-  for (const item of list) {
-    const li = document.createElement('li');
-    const span = document.createElement('span');
-    span.textContent = item.text;
-    const btn = document.createElement('button');
-    btn.textContent = 'remove';
-    btn.dataset.variant = 'danger';
-    btn.addEventListener('click', () => {
-      items.set(prev => prev.filter(i => i.id !== item.id));
-    });
-    li.append(span, btn);
-    listEl.append(li);
-  }
-});
+
+  effect(() => {
+    const list = items();
+    listEl.innerHTML = '';
+    if (list.length === 0) {
+      const li = document.createElement('li');
+      li.textContent = 'No items yet — add one above';
+      li.dataset.status = 'idle';
+      listEl.append(li);
+      return;
+    }
+    for (const item of list) {
+      const li = document.createElement('li');
+      const span = document.createElement('span');
+      span.textContent = item.text;
+      const btn = document.createElement('button');
+      btn.textContent = 'remove';
+      btn.dataset.variant = 'danger';
+      btn.addEventListener('click', () => {
+        items.set((prev) => prev.filter((i) => i.id !== item.id));
+      });
+      li.append(span, btn);
+      listEl.append(li);
+    }
+  });
 </script>

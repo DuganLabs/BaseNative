@@ -1,7 +1,20 @@
 import { escapeHtml } from './escape.js';
 
 const VOID_ELEMENTS = new Set([
-  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr',
+  'area',
+  'base',
+  'br',
+  'col',
+  'embed',
+  'hr',
+  'img',
+  'input',
+  'link',
+  'meta',
+  'param',
+  'source',
+  'track',
+  'wbr',
 ]);
 
 function attrName(key) {
@@ -42,20 +55,16 @@ export function renderNodeToElement(doc, node, palette) {
     else el.setAttribute(name, String(value));
   }
 
-  if (typeof node.props.text === 'string' && (!node.children || node.children.length === 0) && !isVoid) {
-    el.textContent = node.props.text;
-  }
-
   if (node.bindings && node.bindings.text) {
     el.textContent = `{{ ${node.bindings.text.expr || `${node.bindings.text.ref}()`} }}`;
-  }
-
-  if (!isVoid && node.children && node.children.length > 0) {
-    el.textContent = '';
+  } else if (!isVoid && node.children && node.children.length > 0) {
     for (const child of node.children) {
-      const childEl = renderNodeToElement(doc, child, palette);
-      el.appendChild(childEl);
+      el.appendChild(renderNodeToElement(doc, child, palette));
     }
+  } else if (typeof def?.preview === 'function') {
+    el.innerHTML = def.preview(node.props || {});
+  } else if (typeof node.props.text === 'string' && !isVoid) {
+    el.textContent = node.props.text;
   }
 
   return el;

@@ -86,7 +86,7 @@ test.describe('home shell', () => {
             inner: window.innerHeight,
           };
         }, where);
-        expect(result.barBottom).toBeLessThan(result.inner - 4);
+        expect(Math.abs(result.barBottom - result.inner)).toBeLessThan(2);
         expect(result.barTop).toBeGreaterThan(result.inner - 96);
         const png = await page.screenshot({ fullPage: false });
         await test.info().attach(`home-${theme}-320-${where}`, {
@@ -483,13 +483,13 @@ test.describe('home shell', () => {
       });
       expect(bar.left).toBeGreaterThanOrEqual(8);
       expect(bar.right).toBeLessThanOrEqual(bar.inner - 8);
-      expect(bar.bottom).toBeLessThan(bar.height - 4);
+      expect(Math.abs(bar.bottom - bar.height)).toBeLessThan(2);
       expect(bar.radius).toBeGreaterThanOrEqual(24);
       expect(parseFloat(bar.border)).toBe(0);
       expect(bar.pad).toBe(0);
       expect(bar.mainBottom).toBeGreaterThan(bar.height - 2);
       expect(bar.footerBottom).toBeLessThanOrEqual(bar.barTop + 1);
-      expect(bar.mask).toContain('gradient');
+      expect(bar.mask === 'none' || bar.mask === '').toBe(true);
     });
 
     test(`nested surfaces do not share bounds (${theme})`, async ({ page }) => {

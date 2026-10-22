@@ -1,16 +1,61 @@
 import { escapeHtml, escapeAttr, isValidIdentifier } from './escape.js';
 
 const VOID_ELEMENTS = new Set([
-  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr',
+  'area',
+  'base',
+  'br',
+  'col',
+  'embed',
+  'hr',
+  'img',
+  'input',
+  'link',
+  'meta',
+  'param',
+  'source',
+  'track',
+  'wbr',
 ]);
 
 const ATTR_PROPS = new Set([
-  'class', 'id', 'name', 'href', 'src', 'alt', 'placeholder', 'action', 'method', 'target',
-  'aria-label', 'aria-labelledby', 'aria-describedby', 'role', 'rows', 'cols', 'width', 'height',
-  'min', 'max', 'step', 'maxlength', 'minlength', 'pattern', 'autocomplete', 'for',
+  'class',
+  'id',
+  'name',
+  'href',
+  'src',
+  'alt',
+  'placeholder',
+  'action',
+  'method',
+  'target',
+  'aria-label',
+  'aria-labelledby',
+  'aria-describedby',
+  'role',
+  'rows',
+  'cols',
+  'width',
+  'height',
+  'min',
+  'max',
+  'step',
+  'maxlength',
+  'minlength',
+  'pattern',
+  'autocomplete',
+  'for',
 ]);
 
-const BOOL_ATTRS = new Set(['disabled', 'required', 'readonly', 'checked', 'selected', 'multiple', 'autofocus', 'hidden']);
+const BOOL_ATTRS = new Set([
+  'disabled',
+  'required',
+  'readonly',
+  'checked',
+  'selected',
+  'multiple',
+  'autofocus',
+  'hidden',
+]);
 
 function attrName(key) {
   return key.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
@@ -78,7 +123,11 @@ function renderNode(node, palette, depth, indent) {
       if (value) attrs += ` ${attrName(key)}`;
     } else if (ATTR_PROPS.has(key) || /^data-/.test(key)) {
       attrs += renderAttr(key, value);
-    } else if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    } else if (
+      typeof value === 'string' ||
+      typeof value === 'number' ||
+      typeof value === 'boolean'
+    ) {
       attrs += renderAttr(key, value);
     }
   }
@@ -114,6 +163,10 @@ function renderNode(node, palette, depth, indent) {
     return `${pad}${open}\n${childLines.join('\n')}\n${pad}${close}`;
   }
 
+  if (typeof def?.preview === 'function') {
+    return `${pad}${open}${def.preview(node.props || {})}${close}`;
+  }
+
   if (!isContainer || node.props.text != null || node.bindings?.text) {
     const text = renderText(node);
     if (text) return `${pad}${open}${text}${close}`;
@@ -128,7 +181,11 @@ function renderNode(node, palette, depth, indent) {
 
 function renderSignalDeclarations(signals, indent) {
   if (!signals || Object.keys(signals).length === 0) return '';
-  const lines = ['<script type="module">', `${indent}import { signal } from '@basenative/runtime';`, ''];
+  const lines = [
+    '<script type="module">',
+    `${indent}import { signal } from '@basenative/runtime';`,
+    '',
+  ];
   for (const name of Object.keys(signals)) {
     if (!isValidIdentifier(name)) {
       throw new Error(`Invalid signal name "${name}"`);
@@ -141,7 +198,13 @@ function renderSignalDeclarations(signals, indent) {
 }
 
 export function generateBaseNative(state, options = {}) {
-  const { indent = '  ', document: asDocument = false, title = 'BaseNative Page', signals, palette } = options;
+  const {
+    indent = '  ',
+    document: asDocument = false,
+    title = 'BaseNative Page',
+    signals,
+    palette,
+  } = options;
   const tree = state.tree.peek ? state.tree.peek() : state.tree();
 
   const body = tree.map((node) => renderNode(node, palette || null, 0, indent)).join('\n');
@@ -164,5 +227,7 @@ export function generateBaseNative(state, options = {}) {
     body,
     '</body>',
     '</html>',
-  ].filter(Boolean).join('\n');
+  ]
+    .filter(Boolean)
+    .join('\n');
 }

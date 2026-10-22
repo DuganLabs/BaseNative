@@ -1,20 +1,20 @@
-<section>
-  <hgroup data-showcase-hero>
-    <h2>Visual <em>Builder</em></h2>
-    <p>
-      Drag-and-drop composer powered by <code>@basenative/builder</code>. Pick a component from the
-      palette, drop it on the canvas, edit its props in the inspector, and export clean BaseNative
-      code — all running on the same signal runtime that ships with every page on this site.
-    </p>
-  </hgroup>
-</section>
+<header data-bn="bn-hero">
+  <p data-bn="bn-hero-eyebrow">Builder</p>
+  <h1>Visual Builder</h1>
+  <p data-bn="bn-hero-lede">
+    A macOS window: organism palette, canvas, layers, and inspector. Pick an organism, drop it on
+    the canvas, edit it, and export BaseNative.
+  </p>
+</header>
 
 <section id="visual-builder" aria-labelledby="visual-builder-heading">
   <h2 id="visual-builder-heading" class="visually-hidden">Builder canvas</h2>
   <bn-builder data-bn-builder-root></bn-builder>
   <article data-bn-builder-export-panel hidden>
     <header><h3>Generated code</h3></header>
-    <pre data-bn-builder-export-output><code>// Click <em>Export Code</em> to render your tree as BaseNative source.</code></pre>
+    <pre
+      data-bn-builder-export-output
+    ><code>// Click <em>Export Code</em> to render your tree as BaseNative source.</code></pre>
   </article>
 </section>
 

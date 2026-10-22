@@ -26,18 +26,25 @@
     --bn-glass-shadow-overlay: 0 8px 48px rgba(0, 0, 0, 0.25);
     --bn-glass-shadow-alert: 0 18px 48px rgba(0, 0, 0, 0.25);
     --bn-glass-shadow-window: 0 18px 54px rgba(0, 0, 0, 0.3), 0 0 1px rgba(0, 0, 0, 0.8);
-    --bn-glass-edge:
-      0 0 0 0.5px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.7),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.7), inset 1px 0 rgba(255, 86, 116, 0.28),
-      inset -1px 0 rgba(54, 226, 255, 0.22);
+    --bn-glass-edge: 0 0 0 0.5px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    --bn-glass-rim: rgba(255, 255, 255, 0.42);
+    --bn-glass-sheen: linear-gradient(to bottom, rgba(255, 255, 255, 0.28), transparent 46%);
+    --bn-stage-glow:
+      radial-gradient(
+        18rem 10rem at 0% 0%,
+        color-mix(in srgb, var(--bn-brand) 70%, transparent),
+        transparent 72%
+      ),
+      radial-gradient(
+        14rem 8rem at 100% 100%,
+        color-mix(in srgb, var(--bn-brand) 45%, transparent),
+        transparent 70%
+      );
     /* Content text stays at least 15px. 13px is dense chrome only. */
     --bn-content-size: 15px;
     --bn-content-leading: 22px;
     --bn-content-secondary: rgba(60, 60, 67, 0.88);
     --bn-list-surface: rgba(255, 255, 255, 0.94);
-    /* Elevation scale. Card radius 22 minus the 16px pad is the 6px inner.
-       Buttons use the capsule. Organisms reference these, not raw shadows,
-       radii, or z-index. scripts/platform-token-lint.js rejects the raw ones. */
     --bn-elev-0: none;
     --bn-elev-1: 0 1px 1px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.06);
     --bn-elev-2: 0 1px 2px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.1);
@@ -56,8 +63,17 @@
     --bn-z-toast: 50;
     --bn-title-large: 28px;
     --bn-title-large-leading: 34px;
+    --bn-section-space: 12px;
+    --bn-brand: #e8920a;
+    --bn-brand-secondary: #f0ede4;
+    --bn-brand-ink: #0c0b09;
+    --bn-brand-text: #9a5f05;
+    --bn-tab-fill: rgba(246, 246, 246, 0.86);
+    --bn-tab-blur: 80px;
+    --bn-tab-saturate: 240%;
     --bn-button-secondary-fill: var(--bn-plat-color-fills-tertiary);
-    --bn-button-secondary-label: var(--bn-plat-color-accents-blue);
+    --bn-button-secondary-label: var(--bn-brand-text);
+    --bn-alert-surface: var(--bn-plat-swatch-rgba-255-255-255-0-7);
     /* BEGIN METRICS */
     --bn-blur-16: 16px;
     --bn-plat-swatch-0000000f: #0000000f;
@@ -179,25 +195,26 @@
   }
 
   [data-theme='dark'] {
-    --bn-glass-ultrathin: rgba(0, 0, 0, 0.1);
-    --bn-glass-thin: rgba(0, 0, 0, 0.2);
-    --bn-glass-sm: rgba(153, 153, 153, 0.17);
-    --bn-glass-md: rgba(26, 26, 26, 0.96);
-    --bn-glass-lg: rgba(26, 26, 26, 0.96);
-    --bn-glass-thick: rgba(0, 0, 0, 0.4);
-    --bn-glass-ultrathick: rgba(0, 0, 0, 0.5);
-    --bn-glass-opaque: rgba(28, 28, 30, 0.96);
+    --bn-glass-ultrathin: rgba(255, 255, 255, 0.06);
+    --bn-glass-thin: rgba(28, 28, 30, 0.28);
+    --bn-glass-sm: rgba(44, 44, 46, 0.42);
+    --bn-glass-md: rgba(28, 28, 30, 0.55);
+    --bn-glass-lg: rgba(22, 22, 24, 0.66);
+    --bn-glass-thick: rgba(18, 18, 20, 0.78);
+    --bn-glass-ultrathick: rgba(12, 11, 9, 0.86);
+    --bn-glass-opaque: rgba(12, 11, 9, 0.94);
     --bn-glass-shadow-control: 0 8px 15px rgba(0, 0, 0, 0.04);
     --bn-glass-shadow-overlay: 0 8px 48px rgba(0, 0, 0, 0.45);
     --bn-glass-shadow-alert: 0 18px 48px rgba(0, 0, 0, 0.45);
     --bn-glass-shadow-window: 0 18px 54px rgba(0, 0, 0, 0.57), 0 0 1px rgba(0, 0, 0, 0.8);
-    --bn-glass-edge:
-      0 0 0 0.5px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.2),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.2), inset 1px 0 rgba(255, 86, 116, 0.22),
-      inset -1px 0 rgba(54, 226, 255, 0.18);
+    --bn-glass-edge: 0 0 0 0.5px rgba(255, 255, 255, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    --bn-glass-rim: rgba(255, 255, 255, 0.22);
     --bn-content-secondary: rgba(235, 235, 245, 0.92);
-    --bn-list-surface: rgba(44, 44, 46, 0.94);
+    --bn-list-surface: rgba(44, 44, 46, 0.58);
+    --bn-brand-text: #e8920a;
+    --bn-tab-fill: rgba(22, 20, 18, 0.84);
     --bn-button-secondary-fill: rgb(72, 72, 74);
-    --bn-button-secondary-label: rgb(255, 255, 255);
+    --bn-button-secondary-label: var(--bn-brand-secondary);
+    --bn-alert-surface: rgba(26, 26, 26, 0.9);
   }
 }

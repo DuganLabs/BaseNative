@@ -257,7 +257,7 @@ export const siteRoutes = [
       'Every platform control in the states the catalog renders, on the material tokens, light and dark.',
     ogTitle: 'BaseNative design system',
     activePage: 'design-system',
-    ctx: () => ({ catalog: raw(catalogBody()) }),
+    ctx: ({ measure } = {}) => ({ catalog: raw(catalogBody({ measure })) }),
   },
   {
     // A verification harness for the dev server. `internal` keeps it out of

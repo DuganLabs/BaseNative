@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'docs/design-system/coverage.json');
+const VERIFIED = join(ROOT, 'docs/design-system/verified.json');
 const THEMES = ['light', 'dark'];
 const WIDTHS = [320, 768, 1280];
 const STATES = ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'selected'];
@@ -21,7 +22,7 @@ const STATES = ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'select
 const depth = [
   'Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).',
   'Layered shadow, not a flat fill.',
-  'Accent colour stays the system blue where the control is prominent.',
+  'Prominent controls use the BaseNative brand amber, with ink labels that pass AA.',
   'Label does not overflow (scrollWidth within 1px of clientWidth) and does not wrap when the acceptance says one line.',
 ];
 
@@ -173,7 +174,7 @@ const COMPONENTS = [
     tier: 'token',
     renderer: 'renderBnMaterial',
     variants: ['ultrathin', 'thin', 'sm', 'medium', 'lg', 'thick', 'ultrathick', 'opaque'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: [...depth, 'Opaque drops the blur. Refraction shader is a gap, not this swatch.'],
   },
   {
@@ -181,7 +182,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnPopupButton',
     variants: ['menu', 'native'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Menu or native select. Label stays one line.'],
   },
   {
@@ -189,7 +190,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnPulldownButton',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Opens a menu. Label stays one line.'],
   },
   {
@@ -197,7 +198,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnSegmented',
     variants: ['default'],
-    rendered: ['rest', 'selected'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'selected'],
     acceptance: ['Segments share one height. Selected segment is distinct.'],
   },
   {
@@ -205,7 +206,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnCombobox',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Field plus suggestions. No overflow.'],
   },
   {
@@ -213,7 +214,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnColorPicker',
     variants: ['inline'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Inline swatches render.', 'Full native picker chrome is a gap.'],
   },
   {
@@ -221,7 +222,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnDatePicker',
     variants: ['inline'],
-    rendered: ['rest', 'selected'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'selected'],
     acceptance: ['Inline month renders.', 'A wheel picker is a gap.'],
   },
   {
@@ -229,7 +230,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnList',
     variants: ['grouped', 'symbol-tile'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Inset grouped surface, separator, title ellipsis. Detail may wrap.'],
   },
   {
@@ -237,7 +238,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnMenu',
     variants: ['inline'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: [...depth, 'Items stay one line.'],
   },
   {
@@ -245,7 +246,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnContextMenu',
     variants: ['inline'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Same glass surface as a menu.'],
   },
   {
@@ -253,7 +254,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnTooltip',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Tip stays on one line.'],
   },
   {
@@ -261,7 +262,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnPopover',
     variants: ['inline'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: [...depth],
   },
   {
@@ -269,7 +270,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnDisclosure',
     variants: ['open', 'closed'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Uses details/summary.'],
   },
   {
@@ -277,7 +278,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnIndexBar',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Letters stay one column, one line each.'],
   },
   {
@@ -285,7 +286,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnMetric',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Value and label each stay one line. Equal height inside a card grid.'],
   },
   {
@@ -293,7 +294,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnNavBar',
     variants: ['large-title', 'inline-title'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Large Title does not wrap. Back label stays one line.'],
   },
   {
@@ -301,7 +302,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnTabBar',
     variants: ['default', 'overflow'],
-    rendered: ['rest', 'selected'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'selected'],
     acceptance: ['Tab labels stay one line. Overflow is a tab, not a disclosure.'],
   },
   {
@@ -309,7 +310,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnToolbar',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Commands stay one line.'],
   },
   {
@@ -317,7 +318,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnSidebar',
     variants: ['default'],
-    rendered: ['rest', 'selected'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'selected'],
     acceptance: ['Item labels stay one line. Selected row is distinct.'],
   },
   {
@@ -325,7 +326,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnMenubar',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Items stay one line.'],
   },
   {
@@ -333,7 +334,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnDock',
     variants: ['default'],
-    rendered: ['rest', 'selected'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'selected'],
     acceptance: [...depth, 'Item labels stay one line.'],
   },
   {
@@ -341,7 +342,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnAlert',
     variants: ['inline'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: [...depth, 'Actions stay one line.'],
   },
   {
@@ -349,7 +350,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnDialog',
     variants: ['inline'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: [...depth],
   },
   {
@@ -357,7 +358,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnSheet',
     variants: ['inline'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: [...depth],
   },
   {
@@ -365,7 +366,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnActionSheet',
     variants: ['inline'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: [...depth, 'Actions stay one line.'],
   },
   {
@@ -373,7 +374,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnShareSheet',
     variants: ['inline'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Actions stay one line.'],
   },
   {
@@ -381,7 +382,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnNotification',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: [...depth],
   },
   {
@@ -389,7 +390,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnTable',
     variants: ['default'],
-    rendered: ['rest', 'selected'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'selected'],
     acceptance: ['Selected row is distinct. Cells do not overflow the table.'],
   },
   {
@@ -397,7 +398,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnInspector',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Section labels stay one line. Fields use the text-field atom.'],
   },
   {
@@ -405,7 +406,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnCardGrid',
     variants: ['metric', 'widget'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Tiles in a row share one height.'],
   },
   {
@@ -413,7 +414,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnHero',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: [...depth, 'Title stays one line. Actions use the button atom.'],
   },
   {
@@ -421,7 +422,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnFooter',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Links stay one line.'],
   },
   {
@@ -429,7 +430,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnWindow',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: [...depth],
   },
   {
@@ -437,7 +438,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnForm',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Fields use the text-field atom. Submit uses the button atom.'],
   },
   {
@@ -445,7 +446,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnGroup',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Grouped surface, not a flat page band.'],
   },
   {
@@ -453,7 +454,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnEmptyState',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Title stays one line. Description may wrap.'],
   },
   {
@@ -461,7 +462,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnWidget',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Title stays one line.'],
   },
   {
@@ -469,7 +470,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnScroll',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Region scrolls on purpose. A custom scrollbar is a gap.'],
   },
   {
@@ -477,7 +478,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnImageWell',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Well keeps its label inside.'],
   },
   {
@@ -485,28 +486,57 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnInputAccessory',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Keys stay one line.'],
   },
   {
+    id: 'template-list',
+    tier: 'template',
+    renderer: 'templateList',
+    variants: ['ios'],
+    rendered: ['rest'],
+    acceptance: ['Nav bar, search, grouped list, and tab bar are the existing organisms.'],
+    note: 'No kit frame for the whole screen. The cell stays pending until one is measured.',
+  },
+  {
+    id: 'template-window',
+    tier: 'template',
+    renderer: 'templateWindow',
+    variants: ['macos'],
+    rendered: ['rest'],
+    acceptance: ['Window, toolbar, sidebar, and list are the existing organisms.'],
+    note: 'No kit frame for the whole window. The cell stays pending until one is measured.',
+  },
+  {
+    id: 'template-sheet',
+    tier: 'template',
+    renderer: 'templateSheet',
+    variants: ['ios'],
+    rendered: ['rest'],
+    acceptance: ['Sheet, field, and prominent button are the existing organisms.'],
+    note: 'No kit frame for the composed sheet. The cell stays pending until one is measured.',
+  },
+  {
     id: 'scrollbar',
-    tier: 'gap',
-    renderer: null,
-    variants: ['native'],
-    rendered: [],
-    acceptance: ['Native scrollbar only. A designed scrollbar is not built.'],
-    note: 'Puppertino lists scrollbars. The platform leaves them to the browser.',
+    tier: 'atom',
+    renderer: 'renderBnScrollbar',
+    variants: ['vertical'],
+    rendered: ['rest'],
+    acceptance: [
+      'A range control painted as the overlay scrollbar. The thumb uses the brand accent.',
+    ],
+    note: 'Content inside bn-scroll still scrolls natively. This control is the designed thumb.',
   },
   {
     id: 'refraction',
-    tier: 'gap',
-    renderer: null,
-    variants: ['shader'],
-    rendered: [],
+    tier: 'atom',
+    renderer: 'renderBnRefraction',
+    variants: ['glass'],
+    rendered: ['rest'],
     acceptance: [
-      'WebGL or SVG displacement refraction is not ported. Blur, saturation, and the specular edge are the translation.',
+      'A glass figure. Blur, saturation, sheen, and the brand stage glow stand in for a shader.',
     ],
-    note: 'Extra DOM for a filter would break the semantic-HTML axiom.',
+    note: 'No WebGL node. The material is the existing glass tokens on a figure.',
   },
 ];
 
@@ -515,7 +545,25 @@ function referenceImage(theme, width, rendered) {
   return `tests/e2e/design-system.spec.js-snapshots/design-system-${theme}-${width}-linux.png`;
 }
 
+function verifiedKey(id, cell) {
+  return [id, cell.variant, cell.state, cell.theme, cell.width].join('|');
+}
+
+function loadVerified() {
+  try {
+    const doc = JSON.parse(readFileSync(VERIFIED, 'utf8'));
+    const keys = new Map();
+    for (const cell of doc.cells || []) {
+      keys.set(verifiedKey(cell.id, cell), cell.kit || null);
+    }
+    return keys;
+  } catch {
+    return new Map();
+  }
+}
+
 export function buildCoverage() {
+  const verified = loadVerified();
   const components = COMPONENTS.map((component) => {
     const cells = [];
     for (const variant of component.variants) {
@@ -523,13 +571,15 @@ export function buildCoverage() {
         for (const theme of THEMES) {
           for (const width of WIDTHS) {
             const rendered = component.rendered.includes(state);
+            const kit = verified.get(verifiedKey(component.id, { variant, state, theme, width }));
+            const passed = rendered && kit;
             cells.push({
               variant,
               state,
               theme,
               width,
-              status: rendered ? 'pending' : 'gap',
-              referenceImage: referenceImage(theme, width, rendered),
+              status: passed ? 'pass' : rendered ? 'pending' : 'gap',
+              referenceImage: passed ? kit : referenceImage(theme, width, rendered),
               acceptance: component.acceptance,
             });
           }
@@ -563,7 +613,7 @@ export function buildCoverage() {
       pending,
       gap,
       verifiedPercent: all.length ? Math.round((pass / all.length) * 1000) / 10 : 0,
-      renderedPercent: all.length ? Math.round((pending / all.length) * 1000) / 10 : 0,
+      renderedPercent: all.length ? Math.round(((pending + pass) / all.length) * 1000) / 10 : 0,
     },
     components,
   };

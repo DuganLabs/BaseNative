@@ -1,13 +1,43 @@
-<section data-bn-page-hero data-bn-not-found>
-  <p data-bn-eyebrow>404</p>
-  <h2>Page <em>not found</em></h2>
-  <p data-bn-lede>
+<header data-bn="bn-hero" data-bn-not-found>
+  <p data-bn="bn-hero-eyebrow">404</p>
+  <h1>Page <em>not found</em></h1>
+  <p data-bn="bn-hero-lede">
     There is nothing at this address. The link may be out of date, or the URL may have a typo —
     every page on the site is reachable from the navigation.
   </p>
-  <nav data-bn-page-hero-actions aria-label="Where to go next">
-    <a href="/" data-bn-cta="primary">Back to home →</a>
-    <a href="/components" data-bn-cta="secondary">Browse components</a>
-    <a href="/docs" data-bn-cta="secondary">Read the API docs</a>
+  <nav aria-label="Where to go next">
+    <a
+      data-bn="bn-button"
+      data-variant="prominent"
+      data-size="large"
+      data-label="title"
+      data-destructive="false"
+      href="/"
+      >Back to home</a
+    >
+    <a
+      data-bn="bn-button"
+      data-variant="bordered"
+      data-size="large"
+      data-label="title"
+      data-destructive="false"
+      href="/components"
+      >Browse components</a
+    >
+    <a
+      data-bn="bn-button"
+      data-variant="bordered"
+      data-size="large"
+      data-label="title"
+      data-destructive="false"
+      href="/docs"
+      >Read the API docs</a
+    >
   </nav>
+</header>
+<section data-bn="bn-empty-state" data-kind="title">
+  <h2 data-bn="bn-empty-title">Nothing at this address</h2>
+  <p data-bn="bn-empty-description">
+    Use the navigation. Every published page is linked from there.
+  </p>
 </section>

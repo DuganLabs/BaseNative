@@ -244,7 +244,7 @@
       display: flex;
       position: fixed;
       inset-inline: 12px;
-      inset-block-end: calc(env(safe-area-inset-bottom, 0px) + 8px);
+      inset-block-end: 0;
       z-index: var(--bn-z-nav, 20);
       width: auto;
       margin: 0;
@@ -265,19 +265,8 @@
     main {
       min-height: 0;
       overflow: auto;
-      padding: 20px 16px calc(var(--bn-shell-tab) + 24px + env(safe-area-inset-bottom, 0px));
-      -webkit-mask-image: linear-gradient(
-        to bottom,
-        #000 0,
-        #000 calc(100% - var(--bn-shell-tab) - 16px),
-        transparent 100%
-      );
-      mask-image: linear-gradient(
-        to bottom,
-        #000 0,
-        #000 calc(100% - var(--bn-shell-tab) - 16px),
-        transparent 100%
-      );
+      padding: 20px 16px calc(var(--bn-shell-tab) + 16px);
+      mask-image: none;
     }
 
     body[data-active='home'] main {
@@ -289,5 +278,79 @@
     body > [data-bn='bn-tab-bar'] {
       display: none;
     }
+  }
+
+  [data-theme='dark'] body,
+  body[data-active='home'] {
+    background-color: var(--bn-glass-opaque, #0c0b09);
+    background-image:
+      radial-gradient(
+        32rem 18rem at 0% 0%,
+        color-mix(in srgb, var(--bn-brand, #e8920a) 42%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        24rem 14rem at 100% 10%,
+        color-mix(in srgb, var(--bn-brand, #e8920a) 18%, transparent),
+        transparent 68%
+      );
+    background-attachment: scroll;
+  }
+
+  body:not([data-active='home']) main {
+    background: transparent;
+    color: var(--bn-plat-color-labels-primary, rgba(255, 255, 255, 0.92));
+  }
+
+  section[data-hero],
+  section[data-bn-page-hero],
+  [data-bn-showcase-header],
+  [data-bn-component-hero],
+  body:not([data-active='home']) main > section:first-of-type {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin: 0 0 var(--bn-section-space, 12px);
+    padding: 22px;
+    border: 1px solid var(--bn-glass-rim, rgba(255, 255, 255, 0.35));
+    border-radius: var(--bn-radius-card, 22px);
+    background-color: var(--bn-list-surface, rgba(44, 44, 46, 0.58));
+    background-image: var(
+      --bn-glass-sheen,
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.22), transparent 46%)
+    );
+    box-shadow: var(--bn-elev-2, 0 8px 24px rgba(0, 0, 0, 0.16));
+    backdrop-filter: saturate(var(--bn-glass-saturate, 180%)) blur(var(--bn-glass-blur, 30px));
+    color: var(--bn-plat-color-labels-primary, rgba(255, 255, 255, 0.92));
+  }
+
+  main a {
+    color: var(--bn-brand-text, #9a5f05);
+  }
+
+  [data-bn-cta='primary'],
+  [data-hero] a[role='button']:not([data-variant='outline']) {
+    background: var(--bn-brand, #e8920a);
+    color: var(--bn-brand-ink, #0c0b09);
+    border-radius: var(--bn-radius-capsule, 999px);
+    text-decoration: none;
+  }
+
+  [data-bn-platform='macos'] body[data-active='home'] h1,
+  [data-bn-platform='macos'] [data-bn='bn-hero'] h1 {
+    font-size: var(--bn-title-large, 28px);
+    line-height: var(--bn-title-large-leading, 34px);
+  }
+
+  [data-bn-platform='macos'] body[data-active='home'] header > p:not(:first-of-type),
+  [data-bn-platform='macos'] body[data-active='home'] [data-bn='bn-list-title'],
+  [data-bn-platform='macos'] body[data-active='home'] [data-bn='bn-list-detail'],
+  [data-bn-platform='macos'] body[data-active='home'] section > h2,
+  [data-bn-platform='macos'] body[data-active='home'] pre,
+  [data-bn-platform='macos'] body[data-active='home'] pre code,
+  [data-bn-platform='macos'] body[data-active='home'] p code {
+    font-size: var(--bn-content-size, 15px);
+    line-height: var(--bn-content-leading, 22px);
   }
 }
