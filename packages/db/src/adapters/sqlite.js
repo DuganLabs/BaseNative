@@ -48,7 +48,7 @@ function betterSqliteLoads() {
     return { ok: false, reason: 'not installed' };
   }
 
-  let engines = '';
+  let engines;
   try {
     engines = require(require.resolve('better-sqlite3/package.json')).engines?.node || '';
   } catch {
