@@ -8,7 +8,7 @@
     "renderFunctions": 133,
     "customElements": 6,
     "styledContracts": 374,
-    "componentsWithVariants": 37
+    "componentsWithVariants": 38
   },
   "stylesheets": [
     "packages/builder/src/builder.css",
@@ -5078,7 +5078,20 @@
         ],
         "dataAttributes": []
       },
-      "variants": {},
+      "variants": {
+        "present": {
+          "contract": "bn-tooltip",
+          "values": [
+            "inline"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/platform/src/components.css"
+          ],
+          "emittedByRenderer": false
+        }
+      },
       "inertAxes": [],
       "styled": true,
       "useInsteadOf": "a bare <p> with your own classes, or literal <p data-bn=\"bn-tooltip\"> markup"

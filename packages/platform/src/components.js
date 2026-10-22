@@ -428,7 +428,8 @@ export function renderBnPopover(options = {}) {
 /** Tooltip, a hint popover. Inner stroke colour is a macOS token. */
 export function renderBnTooltip(options = {}) {
   const tipId = idOf('tip', options.id);
-  return `<button data-bn="bn-tooltip-button" type="button" popovertarget="${escapeAttr(tipId)}"${opt('data-force', options.force)}>${escapeHtml(options.label || 'Info')}</button><p data-bn="bn-tooltip" id="${escapeAttr(tipId)}" popover="hint"${opt('data-force', options.force)}>${escapeHtml(options.tip || '')}</p>`;
+  const present = options.inline ? ' data-present="inline"' : ' popover="hint"';
+  return `<button data-bn="bn-tooltip-button" type="button" popovertarget="${escapeAttr(tipId)}"${opt('data-force', options.force)}>${escapeHtml(options.label || 'Info')}</button><p data-bn="bn-tooltip" id="${escapeAttr(tipId)}"${present}${opt('data-force', options.force)}>${escapeHtml(options.tip || '')}</p>`;
 }
 
 /** Notification, a status region. A floating card with title and message. */
@@ -612,7 +613,7 @@ export function renderBnWidget(options = {}) {
  */
 export function renderBnMaterial(options = {}) {
   const name = options.name || 'medium';
-  return `<figure data-bn="bn-material" data-material="${escapeAttr(name)}"${opt('id', options.id)}><figcaption>${escapeHtml(options.label || name)}</figcaption></figure>`;
+  return `<figure data-bn="bn-material" data-material="${escapeAttr(name)}"${opt('id', options.id)}${opt('data-force', options.force)}><figcaption>${escapeHtml(options.label || name)}</figcaption></figure>`;
 }
 
 /** Metric tile. Equal height comes from the card grid, not from the page. */

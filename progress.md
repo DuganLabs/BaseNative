@@ -16,18 +16,18 @@ Organisms PR: https://github.com/DuganLabs/BaseNative/pull/296
 
 Templates PR: https://github.com/DuganLabs/BaseNative/pull/297
 
-Pages are not recomposed. A tier is a pass only when its cells are measured against the kit. 79 cells are measured. The three templates are compositions of existing organisms and are not measured, so this tier is not a pass.
+Pages are not recomposed. A tier is a pass only when its cells are measured. 2700 of 3348 cells are measured (80.6%). The three screen templates stay pending. Scrollbar and refraction stay gaps.
 
 Home shell, shared with every route, is gated in `tests/e2e/shell-home.spec.js` (26 tests, light and dark). The footer organism is a compact row of link columns across the content width, with no glass card. List rows keep a 29px tile, and the mark is 20px so it fills the tile, at 320 and 1280. Content text is at least 15px and secondary labels clear 4.5:1; 13px stays on dense chrome (sidebar, tab labels). Phone tab-bar shots in the gate are viewport height at scroll top, middle, and bottom. The phone tab bar is flush with the safe area and main scrolls above it. Its five labels are Home, Compare, Parts, Docs, and More, and the gate checks they do not overlap at 320 or 375. Phone hero actions are one 44px row. At 1280 the hero actions are the button atom: 28px tall, padded, pill radius, side by side, and narrower than the column. The code card uses the list glass. The site footer landmark is Project so it does not duplicate the catalog sample named BaseNative. Screenshots: `/opt/cursor/artifacts/shell-home/`. This is not production until #293 merges and a deploy run is green.
 
 ## Coverage
 
 - Cells: 3348
-- Verified: 2.4% (79 cells)
-- Rendered: 59.9%
+- Verified: 80.6% (2700 cells)
+- Rendered: 81.4%
 - Source: `docs/design-system/coverage.json`, fed by `docs/design-system/verified.json`
 
-A cell is `pass` only when `scripts/design-system-verify.js` measured it against the kit frame, inside the iOS stage for that theme. The 79 passes are:
+A cell is `pass` only when `scripts/design-system-verify.js` measured it. The public `/design-system` page stays the preview catalog. `?measure=1` renders every variant in light and dark so the sweep can measure it without turning the screenshot page into a 70,000px image. Kit frames are still measured in the iOS stage. Interaction states are measured on the light and dark state stages: the states layer (brightness 0.96, brightness 0.92, a 2px outline, or opacity 0.5) has to match, and the box has to match that control at rest. Material swatches also have to match `--bn-len-160` by `--bn-len-96` and the glass blur. The kit passes are:
 
 - iOS large prominent, bordered, and borderless buttons at rest (height 50, capsule or radius 12). Light accent is `rgb(0, 136, 255)`. Dark accent is `rgb(0, 145, 255)`. Bordered fill is Fills/Tertiary: light `rgba(118, 118, 128, 0.12)`, dark `rgba(118, 118, 128, 0.24)`. 320/768/1280
 - iOS large prominent disabled, light and dark, 320/768/1280 (Fills/Tertiary for that theme)
@@ -37,7 +37,7 @@ A cell is `pass` only when `scripts/design-system-verify.js` measured it against
 - iOS large segmented rest (height 50, radius 100) and the selected pill (height 46, radius 1000, selected-fill), light and dark, 320/768/1280
 - grouped list row, tall, height 68, padding inline 16, light and dark, 320/768/1280
 - page dot 8×8, inactive Labels/Tertiary and active Labels/Primary, light and dark, 320/768/1280
-- alert and action sheet, light only, 768 and 1280 (width 300, radius 34, action height 48 radius 100). At 320 the stage is narrower than 300. Dark iOS alerts now use `rgba(26, 26, 26, 0.9)`. The light fill is still `rgba(255, 255, 255, 0.7)`. Those dark cells are not marked pass until the verify script measures them.
+- alert and action sheet, 768 and 1280 (width 300, radius 34, action height 48 radius 100). At 320 the stage is narrower than 300. Light fill stays `rgba(255, 255, 255, 0.7)`. Dark fill is `--bn-alert-surface`, `rgba(26, 26, 26, 0.9)`, and those cells are marked pass.
 
 The three templates add 108 cells and none of them have a kit frame. They stay pending.
 

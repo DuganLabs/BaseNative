@@ -22,7 +22,7 @@ app.use(
       join(pkgRoot, 'packages', 'components', 'src'),
     ],
     cwd: pkgRoot,
-  })
+  }),
 );
 
 app.use(express.json());
@@ -47,7 +47,7 @@ let tasks = [
 
 for (const route of siteRoutes) {
   app.get(route.path, (req, res) => {
-    res.send(renderRoute(route, { tasks, hasApi: true }));
+    res.send(renderRoute(route, { tasks, hasApi: true, measure: req.query.measure === '1' }));
   });
 }
 

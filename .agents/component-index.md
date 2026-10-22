@@ -838,7 +838,7 @@ Toolbar. A menu of commands; each item's li is display:contents.
 ### `renderBnTooltip(options)`
 Tooltip, a hint popover. Inner stroke colour is a macOS token.
 `packages/platform/src/components.js` · emits `<p data-bn="bn-tooltip">` + 1 more contract(s)
-- variants: none declared
+- present: `inline`
 - use instead of: a bare <p> with your own classes, or literal <p data-bn="bn-tooltip"> markup
 
 ### `renderBnWidget(options)`

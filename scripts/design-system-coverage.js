@@ -174,7 +174,7 @@ const COMPONENTS = [
     tier: 'token',
     renderer: 'renderBnMaterial',
     variants: ['ultrathin', 'thin', 'sm', 'medium', 'lg', 'thick', 'ultrathick', 'opaque'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: [...depth, 'Opaque drops the blur. Refraction shader is a gap, not this swatch.'],
   },
   {
@@ -214,7 +214,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnColorPicker',
     variants: ['inline'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Inline swatches render.', 'Full native picker chrome is a gap.'],
   },
   {
@@ -222,7 +222,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnDatePicker',
     variants: ['inline'],
-    rendered: ['rest', 'selected'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'selected'],
     acceptance: ['Inline month renders.', 'A wheel picker is a gap.'],
   },
   {
@@ -246,7 +246,7 @@ const COMPONENTS = [
     tier: 'molecule',
     renderer: 'renderBnContextMenu',
     variants: ['inline'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Same glass surface as a menu.'],
   },
   {
@@ -326,7 +326,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnMenubar',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Items stay one line.'],
   },
   {
@@ -334,7 +334,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnDock',
     variants: ['default'],
-    rendered: ['rest', 'selected'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'selected'],
     acceptance: [...depth, 'Item labels stay one line.'],
   },
   {
@@ -350,7 +350,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnDialog',
     variants: ['inline'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: [...depth],
   },
   {
@@ -366,7 +366,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnActionSheet',
     variants: ['inline'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: [...depth, 'Actions stay one line.'],
   },
   {
@@ -374,7 +374,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnShareSheet',
     variants: ['inline'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Actions stay one line.'],
   },
   {
@@ -390,7 +390,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnTable',
     variants: ['default'],
-    rendered: ['rest', 'selected'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'selected'],
     acceptance: ['Selected row is distinct. Cells do not overflow the table.'],
   },
   {
@@ -398,7 +398,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnInspector',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Section labels stay one line. Fields use the text-field atom.'],
   },
   {
@@ -406,7 +406,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnCardGrid',
     variants: ['metric', 'widget'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Tiles in a row share one height.'],
   },
   {
@@ -414,7 +414,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnHero',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: [...depth, 'Title stays one line. Actions use the button atom.'],
   },
   {
@@ -422,7 +422,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnFooter',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Links stay one line.'],
   },
   {
@@ -430,7 +430,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnWindow',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: [...depth],
   },
   {
@@ -438,7 +438,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnForm',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Fields use the text-field atom. Submit uses the button atom.'],
   },
   {
@@ -446,7 +446,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnGroup',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Grouped surface, not a flat page band.'],
   },
   {
@@ -454,7 +454,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnEmptyState',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Title stays one line. Description may wrap.'],
   },
   {
@@ -462,7 +462,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnWidget',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Title stays one line.'],
   },
   {
@@ -470,7 +470,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnScroll',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Region scrolls on purpose. A custom scrollbar is a gap.'],
   },
   {
@@ -478,7 +478,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnImageWell',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Well keeps its label inside.'],
   },
   {
@@ -486,7 +486,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnInputAccessory',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Keys stay one line.'],
   },
   {

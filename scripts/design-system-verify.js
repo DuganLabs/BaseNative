@@ -9,7 +9,9 @@
  * 300× radius 34, popup 44px, destructive Accents/Red, glass-prominent
  * large 50px with Frost Regular). Comparison only. Samples come from the
  * iOS stage for that theme. Dark alerts stay on the light glass fill, so
- * those cells are not recorded. Refraction is not a blur length.
+ * Dark alerts use the dark glass fill. Refraction is not a blur length.
+ * State cells pass when the states layer (brightness, opacity, or outline)
+ * matches and the box matches the rest control of the same variant.
  *
  *   node scripts/design-system-verify.js
  */
@@ -27,6 +29,335 @@ function close(a, b, tol = 1) {
   return Math.abs(a - b) <= tol;
 }
 
+async function sweepStates(page, theme, width) {
+  return page.evaluate(
+    ({ themeName, viewport }) => {
+      const stages = ['Atom states', 'Molecule states', 'Organism states', 'Materials'];
+      const labels = {
+        Rest: 'rest',
+        Hover: 'hover',
+        Pressed: 'pressed',
+        Focus: 'focus-visible',
+        Disabled: 'disabled',
+        Selected: 'selected',
+      };
+      const selectable = new Set([
+        'switch',
+        'checkbox',
+        'radio',
+        'page-dot',
+        'segmented',
+        'tab-bar',
+        'sidebar',
+        'dock',
+        'table',
+        'date-picker',
+      ]);
+      function boxOf(el) {
+        const style = getComputedStyle(el);
+        const rect = el.getBoundingClientRect();
+        return {
+          w: rect.width,
+          h: rect.height,
+          radius: parseFloat(style.borderTopLeftRadius) || 0,
+          filter: style.filter || 'none',
+          opacity: parseFloat(style.opacity),
+          outlineWidth: parseFloat(style.outlineWidth) || 0,
+          outlineStyle: style.outlineStyle,
+          blur: style.backdropFilter || 'none',
+        };
+      }
+      function classify(el) {
+        const bn = el.getAttribute('data-bn');
+        switch (bn) {
+          case 'bn-button':
+            return {
+              id: 'button',
+              variant:
+                el.getAttribute('data-destructive') === 'true'
+                  ? 'destructive'
+                  : el.getAttribute('data-variant'),
+            };
+          case 'bn-symbol-tile':
+            return { id: 'symbol-tile', variant: el.getAttribute('data-tint') };
+          case 'bn-badge':
+            return { id: 'badge', variant: el.getAttribute('data-tint') || 'red' };
+          case 'bn-switch':
+            return { id: 'switch', variant: 'default' };
+          case 'bn-checkbox':
+            return { id: 'checkbox', variant: 'default' };
+          case 'bn-radio':
+            return { id: 'radio', variant: 'default' };
+          case 'bn-slider':
+            return { id: 'slider', variant: 'default' };
+          case 'bn-dial':
+            return { id: 'dial', variant: 'default' };
+          case 'bn-stepper':
+            return { id: 'stepper', variant: 'default' };
+          case 'bn-progress':
+            return { id: 'progress', variant: 'default' };
+          case 'bn-spinner':
+            return { id: 'spinner', variant: 'default' };
+          case 'bn-field':
+            return { id: 'text-field', variant: 'default' };
+          case 'bn-search':
+            return { id: 'search', variant: 'default' };
+          case 'bn-color-well':
+            return el.closest('[data-bn="bn-color-picker"]')
+              ? null
+              : { id: 'color-well', variant: 'default' };
+          case 'bn-page-control':
+            return { id: 'page-dot', variant: 'default' };
+          case 'bn-app-icon':
+            return { id: 'app-icon', variant: 'default' };
+          case 'bn-material':
+            return { id: 'material', variant: el.getAttribute('data-material') };
+          case 'bn-popup-button':
+            return { id: 'popup-button', variant: el.tagName === 'SELECT' ? 'native' : 'menu' };
+          case 'bn-pulldown-button':
+            return { id: 'pulldown-button', variant: 'default' };
+          case 'bn-segmented':
+            return { id: 'segmented', variant: 'default' };
+          case 'bn-combobox':
+            return { id: 'combobox', variant: 'default' };
+          case 'bn-color-picker':
+            return { id: 'color-picker', variant: 'inline' };
+          case 'bn-date-picker':
+            return { id: 'date-picker', variant: 'inline' };
+          case 'bn-list':
+            return {
+              id: 'list',
+              variant: el.querySelector('[data-bn="bn-symbol-tile"]') ? 'symbol-tile' : 'grouped',
+            };
+          case 'bn-menu':
+            return { id: 'menu', variant: 'inline' };
+          case 'bn-context-menu':
+            return { id: 'context-menu', variant: 'inline' };
+          case 'bn-tooltip':
+            return { id: 'tooltip', variant: 'default' };
+          case 'bn-popover':
+            return el.getAttribute('data-present') === 'inline'
+              ? { id: 'popover', variant: 'inline' }
+              : null;
+          case 'bn-disclosure':
+            return { id: 'disclosure', variant: el.hasAttribute('open') ? 'open' : 'closed' };
+          case 'bn-index-bar':
+            return { id: 'index-bar', variant: 'default' };
+          case 'bn-metric':
+            return el.closest('[data-bn="bn-card-grid"]')
+              ? null
+              : { id: 'metric', variant: 'default' };
+          case 'bn-nav-bar':
+            return {
+              id: 'nav-bar',
+              variant: el.getAttribute('data-large') === 'false' ? 'inline-title' : 'large-title',
+            };
+          case 'bn-tab-bar':
+            return {
+              id: 'tab-bar',
+              variant: el.querySelector('button[data-bn="bn-tab"]') ? 'overflow' : 'default',
+            };
+          case 'bn-toolbar':
+            return { id: 'toolbar', variant: 'default' };
+          case 'bn-sidebar':
+            return { id: 'sidebar', variant: 'default' };
+          case 'bn-menubar':
+            return { id: 'menubar', variant: 'default' };
+          case 'bn-alert':
+            return { id: 'alert', variant: 'inline' };
+          case 'bn-dialog':
+            return { id: 'dialog', variant: 'inline' };
+          case 'bn-sheet':
+            return { id: 'sheet', variant: 'inline' };
+          case 'bn-action-sheet':
+            return { id: 'action-sheet', variant: 'inline' };
+          case 'bn-share-sheet':
+            return { id: 'share-sheet', variant: 'inline' };
+          case 'bn-notification':
+            return { id: 'notification', variant: 'default' };
+          case 'bn-table':
+            return { id: 'table', variant: 'default' };
+          case 'bn-inspector':
+            return { id: 'inspector', variant: 'default' };
+          case 'bn-card-grid': {
+            const metric = el.querySelector(':scope > li [data-bn="bn-metric"]');
+            const widget = el.querySelector(':scope > li [data-bn="bn-widget"]');
+            if (metric && !widget) return { id: 'card-grid', variant: 'metric' };
+            if (widget && !metric) return { id: 'card-grid', variant: 'widget' };
+            return null;
+          }
+          case 'bn-hero':
+            return { id: 'hero', variant: 'default' };
+          case 'bn-footer':
+            return { id: 'footer', variant: 'default' };
+          case 'bn-window':
+            return { id: 'window', variant: 'default' };
+          case 'bn-form':
+            return { id: 'form', variant: 'default' };
+          case 'bn-group':
+            return { id: 'group', variant: 'default' };
+          case 'bn-empty-state':
+            return { id: 'empty-state', variant: 'default' };
+          case 'bn-widget':
+            return el.closest('[data-bn="bn-card-grid"]')
+              ? null
+              : { id: 'widget', variant: 'default' };
+          case 'bn-scroll':
+            return { id: 'scroll', variant: 'default' };
+          case 'bn-image-well':
+            return { id: 'image-well', variant: 'default' };
+          case 'bn-input-accessory':
+            return { id: 'input-accessory', variant: 'default' };
+          case 'bn-dock':
+            return { id: 'dock', variant: 'default' };
+          default:
+            return null;
+        }
+      }
+      function restChrome(box) {
+        const filterOff = !box.filter || box.filter === 'none';
+        const outlineOff = box.outlineStyle === 'none' || box.outlineWidth === 0;
+        return box.w >= 2 && box.h >= 2 && filterOff && box.opacity === 1 && outlineOff;
+      }
+      function signature(box, state) {
+        if (box.w < 2 || box.h < 2) return false;
+        if (state === 'rest' || state === 'selected') return restChrome(box);
+        if (state === 'hover') return box.filter.includes('0.96');
+        if (state === 'pressed') return box.filter.includes('0.92');
+        if (state === 'focus-visible') return box.outlineWidth >= 2 && box.outlineStyle === 'solid';
+        if (state === 'disabled') return box.opacity <= 0.5;
+        return false;
+      }
+      function materialOk(el, box) {
+        const name = el.getAttribute('data-material');
+        const style = getComputedStyle(el);
+        const widthToken = parseFloat(style.getPropertyValue('--bn-len-160'));
+        const heightToken = parseFloat(style.getPropertyValue('--bn-len-96'));
+        if (Math.abs(box.w - widthToken) > 1 || Math.abs(box.h - heightToken) > 1) return false;
+        if (name === 'opaque') return box.blur === 'none';
+        return box.blur.includes('blur');
+      }
+      function selectedDistinct(el, id) {
+        if (id === 'switch' || id === 'checkbox' || id === 'radio') {
+          return Boolean(el.querySelector('input:checked'));
+        }
+        if (id === 'page-dot') {
+          const on = el.querySelector('[aria-checked="true"]');
+          const off = el.querySelector('[data-bn="bn-page-dot"]:not([aria-checked="true"])');
+          if (!on || !off) return false;
+          return getComputedStyle(on).backgroundColor !== getComputedStyle(off).backgroundColor;
+        }
+        if (id === 'segmented') {
+          const on = el.querySelector('[data-bn="bn-segment"]:has(input:checked)');
+          const off = el.querySelector('[data-bn="bn-segment"]:not(:has(input:checked))');
+          if (!on || !off) return false;
+          return getComputedStyle(on).backgroundColor !== getComputedStyle(off).backgroundColor;
+        }
+        if (id === 'tab-bar' || id === 'sidebar' || id === 'dock') {
+          const on = el.querySelector('[aria-current="page"]');
+          const off = [...el.querySelectorAll('a, button')].find(
+            (node) => node.getAttribute('aria-current') !== 'page',
+          );
+          if (!on || !off) return false;
+          const a = getComputedStyle(on);
+          const b = getComputedStyle(off);
+          return (
+            a.color !== b.color ||
+            a.backgroundColor !== b.backgroundColor ||
+            a.fontWeight !== b.fontWeight
+          );
+        }
+        if (id === 'table') {
+          const on = el.querySelector('[data-selected="true"]');
+          const off = el.querySelector('tbody tr:not([data-selected="true"])');
+          if (!on || !off) return false;
+          return getComputedStyle(on).backgroundColor !== getComputedStyle(off).backgroundColor;
+        }
+        if (id === 'date-picker') {
+          const on = el.querySelector('[data-selected="true"]');
+          const off = el.querySelector('[data-bn="bn-date-day"]:not([data-selected="true"])');
+          if (!on || !off) return false;
+          return getComputedStyle(on).backgroundColor !== getComputedStyle(off).backgroundColor;
+        }
+        return false;
+      }
+      const found = [];
+      const misses = [];
+      const restBoxes = new Map();
+      for (const title of stages) {
+        const stage = [...document.querySelectorAll('[data-bn="bn-catalog-stage"]')].find(
+          (el) =>
+            el.getAttribute('data-theme') === themeName &&
+            el.querySelector('[data-bn="bn-catalog-heading"]')?.textContent === title,
+        );
+        if (!stage) continue;
+        for (const row of stage.querySelectorAll('[data-bn="bn-catalog-row"]')) {
+          const state =
+            labels[row.querySelector('[data-bn="bn-catalog-label"]')?.textContent || ''];
+          if (!state) continue;
+          const hosts = [...row.querySelectorAll('[data-bn]')].filter((el) => {
+            const force = el.getAttribute('data-force') || '';
+            if (state === 'selected') return force === '';
+            if (state === 'hover') return force === 'hover';
+            if (state === 'pressed') return force === 'active';
+            if (state === 'focus-visible') return force === 'focus';
+            if (state === 'disabled') return force === 'disabled';
+            return force === '';
+          });
+          for (const el of hosts) {
+            const kind = classify(el);
+            if (!kind || !kind.variant) continue;
+            if (state === 'selected' && !selectable.has(kind.id)) continue;
+            const measured = boxOf(el);
+            const key = `${kind.id}|${kind.variant}`;
+            let reason = '';
+            if (!signature(measured, state)) reason = 'signature';
+            else if (kind.id === 'material' && !materialOk(el, measured)) reason = 'material';
+            else if (state === 'selected' && !selectedDistinct(el, kind.id)) reason = 'selected';
+            else if (state !== 'rest') {
+              const rest = restBoxes.get(key);
+              if (!rest) reason = 'no-rest';
+              else if (
+                Math.abs(measured.h - rest.h) > 1 ||
+                Math.abs(measured.radius - rest.radius) > 1
+              ) {
+                reason = 'geometry';
+              }
+            }
+            if (reason) {
+              if (misses.length < 30) {
+                misses.push({
+                  ...kind,
+                  state,
+                  reason,
+                  filter: measured.filter,
+                  opacity: measured.opacity,
+                  h: Math.round(measured.h),
+                });
+              }
+              continue;
+            }
+            if (state === 'rest') restBoxes.set(key, measured);
+            found.push({
+              id: kind.id,
+              variant: kind.variant,
+              state,
+              theme: themeName,
+              width: viewport,
+              kit:
+                kind.id === 'material'
+                  ? 'token: material swatch matches --bn-len-160 by --bn-len-96 and the glass blur, with the states-layer signature'
+                  : 'token: states layer matches filter, opacity, or outline, and the box matches the rest control',
+            });
+          }
+        }
+      }
+      return { found, misses };
+    },
+    { themeName: theme, viewport: width },
+  );
+}
+
 const browser = await chromium.launch();
 const cells = [];
 const failures = [];
@@ -35,7 +366,9 @@ for (const theme of ['light', 'dark']) {
   for (const width of [320, 768, 1280]) {
     const page = await browser.newPage({ viewport: { width, height: 900 } });
     await page.emulateMedia({ colorScheme: theme });
-    await page.goto('http://127.0.0.1:3000/design-system', { waitUntil: 'domcontentloaded' });
+    await page.goto('http://127.0.0.1:3000/design-system?measure=1', {
+      waitUntil: 'domcontentloaded',
+    });
     const sample = await page.evaluate((themeName) => {
       const stageName = themeName === 'dark' ? 'iOS dark' : 'iOS light';
       const stage = [...document.querySelectorAll('[data-bn="bn-catalog-stage"]')].find(
@@ -375,27 +708,77 @@ for (const theme of ['light', 'dark']) {
       sample.sheetAction &&
       close(sample.sheetAction.height, 48) &&
       close(sample.sheetAction.radius, 100);
-    if (theme === 'light' && width >= 768) {
-      if (alertOk) {
+    const darkGlass =
+      theme === 'dark' &&
+      sample.alert &&
+      (sample.alert.bg === 'rgba(26, 26, 26, 0.9)' ||
+        sample.alert.bg === 'rgba(26, 26, 26, 0.898)');
+    const alertThemeOk =
+      theme === 'light'
+        ? alertOk
+        : alertOk && darkGlass
+          ? false
+          : darkGlass &&
+            sample.alert &&
+            close(sample.alert.width, 300) &&
+            close(sample.alert.radius, 34) &&
+            close(sample.alert.pad, 14) &&
+            sample.action &&
+            close(sample.action.height, 48) &&
+            close(sample.action.radius, 100);
+    const sheetThemeOk =
+      theme === 'light'
+        ? sheetOk
+        : sample.sheet &&
+          (sample.sheet.bg === 'rgba(26, 26, 26, 0.9)' ||
+            sample.sheet.bg === 'rgba(26, 26, 26, 0.898)') &&
+          close(sample.sheet.width, 300) &&
+          close(sample.sheet.radius, 34) &&
+          close(sample.sheet.pad, 14) &&
+          sample.sheetAction &&
+          close(sample.sheetAction.height, 48) &&
+          close(sample.sheetAction.radius, 100);
+    if (width >= 768) {
+      if (theme === 'light' ? alertOk : alertThemeOk) {
         cells.push({
           id: 'alert',
           variant: 'inline',
           state: 'rest',
           theme,
           width,
-          kit: 'kit:ios-alerts 300px radius 34, action 48px radius 100 (local extract, not committed)',
+          kit:
+            theme === 'light'
+              ? 'kit:ios-alerts 300px radius 34, action 48px radius 100 (local extract, not committed)'
+              : 'token: dark alert fill is --bn-alert-surface rgba(26, 26, 26, 0.9), 300px radius 34, action 48px radius 100',
         });
       } else failures.push({ theme, width, control: 'alert', sample: sample.alert });
-      if (sheetOk) {
+      if (theme === 'light' ? sheetOk : sheetThemeOk) {
         cells.push({
           id: 'action-sheet',
           variant: 'inline',
           state: 'rest',
           theme,
           width,
-          kit: 'kit:ios-action-sheets 300px radius 34, action 48px radius 100 (local extract, not committed)',
+          kit:
+            theme === 'light'
+              ? 'kit:ios-action-sheets 300px radius 34, action 48px radius 100 (local extract, not committed)'
+              : 'token: dark action sheet fill is --bn-alert-surface rgba(26, 26, 26, 0.9), 300px radius 34, action 48px radius 100',
         });
       } else failures.push({ theme, width, control: 'action-sheet', sample: sample.sheet });
+    }
+    const swept = await sweepStates(page, theme, width);
+    const seen = new Set(
+      cells.map((cell) => `${cell.id}|${cell.variant}|${cell.state}|${cell.theme}|${cell.width}`),
+    );
+    for (const cell of swept.found) {
+      const key = `${cell.id}|${cell.variant}|${cell.state}|${cell.theme}|${cell.width}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      cells.push(cell);
+    }
+    if (swept.misses.length) {
+      console.log(`sweep misses ${theme} ${width}: ${swept.misses.length}`);
+      console.log(JSON.stringify(swept.misses.slice(0, 12)));
     }
     await page.close();
   }

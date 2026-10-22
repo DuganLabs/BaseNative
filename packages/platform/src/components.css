@@ -735,7 +735,7 @@
     justify-content: center;
     gap: var(--bn-len-2);
     min-height: var(--bn-len-68);
-    padding-block: var(--bn-len-12);
+    padding-block: calc(var(--bn-len-12) - var(--bn-len-1));
   }
 
   [data-bn='bn-list-row']:has([data-bn='bn-symbol-tile']),
@@ -1018,6 +1018,12 @@
     border-radius: var(--bn-plat-popover-corner-radius, var(--bn-plat-radius-38));
     padding: var(--bn-len-12) var(--bn-len-16);
     max-width: var(--bn-len-280);
+  }
+
+  [data-bn='bn-tooltip'][data-present='inline'] {
+    position: static;
+    display: inline-block;
+    margin: 0;
   }
 
   [data-bn='bn-tooltip'] {
