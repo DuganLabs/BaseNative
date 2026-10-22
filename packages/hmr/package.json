@@ -1,6 +1,6 @@
 {
   "name": "@basenative/hmr",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "Dev-only hot module replacement \u2014 state-preserving DOM patching, focus and caret retention, SSE live reload",
   "type": "module",
   "exports": {

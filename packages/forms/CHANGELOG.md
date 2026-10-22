@@ -1,5 +1,12 @@
 # @basenative/forms
 
+## 2.3.2
+
+### Patch Changes
+
+- Updated dependencies [fca7129]
+  - @basenative/runtime@2.3.2
+
 ## 2.3.1
 
 ### Patch Changes
