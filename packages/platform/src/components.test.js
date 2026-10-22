@@ -123,6 +123,15 @@ test('tab bar overflow is a tab, not a disclosure', () => {
   assert.match(html, /href="\/docs"/);
 });
 
+test('atom hosts can force hover, pressed, and focus for the catalog', () => {
+  resetIds();
+  assert.match(ui.renderBnSwitch({ label: 'On', force: 'hover' }), /data-force="hover"/);
+  assert.match(ui.renderBnSymbol({ mark: 'A', force: 'active' }), /data-force="active"/);
+  assert.match(ui.renderBnField({ label: 'Name', force: 'focus' }), /data-force="focus"/);
+  assert.match(ui.renderBnSearch({ disabled: true }), /disabled/);
+  assert.match(ui.renderBnPageControl({ count: 2, disabled: true }), /disabled/);
+});
+
 test('alert, switch, segmented, and page control expose their roles', () => {
   resetIds();
   assert.match(ui.renderBnAlert({ title: 'T' }), /role="alertdialog"/);

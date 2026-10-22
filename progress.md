@@ -4,18 +4,20 @@ Session date: 2026-10-22
 
 ## Tier
 
-Tokens. Branch `cursor/apple27-design-system-98aa`.
+Atoms, on `cursor/apple27-atoms-98aa`, stacked on the tokens branch.
 
-The catalog route also renders organisms so `/design-system` can show every control the matrix names. Pages are not recomposed.
+Tokens PR: https://github.com/DuganLabs/BaseNative/pull/293
+
+The catalog route renders organisms so `/design-system` can show every control the matrix names. Pages are not recomposed. Atom hosts now render rest, hover, pressed, focus, and disabled in an Atom states stage (`data-force`).
 
 ## Coverage
 
 - Cells: 3240 (58 components × variants × 6 states × light/dark × 320/768/1280)
 - Verified (gate-passed): 0%
-- Rendered on `/design-system` but not marked pass: 19.4% (630 pending, 2610 gap)
+- Rendered on `/design-system` but not marked pass: 44.3%
 - Source: `docs/design-system/coverage.json`, checked by `node scripts/design-system-coverage.js --check`
 
-No cell is `pass`. Hover, pressed, and focus-visible are gaps. Scrollbar chrome, the refraction shader, the date wheel, and the full color-picker chrome are gaps.
+No cell is `pass`. Molecule and organism hover, pressed, and focus-visible are still gaps. Scrollbar chrome, the refraction shader, the date wheel, and the full color-picker chrome are gaps.
 
 ## Blocked
 
@@ -27,7 +29,7 @@ No cell is `pass`. Hover, pressed, and focus-visible are gaps. Scrollbar chrome,
 
 ## Next task
 
-Atoms tier, its own branch and PR: render hover, pressed, and focus-visible for atom controls, and pay down contrast on those controls. Then molecules, then organisms, then templates, then pages.
+Molecules tier: popup, pulldown, segmented, menu, and the other molecules get the same forced hover, pressed, and focus treatment. Contrast on `/design-system` is still open. Pages stay unrebuilt until organisms pass.
 
 ## Concerns
 
@@ -39,7 +41,8 @@ Atoms tier, its own branch and PR: render hover, pressed, and focus-visible for 
 
 ## Deviations
 
-- Organisms ship in this tokens PR so the catalog can render them. That is earlier than “one tier per PR”. Pages still inherit; nothing was spot-fixed per route.
+- Organisms shipped in the tokens PR so the catalog can render them. That is earlier than “one tier per PR”. Pages still inherit; nothing was spot-fixed per route.
+- Atom hover, pressed, and focus are `data-force` on the host, the same channel buttons already used. They are rendered, not verified.
 - Shared footer text uses `--text-0` so the site chrome clears the contrast sample. The rule lives in `examples/express/public/styles.css` because that footer is site chrome, not a platform organism.
 - CI (`.github/workflows/ci.yml`) runs on `pull_request` as well as `workflow_dispatch`, so the Playwright and lint gates can block a merge. The 2026-09-14 manual-only policy still applies to the other workflows. Deploy-on-push stays in PR 292.
 - Apple kits were comparison only. MIT texts are in `NOTICE`.

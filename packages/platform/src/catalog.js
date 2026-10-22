@@ -90,6 +90,73 @@ function buttons() {
   );
 }
 
+function atomStates() {
+  const columns = [
+    ['Rest', {}],
+    ['Hover', { force: 'hover' }],
+    ['Pressed', { force: 'active' }],
+    ['Focus', { force: 'focus' }],
+    ['Disabled', { force: 'disabled', disabled: true }],
+  ];
+  return columns
+    .map(([label, state]) =>
+      row(
+        label,
+        [
+          renderBnButton('Play', { variant: 'prominent', size: 'medium', ...state }),
+          renderBnButton('Glass', { variant: 'glass', size: 'medium', ...state }),
+          renderBnSymbol({ tint: 'blue', mark: 'A', force: state.force }),
+          renderBnBadge('3', { force: state.force }),
+          renderBnSwitch({
+            label: 'On',
+            checked: true,
+            force: state.force,
+            disabled: state.disabled,
+          }),
+          renderBnCheckbox({
+            label: 'Check',
+            checked: true,
+            force: state.force,
+            disabled: state.disabled,
+          }),
+          renderBnRadio({
+            label: 'Radio',
+            checked: true,
+            name: `atom-${label}`,
+            force: state.force,
+            disabled: state.disabled,
+          }),
+          renderBnSlider({ label: 'Level', force: state.force, disabled: state.disabled }),
+          renderBnDial({ label: 'Dial', force: state.force, disabled: state.disabled }),
+          renderBnStepper({
+            label: 'Count',
+            value: 2,
+            force: state.force,
+            disabled: state.disabled,
+          }),
+          renderBnProgress({ value: 0.4, force: state.force }),
+          renderBnSpinner({ force: state.force }),
+          renderBnField({
+            label: 'Name',
+            placeholder: 'Title',
+            force: state.force,
+            disabled: state.disabled,
+          }),
+          renderBnSearch({ force: state.force, disabled: state.disabled }),
+          renderBnColorWell({ force: state.force, disabled: state.disabled }),
+          renderBnPageControl({
+            count: 3,
+            current: 1,
+            force: state.force,
+            disabled: state.disabled,
+          }),
+          renderBnAppIcon({ monogram: 'Bn', label: 'BaseNative', force: state.force }),
+        ].join(''),
+      ),
+    )
+    .join('');
+}
+
 function iosBody() {
   return [
     row('Buttons', buttons()),
@@ -436,6 +503,7 @@ export function catalogBody() {
 <p>Atoms, molecules, and organisms. Materials are translated from MIT stylesheets. Copy the semantic HTML under each organism.</p>
 </header>
 ${stage('Materials', 'data-bn-platform="ios" data-theme="light"', row('Liquid Glass', ['ultrathin', 'thin', 'sm', 'medium', 'lg', 'thick', 'ultrathick', 'opaque'].map((name) => renderBnMaterial({ name, label: name })).join('')))}
+${stage('Atom states', 'data-bn-platform="ios" data-theme="light"', atomStates())}
 ${stage('Organisms', 'data-bn-platform="ios" data-theme="light"', organismRows())}
 ${stage('iOS light', 'data-bn-platform="ios" data-theme="light"', iosBody())}
 ${stage('iOS dark', 'data-bn-platform="ios" data-theme="dark"', iosBody())}

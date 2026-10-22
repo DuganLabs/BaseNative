@@ -1516,6 +1516,7 @@
     outline-offset: var(--bn-len-2);
   }
 
+  [data-force='hover'],
   [data-bn='bn-button'][data-force='hover'],
   [data-bn='bn-button']:hover:not(:disabled),
   [data-bn='bn-menu-item'][data-force='hover'],
@@ -1524,9 +1525,28 @@
     filter: brightness(0.96);
   }
 
+  [data-force='active'],
   [data-bn='bn-button'][data-force='active'],
   [data-bn='bn-button']:active {
     filter: brightness(0.92);
+  }
+
+  [data-force='focus'] {
+    outline: var(--bn-len-2) solid var(--bn-plat-color-accents-blue);
+    outline-offset: var(--bn-len-2);
+  }
+
+  [data-force='disabled'],
+  [data-bn='bn-checkbox']:has(input:disabled),
+  [data-bn='bn-radio']:has(input:disabled),
+  [data-bn='bn-slider']:has(input:disabled),
+  [data-bn='bn-dial']:has(input:disabled),
+  [data-bn='bn-field']:has(:disabled),
+  [data-bn='bn-search']:has(:disabled),
+  [data-bn='bn-color-well']:has(:disabled),
+  [data-bn='bn-stepper']:disabled,
+  [data-bn='bn-page-control']:has(:disabled) {
+    opacity: 0.5;
   }
 
   [data-bn='bn-button']:disabled,

@@ -32,7 +32,7 @@ const COMPONENTS = [
     tier: 'atom',
     renderer: 'renderBnButton',
     variants: ['prominent', 'bordered', 'borderless', 'glass', 'glass-prominent', 'destructive'],
-    rendered: ['rest', 'disabled'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Capsule on the large size.', 'One line.', ...depth],
   },
   {
@@ -53,7 +53,7 @@ const COMPONENTS = [
       'cyan',
       'brown',
     ],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['30px tile, original mark, tint fill.', 'One line.'],
   },
   {
@@ -61,7 +61,7 @@ const COMPONENTS = [
     tier: 'atom',
     renderer: 'renderBnBadge',
     variants: ['red', 'blue', 'green', 'orange'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Count stays one line.'],
   },
   {
@@ -69,7 +69,7 @@ const COMPONENTS = [
     tier: 'atom',
     renderer: 'renderBnSwitch',
     variants: ['default'],
-    rendered: ['rest', 'selected'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'selected'],
     acceptance: ['Checked state is the green accent, not a flat grey.'],
   },
   {
@@ -77,7 +77,7 @@ const COMPONENTS = [
     tier: 'atom',
     renderer: 'renderBnCheckbox',
     variants: ['default'],
-    rendered: ['rest', 'selected'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'selected'],
     acceptance: ['Native checkbox, associated label.'],
   },
   {
@@ -85,7 +85,7 @@ const COMPONENTS = [
     tier: 'atom',
     renderer: 'renderBnRadio',
     variants: ['default'],
-    rendered: ['rest', 'selected'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'selected'],
     acceptance: ['Native radio, associated label.'],
   },
   {
@@ -93,7 +93,7 @@ const COMPONENTS = [
     tier: 'atom',
     renderer: 'renderBnSlider',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Track and thumb stay inside the row.'],
   },
   {
@@ -101,7 +101,7 @@ const COMPONENTS = [
     tier: 'atom',
     renderer: 'renderBnDial',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Value label stays one line.'],
   },
   {
@@ -109,7 +109,7 @@ const COMPONENTS = [
     tier: 'atom',
     renderer: 'renderBnStepper',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Decrement and increment are separate buttons.'],
   },
   {
@@ -117,7 +117,7 @@ const COMPONENTS = [
     tier: 'atom',
     renderer: 'renderBnProgress',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Determinate bar uses the accent.'],
   },
   {
@@ -125,7 +125,7 @@ const COMPONENTS = [
     tier: 'atom',
     renderer: 'renderBnSpinner',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Busy indicator has an accessible name.'],
   },
   {
@@ -133,7 +133,7 @@ const COMPONENTS = [
     tier: 'atom',
     renderer: 'renderBnField',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Label and field stay inside the row.'],
   },
   {
@@ -141,7 +141,7 @@ const COMPONENTS = [
     tier: 'atom',
     renderer: 'renderBnSearch',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Search field does not overflow the row.'],
   },
   {
@@ -149,7 +149,7 @@ const COMPONENTS = [
     tier: 'atom',
     renderer: 'renderBnColorWell',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Swatch shows the chosen colour.'],
   },
   {
@@ -157,7 +157,7 @@ const COMPONENTS = [
     tier: 'atom',
     renderer: 'renderBnPageControl',
     variants: ['default'],
-    rendered: ['rest', 'selected'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'selected'],
     acceptance: ['Current dot is distinct. Dots stay one row.'],
   },
   {
@@ -165,7 +165,7 @@ const COMPONENTS = [
     tier: 'atom',
     renderer: 'renderBnAppIcon',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Monogram stays inside the tile.'],
   },
   {
