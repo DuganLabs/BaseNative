@@ -716,9 +716,9 @@ Notification, a status region. A floating card with title and message.
 
 ### `renderBnPageControl(options)`
 Page control. Dots are 8×8. Active is Labels/Primary, inactive Labels/Tertiary.
-`packages/platform/src/components.js` · emits `<nav data-bn="bn-page-control">` + 1 more contract(s)
+`packages/platform/src/components.js` · emits `<div data-bn="bn-page-control">` + 1 more contract(s)
 - variants: none declared
-- use instead of: a bare <nav> with your own classes, or literal <nav data-bn="bn-page-control"> markup
+- use instead of: a bare <div> with your own classes, or literal <div data-bn="bn-page-control"> markup
 
 ### `renderBnPopover(options)`
 Popover. Corner radius is the popover dimension token. The aside is the popover.

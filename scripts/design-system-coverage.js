@@ -294,7 +294,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnNavBar',
     variants: ['large-title', 'inline-title'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Large Title does not wrap. Back label stays one line.'],
   },
   {
@@ -302,7 +302,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnTabBar',
     variants: ['default', 'overflow'],
-    rendered: ['rest', 'selected'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'selected'],
     acceptance: ['Tab labels stay one line. Overflow is a tab, not a disclosure.'],
   },
   {
@@ -310,7 +310,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnToolbar',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: ['Commands stay one line.'],
   },
   {
@@ -318,7 +318,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnSidebar',
     variants: ['default'],
-    rendered: ['rest', 'selected'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'selected'],
     acceptance: ['Item labels stay one line. Selected row is distinct.'],
   },
   {
@@ -342,7 +342,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnAlert',
     variants: ['inline'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: [...depth, 'Actions stay one line.'],
   },
   {
@@ -358,7 +358,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnSheet',
     variants: ['inline'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: [...depth],
   },
   {
@@ -382,7 +382,7 @@ const COMPONENTS = [
     tier: 'organism',
     renderer: 'renderBnNotification',
     variants: ['default'],
-    rendered: ['rest'],
+    rendered: ['rest', 'hover', 'pressed', 'focus-visible', 'disabled'],
     acceptance: [...depth],
   },
   {

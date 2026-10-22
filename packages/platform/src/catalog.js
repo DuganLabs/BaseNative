@@ -142,7 +142,11 @@ function atomStates() {
             force: state.force,
             disabled: state.disabled,
           }),
-          renderBnSearch({ force: state.force, disabled: state.disabled }),
+          renderBnSearch({
+            label: `Find ${label}`,
+            force: state.force,
+            disabled: state.disabled,
+          }),
           renderBnColorWell({ force: state.force, disabled: state.disabled }),
           renderBnPageControl({
             count: 3,
@@ -200,7 +204,7 @@ function moleculeStates() {
           renderBnPopover({ inline: true, label: 'More', body: 'Note', ...state }),
           renderBnTooltip({ label: 'Info', tip: 'Hint', ...state }),
           renderBnDisclosure({ label: 'Details', body: 'Body', open: true, ...state }),
-          renderBnIndexBar({ letters: ['A', 'B'], ...state }),
+          renderBnIndexBar({ letters: ['A', 'B'], label: `Index ${label}`, ...state }),
           renderBnMetric({ value: '12', label: 'Items', ...state }),
         ].join(''),
       ),
@@ -208,7 +212,62 @@ function moleculeStates() {
     .join('');
 }
 
-function iosBody() {
+function organismStates() {
+  const columns = [
+    ['Rest', {}],
+    ['Hover', { force: 'hover' }],
+    ['Pressed', { force: 'active' }],
+    ['Focus', { force: 'focus' }],
+    ['Disabled', { force: 'disabled' }],
+  ];
+  return columns
+    .map(([label, state]) =>
+      row(
+        label,
+        [
+          renderBnNavBar({
+            title: 'Title',
+            large: false,
+            heading: 'h2',
+            label: `Nav ${label}`,
+            ...state,
+          }),
+          renderBnTabBar({
+            label: `Tabs ${label}`,
+            tabs: [{ label: 'Today', current: true }, { label: 'Library' }],
+            ...state,
+          }),
+          renderBnToolbar({
+            label: `Tools ${label}`,
+            items: [{ label: 'Edit' }],
+            ...state,
+          }),
+          renderBnSidebar({
+            inline: true,
+            label: `Side ${label}`,
+            items: [{ label: 'Inbox', current: true }],
+            ...state,
+          }),
+          renderBnAlert({
+            inline: true,
+            title: `Alert ${label}`,
+            message: 'Save this document?',
+            ...state,
+          }),
+          renderBnSheet({
+            inline: true,
+            title: `Sheet ${label}`,
+            body: 'Details',
+            ...state,
+          }),
+          renderBnNotification({ title: 'Notice', message: label, ...state }),
+        ].join(''),
+      ),
+    )
+    .join('');
+}
+
+function iosBody(tone = 'light') {
   return [
     row('Buttons', buttons()),
     row(
@@ -251,7 +310,7 @@ function iosBody() {
     row(
       'Fields',
       renderBnField({ label: 'Name', placeholder: 'Required' }) +
-        renderBnSearch({ label: 'Search' }),
+        renderBnSearch({ label: `Search iOS ${tone}` }),
     ),
     row(
       'Color and date',
@@ -325,13 +384,21 @@ function iosBody() {
       'Page control and tabs',
       renderBnPageControl({ count: 5, current: 2 }) +
         renderBnTabBar({
+          label: `iOS tabs ${tone}`,
           tabs: [{ label: 'Today', current: true }, { label: 'Library' }, { label: 'Search' }],
         }),
     ),
     row(
       'Toolbar, sidebar, menu bar',
-      renderBnToolbar({ items: [{ label: 'Edit' }, { label: 'Done' }] }) +
-        renderBnSidebar({ items: [{ label: 'Inbox', current: true }, { label: 'Archive' }] }) +
+      renderBnToolbar({
+        label: `iOS toolbar ${tone}`,
+        items: [{ label: 'Edit' }, { label: 'Done' }],
+      }) +
+        renderBnSidebar({
+          inline: true,
+          label: `iOS sidebar ${tone}`,
+          items: [{ label: 'Inbox', current: true }, { label: 'Archive' }],
+        }) +
         renderBnMenubar({ items: [{ label: '9:41' }, { label: 'LTE' }] }),
     ),
     row(
@@ -348,7 +415,7 @@ function iosBody() {
   ].join('');
 }
 
-function macosBody() {
+function macosBody(tone = 'light') {
   return [
     row(
       'Buttons',
@@ -396,7 +463,7 @@ function macosBody() {
     row(
       'Fields and search',
       renderBnField({ label: 'Name', placeholder: 'Name' }) +
-        renderBnSearch({ label: 'Search', placeholder: 'Search' }) +
+        renderBnSearch({ label: `Search macOS ${tone}`, placeholder: 'Search' }) +
         renderBnColorWell({ label: 'Color', value: '#0088ff' }),
     ),
     row(
@@ -453,8 +520,15 @@ function macosBody() {
     row(
       'Window, sidebar, toolbar',
       renderBnWindow({ title: 'Document', body: 'Window background is the kit token.' }) +
-        renderBnSidebar({ items: [{ label: 'Recents', current: true }, { label: 'Shared' }] }) +
-        renderBnToolbar({ items: [{ label: 'Back' }, { label: 'Forward' }] }),
+        renderBnSidebar({
+          inline: true,
+          label: `macOS sidebar ${tone}`,
+          items: [{ label: 'Recents', current: true }, { label: 'Shared' }],
+        }) +
+        renderBnToolbar({
+          label: `macOS toolbar ${tone}`,
+          items: [{ label: 'Back' }, { label: 'Forward' }],
+        }),
     ),
     row(
       'Scroll, image well, notification',
@@ -468,7 +542,7 @@ function macosBody() {
 }
 
 function usage(label, html) {
-  return `<section data-bn="bn-catalog-row"><h3 data-bn="bn-catalog-label">${label}</h3><figure data-bn="bn-catalog-demo">${html}</figure><pre data-bn="bn-catalog-usage"><code>${escapeHtml(html)}</code></pre></section>`;
+  return `<section data-bn="bn-catalog-row"><h3 data-bn="bn-catalog-label">${label}</h3><figure data-bn="bn-catalog-demo">${html}</figure><pre data-bn="bn-catalog-usage" tabindex="0"><code>${escapeHtml(html)}</code></pre></section>`;
 }
 
 /** Organisms. Copy the semantic HTML under each one. */
@@ -485,6 +559,7 @@ function organismRows() {
   const hero = renderBnHero({
     eyebrow: 'Runtime',
     title: 'BaseNative',
+    heading: 'h2',
     lede: 'A glass window header composed from the hero organism.',
     actions: [
       { label: 'Continue', variant: 'prominent' },
@@ -496,6 +571,7 @@ function organismRows() {
       'Navigation bar',
       renderBnNavBar({
         title: 'Settings',
+        heading: 'h2',
         back: { label: 'Back', href: '/' },
         subtitle: 'Large Title',
       }),
@@ -515,6 +591,7 @@ function organismRows() {
     usage(
       'Inspector',
       renderBnInspector({
+        inline: true,
         title: 'Inspector',
         sections: [{ label: 'Type', fields: [{ label: 'Name', placeholder: 'Title' }] }],
       }),
@@ -537,7 +614,7 @@ function organismRows() {
       renderBnBadge('3') +
         renderBnSymbol({ tint: 'orange', mark: 'A' }) +
         renderBnMetric({ value: '72', label: 'Degrees', detail: 'Today' }) +
-        renderBnIndexBar({ letters: ['A', 'B', 'C'] }),
+        renderBnIndexBar({ letters: ['A', 'B', 'C'], label: 'Index sample' }),
     ),
   ].join('');
 }
@@ -556,13 +633,14 @@ export function catalogBody() {
 ${stage('Materials', 'data-bn-platform="ios" data-theme="light"', row('Liquid Glass', ['ultrathin', 'thin', 'sm', 'medium', 'lg', 'thick', 'ultrathick', 'opaque'].map((name) => renderBnMaterial({ name, label: name })).join('')))}
 ${stage('Atom states', 'data-bn-platform="ios" data-theme="light"', atomStates())}
 ${stage('Molecule states', 'data-bn-platform="ios" data-theme="light"', moleculeStates())}
+${stage('Organism states', 'data-bn-platform="ios" data-theme="light"', organismStates())}
 ${stage('Organisms', 'data-bn-platform="ios" data-theme="light"', organismRows())}
-${stage('iOS light', 'data-bn-platform="ios" data-theme="light"', iosBody())}
-${stage('iOS dark', 'data-bn-platform="ios" data-theme="dark"', iosBody())}
+${stage('iOS light', 'data-bn-platform="ios" data-theme="light"', iosBody('light'))}
+${stage('iOS dark', 'data-bn-platform="ios" data-theme="dark"', iosBody('dark'))}
 ${stage('iOS increased contrast', 'data-bn-platform="ios" data-theme="light" data-bn-contrast="more"', row('Prominent and secondary label', renderBnButton('Continue') + '<p data-bn="bn-catalog-quiet">Secondary label</p>'))}
 ${stage('Dynamic Type xxxLarge', 'data-bn-platform="ios" data-bn-type="xxxlarge"', typeSample)}
-${stage('macOS light', 'data-bn-platform="macos" data-bn-control="medium" data-theme="light"', macosBody())}
-${stage('macOS dark', 'data-bn-platform="macos" data-bn-control="medium" data-theme="dark"', macosBody())}
+${stage('macOS light', 'data-bn-platform="macos" data-bn-control="medium" data-theme="light"', macosBody('light'))}
+${stage('macOS dark', 'data-bn-platform="macos" data-bn-control="medium" data-theme="dark"', macosBody('dark'))}
 ${stage('macOS Large control', 'data-bn-platform="macos" data-bn-control="large" data-theme="light"', row('Capsule button', renderBnButton('Save', { variant: 'prominent' })))}
 <section data-bn="bn-catalog-stage">
 <h2 data-bn="bn-catalog-heading">What the screenshots could not settle</h2>

@@ -20,11 +20,11 @@
   "summary": {
     "components": 58,
     "cells": 3240,
-    "pass": 24,
-    "pending": 1746,
-    "gap": 1470,
-    "verifiedPercent": 0.7,
-    "renderedPercent": 54.6
+    "pass": 55,
+    "pending": 1931,
+    "gap": 1254,
+    "verifiedPercent": 1.7,
+    "renderedPercent": 61.3
   },
   "components": [
     {
@@ -445,8 +445,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent disabled 50px capsule, tertiary fill (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -461,8 +461,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent disabled 50px capsule, tertiary fill (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -477,8 +477,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent disabled 50px capsule, tertiary fill (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -15023,8 +15023,8 @@
           "state": "rest",
           "theme": "light",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls inactive dot 8px, Labels/Tertiary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15034,8 +15034,8 @@
           "state": "rest",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls inactive dot 8px, Labels/Tertiary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15045,8 +15045,8 @@
           "state": "rest",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls inactive dot 8px, Labels/Tertiary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15056,8 +15056,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls inactive dot 8px, Labels/Tertiary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15067,8 +15067,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls inactive dot 8px, Labels/Tertiary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15078,8 +15078,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls inactive dot 8px, Labels/Tertiary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15353,8 +15353,8 @@
           "state": "selected",
           "theme": "light",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls active dot 8px, Labels/Primary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15364,8 +15364,8 @@
           "state": "selected",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls active dot 8px, Labels/Primary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15375,8 +15375,8 @@
           "state": "selected",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls active dot 8px, Labels/Primary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15386,8 +15386,8 @@
           "state": "selected",
           "theme": "dark",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls active dot 8px, Labels/Primary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15397,8 +15397,8 @@
           "state": "selected",
           "theme": "dark",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls active dot 8px, Labels/Primary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15408,8 +15408,8 @@
           "state": "selected",
           "theme": "dark",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls active dot 8px, Labels/Primary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -21788,8 +21788,8 @@
           "state": "selected",
           "theme": "light",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-segmented selected pill 46px radius 1000, selected-fill (local extract, not committed)",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21799,8 +21799,8 @@
           "state": "selected",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-segmented selected pill 46px radius 1000, selected-fill (local extract, not committed)",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21810,8 +21810,8 @@
           "state": "selected",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-segmented selected pill 46px radius 1000, selected-fill (local extract, not committed)",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21821,8 +21821,8 @@
           "state": "selected",
           "theme": "dark",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-segmented selected pill 46px radius 1000, selected-fill (local extract, not committed)",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21832,8 +21832,8 @@
           "state": "selected",
           "theme": "dark",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-segmented selected pill 46px radius 1000, selected-fill (local extract, not committed)",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21843,8 +21843,8 @@
           "state": "selected",
           "theme": "dark",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-segmented selected pill 46px radius 1000, selected-fill (local extract, not committed)",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -23212,8 +23212,8 @@
           "state": "rest",
           "theme": "light",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-lists row Height=Tall 68px, padding inline 16 (local extract, not committed)",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23223,8 +23223,8 @@
           "state": "rest",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-lists row Height=Tall 68px, padding inline 16 (local extract, not committed)",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23234,8 +23234,8 @@
           "state": "rest",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-lists row Height=Tall 68px, padding inline 16 (local extract, not committed)",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23245,8 +23245,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-lists row Height=Tall 68px, padding inline 16 (local extract, not committed)",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23256,8 +23256,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-lists row Height=Tall 68px, padding inline 16 (local extract, not committed)",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23267,8 +23267,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-lists row Height=Tall 68px, padding inline 16 (local extract, not committed)",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -27618,7 +27618,11 @@
         "selected"
       ],
       "renderedStates": [
-        "rest"
+        "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled"
       ],
       "cells": [
         {
@@ -27692,8 +27696,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27703,8 +27707,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27714,8 +27718,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27725,8 +27729,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27736,8 +27740,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27747,8 +27751,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27758,8 +27762,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27769,8 +27773,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27780,8 +27784,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27791,8 +27795,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27802,8 +27806,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27813,8 +27817,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27824,8 +27828,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27835,8 +27839,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27846,8 +27850,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27857,8 +27861,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27868,8 +27872,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27879,8 +27883,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27890,8 +27894,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27901,8 +27905,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27912,8 +27916,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27923,8 +27927,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27934,8 +27938,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -27945,8 +27949,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28088,8 +28092,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28099,8 +28103,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28110,8 +28114,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28121,8 +28125,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28132,8 +28136,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28143,8 +28147,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28154,8 +28158,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28165,8 +28169,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28176,8 +28180,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28187,8 +28191,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28198,8 +28202,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28209,8 +28213,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28220,8 +28224,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28231,8 +28235,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28242,8 +28246,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28253,8 +28257,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28264,8 +28268,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28275,8 +28279,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28286,8 +28290,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28297,8 +28301,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28308,8 +28312,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28319,8 +28323,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28330,8 +28334,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28341,8 +28345,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Large Title does not wrap. Back label stays one line."
           ]
@@ -28434,6 +28438,10 @@
       ],
       "renderedStates": [
         "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled",
         "selected"
       ],
       "cells": [
@@ -28508,8 +28516,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28519,8 +28527,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28530,8 +28538,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28541,8 +28549,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28552,8 +28560,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28563,8 +28571,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28574,8 +28582,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28585,8 +28593,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28596,8 +28604,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28607,8 +28615,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28618,8 +28626,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28629,8 +28637,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28640,8 +28648,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28651,8 +28659,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28662,8 +28670,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28673,8 +28681,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28684,8 +28692,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28695,8 +28703,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28706,8 +28714,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28717,8 +28725,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28728,8 +28736,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28739,8 +28747,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28750,8 +28758,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28761,8 +28769,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28904,8 +28912,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28915,8 +28923,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28926,8 +28934,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28937,8 +28945,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28948,8 +28956,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28959,8 +28967,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28970,8 +28978,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28981,8 +28989,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -28992,8 +29000,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -29003,8 +29011,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -29014,8 +29022,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -29025,8 +29033,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -29036,8 +29044,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -29047,8 +29055,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -29058,8 +29066,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -29069,8 +29077,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -29080,8 +29088,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -29091,8 +29099,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -29102,8 +29110,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -29113,8 +29121,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -29124,8 +29132,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -29135,8 +29143,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -29146,8 +29154,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -29157,8 +29165,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Tab labels stay one line. Overflow is a tab, not a disclosure."
           ]
@@ -29248,7 +29256,11 @@
         "selected"
       ],
       "renderedStates": [
-        "rest"
+        "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled"
       ],
       "cells": [
         {
@@ -29322,8 +29334,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29333,8 +29345,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29344,8 +29356,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29355,8 +29367,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29366,8 +29378,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29377,8 +29389,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29388,8 +29400,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29399,8 +29411,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29410,8 +29422,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29421,8 +29433,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29432,8 +29444,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29443,8 +29455,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29454,8 +29466,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29465,8 +29477,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29476,8 +29488,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29487,8 +29499,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29498,8 +29510,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29509,8 +29521,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29520,8 +29532,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29531,8 +29543,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29542,8 +29554,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29553,8 +29565,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29564,8 +29576,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29575,8 +29587,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Commands stay one line."
           ]
@@ -29667,6 +29679,10 @@
       ],
       "renderedStates": [
         "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled",
         "selected"
       ],
       "cells": [
@@ -29741,8 +29757,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29752,8 +29768,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29763,8 +29779,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29774,8 +29790,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29785,8 +29801,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29796,8 +29812,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29807,8 +29823,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29818,8 +29834,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29829,8 +29845,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29840,8 +29856,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29851,8 +29867,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29862,8 +29878,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29873,8 +29889,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29884,8 +29900,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29895,8 +29911,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29906,8 +29922,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29917,8 +29933,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29928,8 +29944,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29939,8 +29955,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29950,8 +29966,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29961,8 +29977,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29972,8 +29988,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29983,8 +29999,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -29994,8 +30010,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Item labels stay one line. Selected row is distinct."
           ]
@@ -31066,7 +31082,11 @@
         "selected"
       ],
       "renderedStates": [
-        "rest"
+        "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled"
       ],
       "cells": [
         {
@@ -31089,8 +31109,8 @@
           "state": "rest",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-alerts 300px radius 34, action 48px radius 100 (local extract, not committed)",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31104,8 +31124,8 @@
           "state": "rest",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-alerts 300px radius 34, action 48px radius 100 (local extract, not committed)",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31164,8 +31184,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31179,8 +31199,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31194,8 +31214,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31209,8 +31229,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31224,8 +31244,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31239,8 +31259,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31254,8 +31274,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31269,8 +31289,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31284,8 +31304,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31299,8 +31319,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31314,8 +31334,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31329,8 +31349,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31344,8 +31364,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31359,8 +31379,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31374,8 +31394,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31389,8 +31409,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31404,8 +31424,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31419,8 +31439,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31434,8 +31454,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31449,8 +31469,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31464,8 +31484,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31479,8 +31499,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31494,8 +31514,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31509,8 +31529,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32154,7 +32174,11 @@
         "selected"
       ],
       "renderedStates": [
-        "rest"
+        "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled"
       ],
       "cells": [
         {
@@ -32246,8 +32270,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32260,8 +32284,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32274,8 +32298,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32288,8 +32312,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32302,8 +32326,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32316,8 +32340,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32330,8 +32354,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32344,8 +32368,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32358,8 +32382,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32372,8 +32396,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32386,8 +32410,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32400,8 +32424,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32414,8 +32438,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32428,8 +32452,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32442,8 +32466,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32456,8 +32480,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32470,8 +32494,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32484,8 +32508,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32498,8 +32522,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32512,8 +32536,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32526,8 +32550,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32540,8 +32564,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32554,8 +32578,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32568,8 +32592,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32703,8 +32727,8 @@
           "state": "rest",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-action-sheets 300px radius 34, action 48px radius 100 (local extract, not committed)",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32718,8 +32742,8 @@
           "state": "rest",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-action-sheets 300px radius 34, action 48px radius 100 (local extract, not committed)",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -33660,7 +33684,11 @@
         "selected"
       ],
       "renderedStates": [
-        "rest"
+        "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled"
       ],
       "cells": [
         {
@@ -33752,8 +33780,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -33766,8 +33794,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -33780,8 +33808,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -33794,8 +33822,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -33808,8 +33836,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -33822,8 +33850,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -33836,8 +33864,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -33850,8 +33878,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -33864,8 +33892,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -33878,8 +33906,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -33892,8 +33920,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -33906,8 +33934,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -33920,8 +33948,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -33934,8 +33962,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -33948,8 +33976,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -33962,8 +33990,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -33976,8 +34004,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -33990,8 +34018,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -34004,8 +34032,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -34018,8 +34046,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -34032,8 +34060,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -34046,8 +34074,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -34060,8 +34088,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -34074,8 +34102,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",

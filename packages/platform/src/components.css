@@ -242,15 +242,16 @@
     font-weight: var(--bn-plat-weight-regular);
   }
 
-  /* Segmented — track Fills/Tertiary, radius 100; selected pill shadow 0 2px 20px #0000000f */
+  /* Segmented — track Fills/Tertiary, radius 100. Slot padding 2 and gap 4
+     leave a 46px pill inside the 50px large control. */
   [data-bn='bn-segmented'] {
     display: inline-flex;
     align-items: stretch;
-    gap: 0;
+    gap: var(--bn-len-4);
     box-sizing: border-box;
     margin: 0;
     border: 0;
-    padding: 0;
+    padding: var(--bn-len-2);
     height: var(--bn-len-50);
     min-height: var(--bn-len-50);
     min-inline-size: 0;
@@ -1567,7 +1568,8 @@
     box-sizing: border-box;
     height: var(--bn-len-50);
     min-height: var(--bn-len-50);
-    padding: 0;
+    padding: var(--bn-len-2);
+    gap: var(--bn-len-4);
     border-radius: var(--bn-plat-radius-100);
     background: var(--bn-plat-color-fills-tertiary);
     overflow: hidden;
@@ -1594,6 +1596,119 @@
     background: var(--bn-plat-color-miscellaneous-segmented-control-selected-fill);
     color: var(--bn-plat-color-labels-primary);
     box-shadow: 0 var(--bn-len-2) var(--bn-len-20) var(--bn-plat-swatch-0000000f);
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-switch'] input,
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-switch-input'] {
+    width: var(--bn-len-51);
+    height: var(--bn-len-31);
+    border-radius: var(--bn-plat-radius-31);
+    background: var(--bn-plat-color-fills-tertiary);
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-switch'] input:checked,
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-switch-input']:checked {
+    background: var(--bn-plat-color-accents-green);
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-switch'] input::after,
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-switch-input']::after {
+    top: var(--bn-len-2);
+    left: var(--bn-len-2);
+    width: var(--bn-len-27);
+    height: var(--bn-len-27);
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-switch'] input:checked::after,
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-switch-input']:checked::after {
+    left: var(--bn-len-22);
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-checkbox'] input {
+    width: var(--bn-len-22);
+    height: var(--bn-len-22);
+    border-radius: var(--bn-plat-radius-6);
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-radio'] input {
+    width: var(--bn-len-22);
+    height: var(--bn-len-22);
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-field-control'],
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-search'] input,
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-combobox'] input {
+    min-height: var(--bn-len-34);
+    padding: var(--bn-len-7) var(--bn-len-12);
+    border-radius: var(--bn-plat-radius-10);
+    font-size: inherit;
+    background: var(--bn-plat-color-fills-tertiary);
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-stepper'] {
+    min-height: var(--bn-len-32);
+    border-radius: var(--bn-plat-radius-1000);
+    background: var(--bn-plat-color-fills-tertiary);
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-stepper-dec'],
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-stepper-inc'] {
+    min-width: var(--bn-len-32);
+    font-size: var(--bn-plat-font-body-size);
+    color: var(--bn-plat-color-accents-blue);
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-popup-button'],
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-pulldown-button'] {
+    min-height: var(--bn-len-44);
+    padding: var(--bn-len-13) 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--bn-plat-color-accents-blue);
+    font-size: var(--bn-type-18);
+    line-height: var(--bn-type-18);
+    font-weight: var(--bn-plat-weight-semibold);
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-menu-item'] {
+    min-height: calc(
+      var(--bn-plat-menus-menu-items-padding-top-bottom, var(--bn-len-10)) * 2 +
+        var(--bn-plat-menus-menu-items-title-line-height, var(--bn-len-18))
+    );
+    font-size: var(--bn-plat-menus-menu-items-title-font-size, var(--bn-type-17));
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-alert'],
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-action-sheet'] {
+    width: var(--bn-len-300);
+    max-width: 100%;
+    min-width: 0;
+    padding: var(--bn-len-14);
+    border-radius: var(--bn-plat-radius-34);
+    background: var(--bn-plat-swatch-rgba-255-255-255-0-7);
+    backdrop-filter: blur(var(--bn-plat-glass-frost-medium));
+    box-shadow: var(--bn-glass-edge), var(--bn-glass-shadow-alert);
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-action-list'] {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    min-width: 0;
+    padding: 0;
+    gap: var(--bn-len-8);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-action'] {
+    min-height: var(--bn-len-48);
+    padding: var(--bn-len-13) var(--bn-len-16);
+    border-radius: var(--bn-plat-radius-100);
+    background: var(--bn-plat-swatch-rgba-255-255-255-0-6);
+    color: var(--bn-plat-color-accents-blue);
   }
 
   [data-bn='bn-sidebar-item'] svg {
@@ -1682,6 +1797,18 @@
   [data-bn='bn-switch-input']:disabled,
   [data-bn='bn-field-control']:disabled {
     opacity: 0.5;
+  }
+
+  /* The site fieldset rule lives in this layer and pads every fieldset.
+     The iOS segmented track keeps the kit's 2px slot padding. */
+  [data-bn-platform='ios'] [data-bn='bn-segmented'] {
+    padding: var(--bn-len-2);
+    gap: var(--bn-len-4);
+  }
+
+  [data-bn-platform='ios'] [data-bn-platform='macos'] [data-bn='bn-segmented'] {
+    padding: 0;
+    gap: 0;
   }
 
   /* Beats a later opaque list fill on the site shell. */
