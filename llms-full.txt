@@ -2892,6 +2892,7 @@ Apple iOS, iPadOS, and macOS 27 kit tokens and semantic controls for BaseNative 
 Source: `packages/platform/src` · Docs: `docs/api/platform.md`
 
 - `./components.css` → `./src/components.css` (non-JS resource export)
+- `./materials.css` → `./src/materials.css` (non-JS resource export)
 - `./tokens.css` → `./src/tokens.css` (non-JS resource export)
 
 ### Adoption
@@ -2922,9 +2923,53 @@ Each function returns HTML. The host is a button, dialog, details, input, select
 
 #### Undocumented exports (source-only — not in docs/api/platform.md)
 
+#### `catalogBody()` (function)
+Catalog sections, without a document shell.
+packages/platform/src/catalog.js · `import { catalogBody } from '@basenative/platform';`
+
 #### `renderBnMaterial(options = {})` (function)
 One material swatch from the kit (ultrathin through ultrathick). The sample is a figure; the fill is the material token.
 packages/platform/src/components.js · `import { renderBnMaterial } from '@basenative/platform';`
+
+#### `renderBnSymbol(options = {})` (function)
+Settings-style symbol tile. `mark` is text, never markup.
+packages/platform/src/components.js · `import { renderBnSymbol } from '@basenative/platform';`
+
+#### `renderBnBadge(label = '', options = {})` (function)
+Count or status badge. Default tint is the system red badge.
+packages/platform/src/components.js · `import { renderBnBadge } from '@basenative/platform';`
+
+#### `renderBnIndexBar(options = {})` (function)
+A–Z index beside a long list.
+packages/platform/src/components.js · `import { renderBnIndexBar } from '@basenative/platform';`
+
+#### `renderBnMetric(options = {})` (function)
+Metric tile. Equal height comes from the card grid, not from the page.
+packages/platform/src/components.js · `import { renderBnMetric } from '@basenative/platform';`
+
+#### `renderBnNavBar(options = {})` (function)
+Navigation bar. Large Title is the default; pass large:false for the inline title.
+packages/platform/src/components.js · `import { renderBnNavBar } from '@basenative/platform';`
+
+#### `renderBnInspector(options = {})` (function)
+Inspector. Sections are field groups, not a second sidebar component.
+packages/platform/src/components.js · `import { renderBnInspector } from '@basenative/platform';`
+
+#### `renderBnCardGrid(options = {})` (function)
+Card grid of metric tiles and widget cards. Rows share one height.
+packages/platform/src/components.js · `import { renderBnCardGrid } from '@basenative/platform';`
+
+#### `renderBnHero(options = {})` (function)
+Hero. A glass window header: eyebrow, large title, lede, capsule actions.
+packages/platform/src/components.js · `import { renderBnHero } from '@basenative/platform';`
+
+#### `renderBnFooter(options = {})` (function)
+Site footer. Links are a nav, not a row of loose anchors.
+packages/platform/src/components.js · `import { renderBnFooter } from '@basenative/platform';`
+
+#### `renderBnDock(options = {})` (function)
+Dock. A glass row of equal targets. Marks are text, not a symbol font.
+packages/platform/src/components.js · `import { renderBnDock } from '@basenative/platform';`
 
 ### `@basenative/realtime` (v2.3.2)
 
@@ -4140,7 +4185,18 @@ Everything below is a real, mechanically-detected gap between source/package.jso
 - `@basenative/og-image`: `truncateToWidth` is exported (packages/og-image/src/text.js) but not mentioned in docs/api/og-image.md.
 - `@basenative/og-image`: `wrapToLines` is exported (packages/og-image/src/text.js) but not mentioned in docs/api/og-image.md.
 - `@basenative/og-image`: `fitText` is exported (packages/og-image/src/text.js) but not mentioned in docs/api/og-image.md.
+- `@basenative/platform`: `catalogBody` is exported (packages/platform/src/catalog.js) but not mentioned in docs/api/platform.md.
 - `@basenative/platform`: `renderBnMaterial` is exported (packages/platform/src/components.js) but not mentioned in docs/api/platform.md.
+- `@basenative/platform`: `renderBnSymbol` is exported (packages/platform/src/components.js) but not mentioned in docs/api/platform.md.
+- `@basenative/platform`: `renderBnBadge` is exported (packages/platform/src/components.js) but not mentioned in docs/api/platform.md.
+- `@basenative/platform`: `renderBnIndexBar` is exported (packages/platform/src/components.js) but not mentioned in docs/api/platform.md.
+- `@basenative/platform`: `renderBnMetric` is exported (packages/platform/src/components.js) but not mentioned in docs/api/platform.md.
+- `@basenative/platform`: `renderBnNavBar` is exported (packages/platform/src/components.js) but not mentioned in docs/api/platform.md.
+- `@basenative/platform`: `renderBnInspector` is exported (packages/platform/src/components.js) but not mentioned in docs/api/platform.md.
+- `@basenative/platform`: `renderBnCardGrid` is exported (packages/platform/src/components.js) but not mentioned in docs/api/platform.md.
+- `@basenative/platform`: `renderBnHero` is exported (packages/platform/src/components.js) but not mentioned in docs/api/platform.md.
+- `@basenative/platform`: `renderBnFooter` is exported (packages/platform/src/components.js) but not mentioned in docs/api/platform.md.
+- `@basenative/platform`: `renderBnDock` is exported (packages/platform/src/components.js) but not mentioned in docs/api/platform.md.
 - `@basenative/theme` — no docs/api/theme.md; API below is extracted directly from source signatures/JSDoc only (42 exports).
 - `@basenative/validate`: `spanAt` is exported (packages/validate/src/scan.js) but not mentioned in docs/api/validate.md.
 - `@basenative/validate`: `scanTags` is exported (packages/validate/src/scan.js) but not mentioned in docs/api/validate.md.

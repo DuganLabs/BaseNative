@@ -24,6 +24,7 @@ export const navPages = [
   'showcase',
   'roadmap',
   'tasks',
+  'design-system',
 ];
 
 /** One nav glyph: a 24-unit-grid stroke SVG, the icons package's convention. */
@@ -112,6 +113,12 @@ const appNavSpec = [
     label: 'Tasks',
     href: '/tasks',
     icon: glyph('<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 5-5.5"/>'),
+  },
+  {
+    page: 'design-system',
+    label: 'System',
+    href: '/design-system',
+    icon: glyph('<circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/>'),
   },
 ];
 

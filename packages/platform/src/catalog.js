@@ -4,6 +4,7 @@
  */
 import { resetIds } from './ids.js';
 import { VERIFY } from './verify.js';
+import { escapeHtml } from './html.js';
 import {
   renderBnActionSheet,
   renderBnAlert,
@@ -50,6 +51,17 @@ import {
   renderBnTooltip,
   renderBnWidget,
   renderBnWindow,
+  renderBnMaterial,
+  renderBnBadge,
+  renderBnCardGrid,
+  renderBnDock,
+  renderBnFooter,
+  renderBnHero,
+  renderBnIndexBar,
+  renderBnInspector,
+  renderBnMetric,
+  renderBnNavBar,
+  renderBnSymbol,
 } from './components.js';
 
 function stage(title, attrs, body) {
@@ -337,28 +349,94 @@ function macosBody() {
   ].join('');
 }
 
-/** Full catalog document. */
-export function catalogPage() {
+function usage(label, html) {
+  return `<section data-bn="bn-catalog-row"><h3 data-bn="bn-catalog-label">${label}</h3><figure data-bn="bn-catalog-demo">${html}</figure><pre data-bn="bn-catalog-usage"><code>${escapeHtml(html)}</code></pre></section>`;
+}
+
+/** Organisms. Copy the semantic HTML under each one. */
+function organismRows() {
+  const list = renderBnList({
+    grouped: true,
+    label: 'Settings',
+    footer: 'Inset grouped list.',
+    rows: [
+      { title: 'Wi-Fi', value: 'Home', chevron: true, tint: 'blue', mark: 'W' },
+      { title: 'Bluetooth', detail: 'On', tint: 'teal', mark: 'B' },
+    ],
+  });
+  const hero = renderBnHero({
+    eyebrow: 'Runtime',
+    title: 'BaseNative',
+    lede: 'A glass window header composed from the hero organism.',
+    actions: [
+      { label: 'Continue', variant: 'prominent' },
+      { label: 'Cancel', variant: 'bordered' },
+    ],
+  });
+  return [
+    usage(
+      'Navigation bar',
+      renderBnNavBar({
+        title: 'Settings',
+        back: { label: 'Back', href: '/' },
+        subtitle: 'Large Title',
+      }),
+    ),
+    usage('Hero', hero),
+    usage('Inset grouped list', list),
+    usage(
+      'Card grid',
+      renderBnCardGrid({
+        cards: [
+          { value: '9.9KB', label: 'Runtime', detail: 'gzip' },
+          { value: '45', label: 'Packages', detail: 'public' },
+          { title: 'Notes', body: 'Widget' },
+        ],
+      }),
+    ),
+    usage(
+      'Inspector',
+      renderBnInspector({
+        title: 'Inspector',
+        sections: [{ label: 'Type', fields: [{ label: 'Name', placeholder: 'Title' }] }],
+      }),
+    ),
+    usage(
+      'Dock',
+      renderBnDock({
+        items: [
+          { label: 'Home', href: '/', current: true },
+          { label: 'Docs', href: '/docs' },
+        ],
+      }),
+    ),
+    usage(
+      'Footer',
+      renderBnFooter({ note: 'BaseNative', links: [{ label: 'Docs', href: '/docs' }] }),
+    ),
+    row(
+      'Badge and symbol',
+      renderBnBadge('3') +
+        renderBnSymbol({ tint: 'orange', mark: 'A' }) +
+        renderBnMetric({ value: '72', label: 'Degrees', detail: 'Today' }) +
+        renderBnIndexBar({ letters: ['A', 'B', 'C'] }),
+    ),
+  ].join('');
+}
+
+/** Catalog sections, without a document shell. */
+export function catalogBody() {
   resetIds();
   const notes = VERIFY.map(
     (item) => `<li><strong>${item.topic}.</strong> ${item.detail}</li>`,
   ).join('');
   const typeSample = '<p data-bn="bn-catalog-type">Large Title at xxxLarge</p>';
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BaseNative platform catalog</title>
-<link rel="stylesheet" href="/tokens.css">
-<link rel="stylesheet" href="/components.css">
-<link rel="stylesheet" href="/catalog.css">
-</head>
-<body data-bn="bn-catalog">
-<header data-bn="bn-catalog-header">
-<h1>Apple 27 platform catalog</h1>
-<p>Kit values from the iOS and iPadOS 27 and macOS 27 Figma files. Increased contrast is derived. Components without a captured page were checked against the page screenshots, the tokens, and the HIG.</p>
+  return `<header data-bn="bn-catalog-header">
+<h1>Platform catalog</h1>
+<p>Atoms, molecules, and organisms. Materials are translated from MIT stylesheets. Copy the semantic HTML under each organism.</p>
 </header>
+${stage('Materials', 'data-bn-platform="ios" data-theme="light"', row('Liquid Glass', ['ultrathin', 'thin', 'sm', 'medium', 'lg', 'thick', 'ultrathick', 'opaque'].map((name) => renderBnMaterial({ name, label: name })).join('')))}
+${stage('Organisms', 'data-bn-platform="ios" data-theme="light"', organismRows())}
 ${stage('iOS light', 'data-bn-platform="ios" data-theme="light"', iosBody())}
 ${stage('iOS dark', 'data-bn-platform="ios" data-theme="dark"', iosBody())}
 ${stage('iOS increased contrast', 'data-bn-platform="ios" data-theme="light" data-bn-contrast="more"', row('Prominent and secondary label', renderBnButton('Continue') + '<p data-bn="bn-catalog-quiet">Secondary label</p>'))}
@@ -369,7 +447,24 @@ ${stage('macOS Large control', 'data-bn-platform="macos" data-bn-control="large"
 <section data-bn="bn-catalog-stage">
 <h2 data-bn="bn-catalog-heading">What the screenshots could not settle</h2>
 <ul data-bn="bn-catalog-verify">${notes}</ul>
-</section>
+</section>`;
+}
+
+/** Full catalog document. */
+export function catalogPage() {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BaseNative platform catalog</title>
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/materials.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/catalog.css">
+</head>
+<body data-bn="bn-catalog" data-bn-wallpaper="true">
+${catalogBody()}
 <script type="module" src="/src/platform.js"></script>
 </body>
 </html>`;

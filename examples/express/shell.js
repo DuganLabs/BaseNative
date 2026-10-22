@@ -12,6 +12,7 @@ const GROUPS = [
   { label: 'Start', hrefs: ['/', '/compare', '/components', '/docs'] },
   { label: 'Build', hrefs: ['/ai', '/playground', '/builder', '/showcase'] },
   { label: 'Project', hrefs: ['/roadmap', '/tasks'] },
+  { label: 'System', hrefs: ['/design-system'] },
 ];
 
 export function renderSiteChrome(activePage = '') {

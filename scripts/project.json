@@ -14,7 +14,7 @@
     },
     "lint": {
       "cache": true,
-      "command": "pnpm exec eslint scripts && node scripts/ds-lint.js",
+      "command": "pnpm exec eslint scripts && node scripts/ds-lint.js && node scripts/platform-token-lint.js && node scripts/design-system-coverage.js --check",
       "inputs": [
         "{workspaceRoot}/packages/*/src/**/*.css",
         "{workspaceRoot}/packages/*/*.css",
@@ -24,7 +24,9 @@
         "{workspaceRoot}/docs/adr/**/*.md",
         "{workspaceRoot}/eslint.config.js",
         "{projectRoot}/**/*.js",
-        "{projectRoot}/**/*.mjs"
+        "{projectRoot}/**/*.mjs",
+        "{workspaceRoot}/docs/design-system/coverage.json",
+        "{workspaceRoot}/packages/platform/src/materials.css"
       ]
     }
   }

@@ -4,11 +4,11 @@
   "generatedOn": "2026-10-22",
   "contract": "Generated from source. Never hand-edit: `node scripts/llms-txt.js --check` fails CI when this file disagrees with packages/*/src. `variants` is the set of values a stylesheet actually declares a rule for, so a value outside it renders unstyled rather than erroring.",
   "counts": {
-    "components": 129,
-    "renderFunctions": 123,
+    "components": 139,
+    "renderFunctions": 133,
     "customElements": 6,
-    "styledContracts": 346,
-    "componentsWithVariants": 35
+    "styledContracts": 372,
+    "componentsWithVariants": 37
   },
   "stylesheets": [
     "packages/builder/src/builder.css",
@@ -27,6 +27,7 @@
     "packages/keyboard/src/styles.css",
     "packages/platform/src/catalog.css",
     "packages/platform/src/components.css",
+    "packages/platform/src/materials.css",
     "packages/platform/src/tokens.css",
     "packages/theme/src/bridge.css",
     "packages/components/src/calendar.js",
@@ -132,8 +133,14 @@
     "bn-app-icon": [
       "@basenative/platform#renderBnAppIcon"
     ],
+    "bn-badge": [
+      "@basenative/platform#renderBnBadge"
+    ],
     "bn-button": [
       "@basenative/platform#renderBnButton"
+    ],
+    "bn-card-grid": [
+      "@basenative/platform#renderBnCardGrid"
     ],
     "bn-checkbox": [
       "@basenative/platform#renderBnCheckbox"
@@ -184,6 +191,12 @@
     "bn-disclosure": [
       "@basenative/platform#renderBnDisclosure"
     ],
+    "bn-dock": [
+      "@basenative/platform#renderBnDock"
+    ],
+    "bn-dock-item": [
+      "@basenative/platform#renderBnDock"
+    ],
     "bn-empty-description": [
       "@basenative/platform#renderBnEmptyState"
     ],
@@ -202,6 +215,9 @@
     "bn-field-control": [
       "@basenative/platform#renderBnField"
     ],
+    "bn-footer": [
+      "@basenative/platform#renderBnFooter"
+    ],
     "bn-form": [
       "@basenative/platform#renderBnForm"
     ],
@@ -211,28 +227,67 @@
     "bn-group": [
       "@basenative/platform#renderBnGroup"
     ],
+    "bn-hero": [
+      "@basenative/platform#renderBnHero"
+    ],
+    "bn-hero-eyebrow": [
+      "@basenative/platform#renderBnHero"
+    ],
+    "bn-hero-lede": [
+      "@basenative/platform#renderBnHero"
+    ],
     "bn-image-well": [
       "@basenative/platform#renderBnImageWell"
     ],
     "bn-image-well-preview": [
       "@basenative/platform#renderBnImageWell"
     ],
+    "bn-index-bar": [
+      "@basenative/platform#renderBnIndexBar"
+    ],
     "bn-input-accessory": [
       "@basenative/platform#renderBnInputAccessory"
+    ],
+    "bn-inspector": [
+      "@basenative/platform#renderBnInspector"
     ],
     "bn-key": [
       "@basenative/platform#renderBnInputAccessory"
     ],
+    "bn-large-title": [
+      "@basenative/platform#renderBnNavBar"
+    ],
     "bn-list": [
       "@basenative/platform#renderBnList"
     ],
+    "bn-list-chevron": [
+      "@basenative/platform#renderBnListRow"
+    ],
     "bn-list-detail": [
+      "@basenative/platform#renderBnListRow"
+    ],
+    "bn-list-footer": [
+      "@basenative/platform#renderBnList"
+    ],
+    "bn-list-grabber": [
+      "@basenative/platform#renderBnListRow"
+    ],
+    "bn-list-group": [
+      "@basenative/platform#renderBnList"
+    ],
+    "bn-list-header": [
+      "@basenative/platform#renderBnList"
+    ],
+    "bn-list-image": [
       "@basenative/platform#renderBnListRow"
     ],
     "bn-list-row": [
       "@basenative/platform#renderBnListRow"
     ],
     "bn-list-title": [
+      "@basenative/platform#renderBnListRow"
+    ],
+    "bn-list-value": [
       "@basenative/platform#renderBnListRow"
     ],
     "bn-material": [
@@ -249,6 +304,36 @@
     ],
     "bn-menubar-item": [
       "@basenative/platform#renderBnMenubar"
+    ],
+    "bn-metric": [
+      "@basenative/platform#renderBnMetric"
+    ],
+    "bn-metric-detail": [
+      "@basenative/platform#renderBnMetric"
+    ],
+    "bn-metric-label": [
+      "@basenative/platform#renderBnMetric"
+    ],
+    "bn-metric-value": [
+      "@basenative/platform#renderBnMetric"
+    ],
+    "bn-nav-action": [
+      "@basenative/platform#renderBnNavBar"
+    ],
+    "bn-nav-back": [
+      "@basenative/platform#renderBnNavBar"
+    ],
+    "bn-nav-bar": [
+      "@basenative/platform#renderBnNavBar"
+    ],
+    "bn-nav-subtitle": [
+      "@basenative/platform#renderBnNavBar"
+    ],
+    "bn-nav-title": [
+      "@basenative/platform#renderBnNavBar"
+    ],
+    "bn-nav-trailing": [
+      "@basenative/platform#renderBnNavBar"
     ],
     "bn-notification": [
       "@basenative/platform#renderBnNotification"
@@ -339,6 +424,9 @@
     ],
     "bn-switch-input": [
       "@basenative/platform#renderBnSwitch"
+    ],
+    "bn-symbol-tile": [
+      "@basenative/platform#renderBnSymbol"
     ],
     "bn-tab": [
       "@basenative/platform#renderBnTabBar"
@@ -3422,6 +3510,44 @@
       "useInsteadOf": "a bare <figure> with your own classes, or literal <figure data-bn=\"bn-app-icon\"> markup"
     },
     {
+      "id": "@basenative/platform#renderBnBadge",
+      "name": "renderBnBadge",
+      "kind": "render-function",
+      "package": "@basenative/platform",
+      "file": "packages/platform/src/components.js",
+      "signature": "renderBnBadge(label, options)",
+      "purpose": "Count or status badge. Default tint is the system red badge.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "b",
+        "primaryContract": "bn-badge",
+        "contracts": [
+          "bn-badge"
+        ],
+        "dataAttributes": [
+          "tint"
+        ]
+      },
+      "variants": {
+        "tint": {
+          "contract": "bn-badge",
+          "values": [
+            "blue",
+            "green"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/platform/src/components.css"
+          ],
+          "emittedByRenderer": true
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <b> with your own classes, or literal <b data-bn=\"bn-badge\"> markup"
+    },
+    {
       "id": "@basenative/platform#renderBnButton",
       "name": "renderBnButton",
       "kind": "render-function",
@@ -3544,6 +3670,28 @@
       "inertAxes": [],
       "styled": true,
       "useInsteadOf": "a bare <button> with your own classes, or literal <button data-bn=\"bn-button\"> markup"
+    },
+    {
+      "id": "@basenative/platform#renderBnCardGrid",
+      "name": "renderBnCardGrid",
+      "kind": "render-function",
+      "package": "@basenative/platform",
+      "file": "packages/platform/src/components.js",
+      "signature": "renderBnCardGrid(options)",
+      "purpose": "Card grid of metric tiles and widget cards. Rows share one height.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "ul",
+        "primaryContract": "bn-card-grid",
+        "contracts": [
+          "bn-card-grid"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <ul> with your own classes, or literal <ul data-bn=\"bn-card-grid\"> markup"
     },
     {
       "id": "@basenative/platform#renderBnCheckbox",
@@ -3818,6 +3966,29 @@
       "useInsteadOf": "a bare <details> with your own classes, or literal <details data-bn=\"bn-disclosure\"> markup"
     },
     {
+      "id": "@basenative/platform#renderBnDock",
+      "name": "renderBnDock",
+      "kind": "render-function",
+      "package": "@basenative/platform",
+      "file": "packages/platform/src/components.js",
+      "signature": "renderBnDock(options)",
+      "purpose": "Dock. A glass row of equal targets. Marks are text, not a symbol font.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "nav",
+        "primaryContract": "bn-dock",
+        "contracts": [
+          "bn-dock-item",
+          "bn-dock"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <nav> with your own classes, or literal <nav data-bn=\"bn-dock\"> markup"
+    },
+    {
       "id": "@basenative/platform#renderBnEmptyState",
       "name": "renderBnEmptyState",
       "kind": "render-function",
@@ -3882,6 +4053,28 @@
       "useInsteadOf": "a bare <label> with your own classes, or literal <label data-bn=\"bn-field\"> markup"
     },
     {
+      "id": "@basenative/platform#renderBnFooter",
+      "name": "renderBnFooter",
+      "kind": "render-function",
+      "package": "@basenative/platform",
+      "file": "packages/platform/src/components.js",
+      "signature": "renderBnFooter(options)",
+      "purpose": "Site footer. Links are a nav, not a row of loose anchors.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "footer",
+        "primaryContract": "bn-footer",
+        "contracts": [
+          "bn-footer"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <footer> with your own classes, or literal <footer data-bn=\"bn-footer\"> markup"
+    },
+    {
       "id": "@basenative/platform#renderBnForm",
       "name": "renderBnForm",
       "kind": "render-function",
@@ -3926,6 +4119,30 @@
       "useInsteadOf": "a bare <fieldset> with your own classes, or literal <fieldset data-bn=\"bn-group\"> markup"
     },
     {
+      "id": "@basenative/platform#renderBnHero",
+      "name": "renderBnHero",
+      "kind": "render-function",
+      "package": "@basenative/platform",
+      "file": "packages/platform/src/components.js",
+      "signature": "renderBnHero(options)",
+      "purpose": "Hero. A glass window header: eyebrow, large title, lede, capsule actions.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "header",
+        "primaryContract": "bn-hero",
+        "contracts": [
+          "bn-hero-eyebrow",
+          "bn-hero-lede",
+          "bn-hero"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <header> with your own classes, or literal <header data-bn=\"bn-hero\"> markup"
+    },
+    {
       "id": "@basenative/platform#renderBnImageWell",
       "name": "renderBnImageWell",
       "kind": "render-function",
@@ -3947,6 +4164,28 @@
       "inertAxes": [],
       "styled": true,
       "useInsteadOf": "a bare <label> with your own classes, or literal <label data-bn=\"bn-image-well\"> markup"
+    },
+    {
+      "id": "@basenative/platform#renderBnIndexBar",
+      "name": "renderBnIndexBar",
+      "kind": "render-function",
+      "package": "@basenative/platform",
+      "file": "packages/platform/src/components.js",
+      "signature": "renderBnIndexBar(options)",
+      "purpose": "A–Z index beside a long list.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "nav",
+        "primaryContract": "bn-index-bar",
+        "contracts": [
+          "bn-index-bar"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <nav> with your own classes, or literal <nav data-bn=\"bn-index-bar\"> markup"
     },
     {
       "id": "@basenative/platform#renderBnInputAccessory",
@@ -3972,19 +4211,44 @@
       "useInsteadOf": "a bare <menu> with your own classes, or literal <menu data-bn=\"bn-input-accessory\"> markup"
     },
     {
+      "id": "@basenative/platform#renderBnInspector",
+      "name": "renderBnInspector",
+      "kind": "render-function",
+      "package": "@basenative/platform",
+      "file": "packages/platform/src/components.js",
+      "signature": "renderBnInspector(options)",
+      "purpose": "Inspector. Sections are field groups, not a second sidebar component.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "aside",
+        "primaryContract": "bn-inspector",
+        "contracts": [
+          "bn-inspector"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <aside> with your own classes, or literal <aside data-bn=\"bn-inspector\"> markup"
+    },
+    {
       "id": "@basenative/platform#renderBnList",
       "name": "renderBnList",
       "kind": "render-function",
       "package": "@basenative/platform",
       "file": "packages/platform/src/components.js",
       "signature": "renderBnList(options)",
-      "purpose": "List. Regular rows are 52px with 16px side padding.",
+      "purpose": "List. Regular rows are 52px with 16px side padding. A label or footer wraps the group.",
       "deprecated": false,
       "emits": {
         "rootTag": "ul",
         "primaryContract": "bn-list",
         "contracts": [
-          "bn-list"
+          "bn-list",
+          "bn-list-header",
+          "bn-list-footer",
+          "bn-list-group"
         ],
         "dataAttributes": []
       },
@@ -4013,13 +4277,17 @@
       "package": "@basenative/platform",
       "file": "packages/platform/src/components.js",
       "signature": "renderBnListRow(options)",
-      "purpose": "One list row. swipe paints the captured blue action.",
+      "purpose": "One list row. `tint` plus `mark` is the Settings icon tile. swipe paints the captured blue action.",
       "deprecated": false,
       "emits": {
         "rootTag": "li",
         "primaryContract": "bn-list-row",
         "contracts": [
+          "bn-list-image",
           "bn-list-detail",
+          "bn-list-value",
+          "bn-list-chevron",
+          "bn-list-grabber",
           "bn-list-row",
           "bn-list-title"
         ],
@@ -4066,6 +4334,11 @@
         "material": {
           "contract": "bn-material",
           "values": [
+            "lg",
+            "md",
+            "medium",
+            "opaque",
+            "sm",
             "thick",
             "thin",
             "ultrathick",
@@ -4161,6 +4434,61 @@
       "inertAxes": [],
       "styled": true,
       "useInsteadOf": "a bare <button> with your own classes, or literal <button data-bn=\"bn-menu-item\"> markup"
+    },
+    {
+      "id": "@basenative/platform#renderBnMetric",
+      "name": "renderBnMetric",
+      "kind": "render-function",
+      "package": "@basenative/platform",
+      "file": "packages/platform/src/components.js",
+      "signature": "renderBnMetric(options)",
+      "purpose": "Metric tile. Equal height comes from the card grid, not from the page.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "article",
+        "primaryContract": "bn-metric",
+        "contracts": [
+          "bn-metric-detail",
+          "bn-metric",
+          "bn-metric-value",
+          "bn-metric-label"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <article> with your own classes, or literal <article data-bn=\"bn-metric\"> markup"
+    },
+    {
+      "id": "@basenative/platform#renderBnNavBar",
+      "name": "renderBnNavBar",
+      "kind": "render-function",
+      "package": "@basenative/platform",
+      "file": "packages/platform/src/components.js",
+      "signature": "renderBnNavBar(options)",
+      "purpose": "Navigation bar. Large Title is the default; pass large:false for the inline title.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "header",
+        "primaryContract": "bn-nav-bar",
+        "contracts": [
+          "bn-nav-back",
+          "bn-nav-title",
+          "bn-nav-action",
+          "bn-nav-trailing",
+          "bn-large-title",
+          "bn-nav-subtitle",
+          "bn-nav-bar"
+        ],
+        "dataAttributes": [
+          "large"
+        ]
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <header> with your own classes, or literal <header data-bn=\"bn-nav-bar\"> markup"
     },
     {
       "id": "@basenative/platform#renderBnNotification",
@@ -4615,6 +4943,53 @@
       "inertAxes": [],
       "styled": true,
       "useInsteadOf": "a bare <label> with your own classes, or literal <label data-bn=\"bn-switch\"> markup"
+    },
+    {
+      "id": "@basenative/platform#renderBnSymbol",
+      "name": "renderBnSymbol",
+      "kind": "render-function",
+      "package": "@basenative/platform",
+      "file": "packages/platform/src/components.js",
+      "signature": "renderBnSymbol(options)",
+      "purpose": "Settings-style symbol tile. `mark` is text, never markup.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "i",
+        "primaryContract": "bn-symbol-tile",
+        "contracts": [
+          "bn-symbol-tile"
+        ],
+        "dataAttributes": [
+          "tint"
+        ]
+      },
+      "variants": {
+        "tint": {
+          "contract": "bn-symbol-tile",
+          "values": [
+            "brown",
+            "cyan",
+            "green",
+            "indigo",
+            "mint",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "teal",
+            "yellow"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/platform/src/components.css"
+          ],
+          "emittedByRenderer": true
+        }
+      },
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <i> with your own classes, or literal <i data-bn=\"bn-symbol-tile\"> markup"
     },
     {
       "id": "@basenative/platform#renderBnTabBar",

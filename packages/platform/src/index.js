@@ -8,7 +8,7 @@
 export { kit, PROVENANCE, colorSlug, derivePalette, contrastRatio, FONT_STACK } from './tokens.js';
 export { tokensCss } from './css.js';
 export { detectPlatform, applyPlatform, initPlatform } from './platform.js';
-export { catalogPage } from './catalog.js';
+export { catalogPage, catalogBody } from './catalog.js';
 export { VERIFY } from './verify.js';
 export {
   nextId,
@@ -61,4 +61,14 @@ export {
   renderBnAppIcon,
   renderBnWidget,
   renderBnMaterial,
+  renderBnSymbol,
+  renderBnBadge,
+  renderBnIndexBar,
+  renderBnMetric,
+  renderBnNavBar,
+  renderBnInspector,
+  renderBnCardGrid,
+  renderBnHero,
+  renderBnFooter,
+  renderBnDock,
 } from './components.js';

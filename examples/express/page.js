@@ -10,6 +10,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { render } from '@basenative/server';
 import { raw } from '@basenative/runtime/shared/escape';
+import { catalogBody } from '../../packages/platform/src/catalog.js';
 import { renderBreadcrumb } from '../../packages/components/src/index.js';
 import { renderSiteChrome } from './shell.js';
 import {
@@ -68,7 +69,9 @@ function getAssetVersion() {
   try {
     for (const dir of ['../../packages/components/src', '../../packages/platform/src']) {
       const cssDir = join(__dirname, dir);
-      for (const name of readdirSync(cssDir).filter((n) => n.endsWith('.css')).sort()) {
+      for (const name of readdirSync(cssDir)
+        .filter((n) => n.endsWith('.css'))
+        .sort()) {
         hash.update(readFileSync(join(cssDir, name), 'utf-8'));
       }
     }
@@ -245,6 +248,16 @@ export const siteRoutes = [
     description: 'Live task list demonstrating signal-based hydration over server-rendered HTML.',
     activePage: 'tasks',
     ctx: ({ tasks, hasApi }) => getTasksPageContext(tasks, hasApi),
+  },
+  {
+    path: '/design-system',
+    view: 'design-system.html',
+    title: 'Design system',
+    description:
+      'Every platform control in the states the catalog renders, on the material tokens, light and dark.',
+    ogTitle: 'BaseNative design system',
+    activePage: 'design-system',
+    ctx: () => ({ catalog: raw(catalogBody()) }),
   },
   {
     // A verification harness for the dev server. `internal` keeps it out of
