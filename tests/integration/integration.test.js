@@ -508,8 +508,8 @@ describe('/tasks tells the static visitor where their tasks go', () => {
 });
 
 describe('every published route is reachable from the navigation', () => {
-  // The shell is the platform menu bar, sidebar, and tab bar, rendered
-  // from the route table (shell.js), not hand-written in layout.html.
+  // The shell is the platform sidebar and tab bar, rendered from the
+  // route table (shell.js), not hand-written in layout.html.
   it('links every non-internal route from the rendered navigation', () => {
     for (const route of siteRoutes) {
       if (route.internal) continue;

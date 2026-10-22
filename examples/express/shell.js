@@ -1,10 +1,11 @@
 /**
  * Site chrome. One file: the active page, the grouping, and the markup.
- * Menu bar, sidebar, and tab bar are the platform controls. The phone
- * bar keeps the first four destinations; the rest sit in its More
- * disclosure so every route stays in the document.
+ * Desktop is the sidebar. The phone bar keeps the first four destinations;
+ * the rest sit behind a More tab that matches the others, so every route
+ * stays in the document. A two-word menu bar is not a macOS toolbar, so
+ * the window has none.
  */
-import { renderBnMenubar, renderBnSidebar, renderBnTabBar } from '../../packages/platform/src/components.js';
+import { renderBnSidebar, renderBnTabBar } from '../../packages/platform/src/components.js';
 import { getAppNavItems } from './site-data.js';
 
 const GROUPS = [
@@ -20,11 +21,6 @@ export function renderSiteChrome(activePage = '') {
     items: group.hrefs.map((href) => items.find((item) => item.href === href)).filter(Boolean),
   }));
   return [
-    renderBnMenubar({
-      id: 'site-menu',
-      app: { label: 'BaseNative', href: '/' },
-      items: [{ label: 'GitHub', href: 'https://github.com/DuganLabs/BaseNative' }],
-    }),
     renderBnSidebar({ id: 'site-nav', label: 'Sections', sections }),
     renderBnTabBar({
       id: 'site-tabs',

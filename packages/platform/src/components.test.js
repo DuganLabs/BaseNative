@@ -89,6 +89,24 @@ test('text is escaped', () => {
   assert.match(html, /&lt;script&gt;/);
 });
 
+test('tab bar overflow is a tab, not a disclosure', () => {
+  resetIds();
+  const html = ui.renderBnTabBar({
+    id: 'tabs',
+    barLimit: 1,
+    tabs: [
+      { label: 'Home', href: '/', current: true, icon: '<svg></svg>' },
+      { label: 'Docs', href: '/docs' },
+    ],
+  });
+  assert.equal(html.includes('<details'), false);
+  assert.equal(html.includes('<summary'), false);
+  assert.match(html, /popovertarget="tabs-more"/);
+  assert.match(html, /data-bn="bn-tab"/);
+  assert.match(html, /<circle /);
+  assert.match(html, /href="\/docs"/);
+});
+
 test('alert, switch, segmented, and page control expose their roles', () => {
   resetIds();
   assert.match(ui.renderBnAlert({ title: 'T' }), /role="alertdialog"/);

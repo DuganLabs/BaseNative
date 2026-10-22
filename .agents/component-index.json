@@ -340,6 +340,9 @@
     "bn-switch-input": [
       "@basenative/platform#renderBnSwitch"
     ],
+    "bn-tab": [
+      "@basenative/platform#renderBnTabBar"
+    ],
     "bn-tab-bar": [
       "@basenative/platform#renderBnTabBar"
     ],
@@ -4620,12 +4623,13 @@
       "package": "@basenative/platform",
       "file": "packages/platform/src/components.js",
       "signature": "renderBnTabBar(options)",
-      "purpose": "Tab bar. Selection colour is Miscellaneous/Tab Bar Selection. `barLimit` keeps the first links in the bar and…",
+      "purpose": "Tab bar. Selection colour is Miscellaneous/Tab Bar Selection. `barLimit` keeps the first links in the bar. Th…",
       "deprecated": false,
       "emits": {
         "rootTag": "nav",
         "primaryContract": "bn-tab-bar",
         "contracts": [
+          "bn-tab",
           "bn-tab-more",
           "bn-tab-bar"
         ],

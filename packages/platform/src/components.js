@@ -46,11 +46,14 @@ export function renderBnButton(label = '', options = {}) {
   const destructive = options.destructive ? 'true' : 'false';
   const force = options.force || '';
   const id = options.id ? ` id="${escapeAttr(options.id)}"` : '';
-  const labelAttr = labelStyle === 'icon' ? ` aria-label="${escapeAttr(options.text ?? label)}"` : '';
+  const labelAttr =
+    labelStyle === 'icon' ? ` aria-label="${escapeAttr(options.text ?? label)}"` : '';
   const style = options.style ? ` data-style="${escapeAttr(options.style)}"` : '';
   const selected = options.selected ? ' data-selected="true" aria-pressed="true"' : '';
   const control =
-    options.size === 'mini' || options.size === 'xl' ? ` data-bn-control="${escapeAttr(options.size)}"` : '';
+    options.size === 'mini' || options.size === 'xl'
+      ? ` data-bn-control="${escapeAttr(options.size)}"`
+      : '';
   const open = `${icon}${text}`;
   const attrs = `data-variant="${escapeAttr(variant)}" data-size="${escapeAttr(size)}" data-label="${escapeAttr(labelStyle)}" data-destructive="${destructive}" data-force="${escapeAttr(force)}"${style}${selected}${control}${id}${labelAttr}`;
   if (!options.href) {
@@ -261,9 +264,7 @@ export function renderBnTable(options = {}) {
 export function renderBnMenu(options = {}) {
   const menuId = idOf('menu', options.id);
   const contract = options.contract || 'bn-menu';
-  const items = (options.items || [])
-    .map((item) => `<li>${renderBnMenuItem(item)}</li>`)
-    .join('');
+  const items = (options.items || []).map((item) => `<li>${renderBnMenuItem(item)}</li>`).join('');
   const popover = options.inline ? '' : ' popover="auto"';
   return `<menu data-bn="${escapeAttr(contract)}" id="${escapeAttr(menuId)}" aria-label="${escapeAttr(options.label || 'Menu')}"${popover}${opt('data-present', options.inline ? 'inline' : null)}>${items}</menu>`;
 }
@@ -324,7 +325,8 @@ export function renderBnAlert(options = {}) {
 export function renderBnDialog(options = {}) {
   const actions = (options.actions || [])
     .map(
-      (action) => `<li><button data-bn="bn-action" type="button">${escapeHtml(action.label)}</button></li>`,
+      (action) =>
+        `<li><button data-bn="bn-action" type="button">${escapeHtml(action.label)}</button></li>`,
     )
     .join('');
   return `<dialog data-bn="bn-dialog"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('aria-label', options.label)}><h2 data-bn="bn-dialog-title">${escapeHtml(options.title || '')}</h2><p>${escapeHtml(options.message || '')}</p>${actionMenu(actions, 'bn-action-list')}</dialog>`;
@@ -365,6 +367,10 @@ export function renderBnPageControl(options = {}) {
   return `<nav data-bn="bn-page-control" role="radiogroup" aria-label="${escapeAttr(options.label || 'Pages')}"${opt('id', options.id)}>${dots}</nav>`;
 }
 
+/** Three dots, the same box as the other tab symbols. Not a disclosure mark. */
+const TAB_ELLIPSIS =
+  '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="6" cy="12" r="1.35"/><circle cx="12" cy="12" r="1.35"/><circle cx="18" cy="12" r="1.35"/></svg>';
+
 function tabLink(tab) {
   const icon = tab.icon ? glyph(tab.icon) : '';
   return `<a data-bn="bn-tab" href="${escapeAttr(tab.href || '#')}"${opt('aria-current', tab.current ? 'page' : null)}>${icon}${escapeHtml(tab.label)}</a>`;
@@ -372,8 +378,9 @@ function tabLink(tab) {
 
 /**
  * Tab bar. Selection colour is Miscellaneous/Tab Bar Selection.
- * `barLimit` keeps the first links in the bar and the rest in a More disclosure,
- * so every destination stays in the document.
+ * `barLimit` keeps the first links in the bar. The rest stay in the document
+ * behind a tab that matches the others: an ellipsis above the word More,
+ * opening a popover menu. It is not a disclosure triangle.
  */
 export function renderBnTabBar(options = {}) {
   const tabs = options.tabs || [];
@@ -381,13 +388,16 @@ export function renderBnTabBar(options = {}) {
   const primary = limit ? tabs.slice(0, limit) : tabs;
   const rest = limit ? tabs.slice(limit) : [];
   const links = primary.map(tabLink).join('');
+  const moreId = options.id ? `${options.id}-more` : nextId('tab-more');
+  const moreLabel = options.moreLabel || 'More';
+  const moreCurrent = rest.some((tab) => tab.current);
   const more = rest.length
-    ? `<details data-bn="bn-tab-more"><summary>${escapeHtml(options.moreLabel || 'More')}</summary><ul>${rest
+    ? `<button data-bn="bn-tab" type="button" popovertarget="${escapeAttr(moreId)}" aria-haspopup="menu"${opt('aria-current', moreCurrent ? 'page' : null)}>${glyph(TAB_ELLIPSIS)}${escapeHtml(moreLabel)}</button><menu data-bn="bn-tab-more" id="${escapeAttr(moreId)}" popover="auto" aria-label="${escapeAttr(moreLabel)}">${rest
         .map(
           (tab) =>
-            `<li><a href="${escapeAttr(tab.href || '#')}"${opt('aria-current', tab.current ? 'page' : null)}>${escapeHtml(tab.label)}</a></li>`,
+            `<li><a data-bn="bn-menu-item" href="${escapeAttr(tab.href || '#')}"${opt('aria-current', tab.current ? 'page' : null)}>${escapeHtml(tab.label)}</a></li>`,
         )
-        .join('')}</ul></details>`
+        .join('')}</menu>`
     : '';
   return `<nav data-bn="bn-tab-bar" aria-label="${escapeAttr(options.label || 'Tabs')}"${opt('id', options.id)}>${links}${more}</nav>`;
 }

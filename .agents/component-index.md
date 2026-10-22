@@ -758,8 +758,8 @@ Switch. iOS size is the HIG 51×31 control; macOS uses Toggle (Switch) tokens.
 - use instead of: a bare <label> with your own classes, or literal <label data-bn="bn-switch"> markup
 
 ### `renderBnTabBar(options)`
-Tab bar. Selection colour is Miscellaneous/Tab Bar Selection. `barLimit` keeps the first links in the bar and…
-`packages/platform/src/components.js` · emits `<nav data-bn="bn-tab-bar">` + 1 more contract(s)
+Tab bar. Selection colour is Miscellaneous/Tab Bar Selection. `barLimit` keeps the first links in the bar. Th…
+`packages/platform/src/components.js` · emits `<nav data-bn="bn-tab-bar">` + 2 more contract(s)
 - variants: none declared
 - use instead of: a bare <nav> with your own classes, or literal <nav data-bn="bn-tab-bar"> markup
 
