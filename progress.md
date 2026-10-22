@@ -38,6 +38,8 @@ Molecules tier: popup, pulldown, segmented, menu, and the other molecules get th
 - The overflow gate looks at `[data-bn^="bn-"]` only. Unrebuilt page tables stay out of this tier.
 - Selected sidebar contrast and the 60 design-system contrast nodes are still open.
 - Runtime gzip budget was not re-measured in this session. Platform CSS is not in the runtime bundle. Do not treat that as a new measurement.
+- Tokens CI https://github.com/DuganLabs/BaseNative/actions/runs/39804167799 failed because `nx-cloud-access.test.js` inherited `GITHUB_ENV` on the runner. The refusal test now deletes those variables (`6f03239` on the tokens branch, `f6200fa` on atoms).
+- The rerun https://github.com/DuganLabs/BaseNative/actions/runs/39805077689 is not green. Node 20 `Test` failed outside this diff: `packages/db/src/db.test.js` SIGSEGV, and `packages/visual-builder` `importFromHTML` took 343ms against a 200ms budget. Node 22 was still running when this was recorded. Do not treat either PR as merged or the site as live.
 
 ## Deviations
 
