@@ -5,7 +5,10 @@
     Server-rendered initial state with client-side hydration for interactivity.
   </p>
   <template @if="!hasApi">
-    <p data-tasks-static-notice>This is the static demo — tasks you add are kept in your browser and are not saved to a server.</p>
+    <p data-tasks-static-notice>
+      This is the static demo — tasks you add are kept in your browser and are not saved to a
+      server.
+    </p>
   </template>
 </header>
 
@@ -26,7 +29,7 @@
 </section>
 
 <section data-hydrate>
-  <h3>Interactive Controls</h3>
+  <h2>Interactive Controls</h2>
   <p>Loading...</p>
 </section>
 
@@ -124,7 +127,7 @@
 
   const hydrateRoot = document.querySelector('[data-hydrate]');
   hydrateRoot.innerHTML = `
-  <h3>Interactive Controls</h3>
+  <h2>Interactive Controls</h2>
   <nav data-controls aria-label="Add task">
     <input type="text" placeholder="New task..." aria-label="New task title">
     <button type="button">Add Task</button>
