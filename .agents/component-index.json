@@ -4964,20 +4964,24 @@
         ]
       },
       "variants": {
+        "semantic": {
+          "contract": "bn-symbol-tile",
+          "values": [
+            "true"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/platform/src/components.css"
+          ],
+          "emittedByRenderer": false
+        },
         "tint": {
           "contract": "bn-symbol-tile",
           "values": [
-            "brown",
-            "cyan",
             "green",
-            "indigo",
-            "mint",
             "orange",
-            "pink",
-            "purple",
-            "red",
-            "teal",
-            "yellow"
+            "red"
           ],
           "openPatterns": [],
           "matchesAnyValue": false,
