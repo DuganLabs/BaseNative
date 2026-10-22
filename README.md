@@ -70,19 +70,16 @@ validateTemplate('<div v-if="isAdmin">…</div>');
 
 ## Quick Start
 
-`@basenative/*` publishes to **GitHub Packages**, not npmjs.org. Consuming it needs
-a GitHub token with `read:packages` — see
-[docs/CONSUMING-FROM-GH-PACKAGES.md](docs/CONSUMING-FROM-GH-PACKAGES.md).
+`@basenative/*` publishes to **npmjs.org**. No token and no `.npmrc`.
 
 ```bash
-# .npmrc in your project:
-#   @basenative:registry=https://npm.pkg.github.com/
 npm install @basenative/runtime @basenative/server
 ```
 
-> Older `0.2.x`/`0.3.x` builds of some packages remain on npmjs.org from before the
-> move. They are stale — [docs/package-inventory.md](docs/package-inventory.md)
-> records exactly what is published where.
+> The `0.2.x`/`0.3.x` builds are the old pre-1.0 line, not the current release.
+> [docs/package-inventory.md](docs/package-inventory.md) records what is published.
+> [docs/CONSUMING-FROM-GH-PACKAGES.md](docs/CONSUMING-FROM-GH-PACKAGES.md) describes
+> the retired GitHub Packages setup and is out of date.
 
 **Server (Node.js / Cloudflare Workers):**
 
@@ -117,6 +114,10 @@ effect(() => console.log(`${count()} → ${doubled()}`));
 
 hydrate(document.getElementById('app'), { count, doubled });
 ```
+
+### For a model about to write UI
+
+Read [docs/llm/START.md](docs/llm/START.md) first (deployed as `/llms-start.txt`). The honest scorecard of weaknesses is [/ai](https://basenative.com/ai). A single file with no build is [examples/cdn/index.html](examples/cdn/index.html), loading `@basenative/runtime@2` from jsDelivr. `AGENTS.md` restates the rules that keep a first draft valid.
 
 ---
 

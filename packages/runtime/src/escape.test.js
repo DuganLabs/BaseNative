@@ -9,7 +9,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  escapeText, escapeAttr, raw, isRaw, unwrapRaw, isUrlAttribute, sanitizeUrl, findInterpolations,
+  escapeText, escapeAttr, raw, isRaw, unwrapRaw, isUrlAttribute, sanitizeUrl, findInterpolations, mergeClass,
 } from './shared/escape.js';
 import { interpolate } from './evaluate.js';
 
@@ -145,5 +145,21 @@ describe('findInterpolations', () => {
     const t0 = performance.now();
     findInterpolations(input);
     assert.ok(performance.now() - t0 < 200, 'took too long — not linear');
+  });
+});
+
+describe('mergeClass', () => {
+  it('keeps the static class and appends the binding', () => {
+    assert.equal(mergeClass('item', 'done'), 'item done');
+  });
+
+  it('keeps the static class when the binding is false or null', () => {
+    assert.equal(mergeClass('item', false), 'item');
+    assert.equal(mergeClass('item', null), 'item');
+  });
+
+  it('is just the binding when there is no static class', () => {
+    assert.equal(mergeClass('', 'done'), 'done');
+    assert.equal(mergeClass(null, 'done'), 'done');
   });
 });

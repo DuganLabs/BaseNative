@@ -55,4 +55,10 @@ export interface Interpolation {
  * Locates every `{{ expression }}` in `text`, scanning linearly with `indexOf`
  * rather than a backtracking regex.
  */
+/**
+ * Join a literal `class` attribute with a `:class` result. False and null
+ * contribute no tokens, so the static class remains. Shared by hydrate and render.
+ */
+export function mergeClass(staticClass: unknown, dynamic: unknown): string;
+
 export function findInterpolations(text: string): Interpolation[];

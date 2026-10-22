@@ -192,8 +192,9 @@
       carry closing tags. The {{ stats.benchDocsTokens }}-token <code>llms.txt</code> that teaches a
       model the BaseNative API has no break-even through code savings at this task size; what it
       buys is avoided errors. The run's only app-code bug was BaseNative's — an effect subscribed
-      to both a signal and a computed derived from it fired twice per change — and the fix is now
-      documented in that file.
+      to both a signal and a computed derived from it fired twice per change. The runtime now
+      settles that pattern in one run. The historical count of one app-code fix stands.
+      The updated scorecard is on <a href="/ai">/ai</a>.
     </p>
     <p data-compare-note>
       First run in October 2026, against BaseNative 0.6.4. Re-verified

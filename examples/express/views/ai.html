@@ -1,0 +1,41 @@
+<section data-hero>
+  <h2>The scorecard for <em>models</em></h2>
+  <p>Every point a previous page would have held against BaseNative, with an honest status. Fixed means the runtime or the docs changed. Mitigated means a tool exists and the gap is still real. Accepted means the tradeoff stands.</p>
+  <nav data-controls aria-label="Model entry points">
+    <a href="/llms-start.txt" role="button">Cheat sheet</a>
+    <a href="/compare" role="button" data-variant="outline">Compare</a>
+    <a href="/docs" role="button" data-variant="outline">API docs</a>
+  </nav>
+</section>
+
+<section>
+  <h2>Where this list <em>came from</em></h2>
+  <p>Searches of this repository's history, branches, and closed pull requests found no <code>/ai</code> page and no commit by Muse. Nothing was restored from a deleted file, because no such file exists. The rows below are the last committed list of points against BaseNative: the <a href="/compare">compare</a> page (Where others win, Probably not, and the developer-experience rows), the October 2026 LLM benchmark those pages cite, and the write-up in the benchmark blog. <a href="https://greenput.com/ai" rel="noopener">greenput.com/ai</a> is a page about GreenPut, a different product. It is not this scorecard.</p>
+  <p>The short file to read before writing UI is <a href="/llms-start.txt">/llms-start.txt</a> (<a href="https://github.com/DuganLabs/BaseNative/blob/main/docs/llm/START.md" rel="noopener">docs/llm/START.md</a>). <a href="/llms.txt">llms.txt</a> stays the package index.</p>
+</section>
+
+<section>
+  <h2>Measured <em>now</em></h2>
+  <p>These figures are read from the repository when the page renders. The token pair is the historical benchmark. It is not a new measurement, and it is not a claim that the code got smaller.</p>
+  <div>
+    {{ statsRow }}
+  </div>
+</section>
+
+<section>
+  <h2>Every point <em>against</em> it</h2>
+  <p>An effect that reads a signal and a computed derived from it runs once. The historical benchmark still counts one app-code fix for the old double-fire.</p>
+  {{ scorecard }}
+</section>
+
+<section>
+  <h2>Copy this <em>counter</em></h2>
+  <p>One HTML file. The runtime loads from a CDN. No bundler. The same template is what <code>render()</code> accepts on the server.</p>
+  {{ canonical }}
+</section>
+
+<section>
+  <h2>React habits that <em>fail</em></h2>
+  <p><code>bn from-jsx</code> rewrites this subset of a draft. <code>@basenative/validate</code> reports the same mistakes with the replacement.</p>
+  {{ mistakes }}
+</section>

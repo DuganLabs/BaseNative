@@ -32,18 +32,17 @@ describe('diamond dependencies - comprehensive test suite', () => {
       assert.equal(runs, 2, 'effect should run exactly once');
     });
 
-    it('classic diamond fires multiple times without batch as each computed updates', () => {
+    it('a single set settles a diamond in one effect run', () => {
       const a = signal(1);
       const b = computed(() => a() * 2);
       const c = computed(() => a() * 3);
       const values = [];
       effect(() => { values.push(b() + c()); });
 
-      assert.equal(values[0], 5);
+      assert.deepEqual(values, [5]);
       a.set(5);
-      // Without batch: b updates first (10+3=13), then c updates (10+15=25)
-      assert.equal(values[values.length - 1], 25);
-      assert.ok(values.length > 2, 'effect fires multiple times without batch');
+      // b and c both update before the effect runs, so it never sees 10+3.
+      assert.deepEqual(values, [5, 25]);
     });
   });
 

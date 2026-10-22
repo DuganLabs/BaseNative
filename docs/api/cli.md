@@ -124,7 +124,18 @@ Manages environment variables for the project.
 
 ### `bn analyze`
 
-Analyzes bundle size and reports dependency sizes. Useful for verifying that `@basenative/runtime` stays under its 10KB gzipped budget (currently 9.2KB).
+Analyzes bundle size and reports dependency sizes. Useful for verifying that `@basenative/runtime` stays under its 10KB gzipped budget. The measured size is printed by `node scripts/bundle-size.js`.
+
+---
+
+### `bn from-jsx`
+
+Translates a React or JSX draft into BaseNative. It rewrites `className`, `htmlFor`, `onClick`, `useState`, `useMemo`, `useEffect`, and `{expr}` text, and prints a note for anything it left in place. It is not a full JSX parser.
+
+```bash
+bn from-jsx draft.jsx
+bn from-jsx draft.jsx --out app.html
+```
 
 ---
 

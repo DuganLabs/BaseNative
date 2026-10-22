@@ -1,5 +1,7 @@
 # Consuming `@basenative/*` from GitHub Packages
 
+> **Out of date.** `@basenative/*` publishes to npmjs.org. `npm install @basenative/runtime` needs no token and no `.npmrc`. This page describes the old GitHub Packages setup. The current record is [package-inventory.md](package-inventory.md).
+
 BaseNative publishes to **GitHub Packages**, not npmjs.org. This is deliberate — open-source projects in the DuganLabs org get unlimited free Actions minutes and bandwidth on GH Packages, so it's the right home for our shared libraries.
 
 ## One-time setup (per developer / per CI)

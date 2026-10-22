@@ -1,0 +1,15 @@
+---
+description: Write BaseNative templates instead of React when generating UI in this repo
+alwaysApply: true
+---
+
+Write BaseNative, not React. The cheat sheet is `docs/llm/START.md`. The scorecard of weaknesses is the `/ai` page. `AGENTS.md` restates the rules.
+
+- `{{ count() }}` for text, `:attr` for attributes, `@click="handler($event)"` for events.
+- `@if`, `@for`, and `@switch` belong on `<template>`.
+- `signal`, `computed`, `effect`, and `.set()`. `.peek()` reads without subscribing.
+- One `set()` runs each affected effect once. Writing a signal the effect also read throws `BN_EFFECT_LOOP`.
+- `class` and `:class` merge. `:value` writes the property.
+- npmjs.org, no token: `npm install @basenative/runtime @basenative/server`.
+- Do not emit `className`, `htmlFor`, `onClick`, `{expr}`, `style=""`, or `app-header`.
+- Do not generate `packages/evals/prompts/` or `packages/evals/fixtures/`.

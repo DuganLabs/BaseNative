@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BaseNative counter</title>
+</head>
+<body>
+  <!--
+    StackBlitz and WebContainers: this file is the whole app.
+    No package.json and no bundler. The runtime loads from jsDelivr.
+  -->
+  <p class="item" :class="count() > 0 ? 'done' : ''">
+    Count <span>{{ count() }}</span>, doubled <span>{{ doubled() }}</span>
+  </p>
+  <button type="button" @click="count.set(count() + 1)">Add</button>
+  <script type="module">
+    import { signal, computed, hydrate } from 'https://cdn.jsdelivr.net/npm/@basenative/runtime@2/+esm';
+
+    const count = signal(0);
+    const doubled = computed(() => count() * 2);
+    hydrate(document.body, { count, doubled });
+  </script>
+</body>
+</html>

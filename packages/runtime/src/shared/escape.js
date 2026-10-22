@@ -101,6 +101,27 @@ export function sanitizeUrl(value) {
  * trimmed, and `{{}}` / `{{   }}` is not an interpolation. Unlike the regex it also
  * matches across newlines, which the expression tokenizer already tolerates.
  */
+/**
+ * Join a literal `class` attribute with a `:class` result.
+ *
+ * `:class` used to replace the whole attribute, so a model that wrote
+ * `class="item" :class="done"` lost `item` and the element rendered unstyled.
+ * Both sides (hydrate and render) call this so a static class survives and
+ * the binding only contributes its own tokens. A false/null binding contributes
+ * nothing and leaves the static class in place.
+ *
+ * @param {unknown} staticClass
+ * @param {unknown} dynamic
+ * @returns {string}
+ */
+export function mergeClass(staticClass, dynamic) {
+  const base = staticClass == null ? '' : String(staticClass).trim();
+  const extra = dynamic === false || dynamic == null ? '' : String(unwrapRaw(dynamic)).trim();
+  if (!base) return extra;
+  if (!extra) return base;
+  return `${base} ${extra}`;
+}
+
 export function findInterpolations(text) {
   const out = [];
   let from = 0;

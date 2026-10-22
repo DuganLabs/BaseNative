@@ -77,6 +77,32 @@ export const FOREIGN_ATTRIBUTES = [
   { match: /^x-on:(.+)$/, framework: 'Alpine', rewrite: (v, n) => `@${n.slice('x-on:'.length)}="${v}"` },
   { match: /^on:(.+)$/, framework: 'Svelte', rewrite: (v, n) => `@${n.slice('on:'.length)}="${v}"` },
   { match: /^bind:(.+)$/, framework: 'Svelte', rewrite: (v, n) => `:${n.slice('bind:'.length)}="${v}"` },
+
+  // ---- React (the default a model emits when the sandbox is React-shaped) ----
+  {
+    match: /^className$/,
+    framework: 'React',
+    rewrite: (v) => (/[()?:]/.test(v) ? `:class="${v}"` : `class="${v}"`),
+    note: 'a static class is a class attribute; an expression is :class. The two merge',
+  },
+  { match: /^htmlFor$/, framework: 'React', rewrite: (v) => `for="${v}"` },
+  {
+    match: /^on[A-Z][A-Za-z]*$/,
+    framework: 'React',
+    rewrite: (v, n) => {
+      const event = n.slice(2).toLowerCase();
+      const expr = String(v ?? '').trim();
+      if (/^[A-Za-z_$][\w$]*$/.test(expr)) return `@${event}="${expr}($event)"`;
+      return `@${event}="${expr}"`;
+    },
+    note: 'BaseNative listens with @click="handler($event)", not onClick',
+  },
+  {
+    match: /^dangerouslySetInnerHTML$/,
+    framework: 'React',
+    rewrite: () => '{{ value }}',
+    note: 'interpolate text. Trusted HTML is an explicit raw() call in the context, not an attribute',
+  },
 ];
 
 /**
@@ -98,6 +124,13 @@ export const FOREIGN_BLOCKS = [
     framework: 'Svelte',
     suggestion:
       'BaseNative uses attribute directives on <template>: <template @if="cond"> … </template> or <template @for="item of items; track item.id">',
+  },
+  {
+    // `{count}` / `{user.name}` — not `{{ count }}`, and not an object literal.
+    match: /(?<!\{)\{([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)\}(?!\})/g,
+    framework: 'React/JSX',
+    skipInScript: true,
+    suggestion: (m) => `{{ ${m[1]} }}`,
   },
 ];
 

@@ -20,6 +20,7 @@ import {
   getRoadmapPageContext,
   getTasksPageContext,
 } from './site-data.js';
+import { getAiPageContext } from './ai-scorecard.js';
 import { componentCategories, flatComponents, findComponent } from './component-catalog.js';
 import { getDemo } from './component-demos.js';
 import { getDemoScripts } from './component-demo-scripts.js';
@@ -188,8 +189,8 @@ export function renderPage(viewFile, ctx, opts) {
   const content = render(view, ctx);
   // The shell's primary navigation is the catalog's app nav — one <nav>
   // that is the phone-class bottom bar and the unfolded side rail under
-  // a media query. Nine destinations overflow the bar, so the bar keeps
-  // four and the rest ride the More sheet (renderAppNav's overflow).
+  // a media query. The bar keeps the first four items. AI is the first
+  // item in the More sheet (renderAppNav's overflow).
   const appNav = renderAppNav({
     id: 'site-nav',
     brand: { name: 'BaseNative', href: '/' },
@@ -263,6 +264,16 @@ export const siteRoutes = [
       'API reference for the @basenative/runtime primitives (signal, computed, effect, hydrate), the template directives and @basenative/server render(), with links to the generated docs/api reference for router, forms, components and every other package.',
     activePage: 'docs',
     ctx: () => getDocsPageContext(),
+  },
+  {
+    path: '/ai',
+    view: 'ai.html',
+    title: 'AI',
+    description:
+      'Honest scorecard of the points against BaseNative for models: what is fixed, what is mitigated, and what is an accepted tradeoff.',
+    ogTitle: 'BaseNative for models — honest scorecard',
+    activePage: 'ai',
+    ctx: () => getAiPageContext(),
   },
   {
     path: '/playground',

@@ -56,6 +56,16 @@ date. Outcome: **no measured value changed.**
   slightly from 6,885 at 2.0.1 as the docs grew; the amortization
   verdict is unchanged.
 
+## Runtime follow-up (2026-10-22), not a re-measurement
+
+The numbers above are unchanged. `results.json` was not rewritten. What changed in the runtime, after those runs:
+
+- A single `set()` settles derived computeds and then runs each affected effect once. The diamond that fired twice, and was the run's one BaseNative app-code fix, now runs once. The historical fix count stays 1.
+- `:class` merges with a static `class` through `mergeClass()`, on the server and in `hydrate()`. The blog's three models hit replacement; that was the behavior then.
+- An effect that reads a signal it also writes throws `BN_EFFECT_LOOP` and names `.peek()`, instead of overflowing the stack.
+
+The scorecard that lists each of those points is the `/ai` page.
+
 ## The question
 
 Warren's challenge: *confirm, with measurements, whether BaseNative is better
