@@ -107,17 +107,17 @@ export function renderBnPopupButton(options = {}) {
           `<option value="${escapeAttr(item.value)}"${opt('selected', item.selected)}>${escapeHtml(item.label)}</option>`,
       )
       .join('');
-    return `<select data-bn="bn-popup-button" aria-label="${escapeAttr(options.label || 'Options')}"${opt('id', options.id)}${opt('disabled', options.disabled)}>${items}</select>`;
+    return `<select data-bn="bn-popup-button" aria-label="${escapeAttr(options.label || 'Options')}"${opt('id', options.id)}${opt('disabled', options.disabled)}${opt('data-force', options.force)}>${items}</select>`;
   }
   const menuId = idOf('popup-menu', options.menuId);
-  const button = `<button data-bn="bn-popup-button" type="button" popovertarget="${escapeAttr(menuId)}"${opt('id', options.id)}${opt('disabled', options.disabled)}>${escapeHtml(options.label || 'Options')}${glyph('▾')}</button>`;
+  const button = `<button data-bn="bn-popup-button" type="button" popovertarget="${escapeAttr(menuId)}"${opt('id', options.id)}${opt('disabled', options.disabled)}${opt('data-force', options.force)}>${escapeHtml(options.label || 'Options')}${glyph('▾')}</button>`;
   return `${button}${renderBnMenu({ id: menuId, items: options.items || [], label: options.label || 'Options' })}`;
 }
 
 /** Pull-down button opening a popover menu. */
 export function renderBnPulldownButton(options = {}) {
   const menuId = idOf('pulldown-menu', options.menuId);
-  const button = `<button data-bn="bn-pulldown-button" type="button" popovertarget="${escapeAttr(menuId)}"${opt('id', options.id)}>${escapeHtml(options.label || 'Actions')}${glyph('▾')}</button>`;
+  const button = `<button data-bn="bn-pulldown-button" type="button" popovertarget="${escapeAttr(menuId)}"${opt('id', options.id)}${opt('disabled', options.disabled)}${opt('data-force', options.force)}>${escapeHtml(options.label || 'Actions')}${glyph('▾')}</button>`;
   return `${button}${renderBnMenu({ id: menuId, items: options.items || [], label: options.label || 'Actions' })}`;
 }
 
@@ -133,7 +133,7 @@ export function renderBnSegmented(options = {}) {
         `<label data-bn="bn-segment"${opt('data-selected', segment.selected ? 'true' : null)}><input type="radio" name="${escapeAttr(name)}" value="${escapeAttr(segment.value)}"${opt('checked', segment.selected)}>${escapeHtml(segment.label)}</label>`,
     )
     .join('');
-  return `<fieldset data-bn="bn-segmented" data-size="${escapeAttr(options.size || 'large')}" role="radiogroup" aria-label="${escapeAttr(options.label || 'Segments')}"${opt('id', options.id)}>${radios}</fieldset>`;
+  return `<fieldset data-bn="bn-segmented" data-size="${escapeAttr(options.size || 'large')}" role="radiogroup" aria-label="${escapeAttr(options.label || 'Segments')}"${opt('id', options.id)}${opt('disabled', options.disabled)}${opt('data-force', options.force)}>${radios}</fieldset>`;
 }
 
 /** Switch. iOS size is the HIG 51×31 control; macOS uses Toggle (Switch) tokens. */
@@ -209,7 +209,7 @@ export function renderBnCombobox(options = {}) {
         `<option value="${escapeAttr(item.value || item.label)}">${escapeHtml(item.label)}</option>`,
     )
     .join('');
-  return `<label data-bn="bn-combobox">${escapeHtml(options.label || '')}<input type="text" id="${escapeAttr(inputId)}" list="${escapeAttr(listId)}"${opt('value', options.value)}><datalist id="${escapeAttr(listId)}">${items}</datalist></label>`;
+  return `<label data-bn="bn-combobox"${opt('data-force', options.force)}>${escapeHtml(options.label || '')}<input type="text" id="${escapeAttr(inputId)}" list="${escapeAttr(listId)}"${opt('value', options.value)}${opt('disabled', options.disabled)}><datalist id="${escapeAttr(listId)}">${items}</datalist></label>`;
 }
 
 /** Colour well, a native colour input. macOS size is Color Well tokens. */
@@ -243,7 +243,7 @@ export function renderBnColorPicker(options = {}) {
         `<li><button data-bn="bn-color-swatch" type="button" data-color="${escapeAttr(color)}" aria-label="${escapeAttr(color)}"></button></li>`,
     )
     .join('');
-  return `<button data-bn="bn-color-well" type="button" commandfor="${escapeAttr(dialogId)}" command="show-modal" aria-haspopup="dialog">${escapeHtml(options.label || 'Color')}</button><dialog data-bn="bn-color-picker" id="${escapeAttr(dialogId)}"${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}><p data-bn="bn-color-picker-title">${escapeHtml(options.label || 'Color')}</p><ul data-bn="bn-color-grid">${swatches}</ul></dialog>`;
+  return `<button data-bn="bn-color-well" type="button" commandfor="${escapeAttr(dialogId)}" command="show-modal" aria-haspopup="dialog"${opt('data-force', options.force)}>${escapeHtml(options.label || 'Color')}</button><dialog data-bn="bn-color-picker" id="${escapeAttr(dialogId)}"${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('data-force', options.force)}><p data-bn="bn-color-picker-title">${escapeHtml(options.label || 'Color')}</p><ul data-bn="bn-color-grid">${swatches}</ul></dialog>`;
 }
 
 /**
@@ -265,13 +265,13 @@ export function renderBnDatePicker(options = {}) {
       return `<li><button data-bn="bn-date-chip" type="button" commandfor="${escapeAttr(dialogId)}" command="show-modal">${escapeHtml(label)}</button></li>`;
     })
     .join('');
-  return `<menu data-bn="bn-date-chips">${chips}</menu><dialog data-bn="bn-date-picker" id="${escapeAttr(dialogId)}" aria-label="Date"${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}><table data-bn="bn-date-grid"><caption>${escapeHtml(options.month || 'June')}</caption><tr>${cells}</tr></table></dialog>`;
+  return `<menu data-bn="bn-date-chips">${chips}</menu><dialog data-bn="bn-date-picker" id="${escapeAttr(dialogId)}" aria-label="Date"${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('data-force', options.force)}><table data-bn="bn-date-grid"><caption>${escapeHtml(options.month || 'June')}</caption><tr>${cells}</tr></table></dialog>`;
 }
 
 /** List. Regular rows are 52px with 16px side padding. A label or footer wraps the group. */
 export function renderBnList(options = {}) {
   const rows = (options.rows || []).map((row) => renderBnListRow(row)).join('');
-  const ul = `<ul data-bn="bn-list"${opt('data-grouped', options.grouped ? 'true' : null)}${opt('id', options.id)}>${rows}</ul>`;
+  const ul = `<ul data-bn="bn-list"${opt('data-grouped', options.grouped ? 'true' : null)}${opt('id', options.id)}${opt('data-force', options.force)}>${rows}</ul>`;
   if (!options.label && !options.footer) return ul;
   const head = options.label
     ? `<h2 data-bn="bn-list-header">${escapeHtml(options.label)}</h2>`
@@ -311,7 +311,7 @@ export function renderBnIndexBar(options = {}) {
   const items = letters
     .map((letter) => `<li><a href="#${escapeAttr(letter)}">${escapeHtml(letter)}</a></li>`)
     .join('');
-  return `<nav data-bn="bn-index-bar" aria-label="${escapeAttr(options.label || 'Index')}"${opt('id', options.id)}><ol>${items}</ol></nav>`;
+  return `<nav data-bn="bn-index-bar" aria-label="${escapeAttr(options.label || 'Index')}"${opt('id', options.id)}${opt('data-force', options.force)}><ol>${items}</ol></nav>`;
 }
 
 /** Table. Alternating and selected colours are macOS tokens. */
@@ -334,7 +334,7 @@ export function renderBnMenu(options = {}) {
     .map((item) => `<li role="none">${renderBnMenuItem(item)}</li>`)
     .join('');
   const popover = options.inline ? '' : ' popover="auto"';
-  return `<menu data-bn="${escapeAttr(contract)}" id="${escapeAttr(menuId)}" role="menu" aria-label="${escapeAttr(options.label || 'Menu')}"${popover}${opt('data-present', options.inline ? 'inline' : null)}>${items}</menu>`;
+  return `<menu data-bn="${escapeAttr(contract)}" id="${escapeAttr(menuId)}" role="menu" aria-label="${escapeAttr(options.label || 'Menu')}"${popover}${opt('data-present', options.inline ? 'inline' : null)}${opt('data-force', options.force)}>${items}</menu>`;
 }
 
 /** One menu item. */
@@ -409,13 +409,13 @@ export function renderBnSheet(options = {}) {
 export function renderBnPopover(options = {}) {
   const popId = idOf('popover', options.id);
   const popover = options.inline ? '' : ' popover="auto"';
-  return `<button data-bn="bn-popover-button" type="button" popovertarget="${escapeAttr(popId)}">${escapeHtml(options.label || 'More')}</button><aside data-bn="bn-popover" id="${escapeAttr(popId)}"${popover}${opt('data-present', options.inline ? 'inline' : null)}><p>${escapeHtml(options.body || '')}</p></aside>`;
+  return `<button data-bn="bn-popover-button" type="button" popovertarget="${escapeAttr(popId)}"${opt('data-force', options.force)}>${escapeHtml(options.label || 'More')}</button><aside data-bn="bn-popover" id="${escapeAttr(popId)}"${popover}${opt('data-present', options.inline ? 'inline' : null)}>${opt('data-force', options.force)}><p>${escapeHtml(options.body || '')}</p></aside>`;
 }
 
 /** Tooltip, a hint popover. Inner stroke colour is a macOS token. */
 export function renderBnTooltip(options = {}) {
   const tipId = idOf('tip', options.id);
-  return `<button data-bn="bn-tooltip-button" type="button" popovertarget="${escapeAttr(tipId)}">${escapeHtml(options.label || 'Info')}</button><p data-bn="bn-tooltip" id="${escapeAttr(tipId)}" popover="hint">${escapeHtml(options.tip || '')}</p>`;
+  return `<button data-bn="bn-tooltip-button" type="button" popovertarget="${escapeAttr(tipId)}"${opt('data-force', options.force)}>${escapeHtml(options.label || 'Info')}</button><p data-bn="bn-tooltip" id="${escapeAttr(tipId)}" popover="hint"${opt('data-force', options.force)}>${escapeHtml(options.tip || '')}</p>`;
 }
 
 /** Notification, a status region. A floating card with title and message. */
@@ -526,7 +526,7 @@ export function renderBnMenubar(options = {}) {
 
 /** Disclosure, native details and summary. */
 export function renderBnDisclosure(options = {}) {
-  return `<details data-bn="bn-disclosure"${opt('id', options.id)}${opt('open', options.open)}><summary>${escapeHtml(options.label || 'Details')}</summary><p>${escapeHtml(options.body || '')}</p></details>`;
+  return `<details data-bn="bn-disclosure"${opt('id', options.id)}${opt('open', options.open)}${opt('data-force', options.force)}><summary>${escapeHtml(options.label || 'Details')}</summary><p>${escapeHtml(options.body || '')}</p></details>`;
 }
 
 /** Form of fields. macOS spacing follows the control-size tokens. */
@@ -596,7 +596,7 @@ export function renderBnMetric(options = {}) {
   const detail = options.detail
     ? `<p data-bn="bn-metric-detail">${escapeHtml(options.detail)}</p>`
     : '';
-  return `<article data-bn="bn-metric"${opt('id', options.id)}><p data-bn="bn-metric-value">${escapeHtml(String(options.value ?? ''))}</p><h3 data-bn="bn-metric-label">${escapeHtml(options.label || '')}</h3>${detail}</article>`;
+  return `<article data-bn="bn-metric"${opt('id', options.id)}${opt('data-force', options.force)}><p data-bn="bn-metric-value">${escapeHtml(String(options.value ?? ''))}</p><h3 data-bn="bn-metric-label">${escapeHtml(options.label || '')}</h3>${detail}</article>`;
 }
 
 /**

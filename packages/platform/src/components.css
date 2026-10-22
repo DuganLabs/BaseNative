@@ -247,9 +247,11 @@
     display: inline-flex;
     align-items: stretch;
     gap: 0;
+    box-sizing: border-box;
     margin: 0;
     border: 0;
     padding: 0;
+    height: var(--bn-len-50);
     min-height: var(--bn-len-50);
     min-inline-size: 0;
     max-inline-size: 100%;
@@ -258,6 +260,7 @@
   }
 
   [data-bn='bn-segmented'][data-size='small'] {
+    height: var(--bn-len-32);
     min-height: var(--bn-len-32);
   }
 
@@ -265,6 +268,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    margin: 0;
     min-inline-size: 0;
     padding: var(--bn-len-3) var(--bn-len-6);
     overflow: hidden;
@@ -1488,6 +1492,108 @@
     min-width: 0;
     padding: 0;
     background: transparent;
+  }
+
+  /* Document shell sets data-bn-platform. A nested stage names its own
+     platform and has to beat those shell metrics. */
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-button'] {
+    min-height: var(--bn-len-50);
+    padding: var(--bn-len-14) var(--bn-len-20);
+    border-radius: var(--bn-plat-radius-1000);
+    font-size: var(--bn-plat-font-body-size);
+    line-height: var(--bn-plat-font-body-leading);
+    letter-spacing: var(--bn-plat-font-body-tracking);
+    font-weight: var(--bn-plat-font-body-weight);
+    width: auto;
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-button'][data-size='medium'] {
+    min-height: var(--bn-len-34);
+    padding: var(--bn-len-7) var(--bn-len-14);
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-button'][data-size='small'] {
+    min-height: var(--bn-len-28);
+    padding: var(--bn-len-4) var(--bn-len-10);
+    gap: var(--bn-len-3);
+  }
+
+  [data-bn-platform='macos']
+    [data-bn-platform='ios']
+    [data-bn='bn-button'][data-variant='prominent'] {
+    background: var(--bn-plat-color-accents-blue);
+    color: var(--bn-plat-color-grays-white);
+  }
+
+  [data-bn-platform='macos']
+    [data-bn-platform='ios']
+    [data-bn='bn-button'][data-variant='bordered'] {
+    background: var(--bn-plat-color-fills-tertiary);
+    color: var(--bn-plat-color-accents-blue);
+  }
+
+  [data-bn-platform='macos']
+    [data-bn-platform='ios']
+    [data-bn='bn-button'][data-variant='borderless'] {
+    background: transparent;
+    color: var(--bn-plat-color-accents-blue);
+  }
+
+  [data-bn-platform='macos']
+    [data-bn-platform='ios']
+    [data-bn='bn-button'][data-variant='borderless'][data-size='large'] {
+    border-radius: var(--bn-plat-radius-12);
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-button'][data-label='icon'] {
+    width: var(--bn-len-50);
+    padding: 0;
+    border-radius: var(--bn-plat-radius-500);
+  }
+
+  [data-bn-platform='macos']
+    [data-bn-platform='ios']
+    [data-bn='bn-button'][data-label='icon'][data-size='medium'] {
+    width: var(--bn-len-34);
+  }
+
+  [data-bn-platform='macos']
+    [data-bn-platform='ios']
+    [data-bn='bn-button'][data-label='icon'][data-size='small'] {
+    width: var(--bn-len-28);
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-segmented'] {
+    box-sizing: border-box;
+    height: var(--bn-len-50);
+    min-height: var(--bn-len-50);
+    padding: 0;
+    border-radius: var(--bn-plat-radius-100);
+    background: var(--bn-plat-color-fills-tertiary);
+    overflow: hidden;
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-segmented'][data-size='small'] {
+    height: var(--bn-len-32);
+    min-height: var(--bn-len-32);
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-segment'] {
+    margin: 0;
+    padding: var(--bn-len-3) var(--bn-len-6);
+    border-radius: var(--bn-plat-radius-1000);
+    color: var(--bn-plat-color-labels-primary);
+    font-size: var(--bn-type-13_33);
+    line-height: var(--bn-type-18);
+    letter-spacing: var(--bn-type-neg-0_08);
+    font-weight: var(--bn-plat-weight-semibold);
+  }
+
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-segment']:has(input:checked),
+  [data-bn-platform='macos'] [data-bn-platform='ios'] [data-bn='bn-segment'][data-selected='true'] {
+    background: var(--bn-plat-color-miscellaneous-segmented-control-selected-fill);
+    color: var(--bn-plat-color-labels-primary);
+    box-shadow: 0 var(--bn-len-2) var(--bn-len-20) var(--bn-plat-swatch-0000000f);
   }
 
   [data-bn='bn-sidebar-item'] svg {

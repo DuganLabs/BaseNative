@@ -20,11 +20,11 @@
   "summary": {
     "components": 58,
     "cells": 3240,
-    "pass": 0,
-    "pending": 1434,
-    "gap": 1806,
-    "verifiedPercent": 0,
-    "renderedPercent": 44.3
+    "pass": 24,
+    "pending": 1746,
+    "gap": 1470,
+    "verifiedPercent": 0.7,
+    "renderedPercent": 54.6
   },
   "components": [
     {
@@ -61,8 +61,8 @@
           "state": "rest",
           "theme": "light",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent 50px capsule, accent blue (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -77,8 +77,8 @@
           "state": "rest",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent 50px capsule, accent blue (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -93,8 +93,8 @@
           "state": "rest",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent 50px capsule, accent blue (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -109,8 +109,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent 50px capsule, accent blue (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -125,8 +125,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent 50px capsule, accent blue (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -141,8 +141,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent 50px capsule, accent blue (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -637,8 +637,8 @@
           "state": "rest",
           "theme": "light",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large bordered 50px capsule, tertiary fill (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -653,8 +653,8 @@
           "state": "rest",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large bordered 50px capsule, tertiary fill (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -669,8 +669,8 @@
           "state": "rest",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large bordered 50px capsule, tertiary fill (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -685,8 +685,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large bordered 50px capsule, tertiary fill (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -701,8 +701,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large bordered 50px capsule, tertiary fill (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -717,8 +717,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large bordered 50px capsule, tertiary fill (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -1213,8 +1213,8 @@
           "state": "rest",
           "theme": "light",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large borderless 50px radius 12 (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -1229,8 +1229,8 @@
           "state": "rest",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large borderless 50px radius 12 (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -1245,8 +1245,8 @@
           "state": "rest",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large borderless 50px radius 12 (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -1261,8 +1261,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large borderless 50px radius 12 (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -1277,8 +1277,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large borderless 50px radius 12 (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -1293,8 +1293,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large borderless 50px radius 12 (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -20205,7 +20205,11 @@
         "selected"
       ],
       "renderedStates": [
-        "rest"
+        "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled"
       ],
       "cells": [
         {
@@ -20279,8 +20283,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20290,8 +20294,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20301,8 +20305,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20312,8 +20316,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20323,8 +20327,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20334,8 +20338,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20345,8 +20349,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20356,8 +20360,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20367,8 +20371,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20378,8 +20382,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20389,8 +20393,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20400,8 +20404,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20411,8 +20415,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20422,8 +20426,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20433,8 +20437,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20444,8 +20448,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20455,8 +20459,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20466,8 +20470,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20477,8 +20481,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20488,8 +20492,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20499,8 +20503,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20510,8 +20514,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20521,8 +20525,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20532,8 +20536,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20675,8 +20679,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20686,8 +20690,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20697,8 +20701,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20708,8 +20712,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20719,8 +20723,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20730,8 +20734,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20741,8 +20745,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20752,8 +20756,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20763,8 +20767,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20774,8 +20778,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20785,8 +20789,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20796,8 +20800,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20807,8 +20811,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20818,8 +20822,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20829,8 +20833,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20840,8 +20844,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20851,8 +20855,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20862,8 +20866,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20873,8 +20877,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20884,8 +20888,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20895,8 +20899,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20906,8 +20910,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20917,8 +20921,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20928,8 +20932,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -21019,7 +21023,11 @@
         "selected"
       ],
       "renderedStates": [
-        "rest"
+        "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled"
       ],
       "cells": [
         {
@@ -21093,8 +21101,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21104,8 +21112,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21115,8 +21123,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21126,8 +21134,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21137,8 +21145,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21148,8 +21156,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21159,8 +21167,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21170,8 +21178,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21181,8 +21189,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21192,8 +21200,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21203,8 +21211,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21214,8 +21222,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21225,8 +21233,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21236,8 +21244,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21247,8 +21255,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21258,8 +21266,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21269,8 +21277,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21280,8 +21288,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21291,8 +21299,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21302,8 +21310,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21313,8 +21321,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21324,8 +21332,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21335,8 +21343,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21346,8 +21354,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Opens a menu. Label stays one line."
           ]
@@ -21438,12 +21446,82 @@
       ],
       "renderedStates": [
         "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled",
         "selected"
       ],
       "cells": [
         {
           "variant": "default",
           "state": "rest",
+          "theme": "light",
+          "width": 320,
+          "status": "pass",
+          "referenceImage": "kit:ios-segmented large 50px radius 100 tertiary track (local extract, not committed)",
+          "acceptance": [
+            "Segments share one height. Selected segment is distinct."
+          ]
+        },
+        {
+          "variant": "default",
+          "state": "rest",
+          "theme": "light",
+          "width": 768,
+          "status": "pass",
+          "referenceImage": "kit:ios-segmented large 50px radius 100 tertiary track (local extract, not committed)",
+          "acceptance": [
+            "Segments share one height. Selected segment is distinct."
+          ]
+        },
+        {
+          "variant": "default",
+          "state": "rest",
+          "theme": "light",
+          "width": 1280,
+          "status": "pass",
+          "referenceImage": "kit:ios-segmented large 50px radius 100 tertiary track (local extract, not committed)",
+          "acceptance": [
+            "Segments share one height. Selected segment is distinct."
+          ]
+        },
+        {
+          "variant": "default",
+          "state": "rest",
+          "theme": "dark",
+          "width": 320,
+          "status": "pass",
+          "referenceImage": "kit:ios-segmented large 50px radius 100 tertiary track (local extract, not committed)",
+          "acceptance": [
+            "Segments share one height. Selected segment is distinct."
+          ]
+        },
+        {
+          "variant": "default",
+          "state": "rest",
+          "theme": "dark",
+          "width": 768,
+          "status": "pass",
+          "referenceImage": "kit:ios-segmented large 50px radius 100 tertiary track (local extract, not committed)",
+          "acceptance": [
+            "Segments share one height. Selected segment is distinct."
+          ]
+        },
+        {
+          "variant": "default",
+          "state": "rest",
+          "theme": "dark",
+          "width": 1280,
+          "status": "pass",
+          "referenceImage": "kit:ios-segmented large 50px radius 100 tertiary track (local extract, not committed)",
+          "acceptance": [
+            "Segments share one height. Selected segment is distinct."
+          ]
+        },
+        {
+          "variant": "default",
+          "state": "hover",
           "theme": "light",
           "width": 320,
           "status": "pending",
@@ -21454,7 +21532,7 @@
         },
         {
           "variant": "default",
-          "state": "rest",
+          "state": "hover",
           "theme": "light",
           "width": 768,
           "status": "pending",
@@ -21465,7 +21543,7 @@
         },
         {
           "variant": "default",
-          "state": "rest",
+          "state": "hover",
           "theme": "light",
           "width": 1280,
           "status": "pending",
@@ -21476,7 +21554,7 @@
         },
         {
           "variant": "default",
-          "state": "rest",
+          "state": "hover",
           "theme": "dark",
           "width": 320,
           "status": "pending",
@@ -21487,7 +21565,7 @@
         },
         {
           "variant": "default",
-          "state": "rest",
+          "state": "hover",
           "theme": "dark",
           "width": 768,
           "status": "pending",
@@ -21498,7 +21576,7 @@
         },
         {
           "variant": "default",
-          "state": "rest",
+          "state": "hover",
           "theme": "dark",
           "width": 1280,
           "status": "pending",
@@ -21509,77 +21587,11 @@
         },
         {
           "variant": "default",
-          "state": "hover",
-          "theme": "light",
-          "width": 320,
-          "status": "gap",
-          "referenceImage": null,
-          "acceptance": [
-            "Segments share one height. Selected segment is distinct."
-          ]
-        },
-        {
-          "variant": "default",
-          "state": "hover",
-          "theme": "light",
-          "width": 768,
-          "status": "gap",
-          "referenceImage": null,
-          "acceptance": [
-            "Segments share one height. Selected segment is distinct."
-          ]
-        },
-        {
-          "variant": "default",
-          "state": "hover",
-          "theme": "light",
-          "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
-          "acceptance": [
-            "Segments share one height. Selected segment is distinct."
-          ]
-        },
-        {
-          "variant": "default",
-          "state": "hover",
-          "theme": "dark",
-          "width": 320,
-          "status": "gap",
-          "referenceImage": null,
-          "acceptance": [
-            "Segments share one height. Selected segment is distinct."
-          ]
-        },
-        {
-          "variant": "default",
-          "state": "hover",
-          "theme": "dark",
-          "width": 768,
-          "status": "gap",
-          "referenceImage": null,
-          "acceptance": [
-            "Segments share one height. Selected segment is distinct."
-          ]
-        },
-        {
-          "variant": "default",
-          "state": "hover",
-          "theme": "dark",
-          "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
-          "acceptance": [
-            "Segments share one height. Selected segment is distinct."
-          ]
-        },
-        {
-          "variant": "default",
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21589,8 +21601,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21600,8 +21612,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21611,8 +21623,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21622,8 +21634,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21633,8 +21645,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21644,8 +21656,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21655,8 +21667,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21666,8 +21678,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21677,8 +21689,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21688,8 +21700,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21699,8 +21711,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21710,8 +21722,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21721,8 +21733,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21732,8 +21744,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21743,8 +21755,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21754,8 +21766,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21765,8 +21777,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21856,7 +21868,11 @@
         "selected"
       ],
       "renderedStates": [
-        "rest"
+        "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled"
       ],
       "cells": [
         {
@@ -21930,8 +21946,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -21941,8 +21957,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -21952,8 +21968,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -21963,8 +21979,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -21974,8 +21990,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -21985,8 +22001,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -21996,8 +22012,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -22007,8 +22023,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -22018,8 +22034,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -22029,8 +22045,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -22040,8 +22056,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -22051,8 +22067,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -22062,8 +22078,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -22073,8 +22089,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -22084,8 +22100,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -22095,8 +22111,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -22106,8 +22122,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -22117,8 +22133,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -22128,8 +22144,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -22139,8 +22155,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -22150,8 +22166,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -22161,8 +22177,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -22172,8 +22188,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -22183,8 +22199,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Field plus suggestions. No overflow."
           ]
@@ -23184,7 +23200,11 @@
         "selected"
       ],
       "renderedStates": [
-        "rest"
+        "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled"
       ],
       "cells": [
         {
@@ -23258,8 +23278,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23269,8 +23289,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23280,8 +23300,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23291,8 +23311,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23302,8 +23322,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23313,8 +23333,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23324,8 +23344,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23335,8 +23355,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23346,8 +23366,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23357,8 +23377,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23368,8 +23388,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23379,8 +23399,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23390,8 +23410,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23401,8 +23421,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23412,8 +23432,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23423,8 +23443,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23434,8 +23454,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23445,8 +23465,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23456,8 +23476,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23467,8 +23487,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23478,8 +23498,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23489,8 +23509,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23500,8 +23520,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23511,8 +23531,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23654,8 +23674,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23665,8 +23685,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23676,8 +23696,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23687,8 +23707,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23698,8 +23718,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23709,8 +23729,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23720,8 +23740,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23731,8 +23751,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23742,8 +23762,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23753,8 +23773,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23764,8 +23784,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23775,8 +23795,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23786,8 +23806,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23797,8 +23817,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23808,8 +23828,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23819,8 +23839,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23830,8 +23850,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23841,8 +23861,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23852,8 +23872,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23863,8 +23883,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23874,8 +23894,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23885,8 +23905,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23896,8 +23916,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23907,8 +23927,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23998,7 +24018,11 @@
         "selected"
       ],
       "renderedStates": [
-        "rest"
+        "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled"
       ],
       "cells": [
         {
@@ -24096,8 +24120,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24111,8 +24135,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24126,8 +24150,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24141,8 +24165,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24156,8 +24180,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24171,8 +24195,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24186,8 +24210,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24201,8 +24225,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24216,8 +24240,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24231,8 +24255,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24246,8 +24270,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24261,8 +24285,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24276,8 +24300,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24291,8 +24315,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24306,8 +24330,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24321,8 +24345,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24336,8 +24360,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24351,8 +24375,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24366,8 +24390,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24381,8 +24405,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24396,8 +24420,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24411,8 +24435,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24426,8 +24450,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24441,8 +24465,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -24978,7 +25002,11 @@
         "selected"
       ],
       "renderedStates": [
-        "rest"
+        "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled"
       ],
       "cells": [
         {
@@ -25052,8 +25080,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25063,8 +25091,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25074,8 +25102,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25085,8 +25113,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25096,8 +25124,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25107,8 +25135,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25118,8 +25146,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25129,8 +25157,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25140,8 +25168,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25151,8 +25179,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25162,8 +25190,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25173,8 +25201,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25184,8 +25212,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25195,8 +25223,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25206,8 +25234,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25217,8 +25245,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25228,8 +25256,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25239,8 +25267,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25250,8 +25278,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25261,8 +25289,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25272,8 +25300,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25283,8 +25311,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25294,8 +25322,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25305,8 +25333,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Tip stays on one line."
           ]
@@ -25396,7 +25424,11 @@
         "selected"
       ],
       "renderedStates": [
-        "rest"
+        "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled"
       ],
       "cells": [
         {
@@ -25488,8 +25520,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25502,8 +25534,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25516,8 +25548,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25530,8 +25562,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25544,8 +25576,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25558,8 +25590,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25572,8 +25604,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25586,8 +25618,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25600,8 +25632,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25614,8 +25646,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25628,8 +25660,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25642,8 +25674,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25656,8 +25688,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25670,8 +25702,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25684,8 +25716,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25698,8 +25730,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25712,8 +25744,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25726,8 +25758,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25740,8 +25772,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25754,8 +25786,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25768,8 +25800,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25782,8 +25814,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25796,8 +25828,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25810,8 +25842,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -25923,7 +25955,11 @@
         "selected"
       ],
       "renderedStates": [
-        "rest"
+        "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled"
       ],
       "cells": [
         {
@@ -25997,8 +26033,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26008,8 +26044,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26019,8 +26055,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26030,8 +26066,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26041,8 +26077,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26052,8 +26088,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26063,8 +26099,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26074,8 +26110,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26085,8 +26121,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26096,8 +26132,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26107,8 +26143,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26118,8 +26154,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26129,8 +26165,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26140,8 +26176,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26151,8 +26187,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26162,8 +26198,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26173,8 +26209,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26184,8 +26220,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26195,8 +26231,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26206,8 +26242,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26217,8 +26253,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26228,8 +26264,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26239,8 +26275,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26250,8 +26286,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26393,8 +26429,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26404,8 +26440,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26415,8 +26451,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26426,8 +26462,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26437,8 +26473,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26448,8 +26484,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26459,8 +26495,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26470,8 +26506,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26481,8 +26517,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26492,8 +26528,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26503,8 +26539,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26514,8 +26550,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26525,8 +26561,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26536,8 +26572,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26547,8 +26583,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26558,8 +26594,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26569,8 +26605,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26580,8 +26616,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26591,8 +26627,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26602,8 +26638,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26613,8 +26649,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26624,8 +26660,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26635,8 +26671,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26646,8 +26682,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Uses details/summary."
           ]
@@ -26737,7 +26773,11 @@
         "selected"
       ],
       "renderedStates": [
-        "rest"
+        "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled"
       ],
       "cells": [
         {
@@ -26811,8 +26851,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -26822,8 +26862,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -26833,8 +26873,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -26844,8 +26884,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -26855,8 +26895,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -26866,8 +26906,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -26877,8 +26917,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -26888,8 +26928,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -26899,8 +26939,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -26910,8 +26950,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -26921,8 +26961,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -26932,8 +26972,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -26943,8 +26983,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -26954,8 +26994,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -26965,8 +27005,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -26976,8 +27016,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -26987,8 +27027,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -26998,8 +27038,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -27009,8 +27049,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -27020,8 +27060,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -27031,8 +27071,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -27042,8 +27082,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -27053,8 +27093,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -27064,8 +27104,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Letters stay one column, one line each."
           ]
@@ -27155,7 +27195,11 @@
         "selected"
       ],
       "renderedStates": [
-        "rest"
+        "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled"
       ],
       "cells": [
         {
@@ -27229,8 +27273,8 @@
           "state": "hover",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27240,8 +27284,8 @@
           "state": "hover",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27251,8 +27295,8 @@
           "state": "hover",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27262,8 +27306,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27273,8 +27317,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27284,8 +27328,8 @@
           "state": "hover",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27295,8 +27339,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27306,8 +27350,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27317,8 +27361,8 @@
           "state": "pressed",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27328,8 +27372,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27339,8 +27383,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27350,8 +27394,8 @@
           "state": "pressed",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27361,8 +27405,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27372,8 +27416,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27383,8 +27427,8 @@
           "state": "focus-visible",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27394,8 +27438,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27405,8 +27449,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27416,8 +27460,8 @@
           "state": "focus-visible",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27427,8 +27471,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27438,8 +27482,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27449,8 +27493,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27460,8 +27504,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27471,8 +27515,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
@@ -27482,8 +27526,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "gap",
-          "referenceImage": null,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
           "acceptance": [
             "Value and label each stay one line. Equal height inside a card grid."
           ]
