@@ -35,6 +35,46 @@
       "kit": "kit:ios-segmented large 50px radius 100 tertiary track (local extract, not committed)"
     },
     {
+      "id": "segmented",
+      "variant": "default",
+      "state": "selected",
+      "theme": "light",
+      "width": 320,
+      "kit": "kit:ios-segmented selected pill 46px radius 1000, selected-fill (local extract, not committed)"
+    },
+    {
+      "id": "page-dot",
+      "variant": "default",
+      "state": "rest",
+      "theme": "light",
+      "width": 320,
+      "kit": "kit:ios-page-controls inactive dot 8px, Labels/Tertiary (local extract, not committed)"
+    },
+    {
+      "id": "page-dot",
+      "variant": "default",
+      "state": "selected",
+      "theme": "light",
+      "width": 320,
+      "kit": "kit:ios-page-controls active dot 8px, Labels/Primary (local extract, not committed)"
+    },
+    {
+      "id": "list",
+      "variant": "grouped",
+      "state": "rest",
+      "theme": "light",
+      "width": 320,
+      "kit": "kit:ios-lists row Height=Tall 68px, padding inline 16 (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "prominent",
+      "state": "disabled",
+      "theme": "light",
+      "width": 320,
+      "kit": "kit:ios-buttons large prominent disabled 50px capsule, tertiary fill (local extract, not committed)"
+    },
+    {
       "id": "button",
       "variant": "prominent",
       "state": "rest",
@@ -67,6 +107,62 @@
       "kit": "kit:ios-segmented large 50px radius 100 tertiary track (local extract, not committed)"
     },
     {
+      "id": "segmented",
+      "variant": "default",
+      "state": "selected",
+      "theme": "light",
+      "width": 768,
+      "kit": "kit:ios-segmented selected pill 46px radius 1000, selected-fill (local extract, not committed)"
+    },
+    {
+      "id": "page-dot",
+      "variant": "default",
+      "state": "rest",
+      "theme": "light",
+      "width": 768,
+      "kit": "kit:ios-page-controls inactive dot 8px, Labels/Tertiary (local extract, not committed)"
+    },
+    {
+      "id": "page-dot",
+      "variant": "default",
+      "state": "selected",
+      "theme": "light",
+      "width": 768,
+      "kit": "kit:ios-page-controls active dot 8px, Labels/Primary (local extract, not committed)"
+    },
+    {
+      "id": "list",
+      "variant": "grouped",
+      "state": "rest",
+      "theme": "light",
+      "width": 768,
+      "kit": "kit:ios-lists row Height=Tall 68px, padding inline 16 (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "prominent",
+      "state": "disabled",
+      "theme": "light",
+      "width": 768,
+      "kit": "kit:ios-buttons large prominent disabled 50px capsule, tertiary fill (local extract, not committed)"
+    },
+    {
+      "id": "alert",
+      "variant": "inline",
+      "state": "rest",
+      "theme": "light",
+      "width": 768,
+      "kit": "kit:ios-alerts 300px radius 34, action 48px radius 100 (local extract, not committed)"
+    },
+    {
+      "id": "action-sheet",
+      "variant": "inline",
+      "state": "rest",
+      "theme": "light",
+      "width": 768,
+      "kit": "kit:ios-action-sheets 300px radius 34, action 48px radius 100 (local extract, not committed)"
+    },
+    {
       "id": "button",
       "variant": "prominent",
       "state": "rest",
@@ -97,6 +193,62 @@
       "theme": "light",
       "width": 1280,
       "kit": "kit:ios-segmented large 50px radius 100 tertiary track (local extract, not committed)"
+    },
+    {
+      "id": "segmented",
+      "variant": "default",
+      "state": "selected",
+      "theme": "light",
+      "width": 1280,
+      "kit": "kit:ios-segmented selected pill 46px radius 1000, selected-fill (local extract, not committed)"
+    },
+    {
+      "id": "page-dot",
+      "variant": "default",
+      "state": "rest",
+      "theme": "light",
+      "width": 1280,
+      "kit": "kit:ios-page-controls inactive dot 8px, Labels/Tertiary (local extract, not committed)"
+    },
+    {
+      "id": "page-dot",
+      "variant": "default",
+      "state": "selected",
+      "theme": "light",
+      "width": 1280,
+      "kit": "kit:ios-page-controls active dot 8px, Labels/Primary (local extract, not committed)"
+    },
+    {
+      "id": "list",
+      "variant": "grouped",
+      "state": "rest",
+      "theme": "light",
+      "width": 1280,
+      "kit": "kit:ios-lists row Height=Tall 68px, padding inline 16 (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "prominent",
+      "state": "disabled",
+      "theme": "light",
+      "width": 1280,
+      "kit": "kit:ios-buttons large prominent disabled 50px capsule, tertiary fill (local extract, not committed)"
+    },
+    {
+      "id": "alert",
+      "variant": "inline",
+      "state": "rest",
+      "theme": "light",
+      "width": 1280,
+      "kit": "kit:ios-alerts 300px radius 34, action 48px radius 100 (local extract, not committed)"
+    },
+    {
+      "id": "action-sheet",
+      "variant": "inline",
+      "state": "rest",
+      "theme": "light",
+      "width": 1280,
+      "kit": "kit:ios-action-sheets 300px radius 34, action 48px radius 100 (local extract, not committed)"
     },
     {
       "id": "button",
@@ -131,6 +283,38 @@
       "kit": "kit:ios-segmented large 50px radius 100 tertiary track (local extract, not committed)"
     },
     {
+      "id": "segmented",
+      "variant": "default",
+      "state": "selected",
+      "theme": "dark",
+      "width": 320,
+      "kit": "kit:ios-segmented selected pill 46px radius 1000, selected-fill (local extract, not committed)"
+    },
+    {
+      "id": "page-dot",
+      "variant": "default",
+      "state": "rest",
+      "theme": "dark",
+      "width": 320,
+      "kit": "kit:ios-page-controls inactive dot 8px, Labels/Tertiary (local extract, not committed)"
+    },
+    {
+      "id": "page-dot",
+      "variant": "default",
+      "state": "selected",
+      "theme": "dark",
+      "width": 320,
+      "kit": "kit:ios-page-controls active dot 8px, Labels/Primary (local extract, not committed)"
+    },
+    {
+      "id": "list",
+      "variant": "grouped",
+      "state": "rest",
+      "theme": "dark",
+      "width": 320,
+      "kit": "kit:ios-lists row Height=Tall 68px, padding inline 16 (local extract, not committed)"
+    },
+    {
       "id": "button",
       "variant": "prominent",
       "state": "rest",
@@ -163,6 +347,38 @@
       "kit": "kit:ios-segmented large 50px radius 100 tertiary track (local extract, not committed)"
     },
     {
+      "id": "segmented",
+      "variant": "default",
+      "state": "selected",
+      "theme": "dark",
+      "width": 768,
+      "kit": "kit:ios-segmented selected pill 46px radius 1000, selected-fill (local extract, not committed)"
+    },
+    {
+      "id": "page-dot",
+      "variant": "default",
+      "state": "rest",
+      "theme": "dark",
+      "width": 768,
+      "kit": "kit:ios-page-controls inactive dot 8px, Labels/Tertiary (local extract, not committed)"
+    },
+    {
+      "id": "page-dot",
+      "variant": "default",
+      "state": "selected",
+      "theme": "dark",
+      "width": 768,
+      "kit": "kit:ios-page-controls active dot 8px, Labels/Primary (local extract, not committed)"
+    },
+    {
+      "id": "list",
+      "variant": "grouped",
+      "state": "rest",
+      "theme": "dark",
+      "width": 768,
+      "kit": "kit:ios-lists row Height=Tall 68px, padding inline 16 (local extract, not committed)"
+    },
+    {
       "id": "button",
       "variant": "prominent",
       "state": "rest",
@@ -193,6 +409,38 @@
       "theme": "dark",
       "width": 1280,
       "kit": "kit:ios-segmented large 50px radius 100 tertiary track (local extract, not committed)"
+    },
+    {
+      "id": "segmented",
+      "variant": "default",
+      "state": "selected",
+      "theme": "dark",
+      "width": 1280,
+      "kit": "kit:ios-segmented selected pill 46px radius 1000, selected-fill (local extract, not committed)"
+    },
+    {
+      "id": "page-dot",
+      "variant": "default",
+      "state": "rest",
+      "theme": "dark",
+      "width": 1280,
+      "kit": "kit:ios-page-controls inactive dot 8px, Labels/Tertiary (local extract, not committed)"
+    },
+    {
+      "id": "page-dot",
+      "variant": "default",
+      "state": "selected",
+      "theme": "dark",
+      "width": 1280,
+      "kit": "kit:ios-page-controls active dot 8px, Labels/Primary (local extract, not committed)"
+    },
+    {
+      "id": "list",
+      "variant": "grouped",
+      "state": "rest",
+      "theme": "dark",
+      "width": 1280,
+      "kit": "kit:ios-lists row Height=Tall 68px, padding inline 16 (local extract, not committed)"
     }
   ]
 }

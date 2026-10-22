@@ -20,10 +20,10 @@
   "summary": {
     "components": 58,
     "cells": 3240,
-    "pass": 24,
-    "pending": 1962,
+    "pass": 55,
+    "pending": 1931,
     "gap": 1254,
-    "verifiedPercent": 0.7,
+    "verifiedPercent": 1.7,
     "renderedPercent": 61.3
   },
   "components": [
@@ -445,8 +445,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent disabled 50px capsule, tertiary fill (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -461,8 +461,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent disabled 50px capsule, tertiary fill (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -477,8 +477,8 @@
           "state": "disabled",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent disabled 50px capsule, tertiary fill (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -15023,8 +15023,8 @@
           "state": "rest",
           "theme": "light",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls inactive dot 8px, Labels/Tertiary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15034,8 +15034,8 @@
           "state": "rest",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls inactive dot 8px, Labels/Tertiary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15045,8 +15045,8 @@
           "state": "rest",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls inactive dot 8px, Labels/Tertiary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15056,8 +15056,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls inactive dot 8px, Labels/Tertiary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15067,8 +15067,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls inactive dot 8px, Labels/Tertiary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15078,8 +15078,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls inactive dot 8px, Labels/Tertiary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15353,8 +15353,8 @@
           "state": "selected",
           "theme": "light",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls active dot 8px, Labels/Primary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15364,8 +15364,8 @@
           "state": "selected",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls active dot 8px, Labels/Primary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15375,8 +15375,8 @@
           "state": "selected",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls active dot 8px, Labels/Primary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15386,8 +15386,8 @@
           "state": "selected",
           "theme": "dark",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls active dot 8px, Labels/Primary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15397,8 +15397,8 @@
           "state": "selected",
           "theme": "dark",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls active dot 8px, Labels/Primary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -15408,8 +15408,8 @@
           "state": "selected",
           "theme": "dark",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-page-controls active dot 8px, Labels/Primary (local extract, not committed)",
           "acceptance": [
             "Current dot is distinct. Dots stay one row."
           ]
@@ -21788,8 +21788,8 @@
           "state": "selected",
           "theme": "light",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-segmented selected pill 46px radius 1000, selected-fill (local extract, not committed)",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21799,8 +21799,8 @@
           "state": "selected",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-segmented selected pill 46px radius 1000, selected-fill (local extract, not committed)",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21810,8 +21810,8 @@
           "state": "selected",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-segmented selected pill 46px radius 1000, selected-fill (local extract, not committed)",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21821,8 +21821,8 @@
           "state": "selected",
           "theme": "dark",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-segmented selected pill 46px radius 1000, selected-fill (local extract, not committed)",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21832,8 +21832,8 @@
           "state": "selected",
           "theme": "dark",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-segmented selected pill 46px radius 1000, selected-fill (local extract, not committed)",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -21843,8 +21843,8 @@
           "state": "selected",
           "theme": "dark",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-segmented selected pill 46px radius 1000, selected-fill (local extract, not committed)",
           "acceptance": [
             "Segments share one height. Selected segment is distinct."
           ]
@@ -23212,8 +23212,8 @@
           "state": "rest",
           "theme": "light",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-lists row Height=Tall 68px, padding inline 16 (local extract, not committed)",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23223,8 +23223,8 @@
           "state": "rest",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-lists row Height=Tall 68px, padding inline 16 (local extract, not committed)",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23234,8 +23234,8 @@
           "state": "rest",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-lists row Height=Tall 68px, padding inline 16 (local extract, not committed)",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23245,8 +23245,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-lists row Height=Tall 68px, padding inline 16 (local extract, not committed)",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23256,8 +23256,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-lists row Height=Tall 68px, padding inline 16 (local extract, not committed)",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -23267,8 +23267,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-lists row Height=Tall 68px, padding inline 16 (local extract, not committed)",
           "acceptance": [
             "Inset grouped surface, separator, title ellipsis. Detail may wrap."
           ]
@@ -31109,8 +31109,8 @@
           "state": "rest",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-alerts 300px radius 34, action 48px radius 100 (local extract, not committed)",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -31124,8 +31124,8 @@
           "state": "rest",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-alerts 300px radius 34, action 48px radius 100 (local extract, not committed)",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32727,8 +32727,8 @@
           "state": "rest",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-action-sheets 300px radius 34, action 48px radius 100 (local extract, not committed)",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
@@ -32742,8 +32742,8 @@
           "state": "rest",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-action-sheets 300px radius 34, action 48px radius 100 (local extract, not committed)",
           "acceptance": [
             "Liquid Glass: backdrop-filter blur plus a specular edge (inset highlight and chromatic fringe).",
             "Layered shadow, not a flat fill.",
