@@ -7,7 +7,7 @@
     "components": 139,
     "renderFunctions": 133,
     "customElements": 6,
-    "styledContracts": 372,
+    "styledContracts": 373,
     "componentsWithVariants": 37
   },
   "stylesheets": [
@@ -4474,11 +4474,11 @@
         "primaryContract": "bn-nav-bar",
         "contracts": [
           "bn-nav-back",
-          "bn-nav-title",
           "bn-nav-action",
           "bn-nav-trailing",
-          "bn-large-title",
           "bn-nav-subtitle",
+          "bn-nav-title",
+          "bn-large-title",
           "bn-nav-bar"
         ],
         "dataAttributes": [
@@ -4523,7 +4523,7 @@
       "purpose": "Page control. Dots are 8×8. Active is Labels/Primary, inactive Labels/Tertiary.",
       "deprecated": false,
       "emits": {
-        "rootTag": "nav",
+        "rootTag": "div",
         "primaryContract": "bn-page-control",
         "contracts": [
           "bn-page-dot",
@@ -4534,7 +4534,7 @@
       "variants": {},
       "inertAxes": [],
       "styled": true,
-      "useInsteadOf": "a bare <nav> with your own classes, or literal <nav data-bn=\"bn-page-control\"> markup"
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"bn-page-control\"> markup"
     },
     {
       "id": "@basenative/platform#renderBnPopover",
@@ -4549,8 +4549,8 @@
         "rootTag": "aside",
         "primaryContract": "bn-popover",
         "contracts": [
-          "bn-popover-button",
-          "bn-popover"
+          "bn-popover",
+          "bn-popover-button"
         ],
         "dataAttributes": []
       },

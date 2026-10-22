@@ -15,9 +15,9 @@ function slug(path) {
  * Rule ids axe-core 4.10.3 already reports, measured 2026-10-22 at 320/768/1280
  * in light and dark. The gate fails when a route reports an id that is not
  * listed. Node counts are not frozen: unrebuilt pages still fail color-contrast
- * and several routes have no h1. Catalog ARIA on /design-system is organism-tier
- * debt (inline dialogs, page-control radiogroup on nav, inspector aside inside
- * main, duplicate search, usage pre, hero h1 under a catalog h3).
+ * and several routes have no h1. /design-system keeps color-contrast. The
+ * catalog names its landmarks and dialogs; contrast on the glass surfaces
+ * is still open.
  */
 const AXE_DEBT = {
   '/': ['color-contrast'],
@@ -36,15 +36,7 @@ const AXE_DEBT = {
   '/showcase': ['color-contrast'],
   '/roadmap': ['color-contrast', 'page-has-heading-one'],
   '/tasks': ['color-contrast', 'page-has-heading-one'],
-  '/design-system': [
-    'aria-allowed-role',
-    'aria-dialog-name',
-    'color-contrast',
-    'heading-order',
-    'landmark-complementary-is-top-level',
-    'landmark-unique',
-    'scrollable-region-focusable',
-  ],
+  '/design-system': ['color-contrast'],
 };
 
 function knownAxe(path) {

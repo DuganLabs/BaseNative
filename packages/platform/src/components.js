@@ -196,7 +196,7 @@ export function renderBnField(options = {}) {
 /** Search field inside a search element. */
 export function renderBnSearch(options = {}) {
   const inputId = idOf('search', options.id);
-  return `<search data-bn="bn-search" role="search"${opt('data-force', options.force)}><label for="${escapeAttr(inputId)}">${escapeHtml(options.label || 'Search')}</label><input type="search" id="${escapeAttr(inputId)}"${opt('placeholder', options.placeholder || 'Search')}${opt('value', options.value)}${opt('disabled', options.disabled)}></search>`;
+  return `<search data-bn="bn-search" role="search" aria-label="${escapeAttr(options.label || 'Search')}"${opt('data-force', options.force)}><label for="${escapeAttr(inputId)}">${escapeHtml(options.label || 'Search')}</label><input type="search" id="${escapeAttr(inputId)}"${opt('placeholder', options.placeholder || 'Search')}${opt('value', options.value)}${opt('disabled', options.disabled)}></search>`;
 }
 
 /** Combo box: text input plus datalist. macOS only in the kits. */
@@ -323,7 +323,7 @@ export function renderBnTable(options = {}) {
         `<tr${opt('data-selected', index === options.selected ? 'true' : null)}>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`,
     )
     .join('');
-  return `<table data-bn="bn-table"${opt('id', options.id)}><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
+  return `<table data-bn="bn-table"${opt('id', options.id)}${opt('data-force', options.force)}><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
 }
 
 /** Menu of menuitem buttons. The menu element is the popover. */
@@ -364,7 +364,8 @@ export function renderBnActionSheet(options = {}) {
         `<li><button data-bn="bn-action" type="button" data-role="${escapeAttr(action.role || 'none')}">${escapeHtml(action.label)}</button></li>`,
     )
     .join('');
-  return `<dialog data-bn="bn-action-sheet"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}><h2 data-bn="bn-action-title">${escapeHtml(options.title || '')}</h2><p data-bn="bn-action-message">${escapeHtml(options.message || '')}</p>${actionMenu(actions, 'bn-action-list')}</dialog>`;
+  const titleId = options.titleId || idOf('action-title', options.id);
+  return `<dialog data-bn="bn-action-sheet" aria-labelledby="${escapeAttr(titleId)}"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('data-force', options.force)}><h2 data-bn="bn-action-title" id="${escapeAttr(titleId)}">${escapeHtml(options.title || 'Actions')}</h2><p data-bn="bn-action-message">${escapeHtml(options.message || '')}</p>${actionMenu(actions, 'bn-action-list')}</dialog>`;
 }
 
 /** Share sheet. Width and radii are Activity View dimension tokens. No Apple artwork. */
@@ -375,7 +376,7 @@ export function renderBnShareSheet(options = {}) {
         `<li><button data-bn="bn-share-action" type="button"><i data-bn="bn-share-glyph" aria-hidden="true">${escapeHtml(action.glyph || '•')}</i><b>${escapeHtml(action.label)}</b></button></li>`,
     )
     .join('');
-  return `<dialog data-bn="bn-share-sheet" aria-label="${escapeAttr(options.label || 'Share')}"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}><menu data-bn="bn-share-row">${actions}</menu><button data-bn="bn-share-close" type="button">${escapeHtml(options.closeLabel || 'Close')}</button></dialog>`;
+  return `<dialog data-bn="bn-share-sheet" aria-label="${escapeAttr(options.label || 'Share')}"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('data-force', options.force)}><menu data-bn="bn-share-row">${actions}</menu><button data-bn="bn-share-close" type="button">${escapeHtml(options.closeLabel || 'Close')}</button></dialog>`;
 }
 
 /** Alert dialog. Same glass metrics as the action sheet. */
@@ -386,7 +387,8 @@ export function renderBnAlert(options = {}) {
         `<li><button data-bn="bn-action" type="button" data-role="${escapeAttr(action.role || 'default')}">${escapeHtml(action.label)}</button></li>`,
     )
     .join('');
-  return `<dialog data-bn="bn-alert" role="alertdialog"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('aria-labelledby', options.titleId)}><h2 data-bn="bn-alert-title"${opt('id', options.titleId)}>${escapeHtml(options.title || '')}</h2><p data-bn="bn-alert-message">${escapeHtml(options.message || '')}</p>${actionMenu(actions, 'bn-action-list')}</dialog>`;
+  const titleId = options.titleId || idOf('alert-title', options.id);
+  return `<dialog data-bn="bn-alert" role="alertdialog" aria-labelledby="${escapeAttr(titleId)}"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('data-force', options.force)}><h2 data-bn="bn-alert-title" id="${escapeAttr(titleId)}">${escapeHtml(options.title || 'Alert')}</h2><p data-bn="bn-alert-message">${escapeHtml(options.message || '')}</p>${actionMenu(actions, 'bn-action-list')}</dialog>`;
 }
 
 /** Dialog. Centered title, message, and a trailing action row on macOS. */
@@ -397,19 +399,26 @@ export function renderBnDialog(options = {}) {
         `<li><button data-bn="bn-action" type="button">${escapeHtml(action.label)}</button></li>`,
     )
     .join('');
-  return `<dialog data-bn="bn-dialog"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('aria-label', options.label)}><h2 data-bn="bn-dialog-title">${escapeHtml(options.title || '')}</h2><p>${escapeHtml(options.message || '')}</p>${actionMenu(actions, 'bn-action-list')}</dialog>`;
+  const titleId = options.titleId || idOf('dialog-title', options.id);
+  const name = options.label
+    ? ` aria-label="${escapeAttr(options.label)}"`
+    : ` aria-labelledby="${escapeAttr(titleId)}"`;
+  return `<dialog data-bn="bn-dialog"${name}${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('data-force', options.force)}><h2 data-bn="bn-dialog-title" id="${escapeAttr(titleId)}">${escapeHtml(options.title || 'Dialog')}</h2><p>${escapeHtml(options.message || '')}</p>${actionMenu(actions, 'bn-action-list')}</dialog>`;
 }
 
 /** Sheet. Top and bottom radii and the grabber are dimension tokens. */
 export function renderBnSheet(options = {}) {
-  return `<dialog data-bn="bn-sheet" aria-label="${escapeAttr(options.label || 'Sheet')}"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}><hr data-bn="bn-grabber"><h2 data-bn="bn-sheet-title">${escapeHtml(options.title || '')}</h2><p data-bn="bn-sheet-body">${escapeHtml(options.body || '')}</p></dialog>`;
+  return `<dialog data-bn="bn-sheet" aria-label="${escapeAttr(options.label || options.title || 'Sheet')}"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('data-force', options.force)}><hr data-bn="bn-grabber"><h2 data-bn="bn-sheet-title">${escapeHtml(options.title || '')}</h2><p data-bn="bn-sheet-body">${escapeHtml(options.body || '')}</p></dialog>`;
 }
 
 /** Popover. Corner radius is the popover dimension token. The aside is the popover. */
 export function renderBnPopover(options = {}) {
   const popId = idOf('popover', options.id);
   const popover = options.inline ? '' : ' popover="auto"';
-  return `<button data-bn="bn-popover-button" type="button" popovertarget="${escapeAttr(popId)}"${opt('data-force', options.force)}>${escapeHtml(options.label || 'More')}</button><aside data-bn="bn-popover" id="${escapeAttr(popId)}"${popover}${opt('data-present', options.inline ? 'inline' : null)}>${opt('data-force', options.force)}><p>${escapeHtml(options.body || '')}</p></aside>`;
+  const aside = `<aside data-bn="bn-popover" id="${escapeAttr(popId)}"${popover}${opt('data-force', options.force)}><p>${escapeHtml(options.body || '')}</p></aside>`;
+  const inlinePanel = `<div data-bn="bn-popover" id="${escapeAttr(popId)}"${popover}${opt('data-present', 'inline')}${opt('data-force', options.force)}><p>${escapeHtml(options.body || '')}</p></div>`;
+  const button = `<button data-bn="bn-popover-button" type="button" popovertarget="${escapeAttr(popId)}"${opt('data-force', options.force)}>${escapeHtml(options.label || 'More')}</button>`;
+  return button + (options.inline ? inlinePanel : aside);
 }
 
 /** Tooltip, a hint popover. Inner stroke colour is a macOS token. */
@@ -420,7 +429,7 @@ export function renderBnTooltip(options = {}) {
 
 /** Notification, a status region. A floating card with title and message. */
 export function renderBnNotification(options = {}) {
-  return `<output data-bn="bn-notification" role="status"${opt('id', options.id)}><strong data-bn="bn-notification-title">${escapeHtml(options.title || '')}</strong><p>${escapeHtml(options.message || '')}</p></output>`;
+  return `<output data-bn="bn-notification" role="status"${opt('id', options.id)}${opt('data-force', options.force)}><strong data-bn="bn-notification-title">${escapeHtml(options.title || '')}</strong><p>${escapeHtml(options.message || '')}</p></output>`;
 }
 
 /** Page control. Dots are 8×8. Active is Labels/Primary, inactive Labels/Tertiary. */
@@ -432,7 +441,7 @@ export function renderBnPageControl(options = {}) {
     (_, index) =>
       `<button data-bn="bn-page-dot" type="button" role="radio" aria-checked="${index === current ? 'true' : 'false'}" aria-label="${escapeAttr(`Page ${index + 1}`)}"${opt('disabled', options.disabled)}></button>`,
   ).join('');
-  return `<nav data-bn="bn-page-control" role="radiogroup" aria-label="${escapeAttr(options.label || 'Pages')}"${opt('id', options.id)}${opt('data-force', options.force)}>${dots}</nav>`;
+  return `<div data-bn="bn-page-control" role="radiogroup" aria-label="${escapeAttr(options.label || 'Pages')}"${opt('id', options.id)}${opt('data-force', options.force)}>${dots}</div>`;
 }
 
 /** Three dots, the same box as the other tab symbols. Not a disclosure mark. */
@@ -467,7 +476,7 @@ export function renderBnTabBar(options = {}) {
         )
         .join('')}</menu>`
     : '';
-  return `<nav data-bn="bn-tab-bar" aria-label="${escapeAttr(options.label || 'Tabs')}"${opt('id', options.id)}>${links}${more}</nav>`;
+  return `<nav data-bn="bn-tab-bar" aria-label="${escapeAttr(options.label || 'Tabs')}"${opt('id', options.id)}${opt('data-force', options.force)}>${links}${more}</nav>`;
 }
 
 /** Toolbar. A menu of commands; each item's li is display:contents. */
@@ -478,7 +487,7 @@ export function renderBnToolbar(options = {}) {
         `<li><button data-bn="bn-toolbar-item" type="button">${escapeHtml(item.label)}</button></li>`,
     )
     .join('');
-  return `<menu data-bn="bn-toolbar" aria-label="${escapeAttr(options.label || 'Toolbar')}"${opt('id', options.id)}>${items}</menu>`;
+  return `<menu data-bn="bn-toolbar" aria-label="${escapeAttr(options.label || 'Toolbar')}"${opt('id', options.id)}${opt('data-force', options.force)}>${items}</menu>`;
 }
 
 function sidebarLink(item) {
@@ -499,12 +508,16 @@ export function renderBnSidebar(options = {}) {
       return `<section>${heading}<ul>${items}</ul></section>`;
     })
     .join('');
-  return `<aside data-bn="bn-sidebar"${opt('id', options.id)}><nav aria-label="${escapeAttr(options.label || 'Sidebar')}">${body}</nav></aside>`;
+  const attrs = `${opt('id', options.id)}${opt('data-force', options.force)}`;
+  const inner = `<nav aria-label="${escapeAttr(options.label || 'Sidebar')}">${body}</nav>`;
+  const aside = `<aside data-bn="bn-sidebar"${attrs}>${inner}</aside>`;
+  if (options.inline) return `<section data-bn="bn-sidebar"${attrs}>${inner}</section>`;
+  return aside;
 }
 
 /** Window frame. Background is the macOS window-background token on that platform. */
 export function renderBnWindow(options = {}) {
-  return `<section data-bn="bn-window"${opt('id', options.id)}><header data-bn="bn-window-titlebar"><h2>${escapeHtml(options.title || '')}</h2></header><section data-bn="bn-window-body"><p>${escapeHtml(options.body || '')}</p></section></section>`;
+  return `<section data-bn="bn-window"${opt('id', options.id)}${opt('data-force', options.force)}><header data-bn="bn-window-titlebar"><h2>${escapeHtml(options.title || '')}</h2></header><section data-bn="bn-window-body"><p>${escapeHtml(options.body || '')}</p></section></section>`;
 }
 
 /** Menu bar. iOS status-bar height is a dimension token. The macOS bar is 24px. */
@@ -521,7 +534,7 @@ export function renderBnMenubar(options = {}) {
       return `<button data-bn="bn-menubar-item" type="button">${escapeHtml(item.label)}</button>`;
     })
     .join('');
-  return `<header data-bn="bn-menubar"${opt('id', options.id)}>${app}${items}</header>`;
+  return `<header data-bn="bn-menubar"${opt('id', options.id)}${opt('data-force', options.force)}>${app}${items}</header>`;
 }
 
 /** Disclosure, native details and summary. */
@@ -532,12 +545,12 @@ export function renderBnDisclosure(options = {}) {
 /** Form of fields. macOS spacing follows the control-size tokens. */
 export function renderBnForm(options = {}) {
   const fields = (options.fields || []).map((field) => renderBnField(field)).join('');
-  return `<form data-bn="bn-form"${opt('id', options.id)}>${fields}${renderBnButton(options.submitLabel || 'Submit', { variant: 'prominent', size: 'large', type: 'submit' })}</form>`;
+  return `<form data-bn="bn-form"${opt('id', options.id)}${opt('data-force', options.force)}>${fields}${renderBnButton(options.submitLabel || 'Submit', { variant: 'prominent', size: 'large', type: 'submit' })}</form>`;
 }
 
 /** Group box, native fieldset and legend. */
 export function renderBnGroup(options = {}) {
-  return `<fieldset data-bn="bn-group"${opt('id', options.id)}><legend>${escapeHtml(options.label || '')}</legend><p>${escapeHtml(options.body || '')}</p></fieldset>`;
+  return `<fieldset data-bn="bn-group"${opt('id', options.id)}${opt('data-force', options.force)}><legend>${escapeHtml(options.label || '')}</legend><p>${escapeHtml(options.body || '')}</p></fieldset>`;
 }
 
 /** Image well: a file input that accepts images. */
@@ -546,12 +559,12 @@ export function renderBnImageWell(options = {}) {
   const img = options.src
     ? `<img data-bn="bn-image-well-preview" src="${escapeAttr(options.src)}" alt="${escapeAttr(options.alt || '')}">`
     : '';
-  return `<label data-bn="bn-image-well">${escapeHtml(options.label || 'Image')}<input type="file" id="${escapeAttr(inputId)}" accept="image/*">${img}</label>`;
+  return `<label data-bn="bn-image-well"${opt('data-force', options.force)}>${escapeHtml(options.label || 'Image')}<input type="file" id="${escapeAttr(inputId)}" accept="image/*"${opt('disabled', options.disabled)}>${img}</label>`;
 }
 
 /** Scroll region. macOS scrollbar colour is Miscellaneous/Scrollbar. */
 export function renderBnScroll(options = {}) {
-  return `<section data-bn="bn-scroll" tabindex="0"${opt('id', options.id)}><p>${escapeHtml(options.body || '')}</p></section>`;
+  return `<section data-bn="bn-scroll" tabindex="0"${opt('id', options.id)}${opt('data-force', options.force)}><p>${escapeHtml(options.body || '')}</p></section>`;
 }
 
 /** Keyboard accessory bar. Key size follows the captured iPhone key (about 50×43, radius 8.5). */
@@ -559,14 +572,14 @@ export function renderBnInputAccessory(options = {}) {
   const keys = (options.keys || ['ABC', 'space', 'return'])
     .map((key) => `<li><button data-bn="bn-key" type="button">${escapeHtml(key)}</button></li>`)
     .join('');
-  return `<menu data-bn="bn-input-accessory" aria-label="${escapeAttr(options.label || 'Input accessory')}"${opt('id', options.id)}>${keys}</menu>`;
+  return `<menu data-bn="bn-input-accessory" aria-label="${escapeAttr(options.label || 'Input accessory')}"${opt('id', options.id)}${opt('data-force', options.force)}>${keys}</menu>`;
 }
 
 /** Empty state. Side and bottom padding 36, title semibold 22, description medium 22. */
 export function renderBnEmptyState(options = {}) {
   const kind = options.kind || 'title';
   const symbol = kind === 'title' ? '' : '<i data-bn="bn-empty-symbol" aria-hidden="true"></i>';
-  return `<section data-bn="bn-empty-state" data-kind="${escapeAttr(kind)}"${opt('id', options.id)}>${symbol}<h2 data-bn="bn-empty-title">${escapeHtml(options.title || '')}</h2><p data-bn="bn-empty-description">${escapeHtml(options.description || '')}</p></section>`;
+  return `<section data-bn="bn-empty-state" data-kind="${escapeAttr(kind)}"${opt('id', options.id)}${opt('data-force', options.force)}>${symbol}<h2 data-bn="bn-empty-title">${escapeHtml(options.title || '')}</h2><p data-bn="bn-empty-description">${escapeHtml(options.description || '')}</p></section>`;
 }
 
 /**
@@ -579,7 +592,7 @@ export function renderBnAppIcon(options = {}) {
 
 /** Widget card. A titled article. The Widgets page fit did not yield a pixel size. */
 export function renderBnWidget(options = {}) {
-  return `<article data-bn="bn-widget"${opt('id', options.id)}><h2 data-bn="bn-widget-title">${escapeHtml(options.title || '')}</h2><p>${escapeHtml(options.body || '')}</p></article>`;
+  return `<article data-bn="bn-widget"${opt('id', options.id)}${opt('data-force', options.force)}><h2 data-bn="bn-widget-title">${escapeHtml(options.title || '')}</h2><p>${escapeHtml(options.body || '')}</p></article>`;
 }
 
 /**
@@ -608,7 +621,6 @@ export function renderBnNavBar(options = {}) {
   const back = options.back
     ? `<a data-bn="bn-nav-back" href="${escapeAttr(options.back.href || '/')}">${escapeHtml(options.back.label || 'Back')}</a>`
     : '';
-  const title = large ? '' : `<h1 data-bn="bn-nav-title">${escapeHtml(options.title || '')}</h1>`;
   const trailing = (options.trailing || [])
     .map((item) => {
       const control = item.href
@@ -623,13 +635,17 @@ export function renderBnNavBar(options = {}) {
   const menu = trailing
     ? `<menu data-bn="bn-nav-trailing" aria-label="Actions">${trailing}</menu>`
     : '';
-  const largeTitle = large
-    ? `<h1 data-bn="bn-large-title">${escapeHtml(options.title || '')}</h1>`
-    : '';
   const subtitle = options.subtitle
     ? `<p data-bn="bn-nav-subtitle">${escapeHtml(options.subtitle)}</p>`
     : '';
-  return `<header data-bn="bn-nav-bar" data-large="${large ? 'true' : 'false'}"${opt('id', options.id)}><nav aria-label="${escapeAttr(options.label || 'Navigation')}">${back}${title}${menu}</nav>${largeTitle}${subtitle}</header>`;
+  const heading = options.heading === 'h2' ? 'h2' : 'h1';
+  const title = large
+    ? ''
+    : `<${heading} data-bn="bn-nav-title">${escapeHtml(options.title || '')}</${heading}>`;
+  const largeTitle = large
+    ? `<${heading} data-bn="bn-large-title">${escapeHtml(options.title || '')}</${heading}>`
+    : '';
+  return `<header data-bn="bn-nav-bar" data-large="${large ? 'true' : 'false'}"${opt('id', options.id)}${opt('data-force', options.force)}><nav aria-label="${escapeAttr(options.label || 'Navigation')}">${back}${title}${menu}</nav>${largeTitle}${subtitle}</header>`;
 }
 
 /** Inspector. Sections are field groups, not a second sidebar component. */
@@ -640,7 +656,11 @@ export function renderBnInspector(options = {}) {
       return `<section><h3>${escapeHtml(section.label || '')}</h3>${fields}</section>`;
     })
     .join('');
-  return `<aside data-bn="bn-inspector"${opt('id', options.id)}><header><h2>${escapeHtml(options.title || 'Inspector')}</h2></header>${sections}</aside>`;
+  const attrs = ` aria-label="${escapeAttr(options.title || 'Inspector')}"${opt('id', options.id)}${opt('data-force', options.force)}`;
+  const inner = `<header><h2>${escapeHtml(options.title || 'Inspector')}</h2></header>${sections}`;
+  const aside = `<aside data-bn="bn-inspector"${attrs}>${inner}</aside>`;
+  if (options.inline) return `<section data-bn="bn-inspector"${attrs}>${inner}</section>`;
+  return aside;
 }
 
 /** Card grid of metric tiles and widget cards. Rows share one height. */
@@ -652,7 +672,7 @@ export function renderBnCardGrid(options = {}) {
       return `<li>${body}</li>`;
     })
     .join('');
-  return `<ul data-bn="bn-card-grid"${opt('id', options.id)}>${cards}</ul>`;
+  return `<ul data-bn="bn-card-grid"${opt('id', options.id)}${opt('data-force', options.force)}>${cards}</ul>`;
 }
 
 /**
@@ -676,7 +696,8 @@ export function renderBnHero(options = {}) {
   const nav = actions
     ? `<nav aria-label="${escapeAttr(options.label || 'Primary')}">${actions}</nav>`
     : '';
-  return `<header data-bn="bn-hero"${opt('id', options.id)}>${eyebrow}<h1>${escapeHtml(options.title || '')}</h1>${lede}${nav}</header>`;
+  const heading = options.heading === 'h2' ? 'h2' : 'h1';
+  return `<header data-bn="bn-hero"${opt('id', options.id)}${opt('data-force', options.force)}>${eyebrow}<${heading}>${escapeHtml(options.title || '')}</${heading}>${lede}${nav}</header>`;
 }
 
 /** Site footer. Links are a nav, not a row of loose anchors. */
@@ -687,7 +708,7 @@ export function renderBnFooter(options = {}) {
         `<li><a href="${escapeAttr(link.href || '#')}">${escapeHtml(link.label || '')}</a></li>`,
     )
     .join('');
-  return `<footer data-bn="bn-footer"${opt('id', options.id)}><p>${escapeHtml(options.note || '')}</p><nav aria-label="${escapeAttr(options.label || 'Footer')}"><ul>${links}</ul></nav></footer>`;
+  return `<footer data-bn="bn-footer"${opt('id', options.id)}${opt('data-force', options.force)}><p>${escapeHtml(options.note || '')}</p><nav aria-label="${escapeAttr(options.label || 'Footer')}"><ul>${links}</ul></nav></footer>`;
 }
 
 /** Dock. A glass row of equal targets. Marks are text, not a symbol font. */
@@ -698,5 +719,5 @@ export function renderBnDock(options = {}) {
       return `<li><a data-bn="bn-dock-item" href="${escapeAttr(item.href || '#')}"${current}>${escapeHtml(item.label || '')}</a></li>`;
     })
     .join('');
-  return `<nav data-bn="bn-dock" aria-label="${escapeAttr(options.label || 'Dock')}"${opt('id', options.id)}><ul>${items}</ul></nav>`;
+  return `<nav data-bn="bn-dock" aria-label="${escapeAttr(options.label || 'Dock')}"${opt('id', options.id)}${opt('data-force', options.force)}><ul>${items}</ul></nav>`;
 }
