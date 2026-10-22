@@ -2138,6 +2138,14 @@
       line-height: var(--bn-type-20);
       max-inline-size: 100%;
     }
+
+    body[data-active='home'] article > [data-bn='bn-hero'] nav {
+      flex-wrap: nowrap;
+    }
+
+    body[data-active='home'] article > [data-bn='bn-hero'] [data-bn='bn-button'] {
+      padding-inline: var(--bn-len-2);
+    }
   }
 
   @media (prefers-reduced-transparency: reduce) {
