@@ -88,6 +88,7 @@ test.describe('home shell', () => {
         }, where);
         expect(Math.abs(result.barBottom - result.inner)).toBeLessThan(2);
         expect(result.barTop).toBeGreaterThan(result.inner - 96);
+        expect(result.problems).toEqual([]);
         const png = await page.screenshot({ fullPage: false });
         await test.info().attach(`home-${theme}-320-${where}`, {
           body: png,
@@ -437,8 +438,7 @@ test.describe('home shell', () => {
       await open(page, 1280, theme);
       const glow = await page.evaluate(() => getComputedStyle(document.body).backgroundImage);
       const count = glow.match(/radial-gradient/g)?.length ?? 0;
-      expect(count).toBeGreaterThan(0);
-      expect(count).toBeLessThanOrEqual(2);
+      expect(count).toBe(1);
       expect(glow).not.toContain('255, 45, 85');
       expect(glow).not.toContain('255, 55, 95');
     });
@@ -459,6 +459,33 @@ test.describe('home shell', () => {
       });
       const contrast = compositeContrast(button.color, button.bg, button.surface, theme);
       expect(contrast).toBeGreaterThanOrEqual(4.5);
+    });
+
+    test(`more menu stays closed until opened (${theme})`, async ({ page }) => {
+      await open(page, 390, theme);
+      const closed = await page.evaluate(() => {
+        const menu = document.querySelector('[data-bn="bn-tab-more"]');
+        const style = getComputedStyle(menu);
+        return { open: menu.matches(':popover-open'), display: style.display };
+      });
+      expect(closed.open).toBe(false);
+      expect(closed.display).toBe('none');
+      await page.locator('[data-bn="bn-tab-bar"] [popovertarget]').click();
+      const placed = await page.evaluate(() => {
+        const menu = document.querySelector('[data-bn="bn-tab-more"]');
+        const bar = document.querySelector('body > [data-bn="bn-tab-bar"]');
+        const menuBox = menu.getBoundingClientRect();
+        const barBox = bar.getBoundingClientRect();
+        return {
+          open: menu.matches(':popover-open'),
+          menuBottom: menuBox.bottom,
+          barTop: barBox.top,
+        };
+      });
+      expect(placed.open).toBe(true);
+      expect(placed.menuBottom).toBeLessThanOrEqual(placed.barTop + 2);
+      await page.keyboard.press('Escape');
+      await expect(page.locator('[data-bn="bn-tab-more"]')).toBeHidden();
     });
 
     test(`phone tab bar is a single floating surface (${theme})`, async ({ page }) => {
@@ -492,7 +519,7 @@ test.describe('home shell', () => {
       expect(bar.radius).toBeGreaterThanOrEqual(24);
       expect(parseFloat(bar.border)).toBe(0);
       expect(bar.pad).toBe(0);
-      expect(bar.mainBottom).toBeGreaterThan(bar.height - 2);
+      expect(bar.mainBottom).toBeLessThanOrEqual(bar.barTop + 2);
       expect(bar.footerBottom).toBeLessThanOrEqual(bar.barTop + 1);
       expect(bar.mask === 'none' || bar.mask === '').toBe(true);
     });

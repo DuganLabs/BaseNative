@@ -223,15 +223,18 @@
   @media (min-width: 1100px) {
     body[data-active='home'] article {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      column-gap: 28px;
+      grid-template-columns: minmax(0, 1fr);
       row-gap: 8px;
       align-items: start;
+      inline-size: 100%;
     }
 
     body[data-active='home'] article > header,
-    body[data-active='home'] article > section:last-of-type {
-      grid-column: 1 / -1;
+    body[data-active='home'] article > section,
+    body[data-active='home'] [data-bn='bn-list'],
+    body[data-active='home'] [data-bn='bn-hero'] {
+      inline-size: 100%;
+      max-inline-size: 100%;
     }
   }
 
@@ -263,14 +266,17 @@
     }
 
     main {
+      align-self: start;
+      block-size: calc(100dvh - var(--bn-shell-tab) - env(safe-area-inset-bottom, 0px));
+      max-block-size: calc(100dvh - var(--bn-shell-tab) - env(safe-area-inset-bottom, 0px));
       min-height: 0;
       overflow: auto;
-      padding: 20px 16px calc(var(--bn-shell-tab) + 16px);
+      padding: 20px 16px 16px;
       mask-image: none;
     }
 
     body[data-active='home'] main {
-      padding: 28px 16px calc(var(--bn-shell-tab) + 24px + env(safe-area-inset-bottom, 0px));
+      padding: 28px 16px 16px;
     }
   }
 
@@ -283,17 +289,11 @@
   [data-theme='dark'] body,
   body[data-active='home'] {
     background-color: var(--bn-glass-opaque, #0c0b09);
-    background-image:
-      radial-gradient(
-        32rem 18rem at 0% 0%,
-        color-mix(in srgb, var(--bn-brand, #e8920a) 42%, transparent),
-        transparent 70%
-      ),
-      radial-gradient(
-        24rem 14rem at 100% 10%,
-        color-mix(in srgb, var(--bn-brand, #e8920a) 18%, transparent),
-        transparent 68%
-      );
+    background-image: radial-gradient(
+      28rem 12rem at 8% 0%,
+      color-mix(in srgb, var(--bn-brand, #e8920a) 14%, transparent),
+      transparent 74%
+    );
     background-attachment: scroll;
   }
 
@@ -352,5 +352,38 @@
   [data-bn-platform='macos'] body[data-active='home'] p code {
     font-size: var(--bn-content-size, 15px);
     line-height: var(--bn-content-leading, 22px);
+  }
+}
+
+/*
+ * theme.css pins the dark palette on an unlayered :root, which beats every
+ * layered rule. This file is enforced, so it cannot add another unlayered
+ * rule. An important declaration in the first cascade layer (reset) beats
+ * that unlayered normal rule, and the selector only matches light pages.
+ */
+@layer reset {
+  [data-theme='light'] {
+    color-scheme: light !important;
+    --surface-0: #f2f2f7 !important;
+    --surface-1: #ffffff !important;
+    --surface-2: #f4f4f5 !important;
+    --surface-3: #e7e7e8 !important;
+    --surface-inset: #ffffff !important;
+    --border: rgba(60, 60, 67, 0.18) !important;
+    --border-accent: rgba(154, 95, 5, 0.4) !important;
+    --text-0: #0c0b09 !important;
+    --text-1: rgba(60, 60, 67, 0.88) !important;
+    --text-2: rgba(60, 60, 67, 0.62) !important;
+    --track-bg: #e4e4e6 !important;
+    --table-header-bg: #f4f4f5 !important;
+    --dialog-backdrop: rgba(12, 11, 9, 0.4) !important;
+    --bn-color-surface: #f2f2f7 !important;
+    --bn-color-surface-subtle: #ffffff !important;
+    --bn-color-surface-muted: #f4f4f5 !important;
+    --bn-color-surface-raised: #ffffff !important;
+    --bn-color-surface-inset: #f2f2f7 !important;
+    --bn-color-text: #0c0b09 !important;
+    --bn-color-text-muted: rgba(60, 60, 67, 0.72) !important;
+    --bn-color-text-subtle: rgba(60, 60, 67, 0.55) !important;
   }
 }

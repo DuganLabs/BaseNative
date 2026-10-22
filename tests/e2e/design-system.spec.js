@@ -107,6 +107,80 @@ async function singleLine(page) {
   });
 }
 
+async function visiblePopovers(page) {
+  return page.evaluate(() =>
+    [...document.querySelectorAll('[popover]')]
+      .filter((el) => {
+        const style = getComputedStyle(el);
+        if (style.display === 'none' || style.visibility === 'hidden') return false;
+        const rect = el.getBoundingClientRect();
+        return rect.width > 1 && rect.height > 1;
+      })
+      .map((el) => el.getAttribute('data-bn') || el.tagName)
+      .slice(0, 8),
+  );
+}
+
+async function themeSurfaces(page, theme) {
+  return page.evaluate((pageTheme) => {
+    function channel(value) {
+      const s = value / 255;
+      return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+    }
+    function luminance(color) {
+      const match = color.match(/rgba?\(([^)]+)\)/);
+      if (!match) return null;
+      const parts = match[1].split(',').map((part) => parseFloat(part));
+      const alpha = parts.length > 3 ? parts[3] : 1;
+      if (alpha < 0.45) return null;
+      const paper = pageTheme === 'dark' ? [12, 11, 9] : [242, 242, 247];
+      const rgb = [0, 1, 2].map((index) => parts[index] * alpha + paper[index] * (1 - alpha));
+      return 0.2126 * channel(rgb[0]) + 0.7152 * channel(rgb[1]) + 0.0722 * channel(rgb[2]);
+    }
+    const selector = [
+      '[data-bn-component-search]',
+      '[data-bn-showcase-search]',
+      '[data-bn-component-card]',
+      '[data-bn-showcase-toc]',
+      '[data-bn="bn-search"]',
+      'input[type="search"]',
+      '[data-bn="bn-list"][data-grouped="true"]',
+      'article',
+    ].join(',');
+    const problems = [];
+    for (const el of document.querySelectorAll(selector)) {
+      const scope = el.closest('[data-theme]');
+      if (scope && scope.getAttribute('data-theme') !== pageTheme) continue;
+      const style = getComputedStyle(el);
+      if (style.display === 'none' || style.visibility === 'hidden') continue;
+      const rect = el.getBoundingClientRect();
+      if (rect.width < 8 || rect.height < 8) continue;
+      const tone = luminance(style.backgroundColor);
+      if (tone == null) continue;
+      const name =
+        el.getAttribute('data-bn') ||
+        (el.getAttribute('data-bn-component-search') != null && 'component-search') ||
+        el.tagName;
+      if (pageTheme === 'light' && tone < 0.35)
+        problems.push(`dark surface in light mode: ${name} ${tone.toFixed(2)}`);
+      if (pageTheme === 'dark' && tone > 0.82)
+        problems.push(`light surface in dark mode: ${name} ${tone.toFixed(2)}`);
+    }
+    return problems.slice(0, 8);
+  }, theme);
+}
+
+async function contentSplit(page) {
+  return page.evaluate(() => {
+    const side = document.querySelector('body > [data-bn="bn-sidebar"]');
+    const main = document.querySelector('main');
+    const sideWidth = side ? side.getBoundingClientRect().width : 0;
+    const available = window.innerWidth - sideWidth;
+    const content = main.getBoundingClientRect().width;
+    return { ratio: available > 0 ? content / available : 1 };
+  });
+}
+
 test.describe('design system gates', () => {
   test.describe.configure({ timeout: 90_000 });
 
@@ -163,6 +237,12 @@ test.describe('design system gates', () => {
           });
           expect(await overflow(page)).toEqual([]);
           expect(await singleLine(page)).toEqual([]);
+          expect(await visiblePopovers(page)).toEqual([]);
+          expect(await themeSurfaces(page, theme)).toEqual([]);
+          if (width >= 1280) {
+            const split = await contentSplit(page);
+            expect(split.ratio).toBeGreaterThanOrEqual(0.7);
+          }
           await page.addScriptTag({ url: AXE_URL });
           const violations = await page.evaluate(async () => {
             const out = await window.axe.run(document, { resultTypes: ['violations'] });

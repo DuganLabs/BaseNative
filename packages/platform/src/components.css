@@ -10,17 +10,11 @@
 @layer components {
   [data-bn-wallpaper='true'] {
     background-color: var(--bn-glass-opaque);
-    background-image:
-      radial-gradient(
-        var(--bn-len-42rem) var(--bn-len-24rem) at 0% 0%,
-        color-mix(in srgb, var(--bn-brand) 46%, transparent),
-        transparent 68%
-      ),
-      radial-gradient(
-        var(--bn-len-28rem) var(--bn-len-18rem) at 100% 20%,
-        color-mix(in srgb, var(--bn-brand) 22%, transparent),
-        transparent 70%
-      );
+    background-image: radial-gradient(
+      var(--bn-len-42rem) var(--bn-len-24rem) at 8% 0%,
+      color-mix(in srgb, var(--bn-brand) 16%, transparent),
+      transparent 72%
+    );
     background-attachment: scroll;
   }
 
@@ -1121,7 +1115,6 @@
     text-align: center;
   }
 
-  [data-bn='bn-tab-more'][popover],
   [data-bn='bn-tab-more']:popover-open {
     position: fixed;
     inset: auto var(--bn-len-12) calc(var(--bn-len-62) + env(safe-area-inset-bottom, 0px)) auto;
@@ -1608,6 +1601,11 @@
 }
 
 @layer states {
+  /* A closed popover stays out of the page until its invoker opens it. */
+  [popover]:not(:popover-open) {
+    display: none;
+  }
+
   [data-bn='bn-button']:focus-visible,
   [data-bn='bn-button'][data-force='focus'],
   [data-bn='bn-menu-item']:focus-visible,
