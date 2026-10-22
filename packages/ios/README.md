@@ -17,6 +17,11 @@ crease.
 Zero production dependencies. Hand-written JS, hand-written types,
 `node --test`.
 
+The iOS 27 and macOS 27 kit colour table, control metrics, and semantic
+controls live in `@basenative/platform`. This package’s system colours
+stay the classic UIColor values (`#007aff` and the rest) that the
+express site already consumes.
+
 ```
 @basenative/ios            every token group + tokensCss, POSTURE_MEDIA,
                            postureCss
@@ -138,9 +143,9 @@ complete, and here:
 | Breakpoints                                                 | **Estimate**   | The stops are CSS-pixel classes derived from the announced physical geometry (the cover at its @3 logical width, the inner display at @2); the names are the contract, the numbers refine on hardware |
 | Motion                                                      | **Estimate**   | UIKit springs are response/damping pairs; the cubic-bezier curves are fitted to them                                                                                                                  |
 
-When the iOS 27 Figma kit is duplicated into the owner's workspace (Step
-0 of the fork scope), the estimate groups get refined against the kit's
-styles. The documented groups should already agree with it.
+The kit measurement pass landed in `@basenative/platform`. The estimate
+groups in this package were left as they are, so existing consumers of
+`--bn-ios-*` do not change.
 
 ## License
 

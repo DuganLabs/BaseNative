@@ -86,7 +86,8 @@ npm install @basenative/runtime @basenative/server
 ```js
 import { render } from '@basenative/server';
 
-const html = render(`
+const html = render(
+  `
   <h1>{{ title }}</h1>
   <template @if="user">
     <p>Welcome, {{ user.name }}!</p>
@@ -99,7 +100,9 @@ const html = render(`
       <li>{{ item.name }}</li>
     </template>
   </ul>
-`, { title: 'Dashboard', user: { name: 'Alice' }, items });
+`,
+  { title: 'Dashboard', user: { name: 'Alice' }, items },
+);
 ```
 
 **Client (browser):**
@@ -123,55 +126,56 @@ Read [docs/llm/START.md](docs/llm/START.md) first (deployed as `/llms-start.txt`
 
 ## Packages
 
-| Package | Description |
-|---------|-------------|
-| [`@basenative/runtime`](packages/runtime) | Signals, computed, effects, hydration, lazy loading, Web Vitals |
-| [`@basenative/server`](packages/server) | SSR — render(), streaming, hydration markers |
-| [`@basenative/router`](packages/router) | SSR-aware routing with params, wildcards, query helpers |
-| [`@basenative/forms`](packages/forms) | Signal-based field state, validators, Zod adapter |
-| [`@basenative/components`](packages/components) | 15 semantic UI components with design token theming |
-| [`@basenative/auth`](packages/auth) | Session management, RBAC, password hashing, OAuth providers |
-| [`@basenative/db`](packages/db) | Query builder + SQLite/PostgreSQL/D1 adapters |
-| [`@basenative/hmr`](packages/hmr) | Dev-only hot module replacement — patches the DOM, keeps focus and caret |
-| [`@basenative/middleware`](packages/middleware) | Pipeline, CORS, rate-limit, CSRF — Hono/Fastify/CF Workers adapters |
-| [`@basenative/config`](packages/config) | Env loading, type-safe schema validation |
-| [`@basenative/logger`](packages/logger) | Structured logging, multiple transports, child loggers |
-| [`@basenative/fetch`](packages/fetch) | Signal-based resource fetching with SSR preload and cache |
-| [`@basenative/i18n`](packages/i18n) | ICU message formatting, locale detection, `@t` directive |
-| [`@basenative/realtime`](packages/realtime) | SSE + WebSocket with reactive channel management |
-| [`@basenative/tenant`](packages/tenant) | Multi-tenant middleware — subdomain, path, header resolvers |
-| [`@basenative/upload`](packages/upload) | Multipart upload with R2/S3 storage adapters |
-| [`@basenative/notify`](packages/notify) | Email templates + SMTP/SendGrid transports |
-| [`@basenative/flags`](packages/flags) | Feature flags with percentage rollouts and user context |
-| [`@basenative/date`](packages/date) | Date utilities, formatting, calendar generation |
-| [`@basenative/cli`](packages/cli) | `create-basenative` scaffolding and `bn` dev commands |
-| [`@basenative/fonts`](packages/fonts) | Font loading utilities |
-| [`@basenative/icons`](packages/icons) | Icon system |
-| [`@basenative/marketplace`](packages/marketplace) | Component registry (infrastructure; no third-party packages published yet) |
-| [`@basenative/visual-builder`](packages/visual-builder) | No-code template builder |
-| [`@basenative/validate`](packages/validate) | Structured template diagnostics a model can repair from |
-| [`@basenative/mcp`](packages/mcp) | MCP server — validate, render, directive reference, scaffolding |
-| [`@basenative/evals`](packages/evals) | Eval harness measuring model output correctness (private) |
-| [`@basenative/admin`](packages/admin) | Protected-route helpers, RBAC primitives, audit-log middleware, queue-review UI |
-| [`@basenative/auth-webauthn`](packages/auth-webauthn) | WebAuthn (passkey) adapter for `@basenative/auth` — server, client, Workers/Pages handlers |
-| [`@basenative/builder`](packages/builder) | Signal-based drag-and-drop layout builder that emits BaseNative template code |
-| [`@basenative/claude-config`](packages/claude-config) | Bundled Claude Code subagents, skills, and settings for DuganLabs/BaseNative projects |
-| [`@basenative/combobox`](packages/combobox) | Accessible combobox — typeahead filtering + create-new-entry, WAI-ARIA combobox pattern |
-| [`@basenative/doppler`](packages/doppler) | Thin DX layer around Doppler — local-dev wrapper, CI helper, project bootstrap |
-| [`@basenative/eslint-config`](packages/eslint-config) | Shared ESLint flat-config for DuganLabs projects |
-| [`@basenative/favicon`](packages/favicon) | SVG-first favicon generator + manifest/link-tag primitives |
-| [`@basenative/integrations`](packages/integrations) | Headless third-party integration wrappers |
-| [`@basenative/keyboard`](packages/keyboard) | Accessible mobile-first on-screen virtual keyboard, signal-driven key state |
-| [`@basenative/markdown`](packages/markdown) | Zero-dependency ES module markdown parser + SSR-safe HTML renderer |
-| [`@basenative/og-image`](packages/og-image) | Worker-runtime OG/social share PNG renderer — satori + resvg-wasm |
-| [`@basenative/persist`](packages/persist) | Signal-driven local persistence with TTL, conflict resolution, server rehydrate |
-| [`@basenative/share`](packages/share) | Native Web Share + clipboard fallback, share-card mint client+server |
-| [`@basenative/station`](packages/station) | Queue-driven local-inference primitive — vLLM/Workers AI job runner |
-| [`@basenative/theme`](packages/theme) | The theme layer behind `components` — token tiers, a WCAG contrast harness that fails the build, icon discipline, the `--bn-*` bridge |
-| [`@basenative/tsconfig`](packages/tsconfig) | Shared base tsconfigs for DuganLabs projects |
-| [`@basenative/wrangler-preset`](packages/wrangler-preset) | Pinned Wrangler version + typed `wrangler.toml` fragment generator |
+| Package                                                   | Description                                                                                                                           |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [`@basenative/runtime`](packages/runtime)                 | Signals, computed, effects, hydration, lazy loading, Web Vitals                                                                       |
+| [`@basenative/server`](packages/server)                   | SSR — render(), streaming, hydration markers                                                                                          |
+| [`@basenative/router`](packages/router)                   | SSR-aware routing with params, wildcards, query helpers                                                                               |
+| [`@basenative/forms`](packages/forms)                     | Signal-based field state, validators, Zod adapter                                                                                     |
+| [`@basenative/components`](packages/components)           | 15 semantic UI components with design token theming                                                                                   |
+| [`@basenative/platform`](packages/platform)               | Apple 27 kit tokens and semantic controls for iOS, iPadOS, and macOS                                                                  |
+| [`@basenative/auth`](packages/auth)                       | Session management, RBAC, password hashing, OAuth providers                                                                           |
+| [`@basenative/db`](packages/db)                           | Query builder + SQLite/PostgreSQL/D1 adapters                                                                                         |
+| [`@basenative/hmr`](packages/hmr)                         | Dev-only hot module replacement — patches the DOM, keeps focus and caret                                                              |
+| [`@basenative/middleware`](packages/middleware)           | Pipeline, CORS, rate-limit, CSRF — Hono/Fastify/CF Workers adapters                                                                   |
+| [`@basenative/config`](packages/config)                   | Env loading, type-safe schema validation                                                                                              |
+| [`@basenative/logger`](packages/logger)                   | Structured logging, multiple transports, child loggers                                                                                |
+| [`@basenative/fetch`](packages/fetch)                     | Signal-based resource fetching with SSR preload and cache                                                                             |
+| [`@basenative/i18n`](packages/i18n)                       | ICU message formatting, locale detection, `@t` directive                                                                              |
+| [`@basenative/realtime`](packages/realtime)               | SSE + WebSocket with reactive channel management                                                                                      |
+| [`@basenative/tenant`](packages/tenant)                   | Multi-tenant middleware — subdomain, path, header resolvers                                                                           |
+| [`@basenative/upload`](packages/upload)                   | Multipart upload with R2/S3 storage adapters                                                                                          |
+| [`@basenative/notify`](packages/notify)                   | Email templates + SMTP/SendGrid transports                                                                                            |
+| [`@basenative/flags`](packages/flags)                     | Feature flags with percentage rollouts and user context                                                                               |
+| [`@basenative/date`](packages/date)                       | Date utilities, formatting, calendar generation                                                                                       |
+| [`@basenative/cli`](packages/cli)                         | `create-basenative` scaffolding and `bn` dev commands                                                                                 |
+| [`@basenative/fonts`](packages/fonts)                     | Font loading utilities                                                                                                                |
+| [`@basenative/icons`](packages/icons)                     | Icon system                                                                                                                           |
+| [`@basenative/marketplace`](packages/marketplace)         | Component registry (infrastructure; no third-party packages published yet)                                                            |
+| [`@basenative/visual-builder`](packages/visual-builder)   | No-code template builder                                                                                                              |
+| [`@basenative/validate`](packages/validate)               | Structured template diagnostics a model can repair from                                                                               |
+| [`@basenative/mcp`](packages/mcp)                         | MCP server — validate, render, directive reference, scaffolding                                                                       |
+| [`@basenative/evals`](packages/evals)                     | Eval harness measuring model output correctness (private)                                                                             |
+| [`@basenative/admin`](packages/admin)                     | Protected-route helpers, RBAC primitives, audit-log middleware, queue-review UI                                                       |
+| [`@basenative/auth-webauthn`](packages/auth-webauthn)     | WebAuthn (passkey) adapter for `@basenative/auth` — server, client, Workers/Pages handlers                                            |
+| [`@basenative/builder`](packages/builder)                 | Signal-based drag-and-drop layout builder that emits BaseNative template code                                                         |
+| [`@basenative/claude-config`](packages/claude-config)     | Bundled Claude Code subagents, skills, and settings for DuganLabs/BaseNative projects                                                 |
+| [`@basenative/combobox`](packages/combobox)               | Accessible combobox — typeahead filtering + create-new-entry, WAI-ARIA combobox pattern                                               |
+| [`@basenative/doppler`](packages/doppler)                 | Thin DX layer around Doppler — local-dev wrapper, CI helper, project bootstrap                                                        |
+| [`@basenative/eslint-config`](packages/eslint-config)     | Shared ESLint flat-config for DuganLabs projects                                                                                      |
+| [`@basenative/favicon`](packages/favicon)                 | SVG-first favicon generator + manifest/link-tag primitives                                                                            |
+| [`@basenative/integrations`](packages/integrations)       | Headless third-party integration wrappers                                                                                             |
+| [`@basenative/keyboard`](packages/keyboard)               | Accessible mobile-first on-screen virtual keyboard, signal-driven key state                                                           |
+| [`@basenative/markdown`](packages/markdown)               | Zero-dependency ES module markdown parser + SSR-safe HTML renderer                                                                    |
+| [`@basenative/og-image`](packages/og-image)               | Worker-runtime OG/social share PNG renderer — satori + resvg-wasm                                                                     |
+| [`@basenative/persist`](packages/persist)                 | Signal-driven local persistence with TTL, conflict resolution, server rehydrate                                                       |
+| [`@basenative/share`](packages/share)                     | Native Web Share + clipboard fallback, share-card mint client+server                                                                  |
+| [`@basenative/station`](packages/station)                 | Queue-driven local-inference primitive — vLLM/Workers AI job runner                                                                   |
+| [`@basenative/theme`](packages/theme)                     | The theme layer behind `components` — token tiers, a WCAG contrast harness that fails the build, icon discipline, the `--bn-*` bridge |
+| [`@basenative/tsconfig`](packages/tsconfig)               | Shared base tsconfigs for DuganLabs projects                                                                                          |
+| [`@basenative/wrangler-preset`](packages/wrangler-preset) | Pinned Wrangler version + typed `wrangler.toml` fragment generator                                                                    |
 
-43 packages total (40 publishable, 3 private) — see
+47 packages total (47 publishable, 0 private) — see
 [docs/package-inventory.md](docs/package-inventory.md) for the generated, always-current
 list with exact versions and publish state.
 
@@ -201,7 +205,7 @@ list with exact versions and publish state.
 </template>
 
 <!-- Dynamic attributes -->
-<input :disabled="!canEdit" :class="isActive ? 'active' : ''">
+<input :disabled="!canEdit" :class="isActive ? 'active' : ''" />
 ```
 
 ---
@@ -245,29 +249,29 @@ npx nx run-many --target=lint --all
 
 ## Examples
 
-| Example | Description |
-|---------|-------------|
-| [`examples/express`](examples/express) | Full Express app with components showcase |
-| [`examples/cloudflare-workers`](examples/cloudflare-workers) | Cloudflare Workers with SSR + routing |
-| [`examples/node`](examples/node) | Standalone Node.js HTTP server |
-| [`examples/enterprise`](examples/enterprise) | Auth + DB + middleware stack |
-| [`examples/enterprise-v2`](examples/enterprise-v2) | Multi-tenant enterprise patterns |
+| Example                                                      | Description                               |
+| ------------------------------------------------------------ | ----------------------------------------- |
+| [`examples/express`](examples/express)                       | Full Express app with components showcase |
+| [`examples/cloudflare-workers`](examples/cloudflare-workers) | Cloudflare Workers with SSR + routing     |
+| [`examples/node`](examples/node)                             | Standalone Node.js HTTP server            |
+| [`examples/enterprise`](examples/enterprise)                 | Auth + DB + middleware stack              |
+| [`examples/enterprise-v2`](examples/enterprise-v2)           | Multi-tenant enterprise patterns          |
 
 ---
 
 ## Documentation
 
-| Guide | Description |
-|-------|-------------|
-| [Getting Started](docs/getting-started.md) | Install, first component, routing, SSR |
-| [Building a Todo App](docs/guides/todo-app.md) | End-to-end tutorial: SSR + signals + forms + flags |
-| [API Reference](docs/api/) | Full API docs — one page per package (43 packages; see [docs/package-inventory.md](docs/package-inventory.md)) |
-| [Migration Guide](docs/migration.md) | Moving from React, Vue, Svelte, or vanilla JS |
-| [Accessibility](docs/accessibility.md) | ARIA, keyboard nav, screen reader support |
-| [Browser Support](docs/browser-support.md) | Supported browsers and polyfill guidance |
-| [Roadmap](docs/roadmap.md) | Upcoming features and milestones |
-| [Release Process](docs/releasing.md) | How versions are cut and published |
-| [Package Inventory](docs/package-inventory.md) | Generated, always-current package/version/publish-state list |
+| Guide                                                                                        | Description                                                                                                                                                                                               |
+| -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Getting Started](docs/getting-started.md)                                                   | Install, first component, routing, SSR                                                                                                                                                                    |
+| [Building a Todo App](docs/guides/todo-app.md)                                               | End-to-end tutorial: SSR + signals + forms + flags                                                                                                                                                        |
+| [API Reference](docs/api/)                                                                   | Full API docs — one page per package (47 packages; see [docs/package-inventory.md](docs/package-inventory.md))                                                                                            |
+| [Migration Guide](docs/migration.md)                                                         | Moving from React, Vue, Svelte, or vanilla JS                                                                                                                                                             |
+| [Accessibility](docs/accessibility.md)                                                       | ARIA, keyboard nav, screen reader support                                                                                                                                                                 |
+| [Browser Support](docs/browser-support.md)                                                   | Supported browsers and polyfill guidance                                                                                                                                                                  |
+| [Roadmap](docs/roadmap.md)                                                                   | Upcoming features and milestones                                                                                                                                                                          |
+| [Release Process](docs/releasing.md)                                                         | How versions are cut and published                                                                                                                                                                        |
+| [Package Inventory](docs/package-inventory.md)                                               | Generated, always-current package/version/publish-state list                                                                                                                                              |
 | [PRD.md](PRD.md), [docs/PRD.md](docs/PRD.md), [docs/prd-ai-native.md](docs/prd-ai-native.md) | Three coexisting PRDs (platform vision / meta-library / AI-native repositioning); each states its own scope and cross-links the others, but which governs overall project scope is an open owner decision |
 
 ---
@@ -284,10 +288,10 @@ See [SECURITY.md](SECURITY.md) for the security policy and how to report vulnera
 
 Measured by `scripts/bundle-size.js`, enforced in CI:
 
-| Package | Gzipped | Budget |
-|---|---|---|
-| `@basenative/runtime` | 9.2KB | 10KB |
-| `@basenative/server` | 2.2KB | 16KB |
+| Package               | Gzipped | Budget |
+| --------------------- | ------- | ------ |
+| `@basenative/runtime` | 9.2KB   | 10KB   |
+| `@basenative/server`  | 2.2KB   | 16KB   |
 
 Zero production dependencies in the runtime.
 
