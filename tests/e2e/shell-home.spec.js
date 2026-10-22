@@ -273,5 +273,125 @@ test.describe('home shell', () => {
       expect(Math.abs(buttons[0].top - buttons[1].top)).toBeLessThan(8);
       expect(Math.max(...buttons.map((button) => button.width))).toBeLessThan(280);
     });
+
+    test(`desktop hero buttons keep the atom width (${theme})`, async ({ page }) => {
+      await open(page, 1280, theme);
+      await page.waitForFunction(
+        () => document.documentElement.getAttribute('data-bn-platform') === 'macos',
+      );
+      const buttons = await page.evaluate(() => {
+        const nav = document.querySelector('[data-bn="bn-hero"] nav');
+        const navBox = nav.getBoundingClientRect();
+        return [...nav.querySelectorAll('[data-bn="bn-button"]')].map((button) => {
+          const rect = button.getBoundingClientRect();
+          const style = getComputedStyle(button);
+          return {
+            top: rect.top,
+            height: rect.height,
+            width: rect.width,
+            nav: navBox.width,
+            pad: parseFloat(style.paddingLeft) + parseFloat(style.paddingRight),
+            radius: parseFloat(style.borderTopLeftRadius),
+          };
+        });
+      });
+      expect(buttons.length).toBeGreaterThanOrEqual(2);
+      expect(Math.abs(buttons[0].top - buttons[1].top)).toBeLessThan(8);
+      for (const button of buttons) {
+        expect(button.height).toBeGreaterThanOrEqual(28);
+        expect(button.width).toBeLessThan(button.nav - 8);
+        expect(button.pad).toBeGreaterThanOrEqual(16);
+        expect(button.radius).toBeGreaterThanOrEqual(8);
+      }
+    });
+
+    test(`list tiles at desktop width (${theme})`, async ({ page }) => {
+      await open(page, 1280, theme);
+      const tiles = await page.evaluate(() =>
+        [...document.querySelectorAll('[data-bn="bn-list-row"] [data-bn="bn-symbol-tile"]')].map(
+          (tile) => {
+            const rect = tile.getBoundingClientRect();
+            return {
+              width: rect.width,
+              height: rect.height,
+              font: parseFloat(getComputedStyle(tile).fontSize),
+            };
+          },
+        ),
+      );
+      expect(tiles.length).toBeGreaterThanOrEqual(10);
+      for (const tile of tiles) {
+        expect(tile.width).toBeGreaterThanOrEqual(28);
+        expect(tile.width).toBeLessThanOrEqual(30);
+        expect(tile.height).toBeGreaterThanOrEqual(28);
+        expect(tile.height).toBeLessThanOrEqual(30);
+        expect(tile.font).toBeGreaterThanOrEqual(17);
+      }
+    });
+
+    for (const width of [320, 375]) {
+      test(`tab labels do not overlap at ${width} (${theme})`, async ({ page }) => {
+        await open(page, width, theme);
+        await page.waitForFunction(
+          () => document.documentElement.getAttribute('data-bn-platform') === 'ios',
+        );
+        const labels = await page.evaluate(() => {
+          const bar = document.querySelector('[data-bn="bn-tab-bar"]');
+          const barRect = bar.getBoundingClientRect();
+          return [...bar.querySelectorAll(':scope > [data-bn="bn-tab"]')].map((tab) => {
+            const label = tab.querySelector('[data-bn="bn-tab-label"]');
+            const tabRect = tab.getBoundingClientRect();
+            const labelRect = label.getBoundingClientRect();
+            return {
+              text: label.textContent,
+              left: labelRect.left,
+              right: labelRect.right,
+              top: labelRect.top,
+              bottom: labelRect.bottom,
+              tabLeft: tabRect.left,
+              tabRight: tabRect.right,
+              barLeft: barRect.left,
+              barRight: barRect.right,
+              scroll: label.scrollWidth,
+              client: label.clientWidth,
+            };
+          });
+        });
+        expect(labels.map((label) => label.text)).toEqual([
+          'Home',
+          'Compare',
+          'Parts',
+          'Docs',
+          'More',
+        ]);
+        for (const label of labels) {
+          expect(label.left).toBeGreaterThanOrEqual(label.barLeft - 1);
+          expect(label.right).toBeLessThanOrEqual(label.barRight + 1);
+          expect(label.left).toBeGreaterThanOrEqual(label.tabLeft - 1);
+          expect(label.right).toBeLessThanOrEqual(label.tabRight + 1);
+          expect(label.scroll).toBeLessThanOrEqual(label.client + 1);
+        }
+        for (let i = 0; i < labels.length; i += 1) {
+          for (let j = i + 1; j < labels.length; j += 1) {
+            const x =
+              Math.min(labels[i].right, labels[j].right) - Math.max(labels[i].left, labels[j].left);
+            const y =
+              Math.min(labels[i].bottom, labels[j].bottom) - Math.max(labels[i].top, labels[j].top);
+            expect(x > 1 && y > 1).toBe(false);
+          }
+        }
+      });
+    }
+
+    test(`code card uses the list glass (${theme})`, async ({ page }) => {
+      await open(page, 1280, theme);
+      const card = await page.evaluate(() => {
+        const pre = document.querySelector('body[data-active="home"] pre');
+        const style = getComputedStyle(pre);
+        return { background: style.backgroundColor, blur: style.backdropFilter };
+      });
+      expect(card.blur).toContain('blur');
+      expect(card.background).toContain('0.94');
+    });
   }
 });

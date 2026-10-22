@@ -62,6 +62,7 @@ const appNavSpec = [
   {
     page: 'components',
     label: 'Components',
+    shortLabel: 'Parts',
     href: '/components',
     icon: glyph(
       '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
