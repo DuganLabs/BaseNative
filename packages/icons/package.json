@@ -1,6 +1,6 @@
 {
   "name": "@basenative/icons",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "SVG icon set and FOUC-preventing reset stylesheet for BaseNative applications",
   "type": "module",
   "exports": {
