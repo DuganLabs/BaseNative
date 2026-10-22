@@ -4,7 +4,7 @@ Session date: 2026-10-22
 
 ## Tier
 
-Organisms, on `cursor/apple27-organisms-98aa`, stacked on the molecules branch.
+Templates, on `cursor/apple27-templates-98aa`, stacked on the organisms branch.
 
 Tokens PR: https://github.com/DuganLabs/BaseNative/pull/293
 
@@ -14,13 +14,13 @@ Molecules PR: https://github.com/DuganLabs/BaseNative/pull/295
 
 Organisms PR: https://github.com/DuganLabs/BaseNative/pull/296
 
-Pages are not recomposed. A tier is a pass only when its cells are measured against the kit. 55 cells are measured. The rest of the organism and molecule states are rendered.
+Pages are not recomposed. A tier is a pass only when its cells are measured against the kit. 55 cells are measured. The three templates are compositions of existing organisms and are not measured, so this tier is not a pass.
 
 ## Coverage
 
-- Cells: 3240
-- Verified: 1.7% (55 cells)
-- Rendered: 61.3%
+- Cells: 3348
+- Verified: 1.6% (55 cells)
+- Rendered: 59.9%
 - Source: `docs/design-system/coverage.json`, fed by `docs/design-system/verified.json`
 
 A cell is `pass` only when `scripts/design-system-verify.js` measured it against the kit frame. The 55 passes are:
@@ -32,7 +32,11 @@ A cell is `pass` only when `scripts/design-system-verify.js` measured it against
 - page dot 8×8, inactive Labels/Tertiary and active Labels/Primary, light and dark, 320/768/1280
 - alert and action sheet, light only, 768 and 1280 (width 300, radius 34, action height 48 radius 100). At 320 the stage is narrower than 300. Dark still paints the light glass fill, so those cells stay pending.
 
-Hover, pressed, and focus stay pending. Kit PNGs are not in the repo. The fit-page shots under the local extract do not include Buttons, Lists, Alerts, or Page Controls; those numbers come from the component spec markdown.
+The pass count is still 55. The percent fell because the three templates add 108 cells and none of them have a kit frame.
+
+- `/opt/cursor/artifacts/design-system/templates/ios-templates-light-1280.png`
+- `/opt/cursor/artifacts/design-system/templates/ios-templates-light-320.png`
+- `/opt/cursor/artifacts/design-system/templates/macos-template-light-1280.png`
 
 Row captures from that measurement:
 
@@ -70,15 +74,15 @@ Row captures from that measurement:
 - Axe `color-contrast` and `page-has-heading-one` on unrebuilt routes. `/design-system` keeps `color-contrast` only.
 - WebGL/SVG refraction is not ported. Extra DOM would break the semantic-HTML axiom.
 - Page recomposition stays blocked until the organisms a page uses are kit-verified. They are not.
-- CI Node 20 and Node 22 tests are green on #293 (run https://github.com/DuganLabs/BaseNative/actions/runs/39810776722) and #294 (run https://github.com/DuganLabs/BaseNative/actions/runs/39810837165). The sqlite segfault is gone. E2E on those runs was still in progress when this note was written. #295 failed Node 22 on the same stale index count; `d62c3e5` regenerates it to 373. That rerun's E2E was queued, not finished.
+- CI Node 20 and Node 22 tests are green on #293 (run https://github.com/DuganLabs/BaseNative/actions/runs/39810776722) and #294 (run https://github.com/DuganLabs/BaseNative/actions/runs/39810837165). The sqlite segfault is gone. E2E on those runs failed every `toHaveScreenshot` (same on #295, run https://github.com/DuganLabs/BaseNative/actions/runs/39811398305). The committed shots were taken on this VM. The GitHub runner, after `playwright install --with-deps`, renders `system-ui` with different metrics, so every route is a different height. That is not fixed in this commit.
 
 ## Next task
 
-Templates tier, composed from the existing organism renderers. Builder stays first when page recomposition starts. Page recomposition stays blocked while the organisms a page uses are unverified. `better-sqlite3@13` still cannot be loaded on Node 20; the tests skip. A human has to publish a Node 20-compatible build if those tests should run there instead of skipping. Dark alert glass and the missing kit pages (text fields, toggles, tab bars, toolbars, sidebars) cannot be marked pass from this extract.
+Pin the screenshot font so the GitHub runner matches these snapshots, then recompose routes only for organisms that are kit-verified. Builder stays first. Page recomposition stays blocked while nav, tab bar, toolbar, and sidebar are unverified. `better-sqlite3@13` still cannot be loaded on Node 20; the tests skip. A human has to publish a Node 20-compatible build if those tests should run there instead of skipping. Dark alert glass and the missing component specs (text fields, toggles, tab bars, toolbars, sidebars) cannot be marked pass from the fit-page PNGs.
 
 ## Concerns
 
-- Verified coverage is 55 of 3240 cells. Rendering a state is not a pass.
+- Verified coverage is 55 of 3348 cells. Rendering a state is not a pass. The three templates are the extra 108 cells, all pending or gap.
 - The shell sets `data-bn-platform` on the document. At 1280 that is macOS. Nested rules now restore iOS metrics for button, segmented, switch, checkbox, radio, field, stepper, popup, menu, alert, and action sheet inside an iOS stage. A phone-width document is already iOS, so a macOS stage on that document is restored separately.
 - `better-sqlite3@13` engines require Node >= 22. On Node 20 `new Database()` SIGSEGV's after a successful import (runs 39805077689 and 39806233360). The adapter refuses that addon. Node 20 CI tests passed on run 39809051412.
 - The 50,000-tag scan passed on run 39806233360 after the 2000ms budget. That budget is the quarantine, not an algorithm change.

@@ -18,13 +18,13 @@
     "selected"
   ],
   "summary": {
-    "components": 58,
-    "cells": 3240,
+    "components": 61,
+    "cells": 3348,
     "pass": 55,
-    "pending": 1931,
-    "gap": 1254,
-    "verifiedPercent": 1.7,
-    "renderedPercent": 61.3
+    "pending": 1949,
+    "gap": 1344,
+    "verifiedPercent": 1.6,
+    "renderedPercent": 59.9
   },
   "components": [
     {
@@ -40277,6 +40277,1260 @@
           "referenceImage": null,
           "acceptance": [
             "Keys stay one line."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "template-list",
+      "tier": "template",
+      "renderer": "templateList",
+      "note": "No kit frame for the whole screen. The cell stays pending until one is measured.",
+      "variants": [
+        "ios"
+      ],
+      "states": [
+        "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled",
+        "selected"
+      ],
+      "renderedStates": [
+        "rest"
+      ],
+      "cells": [
+        {
+          "variant": "ios",
+          "state": "rest",
+          "theme": "light",
+          "width": 320,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "rest",
+          "theme": "light",
+          "width": 768,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "rest",
+          "theme": "light",
+          "width": 1280,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "rest",
+          "theme": "dark",
+          "width": 320,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "rest",
+          "theme": "dark",
+          "width": 768,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "rest",
+          "theme": "dark",
+          "width": 1280,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "hover",
+          "theme": "light",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "hover",
+          "theme": "light",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "hover",
+          "theme": "light",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "hover",
+          "theme": "dark",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "hover",
+          "theme": "dark",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "hover",
+          "theme": "dark",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "pressed",
+          "theme": "light",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "pressed",
+          "theme": "light",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "pressed",
+          "theme": "light",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "pressed",
+          "theme": "dark",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "pressed",
+          "theme": "dark",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "pressed",
+          "theme": "dark",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "focus-visible",
+          "theme": "light",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "focus-visible",
+          "theme": "light",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "focus-visible",
+          "theme": "light",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "focus-visible",
+          "theme": "dark",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "focus-visible",
+          "theme": "dark",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "focus-visible",
+          "theme": "dark",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "disabled",
+          "theme": "light",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "disabled",
+          "theme": "light",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "disabled",
+          "theme": "light",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "disabled",
+          "theme": "dark",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "disabled",
+          "theme": "dark",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "disabled",
+          "theme": "dark",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "selected",
+          "theme": "light",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "selected",
+          "theme": "light",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "selected",
+          "theme": "light",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "selected",
+          "theme": "dark",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "selected",
+          "theme": "dark",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "selected",
+          "theme": "dark",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Nav bar, search, grouped list, and tab bar are the existing organisms."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "template-window",
+      "tier": "template",
+      "renderer": "templateWindow",
+      "note": "No kit frame for the whole window. The cell stays pending until one is measured.",
+      "variants": [
+        "macos"
+      ],
+      "states": [
+        "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled",
+        "selected"
+      ],
+      "renderedStates": [
+        "rest"
+      ],
+      "cells": [
+        {
+          "variant": "macos",
+          "state": "rest",
+          "theme": "light",
+          "width": 320,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "rest",
+          "theme": "light",
+          "width": 768,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "rest",
+          "theme": "light",
+          "width": 1280,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "rest",
+          "theme": "dark",
+          "width": 320,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "rest",
+          "theme": "dark",
+          "width": 768,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "rest",
+          "theme": "dark",
+          "width": 1280,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "hover",
+          "theme": "light",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "hover",
+          "theme": "light",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "hover",
+          "theme": "light",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "hover",
+          "theme": "dark",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "hover",
+          "theme": "dark",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "hover",
+          "theme": "dark",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "pressed",
+          "theme": "light",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "pressed",
+          "theme": "light",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "pressed",
+          "theme": "light",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "pressed",
+          "theme": "dark",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "pressed",
+          "theme": "dark",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "pressed",
+          "theme": "dark",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "focus-visible",
+          "theme": "light",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "focus-visible",
+          "theme": "light",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "focus-visible",
+          "theme": "light",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "focus-visible",
+          "theme": "dark",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "focus-visible",
+          "theme": "dark",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "focus-visible",
+          "theme": "dark",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "disabled",
+          "theme": "light",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "disabled",
+          "theme": "light",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "disabled",
+          "theme": "light",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "disabled",
+          "theme": "dark",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "disabled",
+          "theme": "dark",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "disabled",
+          "theme": "dark",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "selected",
+          "theme": "light",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "selected",
+          "theme": "light",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "selected",
+          "theme": "light",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "selected",
+          "theme": "dark",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "selected",
+          "theme": "dark",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        },
+        {
+          "variant": "macos",
+          "state": "selected",
+          "theme": "dark",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Window, toolbar, sidebar, and list are the existing organisms."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "template-sheet",
+      "tier": "template",
+      "renderer": "templateSheet",
+      "note": "No kit frame for the composed sheet. The cell stays pending until one is measured.",
+      "variants": [
+        "ios"
+      ],
+      "states": [
+        "rest",
+        "hover",
+        "pressed",
+        "focus-visible",
+        "disabled",
+        "selected"
+      ],
+      "renderedStates": [
+        "rest"
+      ],
+      "cells": [
+        {
+          "variant": "ios",
+          "state": "rest",
+          "theme": "light",
+          "width": 320,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "rest",
+          "theme": "light",
+          "width": 768,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "rest",
+          "theme": "light",
+          "width": 1280,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "rest",
+          "theme": "dark",
+          "width": 320,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "rest",
+          "theme": "dark",
+          "width": 768,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "rest",
+          "theme": "dark",
+          "width": 1280,
+          "status": "pending",
+          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "hover",
+          "theme": "light",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "hover",
+          "theme": "light",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "hover",
+          "theme": "light",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "hover",
+          "theme": "dark",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "hover",
+          "theme": "dark",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "hover",
+          "theme": "dark",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "pressed",
+          "theme": "light",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "pressed",
+          "theme": "light",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "pressed",
+          "theme": "light",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "pressed",
+          "theme": "dark",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "pressed",
+          "theme": "dark",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "pressed",
+          "theme": "dark",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "focus-visible",
+          "theme": "light",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "focus-visible",
+          "theme": "light",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "focus-visible",
+          "theme": "light",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "focus-visible",
+          "theme": "dark",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "focus-visible",
+          "theme": "dark",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "focus-visible",
+          "theme": "dark",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "disabled",
+          "theme": "light",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "disabled",
+          "theme": "light",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "disabled",
+          "theme": "light",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "disabled",
+          "theme": "dark",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "disabled",
+          "theme": "dark",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "disabled",
+          "theme": "dark",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "selected",
+          "theme": "light",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "selected",
+          "theme": "light",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "selected",
+          "theme": "light",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "selected",
+          "theme": "dark",
+          "width": 320,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "selected",
+          "theme": "dark",
+          "width": 768,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
+          ]
+        },
+        {
+          "variant": "ios",
+          "state": "selected",
+          "theme": "dark",
+          "width": 1280,
+          "status": "gap",
+          "referenceImage": null,
+          "acceptance": [
+            "Sheet, field, and prominent button are the existing organisms."
           ]
         }
       ]
