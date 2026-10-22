@@ -1,12 +1,11 @@
 let currentEffect = null;
 let batchDepth = 0;
+const pendingComputed = new Set();
 const pendingEffects = new Set();
-// Effects queued for the current flush pass that have not run yet. A write
-// that would schedule one of them is dropped: it already runs this pass,
-// after derived computeds, and sees the settled value.
+// Effects still waiting in the current pass. A write that would schedule
+// one of them is dropped: it runs this pass and sees the settled value.
 let wave = null;
 const plugins = [];
-const MAX_FLUSH_PASSES = 10000;
 
 function cleanupEffect(effectRef) {
   for (const subscribers of effectRef.subscriptions) {
@@ -22,58 +21,37 @@ function cleanupEffect(effectRef) {
 }
 
 function loopError() {
-  const error = new Error(
-    'BaseNative: this effect wrote a signal it also read, so it would re-run forever. Read it with .peek() — that does not subscribe — or write a different signal.'
-  );
+  const error = new Error('Use .peek() or write a different signal.');
   error.code = 'BN_EFFECT_LOOP';
   return error;
 }
 
 function scheduleEffect(effectRef) {
-  if (effectRef.running) throw loopError();
+  if (effectRef === currentEffect) throw loopError();
   if (wave && wave.has(effectRef)) return;
-  pendingEffects.add(effectRef);
+  (effectRef.computed ? pendingComputed : pendingEffects).add(effectRef);
+}
+
+function runQueued(queue) {
+  const effects = [...queue];
+  queue.clear();
+  wave = new Set(effects);
+  for (const effectRef of effects) {
+    wave.delete(effectRef);
+    effectRef.run();
+  }
 }
 
 function flushEffects() {
   batchDepth++;
   try {
-    let passes = 0;
-    while (pendingEffects.size > 0) {
-      if (++passes > MAX_FLUSH_PASSES) {
+    for (let passes = 0; pendingComputed.size || pendingEffects.size;) {
+      if (++passes > 10000) {
+        pendingComputed.clear();
         pendingEffects.clear();
         throw loopError();
       }
-      const effects = [...pendingEffects];
-      pendingEffects.clear();
-      const computeds = [];
-      const users = [];
-      for (const effectRef of effects) {
-        (effectRef.computed ? computeds : users).push(effectRef);
-      }
-      wave = new Set(effects);
-      for (const effectRef of computeds) {
-        wave.delete(effectRef);
-        effectRef.run();
-      }
-      let moreComputed = false;
-      for (const effectRef of pendingEffects) {
-        if (effectRef.computed) {
-          moreComputed = true;
-          break;
-        }
-      }
-      if (moreComputed) {
-        for (const effectRef of users) pendingEffects.add(effectRef);
-        wave = null;
-        continue;
-      }
-      wave = new Set(users);
-      for (const effectRef of users) {
-        wave.delete(effectRef);
-        effectRef.run();
-      }
-      wave = null;
+      runQueued(pendingComputed.size ? pendingComputed : pendingEffects);
     }
   } finally {
     wave = null;
@@ -109,23 +87,10 @@ export function signal(initial) {
       for (const plugin of plugins) {
         if (plugin.onSignalWrite) plugin.onSignalWrite(accessor, prev, value);
       }
-      const notify = () => {
+      // A plain set() is its own batch. Nested writes only queue.
+      batch(() => {
         for (const effectRef of [...subs]) scheduleEffect(effectRef);
-      };
-      // A plain set() is its own batch: every subscriber is queued, derived
-      // computeds settle, then each effect runs once. batch() already holds
-      // batchDepth, so nested writes only queue.
-      if (batchDepth > 0) {
-        notify();
-      } else {
-        batchDepth++;
-        try {
-          notify();
-        } finally {
-          batchDepth--;
-          if (batchDepth === 0) flushEffects();
-        }
-      }
+      });
     }
   };
   accessor.peek = () => value;
@@ -137,24 +102,17 @@ function createEffect(fn, computed) {
     computed,
     cleanup: null,
     disposed: false,
-    running: false,
     subscriptions: new Set(),
     run() {
       if (effectRef.disposed) return;
-      effectRef.running = true;
+      const previous = currentEffect;
+      currentEffect = effectRef;
       try {
         cleanupEffect(effectRef);
-
-        const previous = currentEffect;
-        currentEffect = effectRef;
-        try {
-          const cleanup = fn();
-          effectRef.cleanup = typeof cleanup === 'function' ? cleanup : null;
-        } finally {
-          currentEffect = previous;
-        }
+        const cleanup = fn();
+        effectRef.cleanup = typeof cleanup === 'function' ? cleanup : null;
       } finally {
-        effectRef.running = false;
+        currentEffect = previous;
       }
     },
   };
