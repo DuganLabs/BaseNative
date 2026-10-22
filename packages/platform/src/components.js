@@ -441,7 +441,13 @@ const TAB_ELLIPSIS =
 
 function tabLink(tab) {
   const icon = tab.icon ? glyph(tab.icon) : '';
-  return `<a data-bn="bn-tab" href="${escapeAttr(tab.href || '#')}"${opt('aria-current', tab.current ? 'page' : null)}>${icon}${escapeHtml(tab.label)}</a>`;
+  const label = tab.shortLabel || tab.label || '';
+  return `<a data-bn="bn-tab" href="${escapeAttr(tab.href || '#')}"${opt('aria-current', tab.current ? 'page' : null)}>${icon}${tabLabel(label)}</a>`;
+}
+
+function tabLabel(text) {
+  // The label is its own box so a narrow tab clips that word instead of painting into the next tab.
+  return `<span data-bn="bn-tab-label">${escapeHtml(text || '')}</span>`;
 }
 
 /**
@@ -460,7 +466,7 @@ export function renderBnTabBar(options = {}) {
   const moreLabel = options.moreLabel || 'More';
   const moreCurrent = rest.some((tab) => tab.current);
   const more = rest.length
-    ? `<button data-bn="bn-tab" type="button" popovertarget="${escapeAttr(moreId)}" aria-haspopup="menu"${opt('aria-current', moreCurrent ? 'page' : null)}>${glyph(TAB_ELLIPSIS)}${escapeHtml(moreLabel)}</button><menu data-bn="bn-tab-more" id="${escapeAttr(moreId)}" popover="auto" aria-label="${escapeAttr(moreLabel)}">${rest
+    ? `<button data-bn="bn-tab" type="button" popovertarget="${escapeAttr(moreId)}" aria-haspopup="menu"${opt('aria-current', moreCurrent ? 'page' : null)}>${glyph(TAB_ELLIPSIS)}${tabLabel(moreLabel)}</button><menu data-bn="bn-tab-more" id="${escapeAttr(moreId)}" popover="auto" aria-label="${escapeAttr(moreLabel)}">${rest
         .map(
           (tab) =>
             `<li><a data-bn="bn-menu-item" href="${escapeAttr(tab.href || '#')}"${opt('aria-current', tab.current ? 'page' : null)}>${escapeHtml(tab.label)}</a></li>`,
