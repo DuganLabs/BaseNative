@@ -43,10 +43,8 @@
         >Full <code>signal()</code> reference in <code>docs/api</code> →</a
       >
     </p>
-    <pre
-      tabindex="0"
-      aria-label="Code example: signal(initialValue)"
-    ><code><span class="kw">import</span> { signal } <span class="kw">from</span> <span class="str">'@basenative/runtime'</span>;
+    <!-- prettier-ignore -->
+    <pre tabindex="0" aria-label="Code example: signal(initialValue)"><code><span class="kw">import</span> { signal } <span class="kw">from</span> <span class="str">'@basenative/runtime'</span>;
 
 <span class="kw">const</span> count = <span class="fn">signal</span>(<span class="num">0</span>);
 
@@ -74,10 +72,8 @@ count.<span class="fn">peek</span>();     <span class="cmt">// → 6</span></cod
         >Full <code>computed()</code> reference in <code>docs/api</code> →</a
       >
     </p>
-    <pre
-      tabindex="0"
-      aria-label="Code example: computed(fn)"
-    ><code><span class="kw">import</span> { signal, computed } <span class="kw">from</span> <span class="str">'@basenative/runtime'</span>;
+    <!-- prettier-ignore -->
+    <pre tabindex="0" aria-label="Code example: computed(fn)"><code><span class="kw">import</span> { signal, computed } <span class="kw">from</span> <span class="str">'@basenative/runtime'</span>;
 
 <span class="kw">const</span> width = <span class="fn">signal</span>(<span class="num">10</span>);
 <span class="kw">const</span> height = <span class="fn">signal</span>(<span class="num">5</span>);
@@ -104,10 +100,8 @@ width.<span class="fn">set</span>(<span class="num">20</span>);
         >Full <code>effect()</code> reference in <code>docs/api</code> →</a
       >
     </p>
-    <pre
-      tabindex="0"
-      aria-label="Code example: effect(fn)"
-    ><code><span class="kw">import</span> { signal, effect } <span class="kw">from</span> <span class="str">'@basenative/runtime'</span>;
+    <!-- prettier-ignore -->
+    <pre tabindex="0" aria-label="Code example: effect(fn)"><code><span class="kw">import</span> { signal, effect } <span class="kw">from</span> <span class="str">'@basenative/runtime'</span>;
 
 <span class="kw">const</span> name = <span class="fn">signal</span>(<span class="str">'world'</span>);
 
@@ -136,10 +130,8 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
         >Full <code>hydrate()</code> reference in <code>docs/api</code> →</a
       >
     </p>
-    <pre
-      tabindex="0"
-      aria-label="Code example: hydrate(root, context)"
-    ><code><span class="kw">import</span> { signal, hydrate } <span class="kw">from</span> <span class="str">'@basenative/runtime'</span>;
+    <!-- prettier-ignore -->
+    <pre tabindex="0" aria-label="Code example: hydrate(root, context)"><code><span class="kw">import</span> { signal, hydrate } <span class="kw">from</span> <span class="str">'@basenative/runtime'</span>;
 
 <span class="kw">const</span> items = <span class="fn">signal</span>([<span class="str">'one'</span>, <span class="str">'two'</span>]);
 
@@ -274,10 +266,8 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
         >Full <code>render()</code> reference in <code>docs/api</code> →</a
       >
     </p>
-    <pre
-      tabindex="0"
-      aria-label="Code example: render(html, context, options?)"
-    ><code><span class="kw">import</span> { render } <span class="kw">from</span> <span class="str">'@basenative/server'</span>;
+    <!-- prettier-ignore -->
+    <pre tabindex="0" aria-label="Code example: render(html, context, options?)"><code><span class="kw">import</span> { render } <span class="kw">from</span> <span class="str">'@basenative/server'</span>;
 
 <span class="kw">const</span> html = <span class="fn">render</span>(<span class="str">`
   &lt;template @for="item of items; track item.id"&gt;
