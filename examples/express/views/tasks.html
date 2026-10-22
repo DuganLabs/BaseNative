@@ -11,19 +11,20 @@
 </header>
 
 <section data-tasks data-has-api="{{ hasApi }}">
-  <output>{{ tasks.length }} tasks total</output>
-
-  <ul data-bn="bn-list" data-grouped="true" role="list">
-    <template @for="task of tasks; track task.id">
-      <li data-bn="bn-list-row">
-        <p data-bn="bn-list-title">{{ task.title }}</p>
-        <p data-bn="bn-list-value">{{ task.status }}</p>
-      </li>
-    </template>
-    <template @empty>
-      <li data-bn="bn-list-row"><p data-bn="bn-list-title">No tasks yet — add one below</p></li>
-    </template>
-  </ul>
+  <section data-bn="bn-list" data-grouped="true">
+    <output>{{ tasks.length }} tasks total</output>
+    <ul role="list">
+      <template @for="task of tasks; track task.id">
+        <li data-bn="bn-list-row">
+          <p data-bn="bn-list-title">{{ task.title }}</p>
+          <p data-bn="bn-list-value">{{ task.status }}</p>
+        </li>
+      </template>
+      <template @empty>
+        <li data-bn="bn-list-row"><p data-bn="bn-list-title">No tasks yet — add one below</p></li>
+      </template>
+    </ul>
+  </section>
 </section>
 
 <section data-hydrate>
@@ -128,28 +129,30 @@
   <h2>Interactive Controls</h2>
   <nav data-controls aria-label="Add task">
     <input type="text" placeholder="New task..." aria-label="New task title">
-    <button type="button">Add Task</button>
+    <button type="button" data-bn="bn-button" data-variant="prominent">Add Task</button>
   </nav>
-  <output></output>
   <nav data-controls aria-label="Filter tasks">
     <template @for="f of filterOptions">
       <button type="button" :aria-pressed="String(currentFilter() === f)" @click="currentFilter.set(f)">{{ f }}</button>
     </template>
   </nav>
-  <ul role="list">
-    <template @for="task of filteredTasks(); track task.id">
-      <li data-task-item>
-        <span data-task-title>{{ task.title }}</span>
-        <span data-task-actions>
-          <mark data-status="{{ task.status }}">{{ task.status }}</mark>
-          <button type="button" data-variant="danger" aria-label="Delete task" @click="deleteTask(task.id)">x</button>
-        </span>
-      </li>
-    </template>
-    <template @empty>
-      <li data-task-empty>No matching tasks</li>
-    </template>
-  </ul>
+  <section data-bn="bn-list" data-grouped="true">
+    <output></output>
+    <ul role="list">
+      <template @for="task of filteredTasks(); track task.id">
+        <li data-bn="bn-list-row" data-task-item>
+          <span data-task-title>{{ task.title }}</span>
+          <span data-task-actions>
+            <mark data-status="{{ task.status }}">{{ task.status }}</mark>
+            <button type="button" data-variant="danger" aria-label="Delete task" @click="deleteTask(task.id)">x</button>
+          </span>
+        </li>
+      </template>
+      <template @empty>
+        <li data-bn="bn-list-row" data-task-empty>No matching tasks</li>
+      </template>
+    </ul>
+  </section>
 `;
 
   const addInput = hydrateRoot.querySelector('input');

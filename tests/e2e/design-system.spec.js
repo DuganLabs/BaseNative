@@ -316,6 +316,14 @@ async function buttonContrast(page) {
 
 async function materialSamples(page) {
   return page.evaluate(() => {
+    function channel(color) {
+      const match = String(color).match(/rgba?\(([^)]+)\)/);
+      if (!match) return null;
+      const parts = match[1].split(',').map((part) => parseFloat(part));
+      const max = Math.max(parts[0], parts[1], parts[2]);
+      const min = Math.min(parts[0], parts[1], parts[2]);
+      return max === 0 ? 0 : (max - min) / max;
+    }
     const problems = [];
     for (const name of ['ultrathin', 'thin', 'sm']) {
       const el = document.querySelector(`[data-bn="bn-material"][data-material="${name}"]`);
@@ -327,10 +335,56 @@ async function materialSamples(page) {
       const blur = style.backdropFilter || '';
       if (!blur.includes('blur')) problems.push(`${name} has no blur`);
       const stage = el.closest('[data-bn="bn-catalog-demo"]');
-      const back = stage ? getComputedStyle(stage).backgroundImage : 'none';
-      if (!back.includes('gradient')) problems.push(`${name} has no backdrop`);
+      const stageStyle = stage ? getComputedStyle(stage) : null;
+      const back = stageStyle ? stageStyle.backgroundImage : 'none';
+      if (!back.includes('repeating-linear-gradient')) problems.push(`${name} has no pattern`);
+      if (/linear-gradient\([^)]*rgb\(232,\s*146,\s*10\)/.test(back))
+        problems.push(`${name} backdrop is a brand wash`);
+      const sat = stageStyle ? channel(stageStyle.backgroundColor) : 1;
+      if (sat > 0.2) problems.push(`${name} stage is saturated`);
     }
     return problems;
+  });
+}
+
+async function catalogTitle(page) {
+  return page.evaluate(() => {
+    const titles = [...document.querySelectorAll('h1')].map((el) =>
+      el.textContent.replace(/\s+/g, ' ').trim(),
+    );
+    const hits = titles.filter((text) => text === 'Platform catalog');
+    return hits.length === 1 ? [] : [`Platform catalog appears ${hits.length} times`];
+  });
+}
+
+async function sharedSectionSurface(page) {
+  return page.evaluate(() => {
+    const sections = [...document.querySelectorAll('main > section')].filter(
+      (el) => getComputedStyle(el).display !== 'none' && el.getBoundingClientRect().height > 8,
+    );
+    if (sections.length < 2) return ['need two sections'];
+    const paint = (el) => {
+      const style = getComputedStyle(el);
+      return `${style.backgroundColor}|${style.backgroundImage}`;
+    };
+    const first = paint(sections[0]);
+    const next = paint(sections[1]);
+    return first === next ? [] : [`provenance surface ${first} != ${next}`];
+  });
+}
+
+async function tasksCountInsideCard(page) {
+  return page.evaluate(() => {
+    const output = document.querySelector('[data-tasks] output');
+    const card = output?.closest('[data-bn="bn-list"]');
+    if (!output || !card) return ['tasks count has no card'];
+    const text = output.getBoundingClientRect();
+    const box = card.getBoundingClientRect();
+    if (text.top < box.top - 1 || text.bottom > box.bottom + 1)
+      return ['tasks count is outside the card'];
+    if (text.left < box.left - 1 || text.right > box.right + 1)
+      return ['tasks count is outside the card'];
+    return [];
   });
 }
 
@@ -387,6 +441,12 @@ test.describe('design system gates', () => {
           await page.goto(path, { waitUntil: 'domcontentloaded' });
           await page.evaluate(() => document.fonts.ready);
           await expect(page.locator('main')).toBeVisible();
+          if (path === '/design-system') {
+            expect(await catalogTitle(page)).toEqual([]);
+            expect(await materialSamples(page)).toEqual([]);
+          }
+          if (path === '/ai') expect(await sharedSectionSurface(page)).toEqual([]);
+          if (path === '/tasks') expect(await tasksCountInsideCard(page)).toEqual([]);
           await expect(page).toHaveScreenshot(`${slug(path)}-${theme}-${width}.png`, {
             fullPage: true,
             animations: 'disabled',
@@ -405,7 +465,6 @@ test.describe('design system gates', () => {
           expect(await themeSurfaces(page, theme)).toEqual([]);
           expect(await buttonContrast(page)).toEqual([]);
           if (CARD_ROUTES.has(path)) expect(await cardStack(page)).toEqual([]);
-          if (path === '/design-system') expect(await materialSamples(page)).toEqual([]);
           if (width >= 1280) {
             const split = await contentSplit(page);
             expect(split.ratio).toBeGreaterThanOrEqual(0.7);

@@ -311,18 +311,7 @@
   section[data-hero],
   section[data-bn-page-hero],
   [data-bn-showcase-header],
-  [data-bn-component-hero],
-  body:not([data-active='home'])
-    main
-    > section:first-of-type:not(
-      :has(
-        article,
-        [data-bn='bn-list'],
-        [data-bn='bn-metric'],
-        [data-bn='bn-card-grid'],
-        [data-bn-component-card]
-      )
-    ) {
+  [data-bn-component-hero] {
     display: flex;
     flex-direction: column;
     align-items: stretch;

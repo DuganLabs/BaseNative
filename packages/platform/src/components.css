@@ -1580,19 +1580,30 @@
     inline-size: 100%;
     padding: var(--bn-len-12);
     border-radius: var(--bn-radius-card);
-    background-color: var(--bn-brand-ink);
+    background-color: var(--bn-stage-paper);
     background-image:
       radial-gradient(
-        var(--bn-len-24rem) var(--bn-len-18rem) at 12% 0%,
-        var(--bn-brand),
+        var(--bn-len-160) var(--bn-len-120) at 12% 18%,
+        var(--bn-stage-ink),
         transparent 70%
       ),
       radial-gradient(
-        var(--bn-len-24rem) var(--bn-len-18rem) at 88% 100%,
-        var(--bn-brand-secondary),
+        var(--bn-len-220) var(--bn-len-160) at 82% 78%,
+        var(--bn-stage-mist),
+        transparent 72%
+      ),
+      radial-gradient(
+        var(--bn-len-80) var(--bn-len-80) at 70% 16%,
+        var(--bn-stage-brand-hint),
         transparent 68%
       ),
-      linear-gradient(160deg, var(--bn-brand) 0%, var(--bn-brand-ink) 78%);
+      repeating-linear-gradient(
+        135deg,
+        transparent 0,
+        transparent var(--bn-len-16),
+        var(--bn-stage-line) var(--bn-len-16),
+        var(--bn-stage-line) var(--bn-len-18)
+      );
   }
 
   [data-bn='bn-catalog-row']:has([data-bn='bn-material']) {

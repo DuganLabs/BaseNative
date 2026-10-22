@@ -1055,9 +1055,9 @@ export function catalogBody(options = {}) {
     (item) => `<li><strong>${item.topic}.</strong> ${item.detail}</li>`,
   ).join('');
   const typeSample = '<p data-bn="bn-catalog-type">Large Title at xxxLarge</p>';
+  const title = options.omitTitle ? '' : '<h1>Platform catalog</h1>\n';
   return `<header data-bn="bn-catalog-header">
-<h1>Platform catalog</h1>
-<p>Atoms, molecules, organisms, and templates. Materials are translated from MIT stylesheets. Copy the semantic HTML under each organism.</p>
+${title}<p>Atoms, molecules, organisms, and templates. Materials are translated from MIT stylesheets. Copy the semantic HTML under each organism.</p>
 </header>
 ${options.measure ? measuredStages() : previewStages()}
 ${stage('Templates', 'data-bn-platform="ios" data-theme="light"', row('List', templateList()) + row('Sheet', templateSheet()))}

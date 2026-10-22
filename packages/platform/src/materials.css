@@ -75,6 +75,11 @@
     --bn-button-secondary-label: var(--bn-brand-text);
     --bn-danger-label: #9d1c1c;
     --bn-stepper-label: #0050b3;
+    --bn-stage-paper: #e7e4de;
+    --bn-stage-ink: #3a3834;
+    --bn-stage-mist: #c8c4bc;
+    --bn-stage-line: rgba(58, 56, 52, 0.18);
+    --bn-stage-brand-hint: rgba(232, 146, 10, 0.35);
     --bn-alert-surface: var(--bn-plat-swatch-rgba-255-255-255-0-7);
     /* BEGIN METRICS */
     --bn-blur-16: 16px;

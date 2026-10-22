@@ -1670,6 +1670,12 @@
   }
 
   /* -- Tasks page -- */
+  [data-tasks] > [data-bn='bn-list'] > output,
+  [data-hydrate] [data-bn='bn-list'] > output {
+    margin: 0;
+    padding: var(--space-md) var(--space-lg);
+    border-block-end: var(--border-width) solid var(--border);
+  }
   [data-hydrate] > h3 {
     margin-block-end: var(--space-md);
   }
@@ -1694,6 +1700,13 @@
     padding: var(--space-md) var(--space-lg);
     border-radius: var(--radius-md);
     gap: var(--space-md);
+  }
+  [data-hydrate] [data-bn='bn-list'] ul[role='list'] {
+    gap: 0;
+  }
+  [data-hydrate] [data-bn='bn-list'] ul[role='list'] li {
+    padding: 0 var(--space-lg);
+    border-radius: 0;
   }
   [data-task-item] {
     align-items: center;
