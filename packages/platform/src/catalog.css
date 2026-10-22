@@ -1,6 +1,9 @@
 /**
  * Catalog chrome only. Component appearance stays in components.css.
  */
+@layer tokens, components, states;
+
+@layer components {
 [data-bn='bn-catalog'] {
   margin: 0;
   font-family: var(--bn-plat-font-family);
@@ -70,4 +73,10 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+/* The demo figure only groups the controls. It must not affect layout. */
+[data-bn='bn-catalog-demo'] {
+  display: contents;
+}
 }

@@ -1,7 +1,17 @@
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { escapeAttr, escapeText, raw } from '@basenative/runtime/shared/escape';
 import { renderListGroup, renderTabs } from '../../packages/components/src/index.js';
+import { renderBnButton, renderBnList } from '../../packages/platform/src/components.js';
 import { computeCompareStats } from '../../scripts/compare-stats.js';
 import { componentCategories, flatComponents } from './component-catalog.js';
+
+const siteDir = dirname(fileURLToPath(import.meta.url));
+
+function pkgVersion(name) {
+  return JSON.parse(readFileSync(join(siteDir, '../../packages', name, 'package.json'), 'utf8')).version;
+}
 
 export const navPages = [
   'home',
@@ -176,33 +186,77 @@ export const staticTasks = [
 ];
 
 export function getHomePageContext() {
+  const runtimeVersion = pkgVersion('runtime');
+  const platformVersion = pkgVersion('platform');
+  const packages = stats().publicPackages;
   return {
-    showStats: true,
-    features: [
-      { id: 1, name: 'CSP-safe expression evaluator — no eval, no new Function', status: 'done' },
-      { id: 2, name: 'Model self-check — @basenative/validate, /mcp, /evals', status: 'done' },
-      { id: 3, name: '@if / @else conditional rendering', status: 'done' },
-      { id: 4, name: '@for list rendering with track', status: 'done' },
-      { id: 5, name: '@switch state matching', status: 'done' },
-      { id: 6, name: 'Signal-based reactivity', status: 'done' },
-      { id: 7, name: 'Server-side rendering', status: 'done' },
-      { id: 8, name: 'Client hydration', status: 'done' },
-      { id: 9, name: 'Expression binding (:attr, @event)', status: 'done' },
-      { id: 10, name: 'SSR + hydration example', status: 'done' },
-    ],
-    stats: [
-      { label: 'security boundary', value: 'no eval, no Function' },
-      { label: 'render()', value: 'template string at runtime' },
-      { label: 'self-check loop', value: 'validate + mcp + evals' },
-      { label: '@basenative/runtime (gzip)', value: runtimeSizeStat() },
-    ],
-    updates: [
-      { id: 1, text: 'Initial proof of concept complete', date: '2025-01-15' },
-      { id: 2, text: 'Server renderer implemented', date: '2025-02-01' },
-      { id: 3, text: 'Express example with SSR + hydration', date: '2025-02-15' },
-      { id: 4, text: 'Signals playground added', date: '2025-03-01' },
-      { id: 5, text: 'API documentation page', date: '2025-03-15' },
-    ],
+    runtimeVersion,
+    actions: raw(
+      renderBnButton('Try the playground', {
+        variant: 'prominent',
+        size: 'large',
+        href: '/playground',
+      }) +
+        renderBnButton('Read the docs', { variant: 'bordered', size: 'large', href: '/docs' }),
+    ),
+    runtimeList: raw(
+      renderBnList({
+        grouped: true,
+        rows: [
+          {
+            title: 'One set()',
+            detail: 'Derived computeds settle, then each affected effect runs once.',
+          },
+          {
+            title: 'BN_EFFECT_LOOP',
+            detail: 'An effect that writes a signal it also read throws. Use .peek(), or write a different signal.',
+          },
+          {
+            title: 'class and :class',
+            detail: 'The two merge. A false binding adds nothing.',
+          },
+          {
+            title: ':value and :checked',
+            detail: 'Those bindings write the DOM property.',
+          },
+          {
+            title: 'Evaluator',
+            detail: `An allowlist. Gzip ${runtimeSizeStat()}.`,
+          },
+        ],
+      }),
+    ),
+    platformList: raw(
+      renderBnList({
+        grouped: true,
+        rows: [
+          {
+            title: `@basenative/platform ${platformVersion}`,
+            detail: 'Apple 27 controls for iOS, iPadOS, and macOS, in light and dark.',
+          },
+          {
+            title: 'npmjs.org',
+            detail: 'npm install @basenative/runtime @basenative/server. No token.',
+          },
+          {
+            title: '/ai',
+            detail: 'The model scorecard. Pass rates stay unpublished while the prompt corpus is empty.',
+          },
+          {
+            title: '@basenative/validate',
+            detail: 'Flags className, htmlFor, onClick, {expr} text, useState, useEffect, and useMemo, and names the replacement.',
+          },
+          {
+            title: 'bn from-jsx',
+            detail: 'Rewrites a React or JSX draft into BaseNative.',
+          },
+          {
+            title: 'Public packages',
+            detail: `${packages} on npmjs.org.`,
+          },
+        ],
+      }),
+    ),
   };
 }
 

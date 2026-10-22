@@ -57,3 +57,4 @@ export declare function renderBnInputAccessory(options?: BnOptions): string;
 export declare function renderBnEmptyState(options?: BnOptions): string;
 export declare function renderBnAppIcon(options?: BnOptions): string;
 export declare function renderBnWidget(options?: BnOptions): string;
+export declare function renderBnMaterial(options?: BnOptions): string;

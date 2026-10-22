@@ -57,7 +57,7 @@ function stage(title, attrs, body) {
 }
 
 function row(label, html) {
-  return `<div data-bn="bn-catalog-row"><h3 data-bn="bn-catalog-label">${label}</h3><div data-bn="bn-catalog-demo">${html}</div></div>`;
+  return `<section data-bn="bn-catalog-row"><h3 data-bn="bn-catalog-label">${label}</h3><figure data-bn="bn-catalog-demo">${html}</figure></section>`;
 }
 
 function buttons() {
