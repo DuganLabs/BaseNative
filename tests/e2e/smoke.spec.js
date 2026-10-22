@@ -65,7 +65,11 @@ test.describe('Component demos', () => {
     expect(before).toBeGreaterThan(0);
     await nav.getByRole('link', { name: '2', exact: true }).click();
     await expect(nav.locator('[aria-current="page"]')).toHaveText('2');
-    expect(await page.evaluate(() => window.scrollY)).toBe(before);
+    const after = await page.evaluate(() => window.scrollY);
+    // Page 2 can be shorter than page 1, so the browser clamps scrollY.
+    // The failure mode this guards is a reload that jumps back to the top.
+    expect(after).toBeGreaterThan(0);
+    await expect(nav).toBeInViewport();
     expect(new URL(page.url()).pathname).toBe('/showcase');
   });
 });
