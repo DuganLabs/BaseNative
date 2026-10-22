@@ -57,5 +57,5 @@
   ],
   "type": "module",
   "types": "./types/index.d.ts",
-  "version": "2.3.0"
+  "version": "2.3.1"
 }

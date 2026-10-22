@@ -1,5 +1,11 @@
 # @basenative/router
 
+## 2.3.1
+
+### Patch Changes
+
+- @basenative/runtime@2.3.1
+
 ## 2.3.0
 
 ### Patch Changes
