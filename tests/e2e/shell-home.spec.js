@@ -388,11 +388,16 @@ test.describe('home shell', () => {
       await open(page, 1280, theme);
       const card = await page.evaluate(() => {
         const pre = document.querySelector('body[data-active="home"] pre');
+        const list = document.querySelector('[data-bn="bn-list"][data-grouped="true"]');
         const style = getComputedStyle(pre);
-        return { background: style.backgroundColor, blur: style.backdropFilter };
+        return {
+          background: style.backgroundColor,
+          list: getComputedStyle(list).backgroundColor,
+          blur: style.backdropFilter,
+        };
       });
       expect(card.blur).toContain('blur');
-      expect(card.background).toContain('0.94');
+      expect(card.background).toBe(card.list);
     });
 
     test(`phone code card wraps the import line (${theme})`, async ({ page }) => {

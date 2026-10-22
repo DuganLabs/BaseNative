@@ -1124,8 +1124,7 @@
   [data-bn='bn-tab-more'][popover],
   [data-bn='bn-tab-more']:popover-open {
     position: fixed;
-    inset: auto var(--bn-len-12)
-      calc(var(--bn-shell-tab, var(--bn-len-62)) + env(safe-area-inset-bottom, 0px)) auto;
+    inset: auto var(--bn-len-12) calc(var(--bn-len-62) + env(safe-area-inset-bottom, 0px)) auto;
     margin: 0;
     position-area: block-start span-inline-end;
     z-index: var(--bn-z-overlay);
