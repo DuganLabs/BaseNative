@@ -4059,7 +4059,7 @@
       "package": "@basenative/platform",
       "file": "packages/platform/src/components.js",
       "signature": "renderBnFooter(options)",
-      "purpose": "Site footer. Links are a nav, not a row of loose anchors.",
+      "purpose": "Site footer. `groups` are macOS link columns. A flat `links` list is one column.",
       "deprecated": false,
       "emits": {
         "rootTag": "footer",

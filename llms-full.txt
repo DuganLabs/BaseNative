@@ -2964,7 +2964,7 @@ Hero. A glass window header: eyebrow, large title, lede, capsule actions.
 packages/platform/src/components.js · `import { renderBnHero } from '@basenative/platform';`
 
 #### `renderBnFooter(options = {})` (function)
-Site footer. Links are a nav, not a row of loose anchors.
+Site footer. `groups` are macOS link columns. A flat `links` list is one column.
 packages/platform/src/components.js · `import { renderBnFooter } from '@basenative/platform';`
 
 #### `renderBnDock(options = {})` (function)
