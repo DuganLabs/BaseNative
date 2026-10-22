@@ -42,6 +42,10 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    # Install, lint, test, the publish gate, and a release finish well under
+    # this. The platform default is six hours, which is what left a slow
+    # publish sitting until someone cancelled it.
+    timeout-minutes: 30
     # npm's trusted publisher for every @basenative package names this repo,
     # this workflow file and the `prd` environment. The environment only admits
     # the main branch, so nothing but a main-branch release can publish.

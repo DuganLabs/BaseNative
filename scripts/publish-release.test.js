@@ -9,8 +9,15 @@ import {
   changesetReleaseLines,
   findStagedItem,
   formatReleaseSummary,
+  BATCH_PUBLISH_TIMEOUT_MS,
   isAlreadyStagedOutput,
+  isPreviouslyPublishedOutput,
+  NPM_CHILD_STDIO,
+  NPM_COMMAND_TIMEOUT_MS,
+  NPM_FETCH_LIMITS,
+  npmChildOptions,
   npmSupportsStage,
+  parseChangesetPublished,
   parseStageId,
   parseStageList,
   publishTag,
@@ -78,12 +85,6 @@ test('stage ids are read from json and from the text notice', () => {
 test('a 409 for an existing stage is not a publish error', () => {
   assert.equal(
     isAlreadyStagedOutput(
-      'npm error 409 Conflict - POST https://registry.npmjs.org/-/stage/package/tape - Cannot stage previously published version "5.10.0"',
-    ),
-    true,
-  );
-  assert.equal(
-    isAlreadyStagedOutput(
       'npm error 409 Conflict - PUT https://registry.npmjs.org/@basenative%2fios - Cannot publish over previously staged version "2.3.1".',
     ),
     true,
@@ -93,6 +94,62 @@ test('a 409 for an existing stage is not a publish error', () => {
     false,
   );
   assert.equal(isAlreadyStagedOutput('npm error code E404'), false);
+});
+
+test('E409 for a previously published version is published, not staged', () => {
+  const e409 =
+    'npm error code E409\n' +
+    'npm error 409 Conflict - POST https://registry.npmjs.org/-/stage/package/@basenative%2fcombobox - ' +
+    'Cannot stage previously published version "2.3.2".';
+  assert.equal(isPreviouslyPublishedOutput(e409), true);
+  assert.equal(isAlreadyStagedOutput(e409), false);
+  assert.equal(
+    isPreviouslyPublishedOutput(
+      'npm error 409 Conflict - Cannot publish over previously published version "2.3.2".',
+    ),
+    true,
+  );
+  const summary = formatReleaseSummary({
+    onRegistry: 1,
+    published: [{ name: '@basenative/combobox', version: '2.3.2' }],
+    staged: [],
+    blocked: [],
+    missing: [],
+    user: 'warrendugan',
+  });
+  assert.match(summary, /PUBLISHED @basenative\/combobox@2\.3\.2/);
+  assert.doesNotMatch(summary, /STAGED/);
+});
+
+test('changeset success names are not the packages that failed', () => {
+  const text = [
+    '\u001b[?25l◒  Publishing packages...',
+    '◇  Successfully published:',
+    '@basenative/admin@2.3.2',
+    '@basenative/auth@2.3.2',
+    'Some packages failed to publish:',
+    '@basenative/ios@2.3.2',
+    '└ E404: Not Found',
+    '@basenative/runtime@2.3.2',
+  ].join('\n');
+  assert.deepEqual(parseChangesetPublished(text), [
+    { name: '@basenative/admin', version: '2.3.2' },
+    { name: '@basenative/auth', version: '2.3.2' },
+  ]);
+  assert.deepEqual(parseChangesetPublished('no publish happened'), []);
+});
+
+test('npm children ignore stdin, time out, and cap registry retries', () => {
+  const opts = npmChildOptions({ PATH: '/usr/bin' }, '/tmp');
+  assert.deepEqual(opts.stdio, NPM_CHILD_STDIO);
+  assert.equal(opts.stdio[0], 'ignore');
+  assert.equal(opts.timeout, NPM_COMMAND_TIMEOUT_MS);
+  assert.ok(NPM_COMMAND_TIMEOUT_MS <= 3 * 60 * 1000);
+  assert.ok(BATCH_PUBLISH_TIMEOUT_MS <= 10 * 60 * 1000);
+  assert.equal(opts.env.npm_config_fetch_retries, '1');
+  assert.equal(opts.env.npm_config_fetch_timeout, NPM_FETCH_LIMITS.npm_config_fetch_timeout);
+  assert.equal(Number(opts.env.npm_config_fetch_retry_maxtimeout) <= 4000, true);
+  assert.equal(opts.env.PATH, '/usr/bin');
 });
 
 test('stage list json finds the version that is already staged', () => {

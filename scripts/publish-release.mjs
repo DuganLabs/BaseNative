@@ -32,10 +32,13 @@
 //   (`1.2.3-beta.1` → `beta`) when the version is a prerelease — npm
 //   errors if a prerelease is left on the implicit `latest` tag.
 //
-//   A version that is already staged is staged, not a failure. The job
-//   exits 0 when every publishable package is either on the registry or
-//   staged. It exits non-zero only for a real error (no token, a pack
-//   that still has `workspace:`, a stage command that did not stage).
+//   A version that is already staged is staged, not a failure. An E409
+//   whose text is "Cannot stage previously published version" means the
+//   version is already public, so it is reported as published, not
+//   staged. The job exits 0 when every publishable package is either on
+//   the registry or staged. It exits non-zero only for a real error (no
+//   token, a pack that still has `workspace:`, a stage command that did
+//   not stage).
 //
 //   After the run, a maintainer approves each stage with 2FA. The
 //   summary prints the stage id and the Staged Packages URL. Approving
@@ -70,6 +73,32 @@ export const RELEASE_STATE_FILE = '.publish-release-state.json';
 export const NPM_APPROVAL_USER = 'warrendugan';
 export const TRUSTED_PUBLISHER_NOTE =
   'After the first approval, add a trusted publisher for each staged package on npmjs.com (package settings → Trusted Publisher: this repo, .github/workflows/release.yml, environment prd). That needs interactive 2FA, so the owner does it in the browser. The next release of that package then publishes over OIDC.';
+
+// stdin is ignored so an npm prompt (web login, "Press ENTER", OTP) cannot
+// block the job. The timeout is the backstop for a poll that does not read
+// stdin. npm's own fetch defaults retry for minutes and allow a five-minute
+// request; these caps keep one 503 or 403 from owning the step.
+export const NPM_CHILD_STDIO = ['ignore', 'pipe', 'pipe'];
+export const NPM_COMMAND_TIMEOUT_MS = 3 * 60 * 1000;
+export const BATCH_PUBLISH_TIMEOUT_MS = 10 * 60 * 1000;
+export const NPM_FETCH_LIMITS = Object.freeze({
+  npm_config_fetch_retries: '1',
+  npm_config_fetch_retry_factor: '2',
+  npm_config_fetch_retry_mintimeout: '1000',
+  npm_config_fetch_retry_maxtimeout: '4000',
+  npm_config_fetch_timeout: '60000',
+});
+
+export function npmChildOptions(env, cwd, timeout = NPM_COMMAND_TIMEOUT_MS) {
+  return {
+    cwd,
+    env: { ...env, ...NPM_FETCH_LIMITS },
+    encoding: 'utf8',
+    maxBuffer: 64 * 1024 * 1024,
+    stdio: NPM_CHILD_STDIO,
+    timeout,
+  };
+}
 
 const DRY_RUN = process.argv.includes('--dry-run');
 const BOOTSTRAP_TOKEN = (process.env.NPM_BOOTSTRAP_TOKEN ?? '').trim();
@@ -130,17 +159,43 @@ export function parseStageId(text) {
   return null;
 }
 
-// npm's 409 text is "Cannot stage previously published version" both when
-// the version is already staged and when it is already public. Callers
-// check the registry first; this only recognises the staging conflict.
+// "Cannot stage previously published version" is a public version. It is
+// not an existing stage. "previously staged" / "already staged" still are.
 export function isAlreadyStagedOutput(text) {
   const body = String(text);
   return (
     /previously staged version/i.test(body) ||
-    /cannot stage previously published version/i.test(body) ||
     /already been staged/i.test(body) ||
     /already staged/i.test(body)
   );
+}
+
+export function isPreviouslyPublishedOutput(text) {
+  const body = String(text);
+  return (
+    /cannot stage previously published version/i.test(body) ||
+    /cannot publish over previously published version/i.test(body) ||
+    /previously published versions/i.test(body)
+  );
+}
+
+// changeset publish prints a success section and then, on a partial
+// failure, a second list that must not be treated as published.
+export function parseChangesetPublished(text) {
+  const esc = String.fromCharCode(27);
+  const clean = String(text)
+    .replace(new RegExp(`${esc}\\[[0-9;?]*[ -/]*[@-~]`, 'g'), '')
+    .replace(/\r/g, '');
+  const start = clean.search(/Successfully published:/i);
+  if (start < 0) return [];
+  const tail = clean.slice(start);
+  const stop = tail.search(/\n\s*Some packages failed to publish:/i);
+  const section = stop < 0 ? tail : tail.slice(0, stop);
+  const published = [];
+  for (const match of section.matchAll(/(@[\w.-]+\/[\w.-]+)@(\d+\.\d+\.\d+(?:[-+][\w.-]+)?)/g)) {
+    published.push({ name: match[1], version: match[2] });
+  }
+  return published;
 }
 
 export function parseStageList(stdout) {
@@ -169,8 +224,18 @@ export function settleRelease({ candidateNames, publishedNames, stagedNames }) {
   return { missing, ok: missing.length === 0 };
 }
 
-export function formatReleaseSummary({ onRegistry, staged, blocked, missing, user }) {
+export function formatReleaseSummary({
+  onRegistry,
+  staged,
+  blocked,
+  missing,
+  user,
+  published = [],
+}) {
   const lines = ['', 'publish-release summary:', `  on the registry: ${onRegistry}`];
+  for (const pkg of published) {
+    lines.push(`  PUBLISHED ${pkg.name}@${pkg.version}`);
+  }
   for (const { pkg, reason } of blocked) {
     lines.push(`  BLOCKED ${pkg.name}@${pkg.version} — ${reason}`);
   }
@@ -229,6 +294,7 @@ async function fetchPackument(name) {
     try {
       const res = await fetch(url, {
         headers: { accept: 'application/json' },
+        signal: AbortSignal.timeout(15000),
       });
       if (res.status === 404) return null;
       if (!res.ok) throw new Error(`registry answered ${res.status}`);
@@ -246,15 +312,14 @@ async function isPublished(name, version) {
   return Boolean(packument?.versions?.[version]);
 }
 
-// A just-published version can take a few seconds to show up in the
-// packument; poll briefly before declaring the publish lost.
-async function waitPublished(name, version, timeoutMs = 60000) {
-  const deadline = Date.now() + timeoutMs;
-  for (;;) {
+// A just-published version can lag in the packument. Three reads, with
+// one then two seconds between them, is the whole wait before staging.
+async function seenOnRegistry(name, version) {
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
     if (await isPublished(name, version)) return true;
-    if (Date.now() >= deadline) return false;
-    await sleep(5000);
+    if (attempt < 3) await sleep(1000 * attempt);
   }
+  return false;
 }
 
 // ---------------------------------------------------------------- packages
@@ -295,14 +360,9 @@ function workspacePackages() {
 
 // ---------------------------------------------------------------- processes
 
-function runCapture(command, args, env, label, cwd = ROOT) {
+function runCapture(command, args, env, label, cwd = ROOT, timeout = NPM_COMMAND_TIMEOUT_MS) {
   console.log(`\n--- ${label}\n$ ${command} ${args.join(' ')}`);
-  const result = spawnSync(command, args, {
-    cwd,
-    env,
-    encoding: 'utf8',
-    maxBuffer: 64 * 1024 * 1024,
-  });
+  const result = spawnSync(command, args, npmChildOptions(env, cwd, timeout));
   if (result.stdout) process.stdout.write(result.stdout);
   if (result.stderr) process.stderr.write(result.stderr);
   if (result.error) console.error(result.error.message);
@@ -347,7 +407,7 @@ function publishOne(pkg, env, label) {
 }
 
 function npmVersion() {
-  const result = spawnSync('npm', ['--version'], { encoding: 'utf8' });
+  const result = spawnSync('npm', ['--version'], npmChildOptions(process.env, ROOT, 30_000));
   return (result.stdout ?? '').trim();
 }
 
@@ -454,7 +514,7 @@ function verifyStagedManifest(stageId) {
 // Stage one package. An existing stage for this version is success.
 // Returns { kind: 'published' | 'staged' | 'error', ... }.
 async function stagePackage(pkg) {
-  if (await isPublished(pkg.name, pkg.version)) return { kind: 'published' };
+  if (await seenOnRegistry(pkg.name, pkg.version)) return { kind: 'published' };
 
   const listed = findStagedItem(listStaged(pkg), pkg.name, pkg.version);
   if (listed) {
@@ -485,6 +545,7 @@ async function stagePackage(pkg) {
   if (packed.error) return { kind: 'error', reason: packed.error };
   const tag = publishTag(pkg.version);
   try {
+    if (await isPublished(pkg.name, pkg.version)) return { kind: 'published' };
     const result = runCapture(
       'npm',
       stagePublishArgs(packed.tarball, pkg.version),
@@ -492,6 +553,7 @@ async function stagePackage(pkg) {
       `stage ${pkg.name}@${pkg.version} (tag ${tag})`,
     );
     const output = `${result.stdout}\n${result.stderr}`;
+    if (isPreviouslyPublishedOutput(output)) return { kind: 'published', via: 'e409' };
     if (result.status === 0) {
       const stageId = parseStageId(output);
       if (!stageId) {
@@ -640,6 +702,15 @@ export async function main() {
   const blocked = []; // { pkg, reason }
   const failed = []; // { pkg, reason }
   const staged = []; // { name, version, stageId, tag }
+  const confirmed = new Set(alreadyPublished);
+  const publishedNotes = [];
+
+  function acceptPublished(pkg, via) {
+    confirmed.add(pkg.name);
+    if (via === 'e409' && !publishedNotes.some((item) => item.name === pkg.name)) {
+      publishedNotes.push({ name: pkg.name, version: pkg.version });
+    }
+  }
 
   // ---- stage lane: registry-absent packages first. OIDC cannot create
   // the package page, so the stage-only token stages them.
@@ -660,7 +731,10 @@ export async function main() {
     } else {
       for (const pkg of fresh) {
         const result = await stagePackage(pkg);
-        if (result.kind === 'published') continue;
+        if (result.kind === 'published') {
+          acceptPublished(pkg, result.via);
+          continue;
+        }
         if (result.kind === 'staged') {
           recordStaged(staged, pkg, result);
           continue;
@@ -676,6 +750,9 @@ export async function main() {
   // The rescue pass then publishes the main lane one by one. A package
   // that was staged still isn't on the registry; if changeset stops on
   // it, the same rescue pass publishes whatever it didn't reach.
+  // Names under "Successfully published" are done. The packument often
+  // lags that list, and treating the lag as "missing" is what re-published
+  // and then staged packages this command had already shipped.
   if (standard.length > 0) {
     if (blocked.length > 0) {
       console.log(
@@ -684,30 +761,55 @@ export async function main() {
           'per package instead.',
       );
     } else {
-      runCapture(
+      const publishedByChangeset = runCapture(
         'pnpm',
         ['exec', 'changeset', 'publish'],
         mainLaneEnv(),
         'main lane: changeset publish (OIDC)',
+        ROOT,
+        BATCH_PUBLISH_TIMEOUT_MS,
       );
+      for (const item of parseChangesetPublished(
+        `${publishedByChangeset.stdout}\n${publishedByChangeset.stderr}`,
+      )) {
+        const pkg = candidates.find(
+          (entry) => entry.name === item.name && entry.version === item.version,
+        );
+        if (pkg) acceptPublished(pkg);
+      }
     }
   }
 
-  // ---- rescue: anything still missing gets OIDC, then the stage-only
-  // token. One package's failure cannot strand the rest. A version that
-  // is already staged (including "Cannot publish over previously staged
-  // version" from an earlier attempt) is recorded as staged.
+  // ---- rescue: anything still missing gets one OIDC publish, then, only
+  // if the registry still lacks that version, one stage. A successful OIDC
+  // publish is not staged. One package's failure cannot strand the rest.
+  // "Cannot publish over previously staged version" is recorded as staged.
+  // "Cannot stage previously published version" is recorded as published.
   const stagedNames = () => new Set(staged.map((item) => item.name));
   const failedNames = () => new Set(failed.map((entry) => entry.pkg.name));
   for (const pkg of [...standard, ...fresh]) {
     if (stagedNames().has(pkg.name)) continue;
-    if (await isPublished(pkg.name, pkg.version)) continue;
+    if (confirmed.has(pkg.name)) continue;
+    if (await isPublished(pkg.name, pkg.version)) {
+      acceptPublished(pkg);
+      continue;
+    }
     if (blocked.some((entry) => entry.pkg.name === pkg.name)) continue;
 
     const oidc = publishOne(pkg, mainLaneEnv(), `rescue (OIDC) ${pkg.name}`);
     const oidcOutput = `${oidc.stdout}\n${oidc.stderr}`;
-    if (oidc.status === 0 && (await waitPublished(pkg.name, pkg.version, 30000))) continue;
-    if (await isPublished(pkg.name, pkg.version)) continue;
+    if (oidc.status === 0) {
+      acceptPublished(pkg);
+      continue;
+    }
+    if (isPreviouslyPublishedOutput(oidcOutput)) {
+      acceptPublished(pkg, 'e409');
+      continue;
+    }
+    if (await isPublished(pkg.name, pkg.version)) {
+      acceptPublished(pkg);
+      continue;
+    }
 
     if (!BOOTSTRAP_TOKEN) {
       if (!failedNames().has(pkg.name)) {
@@ -722,7 +824,10 @@ export async function main() {
     }
 
     const result = await stagePackage(pkg);
-    if (result.kind === 'published') continue;
+    if (result.kind === 'published') {
+      acceptPublished(pkg, result.via);
+      continue;
+    }
     if (result.kind === 'staged') {
       recordStaged(staged, pkg, result);
       continue;
@@ -730,8 +835,9 @@ export async function main() {
     if (!failedNames().has(pkg.name)) failed.push({ pkg, reason: result.reason });
   }
 
-  const publishedNames = new Set();
+  const publishedNames = new Set(confirmed);
   for (const pkg of candidates) {
+    if (publishedNames.has(pkg.name)) continue;
     if (await isPublished(pkg.name, pkg.version)) publishedNames.add(pkg.name);
   }
   const { missing } = settleRelease({
@@ -758,6 +864,7 @@ export async function main() {
   console.log(
     formatReleaseSummary({
       onRegistry: publishedNames.size,
+      published: publishedNotes,
       staged,
       blocked,
       missing: missingPkgs,
