@@ -18,6 +18,8 @@ Templates PR: https://github.com/DuganLabs/BaseNative/pull/297
 
 Pages are not recomposed. A tier is a pass only when its cells are measured against the kit. 79 cells are measured. The three templates are compositions of existing organisms and are not measured, so this tier is not a pass.
 
+Home shell, shared with every route, is fixed on this branch and gated in `tests/e2e/shell-home.spec.js` (12 passed locally). The phone tab bar is flush with the safe area and main scrolls above it. At 1280 the home article is an 880px centered two-column window with a 26px/700 large title. Body type is 17px on iOS and at least 13px on macOS. Home surfaces use glass blur, a color backdrop, and tinted symbol tiles. The code sample scrolls inside its card. The footer is a grouped column of 44px rows. Screenshots: `/opt/cursor/artifacts/shell-home/`. This is not production until the stack merges and a deploy run is green.
+
 ## Coverage
 
 - Cells: 3348
@@ -78,16 +80,16 @@ Row captures from that measurement:
 
 ## Blocked
 
-- Page recomposition. Organisms and templates are not kit-verified.
+- Kit verification of organisms and templates. That does not block the home shell fix.
 - Apex screenshots of basenative.com. The custom domain challenged this runner.
 - Axe `color-contrast` and `page-has-heading-one` on unrebuilt routes. `/design-system` keeps `color-contrast` only.
 - WebGL/SVG refraction is not ported. Extra DOM would break the semantic-HTML axiom.
-- Page recomposition stays blocked until the organisms a page uses are kit-verified. They are not.
+- Home shell gates passed locally. Production still serves the earlier home until this stack merges and a deploy run is green.
 - CI Node 20 and Node 22 tests are green on #293 (run https://github.com/DuganLabs/BaseNative/actions/runs/39810776722) and #294 (run https://github.com/DuganLabs/BaseNative/actions/runs/39810837165). The sqlite segfault is gone. E2E on those runs, and on #295 (run https://github.com/DuganLabs/BaseNative/actions/runs/39811398305), failed every `toHaveScreenshot` before the font pin. The pin is pushed on #293 (`7f0feb2`), #294 (`0ca5d49`), #295 (`8494b18`), #296 (`d26bedd`), and this branch. Local regeneration of the #293 shots passed 66. The GitHub E2E jobs for those commits are not observed, so those checks are not called green.
 
 ## Next task
 
-Recompose routes only for organisms that are kit-verified. Builder stays first. Page recomposition stays blocked while nav, tab bar, toolbar, and sidebar are unverified. `better-sqlite3@13` still cannot be loaded on Node 20; the tests skip. A human has to publish a Node 20-compatible build if those tests should run there instead of skipping. Dark alert glass and the missing component specs (text fields, toggles, tab bars, toolbars, sidebars, sheets) cannot be marked pass from the fit-page PNGs. Regular glass buttons are not passed: their fill is not the kit glass stack.
+Ship the home shell through #293 so the next merge to main deploys it. Builder stays the first full page recomposition. Nav, tab bar, toolbar, and sidebar still need kit frames before those cells can be marked pass. `better-sqlite3@13` still cannot be loaded on Node 20; the tests skip. A human has to publish a Node 20-compatible build if those tests should run there instead of skipping. Dark alert glass and the missing component specs (text fields, toggles, tab bars, toolbars, sidebars, sheets) cannot be marked pass from the fit-page PNGs. Regular glass buttons are not passed: their fill is not the kit glass stack.
 
 ## Concerns
 
