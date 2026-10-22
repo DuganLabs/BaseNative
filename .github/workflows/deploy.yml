@@ -1,8 +1,8 @@
-# MANUAL-ONLY. Every workflow in this org runs on workflow_dispatch and
-# nothing else: no push, no pull_request, no schedule. The owner runs it
-# from the Actions tab when he wants GitHub minutes spent; everything it
-# does also runs on a developer machine via scripts/pipeline.sh (checks)
-# and the deploy scripts, from the same Doppler config. (2026-09-14)
+# Pushes to main deploy basenative.com. workflow_dispatch stays, so a
+# human can still run it. Other workflows in this org remain manual.
+# Nx Cloud stays on the author allow list in scripts/nx-cloud-access.sh:
+# only warrendugan@gmail.com uses Nx Cloud. Every other author runs Nx
+# locally (NX_NO_CLOUD=true, empty token).
 name: Deploy to Cloudflare Pages
 
 # Thin caller: delegates the Pages deploy to DuganLabs' org-wide reusable
@@ -18,6 +18,8 @@ name: Deploy to Cloudflare Pages
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
 
 env:
   # Comma-separated commit author emails (case-insensitive) that may use
