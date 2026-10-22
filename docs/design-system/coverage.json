@@ -20,10 +20,10 @@
   "summary": {
     "components": 61,
     "cells": 3348,
-    "pass": 55,
-    "pending": 1949,
+    "pass": 79,
+    "pending": 1925,
     "gap": 1344,
-    "verifiedPercent": 1.6,
+    "verifiedPercent": 2.4,
     "renderedPercent": 59.9
   },
   "components": [
@@ -446,7 +446,7 @@
           "theme": "light",
           "width": 320,
           "status": "pass",
-          "referenceImage": "kit:ios-buttons large prominent disabled 50px capsule, tertiary fill (local extract, not committed)",
+          "referenceImage": "kit:ios-buttons large prominent disabled 50px capsule, Fills/Tertiary for the theme (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -462,7 +462,7 @@
           "theme": "light",
           "width": 768,
           "status": "pass",
-          "referenceImage": "kit:ios-buttons large prominent disabled 50px capsule, tertiary fill (local extract, not committed)",
+          "referenceImage": "kit:ios-buttons large prominent disabled 50px capsule, Fills/Tertiary for the theme (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -478,7 +478,7 @@
           "theme": "light",
           "width": 1280,
           "status": "pass",
-          "referenceImage": "kit:ios-buttons large prominent disabled 50px capsule, tertiary fill (local extract, not committed)",
+          "referenceImage": "kit:ios-buttons large prominent disabled 50px capsule, Fills/Tertiary for the theme (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -493,8 +493,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent disabled 50px capsule, Fills/Tertiary for the theme (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -509,8 +509,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent disabled 50px capsule, Fills/Tertiary for the theme (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -525,8 +525,8 @@
           "state": "disabled",
           "theme": "dark",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent disabled 50px capsule, Fills/Tertiary for the theme (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -2365,8 +2365,8 @@
           "state": "rest",
           "theme": "light",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons liquid glass prominent large 50px radius 1000, padding 16/20, Accents/Blue tint, Frost Regular (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -2381,8 +2381,8 @@
           "state": "rest",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons liquid glass prominent large 50px radius 1000, padding 16/20, Accents/Blue tint, Frost Regular (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -2397,8 +2397,8 @@
           "state": "rest",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons liquid glass prominent large 50px radius 1000, padding 16/20, Accents/Blue tint, Frost Regular (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -2413,8 +2413,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons liquid glass prominent large 50px radius 1000, padding 16/20, Accents/Blue tint, Frost Regular (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -2429,8 +2429,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons liquid glass prominent large 50px radius 1000, padding 16/20, Accents/Blue tint, Frost Regular (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -2445,8 +2445,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons liquid glass prominent large 50px radius 1000, padding 16/20, Accents/Blue tint, Frost Regular (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -2941,8 +2941,8 @@
           "state": "rest",
           "theme": "light",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent destructive 50px capsule, Accents/Red (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -2957,8 +2957,8 @@
           "state": "rest",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent destructive 50px capsule, Accents/Red (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -2973,8 +2973,8 @@
           "state": "rest",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent destructive 50px capsule, Accents/Red (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -2989,8 +2989,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent destructive 50px capsule, Accents/Red (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -3005,8 +3005,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent destructive 50px capsule, Accents/Red (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -3021,8 +3021,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-buttons large prominent destructive 50px capsule, Accents/Red (local extract, not committed)",
           "acceptance": [
             "Capsule on the large size.",
             "One line.",
@@ -20217,8 +20217,8 @@
           "state": "rest",
           "theme": "light",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-popup-buttons 44px, padding 13, gap 3, Accents/Blue semibold 18 (local extract, not committed)",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20228,8 +20228,8 @@
           "state": "rest",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-popup-buttons 44px, padding 13, gap 3, Accents/Blue semibold 18 (local extract, not committed)",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20239,8 +20239,8 @@
           "state": "rest",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-popup-buttons 44px, padding 13, gap 3, Accents/Blue semibold 18 (local extract, not committed)",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20250,8 +20250,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-popup-buttons 44px, padding 13, gap 3, Accents/Blue semibold 18 (local extract, not committed)",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20261,8 +20261,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-popup-buttons 44px, padding 13, gap 3, Accents/Blue semibold 18 (local extract, not committed)",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20272,8 +20272,8 @@
           "state": "rest",
           "theme": "dark",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-dark-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-popup-buttons 44px, padding 13, gap 3, Accents/Blue semibold 18 (local extract, not committed)",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20613,8 +20613,8 @@
           "state": "rest",
           "theme": "light",
           "width": 320,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-320-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-popup-buttons 44px, padding 13, gap 3, Accents/Blue semibold 18 (local extract, not committed)",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20624,8 +20624,8 @@
           "state": "rest",
           "theme": "light",
           "width": 768,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-768-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-popup-buttons 44px, padding 13, gap 3, Accents/Blue semibold 18 (local extract, not committed)",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]
@@ -20635,8 +20635,8 @@
           "state": "rest",
           "theme": "light",
           "width": 1280,
-          "status": "pending",
-          "referenceImage": "tests/e2e/design-system.spec.js-snapshots/design-system-light-1280-linux.png",
+          "status": "pass",
+          "referenceImage": "kit:ios-popup-buttons 44px, padding 13, gap 3, Accents/Blue semibold 18 (local extract, not committed)",
           "acceptance": [
             "Menu or native select. Label stays one line."
           ]

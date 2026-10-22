@@ -6,8 +6,10 @@
  * are the iOS 27 frame sizes read from the local kit extract on
  * 2026-10-22 (buttons large 50px capsule, segmented large 50px / radius
  * 100, selected pill 46px, list row tall 68px, page dot 8px, alert
- * 300× radius 34). Comparison only. Dark alerts stay on the light glass
- * fill, so those cells are not recorded.
+ * 300× radius 34, popup 44px, destructive Accents/Red, glass-prominent
+ * large 50px with Frost Regular). Comparison only. Samples come from the
+ * iOS stage for that theme. Dark alerts stay on the light glass fill, so
+ * those cells are not recorded. Refraction is not a blur length.
  *
  *   node scripts/design-system-verify.js
  */
@@ -39,18 +41,6 @@ for (const theme of ['light', 'dark']) {
       const stage = [...document.querySelectorAll('[data-bn="bn-catalog-stage"]')].find(
         (el) => el.querySelector('[data-bn="bn-catalog-heading"]')?.textContent === stageName,
       );
-      const button = document.querySelector(
-        '[data-bn-platform="ios"] [data-bn="bn-button"][data-variant="prominent"][data-size="large"]:not([disabled])',
-      );
-      const bordered = document.querySelector(
-        '[data-bn-platform="ios"] [data-bn="bn-button"][data-variant="bordered"][data-size="large"]:not([disabled])',
-      );
-      const borderless = document.querySelector(
-        '[data-bn-platform="ios"] [data-bn="bn-button"][data-variant="borderless"][data-size="large"]:not([disabled])',
-      );
-      const segmented = document.querySelector(
-        '[data-bn-platform="ios"] [data-bn="bn-segmented"][data-size="large"]',
-      );
       const root = stage || document;
       function box(el) {
         if (!el) return null;
@@ -61,17 +51,56 @@ for (const theme of ['light', 'dark']) {
           height: Math.round(rect.height),
           radius: parseFloat(style.borderTopLeftRadius),
           bg: style.backgroundColor,
+          color: style.color,
           pad: parseFloat(style.paddingInlineStart),
+          padTop: parseFloat(style.paddingTop),
+          gap: parseFloat(style.columnGap),
+          fontSize: parseFloat(style.fontSize),
+          fontWeight: parseFloat(style.fontWeight),
+          blur: style.backdropFilter || '',
         };
       }
       const seg = root.querySelector('[data-bn="bn-segmented"][data-size="large"]');
       const alert = root.querySelector('[data-bn="bn-alert"]');
       const sheet = root.querySelector('[data-bn="bn-action-sheet"]');
+      const molecules = [...document.querySelectorAll('[data-bn="bn-catalog-stage"]')].find(
+        (el) =>
+          el.querySelector('[data-bn="bn-catalog-heading"]')?.textContent === 'Molecule states',
+      );
       return {
-        button: box(button),
-        bordered: box(bordered),
-        borderless: box(borderless),
-        segmented: box(segmented),
+        button: box(
+          root.querySelector(
+            '[data-bn="bn-button"][data-variant="prominent"][data-size="large"]:not([disabled]):not([data-destructive="true"])',
+          ),
+        ),
+        bordered: box(
+          root.querySelector(
+            '[data-bn="bn-button"][data-variant="bordered"][data-size="large"]:not([disabled]):not([data-destructive="true"])',
+          ),
+        ),
+        borderless: box(
+          root.querySelector(
+            '[data-bn="bn-button"][data-variant="borderless"][data-size="large"]:not([disabled])',
+          ),
+        ),
+        segmented: box(seg),
+        glassProminent: box(
+          root.querySelector(
+            '[data-bn="bn-button"][data-variant="glass-prominent"][data-size="large"]:not([disabled])',
+          ),
+        ),
+        destructive: box(
+          root.querySelector(
+            '[data-bn="bn-button"][data-destructive="true"][data-variant="prominent"]:not([disabled])',
+          ),
+        ),
+        destructiveBordered: box(
+          root.querySelector(
+            '[data-bn="bn-button"][data-destructive="true"][data-variant="bordered"]:not([disabled])',
+          ),
+        ),
+        popup: box(root.querySelector('button[data-bn="bn-popup-button"]')),
+        nativePopup: box(molecules?.querySelector('select[data-bn="bn-popup-button"]')),
         pill: box(seg?.querySelector('[data-bn="bn-segment"]:has(input:checked)')),
         row: box(
           root.querySelector('[data-bn="bn-list"][data-grouped="true"] [data-bn="bn-list-row"]'),
@@ -84,23 +113,33 @@ for (const theme of ['light', 'dark']) {
         sheetAction: box(sheet?.querySelector('[data-bn="bn-action"]')),
         disabled: box(
           root.querySelector(
-            '[data-bn="bn-button"][data-variant="prominent"][data-size="large"]:disabled',
+            '[data-bn="bn-button"][data-variant="prominent"][data-size="large"]:disabled:not([data-destructive="true"])',
           ),
         ),
       };
     }, theme);
-    const accent = sample.button && sample.button.bg === 'rgb(0, 136, 255)';
+    const accent = theme === 'light' ? 'rgb(0, 136, 255)' : 'rgb(0, 145, 255)';
+    const red = theme === 'light' ? 'rgb(255, 56, 60)' : 'rgb(255, 66, 69)';
+    const tertiaryFill = (bg) =>
+      theme === 'light'
+        ? bg === 'rgba(118, 118, 128, 0.12)' || bg === 'rgba(118, 118, 128, 0.122)'
+        : bg === 'rgba(118, 118, 128, 0.24)' ||
+          bg === 'rgba(118, 118, 128, 0.239)' ||
+          bg === 'rgba(118, 118, 128, 0.2392)';
+    const redWash = (bg) =>
+      theme === 'light'
+        ? bg === 'rgba(255, 56, 60, 0.14)' || bg === 'rgba(255, 56, 60, 0.141)'
+        : bg === 'rgba(255, 66, 69, 0.14)' || bg === 'rgba(255, 66, 69, 0.141)';
     const buttonOk =
-      sample.button && close(sample.button.height, 50) && sample.button.radius >= 24 && accent;
-    const tertiary =
-      sample.bordered &&
-      (sample.bordered.bg === 'rgba(118, 118, 128, 0.12)' ||
-        sample.bordered.bg === 'rgba(118, 118, 128, 0.122)');
+      sample.button &&
+      close(sample.button.height, 50) &&
+      sample.button.radius >= 24 &&
+      sample.button.bg === accent;
     const borderedOk =
       sample.bordered &&
       close(sample.bordered.height, 50) &&
       sample.bordered.radius >= 24 &&
-      tertiary;
+      tertiaryFill(sample.bordered.bg);
     const borderlessOk =
       sample.borderless &&
       close(sample.borderless.height, 50) &&
@@ -209,27 +248,113 @@ for (const theme of ['light', 'dark']) {
         kit: 'kit:ios-lists row Height=Tall 68px, padding inline 16 (local extract, not committed)',
       });
     } else failures.push({ theme, width, control: 'list', sample: sample.row });
-    const tertiaryOff =
-      sample.disabled &&
-      (sample.disabled.bg === 'rgba(118, 118, 128, 0.12)' ||
-        sample.disabled.bg === 'rgba(118, 118, 128, 0.122)');
     const disabledOk =
-      theme === 'light' &&
       sample.disabled &&
       close(sample.disabled.height, 50) &&
       sample.disabled.radius >= 24 &&
-      tertiaryOff;
+      tertiaryFill(sample.disabled.bg);
+    if (disabledOk) {
+      cells.push({
+        id: 'button',
+        variant: 'prominent',
+        state: 'disabled',
+        theme,
+        width,
+        kit: 'kit:ios-buttons large prominent disabled 50px capsule, Fills/Tertiary for the theme (local extract, not committed)',
+      });
+    } else failures.push({ theme, width, control: 'button-disabled', sample: sample.disabled });
+    const glassProminentOk =
+      sample.glassProminent &&
+      close(sample.glassProminent.height, 50) &&
+      close(sample.glassProminent.radius, 1000) &&
+      close(sample.glassProminent.padTop, 16) &&
+      close(sample.glassProminent.gap, 4) &&
+      sample.glassProminent.bg === accent &&
+      sample.glassProminent.color === 'rgb(255, 255, 255)' &&
+      String(sample.glassProminent.blur).includes('blur(6px)');
+    if (glassProminentOk) {
+      cells.push({
+        id: 'button',
+        variant: 'glass-prominent',
+        state: 'rest',
+        theme,
+        width,
+        kit: 'kit:ios-buttons liquid glass prominent large 50px radius 1000, padding 16/20, Accents/Blue tint, Frost Regular (local extract, not committed)',
+      });
+    } else
+      failures.push({ theme, width, control: 'glass-prominent', sample: sample.glassProminent });
+    const destructiveOk =
+      sample.destructive &&
+      close(sample.destructive.height, 50) &&
+      close(sample.destructive.radius, 1000) &&
+      sample.destructive.bg === red &&
+      sample.destructive.color === 'rgb(255, 255, 255)';
+    if (destructiveOk) {
+      cells.push({
+        id: 'button',
+        variant: 'destructive',
+        state: 'rest',
+        theme,
+        width,
+        kit: 'kit:ios-buttons large prominent destructive 50px capsule, Accents/Red (local extract, not committed)',
+      });
+    } else failures.push({ theme, width, control: 'destructive', sample: sample.destructive });
+    if (
+      sample.destructiveBordered &&
+      !(
+        close(sample.destructiveBordered.height, 50) &&
+        close(sample.destructiveBordered.radius, 1000) &&
+        redWash(sample.destructiveBordered.bg) &&
+        sample.destructiveBordered.color === red
+      )
+    ) {
+      failures.push({
+        theme,
+        width,
+        control: 'destructive-bordered',
+        sample: sample.destructiveBordered,
+      });
+    }
+    const popupOk =
+      sample.popup &&
+      close(sample.popup.height, 44) &&
+      close(sample.popup.padTop, 13) &&
+      close(sample.popup.gap, 3) &&
+      close(sample.popup.fontSize, 18) &&
+      sample.popup.color === accent &&
+      sample.popup.fontWeight >= 580 &&
+      sample.popup.fontWeight <= 700;
+    if (popupOk) {
+      cells.push({
+        id: 'popup-button',
+        variant: 'menu',
+        state: 'rest',
+        theme,
+        width,
+        kit: 'kit:ios-popup-buttons 44px, padding 13, gap 3, Accents/Blue semibold 18 (local extract, not committed)',
+      });
+    } else failures.push({ theme, width, control: 'popup', sample: sample.popup });
+    const nativeOk =
+      theme === 'light' &&
+      sample.nativePopup &&
+      close(sample.nativePopup.height, 44) &&
+      close(sample.nativePopup.padTop, 13) &&
+      close(sample.nativePopup.gap, 3) &&
+      close(sample.nativePopup.fontSize, 18) &&
+      sample.nativePopup.color === accent &&
+      sample.nativePopup.fontWeight >= 580 &&
+      sample.nativePopup.fontWeight <= 700;
     if (theme === 'light') {
-      if (disabledOk) {
+      if (nativeOk) {
         cells.push({
-          id: 'button',
-          variant: 'prominent',
-          state: 'disabled',
+          id: 'popup-button',
+          variant: 'native',
+          state: 'rest',
           theme,
           width,
-          kit: 'kit:ios-buttons large prominent disabled 50px capsule, tertiary fill (local extract, not committed)',
+          kit: 'kit:ios-popup-buttons 44px, padding 13, gap 3, Accents/Blue semibold 18 (local extract, not committed)',
         });
-      } else failures.push({ theme, width, control: 'button-disabled', sample: sample.disabled });
+      } else failures.push({ theme, width, control: 'popup-native', sample: sample.nativePopup });
     }
     const glass = 'rgba(255, 255, 255, 0.7)';
     const alertOk =
