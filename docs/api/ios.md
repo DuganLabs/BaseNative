@@ -8,8 +8,13 @@
 move like it belongs on an iPhone: Liquid Glass materials, the system
 colours, the Dynamic Type scale, layout constants and spring motion
 presets, as `--bn-ios-*` CSS custom properties in light and dark. Phase 1
-ships tokens only; the Tier 1 components that consume them come later
-and read these names.
+ships tokens only. The Apple 27 kit controls live in
+`@basenative/platform` and do not read these names.
+
+## Related
+
+The Apple 27 kit — colours, type, control sizes, and semantic controls —
+is `@basenative/platform`. This package keeps the classic UIColor table.
 
 ## Installation
 

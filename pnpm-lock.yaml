@@ -408,6 +408,8 @@ importers:
         specifier: workspace:*
         version: link:../runtime
 
+  packages/platform: {}
+
   packages/realtime: {}
 
   packages/router:

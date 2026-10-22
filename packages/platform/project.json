@@ -1,0 +1,23 @@
+{
+  "name": "@basenative/platform",
+  "targets": {
+    "lint": {
+      "cache": true,
+      "command": "pnpm exec eslint src/",
+      "inputs": ["{projectRoot}/src/**/*.js"],
+      "options": { "cwd": "{projectRoot}" }
+    },
+    "test": {
+      "cache": true,
+      "command": "node --test src/tokens.test.js src/components.test.js src/platform.test.js types/exports.test.js",
+      "inputs": [
+        "{projectRoot}/src/**/*.js",
+        "{projectRoot}/src/**/*.css",
+        "{projectRoot}/types/**/*",
+        "{projectRoot}/package.json",
+        "{projectRoot}/README.md"
+      ],
+      "options": { "cwd": "{projectRoot}" }
+    }
+  }
+}
