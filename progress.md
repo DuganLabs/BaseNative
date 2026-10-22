@@ -19,10 +19,24 @@ The catalog route renders organisms so `/design-system` can show every control t
 
 No cell is `pass`. Molecule and organism hover, pressed, and focus-visible are still gaps. Scrollbar chrome, the refraction shader, the date wheel, and the full color-picker chrome are gaps.
 
+## Deploy
+
+#292 is merged as `0e769bc0`. Deploy to Cloudflare Pages succeeded: https://github.com/DuganLabs/BaseNative/actions/runs/39805537732
+
+The Pages production deployment serves the #290 home page (title "Home — BaseNative", `BN_EFFECT_LOOP`, `npm install @basenative/runtime`, Runtime 2.3.2). Apex `https://basenative.com/` returned Cloudflare's "Just a moment..." challenge (HTTP 403) from this runner, so the screenshots are of `https://basenative-docs.pages.dev/`, the environment URL the deploy published.
+
+- `/opt/cursor/artifacts/production/home-light-320.png`
+- `/opt/cursor/artifacts/production/home-light-768.png`
+- `/opt/cursor/artifacts/production/home-light-1280.png`
+- `/opt/cursor/artifacts/production/home-dark-320.png`
+- `/opt/cursor/artifacts/production/home-dark-768.png`
+- `/opt/cursor/artifacts/production/home-dark-1280.png`
+- `/opt/cursor/artifacts/production/basenative-com-challenge-or-home.png`
+
 ## Blocked
 
-- Page recomposition. Organisms those pages use are not 100% passing.
-- Production screenshots of basenative.com. Auto-deploy is https://github.com/DuganLabs/BaseNative/pull/292 and is not merged. This branch does not contain that workflow change.
+- Page recomposition. Organisms those pages use are not 100% verified.
+- Apex screenshots of basenative.com. The custom domain challenged this runner. The Pages deployment above is the content that deploy published.
 - Axe `color-contrast` and `page-has-heading-one` on unrebuilt routes. Named in `tests/e2e/design-system.spec.js` (`AXE_DEBT`). New rule ids fail. Node counts are not frozen.
 - Catalog ARIA still open on `/design-system`: `aria-allowed-role`, `aria-dialog-name`, `heading-order`, `landmark-complementary-is-top-level`, `landmark-unique`, `scrollable-region-focusable`. Menu parent and select name were fixed in the renderers.
 - WebGL/SVG refraction from nikdelvin/liquid-glass is not ported. Extra DOM would break the semantic-HTML axiom.
@@ -39,7 +53,7 @@ Molecules tier: popup, pulldown, segmented, menu, and the other molecules get th
 - Selected sidebar contrast and the 60 design-system contrast nodes are still open.
 - Runtime gzip budget was not re-measured in this session. Platform CSS is not in the runtime bundle. Do not treat that as a new measurement.
 - Tokens CI https://github.com/DuganLabs/BaseNative/actions/runs/39804167799 failed because `nx-cloud-access.test.js` inherited `GITHUB_ENV` on the runner. The refusal test now deletes those variables (`6f03239` on the tokens branch, `f6200fa` on atoms).
-- The rerun https://github.com/DuganLabs/BaseNative/actions/runs/39805077689 is not green. Node 20 `Test` failed outside this diff: `packages/db/src/db.test.js` SIGSEGV, and `packages/visual-builder` `importFromHTML` took 343ms against a 200ms budget. Node 22 was still running when this was recorded. Do not treat either PR as merged or the site as live.
+- Run https://github.com/DuganLabs/BaseNative/actions/runs/39805077689 failed on Node 20: `db.test.js` SIGSEGV inside `better-sqlite3`, and the 50,000-tag scan took 343ms against a 200ms budget. Node 22 was cancelled. Fix is `402ed94` on the tokens branch and `8328c4f` on atoms: probe the native addon in a child process, and set the scan budget to 2000ms (quadratic is still past that). The rerun after that push is not confirmed green in this note.
 
 ## Deviations
 
