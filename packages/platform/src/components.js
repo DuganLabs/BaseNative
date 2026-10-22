@@ -702,15 +702,25 @@ export function renderBnHero(options = {}) {
   return `<header data-bn="bn-hero"${opt('id', options.id)}${opt('data-force', options.force)}>${eyebrow}<${heading}>${escapeHtml(options.title || '')}</${heading}>${lede}${nav}</header>`;
 }
 
-/** Site footer. Links are a nav, not a row of loose anchors. */
+/**
+ * Site footer. `groups` are macOS link columns. A flat `links` list is one column.
+ */
 export function renderBnFooter(options = {}) {
-  const links = (options.links || [])
-    .map(
-      (link) =>
-        `<li><a href="${escapeAttr(link.href || '#')}">${escapeHtml(link.label || '')}</a></li>`,
-    )
+  const groups = options.groups || [{ label: options.note || '', links: options.links || [] }];
+  const columns = groups
+    .map((group) => {
+      const links = (group.links || [])
+        .map(
+          (link) =>
+            `<li><a href="${escapeAttr(link.href || '#')}">${escapeHtml(link.label || '')}</a></li>`,
+        )
+        .join('');
+      const title = group.label ? `<p>${escapeHtml(group.label)}</p>` : '';
+      const name = group.label || options.label || 'Footer';
+      return `<nav aria-label="${escapeAttr(name)}">${title}<ul>${links}</ul></nav>`;
+    })
     .join('');
-  return `<footer data-bn="bn-footer"${opt('id', options.id)}${opt('data-force', options.force)}><p>${escapeHtml(options.note || '')}</p><nav aria-label="${escapeAttr(options.label || 'Footer')}"><ul>${links}</ul></nav></footer>`;
+  return `<footer data-bn="bn-footer"${opt('id', options.id)}${opt('data-force', options.force)}>${columns}</footer>`;
 }
 
 /** Dock. A glass row of equal targets. Marks are text, not a symbol font. */

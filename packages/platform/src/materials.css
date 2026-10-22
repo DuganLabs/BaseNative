@@ -30,6 +30,11 @@
       0 0 0 0.5px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.7),
       inset 0 -1px 0 rgba(255, 255, 255, 0.7), inset 1px 0 rgba(255, 86, 116, 0.28),
       inset -1px 0 rgba(54, 226, 255, 0.22);
+    /* Content text stays at least 15px. 13px is dense chrome only. */
+    --bn-content-size: 15px;
+    --bn-content-leading: 22px;
+    --bn-content-secondary: rgba(60, 60, 67, 0.88);
+    --bn-list-surface: rgba(255, 255, 255, 0.94);
     /* BEGIN METRICS */
     --bn-blur-16: 16px;
     --bn-plat-swatch-0000000f: #0000000f;
@@ -72,6 +77,7 @@
     --bn-len-260: 260px;
     --bn-len-27: 27px;
     --bn-len-28: 28px;
+    --bn-len-29: 29px;
     --bn-len-280: 280px;
     --bn-len-3: 3px;
     --bn-len-30: 30px;
@@ -166,5 +172,7 @@
       0 0 0 0.5px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.2),
       inset 0 -1px 0 rgba(255, 255, 255, 0.2), inset 1px 0 rgba(255, 86, 116, 0.22),
       inset -1px 0 rgba(54, 226, 255, 0.18);
+    --bn-content-secondary: rgba(235, 235, 245, 0.92);
+    --bn-list-surface: rgba(44, 44, 46, 0.94);
   }
 }
