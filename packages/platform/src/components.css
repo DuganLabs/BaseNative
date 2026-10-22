@@ -194,6 +194,12 @@
     padding: var(--bn-len-16) var(--bn-len-20);
   }
 
+  [data-bn='bn-button'][data-variant='glass-prominent'][data-size='large'] {
+    line-height: var(--bn-type-18);
+    font-weight: var(--bn-plat-weight-medium);
+    backdrop-filter: saturate(var(--bn-glass-saturate)) blur(var(--bn-plat-glass-frost-regular));
+  }
+
   [data-bn-platform='macos'] [data-bn='bn-button'],
   [data-bn-platform='macos'][data-bn='bn-button'] {
     min-height: var(--bn-plat-control-global-height);
@@ -229,6 +235,18 @@
     font-size: var(--bn-type-18);
     line-height: var(--bn-type-18);
     font-weight: var(--bn-plat-weight-semibold);
+  }
+
+  [data-bn-platform='ios'] select[data-bn='bn-popup-button'] {
+    appearance: none;
+    box-sizing: border-box;
+    height: var(--bn-len-44);
+  }
+
+  [data-bn-platform='ios'] [data-bn-platform='macos'] select[data-bn='bn-popup-button'] {
+    appearance: auto;
+    height: auto;
+    min-height: var(--bn-plat-control-global-height);
   }
 
   [data-bn-platform='macos'] [data-bn='bn-popup-button'],
@@ -1531,6 +1549,44 @@
     [data-bn='bn-button'][data-variant='bordered'] {
     background: var(--bn-plat-color-fills-tertiary);
     color: var(--bn-plat-color-accents-blue);
+  }
+
+  [data-bn-platform='macos']
+    [data-bn-platform='ios']
+    [data-bn='bn-button'][data-destructive='true'][data-variant='prominent'] {
+    background: var(--bn-plat-color-accents-red);
+    color: var(--bn-plat-color-grays-white);
+  }
+
+  [data-bn-platform='macos']
+    [data-bn-platform='ios']
+    [data-bn='bn-button'][data-destructive='true'][data-variant='bordered'] {
+    background: var(--bn-plat-color-miscellaneous-buttons-bg-destructive);
+    color: var(--bn-plat-color-accents-red);
+  }
+
+  [data-bn-platform='macos']
+    [data-bn-platform='ios']
+    [data-bn='bn-button'][data-destructive='true'][data-variant='borderless'],
+  [data-bn-platform='macos']
+    [data-bn-platform='ios']
+    [data-bn='bn-button'][data-destructive='true'][data-variant='glass'],
+  [data-bn-platform='macos']
+    [data-bn-platform='ios']
+    [data-bn='bn-button'][data-destructive='true'][data-variant='glass-prominent'] {
+    color: var(--bn-plat-color-accents-red);
+  }
+
+  [data-bn-platform='macos']
+    [data-bn-platform='ios']
+    [data-bn='bn-button'][data-variant='glass-prominent'][data-size='large'] {
+    padding: var(--bn-len-16) var(--bn-len-20);
+    gap: var(--bn-len-4);
+    font-weight: var(--bn-plat-weight-medium);
+    line-height: var(--bn-type-18);
+    background: var(--bn-plat-color-accents-blue);
+    color: var(--bn-plat-color-grays-white);
+    backdrop-filter: saturate(var(--bn-glass-saturate)) blur(var(--bn-plat-glass-frost-regular));
   }
 
   [data-bn-platform='macos']

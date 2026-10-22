@@ -408,7 +408,10 @@ export function renderBnDialog(options = {}) {
 
 /** Sheet. Top and bottom radii and the grabber are dimension tokens. */
 export function renderBnSheet(options = {}) {
-  return `<dialog data-bn="bn-sheet" aria-label="${escapeAttr(options.label || options.title || 'Sheet')}"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('data-force', options.force)}><hr data-bn="bn-grabber"><h2 data-bn="bn-sheet-title">${escapeHtml(options.title || '')}</h2><p data-bn="bn-sheet-body">${escapeHtml(options.body || '')}</p></dialog>`;
+  const open = `<dialog data-bn="bn-sheet" aria-label="${escapeAttr(options.label || options.title || 'Sheet')}"${opt('id', options.id)}${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}${opt('data-force', options.force)}><hr data-bn="bn-grabber"><h2 data-bn="bn-sheet-title">${escapeHtml(options.title || '')}</h2>`;
+  const text = `<p data-bn="bn-sheet-body">${escapeHtml(options.body || '')}</p>`;
+  const composed = `<section data-bn="bn-sheet-body">${options.content || ''}</section>`;
+  return `${open}${options.content ? composed : text}</dialog>`;
 }
 
 /** Popover. Corner radius is the popover dimension token. The aside is the popover. */
@@ -416,6 +419,7 @@ export function renderBnPopover(options = {}) {
   const popId = idOf('popover', options.id);
   const popover = options.inline ? '' : ' popover="auto"';
   const aside = `<aside data-bn="bn-popover" id="${escapeAttr(popId)}"${popover}${opt('data-force', options.force)}><p>${escapeHtml(options.body || '')}</p></aside>`;
+  // The inline catalog panel has no popover attribute. The live popover stays an aside.
   const inlinePanel = `<div data-bn="bn-popover" id="${escapeAttr(popId)}"${popover}${opt('data-present', 'inline')}${opt('data-force', options.force)}><p>${escapeHtml(options.body || '')}</p></div>`;
   const button = `<button data-bn="bn-popover-button" type="button" popovertarget="${escapeAttr(popId)}"${opt('data-force', options.force)}>${escapeHtml(options.label || 'More')}</button>`;
   return button + (options.inline ? inlinePanel : aside);
@@ -441,6 +445,7 @@ export function renderBnPageControl(options = {}) {
     (_, index) =>
       `<button data-bn="bn-page-dot" type="button" role="radio" aria-checked="${index === current ? 'true' : 'false'}" aria-label="${escapeAttr(`Page ${index + 1}`)}"${opt('disabled', options.disabled)}></button>`,
   ).join('');
+  // No native radiogroup element. The dots are radio buttons inside this group.
   return `<div data-bn="bn-page-control" role="radiogroup" aria-label="${escapeAttr(options.label || 'Pages')}"${opt('id', options.id)}${opt('data-force', options.force)}>${dots}</div>`;
 }
 
@@ -517,7 +522,7 @@ export function renderBnSidebar(options = {}) {
 
 /** Window frame. Background is the macOS window-background token on that platform. */
 export function renderBnWindow(options = {}) {
-  return `<section data-bn="bn-window"${opt('id', options.id)}${opt('data-force', options.force)}><header data-bn="bn-window-titlebar"><h2>${escapeHtml(options.title || '')}</h2></header><section data-bn="bn-window-body"><p>${escapeHtml(options.body || '')}</p></section></section>`;
+  return `<section data-bn="bn-window"${opt('id', options.id)}${opt('data-force', options.force)}><header data-bn="bn-window-titlebar"><h2>${escapeHtml(options.title || '')}</h2></header><section data-bn="bn-window-body">${options.content ? options.content : `<p>${escapeHtml(options.body || '')}</p>`}</section></section>`;
 }
 
 /** Menu bar. iOS status-bar height is a dimension token. The macOS bar is 24px. */

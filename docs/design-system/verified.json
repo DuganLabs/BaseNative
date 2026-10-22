@@ -72,7 +72,39 @@
       "state": "disabled",
       "theme": "light",
       "width": 320,
-      "kit": "kit:ios-buttons large prominent disabled 50px capsule, tertiary fill (local extract, not committed)"
+      "kit": "kit:ios-buttons large prominent disabled 50px capsule, Fills/Tertiary for the theme (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "glass-prominent",
+      "state": "rest",
+      "theme": "light",
+      "width": 320,
+      "kit": "kit:ios-buttons liquid glass prominent large 50px radius 1000, padding 16/20, Accents/Blue tint, Frost Regular (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "destructive",
+      "state": "rest",
+      "theme": "light",
+      "width": 320,
+      "kit": "kit:ios-buttons large prominent destructive 50px capsule, Accents/Red (local extract, not committed)"
+    },
+    {
+      "id": "popup-button",
+      "variant": "menu",
+      "state": "rest",
+      "theme": "light",
+      "width": 320,
+      "kit": "kit:ios-popup-buttons 44px, padding 13, gap 3, Accents/Blue semibold 18 (local extract, not committed)"
+    },
+    {
+      "id": "popup-button",
+      "variant": "native",
+      "state": "rest",
+      "theme": "light",
+      "width": 320,
+      "kit": "kit:ios-popup-buttons 44px, padding 13, gap 3, Accents/Blue semibold 18 (local extract, not committed)"
     },
     {
       "id": "button",
@@ -144,7 +176,39 @@
       "state": "disabled",
       "theme": "light",
       "width": 768,
-      "kit": "kit:ios-buttons large prominent disabled 50px capsule, tertiary fill (local extract, not committed)"
+      "kit": "kit:ios-buttons large prominent disabled 50px capsule, Fills/Tertiary for the theme (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "glass-prominent",
+      "state": "rest",
+      "theme": "light",
+      "width": 768,
+      "kit": "kit:ios-buttons liquid glass prominent large 50px radius 1000, padding 16/20, Accents/Blue tint, Frost Regular (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "destructive",
+      "state": "rest",
+      "theme": "light",
+      "width": 768,
+      "kit": "kit:ios-buttons large prominent destructive 50px capsule, Accents/Red (local extract, not committed)"
+    },
+    {
+      "id": "popup-button",
+      "variant": "menu",
+      "state": "rest",
+      "theme": "light",
+      "width": 768,
+      "kit": "kit:ios-popup-buttons 44px, padding 13, gap 3, Accents/Blue semibold 18 (local extract, not committed)"
+    },
+    {
+      "id": "popup-button",
+      "variant": "native",
+      "state": "rest",
+      "theme": "light",
+      "width": 768,
+      "kit": "kit:ios-popup-buttons 44px, padding 13, gap 3, Accents/Blue semibold 18 (local extract, not committed)"
     },
     {
       "id": "alert",
@@ -232,7 +296,39 @@
       "state": "disabled",
       "theme": "light",
       "width": 1280,
-      "kit": "kit:ios-buttons large prominent disabled 50px capsule, tertiary fill (local extract, not committed)"
+      "kit": "kit:ios-buttons large prominent disabled 50px capsule, Fills/Tertiary for the theme (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "glass-prominent",
+      "state": "rest",
+      "theme": "light",
+      "width": 1280,
+      "kit": "kit:ios-buttons liquid glass prominent large 50px radius 1000, padding 16/20, Accents/Blue tint, Frost Regular (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "destructive",
+      "state": "rest",
+      "theme": "light",
+      "width": 1280,
+      "kit": "kit:ios-buttons large prominent destructive 50px capsule, Accents/Red (local extract, not committed)"
+    },
+    {
+      "id": "popup-button",
+      "variant": "menu",
+      "state": "rest",
+      "theme": "light",
+      "width": 1280,
+      "kit": "kit:ios-popup-buttons 44px, padding 13, gap 3, Accents/Blue semibold 18 (local extract, not committed)"
+    },
+    {
+      "id": "popup-button",
+      "variant": "native",
+      "state": "rest",
+      "theme": "light",
+      "width": 1280,
+      "kit": "kit:ios-popup-buttons 44px, padding 13, gap 3, Accents/Blue semibold 18 (local extract, not committed)"
     },
     {
       "id": "alert",
@@ -317,6 +413,38 @@
     {
       "id": "button",
       "variant": "prominent",
+      "state": "disabled",
+      "theme": "dark",
+      "width": 320,
+      "kit": "kit:ios-buttons large prominent disabled 50px capsule, Fills/Tertiary for the theme (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "glass-prominent",
+      "state": "rest",
+      "theme": "dark",
+      "width": 320,
+      "kit": "kit:ios-buttons liquid glass prominent large 50px radius 1000, padding 16/20, Accents/Blue tint, Frost Regular (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "destructive",
+      "state": "rest",
+      "theme": "dark",
+      "width": 320,
+      "kit": "kit:ios-buttons large prominent destructive 50px capsule, Accents/Red (local extract, not committed)"
+    },
+    {
+      "id": "popup-button",
+      "variant": "menu",
+      "state": "rest",
+      "theme": "dark",
+      "width": 320,
+      "kit": "kit:ios-popup-buttons 44px, padding 13, gap 3, Accents/Blue semibold 18 (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "prominent",
       "state": "rest",
       "theme": "dark",
       "width": 768,
@@ -381,6 +509,38 @@
     {
       "id": "button",
       "variant": "prominent",
+      "state": "disabled",
+      "theme": "dark",
+      "width": 768,
+      "kit": "kit:ios-buttons large prominent disabled 50px capsule, Fills/Tertiary for the theme (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "glass-prominent",
+      "state": "rest",
+      "theme": "dark",
+      "width": 768,
+      "kit": "kit:ios-buttons liquid glass prominent large 50px radius 1000, padding 16/20, Accents/Blue tint, Frost Regular (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "destructive",
+      "state": "rest",
+      "theme": "dark",
+      "width": 768,
+      "kit": "kit:ios-buttons large prominent destructive 50px capsule, Accents/Red (local extract, not committed)"
+    },
+    {
+      "id": "popup-button",
+      "variant": "menu",
+      "state": "rest",
+      "theme": "dark",
+      "width": 768,
+      "kit": "kit:ios-popup-buttons 44px, padding 13, gap 3, Accents/Blue semibold 18 (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "prominent",
       "state": "rest",
       "theme": "dark",
       "width": 1280,
@@ -441,6 +601,38 @@
       "theme": "dark",
       "width": 1280,
       "kit": "kit:ios-lists row Height=Tall 68px, padding inline 16 (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "prominent",
+      "state": "disabled",
+      "theme": "dark",
+      "width": 1280,
+      "kit": "kit:ios-buttons large prominent disabled 50px capsule, Fills/Tertiary for the theme (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "glass-prominent",
+      "state": "rest",
+      "theme": "dark",
+      "width": 1280,
+      "kit": "kit:ios-buttons liquid glass prominent large 50px radius 1000, padding 16/20, Accents/Blue tint, Frost Regular (local extract, not committed)"
+    },
+    {
+      "id": "button",
+      "variant": "destructive",
+      "state": "rest",
+      "theme": "dark",
+      "width": 1280,
+      "kit": "kit:ios-buttons large prominent destructive 50px capsule, Accents/Red (local extract, not committed)"
+    },
+    {
+      "id": "popup-button",
+      "variant": "menu",
+      "state": "rest",
+      "theme": "dark",
+      "width": 1280,
+      "kit": "kit:ios-popup-buttons 44px, padding 13, gap 3, Accents/Blue semibold 18 (local extract, not committed)"
     }
   ]
 }

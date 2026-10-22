@@ -619,6 +619,63 @@ function organismRows() {
   ].join('');
 }
 
+/** Page compositions. Each piece is an existing organism renderer. */
+function templateList() {
+  return [
+    renderBnNavBar({
+      title: 'Library',
+      large: false,
+      heading: 'h2',
+      label: 'Template library',
+    }),
+    renderBnSearch({ label: 'Template library search' }),
+    renderBnList({
+      grouped: true,
+      rows: [
+        { title: 'Airplane Mode', detail: 'Off' },
+        { title: 'Wi-Fi', detail: 'Home' },
+      ],
+    }),
+    renderBnTabBar({
+      label: 'Template library tabs',
+      tabs: [{ label: 'Today', current: true }, { label: 'Library' }],
+    }),
+  ].join('');
+}
+
+function templateWindow() {
+  return renderBnWindow({
+    title: 'Document',
+    content: [
+      renderBnToolbar({
+        label: 'Template window toolbar',
+        items: [{ label: 'Back' }, { label: 'Forward' }],
+      }),
+      renderBnSidebar({
+        inline: true,
+        label: 'Template window sidebar',
+        items: [{ label: 'Recents', current: true }, { label: 'Shared' }],
+      }),
+      renderBnList({
+        grouped: true,
+        rows: [{ title: 'Notes', detail: 'Today' }],
+      }),
+    ].join(''),
+  });
+}
+
+function templateSheet() {
+  return renderBnSheet({
+    inline: true,
+    open: true,
+    title: 'New item',
+    label: 'Template sheet',
+    content:
+      renderBnField({ label: 'Name', placeholder: 'Title' }) +
+      renderBnButton('Save', { variant: 'prominent' }),
+  });
+}
+
 /** Catalog sections, without a document shell. */
 export function catalogBody() {
   resetIds();
@@ -628,12 +685,14 @@ export function catalogBody() {
   const typeSample = '<p data-bn="bn-catalog-type">Large Title at xxxLarge</p>';
   return `<header data-bn="bn-catalog-header">
 <h1>Platform catalog</h1>
-<p>Atoms, molecules, and organisms. Materials are translated from MIT stylesheets. Copy the semantic HTML under each organism.</p>
+<p>Atoms, molecules, organisms, and templates. Materials are translated from MIT stylesheets. Copy the semantic HTML under each organism.</p>
 </header>
 ${stage('Materials', 'data-bn-platform="ios" data-theme="light"', row('Liquid Glass', ['ultrathin', 'thin', 'sm', 'medium', 'lg', 'thick', 'ultrathick', 'opaque'].map((name) => renderBnMaterial({ name, label: name })).join('')))}
 ${stage('Atom states', 'data-bn-platform="ios" data-theme="light"', atomStates())}
 ${stage('Molecule states', 'data-bn-platform="ios" data-theme="light"', moleculeStates())}
 ${stage('Organism states', 'data-bn-platform="ios" data-theme="light"', organismStates())}
+${stage('Templates', 'data-bn-platform="ios" data-theme="light"', row('List', templateList()) + row('Sheet', templateSheet()))}
+${stage('macOS template', 'data-bn-platform="macos" data-bn-control="medium" data-theme="light"', row('Window', templateWindow()))}
 ${stage('Organisms', 'data-bn-platform="ios" data-theme="light"', organismRows())}
 ${stage('iOS light', 'data-bn-platform="ios" data-theme="light"', iosBody('light'))}
 ${stage('iOS dark', 'data-bn-platform="ios" data-theme="dark"', iosBody('dark'))}
