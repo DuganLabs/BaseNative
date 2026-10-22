@@ -1,8 +1,13 @@
 <article>
-  <header>
+  <header data-bn="bn-hero">
     <p>Runtime {{ runtimeVersion }}</p>
     <h1>BaseNative</h1>
-    <p>Signals over semantic HTML. One <code>set()</code> settles derived computeds, then runs each affected effect once. The expression language is an allowlist. Install <code>@basenative/runtime</code> and <code>@basenative/server</code> from npmjs.org, with no token and no <code>.npmrc</code>.</p>
+    <p>
+      Signals over semantic HTML. One <code>set()</code> settles derived computeds, then runs each
+      affected effect once. The expression language is an allowlist. Install
+      <code>@basenative/runtime</code> and <code>@basenative/server</code> from npmjs.org, with no
+      token and no <code>.npmrc</code>.
+    </p>
     <nav aria-label="Primary">{{ actions }}</nav>
   </header>
 
@@ -18,7 +23,10 @@
 
   <section>
     <h2>A counter</h2>
-    <pre tabindex="0" aria-label="Code example: a reactive counter"><code>&lt;button @click="increment()"&gt;
+    <pre
+      tabindex="0"
+      aria-label="Code example: a reactive counter"
+    ><code>&lt;button @click="increment()"&gt;
   Clicked &#123;&#123; count() &#125;&#125; times
 &lt;/button&gt;
 
