@@ -1,15 +1,17 @@
 # Runs on every push to main (the standard changesets flow) and can still
-# be dispatched by hand. Publishing is direct over npm trusted publishing
-# (OIDC). One scoped exception: npm cannot OIDC-publish a package that has
-# never existed on the registry — a trusted publisher can only be
-# configured on a package page, and the first publish creates the page —
-# so scripts/publish-release.mjs first-publishes registry-absent packages
-# with a granular token (the NPM_BOOTSTRAP_TOKEN secret, no provenance)
-# and hands everything else to the OIDC lane. The trust boundary is repo
+# be dispatched by hand. Publishing is over npm trusted publishing (OIDC).
+# One scoped exception: OIDC cannot publish a package that has never
+# existed, and it cannot publish one whose trusted publisher was never
+# configured. scripts/publish-release.mjs stages those with the
+# stage-only granular token in NPM_BOOTSTRAP_TOKEN (`npm stage publish`,
+# no provenance). The token cannot `npm publish` — that returns EOTP or
+# E_STAGE_REQUIRED — and bypass-2FA tokens are not used. A maintainer
+# approves each stage with 2FA on npmjs.com, then adds a trusted publisher
+# for that package (also interactive 2FA). The trust boundary is repo
 # write access: only invited collaborators can land code on main, and only
 # this workflow publishes. Contributor protection for this public repo
 # lives in Settings (read-only default GITHUB_TOKEN, fork-workflow
-# approvals), not in the trigger. Revised 2026-10-20, superseding the
+# approvals), not in the trigger. Revised 2026-10-22, superseding the
 # 2026-09-14 manual-only org rule for this repo.
 name: Release
 
@@ -32,8 +34,9 @@ permissions:
   # Trusted publishing: npm exchanges this job's GitHub OIDC token for a
   # one-time publish credential, and npm attaches a provenance attestation
   # to every version published that way. The only token anywhere is the
-  # bootstrap fallback described above: scoped to first publishes, used by
-  # the publish script only, and never presented to the OIDC lane.
+  # stage-only fallback described above: it can `npm stage publish` and
+  # cannot publish directly, it is used by the publish script only, and
+  # it is never presented to the OIDC lane.
   id-token: write
 
 jobs:
@@ -73,10 +76,13 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           # pnpm 10 hands the actual upload to the npm bundled with Node.
-          # Trusted publishing needs npm >= 11.5.1; Node 22 bundles 10.9, Node 24
-          # bundles 11.x. This matches npm's own trusted-publishing example: the
-          # registry-url line writes an .npmrc for npmjs, and npm uses the OIDC
-          # exchange before it would ever fall back to a token. None is set.
+          # Trusted publishing needs npm >= 11.5.1; `npm stage publish` needs
+          # npm >= 11.15. Node 22 bundles npm 10.9, Node 24 bundles npm 11.x
+          # (24.22 bundles 11.19). This matches npm's own trusted-publishing
+          # example: the registry-url line writes an .npmrc for npmjs, and npm
+          # uses the OIDC exchange before it would ever fall back to a token.
+          # None is set on the OIDC lane. The stage-only token is injected
+          # only into the stage lane's child processes.
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
           cache: pnpm
@@ -99,11 +105,12 @@ jobs:
         uses: changesets/action@v2
         with:
           # The publish script owns the two lanes described at the top of
-          # this file: registry-absent packages are bootstrapped with the
-          # token below; everything else is published by `changeset
-          # publish` over OIDC. The token travels as NPM_BOOTSTRAP_TOKEN —
-          # never NODE_AUTH_TOKEN — so npm itself only ever sees it inside
-          # the bootstrap lane's child processes.
+          # this file: packages OIDC cannot publish are staged with the
+          # stage-only token below (`npm stage publish` of a `pnpm pack`
+          # tarball); everything else is published by `changeset publish`
+          # over OIDC. The token travels as NPM_BOOTSTRAP_TOKEN — never
+          # NODE_AUTH_TOKEN — so npm itself only ever sees it inside the
+          # stage lane's child processes. It is not a direct-publish token.
           publish-script: node scripts/publish-release.mjs
           version-script: pnpm run version
         env:
@@ -116,5 +123,7 @@ jobs:
         # Installs the just-published core packages into an empty directory
         # outside the monorepo and renders a page, so a release that only
         # works through workspace links fails here, not in a consumer.
+        # Versions the publish script only staged are skipped: they are
+        # not on the registry until a maintainer approves them.
         if: steps.changesets.outputs.published == 'true'
         run: node scripts/npm-smoke.mjs
