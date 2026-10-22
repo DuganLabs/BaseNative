@@ -70,6 +70,22 @@ const samples = [
   ['renderBnAppIcon', () => ui.renderBnAppIcon({ monogram: 'B' })],
   ['renderBnWidget', () => ui.renderBnWidget({ title: 'W', body: 'B' })],
   ['renderBnMaterial', () => ui.renderBnMaterial({ name: 'thick', label: 'Thick' })],
+  ['renderBnSymbol', () => ui.renderBnSymbol({ tint: 'orange', mark: 'A' })],
+  ['renderBnBadge', () => ui.renderBnBadge('3')],
+  ['renderBnIndexBar', () => ui.renderBnIndexBar({ letters: ['A', 'B'] })],
+  ['renderBnMetric', () => ui.renderBnMetric({ value: '9.9KB', label: 'Runtime' })],
+  ['renderBnNavBar', () => ui.renderBnNavBar({ title: 'Settings', large: true })],
+  ['renderBnInspector', () => ui.renderBnInspector({ title: 'Inspector', sections: [] })],
+  ['renderBnCardGrid', () => ui.renderBnCardGrid({ cards: [{ value: '1', label: 'One' }] })],
+  [
+    'renderBnHero',
+    () => ui.renderBnHero({ title: 'BaseNative', actions: [{ label: 'Continue' }] }),
+  ],
+  [
+    'renderBnFooter',
+    () => ui.renderBnFooter({ note: 'BaseNative', links: [{ label: 'Docs', href: '/docs' }] }),
+  ],
+  ['renderBnDock', () => ui.renderBnDock({ items: [{ label: 'Home', href: '/', current: true }] })],
 ];
 
 test('every control emits its bn contract and no class or style', () => {

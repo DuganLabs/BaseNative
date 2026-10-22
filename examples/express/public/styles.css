@@ -2220,6 +2220,7 @@
     display: grid;
     gap: var(--space-sm);
     padding: var(--space-lg);
+    color: var(--text-0);
   }
   body > [data-bn-site-footer] nav {
     display: flex;
@@ -2231,7 +2232,7 @@
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
     font-size: var(--font-size-xs);
-    color: var(--text-2);
+    color: var(--text-0);
     text-decoration: none;
     transition: color var(--duration-fast);
   }

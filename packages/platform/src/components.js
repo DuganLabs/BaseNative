@@ -29,6 +29,39 @@ function glyph(text) {
   return `<i data-bn="bn-symbol" aria-hidden="true">${text}</i>`;
 }
 
+const TINTS = [
+  'blue',
+  'green',
+  'orange',
+  'purple',
+  'red',
+  'teal',
+  'indigo',
+  'pink',
+  'yellow',
+  'mint',
+  'cyan',
+  'brown',
+];
+
+function tintOf(value) {
+  return TINTS.includes(value) ? value : 'blue';
+}
+
+/**
+ * Settings-style symbol tile. `mark` is text, never markup.
+ * @param {object} [options]
+ */
+export function renderBnSymbol(options = {}) {
+  return `<i data-bn="bn-symbol-tile" data-tint="${escapeAttr(tintOf(options.tint))}" aria-hidden="true">${escapeHtml(options.mark || '')}</i>`;
+}
+
+/** Count or status badge. Default tint is the system red badge. */
+export function renderBnBadge(label = '', options = {}) {
+  const tint = options.tint ? tintOf(options.tint) : 'red';
+  return `<b data-bn="bn-badge" data-tint="${escapeAttr(tint)}">${escapeHtml(options.text ?? label)}</b>`;
+}
+
 /**
  * Button. iOS variants: prominent, bordered, borderless, glass, glass-prominent.
  * Sizes: large 50, medium 34, small 28. macOS follows the control-size tokens.
@@ -74,7 +107,7 @@ export function renderBnPopupButton(options = {}) {
           `<option value="${escapeAttr(item.value)}"${opt('selected', item.selected)}>${escapeHtml(item.label)}</option>`,
       )
       .join('');
-    return `<select data-bn="bn-popup-button"${opt('id', options.id)}${opt('disabled', options.disabled)}>${items}</select>`;
+    return `<select data-bn="bn-popup-button" aria-label="${escapeAttr(options.label || 'Options')}"${opt('id', options.id)}${opt('disabled', options.disabled)}>${items}</select>`;
   }
   const menuId = idOf('popup-menu', options.menuId);
   const button = `<button data-bn="bn-popup-button" type="button" popovertarget="${escapeAttr(menuId)}"${opt('id', options.id)}${opt('disabled', options.disabled)}>${escapeHtml(options.label || 'Options')}${glyph('▾')}</button>`;
@@ -235,17 +268,50 @@ export function renderBnDatePicker(options = {}) {
   return `<menu data-bn="bn-date-chips">${chips}</menu><dialog data-bn="bn-date-picker" id="${escapeAttr(dialogId)}" aria-label="Date"${opt('open', options.open)}${opt('data-present', options.inline ? 'inline' : null)}><table data-bn="bn-date-grid"><caption>${escapeHtml(options.month || 'June')}</caption><tr>${cells}</tr></table></dialog>`;
 }
 
-/** List. Regular rows are 52px with 16px side padding. */
+/** List. Regular rows are 52px with 16px side padding. A label or footer wraps the group. */
 export function renderBnList(options = {}) {
   const rows = (options.rows || []).map((row) => renderBnListRow(row)).join('');
-  return `<ul data-bn="bn-list"${opt('data-grouped', options.grouped ? 'true' : null)}${opt('id', options.id)}>${rows}</ul>`;
+  const ul = `<ul data-bn="bn-list"${opt('data-grouped', options.grouped ? 'true' : null)}${opt('id', options.id)}>${rows}</ul>`;
+  if (!options.label && !options.footer) return ul;
+  const head = options.label
+    ? `<h2 data-bn="bn-list-header">${escapeHtml(options.label)}</h2>`
+    : '';
+  const foot = options.footer
+    ? `<p data-bn="bn-list-footer">${escapeHtml(options.footer)}</p>`
+    : '';
+  return `<section data-bn="bn-list-group">${head}${ul}${foot}</section>`;
 }
 
-/** One list row. swipe paints the captured blue action. */
+/**
+ * One list row. `tint` plus `mark` is the Settings icon tile.
+ * swipe paints the captured blue action.
+ */
 export function renderBnListRow(options = {}) {
   const row = typeof options === 'string' ? { title: options } : options;
+  const tile =
+    row.mark || row.tint
+      ? renderBnSymbol({
+          tint: row.tint,
+          mark: row.mark || String(row.title || '').slice(0, 1),
+        })
+      : '';
+  const image = row.image
+    ? `<img data-bn="bn-list-image" src="${escapeAttr(row.image)}" alt="${escapeAttr(row.imageAlt || '')}">`
+    : '';
   const detail = row.detail ? `<p data-bn="bn-list-detail">${escapeHtml(row.detail)}</p>` : '';
-  return `<li data-bn="bn-list-row"${opt('data-swipe', row.swipe ? 'true' : null)}><p data-bn="bn-list-title">${escapeHtml(row.title || '')}</p>${detail}</li>`;
+  const value = row.value ? `<p data-bn="bn-list-value">${escapeHtml(row.value)}</p>` : '';
+  const chevron = row.chevron ? `<i data-bn="bn-list-chevron" aria-hidden="true">›</i>` : '';
+  const grabber = row.grabber ? `<i data-bn="bn-list-grabber" aria-hidden="true">≡</i>` : '';
+  return `<li data-bn="bn-list-row"${opt('data-swipe', row.swipe ? 'true' : null)}>${image}${tile}<p data-bn="bn-list-title">${escapeHtml(row.title || '')}</p>${detail}${value}${chevron}${grabber}</li>`;
+}
+
+/** A–Z index beside a long list. */
+export function renderBnIndexBar(options = {}) {
+  const letters = options.letters || [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ#'];
+  const items = letters
+    .map((letter) => `<li><a href="#${escapeAttr(letter)}">${escapeHtml(letter)}</a></li>`)
+    .join('');
+  return `<nav data-bn="bn-index-bar" aria-label="${escapeAttr(options.label || 'Index')}"${opt('id', options.id)}><ol>${items}</ol></nav>`;
 }
 
 /** Table. Alternating and selected colours are macOS tokens. */
@@ -264,9 +330,11 @@ export function renderBnTable(options = {}) {
 export function renderBnMenu(options = {}) {
   const menuId = idOf('menu', options.id);
   const contract = options.contract || 'bn-menu';
-  const items = (options.items || []).map((item) => `<li>${renderBnMenuItem(item)}</li>`).join('');
+  const items = (options.items || [])
+    .map((item) => `<li role="none">${renderBnMenuItem(item)}</li>`)
+    .join('');
   const popover = options.inline ? '' : ' popover="auto"';
-  return `<menu data-bn="${escapeAttr(contract)}" id="${escapeAttr(menuId)}" aria-label="${escapeAttr(options.label || 'Menu')}"${popover}${opt('data-present', options.inline ? 'inline' : null)}>${items}</menu>`;
+  return `<menu data-bn="${escapeAttr(contract)}" id="${escapeAttr(menuId)}" role="menu" aria-label="${escapeAttr(options.label || 'Menu')}"${popover}${opt('data-present', options.inline ? 'inline' : null)}>${items}</menu>`;
 }
 
 /** One menu item. */
@@ -373,7 +441,13 @@ const TAB_ELLIPSIS =
 
 function tabLink(tab) {
   const icon = tab.icon ? glyph(tab.icon) : '';
-  return `<a data-bn="bn-tab" href="${escapeAttr(tab.href || '#')}"${opt('aria-current', tab.current ? 'page' : null)}>${icon}${escapeHtml(tab.label)}</a>`;
+  const label = tab.shortLabel || tab.label || '';
+  return `<a data-bn="bn-tab" href="${escapeAttr(tab.href || '#')}"${opt('aria-current', tab.current ? 'page' : null)}>${icon}${tabLabel(label)}</a>`;
+}
+
+function tabLabel(text) {
+  // The label is its own box so a narrow tab clips that word instead of painting into the next tab.
+  return `<span data-bn="bn-tab-label">${escapeHtml(text || '')}</span>`;
 }
 
 /**
@@ -392,7 +466,7 @@ export function renderBnTabBar(options = {}) {
   const moreLabel = options.moreLabel || 'More';
   const moreCurrent = rest.some((tab) => tab.current);
   const more = rest.length
-    ? `<button data-bn="bn-tab" type="button" popovertarget="${escapeAttr(moreId)}" aria-haspopup="menu"${opt('aria-current', moreCurrent ? 'page' : null)}>${glyph(TAB_ELLIPSIS)}${escapeHtml(moreLabel)}</button><menu data-bn="bn-tab-more" id="${escapeAttr(moreId)}" popover="auto" aria-label="${escapeAttr(moreLabel)}">${rest
+    ? `<button data-bn="bn-tab" type="button" popovertarget="${escapeAttr(moreId)}" aria-haspopup="menu"${opt('aria-current', moreCurrent ? 'page' : null)}>${glyph(TAB_ELLIPSIS)}${tabLabel(moreLabel)}</button><menu data-bn="bn-tab-more" id="${escapeAttr(moreId)}" popover="auto" aria-label="${escapeAttr(moreLabel)}">${rest
         .map(
           (tab) =>
             `<li><a data-bn="bn-menu-item" href="${escapeAttr(tab.href || '#')}"${opt('aria-current', tab.current ? 'page' : null)}>${escapeHtml(tab.label)}</a></li>`,
@@ -521,4 +595,124 @@ export function renderBnWidget(options = {}) {
 export function renderBnMaterial(options = {}) {
   const name = options.name || 'medium';
   return `<figure data-bn="bn-material" data-material="${escapeAttr(name)}"${opt('id', options.id)}><figcaption>${escapeHtml(options.label || name)}</figcaption></figure>`;
+}
+
+/** Metric tile. Equal height comes from the card grid, not from the page. */
+export function renderBnMetric(options = {}) {
+  const detail = options.detail
+    ? `<p data-bn="bn-metric-detail">${escapeHtml(options.detail)}</p>`
+    : '';
+  return `<article data-bn="bn-metric"${opt('id', options.id)}><p data-bn="bn-metric-value">${escapeHtml(String(options.value ?? ''))}</p><h3 data-bn="bn-metric-label">${escapeHtml(options.label || '')}</h3>${detail}</article>`;
+}
+
+/**
+ * Navigation bar. Large Title is the default; pass large:false for the inline title.
+ * @param {object} [options]
+ */
+export function renderBnNavBar(options = {}) {
+  const large = options.large !== false;
+  const back = options.back
+    ? `<a data-bn="bn-nav-back" href="${escapeAttr(options.back.href || '/')}">${escapeHtml(options.back.label || 'Back')}</a>`
+    : '';
+  const title = large ? '' : `<h1 data-bn="bn-nav-title">${escapeHtml(options.title || '')}</h1>`;
+  const trailing = (options.trailing || [])
+    .map((item) => {
+      const control = item.href
+        ? `<a data-bn="bn-nav-action" href="${escapeAttr(item.href)}">${escapeHtml(item.label || '')}</a>`
+        : renderBnButton(item.label || '', {
+            variant: item.variant || 'borderless',
+            size: item.size || 'small',
+          });
+      return `<li>${control}</li>`;
+    })
+    .join('');
+  const menu = trailing
+    ? `<menu data-bn="bn-nav-trailing" aria-label="Actions">${trailing}</menu>`
+    : '';
+  const largeTitle = large
+    ? `<h1 data-bn="bn-large-title">${escapeHtml(options.title || '')}</h1>`
+    : '';
+  const subtitle = options.subtitle
+    ? `<p data-bn="bn-nav-subtitle">${escapeHtml(options.subtitle)}</p>`
+    : '';
+  return `<header data-bn="bn-nav-bar" data-large="${large ? 'true' : 'false'}"${opt('id', options.id)}><nav aria-label="${escapeAttr(options.label || 'Navigation')}">${back}${title}${menu}</nav>${largeTitle}${subtitle}</header>`;
+}
+
+/** Inspector. Sections are field groups, not a second sidebar component. */
+export function renderBnInspector(options = {}) {
+  const sections = (options.sections || [])
+    .map((section) => {
+      const fields = (section.fields || []).map((field) => renderBnField(field)).join('');
+      return `<section><h3>${escapeHtml(section.label || '')}</h3>${fields}</section>`;
+    })
+    .join('');
+  return `<aside data-bn="bn-inspector"${opt('id', options.id)}><header><h2>${escapeHtml(options.title || 'Inspector')}</h2></header>${sections}</aside>`;
+}
+
+/** Card grid of metric tiles and widget cards. Rows share one height. */
+export function renderBnCardGrid(options = {}) {
+  const cards = (options.cards || [])
+    .map((card) => {
+      const body =
+        card.value != null && card.value !== '' ? renderBnMetric(card) : renderBnWidget(card);
+      return `<li>${body}</li>`;
+    })
+    .join('');
+  return `<ul data-bn="bn-card-grid"${opt('id', options.id)}>${cards}</ul>`;
+}
+
+/**
+ * Hero. A glass window header: eyebrow, large title, lede, capsule actions.
+ * @param {object} [options]
+ */
+export function renderBnHero(options = {}) {
+  const actions = (options.actions || [])
+    .map((action, index) =>
+      renderBnButton(action.label || '', {
+        variant: action.variant || (index === 0 ? 'prominent' : 'bordered'),
+        size: action.size || 'large',
+        href: action.href,
+      }),
+    )
+    .join('');
+  const eyebrow = options.eyebrow
+    ? `<p data-bn="bn-hero-eyebrow">${escapeHtml(options.eyebrow)}</p>`
+    : '';
+  const lede = options.lede ? `<p data-bn="bn-hero-lede">${escapeHtml(options.lede)}</p>` : '';
+  const nav = actions
+    ? `<nav aria-label="${escapeAttr(options.label || 'Primary')}">${actions}</nav>`
+    : '';
+  return `<header data-bn="bn-hero"${opt('id', options.id)}>${eyebrow}<h1>${escapeHtml(options.title || '')}</h1>${lede}${nav}</header>`;
+}
+
+/**
+ * Site footer. `groups` are macOS link columns. A flat `links` list is one column.
+ */
+export function renderBnFooter(options = {}) {
+  const groups = options.groups || [{ label: options.note || '', links: options.links || [] }];
+  const columns = groups
+    .map((group) => {
+      const links = (group.links || [])
+        .map(
+          (link) =>
+            `<li><a href="${escapeAttr(link.href || '#')}">${escapeHtml(link.label || '')}</a></li>`,
+        )
+        .join('');
+      const title = group.label ? `<p>${escapeHtml(group.label)}</p>` : '';
+      const name = group.label || options.label || 'Footer';
+      return `<nav aria-label="${escapeAttr(name)}">${title}<ul>${links}</ul></nav>`;
+    })
+    .join('');
+  return `<footer data-bn="bn-footer"${opt('id', options.id)}${opt('data-force', options.force)}>${columns}</footer>`;
+}
+
+/** Dock. A glass row of equal targets. Marks are text, not a symbol font. */
+export function renderBnDock(options = {}) {
+  const items = (options.items || [])
+    .map((item) => {
+      const current = item.current ? ' aria-current="page"' : '';
+      return `<li><a data-bn="bn-dock-item" href="${escapeAttr(item.href || '#')}"${current}>${escapeHtml(item.label || '')}</a></li>`;
+    })
+    .join('');
+  return `<nav data-bn="bn-dock" aria-label="${escapeAttr(options.label || 'Dock')}"${opt('id', options.id)}><ul>${items}</ul></nav>`;
 }

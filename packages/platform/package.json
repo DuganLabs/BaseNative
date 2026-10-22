@@ -17,6 +17,7 @@
       "default": "./src/components.js"
     },
     "./components.css": "./src/components.css",
+    "./materials.css": "./src/materials.css",
     "./css": {
       "types": "./types/css.d.ts",
       "default": "./src/css.js"

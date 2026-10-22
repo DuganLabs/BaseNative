@@ -38,7 +38,16 @@ function initRepo() {
 }
 
 function commit(cwd, email, message) {
-  git(cwd, ['-c', `user.email=${email}`, '-c', 'user.name=Test', 'commit', '--allow-empty', '-m', message]);
+  git(cwd, [
+    '-c',
+    `user.email=${email}`,
+    '-c',
+    'user.name=Test',
+    'commit',
+    '--allow-empty',
+    '-m',
+    message,
+  ]);
   return git(cwd, ['rev-parse', 'HEAD']);
 }
 
@@ -149,7 +158,10 @@ describe('nx-cloud-access', () => {
         assert.equal(envMap(result.envText).get('NX_NO_CLOUD'), 'true');
       }
       commit(cwd, OWNER, 'owner');
-      const allowed = run({ EVENT_NAME: 'workflow_dispatch', PUSH_AUTHOR_EMAIL: 'nope@example.com' }, cwd);
+      const allowed = run(
+        { EVENT_NAME: 'workflow_dispatch', PUSH_AUTHOR_EMAIL: 'nope@example.com' },
+        cwd,
+      );
       assert.match(allowed.outText, /^allowed=true$/m);
     } finally {
       rmSync(cwd, { recursive: true, force: true });
@@ -198,11 +210,17 @@ describe('nx-cloud-access', () => {
       git(workspace, ['clone', '--depth', '1', '--no-local', origin, '.']);
       const present = spawnSync('git', ['cat-file', '-e', `${head}^{commit}`], { cwd: workspace });
       assert.notEqual(present.status, 0, 'shallow clone unexpectedly has the PR head');
-      const missing = run({ EVENT_NAME: 'pull_request', PR_HEAD_SHA: head, PR_NUMBER: '7' }, workspace);
+      const missing = run(
+        { EVENT_NAME: 'pull_request', PR_HEAD_SHA: head, PR_NUMBER: '7' },
+        workspace,
+      );
       assert.equal(missing.status, 0, missing.stderr);
       assert.match(missing.outText, /^allowed=true$/m, missing.stderr);
 
-      const bad = run({ EVENT_NAME: 'pull_request', PR_HEAD_SHA: 'not-a-sha', PR_NUMBER: '7' }, workspace);
+      const bad = run(
+        { EVENT_NAME: 'pull_request', PR_HEAD_SHA: 'not-a-sha', PR_NUMBER: '7' },
+        workspace,
+      );
       assert.equal(bad.status, 0, bad.stderr);
       assert.match(bad.outText, /^allowed=false$/m);
       assert.match(bad.stderr, /denying/);
@@ -224,10 +242,15 @@ describe('nx-cloud-access', () => {
   });
 
   it('refuses to run without GITHUB_ENV and GITHUB_OUTPUT', () => {
-    const result = spawnSync('bash', [script], {
-      encoding: 'utf8',
-      env: { ...gitEnv, EVENT_NAME: 'push', PUSH_AUTHOR_EMAIL: OWNER, NX_CLOUD_ALLOWED_AUTHORS: OWNER },
-    });
+    const env = {
+      ...gitEnv,
+      EVENT_NAME: 'push',
+      PUSH_AUTHOR_EMAIL: OWNER,
+      NX_CLOUD_ALLOWED_AUTHORS: OWNER,
+    };
+    delete env.GITHUB_ENV;
+    delete env.GITHUB_OUTPUT;
+    const result = spawnSync('bash', [script], { encoding: 'utf8', env });
     assert.notEqual(result.status, 0);
     assert.match(result.stderr, /GITHUB_ENV and GITHUB_OUTPUT/);
   });

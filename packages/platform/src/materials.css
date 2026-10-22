@@ -1,0 +1,178 @@
+/**
+ * @layer tokens — materials, blur, shadow, and the metric scale components use.
+ * Colour and type scales that already exist stay in tokens.css (generated).
+ * Do not put a raw colour or length in components.css; reference these
+ * properties. scripts/platform-token-lint.js fails the build when one slips in.
+ *
+ * Glass fill, blur, saturation, and the layered edge are translated from
+ * Puppertino 2.0 (MIT, Edgar Pérez), dist/css/materials.css. The chromatic
+ * inset on the edge is translated from dpawlikowski/liquid-glass (MIT).
+ * The SVG displacement refraction shader is not ported. See NOTICE.
+ */
+@layer tokens {
+  :root,
+  [data-theme='light'] {
+    --bn-glass-saturate: 180%;
+    --bn-glass-blur: 30px;
+    --bn-glass-ultrathin: rgba(246, 246, 246, 0.36);
+    --bn-glass-thin: rgba(246, 246, 246, 0.48);
+    --bn-glass-sm: rgba(242, 242, 242, 0.55);
+    --bn-glass-md: rgba(245, 245, 245, 0.72);
+    --bn-glass-lg: rgba(245, 245, 245, 0.72);
+    --bn-glass-thick: rgba(246, 246, 246, 0.72);
+    --bn-glass-ultrathick: rgba(236, 236, 236, 0.88);
+    --bn-glass-opaque: rgba(246, 246, 246, 0.96);
+    --bn-glass-shadow-control: 0 8px 15px rgba(0, 0, 0, 0.02);
+    --bn-glass-shadow-overlay: 0 8px 48px rgba(0, 0, 0, 0.25);
+    --bn-glass-shadow-alert: 0 18px 48px rgba(0, 0, 0, 0.25);
+    --bn-glass-shadow-window: 0 18px 54px rgba(0, 0, 0, 0.3), 0 0 1px rgba(0, 0, 0, 0.8);
+    --bn-glass-edge:
+      0 0 0 0.5px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.7),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.7), inset 1px 0 rgba(255, 86, 116, 0.28),
+      inset -1px 0 rgba(54, 226, 255, 0.22);
+    /* Content text stays at least 15px. 13px is dense chrome only. */
+    --bn-content-size: 15px;
+    --bn-content-leading: 22px;
+    --bn-content-secondary: rgba(60, 60, 67, 0.88);
+    --bn-list-surface: rgba(255, 255, 255, 0.94);
+    /* BEGIN METRICS */
+    --bn-blur-16: 16px;
+    --bn-plat-swatch-0000000f: #0000000f;
+    --bn-plat-swatch-e4e4e6: #e4e4e6;
+    --bn-plat-swatch-e7e7e8: #e7e7e8;
+    --bn-plat-swatch-f4f4f5: #f4f4f5;
+    --bn-plat-swatch-fff: #fff;
+    --bn-plat-swatch-rgb-230-230-230: rgb(230, 230, 230);
+    --bn-plat-swatch-rgba-0-0-0-0-08: rgba(0, 0, 0, 0.08);
+    --bn-plat-swatch-rgba-0-0-0-0-1: rgba(0, 0, 0, 0.1);
+    --bn-plat-swatch-rgba-0-0-0-0-12: rgba(0, 0, 0, 0.12);
+    --bn-plat-swatch-rgba-0-0-0-0-15: rgba(0, 0, 0, 0.15);
+    --bn-plat-swatch-rgba-0-0-0-0-18: rgba(0, 0, 0, 0.18);
+    --bn-plat-swatch-rgba-0-0-0-0-22: rgba(0, 0, 0, 0.22);
+    --bn-plat-swatch-rgba-246-246-246-0-72: rgba(246, 246, 246, 0.72);
+    --bn-plat-swatch-rgba-255-255-255-0-6: rgba(255, 255, 255, 0.6);
+    --bn-plat-swatch-rgba-255-255-255-0-7: rgba(255, 255, 255, 0.7);
+    --bn-len-0_5: 0.5px;
+    --bn-len-1: 1px;
+    --bn-len-10: 10px;
+    --bn-len-112: 112px;
+    --bn-len-12: 12px;
+    --bn-len-120: 120px;
+    --bn-len-13: 13px;
+    --bn-len-14: 14px;
+    --bn-len-148: 148px;
+    --bn-len-15: 15px;
+    --bn-len-16: 16px;
+    --bn-len-160: 160px;
+    --bn-len-18: 18px;
+    --bn-len-2: 2px;
+    --bn-len-20: 20px;
+    --bn-len-200: 200px;
+    --bn-len-20rem: 20rem;
+    --bn-len-22: 22px;
+    --bn-len-220: 220px;
+    --bn-len-22rem: 22rem;
+    --bn-len-24: 24px;
+    --bn-len-24rem: 24rem;
+    --bn-len-260: 260px;
+    --bn-len-27: 27px;
+    --bn-len-28: 28px;
+    --bn-len-29: 29px;
+    --bn-len-280: 280px;
+    --bn-len-3: 3px;
+    --bn-len-30: 30px;
+    --bn-len-300: 300px;
+    --bn-len-31: 31px;
+    --bn-len-32: 32px;
+    --bn-len-32rem: 32rem;
+    --bn-len-34: 34px;
+    --bn-len-36: 36px;
+    --bn-len-36rem: 36rem;
+    --bn-len-38: 38px;
+    --bn-len-4: 4px;
+    --bn-len-402: 402px;
+    --bn-len-42rem: 42rem;
+    --bn-len-43: 43px;
+    --bn-len-44: 44px;
+    --bn-len-48: 48px;
+    --bn-len-49: 49px;
+    --bn-len-5: 5px;
+    --bn-len-50: 50px;
+    --bn-len-51: 51px;
+    --bn-len-52: 52px;
+    --bn-len-58: 58px;
+    --bn-len-6: 6px;
+    --bn-len-60: 60px;
+    --bn-len-62: 62px;
+    --bn-len-64: 64px;
+    --bn-len-66: 66px;
+    --bn-len-68: 68px;
+    --bn-len-7: 7px;
+    --bn-len-78: 78px;
+    --bn-len-8: 8px;
+    --bn-len-80: 80px;
+    --bn-len-96: 96px;
+    --bn-len-neg-72: -72px;
+    --bn-plat-radius-10: 10px;
+    --bn-plat-radius-100: 100px;
+    --bn-plat-radius-1000: 1000px;
+    --bn-plat-radius-12: 12px;
+    --bn-plat-radius-13: 13px;
+    --bn-plat-radius-14: 14px;
+    --bn-plat-radius-16: 16px;
+    --bn-plat-radius-2: 2px;
+    --bn-plat-radius-22: 22px;
+    --bn-plat-radius-30: 30px;
+    --bn-plat-radius-31: 31px;
+    --bn-plat-radius-34: 34px;
+    --bn-plat-radius-38: 38px;
+    --bn-plat-radius-4: 4px;
+    --bn-plat-radius-40: 40px;
+    --bn-plat-radius-500: 500px;
+    --bn-plat-radius-58: 58px;
+    --bn-plat-radius-6: 6px;
+    --bn-plat-radius-64: 64px;
+    --bn-plat-radius-8: 8px;
+    --bn-plat-radius-8_5: 8.5px;
+    --bn-type-0_06: 0.06px;
+    --bn-type-10: 10px;
+    --bn-type-11: 11px;
+    --bn-type-12: 12px;
+    --bn-type-13: 13px;
+    --bn-type-13_33: 13.33px;
+    --bn-type-14: 14px;
+    --bn-type-15: 15px;
+    --bn-type-16: 16px;
+    --bn-type-17: 17px;
+    --bn-type-18: 18px;
+    --bn-type-20: 20px;
+    --bn-type-22: 22px;
+    --bn-type-28: 28px;
+    --bn-type-2rem: 2rem;
+    --bn-type-neg-0_08: -0.08px;
+    --bn-type-neg-0_23: -0.23px;
+    --bn-type-neg-0_43: -0.43px;
+    /* END METRICS */
+  }
+
+  [data-theme='dark'] {
+    --bn-glass-ultrathin: rgba(0, 0, 0, 0.1);
+    --bn-glass-thin: rgba(0, 0, 0, 0.2);
+    --bn-glass-sm: rgba(153, 153, 153, 0.17);
+    --bn-glass-md: rgba(26, 26, 26, 0.96);
+    --bn-glass-lg: rgba(26, 26, 26, 0.96);
+    --bn-glass-thick: rgba(0, 0, 0, 0.4);
+    --bn-glass-ultrathick: rgba(0, 0, 0, 0.5);
+    --bn-glass-opaque: rgba(28, 28, 30, 0.96);
+    --bn-glass-shadow-control: 0 8px 15px rgba(0, 0, 0, 0.04);
+    --bn-glass-shadow-overlay: 0 8px 48px rgba(0, 0, 0, 0.45);
+    --bn-glass-shadow-alert: 0 18px 48px rgba(0, 0, 0, 0.45);
+    --bn-glass-shadow-window: 0 18px 54px rgba(0, 0, 0, 0.57), 0 0 1px rgba(0, 0, 0, 0.8);
+    --bn-glass-edge:
+      0 0 0 0.5px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.2), inset 1px 0 rgba(255, 86, 116, 0.22),
+      inset -1px 0 rgba(54, 226, 255, 0.18);
+    --bn-content-secondary: rgba(235, 235, 245, 0.92);
+    --bn-list-surface: rgba(44, 44, 46, 0.94);
+  }
+}

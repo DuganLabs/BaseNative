@@ -519,24 +519,22 @@ describe('importFromHTML', () => {
     assert.equal(nodes[0].props.content, 'x');
   });
 
-  test('completes in well under 200ms for 50,000 unbalanced quotes', () => {
-    // The original tagRegex's attribute matcher paired with backtracking
-    // over unbalanced quotes is exactly the shape that goes polynomial.
+  // 200ms was a local-machine margin, not the complexity bound. Node 20 CI
+  // (actions run 39805077689) ran this scan in 343ms under parallel nx while
+  // the scanner in serializer.js stays linear (one closer census, forward
+  // pointers). A quadratic rescan of 50,000 unclosed tags is seconds, so
+  // 2000ms still fails that regression. Same budget as robustness.test.js.
+  test('completes within 2000ms for 50,000 unbalanced quotes', () => {
     const html = `<body><div title="${'"'.repeat(50000)}</body>`;
     const start = Date.now();
     importFromHTML(html);
-    assert.ok(Date.now() - start < 200, 'expected linear-time scan, not a backtracking blowup');
+    assert.ok(Date.now() - start < 2000, 'expected linear-time scan, not a backtracking blowup');
   });
 
-  test('completes in well under 200ms for 50,000 nested unclosed tags', () => {
-    // The backreferenced `<(\w+)...>...<\/\1>` matcher is the classic
-    // catastrophic-backtracking shape for input with no matching close tag —
-    // and naively re-searching from each open tag to end-of-string for its
-    // closer would reintroduce the same quadratic blowup by another route,
-    // since none of these 50,000 same-named tags ever finds one.
+  test('completes within 2000ms for 50,000 nested unclosed tags', () => {
     const html = `<body>${'<div>'.repeat(50000)}</body>`;
     const start = Date.now();
     importFromHTML(html);
-    assert.ok(Date.now() - start < 200, 'expected linear-time scan, not a backtracking blowup');
+    assert.ok(Date.now() - start < 2000, 'expected linear-time scan, not a backtracking blowup');
   });
 });

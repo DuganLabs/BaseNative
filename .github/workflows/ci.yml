@@ -1,12 +1,12 @@
-# MANUAL-ONLY. Every workflow in this org runs on workflow_dispatch and
-# nothing else: no push, no pull_request, no schedule. The owner runs it
-# from the Actions tab when he wants GitHub minutes spent; everything it
-# does also runs on a developer machine via scripts/pipeline.sh (checks)
-# and the deploy scripts, from the same Doppler config. (2026-09-14)
+# This workflow also runs on pull_request so the axiom check, the platform
+# token lint (via nx lint), and the Playwright gates in tests/e2e/ can block
+# a merge. Other workflows in the org stay workflow_dispatch only. (2026-09-14
+# manual-only policy; this file is the exception, same as a push deploy.)
 name: CI
 
 on:
   workflow_dispatch:
+  pull_request:
 
 env:
   # Comma-separated commit author emails (case-insensitive) that may use

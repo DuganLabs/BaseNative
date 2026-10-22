@@ -10,7 +10,8 @@ import { componentCategories, flatComponents } from './component-catalog.js';
 const siteDir = dirname(fileURLToPath(import.meta.url));
 
 function pkgVersion(name) {
-  return JSON.parse(readFileSync(join(siteDir, '../../packages', name, 'package.json'), 'utf8')).version;
+  return JSON.parse(readFileSync(join(siteDir, '../../packages', name, 'package.json'), 'utf8'))
+    .version;
 }
 
 export const navPages = [
@@ -24,6 +25,7 @@ export const navPages = [
   'showcase',
   'roadmap',
   'tasks',
+  'design-system',
 ];
 
 /** One nav glyph: a 24-unit-grid stroke SVG, the icons package's convention. */
@@ -53,11 +55,14 @@ const appNavSpec = [
     page: 'compare',
     label: 'Compare',
     href: '/compare',
-    icon: glyph('<path d="M3 20h18"/><path d="M6 20v-9"/><path d="M12 20V5"/><path d="M18 20v-6"/>'),
+    icon: glyph(
+      '<path d="M3 20h18"/><path d="M6 20v-9"/><path d="M12 20V5"/><path d="M18 20v-6"/>',
+    ),
   },
   {
     page: 'components',
     label: 'Components',
+    shortLabel: 'Parts',
     href: '/components',
     icon: glyph(
       '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
@@ -75,7 +80,9 @@ const appNavSpec = [
     page: 'ai',
     label: 'AI',
     href: '/ai',
-    icon: glyph('<path d="M12 3l1.5 4 4 1.5-4 1.5L12 14l-1.5-4-4-1.5 4-1.5L12 3z"/><path d="M5 19h14"/>'),
+    icon: glyph(
+      '<path d="M12 3l1.5 4 4 1.5-4 1.5L12 14l-1.5-4-4-1.5 4-1.5L12 3z"/><path d="M5 19h14"/>',
+    ),
   },
   {
     page: 'playground',
@@ -111,7 +118,15 @@ const appNavSpec = [
     page: 'tasks',
     label: 'Tasks',
     href: '/tasks',
-    icon: glyph('<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 5-5.5"/>'),
+    icon: glyph(
+      '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 5-5.5"/>',
+    ),
+  },
+  {
+    page: 'design-system',
+    label: 'System',
+    href: '/design-system',
+    icon: glyph('<circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/>'),
   },
 ];
 
@@ -196,8 +211,7 @@ export function getHomePageContext() {
         variant: 'prominent',
         size: 'large',
         href: '/playground',
-      }) +
-        renderBnButton('Read the docs', { variant: 'bordered', size: 'large', href: '/docs' }),
+      }) + renderBnButton('Read the docs', { variant: 'bordered', size: 'large', href: '/docs' }),
     ),
     runtimeList: raw(
       renderBnList({
@@ -206,22 +220,33 @@ export function getHomePageContext() {
           {
             title: 'One set()',
             detail: 'Derived computeds settle, then each affected effect runs once.',
+            tint: 'blue',
+            mark: '1',
           },
           {
             title: 'BN_EFFECT_LOOP',
-            detail: 'An effect that writes a signal it also read throws. Use .peek(), or write a different signal.',
+            detail:
+              'An effect that writes a signal it also read throws. Use .peek(), or write a different signal.',
+            tint: 'orange',
+            mark: '!',
           },
           {
             title: 'class and :class',
             detail: 'The two merge. A false binding adds nothing.',
+            tint: 'green',
+            mark: 'C',
           },
           {
             title: ':value and :checked',
             detail: 'Those bindings write the DOM property.',
+            tint: 'purple',
+            mark: 'V',
           },
           {
             title: 'Evaluator',
             detail: `An allowlist. Gzip ${runtimeSizeStat()}.`,
+            tint: 'teal',
+            mark: 'E',
           },
         ],
       }),
@@ -233,26 +258,40 @@ export function getHomePageContext() {
           {
             title: `@basenative/platform ${platformVersion}`,
             detail: 'Apple 27 controls for iOS, iPadOS, and macOS, in light and dark.',
+            tint: 'indigo',
+            mark: 'P',
           },
           {
             title: 'npmjs.org',
             detail: 'npm install @basenative/runtime @basenative/server. No token.',
+            tint: 'mint',
+            mark: 'N',
           },
           {
             title: '/ai',
-            detail: 'The model scorecard. Pass rates stay unpublished while the prompt corpus is empty.',
+            detail:
+              'The model scorecard. Pass rates stay unpublished while the prompt corpus is empty.',
+            tint: 'pink',
+            mark: 'A',
           },
           {
             title: '@basenative/validate',
-            detail: 'Flags className, htmlFor, onClick, {expr} text, useState, useEffect, and useMemo, and names the replacement.',
+            detail:
+              'Flags className, htmlFor, onClick, {expr} text, useState, useEffect, and useMemo, and names the replacement.',
+            tint: 'cyan',
+            mark: 'V',
           },
           {
             title: 'bn from-jsx',
             detail: 'Rewrites a React or JSX draft into BaseNative.',
+            tint: 'brown',
+            mark: 'J',
           },
           {
             title: 'Public packages',
             detail: `${packages} on npmjs.org.`,
+            tint: 'yellow',
+            mark: '#',
           },
         ],
       }),
