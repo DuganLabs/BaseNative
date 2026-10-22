@@ -126,6 +126,22 @@ test.describe('design system gates', () => {
             FrozenDate.prototype = NativeDate.prototype;
             window.Date = FrozenDate;
             window.setInterval = () => 0;
+            // GitHub's runner (playwright install --with-deps) resolves system-ui
+            // to a different face than this snapshot host. Run 39810776722 failed
+            // every toHaveScreenshot on that difference. Liberation Sans is on both.
+            // documentElement does not exist yet when this script starts.
+            function pinFont() {
+              if (!document.documentElement || document.querySelector('[data-bn-snapshot-font]'))
+                return;
+              const style = document.createElement('style');
+              style.setAttribute('data-bn-snapshot-font', '');
+              style.textContent =
+                'html, body, body * { font-family: "Liberation Sans", sans-serif !important; }';
+              document.documentElement.appendChild(style);
+            }
+            if (document.readyState === 'loading')
+              document.addEventListener('DOMContentLoaded', pinFont);
+            else pinFont();
           });
           await page.setViewportSize({ width, height: 900 });
           await page.emulateMedia({ colorScheme: theme, reducedMotion: 'reduce' });
