@@ -8,6 +8,7 @@ import {
   isUrlAttribute,
   sanitizeUrl,
   findInterpolations,
+  mergeClass,
 } from '@basenative/runtime/shared/escape';
 import { getDirective, listDirectives } from '@basenative/runtime/shared/directives';
 
@@ -119,7 +120,31 @@ function processNode(node, ctx, options) {
 
   if (node.rawAttrs) {
     const attrs = [];
+    let classAt = -1;
+    let sawStaticClass = false;
+    let staticInterpolated = false;
+    let staticClass = '';
+    let sawBoundClass = false;
+    let boundClass = '';
     for (const { name, value } of parseAttrs(node.rawAttrs)) {
+      if (name === 'class' || name === ':class') {
+        if (classAt === -1) classAt = attrs.length;
+        if (name === 'class') {
+          sawStaticClass = true;
+          if (value && value.includes('{{')) {
+            staticInterpolated = true;
+            staticClass = interpolate(value, ctx, options, (v) => (v == null ? '' : String(v)));
+          } else {
+            staticClass = value ?? '';
+          }
+        } else {
+          sawBoundClass = true;
+          const result = evaluate(value, ctx, options);
+          boundClass = result === false || result == null ? '' : String(unwrapRaw(result));
+        }
+        continue;
+      }
+
       if (name.startsWith('@')) {
         const directive = getDirective(name.slice(1));
         if (directive?.on === 'element' && directive.server) {
@@ -164,6 +189,19 @@ function processNode(node, ctx, options) {
       // out of the double quotes we re-emit. Neutralise bare quotes only — the
       // value may legitimately contain entities already, so no full re-escape.
       attrs.push({ name, value: value ? value.replace(/"/g, '&quot;') : value });
+    }
+
+    if (sawStaticClass || sawBoundClass) {
+      let classValue = null;
+      if (sawBoundClass) {
+        const merged = mergeClass(staticClass, boundClass);
+        classValue = merged ? escapeAttr(merged) : null;
+      } else if (staticInterpolated) {
+        classValue = staticClass ? escapeAttr(staticClass) : null;
+      } else if (sawStaticClass) {
+        classValue = staticClass ? String(staticClass).replace(/"/g, '&quot;') : '';
+      }
+      if (classValue != null) attrs.splice(classAt, 0, { name: 'class', value: classValue });
     }
 
     node.rawAttrs = attrs

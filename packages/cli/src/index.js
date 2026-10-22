@@ -34,6 +34,7 @@ const COMMANDS = {
   generate: { mod: './commands/generate.js', desc: 'Generate component, route, or page' },
   env: { mod: './commands/env.js', desc: 'Manage environment variables' },
   analyze: { mod: './commands/analyze.js', desc: 'Analyze bundle size + deps' },
+  'from-jsx': { mod: './commands/from-jsx.js', desc: 'Translate a React/JSX draft into BaseNative' },
 };
 
 const ALIASES = {
@@ -62,6 +63,7 @@ function showHelp() {
     ${c.accent('generate')}  ${c.dim(COMMANDS.generate.desc)}
     ${c.accent('env')}       ${c.dim(COMMANDS.env.desc)}
     ${c.accent('analyze')}   ${c.dim(COMMANDS.analyze.desc)}
+    ${c.accent('from-jsx')}  ${c.dim(COMMANDS['from-jsx'].desc)}
 
   ${c.bold('Global options')}
     -h, --help        Show help (or per-command help)

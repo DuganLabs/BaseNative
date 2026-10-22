@@ -8,6 +8,7 @@ export const navPages = [
   'compare',
   'components',
   'docs',
+  'ai',
   'playground',
   'builder',
   'showcase',
@@ -24,10 +25,12 @@ const glyph = (paths) =>
  * the phone-class bar first — Home (what it is), Compare (why it
  * wins), Components (the proof), Docs (how to use it / reference) —
  * then the ones the More sheet carries, also in travel order:
- * Playground (try it), Builder (build with it), Showcase (the catalog
- * as one live gallery), Roadmap (status), Tasks (the demo app). The
- * rail reads the same list top to bottom. `page` is the route's
- * activePage key.
+ * AI (the scorecard for models), Playground (try it), Builder (build
+ * with it), Showcase (the catalog as one live gallery), Roadmap
+ * (status), Tasks (the demo app). The rail reads the same list top to
+ * bottom. `page` is the route's activePage key. The phone bar keeps
+ * the first four items; AI is the first overflow item so that bar
+ * does not change.
  */
 const appNavSpec = [
   {
@@ -57,6 +60,12 @@ const appNavSpec = [
     icon: glyph(
       '<path d="M12 6c-1.5-1.5-3.5-2-7-2v14c3.5 0 5.5.5 7 2 1.5-1.5 3.5-2 7-2V4c-3.5 0-5.5.5-7 2z"/><path d="M12 6v14"/>',
     ),
+  },
+  {
+    page: 'ai',
+    label: 'AI',
+    href: '/ai',
+    icon: glyph('<path d="M12 3l1.5 4 4 1.5-4 1.5L12 14l-1.5-4-4-1.5 4-1.5L12 3z"/><path d="M5 19h14"/>'),
   },
   {
     page: 'playground',
@@ -144,6 +153,11 @@ export function getDocsPageContext() {
 // twice, or per request on the dev server.
 let compareStats;
 const stats = () => (compareStats ??= computeCompareStats());
+
+/** Measured compare stats, shared so /ai does not bundle the runtime a second time. */
+export function getMeasuredStats() {
+  return stats();
+}
 
 /**
  * The home page's runtime-size stat. Measured, not typed: this line read

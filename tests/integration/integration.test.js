@@ -24,6 +24,7 @@ import {
 } from '../../scripts/check-demo-snippets.js';
 import { computeCompareStats } from '../../scripts/compare-stats.js';
 import { renderRoute, siteRoutes } from '../../examples/express/page.js';
+import { AI_SCORECARD } from '../../examples/express/ai-scorecard.js';
 import { flatComponents } from '../../examples/express/component-catalog.js';
 import { getDemo } from '../../examples/express/component-demos.js';
 import { getDemoScripts, demoInitialisers } from '../../examples/express/component-demo-scripts.js';
@@ -813,5 +814,33 @@ describe('the builder bundle registers the elements /builder needs', () => {
     for (const tag of ['bn-builder', 'bn-builder-palette', 'bn-builder-canvas']) {
       assert.ok(bundle.includes(tag), `builder bundle should register ${tag}`);
     }
+  });
+});
+
+describe('the /ai scorecard keeps every point against BaseNative', () => {
+  const route = siteRoutes.find((entry) => entry.path === '/ai');
+  const html = renderRoute(route, { tasks: [], hasApi: false });
+
+  it('is a published route linked from the navigation', () => {
+    assert.ok(route && !route.internal);
+    assert.equal(route.activePage, 'ai');
+    assert.match(html, /href="\/ai"/);
+  });
+
+  it('renders every checklist row', () => {
+    for (const item of AI_SCORECARD) {
+      assert.ok(html.includes(item.point), `missing point: ${item.point}`);
+      assert.ok(html.includes(item.status), `missing status for ${item.id}`);
+    }
+  });
+
+  it('says the natural effect pattern runs once, and names the loop error', () => {
+    assert.match(html, /runs once/);
+    assert.match(html, /BN_EFFECT_LOOP/);
+  });
+
+  it('does not confuse the page with greenput.com/ai', () => {
+    assert.match(html, /greenput\.com\/ai/);
+    assert.match(html, /no commit by Muse/);
   });
 });

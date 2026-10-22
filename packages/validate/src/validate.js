@@ -208,6 +208,16 @@ function checkExpression(expr, offset, source, context, locals, out) {
   }
 }
 
+/** True when `index` sits inside a `<script>`…`</script>` span. JSX-brace checks
+ * must not fire on ordinary JavaScript blocks a template is allowed to carry. */
+function inScript(src, index) {
+  const before = src.slice(0, index);
+  const open = before.lastIndexOf('<script');
+  if (open === -1) return false;
+  const close = before.lastIndexOf('</script');
+  return close < open;
+}
+
 /**
  * Validate a BaseNative template.
  *
@@ -226,10 +236,11 @@ export function validateTemplate(source, options = {}) {
     rule.match.lastIndex = 0;
     let m;
     while ((m = rule.match.exec(src)) !== null) {
+      if (rule.skipInScript && inScript(src, m.index)) continue;
       out.push(
         diagnostic('BN_E_FOREIGN_DIRECTIVE', {
           message: `"${m[0].trim()}" is ${rule.framework} syntax, which BaseNative does not parse`,
-          suggestion: rule.suggestion,
+          suggestion: typeof rule.suggestion === 'function' ? rule.suggestion(m) : rule.suggestion,
           span: spanAt(src, m.index),
         })
       );

@@ -568,3 +568,44 @@ describe('diamond dependency comprehensive', () => {
     assert.equal(result, 50); // 20 + 30
   });
 });
+
+describe('effect notification settles once per write', () => {
+  it('reading a signal and a computed derived from it runs once', () => {
+    const count = signal(0);
+    const doubled = computed(() => count() * 2);
+    const log = [];
+    effect(() => { log.push([count(), doubled()]); });
+
+    assert.deepEqual(log, [[0, 0]]);
+    count.set(1);
+    assert.deepEqual(log, [[0, 0], [1, 2]]);
+  });
+
+  it('a deeper chain also runs the consumer once, with settled values', () => {
+    const count = signal(1);
+    const doubled = computed(() => count() * 2);
+    const quadrupled = computed(() => doubled() * 2);
+    const log = [];
+    effect(() => { log.push([count(), doubled(), quadrupled()]); });
+
+    count.set(2);
+    assert.deepEqual(log, [[1, 2, 4], [2, 4, 8]]);
+  });
+
+  it('throws BN_EFFECT_LOOP when an effect writes a signal it read', () => {
+    const log = signal('');
+    assert.throws(
+      () => effect(() => { log.set(log() + 'x'); }),
+      (err) => err.code === 'BN_EFFECT_LOOP' && /peek/.test(err.message),
+    );
+  });
+
+  it('lets an effect write a signal it only peeked', () => {
+    const count = signal(0);
+    const log = signal('');
+    effect(() => { log.set(log.peek() + String(count())); });
+    assert.equal(log(), '0');
+    count.set(1);
+    assert.equal(log(), '01');
+  });
+});

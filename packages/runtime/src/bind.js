@@ -3,7 +3,7 @@ import { evaluate, interpolate } from './evaluate.js';
 import { hydrateChildren } from './hydrate.js';
 import { registerCleanup } from './dom-lifecycle.js';
 import { createChildContext } from './scope.js';
-import { isRaw, unwrapRaw, isUrlAttribute, sanitizeUrl } from './shared/escape.js';
+import { isRaw, unwrapRaw, isUrlAttribute, sanitizeUrl, mergeClass } from './shared/escape.js';
 import { getDirective } from './shared/directives.js';
 
 // Attribute bindings write attributes, but two form-control bindings also
@@ -77,8 +77,17 @@ export function bindNode(node, ctx, options) {
     } else if (attr.name.startsWith(':')) {
       const attrName = attr.name.slice(1);
       const expr = attr.value;
+      // Snapshot before the effect removes `:class`. A later run must keep
+      // the literal class, not whatever a previous merge wrote back.
+      const staticClass = attrName === 'class' ? node.getAttribute('class') : null;
       const runner = effect(() => {
         const result = evaluate(expr, ctx, options);
+        if (attrName === 'class') {
+          const merged = mergeClass(staticClass, result);
+          if (merged) node.setAttribute('class', merged);
+          else node.removeAttribute('class');
+          return;
+        }
         if (result === false || result == null) {
           node.removeAttribute(attrName);
           syncFormControlProperty(node, attrName, result);

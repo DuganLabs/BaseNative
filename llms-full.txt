@@ -40,14 +40,13 @@ Loop variables: `$index`, `$first`, `$last`, `$even`, `$odd`.
 
 ### Event Binding — `@event`
 ```html
-<button @click="handleClick()">Click</button>
-<input @input="updateValue($event.target.value)">
+<button @click="handleClick()">Click</button> <input @input="updateValue($event.target.value)" />
 ```
 
 ### Attribute Binding — `:attr`
 ```html
 <button :disabled="isLoading()">Save</button>
-<div :class="isActive() ? 'active' : ''">Content</div>
+<div class="item" :class="done() ? 'done' : ''">Content</div>
 ```
 
 ### Text Interpolation — `{{ }}`
@@ -63,8 +62,8 @@ import { registerDirective } from '@basenative/runtime';
 // or: import { registerDirective } from '@basenative/runtime/shared/directives';
 
 registerDirective('tooltip', {
-  on: 'element',                                    // 'template' | 'element' (default)
-  server: (value, ctx, options) => value,           // string (or raw()) to use as text content
+  on: 'element', // 'template' | 'element' (default)
+  server: (value, ctx, options) => value, // string (or raw()) to use as text content
   client: (value, ctx, options) => value,
 });
 ```
@@ -478,7 +477,7 @@ Absolute path to `CLAUDE.md.tmpl` under `PACKAGE_ROOT`. Installed to `<projectRo
 
 ### `@basenative/cli` (v2.3.1)
 
-The bn CLI — front door for BaseNative / DuganLabs projects (create, prd, speckit, gh, nx, deploy, doctor)
+bn CLI: create, deploy, doctor, and from-jsx (React drafts to BaseNative templates)
 
 Source: `packages/cli/src` · Docs: `docs/api/cli.md`
 
@@ -511,7 +510,14 @@ Deploys the application to BaseNative Cloud. **Options:** - `--env <name>` — t
 Manages environment variables for the project. **Subcommands:** - `bn env set <KEY> <VALUE>` — sets an environment variable - `bn env get <KEY>` — reads a single variable - `bn env list` — lists all configured variables - `bn env delete <K…
 
 #### `bn analyze`
-Analyzes bundle size and reports dependency sizes. Useful for verifying that `@basenative/runtime` stays under its 10KB gzipped budget (currently 9.2KB).
+Analyzes bundle size and reports dependency sizes. Useful for verifying that `@basenative/runtime` stays under its 10KB gzipped budget. The measured size is printed by `node scripts/bundle-size.js`.
+
+#### `bn from-jsx`
+Translates a React or JSX draft into BaseNative. It rewrites `className`, `htmlFor`, `onClick`, `useState`, `useMemo`, `useEffect`, and `{expr}` text, and prints a note for anything it left in place. It is not a full JSX parser.
+```bash
+bn from-jsx draft.jsx
+bn from-jsx draft.jsx --out app.html
+```
 
 #### `bn help`
 Prints the help message listing all commands.
@@ -3051,10 +3057,10 @@ Source: `packages/runtime/src` · Docs: `docs/api/runtime.md`
 Creates a reactive signal.
 ```js
 const count = signal(0);
-count();        // read: 0
-count.set(5);   // write
-count.set(c => c + 1); // updater
-count.peek();   // read without subscribing
+count(); // read: 0
+count.set(5); // write
+count.set((c) => c + 1); // updater
+count.peek(); // read without subscribing
 ```
 
 ### `computed(fn)`
@@ -3064,7 +3070,7 @@ const double = computed(() => count() * 2);
 ```
 
 ### `effect(fn)`
-Runs a function reactively. Re-runs when any signal read inside changes. Returns a handle with `.dispose()`.
+One `set()` settles derived computeds, then runs each affected effect once. Writing a signal the effect also read throws `BN_EFFECT_LOOP`; use `.peek()` or write a different signal. Returns a handle with `.dispose()`. Reading a signal and…
 ```js
 const stop = effect(() => {
   console.log('Count is', count());
@@ -3099,12 +3105,14 @@ Activates template directives in a DOM subtree. Returns a dispose function.
 const dispose = hydrate(document.getElementById('app'), {
   count,
   items: signal([]),
-  increment() { count.set(c => c + 1); },
+  increment() {
+    count.set((c) => c + 1);
+  },
 });
 ```
 
 #### Options
-| Option | Type | Description | |--------|------|-------------| | `onDiagnostic` | `(diagnostic) => void` | Callback for diagnostic events | | `onMismatch` | `(message, detail) => void` | Callback for hydration mismatches | | `recover` | `…
+| Option | Type | Description | | -------------- | --------------------------- | --------------------------------- | | `onDiagnostic` | `(diagnostic) => void` | Callback for diagnostic events | | `onMismatch` | `(message, detail) => void`…
 
 #### `@if` / `@else`
 ```html
@@ -3138,14 +3146,13 @@ Loop variables: `$index`, `$first`, `$last`, `$even`, `$odd`.
 
 #### Event Binding — `@event`
 ```html
-<button @click="handleClick()">Click</button>
-<input @input="updateValue($event.target.value)">
+<button @click="handleClick()">Click</button> <input @input="updateValue($event.target.value)" />
 ```
 
 #### Attribute Binding — `:attr`
 ```html
 <button :disabled="isLoading()">Save</button>
-<div :class="isActive() ? 'active' : ''">Content</div>
+<div class="item" :class="done() ? 'done' : ''">Content</div>
 ```
 
 #### Text Interpolation — `{{ }}`
@@ -3161,8 +3168,8 @@ import { registerDirective } from '@basenative/runtime';
 // or: import { registerDirective } from '@basenative/runtime/shared/directives';
 
 registerDirective('tooltip', {
-  on: 'element',                                    // 'template' | 'element' (default)
-  server: (value, ctx, options) => value,           // string (or raw()) to use as text content
+  on: 'element', // 'template' | 'element' (default)
+  server: (value, ctx, options) => value, // string (or raw()) to use as text content
   client: (value, ctx, options) => value,
 });
 ```
@@ -3213,7 +3220,7 @@ trackSignal(count, 'count');
 Verbose console logging for diagnosing reactivity issues during development. Zero overhead when off.
 
 #### `enableDebug(options?)`
-| Option | Type | Description | |--------|------|-------------| | `label` | `string` | Prefix included in every log line | | `logger` | `object` | Custom logger (default: `console`) | | `trackReads` | `boolean` | Also log every signal read…
+| Option | Type | Description | | ------------ | --------- | ---------------------------------------------------------- | | `label` | `string` | Prefix included in every log line | | `logger` | `object` | Custom logger (default: `console`)…
 
 #### `disableDebug()`
 Turns debug mode off, logs a final `getDebugStats()` snapshot, and resets the counters to zero.
@@ -3252,10 +3259,12 @@ count.set(1);
 Programmatic try/catch helpers for template and SSR rendering. Despite a comment in `packages/runtime/src/error-boundary.js` describing a `@catch` template directive, no such directive is registered anywhere in source — these are called di…
 
 #### `createErrorBoundary(options?)`
-| Option | Type | Description | |--------|------|-------------| | `onError` | `(error) => void` | Called when `.try()` catches an error | | `fallback` | `string` | Fallback HTML returned by `.getFallback()` | Returns a boundary object: | M…
+| Option | Type | Description | | ---------- | ----------------- | ------------------------------------------ | | `onError` | `(error) => void` | Called when `.try()` catches an error | | `fallback` | `string` | Fallback HTML returned by `…
 ```js
 const boundary = createErrorBoundary({
-  onError(error) { logger.error('render failed', error); },
+  onError(error) {
+    logger.error('render failed', error);
+  },
   fallback: '<p>Something went wrong.</p>',
 });
 
@@ -3277,25 +3286,26 @@ A lifecycle-hook and custom-directive registry, distinct from the signal-write h
 Validates and returns a plugin descriptor `{ name, setup }` from `config: { name, setup? }`. Throws if `name` is missing or an empty string. `setup` defaults to a no-op if omitted.
 
 #### `createPluginRegistry()`
-Creates an isolated registry: | Method | Description | |--------|-------------| | `register(plugin)` | Registers a plugin (from `definePlugin`) and immediately calls its `setup(api)`. Throws if a plugin with the same `name` is already regi…
+Creates an isolated registry: | Method | Description | | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | | `re…
 ```js
 const registry = createPluginRegistry();
 
-registry.register(definePlugin({
-  name: 'analytics',
-  setup(api) {
-    api.onAfterHydrate(() => sendPageView());
-  },
-}));
-
-registry.runHook('afterHydrate'); // fires the handler above
+registry.register(
+  definePlugin({
+    name: 'analytics',
+    setup(api) {
+      api.onAfterHydrate(() => sendPageView());
+    },
+  }),
+);
+…
 ```
 
 ### Lazy Hydration
 Defers hydration of a subtree until it's needed. Browser-only — every function here reads DOM/browser APIs (`IntersectionObserver`, `requestIdleCallback`, `matchMedia`) that don't exist during SSR.
 
 #### `createLazyHydrator(options?)`
-| Option | Type | Default | Description | |--------|------|---------|-------------| | `rootMargin` | `string` | `'0px'` | Forwarded to `IntersectionObserver` | | `threshold` | `number` | `0` | Forwarded to `IntersectionObserver` | Returns…
+| Option | Type | Default | Description | | ------------ | -------- | ------- | ----------------------------------- | | `rootMargin` | `string` | `'0px'` | Forwarded to `IntersectionObserver` | | `threshold` | `number` | `0` | Forwarded to…
 
 #### `lazyHydrate(element, hydrateFn, options?)`
 Convenience wrapper: creates a `createLazyHydrator(options)` and immediately `observe()`s a single element. Returns the hydrator, so `disconnect()`/`hydrateNow()` remain available.
@@ -3325,15 +3335,17 @@ hydrateOnInteraction(document.getElementById('comments'), () => {
 Zero-dependency Core Web Vitals collection over `PerformanceObserver`. Every `observe*` function returns a cleanup function, or `null` when `PerformanceObserver` is unavailable (SSR, or an unsupporting browser) — always guard the return va…
 
 #### `observeLCP(callback)` / `observeFID(callback)` / `observeCLS(callback)` / `observeFCP(callback)` / `observeTTFB(callback)` / `observeINP(callback)`
-Each observes one metric and calls `callback({ name, value, entries })` as new performance entries arrive: | Function | `name` | `value` | Underlying entry type | |----------|--------|---------|------------------------| | `observeLCP` | `'…
+Each observes one metric and calls `callback({ name, value, entries })` as new performance entries arrive: | Function | `name` | `value` | Underlying entry type | | ------------- | -------- | -----------------------------------------------…
 
 #### `createVitalsReporter(options?)`
-| Option | Type | Description | |--------|------|-------------| | `onReport` | `(metric) => void` | Called for every metric update from any observer | Returns `{ start, stop, getMetrics }`: | Method | Description | |--------|-------------|…
+| Option | Type | Description | | ---------- | ------------------ | ------------------------------------------------ | | `onReport` | `(metric) => void` | Called for every metric update from any observer | Returns `{ start, stop, getMetric…
 ```js
 import { createVitalsReporter } from '@basenative/runtime';
 
 const vitals = createVitalsReporter({
-  onReport(metric) { navigator.sendBeacon('/vitals', JSON.stringify(metric)); },
+  onReport(metric) {
+    navigator.sendBeacon('/vitals', JSON.stringify(metric));
+  },
 });
 vitals.start();
 // later
@@ -3361,7 +3373,7 @@ The `Symbol.for('basenative.scopeSlot')` used to tag scope slots. Exported so a 
 import { evaluateExpression } from '@basenative/runtime/shared/expression';
 
 evaluateExpression('items.length > 0', { items: [1, 2] }); // true
-evaluateExpression('user.__proto__', { user: {} });         // undefined — reports BN_EXPR_UNSAFE_MEMBER
+evaluateExpression('user.__proto__', { user: {} }); // undefined — reports BN_EXPR_UNSAFE_MEMBER
 ```
 
 ### Output Escaping — `@basenative/runtime/shared/escape`
@@ -3388,15 +3400,18 @@ Returns whether `name` (case-insensitive) is one of the attributes whose value i
 #### `sanitizeUrl(value)`
 Strips control characters and whitespace, then returns `null` if what remains starts with a `javascript:`, `vbscript:`, `data:`, `blob:`, or `file:` scheme. Returns the original value unchanged otherwise — this is a scheme guard, not an es…
 
+#### `mergeClass(staticClass, dynamic)`
+Joins a literal `class` attribute with a `:class` result. `hydrate()` and `render()` both call it, so `class="item" :class="done ? 'done' : ''"` renders `class="item done"`. A false or null binding adds nothing and the static class stays.…
+
 #### `findInterpolations(text)`
 Returns every `{{ expression }}` found in `text` as `{ start, end, expression }`, scanning linearly with `indexOf` rather than a backtracking regex — the input is on the untrusted-input path (model-generated templates), where a `\{\{\s*(.+…
 ```js
 import { escapeText, isUrlAttribute, sanitizeUrl } from '@basenative/runtime/shared/escape';
 
-escapeText('<script>');             // '&lt;script&gt;'
-isUrlAttribute('href');             // true
+escapeText('<script>'); // '&lt;script&gt;'
+isUrlAttribute('href'); // true
 sanitizeUrl('javascript:alert(1)'); // null
-sanitizeUrl('/safe/path');          // '/safe/path'
+sanitizeUrl('/safe/path'); // '/safe/path'
 ```
 
 ### `@basenative/server` (v2.3.1)

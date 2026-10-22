@@ -173,6 +173,17 @@ describe('render', () => {
     assert.match(html, /class="active highlight"/);
   });
 
+  it(':class merges with a static class instead of replacing it', () => {
+    const html = render('<li class="item" :class="done ? \'done\' : \'\'">', { done: true });
+    assert.match(html, /class="item done"/);
+  });
+
+  it('keeps the static class when :class is empty', () => {
+    const html = render('<li class="item" :class="done">', { done: false });
+    assert.match(html, /class="item"/);
+    assert.doesNotMatch(html, /class=""/);
+  });
+
   it('inline {{ }} interpolation in attributes', () => {
     const html = render('<img alt="{{ desc }}">', { desc: 'A picture' });
     assert.match(html, /alt="A picture"/);

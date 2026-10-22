@@ -6,10 +6,10 @@ Creates a reactive signal.
 
 ```js
 const count = signal(0);
-count();        // read: 0
-count.set(5);   // write
-count.set(c => c + 1); // updater
-count.peek();   // read without subscribing
+count(); // read: 0
+count.set(5); // write
+count.set((c) => c + 1); // updater
+count.peek(); // read without subscribing
 ```
 
 ## `computed(fn)`
@@ -22,7 +22,9 @@ const double = computed(() => count() * 2);
 
 ## `effect(fn)`
 
-Runs a function reactively. Re-runs when any signal read inside changes. Returns a handle with `.dispose()`.
+One `set()` settles derived computeds, then runs each affected effect once. Writing a signal the effect also read throws `BN_EFFECT_LOOP`; use `.peek()` or write a different signal. Returns a handle with `.dispose()`.
+
+Reading a signal and a computed derived from it is the normal pattern, and it runs once. A read inside a helper still subscribes. The throw replaces a stack overflow. Do this from the error alone.
 
 ```js
 const stop = effect(() => {
@@ -68,17 +70,19 @@ Activates template directives in a DOM subtree. Returns a dispose function.
 const dispose = hydrate(document.getElementById('app'), {
   count,
   items: signal([]),
-  increment() { count.set(c => c + 1); },
+  increment() {
+    count.set((c) => c + 1);
+  },
 });
 ```
 
 ### Options
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `onDiagnostic` | `(diagnostic) => void` | Callback for diagnostic events |
-| `onMismatch` | `(message, detail) => void` | Callback for hydration mismatches |
-| `recover` | `'client' \| 'throw'` | Mismatch recovery strategy |
+| Option         | Type                        | Description                       |
+| -------------- | --------------------------- | --------------------------------- |
+| `onDiagnostic` | `(diagnostic) => void`      | Callback for diagnostic events    |
+| `onMismatch`   | `(message, detail) => void` | Callback for hydration mismatches |
+| `recover`      | `'client' \| 'throw'`       | Mismatch recovery strategy        |
 
 ## Template Directives
 
@@ -119,15 +123,14 @@ Loop variables: `$index`, `$first`, `$last`, `$even`, `$odd`.
 ### Event Binding — `@event`
 
 ```html
-<button @click="handleClick()">Click</button>
-<input @input="updateValue($event.target.value)">
+<button @click="handleClick()">Click</button> <input @input="updateValue($event.target.value)" />
 ```
 
 ### Attribute Binding — `:attr`
 
 ```html
 <button :disabled="isLoading()">Save</button>
-<div :class="isActive() ? 'active' : ''">Content</div>
+<div class="item" :class="done() ? 'done' : ''">Content</div>
 ```
 
 ### Text Interpolation — `{{ }}`
@@ -146,8 +149,8 @@ import { registerDirective } from '@basenative/runtime';
 // or: import { registerDirective } from '@basenative/runtime/shared/directives';
 
 registerDirective('tooltip', {
-  on: 'element',                                    // 'template' | 'element' (default)
-  server: (value, ctx, options) => value,           // string (or raw()) to use as text content
+  on: 'element', // 'template' | 'element' (default)
+  server: (value, ctx, options) => value, // string (or raw()) to use as text content
   client: (value, ctx, options) => value,
 });
 ```
@@ -227,10 +230,10 @@ Verbose console logging for diagnosing reactivity issues during development. Zer
 
 ### `enableDebug(options?)`
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `label` | `string` | Prefix included in every log line |
-| `logger` | `object` | Custom logger (default: `console`) |
+| Option       | Type      | Description                                                |
+| ------------ | --------- | ---------------------------------------------------------- |
+| `label`      | `string`  | Prefix included in every log line                          |
+| `logger`     | `object`  | Custom logger (default: `console`)                         |
 | `trackReads` | `boolean` | Also log every signal read (very verbose, default `false`) |
 
 ### `disableDebug()`
@@ -286,24 +289,26 @@ Programmatic try/catch helpers for template and SSR rendering. Despite a comment
 
 ### `createErrorBoundary(options?)`
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `onError` | `(error) => void` | Called when `.try()` catches an error |
-| `fallback` | `string` | Fallback HTML returned by `.getFallback()` |
+| Option     | Type              | Description                                |
+| ---------- | ----------------- | ------------------------------------------ |
+| `onError`  | `(error) => void` | Called when `.try()` catches an error      |
+| `fallback` | `string`          | Fallback HTML returned by `.getFallback()` |
 
 Returns a boundary object:
 
-| Method | Description |
-|--------|-------------|
-| `try(fn)` | Runs `fn()` and returns its result, or catches, records the error, calls `onError`, and returns `null` |
-| `getError()` | Returns the last caught error, or `null` |
-| `hasError()` | Returns whether an error has been caught |
-| `getFallback()` | Returns the configured `fallback` string, or `''` |
-| `reset()` | Clears the error state so the boundary can be reused |
+| Method          | Description                                                                                            |
+| --------------- | ------------------------------------------------------------------------------------------------------ |
+| `try(fn)`       | Runs `fn()` and returns its result, or catches, records the error, calls `onError`, and returns `null` |
+| `getError()`    | Returns the last caught error, or `null`                                                               |
+| `hasError()`    | Returns whether an error has been caught                                                               |
+| `getFallback()` | Returns the configured `fallback` string, or `''`                                                      |
+| `reset()`       | Clears the error state so the boundary can be reused                                                   |
 
 ```js
 const boundary = createErrorBoundary({
-  onError(error) { logger.error('render failed', error); },
+  onError(error) {
+    logger.error('render failed', error);
+  },
   fallback: '<p>Something went wrong.</p>',
 });
 
@@ -339,33 +344,35 @@ Validates and returns a plugin descriptor `{ name, setup }` from `config: { name
 
 Creates an isolated registry:
 
-| Method | Description |
-|--------|-------------|
-| `register(plugin)` | Registers a plugin (from `definePlugin`) and immediately calls its `setup(api)`. Throws if a plugin with the same `name` is already registered. |
-| `runHook(hookName, ...args)` | Runs every handler registered for `hookName`, in registration order |
-| `getDirective(name)` | Returns a custom directive handler registered via `api.addDirective`, or `undefined` |
-| `getPlugins()` | Returns the names of all registered plugins |
+| Method                       | Description                                                                                                                                     |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `register(plugin)`           | Registers a plugin (from `definePlugin`) and immediately calls its `setup(api)`. Throws if a plugin with the same `name` is already registered. |
+| `runHook(hookName, ...args)` | Runs every handler registered for `hookName`, in registration order                                                                             |
+| `getDirective(name)`         | Returns a custom directive handler registered via `api.addDirective`, or `undefined`                                                            |
+| `getPlugins()`               | Returns the names of all registered plugins                                                                                                     |
 
 `setup(api)` receives:
 
-| `api` method | Registers a handler for |
-|--------------|-------------------------|
+| `api` method                  | Registers a handler for     |
+| ----------------------------- | --------------------------- |
 | `addDirective(name, handler)` | a custom template directive |
-| `onBeforeRender(fn)` | the `beforeRender` hook |
-| `onAfterRender(fn)` | the `afterRender` hook |
-| `onBeforeHydrate(fn)` | the `beforeHydrate` hook |
-| `onAfterHydrate(fn)` | the `afterHydrate` hook |
-| `onError(fn)` | the `error` hook |
+| `onBeforeRender(fn)`          | the `beforeRender` hook     |
+| `onAfterRender(fn)`           | the `afterRender` hook      |
+| `onBeforeHydrate(fn)`         | the `beforeHydrate` hook    |
+| `onAfterHydrate(fn)`          | the `afterHydrate` hook     |
+| `onError(fn)`                 | the `error` hook            |
 
 ```js
 const registry = createPluginRegistry();
 
-registry.register(definePlugin({
-  name: 'analytics',
-  setup(api) {
-    api.onAfterHydrate(() => sendPageView());
-  },
-}));
+registry.register(
+  definePlugin({
+    name: 'analytics',
+    setup(api) {
+      api.onAfterHydrate(() => sendPageView());
+    },
+  }),
+);
 
 registry.runHook('afterHydrate'); // fires the handler above
 ```
@@ -380,19 +387,19 @@ Defers hydration of a subtree until it's needed. Browser-only — every function
 
 ### `createLazyHydrator(options?)`
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
+| Option       | Type     | Default | Description                         |
+| ------------ | -------- | ------- | ----------------------------------- |
 | `rootMargin` | `string` | `'0px'` | Forwarded to `IntersectionObserver` |
-| `threshold` | `number` | `0` | Forwarded to `IntersectionObserver` |
+| `threshold`  | `number` | `0`     | Forwarded to `IntersectionObserver` |
 
 Returns a controller:
 
-| Method | Description |
-|--------|-------------|
+| Method                        | Description                                                                 |
+| ----------------------------- | --------------------------------------------------------------------------- |
 | `observe(element, hydrateFn)` | Watches `element`; calls `hydrateFn()` once when it intersects the viewport |
-| `disconnect()` | Stops observing everything and clears the pending queue |
-| `hydrateNow(element)` | Forces immediate hydration of a tracked element |
-| `getPending()` | Number of elements still waiting |
+| `disconnect()`                | Stops observing everything and clears the pending queue                     |
+| `hydrateNow(element)`         | Forces immediate hydration of a tracked element                             |
+| `getPending()`                | Number of elements still waiting                                            |
 
 ### `lazyHydrate(element, hydrateFn, options?)`
 
@@ -436,34 +443,36 @@ Zero-dependency Core Web Vitals collection over `PerformanceObserver`. Every `ob
 
 Each observes one metric and calls `callback({ name, value, entries })` as new performance entries arrive:
 
-| Function | `name` | `value` | Underlying entry type |
-|----------|--------|---------|------------------------|
-| `observeLCP` | `'LCP'` | `entry.startTime` | `largest-contentful-paint` |
-| `observeFID` | `'FID'` | `entry.processingStart - entry.startTime` | `first-input` |
-| `observeCLS` | `'CLS'` | running total of `entry.value` (entries with `hadRecentInput` are skipped) | `layout-shift` |
-| `observeFCP` | `'FCP'` | `entry.startTime` | `paint`, filtered to `first-contentful-paint` |
-| `observeTTFB` | `'TTFB'` | `entry.responseStart` | `navigation` |
-| `observeINP` | `'INP'` | running max of `entry.duration` (only reports when a new max is seen) | `event` |
+| Function      | `name`   | `value`                                                                    | Underlying entry type                         |
+| ------------- | -------- | -------------------------------------------------------------------------- | --------------------------------------------- |
+| `observeLCP`  | `'LCP'`  | `entry.startTime`                                                          | `largest-contentful-paint`                    |
+| `observeFID`  | `'FID'`  | `entry.processingStart - entry.startTime`                                  | `first-input`                                 |
+| `observeCLS`  | `'CLS'`  | running total of `entry.value` (entries with `hadRecentInput` are skipped) | `layout-shift`                                |
+| `observeFCP`  | `'FCP'`  | `entry.startTime`                                                          | `paint`, filtered to `first-contentful-paint` |
+| `observeTTFB` | `'TTFB'` | `entry.responseStart`                                                      | `navigation`                                  |
+| `observeINP`  | `'INP'`  | running max of `entry.duration` (only reports when a new max is seen)      | `event`                                       |
 
 ### `createVitalsReporter(options?)`
 
-| Option | Type | Description |
-|--------|------|-------------|
+| Option     | Type               | Description                                      |
+| ---------- | ------------------ | ------------------------------------------------ |
 | `onReport` | `(metric) => void` | Called for every metric update from any observer |
 
 Returns `{ start, stop, getMetrics }`:
 
-| Method | Description |
-|--------|-------------|
-| `start()` | Starts all six observers above |
-| `stop()` | Disconnects every observer started by `start()`; safe to call before `start()` or twice in a row |
+| Method         | Description                                                                                              |
+| -------------- | -------------------------------------------------------------------------------------------------------- |
+| `start()`      | Starts all six observers above                                                                           |
+| `stop()`       | Disconnects every observer started by `start()`; safe to call before `start()` or twice in a row         |
 | `getMetrics()` | Returns a snapshot (`{ LCP, FID, CLS, FCP, TTFB, INP }`) of the latest value seen for each metric so far |
 
 ```js
 import { createVitalsReporter } from '@basenative/runtime';
 
 const vitals = createVitalsReporter({
-  onReport(metric) { navigator.sendBeacon('/vitals', JSON.stringify(metric)); },
+  onReport(metric) {
+    navigator.sendBeacon('/vitals', JSON.stringify(metric));
+  },
 });
 vitals.start();
 // later
@@ -504,7 +513,7 @@ The `Symbol.for('basenative.scopeSlot')` used to tag scope slots. Exported so a 
 import { evaluateExpression } from '@basenative/runtime/shared/expression';
 
 evaluateExpression('items.length > 0', { items: [1, 2] }); // true
-evaluateExpression('user.__proto__', { user: {} });         // undefined — reports BN_EXPR_UNSAFE_MEMBER
+evaluateExpression('user.__proto__', { user: {} }); // undefined — reports BN_EXPR_UNSAFE_MEMBER
 ```
 
 ### Notes
@@ -546,6 +555,10 @@ Returns whether `name` (case-insensitive) is one of the attributes whose value i
 
 Strips control characters and whitespace, then returns `null` if what remains starts with a `javascript:`, `vbscript:`, `data:`, `blob:`, or `file:` scheme. Returns the original value unchanged otherwise — this is a scheme guard, not an escaper.
 
+### `mergeClass(staticClass, dynamic)`
+
+Joins a literal `class` attribute with a `:class` result. `hydrate()` and `render()` both call it, so `class="item" :class="done ? 'done' : ''"` renders `class="item done"`. A false or null binding adds nothing and the static class stays. This used to replace the attribute, which dropped the static class.
+
 ### `findInterpolations(text)`
 
 Returns every `{{ expression }}` found in `text` as `{ start, end, expression }`, scanning linearly with `indexOf` rather than a backtracking regex — the input is on the untrusted-input path (model-generated templates), where a `\{\{\s*(.+?)\s*\}\}` regex is quadratic on a long unclosed `{{`.
@@ -553,10 +566,10 @@ Returns every `{{ expression }}` found in `text` as `{ start, end, expression }`
 ```js
 import { escapeText, isUrlAttribute, sanitizeUrl } from '@basenative/runtime/shared/escape';
 
-escapeText('<script>');             // '&lt;script&gt;'
-isUrlAttribute('href');             // true
+escapeText('<script>'); // '&lt;script&gt;'
+isUrlAttribute('href'); // true
 sanitizeUrl('javascript:alert(1)'); // null
-sanitizeUrl('/safe/path');          // '/safe/path'
+sanitizeUrl('/safe/path'); // '/safe/path'
 ```
 
 ### Notes

@@ -1,7 +1,7 @@
 {
   "name": "@basenative/cli",
   "version": "2.3.1",
-  "description": "The bn CLI \u2014 front door for BaseNative / DuganLabs projects (create, prd, speckit, gh, nx, deploy, doctor)",
+  "description": "bn CLI: create, deploy, doctor, and from-jsx (React drafts to BaseNative templates)",
   "type": "module",
   "bin": {
     "bn": "./src/index.js",

@@ -117,6 +117,16 @@ describe('BN_E_FOREIGN_DIRECTIVE', () => {
   it('points Svelte runes and React hooks at the right BaseNative primitive', () => {
     assert.match(first('<script>$state(0)</script>', 'BN_E_FOREIGN_DIRECTIVE').suggestion, /signal\(/);
     assert.match(first('<script>useMemo(f)</script>', 'BN_E_FOREIGN_DIRECTIVE').suggestion, /computed\(/);
+    assert.equal(first('<div className="card">x</div>', 'BN_E_FOREIGN_DIRECTIVE').suggestion, 'class="card"');
+    assert.equal(
+      first('<div className="on ? \'a\' : \'b\'">x</div>', 'BN_E_FOREIGN_DIRECTIVE').suggestion,
+      ':class="on ? \'a\' : \'b\'"',
+    );
+    assert.equal(first('<button onClick="save">x</button>', 'BN_E_FOREIGN_DIRECTIVE').suggestion, '@click="save($event)"');
+    assert.equal(first('<label htmlFor="email">Email</label>', 'BN_E_FOREIGN_DIRECTIVE').suggestion, 'for="email"');
+    assert.equal(first('<p>{user.name}</p>', 'BN_E_FOREIGN_DIRECTIVE').suggestion, '{{ user.name }}');
+    assert.equal(validateTemplate('<p>{{ user.name }}</p>').valid, true);
+    assert.equal(validateTemplate('<script>const o = {count}</script>').valid, true);
   });
 });
 

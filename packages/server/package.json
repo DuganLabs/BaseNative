@@ -44,7 +44,11 @@
     "ssr",
     "streaming",
     "server-rendering",
-    "html-templates"
+    "html-templates",
+    "llm",
+    "generative-ui",
+    "no-build",
+    "csp"
   ],
   "publishConfig": {
     "access": "public",
