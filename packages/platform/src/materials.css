@@ -35,6 +35,8 @@
     --bn-content-leading: 22px;
     --bn-content-secondary: rgba(60, 60, 67, 0.88);
     --bn-list-surface: rgba(255, 255, 255, 0.94);
+    /* Light alerts stay this white glass. Dark replaces it below. */
+    --bn-alert-surface: var(--bn-plat-swatch-rgba-255-255-255-0-7);
     /* BEGIN METRICS */
     --bn-blur-16: 16px;
     --bn-plat-swatch-0000000f: #0000000f;
@@ -174,5 +176,6 @@
       inset -1px 0 rgba(54, 226, 255, 0.18);
     --bn-content-secondary: rgba(235, 235, 245, 0.92);
     --bn-list-surface: rgba(44, 44, 46, 0.94);
+    --bn-alert-surface: rgba(26, 26, 26, 0.9);
   }
 }

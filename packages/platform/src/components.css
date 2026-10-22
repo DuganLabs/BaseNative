@@ -194,6 +194,12 @@
     padding: var(--bn-len-16) var(--bn-len-20);
   }
 
+  [data-bn='bn-button'][data-variant='glass'][data-size='large'] {
+    min-block-size: var(--bn-len-50);
+    line-height: var(--bn-type-18);
+    backdrop-filter: saturate(var(--bn-glass-saturate)) blur(var(--bn-glass-blur));
+  }
+
   [data-bn='bn-button'][data-variant='glass-prominent'][data-size='large'] {
     line-height: var(--bn-type-18);
     font-weight: var(--bn-plat-weight-medium);
@@ -895,6 +901,7 @@
     max-width: 100%;
     padding: var(--bn-len-14);
     border-radius: var(--bn-plat-radius-34);
+    background: var(--bn-alert-surface, var(--bn-plat-swatch-rgba-255-255-255-0-7));
     box-shadow: var(--bn-glass-edge), var(--bn-glass-shadow-alert);
   }
 
@@ -1593,6 +1600,16 @@
 
   [data-bn-platform='macos']
     [data-bn-platform='ios']
+    [data-bn='bn-button'][data-variant='glass'][data-size='large'] {
+    min-height: var(--bn-len-50);
+    min-block-size: var(--bn-len-50);
+    padding: var(--bn-len-16) var(--bn-len-20);
+    line-height: var(--bn-type-18);
+    backdrop-filter: saturate(var(--bn-glass-saturate)) blur(var(--bn-glass-blur));
+  }
+
+  [data-bn-platform='macos']
+    [data-bn-platform='ios']
     [data-bn='bn-button'][data-variant='glass-prominent'][data-size='large'] {
     padding: var(--bn-len-16) var(--bn-len-20);
     gap: var(--bn-len-4);
@@ -1755,7 +1772,7 @@
     min-width: 0;
     padding: var(--bn-len-14);
     border-radius: var(--bn-plat-radius-34);
-    background: var(--bn-plat-swatch-rgba-255-255-255-0-7);
+    background: var(--bn-alert-surface, var(--bn-plat-swatch-rgba-255-255-255-0-7));
     backdrop-filter: blur(var(--bn-plat-glass-frost-medium));
     box-shadow: var(--bn-glass-edge), var(--bn-glass-shadow-alert);
   }
