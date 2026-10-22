@@ -613,7 +613,7 @@ Text field. macOS insets come from Fields tokens.
 - use instead of: a bare <label> with your own classes, or literal <label data-bn="bn-field"> markup
 
 ### `renderBnFooter(options)`
-Site footer. Links are a nav, not a row of loose anchors.
+Site footer. `groups` are macOS link columns. A flat `links` list is one column.
 `packages/platform/src/components.js` · emits `<footer data-bn="bn-footer">`
 - variants: none declared
 - use instead of: a bare <footer> with your own classes, or literal <footer data-bn="bn-footer"> markup
