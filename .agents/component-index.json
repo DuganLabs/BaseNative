@@ -4,11 +4,11 @@
   "generatedOn": "2026-10-22",
   "contract": "Generated from source. Never hand-edit: `node scripts/llms-txt.js --check` fails CI when this file disagrees with packages/*/src. `variants` is the set of values a stylesheet actually declares a rule for, so a value outside it renders unstyled rather than erroring.",
   "counts": {
-    "components": 128,
-    "renderFunctions": 122,
+    "components": 129,
+    "renderFunctions": 123,
     "customElements": 6,
-    "styledContracts": 343,
-    "componentsWithVariants": 36
+    "styledContracts": 346,
+    "componentsWithVariants": 35
   },
   "stylesheets": [
     "packages/builder/src/builder.css",
@@ -111,11 +111,6 @@
       "@basenative/platform#renderBnAlert",
       "@basenative/platform#renderBnDialog"
     ],
-    "bn-action-list": [
-      "@basenative/platform#renderBnActionSheet",
-      "@basenative/platform#renderBnAlert",
-      "@basenative/platform#renderBnDialog"
-    ],
     "bn-action-message": [
       "@basenative/platform#renderBnActionSheet"
     ],
@@ -159,17 +154,8 @@
       "@basenative/platform#renderBnColorPicker",
       "@basenative/platform#renderBnColorWell"
     ],
-    "bn-color-well-label": [
-      "@basenative/platform#renderBnColorWell"
-    ],
     "bn-combobox": [
       "@basenative/platform#renderBnCombobox"
-    ],
-    "bn-combobox-label": [
-      "@basenative/platform#renderBnCombobox"
-    ],
-    "bn-context-menu": [
-      "@basenative/platform#renderBnContextMenu"
     ],
     "bn-date-chip": [
       "@basenative/platform#renderBnDatePicker"
@@ -187,9 +173,6 @@
       "@basenative/platform#renderBnDatePicker"
     ],
     "bn-dial": [
-      "@basenative/platform#renderBnDial"
-    ],
-    "bn-dial-label": [
       "@basenative/platform#renderBnDial"
     ],
     "bn-dialog": [
@@ -217,9 +200,6 @@
       "@basenative/platform#renderBnField"
     ],
     "bn-field-control": [
-      "@basenative/platform#renderBnField"
-    ],
-    "bn-field-label": [
       "@basenative/platform#renderBnField"
     ],
     "bn-form": [
@@ -255,13 +235,16 @@
     "bn-list-title": [
       "@basenative/platform#renderBnListRow"
     ],
-    "bn-menu": [
-      "@basenative/platform#renderBnMenu"
+    "bn-material": [
+      "@basenative/platform#renderBnMaterial"
     ],
     "bn-menu-item": [
       "@basenative/platform#renderBnMenuItem"
     ],
     "bn-menubar": [
+      "@basenative/platform#renderBnMenubar"
+    ],
+    "bn-menubar-app": [
       "@basenative/platform#renderBnMenubar"
     ],
     "bn-menubar-item": [
@@ -336,13 +319,7 @@
     "bn-sidebar": [
       "@basenative/platform#renderBnSidebar"
     ],
-    "bn-sidebar-item": [
-      "@basenative/platform#renderBnSidebar"
-    ],
     "bn-slider": [
-      "@basenative/platform#renderBnSlider"
-    ],
-    "bn-slider-label": [
       "@basenative/platform#renderBnSlider"
     ],
     "bn-spinner": [
@@ -363,18 +340,10 @@
     "bn-switch-input": [
       "@basenative/platform#renderBnSwitch"
     ],
-    "bn-switch-label": [
-      "@basenative/platform#renderBnSwitch"
-    ],
-    "bn-symbol": [
-      "@basenative/platform#renderBnButton",
-      "@basenative/platform#renderBnPopupButton",
-      "@basenative/platform#renderBnPulldownButton"
-    ],
-    "bn-tab": [
+    "bn-tab-bar": [
       "@basenative/platform#renderBnTabBar"
     ],
-    "bn-tab-bar": [
+    "bn-tab-more": [
       "@basenative/platform#renderBnTabBar"
     ],
     "bn-table": [
@@ -3337,8 +3306,7 @@
           "bn-action",
           "bn-action-sheet",
           "bn-action-title",
-          "bn-action-message",
-          "bn-action-list"
+          "bn-action-message"
         ],
         "dataAttributes": [
           "role"
@@ -3391,8 +3359,7 @@
           "bn-action",
           "bn-alert",
           "bn-alert-title",
-          "bn-alert-message",
-          "bn-action-list"
+          "bn-alert-message"
         ],
         "dataAttributes": [
           "role"
@@ -3439,7 +3406,7 @@
       "purpose": "App icon frame. Size is the App Icon token. Radius is 0.26 of that size (kit grid 256, radius 66.56). No Appl…",
       "deprecated": false,
       "emits": {
-        "rootTag": "span",
+        "rootTag": "figure",
         "primaryContract": "bn-app-icon",
         "contracts": [
           "bn-app-icon"
@@ -3449,7 +3416,7 @@
       "variants": {},
       "inertAxes": [],
       "styled": true,
-      "useInsteadOf": "a bare <span> with your own classes, or literal <span data-bn=\"bn-app-icon\"> markup"
+      "useInsteadOf": "a bare <figure> with your own classes, or literal <figure data-bn=\"bn-app-icon\"> markup"
     },
     {
       "id": "@basenative/platform#renderBnButton",
@@ -3464,16 +3431,9 @@
         "rootTag": "button",
         "primaryContract": "bn-button",
         "contracts": [
-          "bn-symbol",
           "bn-button"
         ],
-        "dataAttributes": [
-          "destructive",
-          "force",
-          "label",
-          "size",
-          "variant"
-        ]
+        "dataAttributes": []
       },
       "variants": {
         "size": {
@@ -3488,7 +3448,7 @@
           "declaredIn": [
             "packages/platform/src/components.css"
           ],
-          "emittedByRenderer": true
+          "emittedByRenderer": false
         },
         "variant": {
           "contract": "bn-button",
@@ -3504,7 +3464,7 @@
           "declaredIn": [
             "packages/platform/src/components.css"
           ],
-          "emittedByRenderer": true
+          "emittedByRenderer": false
         },
         "label": {
           "contract": "bn-button",
@@ -3517,7 +3477,7 @@
           "declaredIn": [
             "packages/platform/src/components.css"
           ],
-          "emittedByRenderer": true
+          "emittedByRenderer": false
         },
         "destructive": {
           "contract": "bn-button",
@@ -3529,12 +3489,31 @@
           "declaredIn": [
             "packages/platform/src/components.css"
           ],
-          "emittedByRenderer": true
+          "emittedByRenderer": false
         },
         "bn-platform": {
           "contract": "bn-button",
           "values": [
             "macos"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/platform/src/components.css"
+          ],
+          "emittedByRenderer": false
+        },
+        "style": {
+          "contract": "bn-button",
+          "values": [
+            "bevel",
+            "gradient",
+            "help",
+            "push",
+            "recessed",
+            "rounded",
+            "square",
+            "textured"
           ],
           "openPatterns": [],
           "matchesAnyValue": false,
@@ -3556,7 +3535,7 @@
           "declaredIn": [
             "packages/platform/src/components.css"
           ],
-          "emittedByRenderer": true
+          "emittedByRenderer": false
         }
       },
       "inertAxes": [],
@@ -3639,8 +3618,7 @@
         "rootTag": "label",
         "primaryContract": "bn-color-well",
         "contracts": [
-          "bn-color-well",
-          "bn-color-well-label"
+          "bn-color-well"
         ],
         "dataAttributes": []
       },
@@ -3662,8 +3640,7 @@
         "rootTag": "label",
         "primaryContract": "bn-combobox",
         "contracts": [
-          "bn-combobox",
-          "bn-combobox-label"
+          "bn-combobox"
         ],
         "dataAttributes": []
       },
@@ -3679,33 +3656,18 @@
       "package": "@basenative/platform",
       "file": "packages/platform/src/components.js",
       "signature": "renderBnContextMenu(options)",
-      "purpose": "Contextual menu. Cut-corner radius and overlay colour are kit tokens.",
+      "purpose": "Contextual menu. The menu itself is the popover; no extra wrapper.",
       "deprecated": false,
       "emits": {
-        "rootTag": "div",
-        "primaryContract": "bn-context-menu",
-        "contracts": [
-          "bn-context-menu"
-        ],
+        "rootTag": null,
+        "primaryContract": null,
+        "contracts": [],
         "dataAttributes": []
       },
-      "variants": {
-        "present": {
-          "contract": "bn-context-menu",
-          "values": [
-            "inline"
-          ],
-          "openPatterns": [],
-          "matchesAnyValue": false,
-          "declaredIn": [
-            "packages/platform/src/components.css"
-          ],
-          "emittedByRenderer": false
-        }
-      },
+      "variants": {},
       "inertAxes": [],
-      "styled": true,
-      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"bn-context-menu\"> markup"
+      "styled": false,
+      "useInsteadOf": "hand-written markup for this element"
     },
     {
       "id": "@basenative/platform#renderBnDatePicker",
@@ -3721,8 +3683,8 @@
         "primaryContract": "bn-date-picker",
         "contracts": [
           "bn-date-day",
-          "bn-date-chips",
           "bn-date-chip",
+          "bn-date-chips",
           "bn-date-picker",
           "bn-date-grid"
         ],
@@ -3771,8 +3733,7 @@
         "rootTag": "label",
         "primaryContract": "bn-dial",
         "contracts": [
-          "bn-dial",
-          "bn-dial-label"
+          "bn-dial"
         ],
         "dataAttributes": []
       },
@@ -3796,8 +3757,7 @@
         "contracts": [
           "bn-action",
           "bn-dialog",
-          "bn-dialog-title",
-          "bn-action-list"
+          "bn-dialog-title"
         ],
         "dataAttributes": []
       },
@@ -3909,8 +3869,7 @@
         "primaryContract": "bn-field",
         "contracts": [
           "bn-field-control",
-          "bn-field",
-          "bn-field-label"
+          "bn-field"
         ],
         "dataAttributes": []
       },
@@ -3996,7 +3955,7 @@
       "purpose": "Keyboard accessory bar. Key size follows the captured iPhone key (about 50×43, radius 8.5).",
       "deprecated": false,
       "emits": {
-        "rootTag": "div",
+        "rootTag": "menu",
         "primaryContract": "bn-input-accessory",
         "contracts": [
           "bn-key",
@@ -4007,7 +3966,7 @@
       "variants": {},
       "inertAxes": [],
       "styled": true,
-      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"bn-input-accessory\"> markup"
+      "useInsteadOf": "a bare <menu> with your own classes, or literal <menu data-bn=\"bn-input-accessory\"> markup"
     },
     {
       "id": "@basenative/platform#renderBnList",
@@ -4082,39 +4041,64 @@
       "useInsteadOf": "a bare <li> with your own classes, or literal <li data-bn=\"bn-list-row\"> markup"
     },
     {
-      "id": "@basenative/platform#renderBnMenu",
-      "name": "renderBnMenu",
+      "id": "@basenative/platform#renderBnMaterial",
+      "name": "renderBnMaterial",
       "kind": "render-function",
       "package": "@basenative/platform",
       "file": "packages/platform/src/components.js",
-      "signature": "renderBnMenu(options)",
-      "purpose": "Menu of menuitem buttons.",
+      "signature": "renderBnMaterial(options)",
+      "purpose": "One material swatch from the kit (ultrathin through ultrathick). The sample is a figure; the fill is the mate…",
       "deprecated": false,
       "emits": {
-        "rootTag": "div",
-        "primaryContract": "bn-menu",
+        "rootTag": "figure",
+        "primaryContract": "bn-material",
         "contracts": [
-          "bn-menu"
+          "bn-material"
         ],
-        "dataAttributes": []
+        "dataAttributes": [
+          "material"
+        ]
       },
       "variants": {
-        "present": {
-          "contract": "bn-menu",
+        "material": {
+          "contract": "bn-material",
           "values": [
-            "inline"
+            "thick",
+            "thin",
+            "ultrathick",
+            "ultrathin"
           ],
           "openPatterns": [],
           "matchesAnyValue": false,
           "declaredIn": [
             "packages/platform/src/components.css"
           ],
-          "emittedByRenderer": false
+          "emittedByRenderer": true
         }
       },
       "inertAxes": [],
       "styled": true,
-      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"bn-menu\"> markup"
+      "useInsteadOf": "a bare <figure> with your own classes, or literal <figure data-bn=\"bn-material\"> markup"
+    },
+    {
+      "id": "@basenative/platform#renderBnMenu",
+      "name": "renderBnMenu",
+      "kind": "render-function",
+      "package": "@basenative/platform",
+      "file": "packages/platform/src/components.js",
+      "signature": "renderBnMenu(options)",
+      "purpose": "Menu of menuitem buttons. The menu element is the popover.",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "li",
+        "primaryContract": null,
+        "contracts": [],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": false,
+      "useInsteadOf": "a bare <li> with your own classes"
     },
     {
       "id": "@basenative/platform#renderBnMenubar",
@@ -4123,12 +4107,13 @@
       "package": "@basenative/platform",
       "file": "packages/platform/src/components.js",
       "signature": "renderBnMenubar(options)",
-      "purpose": "Menu bar. iOS status-bar height is a dimension token. The macOS bar follows the HIG.",
+      "purpose": "Menu bar. iOS status-bar height is a dimension token. The macOS bar is 24px.",
       "deprecated": false,
       "emits": {
         "rootTag": "header",
         "primaryContract": "bn-menubar",
         "contracts": [
+          "bn-menubar-app",
           "bn-menubar-item",
           "bn-menubar"
         ],
@@ -4227,10 +4212,10 @@
       "package": "@basenative/platform",
       "file": "packages/platform/src/components.js",
       "signature": "renderBnPopover(options)",
-      "purpose": "Popover. Corner radius is the popover dimension token.",
+      "purpose": "Popover. Corner radius is the popover dimension token. The aside is the popover.",
       "deprecated": false,
       "emits": {
-        "rootTag": "div",
+        "rootTag": "aside",
         "primaryContract": "bn-popover",
         "contracts": [
           "bn-popover-button",
@@ -4254,7 +4239,7 @@
       },
       "inertAxes": [],
       "styled": true,
-      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"bn-popover\"> markup"
+      "useInsteadOf": "a bare <aside> with your own classes, or literal <aside data-bn=\"bn-popover\"> markup"
     },
     {
       "id": "@basenative/platform#renderBnPopupButton",
@@ -4269,8 +4254,7 @@
         "rootTag": "select",
         "primaryContract": "bn-popup-button",
         "contracts": [
-          "bn-popup-button",
-          "bn-symbol"
+          "bn-popup-button"
         ],
         "dataAttributes": []
       },
@@ -4314,8 +4298,7 @@
         "rootTag": "button",
         "primaryContract": "bn-pulldown-button",
         "contracts": [
-          "bn-pulldown-button",
-          "bn-symbol"
+          "bn-pulldown-button"
         ],
         "dataAttributes": []
       },
@@ -4356,7 +4339,7 @@
       "purpose": "Scroll region. macOS scrollbar colour is Miscellaneous/Scrollbar.",
       "deprecated": false,
       "emits": {
-        "rootTag": "div",
+        "rootTag": "section",
         "primaryContract": "bn-scroll",
         "contracts": [
           "bn-scroll"
@@ -4366,7 +4349,7 @@
       "variants": {},
       "inertAxes": [],
       "styled": true,
-      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"bn-scroll\"> markup"
+      "useInsteadOf": "a bare <section> with your own classes, or literal <section data-bn=\"bn-scroll\"> markup"
     },
     {
       "id": "@basenative/platform#renderBnSearch",
@@ -4524,13 +4507,12 @@
       "package": "@basenative/platform",
       "file": "packages/platform/src/components.js",
       "signature": "renderBnSidebar(options)",
-      "purpose": "Sidebar. Active and inactive backgrounds are kit colours.",
+      "purpose": "Sidebar. Active and inactive backgrounds are kit colours. `sections` is `{ label, items }[]`. A flat `items`…",
       "deprecated": false,
       "emits": {
         "rootTag": "aside",
         "primaryContract": "bn-sidebar",
         "contracts": [
-          "bn-sidebar-item",
           "bn-sidebar"
         ],
         "dataAttributes": []
@@ -4553,8 +4535,7 @@
         "rootTag": "label",
         "primaryContract": "bn-slider",
         "contracts": [
-          "bn-slider",
-          "bn-slider-label"
+          "bn-slider"
         ],
         "dataAttributes": []
       },
@@ -4595,7 +4576,7 @@
       "purpose": "Stepper: a number input between decrement and increment buttons.",
       "deprecated": false,
       "emits": {
-        "rootTag": "span",
+        "rootTag": "fieldset",
         "primaryContract": "bn-stepper",
         "contracts": [
           "bn-stepper",
@@ -4607,7 +4588,7 @@
       "variants": {},
       "inertAxes": [],
       "styled": true,
-      "useInsteadOf": "a bare <span> with your own classes, or literal <span data-bn=\"bn-stepper\"> markup"
+      "useInsteadOf": "a bare <fieldset> with your own classes, or literal <fieldset data-bn=\"bn-stepper\"> markup"
     },
     {
       "id": "@basenative/platform#renderBnSwitch",
@@ -4623,8 +4604,7 @@
         "primaryContract": "bn-switch",
         "contracts": [
           "bn-switch",
-          "bn-switch-input",
-          "bn-switch-label"
+          "bn-switch-input"
         ],
         "dataAttributes": []
       },
@@ -4640,13 +4620,13 @@
       "package": "@basenative/platform",
       "file": "packages/platform/src/components.js",
       "signature": "renderBnTabBar(options)",
-      "purpose": "Tab bar. Selection colour is Miscellaneous/Tab Bar Selection.",
+      "purpose": "Tab bar. Selection colour is Miscellaneous/Tab Bar Selection. `barLimit` keeps the first links in the bar and…",
       "deprecated": false,
       "emits": {
         "rootTag": "nav",
         "primaryContract": "bn-tab-bar",
         "contracts": [
-          "bn-tab",
+          "bn-tab-more",
           "bn-tab-bar"
         ],
         "dataAttributes": []
@@ -4685,10 +4665,10 @@
       "package": "@basenative/platform",
       "file": "packages/platform/src/components.js",
       "signature": "renderBnToolbar(options)",
-      "purpose": "Toolbar.",
+      "purpose": "Toolbar. A menu of commands; each item's li is display:contents.",
       "deprecated": false,
       "emits": {
-        "rootTag": "div",
+        "rootTag": "menu",
         "primaryContract": "bn-toolbar",
         "contracts": [
           "bn-toolbar-item",
@@ -4699,7 +4679,7 @@
       "variants": {},
       "inertAxes": [],
       "styled": true,
-      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"bn-toolbar\"> markup"
+      "useInsteadOf": "a bare <menu> with your own classes, or literal <menu data-bn=\"bn-toolbar\"> markup"
     },
     {
       "id": "@basenative/platform#renderBnTooltip",
@@ -4711,7 +4691,7 @@
       "purpose": "Tooltip, a hint popover. Inner stroke colour is a macOS token.",
       "deprecated": false,
       "emits": {
-        "rootTag": "span",
+        "rootTag": "p",
         "primaryContract": "bn-tooltip",
         "contracts": [
           "bn-tooltip-button",
@@ -4722,7 +4702,7 @@
       "variants": {},
       "inertAxes": [],
       "styled": true,
-      "useInsteadOf": "a bare <span> with your own classes, or literal <span data-bn=\"bn-tooltip\"> markup"
+      "useInsteadOf": "a bare <p> with your own classes, or literal <p data-bn=\"bn-tooltip\"> markup"
     },
     {
       "id": "@basenative/platform#renderBnWidget",

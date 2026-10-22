@@ -508,17 +508,19 @@ describe('/tasks tells the static visitor where their tasks go', () => {
 });
 
 describe('every published route is reachable from the navigation', () => {
-  // The shell's nav is rendered by renderAppNav from the route table's
-  // page data (page.js), not hand-written in layout.html — so reachability
-  // is asserted on rendered pages, which is the stronger claim anyway:
-  // it proves the link a visitor gets, in the bar or the More sheet.
+  // The shell is the platform menu bar, sidebar, and tab bar, rendered
+  // from the route table (shell.js), not hand-written in layout.html.
   it('links every non-internal route from the rendered navigation', () => {
     for (const route of siteRoutes) {
       if (route.internal) continue;
       const html = renderRoute(route, { tasks: [], hasApi: false });
       assert.ok(
-        html.includes('data-bn="app-nav"'),
-        `${route.path} renders without the app nav shell`,
+        html.includes('data-bn="bn-sidebar"'),
+        `${route.path} renders without the sidebar`,
+      );
+      assert.ok(
+        html.includes('data-bn="bn-tab-bar"'),
+        `${route.path} renders without the tab bar`,
       );
       assert.ok(
         html.includes(`href="${route.path}"`),
@@ -527,39 +529,44 @@ describe('every published route is reachable from the navigation', () => {
     }
   });
 
-  it('carries the shell-critical nav CSS inline, independent of the cached stylesheet chain', () => {
+  it('carries the shell-critical CSS inline, independent of the cached stylesheet chain', () => {
     // Pages' assets are cached for hours while the HTML is revalidated
-    // per visit; a returning visitor with a pre-app-nav components.css
-    // must still get a styled shell (the 2026-10-20 phone incident).
-    // page.js inlines the App Nav + List Group sections for that reason.
+    // per visit. The window chrome is inlined so a stale platform-shell.css
+    // cannot drop the grid or the phone tab bar (the 2026-10-20 incident).
     const html = renderRoute(siteRoutes[0], { tasks: [], hasApi: false });
     assert.ok(html.includes('<style data-bn-critical="shell">'), 'the shell-critical style block renders');
     const style = html.slice(html.indexOf('<style data-bn-critical="shell">'), html.indexOf('</style>', html.indexOf('<style data-bn-critical="shell">')));
-    assert.ok(style.includes('[data-bn="app-nav"]'), 'the app nav rules are inlined');
+    assert.ok(style.includes('[data-bn=\'bn-sidebar\']') || style.includes('[data-bn="bn-sidebar"]'), 'the sidebar rules are inlined');
+    assert.ok(style.includes('[data-bn=\'bn-tab-bar\']') || style.includes('[data-bn="bn-tab-bar"]'), 'the tab bar rules are inlined');
     assert.ok(style.includes('position: fixed'), 'the bar positioning is inlined');
-    assert.ok(style.includes('[data-bn="app-nav-sheet"]'), 'the More sheet rules are inlined');
-    assert.ok(style.includes('[data-bn="list-group"]'), 'the grouped list rules are inlined');
   });
 
-  it('the inlined shell CSS is self-contained: every token it uses, it defines', () => {
-    // PR #275 inlined the shell's rules but not the tokens they compute
-    // from — those still came from the cached tokens.css, so a visitor
-    // holding a pre-app-nav copy got a bar whose z-index computed to
-    // auto and a clearance calc that was invalid outright: content
-    // painted over the bar and the page reserved no space for it.
-    // The invariant that prevents the whole class: within the shell
-    // block, every var(--bn-*) reference resolves to a definition in
-    // the same block.
+  it('the inlined shell CSS is self-contained: every token it uses, it defines or falls back', () => {
+    // A var(--bn-*) with no fallback still has to be defined in the
+    // same block. A fallback is enough: the shell must lay out when
+    // tokens.css is stale.
     const html = renderRoute(siteRoutes[0], { tasks: [], hasApi: false });
     const style = html.slice(html.indexOf('<style data-bn-critical="shell">'), html.indexOf('</style>', html.indexOf('<style data-bn-critical="shell">')));
     const defined = new Set([...style.matchAll(/(--bn-[a-z0-9-]+)\s*:/g)].map((m) => m[1]));
-    const referenced = new Set([...style.matchAll(/var\(\s*(--bn-[a-z0-9-]+)/g)].map((m) => m[1]));
-    const missing = [...referenced].filter((name) => !defined.has(name));
-    assert.deepEqual(missing, [], `shell CSS references tokens it does not define: ${missing.join(', ')}`);
-    // The two whose absence broke the phone shell, pinned to the
-    // values tokens.css declares.
-    assert.ok(style.includes('--bn-z-nav: 900'), 'the nav stacking token is inlined');
-    assert.ok(style.includes('--bn-size-app-nav-bar: 3.5rem'), 'the bar height token is inlined');
+    const missing = [];
+    for (const match of style.matchAll(/var\(\s*(--bn-[a-z0-9-]+)([^)]*)\)/g)) {
+      const name = match[1];
+      const hasFallback = match[2].trimStart().startsWith(',');
+      if (!hasFallback && !defined.has(name)) missing.push(name);
+    }
+    assert.deepEqual([...new Set(missing)], [], `shell CSS references tokens it does not define: ${missing.join(', ')}`);
+    assert.ok(style.includes('--bn-shell-sidebar:'), 'the sidebar track is inlined');
+    assert.ok(style.includes('--bn-shell-tab:'), 'the tab bar size is inlined');
+  });
+
+  it('home names the installed runtime and the effect rule, with no inline style', () => {
+    const html = renderRoute(siteRoutes[0], { tasks: [], hasApi: false });
+    const runtime = JSON.parse(readFileSync(repo('packages/runtime/package.json'), 'utf8')).version;
+    assert.ok(html.includes(runtime), 'home names the runtime version');
+    assert.match(html, /BN_EFFECT_LOOP/);
+    assert.equal(html.includes('style='), false);
+    assert.match(html, /data-bn="bn-button"/);
+    assert.match(html, /data-bn="bn-list"/);
   });
 
   it('a route with no nav entry is marked internal, and an internal route has no nav entry', () => {

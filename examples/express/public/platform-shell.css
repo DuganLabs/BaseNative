@@ -1,0 +1,238 @@
+/**
+ * Window chrome for basenative.com. Inlined into every page as well as
+ * linked, so a stale cached stylesheet cannot unstyle the shell.
+ * Every --bn-plat-* use carries a fallback so the inline copy does not
+ * depend on tokens.css being fresh.
+ */
+@layer components {
+  :root {
+    color-scheme: light dark;
+    --bn-shell-sidebar: 240px;
+    --bn-shell-menu: 28px;
+    --bn-shell-tab: 49px;
+  }
+
+  body {
+    display: grid;
+    grid-template-columns: var(--bn-shell-sidebar) minmax(0, 1fr);
+    grid-template-rows: var(--bn-shell-menu) minmax(0, 1fr) auto;
+    grid-template-areas:
+      'menu menu'
+      'side main'
+      'side foot';
+    min-block-size: 100dvh;
+    margin: 0;
+    background: var(--bn-plat-color-bg-grouped, #f2f2f7);
+    color: var(--bn-plat-color-labels-primary, rgba(0, 0, 0, 0.97));
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.29;
+  }
+
+  body::before,
+  body::after {
+    content: none;
+    display: none;
+  }
+
+  [data-bn='bn-menubar'] {
+    grid-area: menu;
+  }
+
+  [data-bn='bn-sidebar'] {
+    grid-area: side;
+    min-block-size: 0;
+    overflow: auto;
+  }
+
+  main {
+    grid-area: main;
+    max-inline-size: none;
+    margin: 0;
+    min-inline-size: 0;
+    padding: 24px 32px 48px;
+    background: transparent;
+  }
+
+  body > [data-bn-site-footer] {
+    grid-area: foot;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    margin: 0;
+    padding: 8px 16px;
+    border: 0;
+    border-block-start: 1px solid var(--bn-plat-color-separators-non-opaque, rgba(0, 0, 0, 0.12));
+    background: transparent;
+    text-align: start;
+    font-size: 12px;
+    line-height: 1.3;
+    color: var(--bn-plat-color-labels-secondary, rgba(0, 0, 0, 0.65));
+  }
+
+  body > [data-bn-site-footer] p {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: inherit;
+  }
+
+  body > [data-bn-site-footer] nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+  }
+
+  body > [data-bn-site-footer] a {
+    color: var(--bn-plat-color-accents-blue, #0088ff);
+    font-size: 12px;
+    text-decoration: none;
+  }
+
+  /* Pages that still use the previous dark type stay readable inside the new chrome. */
+  body:not([data-active='home']) main {
+    background: var(--surface-0, #0c0b09);
+    color: var(--text-0, #f0ede4);
+  }
+
+  body[data-active='home'] main {
+    background: var(--bn-plat-color-bg-grouped, #f2f2f7);
+    color: var(--bn-plat-color-labels-primary, rgba(0, 0, 0, 0.97));
+  }
+
+  body[data-active='home'] article {
+    max-inline-size: 720px;
+  }
+
+  body[data-active='home'] h1 {
+    margin: 0;
+    font-size: var(--bn-plat-font-large-title-size, 34px);
+    line-height: var(--bn-plat-font-large-title-leading, 41px);
+    font-weight: var(--bn-plat-font-large-title-emphasized-weight, 700);
+    letter-spacing: -0.4px;
+    color: var(--bn-plat-color-labels-primary, rgba(0, 0, 0, 0.97));
+  }
+
+  [data-bn-platform='macos'] body[data-active='home'] h1 {
+    font-size: var(--bn-plat-font-title-1-size, 28px);
+    line-height: 1.2;
+    font-weight: 700;
+  }
+
+  body[data-active='home'] header > p:first-of-type {
+    margin: 0 0 4px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--bn-plat-color-labels-secondary, rgba(0, 0, 0, 0.65));
+  }
+
+  body[data-active='home'] header > p {
+    margin: 8px 0 0;
+    max-inline-size: 40rem;
+    font-size: 17px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: var(--bn-plat-color-labels-secondary, rgba(0, 0, 0, 0.65));
+  }
+
+  body[data-active='home'] header nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 20px 0 8px;
+  }
+
+  body[data-active='home'] main > header,
+  body[data-active='home'] main > section,
+  body[data-active='home'] section {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  body[data-active='home'] section > h2 {
+    margin: 28px 16px 6px;
+    font-size: 13px;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--bn-plat-color-labels-secondary, rgba(0, 0, 0, 0.65));
+  }
+
+  body[data-active='home'] [data-bn='bn-list-row'] {
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    padding-block: 10px;
+  }
+
+  body[data-active='home'] pre {
+    margin: 0 16px 24px;
+    padding: 16px;
+    overflow: auto;
+    border-radius: 12px;
+    background: var(--bn-plat-color-backgrounds-grouped-secondary, #fff);
+    color: var(--bn-plat-color-labels-primary, rgba(0, 0, 0, 0.97));
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  @media (max-width: 1099px) {
+    [data-bn='bn-menubar'] {
+      display: none;
+    }
+
+    body {
+      grid-template-rows: minmax(0, 1fr) auto;
+      grid-template-areas:
+        'side main'
+        'side foot';
+    }
+  }
+
+  @media (max-width: 767px) {
+    [data-bn='bn-sidebar'] {
+      display: none;
+    }
+
+    [data-bn='bn-tab-bar'] {
+      display: flex;
+      position: fixed;
+      inset-inline: 0;
+      inset-block-end: 0;
+      z-index: 20;
+      min-height: var(--bn-shell-tab);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      background: var(--bn-plat-material-ultrathin, rgba(255, 255, 255, 0.72));
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--bn-plat-color-separators-non-opaque, rgba(0, 0, 0, 0.12));
+    }
+
+    body {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr) auto;
+      grid-template-areas:
+        'main'
+        'foot';
+    }
+
+    main {
+      padding: 20px 16px calc(var(--bn-shell-tab) + env(safe-area-inset-bottom, 0px) + 24px);
+    }
+  }
+
+  @media (min-width: 768px) {
+    [data-bn='bn-tab-bar'] {
+      display: none;
+    }
+  }
+}

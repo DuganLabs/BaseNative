@@ -37,6 +37,7 @@
   [data-bn='bn-symbol'] {
     display: inline-block;
     line-height: 1;
+    font-style: normal;
   }
 
   /* Buttons — iOS content area, page 507:24673 */
@@ -458,9 +459,20 @@
     display: inline-flex;
     align-items: stretch;
     min-height: 32px;
+    margin: 0;
+    border: 0;
+    padding: 0;
     border-radius: 1000px;
     background: var(--bn-plat-color-fills-tertiary);
     overflow: hidden;
+  }
+
+  [data-bn='bn-stepper'] legend {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
   }
 
   [data-bn='bn-stepper'] input {
@@ -663,16 +675,36 @@
 
   [data-bn='bn-menu'],
   [data-bn='bn-popover'],
-  [data-bn='bn-context-menu'] {
+  [data-bn='bn-context-menu'],
+  [data-bn='bn-toolbar'],
+  [data-bn='bn-action-list'],
+  [data-bn='bn-share-row'],
+  [data-bn='bn-input-accessory'],
+  [data-bn='bn-date-chips'] {
     display: flex;
     flex-direction: column;
     min-width: 200px;
     padding: var(--bn-plat-menus-control-group-padding-top, 6px) 0;
     margin: 0;
     border: 0;
+    list-style: none;
     border-radius: var(--bn-plat-popover-corner-radius, 10px);
     background: var(--bn-plat-color-bg);
     color: var(--bn-plat-color-labels-primary);
+  }
+
+  /* The list item is required by menu and ul. It must not generate a box. */
+  [data-bn='bn-menu'] > li,
+  [data-bn='bn-context-menu'] > li,
+  [data-bn='bn-toolbar'] > li,
+  [data-bn='bn-action-list'] > li,
+  [data-bn='bn-share-row'] > li,
+  [data-bn='bn-input-accessory'] > li,
+  [data-bn='bn-date-chips'] > li,
+  [data-bn='bn-color-grid'] > li,
+  [data-bn='bn-sidebar'] li,
+  [data-bn='bn-tab-more'] li {
+    display: contents;
   }
 
   [data-bn='bn-context-menu'] {
@@ -802,6 +834,7 @@
     width: var(--bn-plat-grabber-width, 60px);
     height: var(--bn-plat-grabber-height, 4px);
     margin: 0 auto 12px;
+    border: 0;
     border-radius: 4px;
     background: var(--bn-plat-color-fills-tertiary);
   }
@@ -855,7 +888,6 @@
   }
 
   [data-bn='bn-tab-bar'],
-  [data-bn='bn-toolbar'],
   [data-bn='bn-menubar'],
   [data-bn='bn-input-accessory'] {
     display: flex;
@@ -865,6 +897,16 @@
     padding: 0 16px;
     background: var(--bn-plat-color-bg);
     color: var(--bn-plat-color-labels-primary);
+  }
+
+  [data-bn='bn-toolbar'],
+  [data-bn='bn-input-accessory'],
+  [data-bn='bn-date-chips'] {
+    flex-direction: row;
+    align-items: center;
+    min-width: 0;
+    border-radius: 0;
+    background: transparent;
   }
 
   [data-bn='bn-tab-bar'] {
@@ -888,34 +930,146 @@
   }
 
   [data-bn='bn-sidebar'] {
-    display: block;
-    min-width: 220px;
-    padding: 8px;
-    background: var(
-      --bn-plat-color-miscellaneous-sidebar-sidebar-bg-inactive,
-      var(--bn-plat-color-bg-secondary)
-    );
-  }
-
-  [data-bn='bn-sidebar'] nav {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    min-width: 220px;
+    padding: 8px 8px 16px;
+    background: var(--bn-plat-color-miscellaneous-sidebar-sidebar-bg-inactive, #edf4fa);
+    color: var(--bn-plat-color-labels-primary);
+  }
+
+  [data-bn='bn-sidebar'] nav,
+  [data-bn='bn-sidebar'] section,
+  [data-bn='bn-sidebar'] ul {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  [data-bn='bn-sidebar'] h2 {
+    margin: 14px 8px 4px;
+    font-size: 11px;
+    line-height: 14px;
+    font-weight: var(--bn-plat-weight-semibold, 600);
+    color: var(--bn-plat-color-labels-secondary);
   }
 
   [data-bn='bn-sidebar-item'] {
-    display: block;
-    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 28px;
+    padding: 4px 8px;
     border-radius: 6px;
     color: var(--bn-plat-color-labels-primary);
     text-decoration: none;
+    font-size: 13px;
   }
 
   [data-bn='bn-sidebar-item'][aria-current='page'] {
-    background: var(
-      --bn-plat-color-miscellaneous-sidebar-sidebar-bg-active,
-      var(--bn-plat-color-accents-blue)
-    );
+    background: var(--bn-plat-color-accents-blue);
+    color: var(--bn-plat-color-grays-white, #fff);
+  }
+
+  [data-bn-platform='macos'] [data-bn='bn-menubar'] {
+    min-height: 24px;
+    padding: 0 12px;
+    gap: 16px;
+    font-size: 13px;
+    background: var(--bn-plat-material-thick, rgba(246, 246, 246, 0.72));
+    backdrop-filter: blur(var(--bn-plat-glass-frost-medium, 16px));
+    border-bottom: 1px solid var(--bn-plat-color-separators-non-opaque, rgba(0, 0, 0, 0.12)); /* bn-allow: DS005 — kit hairline, not the theme border token */
+  }
+
+  [data-bn='bn-menubar-app'],
+  [data-bn='bn-menubar-item'] {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  [data-bn='bn-menubar-app'] {
+    font-weight: var(--bn-plat-weight-semibold, 600);
+  }
+
+  [data-bn='bn-menubar'] [data-bn='bn-menubar-item']:last-child {
+    margin-inline-start: auto;
+  }
+
+  [data-bn='bn-button'][data-style='push'] {
+    background: var(--bn-plat-color-fills-opaque-primary, rgba(0, 0, 0, 0.1));
+    color: var(--bn-plat-color-labels-primary);
+    box-shadow:
+      0 0.5px 0 rgba(255, 255, 255, 0.6) inset,
+      0 1px 1px rgba(0, 0, 0, 0.12);
+  }
+
+  [data-bn='bn-button'][data-style='bevel'],
+  [data-bn='bn-button'][data-style='gradient'] {
+    background: linear-gradient(#fff, #e4e4e6);
+    color: var(--bn-plat-color-labels-primary);
+    box-shadow:
+      0 0.5px 0 #fff inset,
+      0 1px 0 rgba(0, 0, 0, 0.18);
+  }
+
+  [data-bn='bn-button'][data-style='recessed'] {
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--bn-plat-color-labels-primary);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.18) inset;
+  }
+
+  [data-bn='bn-button'][data-style='textured'] {
+    /* bn-allow: DS001 — kit textured-button stripe, not the theme gray */
+    background: repeating-linear-gradient(#f4f4f5, #f4f4f5 1px, #e7e7e8 2px);
+    color: var(--bn-plat-color-labels-primary);
+  }
+
+  [data-bn='bn-button'][data-style='rounded'] {
+    border-radius: 1000px;
+  }
+
+  [data-bn='bn-button'][data-style='square'] {
+    border-radius: 2px;
+  }
+
+  [data-bn='bn-button'][data-style='help'] {
+    min-width: var(--bn-plat-control-global-height, 24px);
+    padding-inline: 0;
+    border-radius: 1000px;
+  }
+
+  [data-bn='bn-material'] {
+    display: grid;
+    place-items: end start;
+    width: 160px;
+    height: 96px;
+    margin: 0;
+    padding: 10px;
+    border-radius: 12px;
+    background: var(--bn-plat-material-medium);
+    color: var(--bn-plat-color-labels-primary);
+  }
+
+  [data-bn='bn-material'][data-material='ultrathin'] {
+    background: var(--bn-plat-material-ultrathin);
+  }
+  [data-bn='bn-material'][data-material='thin'] {
+    background: var(--bn-plat-material-thin);
+  }
+  [data-bn='bn-material'][data-material='thick'] {
+    background: var(--bn-plat-material-thick);
+  }
+  [data-bn='bn-material'][data-material='ultrathick'] {
+    background: var(--bn-plat-material-ultrathick);
+  }
+
+  [data-bn='bn-list-title'],
+  [data-bn='bn-list-detail'],
+  [data-bn='bn-sheet-body'] {
+    margin: 0;
   }
 
   [data-bn='bn-window'] {
@@ -1069,6 +1223,26 @@
   [data-bn='bn-notification-title'] {
     color: var(--bn-plat-color-labels-primary);
   }
+
+  /* Restated after the shared menu rule, which sets action lists to a column. */
+  [data-bn-platform='macos'] [data-bn='bn-action-list'] {
+    flex-direction: row;
+    justify-content: flex-end;
+    min-width: 0;
+    padding: 0;
+    background: transparent;
+  }
+
+  [data-bn='bn-sidebar-item'] svg {
+    width: 16px;
+    height: 16px;
+    flex: none;
+  }
+
+  [data-bn='bn-tab'] svg {
+    width: 22px;
+    height: 22px;
+  }
 }
 
 @layer states {
@@ -1086,9 +1260,11 @@
   }
 
   [data-bn='bn-button'][data-force='hover'],
+  [data-bn='bn-button']:hover:not(:disabled),
   [data-bn='bn-menu-item'][data-force='hover'],
-  [data-bn='bn-menu-item']:hover {
-    filter: brightness(0.95);
+  [data-bn='bn-menu-item']:hover,
+  [data-bn='bn-sidebar-item']:hover {
+    filter: brightness(0.96);
   }
 
   [data-bn='bn-button'][data-force='active'],

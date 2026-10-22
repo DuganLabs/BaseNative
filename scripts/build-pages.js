@@ -124,6 +124,8 @@ console.log('  404.html');
 cpSync(join(express, 'public', 'styles.css'), join(dist, 'styles.css'));
 cpSync(join(express, 'public', 'theme.css'), join(dist, 'theme.css'));
 cpSync(join(express, 'public', 'ios.css'), join(dist, 'ios.css'));
+cpSync(join(express, 'public', 'platform-shell.css'), join(dist, 'platform-shell.css'));
+cpSync(join(express, 'public', 'platform-shell.js'), join(dist, 'platform-shell.js'));
 cpSync(join(express, 'public', 'basenative.js'), join(dist, 'basenative.js'));
 cpSync(join(express, 'public', 'showcase.js'), join(dist, 'showcase.js'));
 cpSync(join(express, 'public', 'builder.js'), join(dist, 'builder.js'));
@@ -164,6 +166,11 @@ for (const file of [
 const bnIosDir = join(dist, 'bn-ios');
 mkdirSync(bnIosDir, { recursive: true });
 cpSync(join(root, 'packages', 'ios', 'src', 'tokens.css'), join(bnIosDir, 'tokens.css'));
+
+const bnPlatformDir = join(dist, 'bn-platform');
+mkdirSync(bnPlatformDir, { recursive: true });
+cpSync(join(root, 'packages', 'platform', 'src', 'tokens.css'), join(bnPlatformDir, 'tokens.css'));
+cpSync(join(root, 'packages', 'platform', 'src', 'components.css'), join(bnPlatformDir, 'components.css'));
 
 // Copy builder CSS (served as /bn-builder-css/ in Express, must exist in dist)
 const bnBuilderCssDir = join(dist, 'bn-builder-css');

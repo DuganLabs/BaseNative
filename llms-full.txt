@@ -2920,6 +2920,12 @@ renderBnButton('Save', { variant: 'prominent', size: 'large' });
 #### Controls — `@basenative/platform/components`
 Each function returns HTML. The host is a button, dialog, details, input, select, fieldset, progress, table, list, nav, search, or the popover API. No class, no inline style. - `renderBnButton` — prominent, bordered, borderless, glass, gla…
 
+#### Undocumented exports (source-only — not in docs/api/platform.md)
+
+#### `renderBnMaterial(options = {})` (function)
+One material swatch from the kit (ultrathin through ultrathick). The sample is a figure; the fill is the material token.
+packages/platform/src/components.js · `import { renderBnMaterial } from '@basenative/platform';`
+
 ### `@basenative/realtime` (v2.3.2)
 
 SSE and WebSocket connections with signal-based reactive message streams
@@ -4134,6 +4140,7 @@ Everything below is a real, mechanically-detected gap between source/package.jso
 - `@basenative/og-image`: `truncateToWidth` is exported (packages/og-image/src/text.js) but not mentioned in docs/api/og-image.md.
 - `@basenative/og-image`: `wrapToLines` is exported (packages/og-image/src/text.js) but not mentioned in docs/api/og-image.md.
 - `@basenative/og-image`: `fitText` is exported (packages/og-image/src/text.js) but not mentioned in docs/api/og-image.md.
+- `@basenative/platform`: `renderBnMaterial` is exported (packages/platform/src/components.js) but not mentioned in docs/api/platform.md.
 - `@basenative/theme` — no docs/api/theme.md; API below is extracted directly from source signatures/JSDoc only (42 exports).
 - `@basenative/validate`: `spanAt` is exported (packages/validate/src/scan.js) but not mentioned in docs/api/validate.md.
 - `@basenative/validate`: `scanTags` is exported (packages/validate/src/scan.js) but not mentioned in docs/api/validate.md.

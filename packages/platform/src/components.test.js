@@ -69,6 +69,7 @@ const samples = [
   ['renderBnEmptyState', () => ui.renderBnEmptyState({ title: 'Empty', description: 'None' })],
   ['renderBnAppIcon', () => ui.renderBnAppIcon({ monogram: 'B' })],
   ['renderBnWidget', () => ui.renderBnWidget({ title: 'W', body: 'B' })],
+  ['renderBnMaterial', () => ui.renderBnMaterial({ name: 'thick', label: 'Thick' })],
 ];
 
 test('every control emits its bn contract and no class or style', () => {

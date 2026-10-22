@@ -1,7 +1,9 @@
 // ../../packages/runtime/src/signals.js
 var currentEffect = null;
 var batchDepth = 0;
+var pendingComputed = /* @__PURE__ */ new Set();
 var pendingEffects = /* @__PURE__ */ new Set();
+var wave = null;
 var plugins = [];
 function cleanupEffect(effectRef) {
   for (const subscribers of effectRef.subscriptions) {
@@ -14,22 +16,38 @@ function cleanupEffect(effectRef) {
     cleanup();
   }
 }
+function loopError() {
+  const error = new Error("Use .peek() or write a different signal.");
+  error.code = "BN_EFFECT_LOOP";
+  return error;
+}
 function scheduleEffect(effectRef) {
-  if (batchDepth > 0) {
-    pendingEffects.add(effectRef);
-  } else {
+  if (effectRef === currentEffect) throw loopError();
+  if (wave && wave.has(effectRef)) return;
+  (effectRef.computed ? pendingComputed : pendingEffects).add(effectRef);
+}
+function runQueued(queue) {
+  const effects = [...queue];
+  queue.clear();
+  wave = new Set(effects);
+  for (const effectRef of effects) {
+    wave.delete(effectRef);
     effectRef.run();
   }
 }
 function flushEffects() {
   batchDepth++;
   try {
-    while (pendingEffects.size > 0) {
-      const effects = [...pendingEffects];
-      pendingEffects.clear();
-      for (const effectRef of effects) effectRef.run();
+    for (let passes = 0; pendingComputed.size || pendingEffects.size; ) {
+      if (++passes > 1e4) {
+        pendingComputed.clear();
+        pendingEffects.clear();
+        throw loopError();
+      }
+      runQueued(pendingComputed.size ? pendingComputed : pendingEffects);
     }
   } finally {
+    wave = null;
     batchDepth--;
   }
 }
@@ -60,28 +78,26 @@ function signal(initial) {
       for (const plugin of plugins) {
         if (plugin.onSignalWrite) plugin.onSignalWrite(accessor, prev, value);
       }
-      for (const effectRef of [...subs]) scheduleEffect(effectRef);
+      batch(() => {
+        for (const effectRef of [...subs]) scheduleEffect(effectRef);
+      });
     }
   };
   accessor.peek = () => value;
   return accessor;
 }
-function computed(fn) {
-  const s = signal(void 0);
-  effect(() => s.set(fn()));
-  return s;
-}
-function effect(fn) {
+function createEffect(fn, computed2) {
   const effectRef = {
+    computed: computed2,
     cleanup: null,
     disposed: false,
     subscriptions: /* @__PURE__ */ new Set(),
     run() {
       if (effectRef.disposed) return;
-      cleanupEffect(effectRef);
       const previous = currentEffect;
       currentEffect = effectRef;
       try {
+        cleanupEffect(effectRef);
         const cleanup = fn();
         effectRef.cleanup = typeof cleanup === "function" ? cleanup : null;
       } finally {
@@ -99,6 +115,14 @@ function effect(fn) {
   };
   execute();
   return execute;
+}
+function computed(fn) {
+  const s = signal(void 0);
+  createEffect(() => s.set(fn()), true);
+  return s;
+}
+function effect(fn) {
+  return createEffect(fn, false);
 }
 
 // ../../packages/builder/src/state.js

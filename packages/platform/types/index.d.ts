@@ -60,6 +60,7 @@ export {
   renderBnEmptyState,
   renderBnAppIcon,
   renderBnWidget,
+  renderBnMaterial,
 } from './components.js';
 
 export type { Rgb, DerivedColor, Provenance } from './tokens.js';

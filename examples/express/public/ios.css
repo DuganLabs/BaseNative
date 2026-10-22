@@ -10,9 +10,11 @@
  * catalog's --bn-material-* tokens. Nothing here invents a value the
  * token package owns; where a choice had to be made it is noted.
  *
- * Loaded last, unlayered, so it wins the ties it is meant to win over
- * theme.css and the layered styles.css. */
+ * Lives in @layer components, after styles.css has ordered the layers.
+ * The Apple 27 shell sheet loads later in the same layer and wins the
+ * ties it is meant to win (window chrome, home type, the page glow). */
 
+@layer components {
 /* ── Token bridge ─────────────────────────────────────────────────── */
 :root {
   color-scheme: dark;
@@ -542,4 +544,5 @@ body > [data-bn-site-footer] nav a:hover {
   padding: var(--bn-ios-space-2) var(--bn-ios-space-4);
   text-align: center;
   text-decoration: none;
+}
 }

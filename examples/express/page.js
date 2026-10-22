@@ -10,9 +10,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { render } from '@basenative/server';
 import { raw } from '@basenative/runtime/shared/escape';
-import { renderAppNav, renderBreadcrumb } from '../../packages/components/src/index.js';
+import { renderBreadcrumb } from '../../packages/components/src/index.js';
+import { renderSiteChrome } from './shell.js';
 import {
-  getAppNavItems,
   getComparePageContext,
   getComponentsPageContext,
   getDocsPageContext,
@@ -51,7 +51,14 @@ let assetVersion = null;
 function getAssetVersion() {
   if (assetVersion) return assetVersion;
   const hash = createHash('sha256');
-  for (const file of ['public/basenative.js', 'public/styles.css', 'public/ios.css', 'public/theme.css']) {
+  for (const file of [
+    'public/basenative.js',
+    'public/styles.css',
+    'public/ios.css',
+    'public/theme.css',
+    'public/platform-shell.css',
+    'public/platform-shell.js',
+  ]) {
     try {
       hash.update(read(file));
     } catch {
@@ -59,9 +66,11 @@ function getAssetVersion() {
     }
   }
   try {
-    const cssDir = join(__dirname, '../../packages/components/src');
-    for (const name of readdirSync(cssDir).filter((n) => n.endsWith('.css')).sort()) {
-      hash.update(readFileSync(join(cssDir, name), 'utf-8'));
+    for (const dir of ['../../packages/components/src', '../../packages/platform/src']) {
+      const cssDir = join(__dirname, dir);
+      for (const name of readdirSync(cssDir).filter((n) => n.endsWith('.css')).sort()) {
+        hash.update(readFileSync(join(cssDir, name), 'utf-8'));
+      }
     }
   } catch {
     /* same reasoning as above */
@@ -71,86 +80,15 @@ function getAssetVersion() {
 }
 
 /**
- * The shell-critical CSS, sliced out of the catalog's sources at render
- * time and inlined into every page by the layout: the token definitions
- * the shell depends on (from tokens.css) plus the App Nav and List
- * Group sections of components.css, verbatim (comments stripped).
- *
- * Why this exists: components.css reaches the browser through an
- * @import chain under /bn-css/, and Cloudflare Pages serves those
- * assets with a multi-hour cache lifetime while the HTML itself is
- * revalidated on every visit. A returning visitor can therefore hold a
- * components.css from before the app nav existed next to today's HTML
- * — and the shell renders as a raw list of links (seen on a real phone,
- * 2026-10-20, while every fresh-profile check passed). The shell is
- * not allowed to depend on that race: its rules ride the HTML, which
- * is always fresh. The package files stay the single source the slice
- * is cut from — when they are fresh too, the same rules arrive twice
- * with identical values and nothing changes.
- *
- * The tokens ride along because the first version of this slice (PR
- * #275) inlined the rules but not the values they compute from: every
- * shell property is a var(--bn-*) whose definition lives in tokens.css,
- * behind the same stale cache. With a pre-app-nav tokens.css the bar
- * still rendered — but its z-index computed to auto (page content
- * painted over it), its height token was missing, and the clearance
- * rule's calc() was invalid, so the page reserved no space for the
- * bar at all: the last screenful of every page sat trapped underneath
- * it (seen on the same phone after the #275 reload). So the slice now
- * carries the full dependency closure of the tokens the two sections
- * reference, declarations verbatim from tokens.css in source order.
- * They are emitted inside `@layer tokens` — the layer tokens.css
- * itself declares — so the site's unlayered sheets (theme.css,
- * ios.css) keep re-pointing them exactly as they do when the chain is
- * fresh; only the staleness is removed.
+ * Shell CSS inlined into every page. Pages caches stylesheets for hours
+ * and revalidates HTML immediately, so the window chrome cannot depend
+ * on /platform-shell.css arriving fresh (the 2026-10-20 phone incident).
+ * The sheet defines its own --bn-shell-* properties and gives every
+ * --bn-plat-* reference a fallback, so a stale tokens.css cannot collapse
+ * the grid or the tab bar clearance.
  */
 function shellCriticalCss() {
-  const strip = (text) => text.replace(/\/\*[\s\S]*?\*\//g, '');
-  const css = read('../../packages/components/src/components.css');
-  const slice = (from, to) => {
-    const start = css.indexOf(from);
-    const end = to ? css.indexOf(to, start) : css.length;
-    if (start === -1 || end === -1) return '';
-    return strip(css.slice(start, end));
-  };
-  const sections =
-    slice('/* === List Group ===', '/* === Combobox ===') +
-    slice('/* === App Nav ===', '} /* end @layer components */');
-
-  // Every --bn-* declaration in tokens.css, in source order (a token
-  // declared twice keeps both lines; the later wins, as in the sheet).
-  const declarations = [];
-  const byName = new Map();
-  for (const match of strip(read('../../packages/components/src/tokens.css')).matchAll(
-    /(--bn-[a-z0-9-]+)\s*:\s*([^;{}]+);/g,
-  )) {
-    const entry = { name: match[1], value: match[2].trim() };
-    declarations.push(entry);
-    if (!byName.has(entry.name)) byName.set(entry.name, []);
-    byName.get(entry.name).push(entry);
-  }
-  // The closure: tokens the sections reference, plus whatever those
-  // tokens' own values reference, transitively.
-  const refsOf = (text) => [...text.matchAll(/var\(\s*(--bn-[a-z0-9-]+)/g)].map((m) => m[1]);
-  const needed = new Set(refsOf(sections));
-  for (let grew = true; grew; ) {
-    grew = false;
-    for (const name of [...needed]) {
-      for (const entry of byName.get(name) ?? []) {
-        for (const ref of refsOf(entry.value)) {
-          if (!needed.has(ref)) {
-            needed.add(ref);
-            grew = true;
-          }
-        }
-      }
-    }
-  }
-  const tokenLines = declarations
-    .filter((entry) => needed.has(entry.name))
-    .map((entry) => `    ${entry.name}: ${entry.value};`);
-  const tokens = `@layer tokens {\n  :root {\n${tokenLines.join('\n')}\n  }\n}\n`;
-  return (tokens + sections).trim();
+  return read('public/platform-shell.css').trim();
 }
 
 export const SITE_URL = 'https://basenative.com';
@@ -187,18 +125,6 @@ export function renderPage(viewFile, ctx, opts) {
   const layout = read('views/layout.html');
   const view = read(`views/${viewFile}`);
   const content = render(view, ctx);
-  // The shell's primary navigation is the catalog's app nav — one <nav>
-  // that is the phone-class bottom bar and the unfolded side rail under
-  // a media query. The bar keeps the first four items. AI is the first
-  // item in the More sheet (renderAppNav's overflow).
-  const appNav = renderAppNav({
-    id: 'site-nav',
-    brand: { name: 'BaseNative', href: '/' },
-    items: getAppNavItems(activePage),
-    actions:
-      '<a href="https://github.com/DuganLabs/BaseNative" rel="noopener">GitHub</a>',
-    overflow: {},
-  });
   const version = getAssetVersion();
   return layout
     .replace(/<!--TITLE-->/g, escapeAttr(title))
@@ -206,7 +132,8 @@ export function renderPage(viewFile, ctx, opts) {
     .replace(/<!--OG_TITLE-->/g, escapeAttr(ogTitle))
     .replace(/<!--OG_URL-->/g, escapeAttr(SITE_URL + path))
     .replace('<!--APP_NAV_CSS-->', () => shellCriticalCss())
-    .replace('<!--APP_NAV-->', appNav)
+    .replace('<!--APP_NAV-->', () => renderSiteChrome(activePage))
+    .replaceAll('__ACTIVE__', escapeAttr(activePage))
     .replace('<!--CONTENT-->', content)
     .replace('<!--SCRIPTS-->', scripts)
     .replace(/((?:href|src)=")(\/[^"]+\.(?:css|js))"/g, `$1$2?v=${version}"`)

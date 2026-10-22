@@ -1,87 +1,42 @@
-<section data-hero>
-  <h2>The UI runtime for <em>code you didn't write</em></h2>
-  <p>A model can generate a BaseNative interface at inference time — no build step, and no escape hatch to arbitrary JavaScript. The expression evaluator never calls <code>eval</code> or <code>new Function</code>, and <code>render()</code> takes that generated template string and returns HTML on the spot.</p>
-  <nav data-controls aria-label="Primary calls to action">
-    <a href="/playground" role="button">Try the playground</a>
-    <a href="/docs" role="button" data-variant="outline">Read the docs</a>
-  </nav>
-</section>
+<article>
+  <header>
+    <p>Runtime {{ runtimeVersion }}</p>
+    <h1>BaseNative</h1>
+    <p>Signals over semantic HTML. One <code>set()</code> settles derived computeds, then runs each affected effect once. The expression language is an allowlist. Install <code>@basenative/runtime</code> and <code>@basenative/server</code> from npmjs.org, with no token and no <code>.npmrc</code>.</p>
+    <nav aria-label="Primary">{{ actions }}</nav>
+  </header>
 
-<section>
-  <h2>Why this is <em>different</em></h2>
-  <p>A CSP-safe evaluator, a runtime template renderer, and a toolchain that lets the model check its own output before it ships.</p>
-  <ul role="list">
-    <template @for="feature of features; track feature.id">
-      <li>
-        {{ feature.name }}
-        <mark data-status="{{ feature.status }}">{{ feature.status }}</mark>
-      </li>
-    </template>
-  </ul>
-  <blockquote>
-    <p>Eval results: not yet published — the harness ships, the corpus is in progress.</p>
-  </blockquote>
-</section>
-
-<section data-code-preview>
-  <h2>How it <em>works</em></h2>
-  <p>Write standard HTML with template directives. BaseNative handles the rest — server-side or client-side.</p>
-
-  <article>
-    <header><h3>Reactive counter in 6 lines</h3></header>
-    <pre tabindex="0" aria-label="Code example: Reactive counter in 6 lines"><code><span class="tag">&lt;button</span> <span class="attr">@click</span>=<span class="str">"incrementCount()"</span><span class="tag">&gt;</span>
-  Clicked &#123;&#123; count() &#125;&#125; times
-<span class="tag">&lt;/button&gt;</span>
-
-<span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="str">"module"</span><span class="tag">&gt;</span>
-  <span class="kw">import</span> { signal, hydrate } <span class="kw">from</span> <span class="str">'@basenative/runtime'</span>;
-  <span class="kw">const</span> count = <span class="fn">signal</span>(<span class="num">0</span>);
-  <span class="kw">function</span> <span class="fn">incrementCount</span>() { count.<span class="fn">set</span>(count() + <span class="num">1</span>); }
-  <span class="fn">hydrate</span>(document.body, { count, incrementCount });
-<span class="tag">&lt;/script&gt;</span></code></pre>
-  </article>
-
-  <article>
-    <header><h3>Server-rendered list with Express</h3></header>
-    <pre tabindex="0" aria-label="Code example: Server-rendered list with Express"><code><span class="cmt">// server.js</span>
-<span class="kw">import</span> { render } <span class="kw">from</span> <span class="str">'@basenative/server'</span>;
-
-app.<span class="fn">get</span>(<span class="str">'/'</span>, (req, res) =&gt; {
-  <span class="kw">const</span> html = <span class="fn">render</span>(<span class="str">`
-    &lt;template @for="user of users"&gt;
-      &lt;li&gt;{{ user.name }}&lt;/li&gt;
-    &lt;/template&gt;
-  `</span>, { users });
-  res.<span class="fn">send</span>(html);
-});</code></pre>
-  </article>
-</section>
-
-<template @if="showStats">
-  <section data-stats>
-    <p>This is a supporting fact, not the argument — the CSP sandbox and runtime string rendering above are the reasons to use it.</p>
-    <ul role="list" data-stat-grid>
-      <template @for="stat of stats; track stat.label">
-        <li>
-          <strong>{{ stat.value }}</strong>
-          <span>{{ stat.label }}</span>
-        </li>
-      </template>
-    </ul>
+  <section>
+    <h2>Runtime</h2>
+    {{ runtimeList }}
   </section>
-</template>
 
-<section>
-  <h2>Recent updates</h2>
-  <ul role="list">
-    <template @for="update of updates; track update.id">
-      <li>
-        {{ update.text }}
-        <time>{{ update.date }}</time>
-      </li>
-    </template>
-    <template @empty>
-      <li>No updates yet</li>
-    </template>
-  </ul>
-</section>
+  <section>
+    <h2>Platform</h2>
+    {{ platformList }}
+  </section>
+
+  <section>
+    <h2>A counter</h2>
+    <pre tabindex="0" aria-label="Code example: a reactive counter"><code>&lt;button @click="increment()"&gt;
+  Clicked &#123;&#123; count() &#125;&#125; times
+&lt;/button&gt;
+
+&lt;script type="module"&gt;
+  import { signal, computed, effect, hydrate } from '@basenative/runtime';
+
+  const count = signal(0);
+  const doubled = computed(() =&gt; count() * 2);
+
+  effect(() =&gt; {
+    document.title = String(doubled());
+  });
+
+  function increment() {
+    count.set(count() + 1);
+  }
+
+  hydrate(document.body, { count, increment });
+&lt;/script&gt;</code></pre>
+  </section>
+</article>
