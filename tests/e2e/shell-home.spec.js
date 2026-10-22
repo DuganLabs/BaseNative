@@ -86,7 +86,8 @@ test.describe('home shell', () => {
             inner: window.innerHeight,
           };
         }, where);
-        expect(Math.abs(result.barBottom - result.inner)).toBeLessThan(2);
+        expect(result.inner - result.barBottom).toBeGreaterThanOrEqual(8);
+        expect(result.inner - result.barBottom).toBeLessThan(20);
         expect(result.barTop).toBeGreaterThan(result.inner - 96);
         expect(result.problems).toEqual([]);
         const png = await page.screenshot({ fullPage: false });
@@ -503,6 +504,7 @@ test.describe('home shell', () => {
           right: rect.right,
           bottom: rect.bottom,
           radius: parseFloat(style.borderTopLeftRadius),
+          radiusEnd: parseFloat(style.borderBottomRightRadius),
           border: style.borderTopWidth,
           pad: parseFloat(getComputedStyle(document.body).paddingBottom),
           mainBottom: main.getBoundingClientRect().bottom,
@@ -515,8 +517,10 @@ test.describe('home shell', () => {
       });
       expect(bar.left).toBeGreaterThanOrEqual(8);
       expect(bar.right).toBeLessThanOrEqual(bar.inner - 8);
-      expect(Math.abs(bar.bottom - bar.height)).toBeLessThan(2);
+      expect(bar.height - bar.bottom).toBeGreaterThanOrEqual(8);
+      expect(bar.height - bar.bottom).toBeLessThan(20);
       expect(bar.radius).toBeGreaterThanOrEqual(24);
+      expect(bar.radiusEnd).toBe(bar.radius);
       expect(parseFloat(bar.border)).toBe(0);
       expect(bar.pad).toBe(0);
       expect(bar.mainBottom).toBeLessThanOrEqual(bar.barTop + 2);

@@ -71,8 +71,10 @@
     --bn-tab-fill: rgba(246, 246, 246, 0.86);
     --bn-tab-blur: 80px;
     --bn-tab-saturate: 240%;
-    --bn-button-secondary-fill: var(--bn-plat-color-fills-tertiary);
+    --bn-button-secondary-fill: rgba(118, 118, 128, 0.12);
     --bn-button-secondary-label: var(--bn-brand-text);
+    --bn-danger-label: #9d1c1c;
+    --bn-stepper-label: #0050b3;
     --bn-alert-surface: var(--bn-plat-swatch-rgba-255-255-255-0-7);
     /* BEGIN METRICS */
     --bn-blur-16: 16px;
@@ -217,6 +219,8 @@
     --bn-tab-fill: rgba(22, 20, 18, 0.84);
     --bn-button-secondary-fill: rgb(72, 72, 74);
     --bn-button-secondary-label: var(--bn-brand-secondary);
+    --bn-danger-label: var(--bn-plat-color-accents-red);
+    --bn-stepper-label: var(--bn-plat-color-accents-blue);
     --bn-alert-surface: rgba(26, 26, 26, 0.9);
   }
 }

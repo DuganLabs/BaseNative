@@ -394,11 +394,16 @@ button[aria-pressed='true']:not([data-bn]) {
 }
 button[data-variant='danger']:not([data-bn]) {
   background: rgb(255 69 58 / 0.16);
-  color: var(--bn-ios-color-red);
+  color: var(--bn-danger-label, #9d1c1c);
 }
 button[data-variant='danger']:not([data-bn]):hover {
   background: rgb(255 69 58 / 0.24);
-  color: var(--bn-ios-color-red);
+  color: var(--bn-danger-label, #9d1c1c);
+}
+/* Kit red on the 16% wash is 4.1:1 over a dark card. This lighter red clears 4.5. */
+[data-theme='dark'] button[data-variant='danger']:not([data-bn]),
+[data-theme='dark'] button[data-variant='danger']:not([data-bn]):hover {
+  color: #ff6b6d;
 }
 a[role='button'][data-variant='outline'],
 button:not([data-bn])[data-variant='outline'] {
@@ -471,8 +476,8 @@ button[data-bn-component-filter]:hover {
   opacity: 1;
 }
 button[data-bn-component-filter][aria-pressed='true'] {
-  background: var(--bn-ios-color-orange);
-  color: #000;
+  background: var(--bn-brand, #e8920a);
+  color: var(--bn-brand-ink, #0c0b09);
 }
 button[data-bn-component-reset] {
   font: var(--bn-ios-font-subheadline);

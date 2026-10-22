@@ -639,7 +639,7 @@
     justify-content: center;
     background: var(--surface-3);
     color: var(--text-0);
-    border: var(--border-width) solid var(--border-accent);
+    border: var(--border-width) solid var(--text-1);
     border-radius: var(--radius-sm);
     cursor: pointer;
     text-decoration: none;
@@ -662,8 +662,8 @@
     outline-offset: var(--border-inline-width);
   }
   button:not([data-bn])[data-variant='danger'] {
-    border-color: var(--danger);
-    color: var(--danger);
+    border-color: var(--bn-danger-label, #9d1c1c);
+    color: var(--bn-danger-label, #9d1c1c);
   }
   button:not([data-bn])[data-variant='danger']:hover {
     background: var(--danger);
@@ -686,10 +686,16 @@
     inline-size: 1em;
     block-size: 1em;
     vertical-align: middle;
-    filter: brightness(0) invert(0.9);
+    filter: brightness(0);
+  }
+  [data-theme='dark'] button:not([data-bn]) > img[src*='/icons/'] {
+    filter: brightness(0) invert(1);
   }
   button:not([data-bn]):hover > img[src*='/icons/'] {
-    filter: brightness(0) invert(0.03);
+    filter: brightness(0) invert(1);
+  }
+  [data-theme='dark'] button:not([data-bn]):hover > img[src*='/icons/'] {
+    filter: brightness(0);
   }
 
   /* -- Inputs -- */
@@ -2413,7 +2419,7 @@
   [data-bn-component-grid] {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-    gap: var(--space-md);
+    gap: var(--bn-section-space, 12px);
     list-style: none;
     padding: 0;
     margin: 0;
@@ -3782,16 +3788,14 @@
       border: var(--border-width) solid var(--border);
       border-radius: var(--radius-sm);
       background: var(--surface-2);
-      color: var(--text-2);
+      color: var(--text-0);
       font-family: var(--font-family);
       font-stretch: var(--font-mono);
       font-size: var(--font-size-xs);
       letter-spacing: var(--letter-spacing-wider);
       cursor: pointer;
-      /* Quiet by color, never by opacity. A dimmed --text-2 fell below the 4.5:1
-         axe checks for, and "it is only faint until you hover" is not an
-         exemption — the label has to be readable at rest. --text-2 on
-         --surface-2 is the same pairing the figcaption above it already uses. */
+      /* Primary label ink. --text-2 is 0.62 alpha in light and lands under 4.5:1
+         on --surface-2, so the resting label uses --text-0. */
       transition:
         background var(--duration-fast),
         border-color var(--duration-fast),
@@ -3800,8 +3804,8 @@
 
     & > [data-bn-action='copy-code']:hover {
       background: var(--surface-1);
-      border-color: var(--accent);
-      color: var(--accent);
+      border-color: var(--bn-brand-text, #9a5f05);
+      color: var(--bn-brand-text, #9a5f05);
     }
 
     & > [data-bn-action='copy-code']:focus-visible {
@@ -4014,9 +4018,9 @@
       }
 
       &[aria-pressed='true'] {
-        background: color-mix(in srgb, var(--accent) 18%, transparent);
-        color: var(--accent);
-        border-color: var(--accent);
+        background: var(--bn-brand, #e8920a);
+        color: var(--bn-brand-ink, #0c0b09);
+        border-color: var(--bn-brand, #e8920a);
       }
     }
   }
