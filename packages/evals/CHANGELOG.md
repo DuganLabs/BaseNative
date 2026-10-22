@@ -1,5 +1,14 @@
 # @basenative/evals
 
+## 2.3.2
+
+### Patch Changes
+
+- Updated dependencies [fca7129]
+  - @basenative/runtime@2.3.2
+  - @basenative/server@2.3.2
+  - @basenative/validate@2.3.2
+
 ## 2.3.1
 
 ### Patch Changes

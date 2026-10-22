@@ -1,5 +1,9 @@
 # Changelog — @basenative/admin
 
+## 2.3.2
+
+No changes in this release.
+
 ## 2.3.1
 
 No changes in this release.

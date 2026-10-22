@@ -1,5 +1,18 @@
 # @basenative/validate
 
+## 2.3.2
+
+### Patch Changes
+
+- fca7129: Effects settle once per write. A `set()` queues subscribers, runs derived computeds until the graph settles, then runs each user effect once. An effect that writes a signal it also read throws `BN_EFFECT_LOOP` and tells the caller to use `.peek()` or write a different signal.
+
+  `class` and `:class` merge. `mergeClass()` is shared by `render()` and `hydrate()`, so `class="item" :class="done() ? 'done' : ''"` keeps both tokens. A false or null binding adds nothing.
+
+  `@basenative/validate` reports React habits (`className`, `htmlFor`, `onClick`, `dangerouslySetInnerHTML`, and `{expr}` text) with the BaseNative replacement. `bn from-jsx` applies the same translation to a draft file.
+
+- Updated dependencies [fca7129]
+  - @basenative/runtime@2.3.2
+
 ## 2.3.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@basenative/visual-builder",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "No-code template builder for BaseNative components",
   "type": "module",
   "main": "./src/index.js",
