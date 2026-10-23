@@ -653,6 +653,42 @@ async function contentSplit(page) {
   });
 }
 
+async function sidebarAccent(page) {
+  return page.evaluate(() => {
+    function channels(color) {
+      const raw = String(color).trim();
+      const hex = raw.match(/^#([0-9a-f]{6})$/i);
+      if (hex) {
+        const value = Number.parseInt(hex[1], 16);
+        return [(value >> 16) & 255, (value >> 8) & 255, value & 255];
+      }
+      const match = raw.match(/rgba?\(([^)]+)\)/);
+      if (!match) return null;
+      return match[1]
+        .split(',')
+        .slice(0, 3)
+        .map((part) => Math.round(Number.parseFloat(part)));
+    }
+    function same(paint, token) {
+      const left = channels(paint);
+      const right = channels(token);
+      return Boolean(left && right && left.every((channel, index) => channel === right[index]));
+    }
+    const current = document.querySelector(
+      '#site-nav [data-bn="bn-sidebar-item"][aria-current="page"]',
+    );
+    if (!current) return ['missing selected sidebar item'];
+    const style = getComputedStyle(current);
+    const brand = style.getPropertyValue('--bn-brand');
+    const ink = style.getPropertyValue('--bn-brand-ink');
+    const problems = [];
+    if (!same(style.backgroundColor, brand))
+      problems.push(`selected sidebar fill is ${style.backgroundColor}`);
+    if (!same(style.color, ink)) problems.push(`selected sidebar label is ${style.color}`);
+    return problems;
+  });
+}
+
 test.describe('design system gates', () => {
   test.describe.configure({ timeout: 90_000 });
 
@@ -706,6 +742,7 @@ test.describe('design system gates', () => {
           if (path === '/builder') expect(await canvasStage(page)).toEqual([]);
           if (path === '/tasks') expect(await tasksCountInsideCard(page)).toEqual([]);
           expect(await heroPattern(page)).toEqual([]);
+          expect(await sidebarAccent(page)).toEqual([]);
           expect(await metricTiles(page)).toEqual([]);
           expect(await sectionRhythm(page)).toEqual([]);
           await expect(page).toHaveScreenshot(`${slug(path)}-${theme}-${width}.png`, {

@@ -82,7 +82,7 @@
     --bn-button-secondary-fill: rgba(118, 118, 128, 0.12);
     --bn-button-secondary-label: var(--bn-brand-text);
     --bn-danger-label: #9d1c1c;
-    --bn-stepper-label: #0050b3;
+    --bn-stepper-label: var(--bn-brand-text);
     --bn-hero-accent: var(--bn-brand-text);
     --bn-alert-surface: var(--bn-plat-swatch-rgba-255-255-255-0-7);
     /* BEGIN METRICS */

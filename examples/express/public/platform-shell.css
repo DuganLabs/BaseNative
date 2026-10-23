@@ -85,17 +85,11 @@
 
   body[data-active='home'] {
     background-color: var(--bn-glass-opaque, #f2f2f7);
-    background-image:
-      radial-gradient(
-        28rem 16rem at 0% 0%,
-        color-mix(in srgb, var(--bn-plat-color-accents-indigo, #5e5ce6) 22%, transparent),
-        transparent 70%
-      ),
-      radial-gradient(
-        22rem 12rem at 100% 0%,
-        color-mix(in srgb, var(--bn-plat-color-accents-blue, #0088ff) 16%, transparent),
-        transparent 68%
-      );
+    background-image: radial-gradient(
+      28rem 12rem at 8% 0%,
+      color-mix(in srgb, var(--bn-brand, #e8920a) 14%, transparent),
+      transparent 74%
+    );
     background-attachment: scroll;
   }
 
