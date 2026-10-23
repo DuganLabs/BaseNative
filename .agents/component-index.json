@@ -4,10 +4,10 @@
   "generatedOn": "2026-10-22",
   "contract": "Generated from source. Never hand-edit: `node scripts/llms-txt.js --check` fails CI when this file disagrees with packages/*/src. `variants` is the set of values a stylesheet actually declares a rule for, so a value outside it renders unstyled rather than erroring.",
   "counts": {
-    "components": 139,
-    "renderFunctions": 133,
+    "components": 141,
+    "renderFunctions": 135,
     "customElements": 6,
-    "styledContracts": 374,
+    "styledContracts": 376,
     "componentsWithVariants": 37
   },
   "stylesheets": [
@@ -365,8 +365,14 @@
     "bn-radio": [
       "@basenative/platform#renderBnRadio"
     ],
+    "bn-refraction": [
+      "@basenative/platform#renderBnRefraction"
+    ],
     "bn-scroll": [
       "@basenative/platform#renderBnScroll"
+    ],
+    "bn-scrollbar": [
+      "@basenative/platform#renderBnScrollbar"
     ],
     "bn-search": [
       "@basenative/platform#renderBnSearch"
@@ -1252,7 +1258,7 @@
       "kind": "render-function",
       "package": "@basenative/builder",
       "file": "packages/builder/src/palette-element.js",
-      "signature": "renderPaletteHTML(palette)",
+      "signature": "renderPaletteHTML(palette, query)",
       "purpose": "",
       "deprecated": false,
       "emits": {
@@ -4474,11 +4480,11 @@
         "primaryContract": "bn-nav-bar",
         "contracts": [
           "bn-nav-back",
-          "bn-nav-title",
           "bn-nav-action",
           "bn-nav-trailing",
-          "bn-large-title",
           "bn-nav-subtitle",
+          "bn-nav-title",
+          "bn-large-title",
           "bn-nav-bar"
         ],
         "dataAttributes": [
@@ -4523,7 +4529,7 @@
       "purpose": "Page control. Dots are 8×8. Active is Labels/Primary, inactive Labels/Tertiary.",
       "deprecated": false,
       "emits": {
-        "rootTag": "nav",
+        "rootTag": "div",
         "primaryContract": "bn-page-control",
         "contracts": [
           "bn-page-dot",
@@ -4534,7 +4540,7 @@
       "variants": {},
       "inertAxes": [],
       "styled": true,
-      "useInsteadOf": "a bare <nav> with your own classes, or literal <nav data-bn=\"bn-page-control\"> markup"
+      "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"bn-page-control\"> markup"
     },
     {
       "id": "@basenative/platform#renderBnPopover",
@@ -4549,8 +4555,8 @@
         "rootTag": "aside",
         "primaryContract": "bn-popover",
         "contracts": [
-          "bn-popover-button",
-          "bn-popover"
+          "bn-popover",
+          "bn-popover-button"
         ],
         "dataAttributes": []
       },
@@ -4661,6 +4667,28 @@
       "useInsteadOf": "a bare <label> with your own classes, or literal <label data-bn=\"bn-radio\"> markup"
     },
     {
+      "id": "@basenative/platform#renderBnRefraction",
+      "name": "renderBnRefraction",
+      "kind": "render-function",
+      "package": "@basenative/platform",
+      "file": "packages/platform/src/components.js",
+      "signature": "renderBnRefraction(options)",
+      "purpose": "Refraction swatch. Blur, saturation, sheen, and the brand stage glow stand in for a displacement shader. The…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "figure",
+        "primaryContract": "bn-refraction",
+        "contracts": [
+          "bn-refraction"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <figure> with your own classes, or literal <figure data-bn=\"bn-refraction\"> markup"
+    },
+    {
       "id": "@basenative/platform#renderBnScroll",
       "name": "renderBnScroll",
       "kind": "render-function",
@@ -4681,6 +4709,28 @@
       "inertAxes": [],
       "styled": true,
       "useInsteadOf": "a bare <section> with your own classes, or literal <section data-bn=\"bn-scroll\"> markup"
+    },
+    {
+      "id": "@basenative/platform#renderBnScrollbar",
+      "name": "renderBnScrollbar",
+      "kind": "render-function",
+      "package": "@basenative/platform",
+      "file": "packages/platform/src/components.js",
+      "signature": "renderBnScrollbar(options)",
+      "purpose": "Overlay scrollbar. A range control, so the thumb is a real widget. Vertical is the default. Horizontal is ari…",
+      "deprecated": false,
+      "emits": {
+        "rootTag": "input",
+        "primaryContract": "bn-scrollbar",
+        "contracts": [
+          "bn-scrollbar"
+        ],
+        "dataAttributes": []
+      },
+      "variants": {},
+      "inertAxes": [],
+      "styled": true,
+      "useInsteadOf": "a bare <input> with your own classes, or literal <input data-bn=\"bn-scrollbar\"> markup"
     },
     {
       "id": "@basenative/platform#renderBnSearch",

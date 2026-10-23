@@ -56,6 +56,8 @@ export {
   renderBnGroup,
   renderBnImageWell,
   renderBnScroll,
+  renderBnScrollbar,
+  renderBnRefraction,
   renderBnInputAccessory,
   renderBnEmptyState,
   renderBnAppIcon,

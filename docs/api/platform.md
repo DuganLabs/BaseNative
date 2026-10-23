@@ -138,6 +138,8 @@ popover API. No class, no inline style.
 - `renderBnGroup` — `fieldset` and `legend`.
 - `renderBnImageWell`
 - `renderBnScroll`
+- `renderBnScrollbar`
+- `renderBnRefraction`
 - `renderBnInputAccessory`
 - `renderBnEmptyState`
 - `renderBnAppIcon` — a monogram frame, not Apple artwork.

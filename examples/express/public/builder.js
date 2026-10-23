@@ -434,6 +434,19 @@ function createBuilderState(options = {}) {
   };
 }
 
+// ../../packages/builder/src/escape.js
+function escapeHtml(value) {
+  const s = value == null ? "" : String(value);
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+function escapeAttr(value) {
+  return escapeHtml(value);
+}
+var JS_IDENT = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
+function isValidIdentifier(name) {
+  return typeof name === "string" && JS_IDENT.test(name);
+}
+
 // ../../packages/builder/src/palette.js
 function createPalette() {
   const map = /* @__PURE__ */ new Map();
@@ -452,7 +465,8 @@ function createPalette() {
       defaultContent: spec.defaultContent,
       role: spec.role,
       bn: spec.bn,
-      dataProps: Array.isArray(spec.dataProps) ? spec.dataProps.slice() : []
+      dataProps: Array.isArray(spec.dataProps) ? spec.dataProps.slice() : [],
+      preview: typeof spec.preview === "function" ? spec.preview : null
     };
     map.set(def.type, def);
     return def;
@@ -483,8 +497,239 @@ function createPalette() {
   }
   return { register, unregister, get, list, byCategory, categories, search };
 }
+function registerOrganisms(palette) {
+  const text = (props, fallback) => escapeHtml(props?.text || fallback);
+  palette.register({
+    type: "hero",
+    label: "Hero",
+    category: "organisms",
+    tag: "header",
+    bn: "bn-hero",
+    container: true,
+    props: [{ name: "text", kind: "string", label: "Title" }],
+    defaults: { text: "Title" },
+    preview(props) {
+      return `<p data-bn="bn-hero-eyebrow">Organism</p><h2>${text(props, "Title")}</h2><p data-bn="bn-hero-lede">Glass header. Actions sit under the copy.</p>`;
+    }
+  });
+  palette.register({
+    type: "list",
+    label: "List",
+    category: "organisms",
+    tag: "ul",
+    bn: "bn-list",
+    container: true,
+    props: [
+      { name: "text", kind: "string", label: "First row" },
+      {
+        name: "data-grouped",
+        kind: "enum",
+        options: ["true", "false"],
+        default: "true",
+        label: "Grouped"
+      }
+    ],
+    defaults: { text: "Inbox", "data-grouped": "true" },
+    preview(props) {
+      return `<li data-bn="bn-list-row"><p data-bn="bn-list-title">${text(props, "Inbox")}</p><p data-bn="bn-list-detail">Grouped row</p></li><li data-bn="bn-list-row"><p data-bn="bn-list-title">Drafts</p><p data-bn="bn-list-detail">Second row</p></li>`;
+    }
+  });
+  palette.register({
+    type: "window",
+    label: "Window",
+    category: "organisms",
+    tag: "section",
+    bn: "bn-window",
+    container: true,
+    props: [{ name: "text", kind: "string", label: "Title" }],
+    defaults: { text: "Untitled" },
+    preview(props) {
+      return `<header data-bn="bn-window-titlebar"><h2>${text(props, "Untitled")}</h2></header><section data-bn="bn-window-body"><p>Window body</p></section>`;
+    }
+  });
+  palette.register({
+    type: "sheet",
+    label: "Sheet",
+    category: "organisms",
+    tag: "section",
+    bn: "bn-sheet",
+    container: true,
+    props: [{ name: "text", kind: "string", label: "Title" }],
+    defaults: { text: "Sheet" },
+    preview(props) {
+      return `<header><h2 data-bn="bn-sheet-title">${text(props, "Sheet")}</h2></header><section data-bn="bn-sheet-body"><p>Sheet body</p></section>`;
+    }
+  });
+  palette.register({
+    type: "sidebar",
+    label: "Sidebar",
+    category: "organisms",
+    tag: "aside",
+    bn: "bn-sidebar",
+    container: true,
+    props: [{ name: "text", kind: "string", label: "Section" }],
+    defaults: { text: "Library" },
+    preview(props) {
+      return `<nav aria-label="Sidebar"><h2>${text(props, "Library")}</h2><ul><li><a href="#" aria-current="page">Recents</a></li><li><a href="#">Shared</a></li></ul></nav>`;
+    }
+  });
+  palette.register({
+    type: "inspector",
+    label: "Inspector",
+    category: "organisms",
+    tag: "aside",
+    bn: "bn-inspector",
+    container: true,
+    props: [{ name: "text", kind: "string", label: "Title" }],
+    defaults: { text: "Inspector" },
+    preview(props) {
+      return `<header><h2>${text(props, "Inspector")}</h2></header><section><h3>Type</h3><p>Name</p></section>`;
+    }
+  });
+  palette.register({
+    type: "toolbar",
+    label: "Toolbar",
+    category: "organisms",
+    tag: "header",
+    bn: "bn-toolbar",
+    container: false,
+    props: [{ name: "text", kind: "string", label: "Label" }],
+    defaults: { text: "Edit" },
+    preview(props) {
+      return `<button type="button">${text(props, "Edit")}</button><button type="button">Share</button>`;
+    }
+  });
+  palette.register({
+    type: "nav-bar",
+    label: "Nav bar",
+    category: "organisms",
+    tag: "header",
+    bn: "bn-nav-bar",
+    container: false,
+    props: [{ name: "text", kind: "string", label: "Title" }],
+    defaults: { text: "Settings" },
+    preview(props) {
+      return `<h2 data-bn="bn-large-title">${text(props, "Settings")}</h2>`;
+    }
+  });
+  palette.register({
+    type: "metric",
+    label: "Metric",
+    category: "organisms",
+    tag: "article",
+    bn: "bn-metric",
+    container: false,
+    props: [{ name: "text", kind: "string", label: "Label" }],
+    defaults: { text: "Runtime" },
+    preview(props) {
+      return `<p data-bn="bn-metric-value">9.6KB</p><h3 data-bn="bn-metric-label">${text(props, "Runtime")}</h3>`;
+    }
+  });
+  palette.register({
+    type: "card-grid",
+    label: "Card grid",
+    category: "organisms",
+    tag: "ul",
+    bn: "bn-card-grid",
+    container: true,
+    props: [{ name: "text", kind: "string", label: "Label" }],
+    defaults: { text: "Packages" },
+    preview(props) {
+      return `<li><article data-bn="bn-metric"><p data-bn="bn-metric-value">45</p><h3 data-bn="bn-metric-label">${text(props, "Packages")}</h3></article></li>`;
+    }
+  });
+  palette.register({
+    type: "alert",
+    label: "Alert",
+    category: "organisms",
+    tag: "section",
+    bn: "bn-alert",
+    container: false,
+    props: [{ name: "text", kind: "string", label: "Title" }],
+    defaults: { text: "Save changes?" },
+    preview(props) {
+      return `<h2>${text(props, "Save changes?")}</h2><p>Your edits stay on this page.</p>`;
+    }
+  });
+  palette.register({
+    type: "empty-state",
+    label: "Empty state",
+    category: "organisms",
+    tag: "section",
+    bn: "bn-empty-state",
+    container: false,
+    props: [{ name: "text", kind: "string", label: "Title" }],
+    defaults: { text: "Nothing here" },
+    preview(props) {
+      return `<h2 data-bn="bn-empty-title">${text(props, "Nothing here")}</h2><p data-bn="bn-empty-description">Add an organism from the palette.</p>`;
+    }
+  });
+  palette.register({
+    type: "form-organism",
+    label: "Form",
+    category: "organisms",
+    tag: "form",
+    bn: "bn-form",
+    container: true,
+    props: [{ name: "text", kind: "string", label: "Submit" }],
+    defaults: { text: "Save" },
+    preview(props) {
+      return `<label data-bn="bn-field">Name<input data-bn="bn-field-control" type="text" placeholder="Title"></label><button data-bn="bn-button" data-variant="prominent" data-size="large" type="submit">${text(props, "Save")}</button>`;
+    }
+  });
+  palette.register({
+    type: "menu-organism",
+    label: "Menu",
+    category: "organisms",
+    tag: "menu",
+    bn: "bn-menu",
+    container: false,
+    props: [{ name: "text", kind: "string", label: "First item" }],
+    defaults: { text: "New" },
+    preview(props) {
+      return `<li><button type="button">${text(props, "New")}</button></li><li><button type="button">Open</button></li>`;
+    }
+  });
+  palette.register({
+    type: "search-field",
+    label: "Search",
+    category: "organisms",
+    tag: "search",
+    bn: "bn-search",
+    container: false,
+    props: [{ name: "text", kind: "string", label: "Placeholder" }],
+    defaults: { text: "Search" },
+    preview(props) {
+      return `<label>Search</label><input type="search" placeholder="${text(props, "Search")}">`;
+    }
+  });
+  palette.register({
+    type: "scrollbar",
+    label: "Scrollbar",
+    category: "organisms",
+    tag: "input",
+    bn: "bn-scrollbar",
+    container: false,
+    props: [{ name: "aria-label", kind: "string", label: "Label" }],
+    defaults: { type: "range", "aria-label": "Scroll position", min: "0", max: "100", value: "40" }
+  });
+  palette.register({
+    type: "refraction",
+    label: "Refraction",
+    category: "organisms",
+    tag: "figure",
+    bn: "bn-refraction",
+    container: false,
+    props: [{ name: "text", kind: "string", label: "Label" }],
+    defaults: { text: "Liquid glass" },
+    preview(props) {
+      return `<figcaption>${text(props, "Liquid glass")}</figcaption><p>Sheen over the brand glow.</p>`;
+    }
+  });
+}
 function defaultPalette() {
   const palette = createPalette();
+  registerOrganisms(palette);
   palette.register({
     type: "section",
     label: "Section",
@@ -505,7 +750,13 @@ function defaultPalette() {
     tag: "div",
     container: true,
     props: [
-      { name: "direction", kind: "enum", options: ["row", "column"], default: "column", label: "Direction" },
+      {
+        name: "direction",
+        kind: "enum",
+        options: ["row", "column"],
+        default: "column",
+        label: "Direction"
+      },
       { name: "gap", kind: "string", default: "1rem", label: "Gap" },
       { name: "class", kind: "string", label: "Class" }
     ],
@@ -531,7 +782,13 @@ function defaultPalette() {
     tag: "h2",
     container: false,
     props: [
-      { name: "level", kind: "enum", options: ["h1", "h2", "h3", "h4", "h5", "h6"], default: "h2", label: "Level" },
+      {
+        name: "level",
+        kind: "enum",
+        options: ["h1", "h2", "h3", "h4", "h5", "h6"],
+        default: "h2",
+        label: "Level"
+      },
       { name: "text", kind: "string", label: "Text" }
     ],
     defaults: { level: "h2", text: "Heading" }
@@ -542,9 +799,7 @@ function defaultPalette() {
     category: "text",
     tag: "p",
     container: false,
-    props: [
-      { name: "text", kind: "string", label: "Text" }
-    ],
+    props: [{ name: "text", kind: "string", label: "Text" }],
     defaults: { text: "Lorem ipsum." }
   });
   palette.register({
@@ -557,9 +812,27 @@ function defaultPalette() {
     dataProps: ["variant", "size"],
     props: [
       { name: "text", kind: "string", label: "Label" },
-      { name: "variant", kind: "enum", options: ["primary", "secondary", "ghost", "destructive"], default: "primary", label: "Variant" },
-      { name: "size", kind: "enum", options: ["sm", "default", "lg"], default: "default", label: "Size" },
-      { name: "type", kind: "enum", options: ["button", "submit", "reset"], default: "button", label: "Type" },
+      {
+        name: "variant",
+        kind: "enum",
+        options: ["primary", "secondary", "ghost", "destructive"],
+        default: "primary",
+        label: "Variant"
+      },
+      {
+        name: "size",
+        kind: "enum",
+        options: ["sm", "default", "lg"],
+        default: "default",
+        label: "Size"
+      },
+      {
+        name: "type",
+        kind: "enum",
+        options: ["button", "submit", "reset"],
+        default: "button",
+        label: "Type"
+      },
       { name: "disabled", kind: "boolean", default: false, label: "Disabled" }
     ],
     defaults: { text: "Click me", variant: "primary", size: "default", type: "button" }
@@ -572,7 +845,13 @@ function defaultPalette() {
     container: false,
     bn: "input",
     props: [
-      { name: "type", kind: "enum", options: ["text", "email", "password", "number", "search", "tel", "url"], default: "text", label: "Type" },
+      {
+        name: "type",
+        kind: "enum",
+        options: ["text", "email", "password", "number", "search", "tel", "url"],
+        default: "text",
+        label: "Type"
+      },
       { name: "name", kind: "string", label: "Name" },
       { name: "placeholder", kind: "string", label: "Placeholder" },
       { name: "value", kind: "signal", label: "Bound value" },
@@ -642,7 +921,13 @@ function defaultPalette() {
     props: [
       { name: "href", kind: "string", label: "URL" },
       { name: "text", kind: "string", label: "Text" },
-      { name: "target", kind: "enum", options: ["", "_blank", "_self"], default: "", label: "Target" }
+      {
+        name: "target",
+        kind: "enum",
+        options: ["", "_blank", "_self"],
+        default: "",
+        label: "Target"
+      }
     ],
     defaults: { href: "#", text: "Link" }
   });
@@ -666,25 +951,10 @@ function defaultPalette() {
     category: "reactive",
     tag: "span",
     container: false,
-    props: [
-      { name: "value", kind: "signal", label: "Bound expression" }
-    ],
+    props: [{ name: "value", kind: "signal", label: "Bound expression" }],
     defaults: {}
   });
   return palette;
-}
-
-// ../../packages/builder/src/escape.js
-function escapeHtml(value) {
-  const s = value == null ? "" : String(value);
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-}
-function escapeAttr(value) {
-  return escapeHtml(value);
-}
-var JS_IDENT = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
-function isValidIdentifier(name) {
-  return typeof name === "string" && JS_IDENT.test(name);
 }
 
 // ../../packages/builder/src/codegen.js
@@ -732,7 +1002,16 @@ var ATTR_PROPS = /* @__PURE__ */ new Set([
   "autocomplete",
   "for"
 ]);
-var BOOL_ATTRS = /* @__PURE__ */ new Set(["disabled", "required", "readonly", "checked", "selected", "multiple", "autofocus", "hidden"]);
+var BOOL_ATTRS = /* @__PURE__ */ new Set([
+  "disabled",
+  "required",
+  "readonly",
+  "checked",
+  "selected",
+  "multiple",
+  "autofocus",
+  "hidden"
+]);
 function attrName(key) {
   return key.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
 }
@@ -818,6 +1097,9 @@ function renderNode(node, palette, depth, indent) {
 ${childLines.join("\n")}
 ${pad}${close}`;
   }
+  if (typeof def?.preview === "function") {
+    return `${pad}${open}${def.preview(node.props || {})}${close}`;
+  }
   if (!isContainer || node.props.text != null || node.bindings?.text) {
     const text = renderText(node);
     if (text) return `${pad}${open}${text}${close}`;
@@ -829,7 +1111,11 @@ ${pad}${close}`;
 }
 function renderSignalDeclarations(signals, indent) {
   if (!signals || Object.keys(signals).length === 0) return "";
-  const lines = ['<script type="module">', `${indent}import { signal } from '@basenative/runtime';`, ""];
+  const lines = [
+    '<script type="module">',
+    `${indent}import { signal } from '@basenative/runtime';`,
+    ""
+  ];
   for (const name of Object.keys(signals)) {
     if (!isValidIdentifier(name)) {
       throw new Error(`Invalid signal name "${name}"`);
@@ -841,7 +1127,13 @@ function renderSignalDeclarations(signals, indent) {
   return lines.join("\n") + "\n";
 }
 function generateBaseNative(state, options = {}) {
-  const { indent = "  ", document: asDocument = false, title = "BaseNative Page", signals, palette } = options;
+  const {
+    indent = "  ",
+    document: asDocument = false,
+    title = "BaseNative Page",
+    signals,
+    palette
+  } = options;
   const tree = state.tree.peek ? state.tree.peek() : state.tree();
   const body = tree.map((node) => renderNode(node, palette || null, 0, indent)).join("\n");
   const script = renderSignalDeclarations(signals, indent);
@@ -951,17 +1243,23 @@ function renderInspector(state, palette) {
 
 // ../../packages/builder/src/palette-element.js
 var TAG = "bn-builder-palette";
-function renderPaletteHTML(palette) {
+function renderPaletteHTML(palette, query) {
+  const q = String(query || "").trim().toLowerCase();
   const categories = palette.categories();
   if (!categories.length) {
     return '<p class="bn-palette__empty">No components registered.</p>';
   }
-  return categories.map((cat) => {
-    const items = palette.byCategory(cat).map(
-      (def) => `<li class="bn-palette__item"><div role="button" tabindex="0" draggable="true" data-bn-palette-type="${escapeHtml(def.type)}" class="bn-palette__btn" aria-label="Add ${escapeHtml(def.label)}"><span class="bn-palette__label">${escapeHtml(def.label)}</span><span class="bn-palette__type">${escapeHtml(def.type)}</span></div></li>`
-    ).join("");
+  const groups = categories.map((cat) => {
+    const items = palette.byCategory(cat).filter((def) => {
+      if (!q) return true;
+      return def.label.toLowerCase().includes(q) || def.type.toLowerCase().includes(q) || def.category.toLowerCase().includes(q);
+    }).map((def) => {
+      return `<li class="bn-palette__item"><div role="button" tabindex="0" draggable="true" data-bn-palette-type="${escapeHtml(def.type)}" class="bn-palette__btn" aria-label="Add ${escapeHtml(def.label)}"><span class="bn-palette__label">${escapeHtml(def.label)}</span><span class="bn-palette__type">${escapeHtml(def.type)}</span></div></li>`;
+    }).join("");
+    if (!items) return "";
     return `<section class="bn-palette__group" aria-label="${escapeHtml(cat)} components"><h3 class="bn-palette__heading">${escapeHtml(cat)}</h3><ul class="bn-palette__list" role="list">${items}</ul></section>`;
   }).join("");
+  return groups || '<p class="bn-palette__empty">No organisms match.</p>';
 }
 var BnBuilderPalette = class extends HTMLElement {
   constructor() {
@@ -981,11 +1279,22 @@ var BnBuilderPalette = class extends HTMLElement {
   }
   _render() {
     if (!this.palette) return;
-    this.innerHTML = `<div class="bn-palette">${renderPaletteHTML(this.palette)}</div>`;
+    const groups = this.querySelector("[data-bn-palette-groups]");
+    if (!groups) {
+      this.innerHTML = `<div class="bn-palette"><search class="bn-palette__search"><label class="bn-palette__search-label" for="bn-palette-query">Find</label><input id="bn-palette-query" type="search" class="bn-palette__query" placeholder="Hero, list, window" value="${escapeHtml(this._query || "")}"></search><div data-bn-palette-groups>${renderPaletteHTML(this.palette, this._query)}</div></div>`;
+      return;
+    }
+    groups.innerHTML = renderPaletteHTML(this.palette, this._query);
   }
   _wire() {
     if (this._wired) return;
     this._wired = true;
+    this.addEventListener("input", (e) => {
+      const field = e.target.closest("[data-bn-palette-query], .bn-palette__query");
+      if (!field) return;
+      this._query = field.value;
+      this._render();
+    });
     this.addEventListener("dragstart", (e) => {
       const btn = e.target.closest("[data-bn-palette-type]");
       if (!btn) return;
@@ -1009,10 +1318,12 @@ var BnBuilderPalette = class extends HTMLElement {
     if (!type || !this.palette) return;
     const def = this.palette.get(type);
     if (!def) return;
-    this.dispatchEvent(new CustomEvent("bn-palette-add", {
-      detail: { type, def },
-      bubbles: true
-    }));
+    this.dispatchEvent(
+      new CustomEvent("bn-palette-add", {
+        detail: { type, def },
+        bubbles: true
+      })
+    );
   }
 };
 if (typeof customElements !== "undefined" && !customElements.get(TAG)) {
@@ -1065,18 +1376,16 @@ function renderNodeToElement(doc, node, palette) {
     if (value === true) el.setAttribute(name, "");
     else el.setAttribute(name, String(value));
   }
-  if (typeof node.props.text === "string" && (!node.children || node.children.length === 0) && !isVoid) {
-    el.textContent = node.props.text;
-  }
   if (node.bindings && node.bindings.text) {
     el.textContent = `{{ ${node.bindings.text.expr || `${node.bindings.text.ref}()`} }}`;
-  }
-  if (!isVoid && node.children && node.children.length > 0) {
-    el.textContent = "";
+  } else if (!isVoid && node.children && node.children.length > 0) {
     for (const child of node.children) {
-      const childEl = renderNodeToElement(doc, child, palette);
-      el.appendChild(childEl);
+      el.appendChild(renderNodeToElement(doc, child, palette));
     }
+  } else if (typeof def?.preview === "function") {
+    el.innerHTML = def.preview(node.props || {});
+  } else if (typeof node.props.text === "string" && !isVoid) {
+    el.textContent = node.props.text;
   }
   return el;
 }
@@ -1427,26 +1736,38 @@ if (typeof customElements !== "undefined" && !customElements.get(TAG3)) {
 // ../../packages/builder/src/builder-element.js
 var TAG4 = "bn-builder";
 var LAYOUT_HTML = `
-<div class="bn-builder">
-  <header class="bn-builder__toolbar" role="toolbar" aria-label="Builder actions">
-    <button type="button" data-bn-builder-action="undo" class="bn-builder__btn">Undo</button>
-    <button type="button" data-bn-builder-action="redo" class="bn-builder__btn">Redo</button>
-    <button type="button" data-bn-builder-action="clear" class="bn-builder__btn">Clear</button>
-    <button type="button" data-bn-builder-action="export" class="bn-builder__btn">Export Code</button>
+<section class="bn-builder" data-bn="bn-window">
+  <header class="bn-builder__toolbar" data-bn="bn-window-titlebar">
+    <p class="bn-builder__traffic" aria-hidden="true"><i></i><i></i><i></i></p>
+    <h2 class="bn-builder__title">Builder</h2>
+    <nav aria-label="Builder actions">
+      <button type="button" data-bn-builder-action="undo" class="bn-builder__btn">Undo</button>
+      <button type="button" data-bn-builder-action="redo" class="bn-builder__btn">Redo</button>
+      <button type="button" data-bn-builder-action="clear" class="bn-builder__btn">Clear</button>
+      <button type="button" data-bn-builder-action="export" class="bn-builder__btn">Export Code</button>
+    </nav>
   </header>
-  <div class="bn-builder__panes">
-    <aside class="bn-builder__pane bn-builder__pane--palette" aria-label="Components">
-      <bn-builder-palette></bn-builder-palette>
-    </aside>
-    <section class="bn-builder__pane bn-builder__pane--canvas" aria-label="Canvas">
-      <bn-builder-canvas></bn-builder-canvas>
-    </section>
-    <aside class="bn-builder__pane bn-builder__pane--side" aria-label="Inspector and tree">
-      <bn-builder-inspector></bn-builder-inspector>
-      <bn-builder-tree></bn-builder-tree>
-    </aside>
-  </div>
-</div>`;
+  <section class="bn-builder__body" data-bn="bn-window-body">
+    <div class="bn-builder__panes">
+      <aside class="bn-builder__pane bn-builder__pane--palette" data-bn="bn-sidebar" aria-label="Organism palette">
+        <h2 class="bn-builder__heading">Organisms</h2>
+        <bn-builder-palette></bn-builder-palette>
+      </aside>
+      <section class="bn-builder__pane bn-builder__pane--canvas" aria-label="Canvas">
+        <h2 class="bn-builder__heading">Canvas</h2>
+        <bn-builder-canvas></bn-builder-canvas>
+      </section>
+      <aside class="bn-builder__pane bn-builder__pane--layers" aria-label="Layers">
+        <h2 class="bn-builder__heading">Layers</h2>
+        <bn-builder-tree></bn-builder-tree>
+      </aside>
+      <aside class="bn-builder__pane bn-builder__pane--inspector" data-bn="bn-inspector" aria-label="Inspector">
+        <h2 class="bn-builder__heading">Inspector</h2>
+        <bn-builder-inspector></bn-builder-inspector>
+      </aside>
+    </div>
+  </section>
+</section>`;
 var BnBuilder = class extends HTMLElement {
   constructor() {
     super();
@@ -1495,7 +1816,9 @@ var BnBuilder = class extends HTMLElement {
       else if (action === "clear") this.state.clear();
       else if (action === "export") {
         const code = this.generateCode();
-        this.dispatchEvent(new CustomEvent("bn-builder-export", { detail: { code }, bubbles: true }));
+        this.dispatchEvent(
+          new CustomEvent("bn-builder-export", { detail: { code }, bubbles: true })
+        );
       }
     });
   }
@@ -1517,10 +1840,14 @@ var BnBuilder = class extends HTMLElement {
   }
 };
 if (typeof customElements !== "undefined") {
-  if (!customElements.get("bn-builder-palette")) customElements.define("bn-builder-palette", BnBuilderPalette);
-  if (!customElements.get("bn-builder-canvas")) customElements.define("bn-builder-canvas", BnBuilderCanvas);
-  if (!customElements.get("bn-builder-tree")) customElements.define("bn-builder-tree", BnBuilderTree);
-  if (!customElements.get("bn-builder-inspector")) customElements.define("bn-builder-inspector", BnBuilderInspector);
+  if (!customElements.get("bn-builder-palette"))
+    customElements.define("bn-builder-palette", BnBuilderPalette);
+  if (!customElements.get("bn-builder-canvas"))
+    customElements.define("bn-builder-canvas", BnBuilderCanvas);
+  if (!customElements.get("bn-builder-tree"))
+    customElements.define("bn-builder-tree", BnBuilderTree);
+  if (!customElements.get("bn-builder-inspector"))
+    customElements.define("bn-builder-inspector", BnBuilderInspector);
   if (!customElements.get(TAG4)) customElements.define(TAG4, BnBuilder);
 }
 

@@ -36,6 +36,8 @@ import {
   renderBnPulldownButton,
   renderBnRadio,
   renderBnScroll,
+  renderBnScrollbar,
+  renderBnRefraction,
   renderBnSearch,
   renderBnSegmented,
   renderBnShareSheet,
@@ -90,74 +92,349 @@ function buttons() {
   );
 }
 
-function atomStates() {
-  const columns = [
-    ['Rest', {}],
-    ['Hover', { force: 'hover' }],
-    ['Pressed', { force: 'active' }],
-    ['Focus', { force: 'focus' }],
-    ['Disabled', { force: 'disabled', disabled: true }],
-  ];
-  return columns
+const STATE_COLUMNS = [
+  ['Rest', {}],
+  ['Hover', { force: 'hover' }],
+  ['Pressed', { force: 'active' }],
+  ['Focus', { force: 'focus' }],
+  ['Disabled', { force: 'disabled', disabled: true }],
+  ['Selected', { pick: 'selected' }],
+];
+
+const SYMBOL_TINTS = [
+  'blue',
+  'green',
+  'orange',
+  'purple',
+  'red',
+  'teal',
+  'indigo',
+  'pink',
+  'yellow',
+  'mint',
+  'cyan',
+  'brown',
+];
+
+function atomStates(tone = 'light') {
+  return STATE_COLUMNS.map(([label, state]) => {
+    if (state.pick === 'selected') {
+      return row(
+        label,
+        [
+          renderBnSwitch({ label: 'On', checked: true }),
+          renderBnCheckbox({ label: 'Check', checked: true }),
+          renderBnRadio({ label: 'Radio', checked: true, name: `atom-selected-${tone}` }),
+          renderBnPageControl({ count: 3, current: 1 }),
+        ].join(''),
+      );
+    }
+    const buttons = ['prominent', 'bordered', 'borderless', 'glass', 'glass-prominent']
+      .map((variant) => renderBnButton(variant, { variant, size: 'large', ...state }))
+      .join('');
+    const destructive = renderBnButton('Delete', {
+      variant: 'prominent',
+      destructive: true,
+      size: 'large',
+      ...state,
+    });
+    const tiles = SYMBOL_TINTS.map((tint) =>
+      renderBnSymbol({ tint, mark: tint.slice(0, 1).toUpperCase(), force: state.force }),
+    ).join('');
+    const badges = ['red', 'blue', 'green', 'orange']
+      .map((tint) => renderBnBadge('3', { tint, force: state.force }))
+      .join('');
+    return row(
+      label,
+      [
+        buttons,
+        destructive,
+        tiles,
+        badges,
+        renderBnSwitch({ label: 'Off', force: state.force, disabled: state.disabled }),
+        renderBnCheckbox({ label: 'Check', force: state.force, disabled: state.disabled }),
+        renderBnRadio({
+          label: 'Radio',
+          name: `atom-${label}-${tone}`,
+          force: state.force,
+          disabled: state.disabled,
+        }),
+        renderBnSlider({ label: 'Level', force: state.force, disabled: state.disabled }),
+        renderBnDial({ label: 'Dial', force: state.force, disabled: state.disabled }),
+        renderBnStepper({
+          label: 'Count',
+          value: 2,
+          force: state.force,
+          disabled: state.disabled,
+        }),
+        renderBnProgress({ value: 0.4, force: state.force }),
+        renderBnSpinner({ force: state.force }),
+        renderBnField({
+          label: 'Name',
+          placeholder: 'Title',
+          force: state.force,
+          disabled: state.disabled,
+        }),
+        renderBnSearch({ label: `Find ${label}`, force: state.force, disabled: state.disabled }),
+        renderBnColorWell({ force: state.force, disabled: state.disabled }),
+        renderBnPageControl({
+          count: 3,
+          current: 1,
+          force: state.force,
+          disabled: state.disabled,
+        }),
+        renderBnAppIcon({ monogram: 'Bn', label: 'BaseNative', force: state.force }),
+      ].join(''),
+    );
+  }).join('');
+}
+
+function moleculeStates() {
+  return STATE_COLUMNS.map(([label, state]) => {
+    if (state.pick === 'selected') {
+      return row(
+        label,
+        [
+          renderBnSegmented({
+            size: 'large',
+            segments: [
+              { label: 'Days', value: 'd', selected: true },
+              { label: 'Weeks', value: 'w' },
+            ],
+          }),
+          renderBnDatePicker({ inline: true, open: true, selected: '4', month: 'June' }),
+        ].join(''),
+      );
+    }
+    return row(
+      label,
+      [
+        renderBnPopupButton({
+          label: 'Menu',
+          items: [{ label: 'One', value: '1' }],
+          ...state,
+        }),
+        renderBnPopupButton({
+          label: 'Native',
+          native: true,
+          items: [{ label: 'One', value: '1' }],
+          ...state,
+        }),
+        renderBnPulldownButton({ label: 'Actions', items: [{ label: 'Copy' }], ...state }),
+        renderBnSegmented({
+          size: 'large',
+          segments: [
+            { label: 'Days', value: 'd', selected: true },
+            { label: 'Weeks', value: 'w' },
+          ],
+          ...state,
+        }),
+        renderBnCombobox({ label: 'City', items: [{ label: 'One' }], ...state }),
+        renderBnList({
+          grouped: true,
+          rows: [{ title: 'Row', detail: 'Detail' }],
+          force: state.force,
+        }),
+        renderBnList({
+          grouped: true,
+          rows: [{ title: 'Wi-Fi', tint: 'blue', mark: 'W' }],
+          force: state.force,
+        }),
+        renderBnMenu({
+          inline: true,
+          label: 'Menu',
+          items: [{ label: 'Copy', force: state.force }],
+          force: state.force,
+        }),
+        renderBnContextMenu({
+          inline: true,
+          items: [{ label: 'Copy', force: state.force }],
+          force: state.force,
+        }),
+        renderBnPopover({ inline: true, label: 'More', body: 'Note', ...state }),
+        renderBnTooltip({ label: 'Info', tip: 'Hint', inline: true, ...state }),
+        renderBnDisclosure({ label: 'Open', body: 'Body', open: true, ...state }),
+        renderBnDisclosure({ label: 'Closed', body: 'Body', ...state }),
+        renderBnIndexBar({ letters: ['A', 'B'], label: `Index ${label}`, ...state }),
+        renderBnMetric({ value: '12', label: 'Items', ...state }),
+        renderBnColorPicker({ inline: true, open: true, label: 'Accent', force: state.force }),
+        renderBnDatePicker({
+          inline: true,
+          open: true,
+          selected: '4',
+          month: 'June',
+          force: state.force,
+        }),
+      ].join(''),
+    );
+  }).join('');
+}
+
+function materialStates() {
+  const names = ['ultrathin', 'thin', 'sm', 'medium', 'lg', 'thick', 'ultrathick', 'opaque'];
+  return STATE_COLUMNS.filter(([, state]) => state.pick !== 'selected')
     .map(([label, state]) =>
       row(
         label,
-        [
-          renderBnButton('Play', { variant: 'prominent', size: 'medium', ...state }),
-          renderBnButton('Glass', { variant: 'glass', size: 'medium', ...state }),
-          renderBnSymbol({ tint: 'blue', mark: 'A', force: state.force }),
-          renderBnBadge('3', { force: state.force }),
-          renderBnSwitch({
-            label: 'On',
-            checked: true,
-            force: state.force,
-            disabled: state.disabled,
-          }),
-          renderBnCheckbox({
-            label: 'Check',
-            checked: true,
-            force: state.force,
-            disabled: state.disabled,
-          }),
-          renderBnRadio({
-            label: 'Radio',
-            checked: true,
-            name: `atom-${label}`,
-            force: state.force,
-            disabled: state.disabled,
-          }),
-          renderBnSlider({ label: 'Level', force: state.force, disabled: state.disabled }),
-          renderBnDial({ label: 'Dial', force: state.force, disabled: state.disabled }),
-          renderBnStepper({
-            label: 'Count',
-            value: 2,
-            force: state.force,
-            disabled: state.disabled,
-          }),
-          renderBnProgress({ value: 0.4, force: state.force }),
-          renderBnSpinner({ force: state.force }),
-          renderBnField({
-            label: 'Name',
-            placeholder: 'Title',
-            force: state.force,
-            disabled: state.disabled,
-          }),
-          renderBnSearch({ force: state.force, disabled: state.disabled }),
-          renderBnColorWell({ force: state.force, disabled: state.disabled }),
-          renderBnPageControl({
-            count: 3,
-            current: 1,
-            force: state.force,
-            disabled: state.disabled,
-          }),
-          renderBnAppIcon({ monogram: 'Bn', label: 'BaseNative', force: state.force }),
-        ].join(''),
+        names.map((name) => renderBnMaterial({ name, label: name, force: state.force })).join(''),
       ),
     )
     .join('');
 }
 
-function iosBody() {
+function organismStates() {
+  return STATE_COLUMNS.map(([label, state]) => {
+    if (state.pick === 'selected') {
+      return row(
+        label,
+        [
+          renderBnTabBar({
+            label: 'Tabs selected',
+            tabs: [{ label: 'Today', current: true }, { label: 'Library' }],
+          }),
+          renderBnSidebar({
+            inline: true,
+            label: 'Side selected',
+            items: [{ label: 'Inbox', current: true }, { label: 'Archive' }],
+          }),
+          renderBnDock({
+            items: [
+              { label: 'Home', href: '/', current: true },
+              { label: 'Docs', href: '/docs' },
+            ],
+          }),
+          renderBnTable({
+            columns: ['Name'],
+            rows: [['Notes'], ['Mail']],
+            selected: 0,
+          }),
+        ].join(''),
+      );
+    }
+    return row(
+      label,
+      [
+        renderBnNavBar({
+          title: 'Title',
+          heading: 'h2',
+          label: `Nav large ${label}`,
+          ...state,
+        }),
+        renderBnNavBar({
+          title: 'Title',
+          large: false,
+          heading: 'h2',
+          label: `Nav ${label}`,
+          ...state,
+        }),
+        renderBnTabBar({
+          label: `Tabs ${label}`,
+          tabs: [{ label: 'Today', current: true }, { label: 'Library' }],
+          ...state,
+        }),
+        renderBnTabBar({
+          label: `More ${label}`,
+          barLimit: 1,
+          tabs: [{ label: 'Today', current: true }, { label: 'Library' }, { label: 'Search' }],
+          ...state,
+        }),
+        renderBnToolbar({ label: `Tools ${label}`, items: [{ label: 'Edit' }], ...state }),
+        renderBnSidebar({
+          inline: true,
+          label: `Side ${label}`,
+          items: [{ label: 'Inbox', current: true }, { label: 'Archive' }],
+          ...state,
+        }),
+        renderBnAlert({
+          inline: true,
+          open: true,
+          title: `Alert ${label}`,
+          message: 'Save this document?',
+          ...state,
+        }),
+        renderBnSheet({
+          inline: true,
+          open: true,
+          title: `Sheet ${label}`,
+          body: 'Details',
+          ...state,
+        }),
+        renderBnNotification({ title: 'Notice', message: label, ...state }),
+        renderBnMenubar({ items: [{ label: 'File' }, { label: 'Edit' }], ...state }),
+        renderBnDialog({
+          inline: true,
+          open: true,
+          title: `Dialog ${label}`,
+          message: 'Keep this?',
+          ...state,
+        }),
+        renderBnActionSheet({
+          inline: true,
+          open: true,
+          title: `Actions ${label}`,
+          actions: [{ label: 'Copy' }],
+          ...state,
+        }),
+        renderBnShareSheet({
+          inline: true,
+          open: true,
+          actions: [{ label: 'Copy', glyph: 'C' }],
+          ...state,
+        }),
+        renderBnInspector({
+          inline: true,
+          title: 'Inspector',
+          sections: [{ label: 'Type', fields: [{ label: 'Name', placeholder: 'Title' }] }],
+          ...state,
+        }),
+        renderBnCardGrid({
+          cards: [{ value: '12', label: 'Items' }],
+          ...state,
+        }),
+        renderBnCardGrid({
+          cards: [{ title: 'Notes', body: 'Widget' }],
+          ...state,
+        }),
+        renderBnHero({
+          eyebrow: 'Runtime',
+          title: 'BaseNative',
+          heading: 'h2',
+          lede: 'A glass window header.',
+          actions: [{ label: 'Continue', variant: 'prominent' }],
+          ...state,
+        }),
+        renderBnFooter({ note: 'BaseNative', links: [{ label: 'Docs', href: '/docs' }], ...state }),
+        renderBnWindow({ title: 'Document', body: 'Body', ...state }),
+        renderBnForm({
+          fields: [{ label: 'Name', placeholder: 'Title' }],
+          submitLabel: 'Save',
+          ...state,
+        }),
+        renderBnGroup({ label: 'Group', body: 'Grouped', ...state }),
+        renderBnEmptyState({ title: 'Empty', description: 'Nothing here.', ...state }),
+        renderBnWidget({ title: 'Widget', body: 'Today', ...state }),
+        renderBnScroll({ body: 'Scrollable notes.', ...state }),
+        renderBnImageWell({ label: 'Image', ...state }),
+        renderBnInputAccessory({ keys: ['space', 'return'], ...state }),
+        renderBnDock({
+          items: [
+            { label: 'Home', href: '/', current: true },
+            { label: 'Docs', href: '/docs' },
+          ],
+          ...state,
+        }),
+        renderBnTable({
+          columns: ['Name'],
+          rows: [['Notes'], ['Mail']],
+          selected: 0,
+          ...state,
+        }),
+      ].join(''),
+    );
+  }).join('');
+}
+
+function iosBody(tone = 'light') {
   return [
     row('Buttons', buttons()),
     row(
@@ -200,7 +477,7 @@ function iosBody() {
     row(
       'Fields',
       renderBnField({ label: 'Name', placeholder: 'Required' }) +
-        renderBnSearch({ label: 'Search' }),
+        renderBnSearch({ label: `Search iOS ${tone}` }),
     ),
     row(
       'Color and date',
@@ -274,13 +551,21 @@ function iosBody() {
       'Page control and tabs',
       renderBnPageControl({ count: 5, current: 2 }) +
         renderBnTabBar({
+          label: `iOS tabs ${tone}`,
           tabs: [{ label: 'Today', current: true }, { label: 'Library' }, { label: 'Search' }],
         }),
     ),
     row(
       'Toolbar, sidebar, menu bar',
-      renderBnToolbar({ items: [{ label: 'Edit' }, { label: 'Done' }] }) +
-        renderBnSidebar({ items: [{ label: 'Inbox', current: true }, { label: 'Archive' }] }) +
+      renderBnToolbar({
+        label: `iOS toolbar ${tone}`,
+        items: [{ label: 'Edit' }, { label: 'Done' }],
+      }) +
+        renderBnSidebar({
+          inline: true,
+          label: `iOS sidebar ${tone}`,
+          items: [{ label: 'Inbox', current: true }, { label: 'Archive' }],
+        }) +
         renderBnMenubar({ items: [{ label: '9:41' }, { label: 'LTE' }] }),
     ),
     row(
@@ -297,7 +582,7 @@ function iosBody() {
   ].join('');
 }
 
-function macosBody() {
+function macosBody(tone = 'light') {
   return [
     row(
       'Buttons',
@@ -345,7 +630,7 @@ function macosBody() {
     row(
       'Fields and search',
       renderBnField({ label: 'Name', placeholder: 'Name' }) +
-        renderBnSearch({ label: 'Search', placeholder: 'Search' }) +
+        renderBnSearch({ label: `Search macOS ${tone}`, placeholder: 'Search' }) +
         renderBnColorWell({ label: 'Color', value: '#0088ff' }),
     ),
     row(
@@ -402,14 +687,24 @@ function macosBody() {
     row(
       'Window, sidebar, toolbar',
       renderBnWindow({ title: 'Document', body: 'Window background is the kit token.' }) +
-        renderBnSidebar({ items: [{ label: 'Recents', current: true }, { label: 'Shared' }] }) +
-        renderBnToolbar({ items: [{ label: 'Back' }, { label: 'Forward' }] }),
+        renderBnSidebar({
+          inline: true,
+          label: `macOS sidebar ${tone}`,
+          items: [{ label: 'Recents', current: true }, { label: 'Shared' }],
+        }) +
+        renderBnToolbar({
+          label: `macOS toolbar ${tone}`,
+          items: [{ label: 'Back' }, { label: 'Forward' }],
+        }),
     ),
     row(
       'Scroll, image well, notification',
       renderBnScroll({
         body: 'Scrollbar colour is Miscellaneous/Scrollbar. The track itself is native.',
       }) +
+        renderBnScrollbar({ label: 'Position', value: 35 }) +
+        renderBnScrollbar({ orientation: 'horizontal', label: 'Horizontal position', value: 60 }) +
+        renderBnRefraction({ label: 'Liquid glass', body: 'Sheen over the brand glow.' }) +
         renderBnImageWell({ label: 'Picture' }) +
         renderBnNotification({ title: 'Export complete', message: 'The file is in Downloads.' }),
     ),
@@ -417,7 +712,7 @@ function macosBody() {
 }
 
 function usage(label, html) {
-  return `<section data-bn="bn-catalog-row"><h3 data-bn="bn-catalog-label">${label}</h3><figure data-bn="bn-catalog-demo">${html}</figure><pre data-bn="bn-catalog-usage"><code>${escapeHtml(html)}</code></pre></section>`;
+  return `<section data-bn="bn-catalog-row"><h3 data-bn="bn-catalog-label">${label}</h3><figure data-bn="bn-catalog-demo">${html}</figure><pre data-bn="bn-catalog-usage" tabindex="0"><code>${escapeHtml(html)}</code></pre></section>`;
 }
 
 /** Organisms. Copy the semantic HTML under each one. */
@@ -434,6 +729,7 @@ function organismRows() {
   const hero = renderBnHero({
     eyebrow: 'Runtime',
     title: 'BaseNative',
+    heading: 'h2',
     lede: 'A glass window header composed from the hero organism.',
     actions: [
       { label: 'Continue', variant: 'prominent' },
@@ -445,6 +741,7 @@ function organismRows() {
       'Navigation bar',
       renderBnNavBar({
         title: 'Settings',
+        heading: 'h2',
         back: { label: 'Back', href: '/' },
         subtitle: 'Large Title',
       }),
@@ -464,6 +761,7 @@ function organismRows() {
     usage(
       'Inspector',
       renderBnInspector({
+        inline: true,
         title: 'Inspector',
         sections: [{ label: 'Type', fields: [{ label: 'Name', placeholder: 'Title' }] }],
       }),
@@ -486,13 +784,272 @@ function organismRows() {
       renderBnBadge('3') +
         renderBnSymbol({ tint: 'orange', mark: 'A' }) +
         renderBnMetric({ value: '72', label: 'Degrees', detail: 'Today' }) +
-        renderBnIndexBar({ letters: ['A', 'B', 'C'] }),
+        renderBnIndexBar({ letters: ['A', 'B', 'C'], label: 'Index sample' }),
     ),
   ].join('');
 }
 
+/** Page compositions. Each piece is an existing organism renderer. */
+function templateList() {
+  return [
+    renderBnNavBar({
+      title: 'Library',
+      large: false,
+      heading: 'h2',
+      label: 'Template library',
+    }),
+    renderBnSearch({ label: 'Template library search' }),
+    renderBnList({
+      grouped: true,
+      rows: [
+        { title: 'Airplane Mode', detail: 'Off' },
+        { title: 'Wi-Fi', detail: 'Home' },
+      ],
+    }),
+    renderBnTabBar({
+      label: 'Template library tabs',
+      tabs: [{ label: 'Today', current: true }, { label: 'Library' }],
+    }),
+  ].join('');
+}
+
+function templateWindow() {
+  return renderBnWindow({
+    title: 'Document',
+    content: [
+      renderBnToolbar({
+        label: 'Template window toolbar',
+        items: [{ label: 'Back' }, { label: 'Forward' }],
+      }),
+      renderBnSidebar({
+        inline: true,
+        label: 'Template window sidebar',
+        items: [{ label: 'Recents', current: true }, { label: 'Shared' }],
+      }),
+      renderBnList({
+        grouped: true,
+        rows: [{ title: 'Notes', detail: 'Today' }],
+      }),
+    ].join(''),
+  });
+}
+
+function templateSheet() {
+  return renderBnSheet({
+    inline: true,
+    open: true,
+    title: 'New item',
+    label: 'Template sheet',
+    content:
+      renderBnField({ label: 'Name', placeholder: 'Title' }) +
+      renderBnButton('Save', { variant: 'prominent' }),
+  });
+}
+
+function previewAtomStates() {
+  const columns = [
+    ['Rest', {}],
+    ['Hover', { force: 'hover' }],
+    ['Pressed', { force: 'active' }],
+    ['Focus', { force: 'focus' }],
+    ['Disabled', { force: 'disabled', disabled: true }],
+  ];
+  return columns
+    .map(([label, state]) =>
+      row(
+        label,
+        [
+          renderBnButton('Play', { variant: 'prominent', size: 'medium', ...state }),
+          renderBnButton('Glass', { variant: 'glass', size: 'medium', ...state }),
+          renderBnSymbol({ tint: 'blue', mark: 'A', force: state.force }),
+          renderBnBadge('3', { force: state.force }),
+          renderBnSwitch({
+            label: 'On',
+            checked: true,
+            force: state.force,
+            disabled: state.disabled,
+          }),
+          renderBnCheckbox({
+            label: 'Check',
+            checked: true,
+            force: state.force,
+            disabled: state.disabled,
+          }),
+          renderBnRadio({
+            label: 'Radio',
+            checked: true,
+            name: `atom-${label}`,
+            force: state.force,
+            disabled: state.disabled,
+          }),
+          renderBnSlider({ label: 'Level', force: state.force, disabled: state.disabled }),
+          renderBnDial({ label: 'Dial', force: state.force, disabled: state.disabled }),
+          renderBnStepper({
+            label: 'Count',
+            value: 2,
+            force: state.force,
+            disabled: state.disabled,
+          }),
+          renderBnProgress({ value: 0.4, force: state.force }),
+          renderBnSpinner({ force: state.force }),
+          renderBnField({
+            label: 'Name',
+            placeholder: 'Title',
+            force: state.force,
+            disabled: state.disabled,
+          }),
+          renderBnSearch({
+            label: `Find ${label}`,
+            force: state.force,
+            disabled: state.disabled,
+          }),
+          renderBnColorWell({ force: state.force, disabled: state.disabled }),
+          renderBnPageControl({
+            count: 3,
+            current: 1,
+            force: state.force,
+            disabled: state.disabled,
+          }),
+          renderBnAppIcon({ monogram: 'Bn', label: 'BaseNative', force: state.force }),
+        ].join(''),
+      ),
+    )
+    .join('');
+}
+
+function previewMoleculeStates() {
+  const columns = [
+    ['Rest', {}],
+    ['Hover', { force: 'hover' }],
+    ['Pressed', { force: 'active' }],
+    ['Focus', { force: 'focus' }],
+    ['Disabled', { force: 'disabled', disabled: true }],
+  ];
+  return columns
+    .map(([label, state]) =>
+      row(
+        label,
+        [
+          renderBnPopupButton({
+            label: 'Options',
+            native: true,
+            items: [{ label: 'One', value: '1' }],
+            ...state,
+          }),
+          renderBnPulldownButton({ label: 'Actions', items: [{ label: 'Copy' }], ...state }),
+          renderBnSegmented({
+            size: 'large',
+            segments: [
+              { label: 'Days', value: 'd', selected: true },
+              { label: 'Weeks', value: 'w' },
+            ],
+            ...state,
+          }),
+          renderBnCombobox({ label: 'City', items: [{ label: 'One' }], ...state }),
+          renderBnList({
+            grouped: true,
+            rows: [{ title: 'Row', detail: 'Detail' }],
+            force: state.force,
+          }),
+          renderBnMenu({
+            inline: true,
+            label: 'Menu',
+            items: [{ label: 'Copy', force: state.force }],
+            force: state.force,
+          }),
+          renderBnPopover({ inline: true, label: 'More', body: 'Note', ...state }),
+          renderBnTooltip({ label: 'Info', tip: 'Hint', ...state }),
+          renderBnDisclosure({ label: 'Details', body: 'Body', open: true, ...state }),
+          renderBnIndexBar({ letters: ['A', 'B'], label: `Index ${label}`, ...state }),
+          renderBnMetric({ value: '12', label: 'Items', ...state }),
+        ].join(''),
+      ),
+    )
+    .join('');
+}
+
+function previewOrganismStates() {
+  const columns = [
+    ['Rest', {}],
+    ['Hover', { force: 'hover' }],
+    ['Pressed', { force: 'active' }],
+    ['Focus', { force: 'focus' }],
+    ['Disabled', { force: 'disabled' }],
+  ];
+  return columns
+    .map(([label, state]) =>
+      row(
+        label,
+        [
+          renderBnNavBar({
+            title: 'Title',
+            large: false,
+            heading: 'h2',
+            label: `Nav ${label}`,
+            ...state,
+          }),
+          renderBnTabBar({
+            label: `Tabs ${label}`,
+            tabs: [{ label: 'Today', current: true }, { label: 'Library' }],
+            ...state,
+          }),
+          renderBnToolbar({
+            label: `Tools ${label}`,
+            items: [{ label: 'Edit' }],
+            ...state,
+          }),
+          renderBnSidebar({
+            inline: true,
+            label: `Side ${label}`,
+            items: [{ label: 'Inbox', current: true }],
+            ...state,
+          }),
+          renderBnAlert({
+            inline: true,
+            title: `Alert ${label}`,
+            message: 'Save this document?',
+            ...state,
+          }),
+          renderBnSheet({
+            inline: true,
+            title: `Sheet ${label}`,
+            body: 'Details',
+            ...state,
+          }),
+          renderBnNotification({ title: 'Notice', message: label, ...state }),
+        ].join(''),
+      ),
+    )
+    .join('');
+}
+
+function previewStages() {
+  const materials = ['ultrathin', 'thin', 'sm', 'medium', 'lg', 'thick', 'ultrathick', 'opaque']
+    .map((name) => renderBnMaterial({ name, label: name }))
+    .join('');
+  return [
+    stage('Materials', 'data-bn-platform="ios"', row('Liquid Glass', materials)),
+    stage('Atom states', 'data-bn-platform="ios" data-theme="light"', previewAtomStates()),
+    stage('Molecule states', 'data-bn-platform="ios" data-theme="light"', previewMoleculeStates()),
+    stage('Organism states', 'data-bn-platform="ios" data-theme="light"', previewOrganismStates()),
+  ].join('');
+}
+
+function measuredStages() {
+  return [
+    stage('Materials', 'data-bn-platform="ios" data-theme="light"', materialStates()),
+    stage('Materials', 'data-bn-platform="ios" data-theme="dark"', materialStates()),
+    stage('Atom states', 'data-bn-platform="ios" data-theme="light"', atomStates('light')),
+    stage('Atom states', 'data-bn-platform="ios" data-theme="dark"', atomStates('dark')),
+    stage('Molecule states', 'data-bn-platform="ios" data-theme="light"', moleculeStates()),
+    stage('Molecule states', 'data-bn-platform="ios" data-theme="dark"', moleculeStates()),
+    stage('Organism states', 'data-bn-platform="ios" data-theme="light"', organismStates()),
+    stage('Organism states', 'data-bn-platform="ios" data-theme="dark"', organismStates()),
+  ].join('');
+}
+
 /** Catalog sections, without a document shell. */
-export function catalogBody() {
+export function catalogBody(options = {}) {
   resetIds();
   const notes = VERIFY.map(
     (item) => `<li><strong>${item.topic}.</strong> ${item.detail}</li>`,
@@ -500,17 +1057,18 @@ export function catalogBody() {
   const typeSample = '<p data-bn="bn-catalog-type">Large Title at xxxLarge</p>';
   return `<header data-bn="bn-catalog-header">
 <h1>Platform catalog</h1>
-<p>Atoms, molecules, and organisms. Materials are translated from MIT stylesheets. Copy the semantic HTML under each organism.</p>
+<p>Atoms, molecules, organisms, and templates. Materials are translated from MIT stylesheets. Copy the semantic HTML under each organism.</p>
 </header>
-${stage('Materials', 'data-bn-platform="ios" data-theme="light"', row('Liquid Glass', ['ultrathin', 'thin', 'sm', 'medium', 'lg', 'thick', 'ultrathick', 'opaque'].map((name) => renderBnMaterial({ name, label: name })).join('')))}
-${stage('Atom states', 'data-bn-platform="ios" data-theme="light"', atomStates())}
+${options.measure ? measuredStages() : previewStages()}
+${stage('Templates', 'data-bn-platform="ios" data-theme="light"', row('List', templateList()) + row('Sheet', templateSheet()))}
+${stage('macOS template', 'data-bn-platform="macos" data-bn-control="medium" data-theme="light"', row('Window', templateWindow()))}
 ${stage('Organisms', 'data-bn-platform="ios" data-theme="light"', organismRows())}
-${stage('iOS light', 'data-bn-platform="ios" data-theme="light"', iosBody())}
-${stage('iOS dark', 'data-bn-platform="ios" data-theme="dark"', iosBody())}
+${stage('iOS light', 'data-bn-platform="ios" data-theme="light"', iosBody('light'))}
+${stage('iOS dark', 'data-bn-platform="ios" data-theme="dark"', iosBody('dark'))}
 ${stage('iOS increased contrast', 'data-bn-platform="ios" data-theme="light" data-bn-contrast="more"', row('Prominent and secondary label', renderBnButton('Continue') + '<p data-bn="bn-catalog-quiet">Secondary label</p>'))}
 ${stage('Dynamic Type xxxLarge', 'data-bn-platform="ios" data-bn-type="xxxlarge"', typeSample)}
-${stage('macOS light', 'data-bn-platform="macos" data-bn-control="medium" data-theme="light"', macosBody())}
-${stage('macOS dark', 'data-bn-platform="macos" data-bn-control="medium" data-theme="dark"', macosBody())}
+${stage('macOS light', 'data-bn-platform="macos" data-bn-control="medium" data-theme="light"', macosBody('light'))}
+${stage('macOS dark', 'data-bn-platform="macos" data-bn-control="medium" data-theme="dark"', macosBody('dark'))}
 ${stage('macOS Large control', 'data-bn-platform="macos" data-bn-control="large" data-theme="light"', row('Capsule button', renderBnButton('Save', { variant: 'prominent' })))}
 <section data-bn="bn-catalog-stage">
 <h2 data-bn="bn-catalog-heading">What the screenshots could not settle</h2>

@@ -53,6 +53,8 @@ export declare function renderBnForm(options?: BnOptions): string;
 export declare function renderBnGroup(options?: BnOptions): string;
 export declare function renderBnImageWell(options?: BnOptions): string;
 export declare function renderBnScroll(options?: BnOptions): string;
+export declare function renderBnScrollbar(options?: BnOptions): string;
+export declare function renderBnRefraction(options?: BnOptions): string;
 export declare function renderBnInputAccessory(options?: BnOptions): string;
 export declare function renderBnEmptyState(options?: BnOptions): string;
 export declare function renderBnAppIcon(options?: BnOptions): string;

@@ -2923,7 +2923,7 @@ Each function returns HTML. The host is a button, dialog, details, input, select
 
 #### Undocumented exports (source-only — not in docs/api/platform.md)
 
-#### `catalogBody()` (function)
+#### `catalogBody(options = {})` (function)
 Catalog sections, without a document shell.
 packages/platform/src/catalog.js · `import { catalogBody } from '@basenative/platform';`
 

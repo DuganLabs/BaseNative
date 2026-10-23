@@ -54,6 +54,28 @@ describe('defaultPalette', () => {
     assert.ok(p.get('signal-text'));
   });
 
+  test('organism palette previews the kit contract', () => {
+    const p = defaultPalette();
+    for (const type of [
+      'hero',
+      'list',
+      'window',
+      'sheet',
+      'sidebar',
+      'inspector',
+      'scrollbar',
+      'refraction',
+    ]) {
+      const def = p.get(type);
+      assert.ok(def, type);
+      assert.equal(def.category, 'organisms', type);
+      assert.match(def.bn, /^bn-/, type);
+    }
+    assert.match(p.get('hero').preview({ text: 'Notes' }), /data-bn="bn-hero-eyebrow"/);
+    assert.match(p.get('list').preview({ text: 'Inbox' }), /data-bn="bn-list-row"/);
+    assert.match(p.get('refraction').preview({ text: 'Glass' }), /<figcaption>Glass<\/figcaption>/);
+  });
+
   test('button is non-container', () => {
     const p = defaultPalette();
     assert.equal(p.get('button').container, false);
@@ -99,7 +121,10 @@ describe('component attribute contract (bn / dataProps)', () => {
     // the palette promises is not what the export carries.
     for (const def of defaultPalette().list()) {
       for (const name of def.dataProps) {
-        assert.ok(def.props.some((p) => p.name === name), `${def.type}: dataProp "${name}" is not in props`);
+        assert.ok(
+          def.props.some((p) => p.name === name),
+          `${def.type}: dataProp "${name}" is not in props`,
+        );
         assert.ok(name in def.defaults, `${def.type}: dataProp "${name}" has no default`);
       }
     }
@@ -110,8 +135,23 @@ describe('component attribute contract (bn / dataProps)', () => {
     assert.equal(palette.get('input').bn, 'input');
     assert.equal(palette.get('textarea').bn, 'textarea');
     assert.equal(palette.get('checkbox').bn, 'checkbox');
-    for (const type of ['section', 'stack', 'grid', 'heading', 'text', 'label', 'form', 'link', 'image', 'signal-text']) {
-      assert.equal(palette.get(type).bn, undefined, `${type} has no @basenative/components render function`);
+    for (const type of [
+      'section',
+      'stack',
+      'grid',
+      'heading',
+      'text',
+      'label',
+      'form',
+      'link',
+      'image',
+      'signal-text',
+    ]) {
+      assert.equal(
+        palette.get(type).bn,
+        undefined,
+        `${type} has no @basenative/components render function`,
+      );
     }
   });
 });
