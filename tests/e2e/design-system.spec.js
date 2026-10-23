@@ -653,6 +653,23 @@ async function contentSplit(page) {
   });
 }
 
+async function loadAxe(page) {
+  let last;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      const response = await page.request.get(AXE_URL, { timeout: 15_000 });
+      if (!response.ok()) throw new Error(`axe ${response.status()}`);
+      await page.addScriptTag({ content: await response.text() });
+      const ready = await page.evaluate(() => typeof window.axe?.run === 'function');
+      if (ready) return;
+      last = new Error('axe did not load');
+    } catch (error) {
+      last = error;
+    }
+  }
+  throw last;
+}
+
 async function sidebarAccent(page) {
   return page.evaluate(() => {
     function channels(color) {
@@ -768,7 +785,7 @@ test.describe('design system gates', () => {
             expect(split.ratio).toBeGreaterThanOrEqual(0.7);
             expect(await contentMeasure(page)).toEqual([]);
           }
-          await page.addScriptTag({ url: AXE_URL });
+          await loadAxe(page);
           const violations = await page.evaluate(async () => {
             const out = await window.axe.run(document, { resultTypes: ['violations'] });
             return out.violations.map((item) => item.id);
