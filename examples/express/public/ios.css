@@ -182,7 +182,7 @@ main > section {
   border: none;
   border-radius: var(--bn-ios-radius-2xl);
   padding: var(--bn-ios-space-5);
-  margin-block-end: var(--bn-ios-space-5);
+  margin-block-end: var(--bn-section-space, 12px);
 }
 
 /* Heroes are not cards: they are the head of the stack — transparent,

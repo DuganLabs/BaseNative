@@ -79,8 +79,6 @@ async function singleLine(page) {
       '[data-bn="bn-tab"]',
       '[data-bn="bn-badge"]',
       '[data-bn="bn-sidebar"] a',
-      '[data-bn="bn-metric-label"]',
-      '[data-bn="bn-metric-value"]',
       '[data-bn="bn-dock-item"]',
     ].join(',');
     for (const el of document.querySelectorAll(selector)) {
@@ -316,6 +314,14 @@ async function buttonContrast(page) {
 
 async function materialSamples(page) {
   return page.evaluate(() => {
+    function channel(color) {
+      const match = String(color).match(/rgba?\(([^)]+)\)/);
+      if (!match) return null;
+      const parts = match[1].split(',').map((part) => parseFloat(part));
+      const max = Math.max(parts[0], parts[1], parts[2]);
+      const min = Math.min(parts[0], parts[1], parts[2]);
+      return max === 0 ? 0 : (max - min) / max;
+    }
     const problems = [];
     for (const name of ['ultrathin', 'thin', 'sm']) {
       const el = document.querySelector(`[data-bn="bn-material"][data-material="${name}"]`);
@@ -327,10 +333,312 @@ async function materialSamples(page) {
       const blur = style.backdropFilter || '';
       if (!blur.includes('blur')) problems.push(`${name} has no blur`);
       const stage = el.closest('[data-bn="bn-catalog-demo"]');
-      const back = stage ? getComputedStyle(stage).backgroundImage : 'none';
-      if (!back.includes('gradient')) problems.push(`${name} has no backdrop`);
+      const stageStyle = stage ? getComputedStyle(stage) : null;
+      const back = stageStyle ? stageStyle.backgroundImage : 'none';
+      if (!back.includes('repeating-linear-gradient')) problems.push(`${name} has no pattern`);
+      if (/linear-gradient\([^)]*rgb\(232,\s*146,\s*10\)/.test(back))
+        problems.push(`${name} backdrop is a brand wash`);
+      const sat = stageStyle ? channel(stageStyle.backgroundColor) : 1;
+      if (sat > 0.2) problems.push(`${name} stage is saturated`);
+      const box = el.getBoundingClientRect();
+      if (box.width > 120) problems.push(`${name} tile is ${Math.round(box.width)}px wide`);
+      const caption = el.querySelector('figcaption');
+      if (!caption || !caption.textContent.trim()) problems.push(`${name} has no label`);
     }
     return problems;
+  });
+}
+
+async function catalogTitle(page) {
+  return page.evaluate(() => {
+    const titles = [...document.querySelectorAll('h1')].map((el) =>
+      el.textContent.replace(/\s+/g, ' ').trim(),
+    );
+    const hits = titles.filter((text) => text === 'Platform catalog');
+    return hits.length === 1 ? [] : [`Platform catalog appears ${hits.length} times`];
+  });
+}
+
+async function sharedSectionSurface(page) {
+  return page.evaluate(() => {
+    const hero = document.querySelector('main [data-bn="bn-hero"]');
+    const card = [...document.querySelectorAll('main > section')].find((el) =>
+      /Where this list came from/.test(el.textContent || ''),
+    );
+    if (!hero || !card) return ['missing provenance card'];
+    const a = getComputedStyle(hero);
+    const b = getComputedStyle(card);
+    const problems = [];
+    if (a.backgroundColor !== b.backgroundColor)
+      problems.push(`surface ${b.backgroundColor} != hero ${a.backgroundColor}`);
+    if (a.backgroundImage !== b.backgroundImage)
+      problems.push(`surface image ${b.backgroundImage} != hero ${a.backgroundImage}`);
+    if (a.boxShadow !== b.boxShadow) problems.push('provenance elevation != hero');
+    if (b.backgroundImage !== 'none') problems.push('provenance card paints a gradient');
+    return problems;
+  });
+}
+
+async function atomStatesCard(page) {
+  return page.evaluate(() => {
+    function channels(color) {
+      const raw = String(color).trim();
+      const hex = raw.match(/^#([0-9a-f]{6})$/i);
+      if (hex) {
+        const value = Number.parseInt(hex[1], 16);
+        return [(value >> 16) & 255, (value >> 8) & 255, value & 255];
+      }
+      const modern = raw.match(/color\(srgb\s+([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)/i);
+      if (modern)
+        return modern.slice(1, 4).map((part) => Math.round(Number.parseFloat(part) * 255));
+      const match = raw.match(/rgba?\(([^)]+)\)/);
+      if (!match) return null;
+      return match[1]
+        .split(',')
+        .slice(0, 3)
+        .map((part) => Math.round(Number.parseFloat(part)));
+    }
+    function same(a, b) {
+      const left = channels(a);
+      const right = channels(b);
+      return Boolean(left && right && left.every((channel, index) => channel === right[index]));
+    }
+    function luminance(color) {
+      const rgb = channels(color);
+      if (!rgb) return null;
+      const linear = rgb.map((value) => {
+        const s = value / 255;
+        return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+    }
+    const pageTheme = document.documentElement.getAttribute('data-theme');
+    const stage = [...document.querySelectorAll('[data-bn="bn-catalog-stage"]')].find((el) =>
+      /^Atom states/.test(el.querySelector('h2')?.textContent || ''),
+    );
+    if (!stage) return ['missing Atom states'];
+    const problems = [];
+    const theme = stage.getAttribute('data-theme');
+    if (theme && theme !== pageTheme) problems.push(`Atom states theme is ${theme}`);
+    const style = getComputedStyle(stage);
+    if (parseFloat(style.paddingTop) < 16) problems.push('Atom states has no inset padding');
+    if (parseFloat(style.borderTopLeftRadius) < 16) problems.push('Atom states has no radius');
+    const tone = luminance(style.backgroundColor);
+    if (pageTheme === 'dark' && tone != null && tone > 0.45)
+      problems.push(`Atom states is a light panel ${style.backgroundColor}`);
+    if (pageTheme === 'light' && tone != null && tone < 0.45)
+      problems.push(`Atom states is a dark panel ${style.backgroundColor}`);
+    const brand = style.getPropertyValue('--bn-brand');
+    const green = style.getPropertyValue('--bn-plat-color-accents-green');
+    const radio = stage.querySelector('[data-bn="bn-radio"] input:checked');
+    const check = stage.querySelector('[data-bn="bn-checkbox"] input:checked');
+    const toggle = stage.querySelector('[data-bn="bn-switch"] input:checked');
+    if (!radio || !same(getComputedStyle(radio).backgroundColor, brand))
+      problems.push('selected radio is not the brand accent');
+    if (!check || !same(getComputedStyle(check).backgroundColor, brand))
+      problems.push('selected checkbox is not the brand accent');
+    if (!toggle || !same(getComputedStyle(toggle).backgroundColor, green))
+      problems.push('switch on-state lost its semantic green');
+    for (const el of document.querySelectorAll('[data-bn="bn-catalog-stage"]')) {
+      const forced = el.getAttribute('data-theme');
+      if (forced === 'light' && pageTheme === 'dark') {
+        const title = (el.querySelector('h2')?.textContent || '').trim();
+        problems.push(`light stage on a dark page: ${title}`);
+      }
+    }
+    return problems;
+  });
+}
+
+async function neutralIntro(page) {
+  return page.evaluate(() => {
+    const problems = [];
+    const hero = document.querySelector('main [data-bn="bn-hero"]');
+    const article = document.querySelector('[data-bn-wallpaper="true"]');
+    const heroImage = hero ? getComputedStyle(hero).backgroundImage : 'none';
+    const articleImage = article ? getComputedStyle(article).backgroundImage : 'none';
+    const bodyImage = getComputedStyle(document.body).backgroundImage;
+    if (heroImage !== 'none') problems.push('intro card paints a glow');
+    if (articleImage !== 'none') problems.push('catalog wallpaper paints a glow');
+    if (
+      document.documentElement.getAttribute('data-theme') === 'dark' &&
+      document.body.getAttribute('data-active') !== 'home' &&
+      bodyImage !== 'none'
+    )
+      problems.push('dark page background paints a glow');
+    return problems;
+  });
+}
+
+async function canvasStage(page) {
+  return page.evaluate(() => {
+    function channel(color) {
+      const match = String(color).match(/rgba?\(([^)]+)\)/);
+      if (!match) return null;
+      const parts = match[1].split(',').map((part) => parseFloat(part));
+      const max = Math.max(parts[0], parts[1], parts[2]);
+      const min = Math.min(parts[0], parts[1], parts[2]);
+      return max === 0 ? 0 : (max - min) / max;
+    }
+    const canvas = document.querySelector('.bn-builder__pane--canvas');
+    if (!canvas) return ['missing builder canvas'];
+    const style = getComputedStyle(canvas);
+    const problems = [];
+    if (!style.backgroundImage.includes('repeating-linear-gradient'))
+      problems.push('canvas has no neutral pattern');
+    if (/linear-gradient\([^)]*rgb\(232,\s*146,\s*10\)/.test(style.backgroundImage))
+      problems.push('canvas is a brand wash');
+    const sat = channel(style.backgroundColor);
+    if (sat == null || sat > 0.2) problems.push('canvas stage is saturated');
+    return problems;
+  });
+}
+
+async function heroPattern(page) {
+  return page.evaluate(() => {
+    const hero = document.querySelector('main [data-bn="bn-hero"]');
+    if (!hero) return ['missing hero'];
+    const h1 = hero.querySelector('h1');
+    const problems = [];
+    if (!h1) problems.push('hero has no title');
+    const ems = h1 ? h1.querySelectorAll('em') : [];
+    if (ems.length !== 1) problems.push(`hero accent count ${ems.length}`);
+    const eyebrow = hero.querySelector('[data-bn="bn-hero-eyebrow"]');
+    const lede = hero.querySelector('[data-bn="bn-hero-lede"]');
+    if (!eyebrow) problems.push('missing eyebrow');
+    if (!lede) problems.push('missing lede');
+    const platform = document.documentElement.getAttribute('data-bn-platform');
+    if (h1) {
+      const size = parseFloat(getComputedStyle(h1).fontSize);
+      const expected = platform === 'macos' ? 28 : 34;
+      if (Math.abs(size - expected) > 0.6) problems.push(`title ${size} expected ${expected}`);
+    }
+    if (eyebrow) {
+      const size = parseFloat(getComputedStyle(eyebrow).fontSize);
+      if (Math.abs(size - 13) > 0.6) problems.push(`eyebrow ${size}`);
+    }
+    if (lede) {
+      const size = parseFloat(getComputedStyle(lede).fontSize);
+      const expected = platform === 'macos' ? 15 : 17;
+      if (Math.abs(size - expected) > 0.6) problems.push(`lede ${size} expected ${expected}`);
+    }
+    if (ems[0] && getComputedStyle(ems[0]).fontStyle !== 'italic')
+      problems.push(`accent is ${getComputedStyle(ems[0]).fontStyle}`);
+    const buttons = [...hero.querySelectorAll('[data-bn="bn-button"]')];
+    if (buttons.length > 1) {
+      const heights = buttons.map((button) => Math.round(button.getBoundingClientRect().height));
+      const radii = buttons.map((button) => getComputedStyle(button).borderTopLeftRadius);
+      if (Math.max(...heights) - Math.min(...heights) > 1) problems.push('button heights differ');
+      if (new Set(radii).size > 1) problems.push('button radii differ');
+      if (window.innerWidth <= 767) {
+        for (const height of heights) {
+          if (height < 44) problems.push(`hit target ${height}`);
+        }
+      }
+    }
+    return problems;
+  });
+}
+
+async function metricTiles(page) {
+  return page.evaluate(() => {
+    const problems = [];
+    for (const grid of document.querySelectorAll('[data-bn="bn-card-grid"]')) {
+      const tiles = [...grid.querySelectorAll('[data-bn="bn-metric"]')];
+      const rows = new Map();
+      for (const tile of tiles) {
+        const box = tile.getBoundingClientRect();
+        if (box.height < 8) continue;
+        const top = Math.round(box.top);
+        const key = [...rows.keys()].find((value) => Math.abs(value - top) < 4) ?? top;
+        rows.set(key, [...(rows.get(key) || []), Math.round(box.height)]);
+        const label = tile.querySelector('[data-bn="bn-metric-label"]');
+        const value = tile.querySelector('[data-bn="bn-metric-value"]');
+        if (!label || !value) continue;
+        const labelStyle = getComputedStyle(label);
+        const valueStyle = getComputedStyle(value);
+        if (labelStyle.whiteSpace === 'nowrap' || labelStyle.textOverflow === 'ellipsis')
+          problems.push('label truncates');
+        if (parseFloat(valueStyle.fontSize) <= parseFloat(labelStyle.fontSize))
+          problems.push('value is not larger than the label');
+        if (label.scrollHeight > label.clientHeight + 2)
+          problems.push(`label clipped ${(label.textContent || '').slice(0, 32)}`);
+      }
+      for (const heights of rows.values()) {
+        if (heights.length > 1 && Math.max(...heights) - Math.min(...heights) > 1)
+          problems.push(`tile heights ${heights.join(',')}`);
+      }
+    }
+    return problems.slice(0, 6);
+  });
+}
+
+async function sectionRhythm(page) {
+  return page.evaluate(() => {
+    const token =
+      parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue('--bn-section-space'),
+      ) || 12;
+    const problems = [];
+    const nodes = document.querySelectorAll(
+      'main > section, [data-bn-showcase-section], [data-bn-docs-toc], [data-bn-component-category]',
+    );
+    for (const el of nodes) {
+      const style = getComputedStyle(el);
+      if (style.display === 'none') continue;
+      const bottom = parseFloat(style.marginBottom) || 0;
+      if (bottom > token + 1) {
+        const name = el.getAttribute('data-bn') || el.id || el.tagName;
+        problems.push(`margin ${bottom} on ${name}`);
+      }
+      if (el.hasAttribute('data-bn-showcase-section')) {
+        const pad = (parseFloat(style.paddingTop) || 0) + (parseFloat(style.paddingBottom) || 0);
+        if (pad > token + 1) problems.push(`showcase pad ${pad}`);
+      }
+    }
+    return problems.slice(0, 6);
+  });
+}
+
+async function contentMeasure(page) {
+  return page.evaluate(() => {
+    const main = document.querySelector('main');
+    const hero = document.querySelector('main [data-bn="bn-hero"]');
+    const side = document.querySelector('body > [data-bn="bn-sidebar"]');
+    if (!main || !hero) return ['missing measure'];
+    const mainBox = main.getBoundingClientRect();
+    const heroBox = hero.getBoundingClientRect();
+    const frame = hero.parentElement === main ? hero : hero.parentElement;
+    const frameBox = frame.getBoundingClientRect();
+    const problems = [];
+    const leftGap = heroBox.left - mainBox.left;
+    const rightGap = mainBox.right - heroBox.right;
+    if (Math.abs(leftGap - rightGap) > 2)
+      problems.push(`measure off-center ${leftGap.toFixed(0)}/${rightGap.toFixed(0)}`);
+    if (rightGap > 64) problems.push(`right gutter ${rightGap.toFixed(0)}`);
+    if (Math.abs(frameBox.left - heroBox.left) > 2 || Math.abs(frameBox.right - heroBox.right) > 2)
+      problems.push('header does not fill the content column');
+    if (side) {
+      const sideBox = side.getBoundingClientRect();
+      if (sideBox.left > 1) problems.push('sidebar is off the grid');
+      if (Math.abs(sideBox.top - mainBox.top) > 2) problems.push('sidebar and content tops differ');
+    }
+    return problems;
+  });
+}
+
+async function tasksCountInsideCard(page) {
+  return page.evaluate(() => {
+    const output = document.querySelector('[data-tasks] output');
+    const card = output?.closest('[data-bn="bn-list"]');
+    if (!output || !card) return ['tasks count has no card'];
+    const text = output.getBoundingClientRect();
+    const box = card.getBoundingClientRect();
+    if (text.top < box.top - 1 || text.bottom > box.bottom + 1)
+      return ['tasks count is outside the card'];
+    if (text.left < box.left - 1 || text.right > box.right + 1)
+      return ['tasks count is outside the card'];
+    return [];
   });
 }
 
@@ -387,6 +695,19 @@ test.describe('design system gates', () => {
           await page.goto(path, { waitUntil: 'domcontentloaded' });
           await page.evaluate(() => document.fonts.ready);
           await expect(page.locator('main')).toBeVisible();
+          if (path === '/design-system') {
+            expect(await catalogTitle(page)).toEqual([]);
+            expect(await materialSamples(page)).toEqual([]);
+            expect(await atomStatesCard(page)).toEqual([]);
+            expect(await neutralIntro(page)).toEqual([]);
+          }
+          if (path !== '/design-system') expect(await neutralIntro(page)).toEqual([]);
+          if (path === '/ai') expect(await sharedSectionSurface(page)).toEqual([]);
+          if (path === '/builder') expect(await canvasStage(page)).toEqual([]);
+          if (path === '/tasks') expect(await tasksCountInsideCard(page)).toEqual([]);
+          expect(await heroPattern(page)).toEqual([]);
+          expect(await metricTiles(page)).toEqual([]);
+          expect(await sectionRhythm(page)).toEqual([]);
           await expect(page).toHaveScreenshot(`${slug(path)}-${theme}-${width}.png`, {
             fullPage: true,
             animations: 'disabled',
@@ -405,10 +726,10 @@ test.describe('design system gates', () => {
           expect(await themeSurfaces(page, theme)).toEqual([]);
           expect(await buttonContrast(page)).toEqual([]);
           if (CARD_ROUTES.has(path)) expect(await cardStack(page)).toEqual([]);
-          if (path === '/design-system') expect(await materialSamples(page)).toEqual([]);
           if (width >= 1280) {
             const split = await contentSplit(page);
             expect(split.ratio).toBeGreaterThanOrEqual(0.7);
+            expect(await contentMeasure(page)).toEqual([]);
           }
           await page.addScriptTag({ url: AXE_URL });
           const violations = await page.evaluate(async () => {

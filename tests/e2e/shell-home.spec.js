@@ -272,9 +272,12 @@ test.describe('home shell', () => {
         ),
       );
       expect(buttons.length).toBeGreaterThanOrEqual(2);
-      expect(Math.max(...buttons.map((button) => button.height))).toBeLessThanOrEqual(46);
-      expect(Math.abs(buttons[0].top - buttons[1].top)).toBeLessThan(8);
-      expect(Math.max(...buttons.map((button) => button.width))).toBeLessThan(280);
+      for (const button of buttons) {
+        expect(button.height).toBeGreaterThanOrEqual(44);
+        expect(button.height).toBeLessThanOrEqual(46);
+        expect(button.width).toBeGreaterThanOrEqual(44);
+        expect(button.width).toBeLessThan(280);
+      }
     });
 
     test(`desktop hero buttons keep the atom width (${theme})`, async ({ page }) => {

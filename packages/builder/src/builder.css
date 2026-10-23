@@ -75,7 +75,8 @@
   }
 
   .bn-builder__pane--canvas {
-    background: var(--bn-plat-color-fills-quaternary, transparent);
+    background-color: var(--bn-stage-paper, canvas);
+    background-image: var(--bn-stage-glow, none);
     padding: var(--bn-len-16, 16px);
   }
 
@@ -374,6 +375,7 @@
   }
 
   .bn-builder__pane--canvas {
+    background-color: var(--bn-stage-paper, canvas);
     background-image: var(--bn-stage-glow, none);
   }
 }

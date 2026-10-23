@@ -165,13 +165,13 @@ export function renderBnSwitch(options = {}) {
 export function renderBnCheckbox(options = {}) {
   const inputId = idOf('checkbox', options.id);
   const mixed = options.mixed ? ' data-mixed="true" aria-checked="mixed"' : '';
-  return `<label data-bn="bn-checkbox"${opt('data-force', options.force)}><input type="checkbox" id="${escapeAttr(inputId)}"${opt('checked', options.checked && !options.mixed)}${opt('disabled', options.disabled)}${mixed}>${escapeHtml(options.label || '')}</label>`;
+  return `<label data-bn="bn-checkbox"${opt('data-force', options.force)}><input data-bn="bn-checkbox-input" type="checkbox" id="${escapeAttr(inputId)}"${opt('checked', options.checked && !options.mixed)}${opt('disabled', options.disabled)}${mixed}>${escapeHtml(options.label || '')}</label>`;
 }
 
 /** Radio. macOS size comes from Radio Button tokens. */
 export function renderBnRadio(options = {}) {
   const inputId = idOf('radio', options.id);
-  return `<label data-bn="bn-radio"${opt('data-force', options.force)}><input type="radio" name="${escapeAttr(options.name || 'bn-radio')}" id="${escapeAttr(inputId)}"${opt('checked', options.checked)}${opt('disabled', options.disabled)}>${escapeHtml(options.label || '')}</label>`;
+  return `<label data-bn="bn-radio"${opt('data-force', options.force)}><input data-bn="bn-radio-input" type="radio" name="${escapeAttr(options.name || 'bn-radio')}" id="${escapeAttr(inputId)}"${opt('checked', options.checked)}${opt('disabled', options.disabled)}>${escapeHtml(options.label || '')}</label>`;
 }
 
 /** Slider. macOS knob and track insets come from Slider tokens. */
