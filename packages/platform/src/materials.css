@@ -29,16 +29,23 @@
     --bn-glass-edge: 0 0 0 0.5px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.55);
     --bn-glass-rim: rgba(255, 255, 255, 0.42);
     --bn-glass-sheen: linear-gradient(to bottom, rgba(255, 255, 255, 0.28), transparent 46%);
+    --bn-stage-paper: #e7e4de;
+    --bn-stage-ink: #3a3834;
+    --bn-stage-mist: #c8c4bc;
+    --bn-stage-line: rgba(58, 56, 52, 0.14);
+    --bn-stage-brand-hint: rgba(232, 146, 10, 0.16);
     --bn-stage-glow:
       radial-gradient(
-        18rem 10rem at 0% 0%,
-        color-mix(in srgb, var(--bn-brand) 70%, transparent),
-        transparent 72%
-      ),
-      radial-gradient(
-        14rem 8rem at 100% 100%,
-        color-mix(in srgb, var(--bn-brand) 45%, transparent),
+        var(--bn-len-48) var(--bn-len-48) at 92% 8%,
+        var(--bn-stage-brand-hint),
         transparent 70%
+      ),
+      repeating-linear-gradient(
+        135deg,
+        transparent 0,
+        transparent var(--bn-len-14),
+        var(--bn-stage-line) var(--bn-len-14),
+        var(--bn-stage-line) var(--bn-len-15)
       );
     /* Content text stays at least 15px. 13px is dense chrome only. */
     --bn-content-size: 15px;
@@ -75,11 +82,7 @@
     --bn-button-secondary-label: var(--bn-brand-text);
     --bn-danger-label: #9d1c1c;
     --bn-stepper-label: #0050b3;
-    --bn-stage-paper: #e7e4de;
-    --bn-stage-ink: #3a3834;
-    --bn-stage-mist: #c8c4bc;
-    --bn-stage-line: rgba(58, 56, 52, 0.18);
-    --bn-stage-brand-hint: rgba(232, 146, 10, 0.35);
+    --bn-hero-accent: var(--bn-brand-text);
     --bn-alert-surface: var(--bn-plat-swatch-rgba-255-255-255-0-7);
     /* BEGIN METRICS */
     --bn-blur-16: 16px;
@@ -227,5 +230,11 @@
     --bn-danger-label: var(--bn-plat-color-accents-red);
     --bn-stepper-label: var(--bn-plat-color-accents-blue);
     --bn-alert-surface: rgba(26, 26, 26, 0.9);
+    --bn-stage-paper: #2a2826;
+    --bn-stage-ink: #8a8680;
+    --bn-stage-mist: #3a3834;
+    --bn-stage-line: rgba(255, 255, 255, 0.08);
+    --bn-stage-brand-hint: rgba(232, 146, 10, 0.2);
+    --bn-hero-accent: var(--bn-brand);
   }
 }

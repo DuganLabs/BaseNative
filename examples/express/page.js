@@ -290,8 +290,16 @@ export function renderComponentPage(slug) {
     .filter((c) => c.categoryId === component.categoryId && c.slug !== component.slug)
     .slice(0, 6);
 
+  const titleWords = String(component.title || '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  const titleAccent = titleWords.length ? titleWords[titleWords.length - 1] : component.title;
+  const titleLead = titleWords.length > 1 ? `${titleWords.slice(0, -1).join(' ')} ` : '';
   const ctx = {
     component,
+    titleLead,
+    titleAccent,
     quickstart: demo?.quickstart ?? '',
     // Every example's `html` is component markup assembled by the
     // @basenative/components render* functions over hand-authored data — no
