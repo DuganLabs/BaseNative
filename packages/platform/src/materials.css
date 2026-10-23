@@ -52,6 +52,7 @@
     --bn-content-leading: 22px;
     --bn-content-secondary: rgba(60, 60, 67, 0.88);
     --bn-list-surface: rgba(255, 255, 255, 0.94);
+    --bn-card-surface: var(--bn-list-surface);
     --bn-elev-0: none;
     --bn-elev-1: 0 1px 1px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.06);
     --bn-elev-2: 0 1px 2px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.1);
@@ -223,12 +224,13 @@
     --bn-glass-rim: rgba(255, 255, 255, 0.22);
     --bn-content-secondary: rgba(235, 235, 245, 0.92);
     --bn-list-surface: rgba(44, 44, 46, 0.58);
+    --bn-card-surface: #1e1e1e;
     --bn-brand-text: #e8920a;
     --bn-tab-fill: rgba(22, 20, 18, 0.84);
     --bn-button-secondary-fill: rgb(72, 72, 74);
     --bn-button-secondary-label: var(--bn-brand-secondary);
     --bn-danger-label: var(--bn-plat-color-accents-red);
-    --bn-stepper-label: var(--bn-plat-color-accents-blue);
+    --bn-stepper-label: var(--bn-brand);
     --bn-alert-surface: rgba(26, 26, 26, 0.9);
     --bn-stage-paper: #2a2826;
     --bn-stage-ink: #8a8680;

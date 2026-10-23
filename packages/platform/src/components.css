@@ -9,13 +9,13 @@
 
 @layer components {
   [data-bn-wallpaper='true'] {
-    background-color: var(--bn-glass-opaque);
-    background-image: radial-gradient(
-      var(--bn-len-42rem) var(--bn-len-24rem) at 8% 0%,
-      color-mix(in srgb, var(--bn-brand) 16%, transparent),
-      transparent 72%
-    );
-    background-attachment: scroll;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
   }
 
   [data-bn='bn-button'],
@@ -408,9 +408,9 @@
 
   [data-bn='bn-checkbox'] input:checked,
   [data-bn='bn-radio'] input:checked {
-    background: var(--bn-plat-color-accents-blue);
-    border-color: var(--bn-plat-color-accents-blue);
-    box-shadow: inset 0 0 0 var(--bn-len-4) var(--bn-plat-color-grays-white);
+    background: var(--bn-brand);
+    border-color: var(--bn-brand);
+    box-shadow: inset 0 0 0 var(--bn-len-4) var(--bn-brand-ink);
   }
 
   [data-bn-platform='macos'] [data-bn='bn-checkbox'] input {
@@ -1709,7 +1709,7 @@
     margin: 0 0 var(--bn-section-space);
     padding: var(--bn-len-28);
     border-radius: var(--bn-radius-card);
-    background: var(--bn-list-surface, var(--bn-glass-opaque));
+    background: var(--bn-card-surface, var(--bn-list-surface, var(--bn-glass-opaque)));
     backdrop-filter: saturate(var(--bn-glass-saturate)) blur(var(--bn-glass-blur));
     box-shadow: var(--bn-elev-2);
   }
@@ -1723,7 +1723,7 @@
     margin: 0 0 var(--bn-section-space);
     padding: var(--bn-len-28);
     border-radius: var(--bn-radius-card);
-    background: var(--bn-list-surface, var(--bn-glass-opaque));
+    background: var(--bn-card-surface, var(--bn-list-surface, var(--bn-glass-opaque)));
     backdrop-filter: saturate(var(--bn-glass-saturate)) blur(var(--bn-glass-blur));
     box-shadow: var(--bn-elev-2);
   }
@@ -1989,9 +1989,14 @@
     box-sizing: border-box;
   }
 
-  [data-bn='bn-catalog-stage'][data-theme] {
-    background: var(--bn-color-surface);
-    color: var(--bn-color-text);
+  [data-bn='bn-catalog-stage'] {
+    margin: 0 0 var(--bn-section-space);
+    padding: var(--bn-len-22);
+    border: var(--bn-len-1) solid var(--bn-glass-rim);
+    border-radius: var(--bn-radius-card);
+    background: var(--bn-card-surface, var(--bn-list-surface));
+    box-shadow: var(--bn-elev-2);
+    color: var(--bn-plat-color-labels-primary);
   }
 
   [data-bn='bn-catalog-stage'],

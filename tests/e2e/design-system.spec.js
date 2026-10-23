@@ -371,7 +371,101 @@ async function sharedSectionSurface(page) {
     const problems = [];
     if (a.backgroundColor !== b.backgroundColor)
       problems.push(`surface ${b.backgroundColor} != hero ${a.backgroundColor}`);
+    if (a.backgroundImage !== b.backgroundImage)
+      problems.push(`surface image ${b.backgroundImage} != hero ${a.backgroundImage}`);
     if (a.boxShadow !== b.boxShadow) problems.push('provenance elevation != hero');
+    if (b.backgroundImage !== 'none') problems.push('provenance card paints a gradient');
+    return problems;
+  });
+}
+
+async function atomStatesCard(page) {
+  return page.evaluate(() => {
+    function channels(color) {
+      const raw = String(color).trim();
+      const hex = raw.match(/^#([0-9a-f]{6})$/i);
+      if (hex) {
+        const value = Number.parseInt(hex[1], 16);
+        return [(value >> 16) & 255, (value >> 8) & 255, value & 255];
+      }
+      const modern = raw.match(/color\(srgb\s+([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)/i);
+      if (modern)
+        return modern.slice(1, 4).map((part) => Math.round(Number.parseFloat(part) * 255));
+      const match = raw.match(/rgba?\(([^)]+)\)/);
+      if (!match) return null;
+      return match[1]
+        .split(',')
+        .slice(0, 3)
+        .map((part) => Math.round(Number.parseFloat(part)));
+    }
+    function same(a, b) {
+      const left = channels(a);
+      const right = channels(b);
+      return Boolean(left && right && left.every((channel, index) => channel === right[index]));
+    }
+    function luminance(color) {
+      const rgb = channels(color);
+      if (!rgb) return null;
+      const linear = rgb.map((value) => {
+        const s = value / 255;
+        return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+    }
+    const pageTheme = document.documentElement.getAttribute('data-theme');
+    const stage = [...document.querySelectorAll('[data-bn="bn-catalog-stage"]')].find((el) =>
+      /^Atom states/.test(el.querySelector('h2')?.textContent || ''),
+    );
+    if (!stage) return ['missing Atom states'];
+    const problems = [];
+    const theme = stage.getAttribute('data-theme');
+    if (theme && theme !== pageTheme) problems.push(`Atom states theme is ${theme}`);
+    const style = getComputedStyle(stage);
+    if (parseFloat(style.paddingTop) < 16) problems.push('Atom states has no inset padding');
+    if (parseFloat(style.borderTopLeftRadius) < 16) problems.push('Atom states has no radius');
+    const tone = luminance(style.backgroundColor);
+    if (pageTheme === 'dark' && tone != null && tone > 0.45)
+      problems.push(`Atom states is a light panel ${style.backgroundColor}`);
+    if (pageTheme === 'light' && tone != null && tone < 0.45)
+      problems.push(`Atom states is a dark panel ${style.backgroundColor}`);
+    const brand = style.getPropertyValue('--bn-brand');
+    const green = style.getPropertyValue('--bn-plat-color-accents-green');
+    const radio = stage.querySelector('[data-bn="bn-radio"] input:checked');
+    const check = stage.querySelector('[data-bn="bn-checkbox"] input:checked');
+    const toggle = stage.querySelector('[data-bn="bn-switch"] input:checked');
+    if (!radio || !same(getComputedStyle(radio).backgroundColor, brand))
+      problems.push('selected radio is not the brand accent');
+    if (!check || !same(getComputedStyle(check).backgroundColor, brand))
+      problems.push('selected checkbox is not the brand accent');
+    if (!toggle || !same(getComputedStyle(toggle).backgroundColor, green))
+      problems.push('switch on-state lost its semantic green');
+    for (const el of document.querySelectorAll('[data-bn="bn-catalog-stage"]')) {
+      const forced = el.getAttribute('data-theme');
+      if (forced === 'light' && pageTheme === 'dark') {
+        const title = (el.querySelector('h2')?.textContent || '').trim();
+        problems.push(`light stage on a dark page: ${title}`);
+      }
+    }
+    return problems;
+  });
+}
+
+async function neutralIntro(page) {
+  return page.evaluate(() => {
+    const problems = [];
+    const hero = document.querySelector('main [data-bn="bn-hero"]');
+    const article = document.querySelector('[data-bn-wallpaper="true"]');
+    const heroImage = hero ? getComputedStyle(hero).backgroundImage : 'none';
+    const articleImage = article ? getComputedStyle(article).backgroundImage : 'none';
+    const bodyImage = getComputedStyle(document.body).backgroundImage;
+    if (heroImage !== 'none') problems.push('intro card paints a glow');
+    if (articleImage !== 'none') problems.push('catalog wallpaper paints a glow');
+    if (
+      document.documentElement.getAttribute('data-theme') === 'dark' &&
+      document.body.getAttribute('data-active') !== 'home' &&
+      bodyImage !== 'none'
+    )
+      problems.push('dark page background paints a glow');
     return problems;
   });
 }
@@ -604,7 +698,10 @@ test.describe('design system gates', () => {
           if (path === '/design-system') {
             expect(await catalogTitle(page)).toEqual([]);
             expect(await materialSamples(page)).toEqual([]);
+            expect(await atomStatesCard(page)).toEqual([]);
+            expect(await neutralIntro(page)).toEqual([]);
           }
+          if (path !== '/design-system') expect(await neutralIntro(page)).toEqual([]);
           if (path === '/ai') expect(await sharedSectionSurface(page)).toEqual([]);
           if (path === '/builder') expect(await canvasStage(page)).toEqual([]);
           if (path === '/tasks') expect(await tasksCountInsideCard(page)).toEqual([]);

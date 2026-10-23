@@ -1029,9 +1029,9 @@ function previewStages() {
     .join('');
   return [
     stage('Materials', 'data-bn-platform="ios"', row('Liquid Glass', materials)),
-    stage('Atom states', 'data-bn-platform="ios" data-theme="light"', previewAtomStates()),
-    stage('Molecule states', 'data-bn-platform="ios" data-theme="light"', previewMoleculeStates()),
-    stage('Organism states', 'data-bn-platform="ios" data-theme="light"', previewOrganismStates()),
+    stage('Atom states', 'data-bn-platform="ios"', previewAtomStates()),
+    stage('Molecule states', 'data-bn-platform="ios"', previewMoleculeStates()),
+    stage('Organism states', 'data-bn-platform="ios"', previewOrganismStates()),
   ].join('');
 }
 
@@ -1060,16 +1060,16 @@ export function catalogBody(options = {}) {
 ${title}<p>Atoms, molecules, organisms, and templates. Materials are translated from MIT stylesheets. Copy the semantic HTML under each organism.</p>
 </header>
 ${options.measure ? measuredStages() : previewStages()}
-${stage('Templates', 'data-bn-platform="ios" data-theme="light"', row('List', templateList()) + row('Sheet', templateSheet()))}
-${stage('macOS template', 'data-bn-platform="macos" data-bn-control="medium" data-theme="light"', row('Window', templateWindow()))}
-${stage('Organisms', 'data-bn-platform="ios" data-theme="light"', organismRows())}
-${stage('iOS light', 'data-bn-platform="ios" data-theme="light"', iosBody('light'))}
+${stage('Templates', 'data-bn-platform="ios"', row('List', templateList()) + row('Sheet', templateSheet()))}
+${stage('macOS template', 'data-bn-platform="macos" data-bn-control="medium"', row('Window', templateWindow()))}
+${stage('Organisms', 'data-bn-platform="ios"', organismRows())}
+${stage('iOS', 'data-bn-platform="ios"', iosBody('light'))}
 ${stage('iOS dark', 'data-bn-platform="ios" data-theme="dark"', iosBody('dark'))}
-${stage('iOS increased contrast', 'data-bn-platform="ios" data-theme="light" data-bn-contrast="more"', row('Prominent and secondary label', renderBnButton('Continue') + '<p data-bn="bn-catalog-quiet">Secondary label</p>'))}
+${stage('iOS increased contrast', 'data-bn-platform="ios" data-bn-contrast="more"', row('Prominent and secondary label', renderBnButton('Continue') + '<p data-bn="bn-catalog-quiet">Secondary label</p>'))}
 ${stage('Dynamic Type xxxLarge', 'data-bn-platform="ios" data-bn-type="xxxlarge"', typeSample)}
-${stage('macOS light', 'data-bn-platform="macos" data-bn-control="medium" data-theme="light"', macosBody('light'))}
+${stage('macOS', 'data-bn-platform="macos" data-bn-control="medium"', macosBody('light'))}
 ${stage('macOS dark', 'data-bn-platform="macos" data-bn-control="medium" data-theme="dark"', macosBody('dark'))}
-${stage('macOS Large control', 'data-bn-platform="macos" data-bn-control="large" data-theme="light"', row('Capsule button', renderBnButton('Save', { variant: 'prominent' })))}
+${stage('macOS Large control', 'data-bn-platform="macos" data-bn-control="large"', row('Capsule button', renderBnButton('Save', { variant: 'prominent' })))}
 <section data-bn="bn-catalog-stage">
 <h2 data-bn="bn-catalog-heading">What the screenshots could not settle</h2>
 <ul data-bn="bn-catalog-verify">${notes}</ul>
