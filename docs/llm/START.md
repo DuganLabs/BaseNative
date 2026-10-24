@@ -48,8 +48,10 @@ Server render takes the same template string:
 ```js
 import { render } from '@basenative/server';
 
-render('<p>{{ count() }}</p>', { count });
+const html = render('<p>{{ count() }}</p>', { count });
 ```
+
+`render()` is synchronous and returns the HTML string. There is no promise; awaiting the result is harmless but unnecessary.
 
 ## Syntax
 

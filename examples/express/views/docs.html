@@ -256,8 +256,9 @@ hydrate(document.querySelector('[data-app]'), {
       <mark data-status="idle">server</mark>
     </header>
     <p>
-      Parses an HTML string containing BaseNative directives and returns resolved HTML. Optional
-      render diagnostics and hydratable markers are available through the third argument.
+      Parses an HTML string containing BaseNative directives and returns resolved HTML.
+      <code>render()</code> is synchronous — the return value is the HTML string, not a promise.
+      Optional render diagnostics and hydratable markers are available through the third argument.
     </p>
     <p>
       <a

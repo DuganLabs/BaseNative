@@ -2,7 +2,7 @@
 
 ## `render(html, ctx?, options?)`
 
-Renders an HTML template string with the given context. Processes all BaseNative directives server-side.
+Renders an HTML template string with the given context. Processes all BaseNative directives server-side. `render()` is synchronous and returns the rendered HTML as a string — not a promise. (Awaiting the result is harmless.)
 
 ```js
 import { render } from '@basenative/server';
