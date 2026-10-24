@@ -186,7 +186,7 @@ Instrumentation hooks that expose signal/effect/hydration state to a browser ext
 
 ### `enableDevtools()`
 
-Turns on devtools instrumentation and installs `globalThis.__BASENATIVE_DEVTOOLS__`, with `getSignals()`, `getEffects()`, `getHydrations()`, and `getState()`. Call before creating the signals/effects you want visible — anything created earlier is not retroactively tracked.
+Turns on devtools instrumentation and installs `globalThis.__BASENATIVE_DEVTOOLS__`, with `getSignals()`, `getEffects()`, `getHydrations()`, and `getState()`. Call before creating the signals/effects you want visible — anything created earlier is not retroactively tracked. Creation is registration: `signal()`, `computed()`, and `effect()` register as they are created, with live values, subscriber counts, and disposal state, and `hydrate()` appends each run to the timeline.
 
 ### `disableDevtools()`
 
@@ -198,15 +198,15 @@ Returns whether devtools are currently enabled.
 
 ### `trackSignal(accessor, label?)`
 
-Registers a signal for inspection. A no-op (returns `undefined`) unless devtools are enabled. Returns a numeric id otherwise.
+Registers a signal for inspection, or relabels the automatic registration `signal()` made. A no-op (returns `undefined`) unless devtools are enabled. Returns the registration's numeric id otherwise.
 
 ### `trackEffect(handle, label?)`
 
-Registers an effect for inspection. A no-op unless devtools are enabled. Returns a numeric id otherwise.
+Registers an effect for inspection, or relabels the automatic registration `effect()`/`computed()` made. A no-op unless devtools are enabled. Returns the registration's numeric id otherwise.
 
 ### `recordHydration(root, details?)`
 
-Appends a hydration event (`{ timestamp, root: root.tagName, directivesProcessed, duration }`) to the devtools timeline. A no-op unless devtools are enabled.
+Appends a hydration event (`{ timestamp, root: root.tagName, directivesProcessed, duration }`) to the devtools timeline. A no-op unless devtools are enabled. `hydrate()` calls it on every run.
 
 ```js
 import { enableDevtools, trackSignal, signal } from '@basenative/runtime';
@@ -221,8 +221,8 @@ trackSignal(count, 'count');
 ### Notes
 
 - Guards `typeof globalThis !== 'undefined'` before installing the hook, so `enableDevtools()` is safe to call during SSR — there is just no extension to attach to.
-- `trackSignal`/`trackEffect`/`recordHydration` check `enabled` first, so leaving these calls in production code costs almost nothing once `enableDevtools()` is never called.
-- This module has no dedicated test file in `packages/runtime/src/` as of this writing; the description above is read directly from source.
+- The track calls — including the ones `signal()`, `effect()`, and `hydrate()` make internally — check `enabled` first, so the instrumentation costs almost nothing in production code once `enableDevtools()` is never called.
+- Covered by `packages/runtime/src/devtools.test.js`, including the automatic registration described above.
 
 ## Debug Mode
 
