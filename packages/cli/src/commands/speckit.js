@@ -241,7 +241,7 @@ function speckitSpec(specifyDir, name, values) {
     const tpl = existsSync(tplPath)
       ? readFileSync(tplPath, 'utf-8')
       : '# Spec: {{title}}\n\n> Status: draft\n> Spec ID: {{id}}\n';
-    const filled = tpl.replace(/\{\{title\}\}/g, name).replace(/\{\{id\}\}/g, id).replace(/\{\{owner\}\}/g, process.env.USER || 'TBD');
+    const filled = tpl.replace(/\{\{title\}\}/g, name).replace(/\{\{id\}\}/g, id).replace(/\{\{owner\}\}/g, 'TBD');
     writeFileSync(join(dir, 'spec.md'), filled);
   }
 
@@ -350,7 +350,6 @@ function speckitTasks(specifyDir, cwd, values) {
   const output = {
     source: `${SPECIFY_DIR}/specs/${id}/tasks.md`,
     spec: id,
-    generated_at: new Date().toISOString(),
     milestones: [
       {
         external_id: `speckit:milestone:${id}`,
@@ -394,7 +393,7 @@ function speckitValidate(specifyDir, values) {
   if (!existsSync(specsDir)) {
     issues.push('missing specs/ directory');
   } else {
-    for (const d of readdirSync(specsDir)) {
+    for (const d of readdirSync(specsDir).sort()) {
       const dir = join(specsDir, d);
       if (!statSync(dir).isDirectory()) continue;
       const spec = join(dir, 'spec.md');

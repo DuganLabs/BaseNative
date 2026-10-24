@@ -31,7 +31,7 @@ function showHelp() {
 
   ${c.bold('Options')}
     --name <s>    Project name (default: cwd basename)
-    --owner <s>   Owner (default: $USER)
+    --owner <s>   Owner (default: TBD)
     --force       Overwrite existing PRD on \`init\`
     --json        Machine output on \`sync\`
     --dry-run     Don't write files
@@ -76,12 +76,14 @@ function prdInit(prdPath, values) {
   // (unless --force) and reports the same "already exists" error from the
   // resulting EEXIST, so there's no separate check-then-act window.
   const projectName = values.name || basename(process.cwd());
-  const owner = values.owner || process.env.USER || 'TBD';
-  const today = new Date().toISOString().slice(0, 10);
+  // Deterministic: the scaffold is a function of its explicit inputs
+  // only — no $USER, no clock. Owner comes from --owner or stays TBD
+  // for the author to fill in.
+  const owner = values.owner || 'TBD';
 
   const body = `# ${projectName} — Product Requirements Document
 
-> Status: **draft** · Owner: ${owner} · Last updated: ${today}
+> Status: **draft** · Owner: ${owner}
 >
 > This PRD is the canonical source of truth for what ${projectName} is, who it's for, and what it does. Issues and milestones reflect this document — when reality drifts, update the doc *and* the issues.
 
@@ -278,7 +280,6 @@ function prdSync(prdPath, cwd, values) {
 
   const output = {
     source: PRD_PATH,
-    generated_at: new Date().toISOString(),
     milestones,
     issues,
   };

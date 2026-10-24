@@ -94,7 +94,9 @@ export function renderTemplate(srcDir, destDir, vars, opts = {}) {
 }
 
 function walk(dir, onFile, base = dir) {
-  for (const entry of readdirSync(dir)) {
+  // Sorted: the walk order is the written order, and readdir order is
+  // filesystem-dependent — same template in, same tree out, everywhere.
+  for (const entry of readdirSync(dir).sort()) {
     const abs = join(dir, entry);
     const stat = statSync(abs);
     if (stat.isDirectory()) {
