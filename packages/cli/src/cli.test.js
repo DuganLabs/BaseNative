@@ -660,3 +660,23 @@ describe('build command', () => {
     assert.ok(existsSync(join(tempDir, 'output', 'server.js')));
   });
 });
+
+describe('manifest.json', () => {
+  it('enumerates every command the dispatcher registers', () => {
+    const here = new URL('.', import.meta.url);
+    const manifest = JSON.parse(readFileSync(new URL('../manifest.json', here), 'utf8'));
+    const indexSource = readFileSync(new URL('./index.js', here), 'utf8');
+    const mapBody = indexSource.slice(
+      indexSource.indexOf('const COMMANDS = {'),
+      indexSource.indexOf('};', indexSource.indexOf('const COMMANDS = {')),
+    );
+    const dispatched = [...mapBody.matchAll(/^\s{2}'?([a-z][a-z0-9-]*)'?: \{ mod:/gm)].map(
+      (m) => m[1],
+    );
+    assert.ok(dispatched.length >= 13, `expected the full command map, got ${dispatched}`);
+    assert.deepEqual(
+      manifest.commands.map((c) => c.name).sort(),
+      dispatched.sort(),
+    );
+  });
+});
