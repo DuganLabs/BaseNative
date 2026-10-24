@@ -23,7 +23,8 @@ import {
   snippetSyntaxError,
 } from '../../scripts/check-demo-snippets.js';
 import { computeCompareStats } from '../../scripts/compare-stats.js';
-import { renderRoute, siteRoutes } from '../../examples/express/page.js';
+import { renderRoute, renderComponentPage, siteRoutes } from '../../examples/express/page.js';
+import { highlightCode, highlightCodeBlocks } from '../../examples/express/highlight.js';
 import { AI_SCORECARD } from '../../examples/express/ai-scorecard.js';
 import { flatComponents } from '../../examples/express/component-catalog.js';
 import { getDemo } from '../../examples/express/component-demos.js';
@@ -575,6 +576,99 @@ describe('every published route is reachable from the navigation', () => {
         `${route.path}: activePage "${route.activePage}" and internal ${route.internal} disagree`);
     }
     assert.ok(siteRoutes.some((r) => r.internal), 'the verification harness is still expected to be internal');
+  });
+});
+
+// ─── 13b. Site syntax highlighting: a pipeline step, not hand-typed spans ───
+// Highlighting used to exist only where an author hand-wrote spans into a
+// view (docs alone); every other page's code rendered monochrome. The pass
+// in examples/express/highlight.js runs inside renderPage, so a code block
+// is highlighted because it is a code block.
+
+describe('site syntax highlighting is a pipeline step', () => {
+  it('the tokenizer splits the classes the sheet defines', () => {
+    const html = highlightCode(
+      "import { signal } from '@basenative/runtime';\nconst count = signal(0); // first",
+    );
+    assert.match(html, /<span class="kw">import<\/span>/);
+    assert.match(html, /<span class="kw">from<\/span>/);
+    assert.match(html, /<span class="str">'@basenative\/runtime'<\/span>/);
+    assert.match(html, /<span class="fn">signal<\/span>/);
+    assert.match(html, /<span class="num">0<\/span>/);
+    assert.match(html, /<span class="cmt">\/\/ first<\/span>/);
+  });
+
+  it('the tokenizer colours template tags, attributes, and method calls', () => {
+    const html = highlightCode('<p class="item" :class="done()">{{ count() }}</p>');
+    assert.match(html, /<span class="tag">p<\/span>/);
+    assert.match(html, /<span class="attr">class<\/span>/);
+    assert.match(html, /<span class="attr">:class<\/span>/);
+    const js = highlightCode('count.set(count() + 1);');
+    assert.match(js, /<span class="fn">set<\/span>/);
+    assert.match(js, /<span class="fn">count<\/span>/);
+  });
+
+  it('the tokenizer handles @-directives without stalling', () => {
+    // Regression: an attribute starting with @ (@click, @if) once looped
+    // the tag scanner forever — its first char was a valid attribute
+    // start but not a valid attribute continuation.
+    const html = highlightCode('<button @click="save($event)">Save</button>');
+    assert.match(html, /<span class="attr">@click<\/span>/);
+    assert.match(html, /<span class="tag">button<\/span>/);
+  });
+
+  it('highlighting preserves the code text exactly', () => {
+    const code = '<div data-x="a<b">{{ a() }}</div>\nif (a < b && c > 2) run("x");';
+    const text = highlightCode(code).replace(/<[^>]+>/g, '');
+    assert.equal(
+      text,
+      code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'),
+    );
+  });
+
+  it('the pass is deterministic and leaves real markup alone', () => {
+    const block = '<pre><code>const a = signal(1);</code></pre>';
+    assert.equal(highlightCodeBlocks(block), highlightCodeBlocks(block));
+    assert.match(highlightCodeBlocks(block), /class="kw"/);
+    const placeholder = '<pre><code>// Click <em>Export</em> to render.</code></pre>';
+    assert.equal(highlightCodeBlocks(placeholder), placeholder);
+  });
+
+  it('entity-escaped code round-trips into highlighted markup', () => {
+    const out = highlightCodeBlocks('<pre><code>&lt;div&gt;{{ count() }}&lt;/div&gt;</code></pre>');
+    assert.match(out, /<span class="tag">div<\/span>/);
+    assert.equal(out.includes('&lt;span'), false, 'spans are markup; the code stays escaped');
+  });
+
+  it('every rendered page highlights its code blocks', () => {
+    for (const route of siteRoutes) {
+      if (route.internal) continue;
+      const html = renderRoute(route, { tasks: [], hasApi: false });
+      const blocks = [...html.matchAll(/<pre\b[^>]*>\s*<code\b[^>]*>([\s\S]*?)<\/code>/g)].map(
+        (m) => m[1],
+      );
+      for (const inner of blocks) {
+        if (inner.includes('<') && !inner.includes('<span class=')) continue;
+        assert.ok(
+          inner.includes('<span class='),
+          `${route.path} renders a code block with no highlighting`,
+        );
+      }
+    }
+    const componentHtml = renderComponentPage('button');
+    assert.match(componentHtml, /<pre[^>]*><code><span class="kw">import<\/span>/);
+  });
+
+  it('no view hand-writes highlight spans any more', () => {
+    const viewsDir = repo('examples/express/views');
+    for (const name of readdirSync(viewsDir)) {
+      const text = readFileSync(`${viewsDir}/${name}`, 'utf8');
+      assert.equal(
+        /class="(kw|str|fn|num|cmt|tag|attr)"/.test(text),
+        false,
+        `${name} hand-writes highlight spans`,
+      );
+    }
   });
 });
 

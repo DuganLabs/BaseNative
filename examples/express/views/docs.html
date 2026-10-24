@@ -44,19 +44,19 @@
       >
     </p>
     <!-- prettier-ignore -->
-    <pre tabindex="0" aria-label="Code example: signal(initialValue)"><code><span class="kw">import</span> { signal } <span class="kw">from</span> <span class="str">'@basenative/runtime'</span>;
+    <pre tabindex="0" aria-label="Code example: signal(initialValue)"><code>import { signal } from '@basenative/runtime';
 
-<span class="kw">const</span> count = <span class="fn">signal</span>(<span class="num">0</span>);
+const count = signal(0);
 
-<span class="cmt">// Read the current value (tracks in effects)</span>
-<span class="fn">count</span>();          <span class="cmt">// → 0</span>
+// Read the current value (tracks in effects)
+count();          // → 0
 
-<span class="cmt">// Write a new value</span>
-count.<span class="fn">set</span>(<span class="num">5</span>);
-count.<span class="fn">set</span>(count() + <span class="num">1</span>);
+// Write a new value
+count.set(5);
+count.set(count() + 1);
 
-<span class="cmt">// Read without tracking</span>
-count.<span class="fn">peek</span>();     <span class="cmt">// → 6</span></code></pre>
+// Read without tracking
+count.peek();     // → 6</code></pre>
   </article>
 
   <article>
@@ -73,15 +73,15 @@ count.<span class="fn">peek</span>();     <span class="cmt">// → 6</span></cod
       >
     </p>
     <!-- prettier-ignore -->
-    <pre tabindex="0" aria-label="Code example: computed(fn)"><code><span class="kw">import</span> { signal, computed } <span class="kw">from</span> <span class="str">'@basenative/runtime'</span>;
+    <pre tabindex="0" aria-label="Code example: computed(fn)"><code>import { signal, computed } from '@basenative/runtime';
 
-<span class="kw">const</span> width = <span class="fn">signal</span>(<span class="num">10</span>);
-<span class="kw">const</span> height = <span class="fn">signal</span>(<span class="num">5</span>);
-<span class="kw">const</span> area = <span class="fn">computed</span>(() => <span class="fn">width</span>() * <span class="fn">height</span>());
+const width = signal(10);
+const height = signal(5);
+const area = computed(() => width() * height());
 
-<span class="fn">area</span>();  <span class="cmt">// → 50</span>
-width.<span class="fn">set</span>(<span class="num">20</span>);
-<span class="fn">area</span>();  <span class="cmt">// → 100</span></code></pre>
+area();  // → 50
+width.set(20);
+area();  // → 100</code></pre>
   </article>
 
   <article>
@@ -101,16 +101,16 @@ width.<span class="fn">set</span>(<span class="num">20</span>);
       >
     </p>
     <!-- prettier-ignore -->
-    <pre tabindex="0" aria-label="Code example: effect(fn)"><code><span class="kw">import</span> { signal, effect } <span class="kw">from</span> <span class="str">'@basenative/runtime'</span>;
+    <pre tabindex="0" aria-label="Code example: effect(fn)"><code>import { signal, effect } from '@basenative/runtime';
 
-<span class="kw">const</span> name = <span class="fn">signal</span>(<span class="str">'world'</span>);
+const name = signal('world');
 
-<span class="fn">effect</span>(() => {
-  document.title = <span class="str">`Hello, ${</span><span class="fn">name</span>()<span class="str">}`</span>;
+effect(() => {
+  document.title = `Hello, ${name()}`;
 });
 
-name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
-<span class="cmt">// document.title is now "Hello, BaseNative"</span></code></pre>
+name.set('BaseNative');
+// document.title is now "Hello, BaseNative"</code></pre>
   </article>
 
   <article>
@@ -131,11 +131,11 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
       >
     </p>
     <!-- prettier-ignore -->
-    <pre tabindex="0" aria-label="Code example: hydrate(root, context)"><code><span class="kw">import</span> { signal, hydrate } <span class="kw">from</span> <span class="str">'@basenative/runtime'</span>;
+    <pre tabindex="0" aria-label="Code example: hydrate(root, context)"><code>import { signal, hydrate } from '@basenative/runtime';
 
-<span class="kw">const</span> items = <span class="fn">signal</span>([<span class="str">'one'</span>, <span class="str">'two'</span>]);
+const items = signal(['one', 'two']);
 
-<span class="fn">hydrate</span>(document.querySelector(<span class="str">'[data-app]'</span>), {
+hydrate(document.querySelector('[data-app]'), {
   items,
 });</code></pre>
   </article>
@@ -166,12 +166,12 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
     <pre
       tabindex="0"
       aria-label="Code example: @if / @else"
-    ><code><span class="tag">&lt;template</span> <span class="attr">@if</span>=<span class="str">"isLoggedIn()"</span><span class="tag">&gt;</span>
-  <span class="tag">&lt;p&gt;</span>Welcome back!<span class="tag">&lt;/p&gt;</span>
-<span class="tag">&lt;/template&gt;</span>
-<span class="tag">&lt;template</span> <span class="attr">@else</span><span class="tag">&gt;</span>
-  <span class="tag">&lt;p&gt;</span>Please sign in<span class="tag">&lt;/p&gt;</span>
-<span class="tag">&lt;/template&gt;</span></code></pre>
+    ><code>&lt;template @if="isLoggedIn()"&gt;
+  &lt;p&gt;Welcome back!&lt;/p&gt;
+&lt;/template&gt;
+&lt;template @else&gt;
+  &lt;p&gt;Please sign in&lt;/p&gt;
+&lt;/template&gt;</code></pre>
   </article>
 
   <article>
@@ -187,12 +187,12 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
     <pre
       tabindex="0"
       aria-label="Code example: @for / @empty"
-    ><code><span class="tag">&lt;template</span> <span class="attr">@for</span>=<span class="str">"item of items(); track item.id"</span><span class="tag">&gt;</span>
-  <span class="tag">&lt;li&gt;</span>&#123;&#123; item.name &#125;&#125;<span class="tag">&lt;/li&gt;</span>
-<span class="tag">&lt;/template&gt;</span>
-<span class="tag">&lt;template</span> <span class="attr">@empty</span><span class="tag">&gt;</span>
-  <span class="tag">&lt;li&gt;</span>No items found<span class="tag">&lt;/li&gt;</span>
-<span class="tag">&lt;/template&gt;</span></code></pre>
+    ><code>&lt;template @for="item of items(); track item.id"&gt;
+  &lt;li&gt;&#123;&#123; item.name &#125;&#125;&lt;/li&gt;
+&lt;/template&gt;
+&lt;template @empty&gt;
+  &lt;li&gt;No items found&lt;/li&gt;
+&lt;/template&gt;</code></pre>
   </article>
 
   <article>
@@ -207,14 +207,14 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
     <pre
       tabindex="0"
       aria-label="Code example: @switch / @case / @default"
-    ><code><span class="tag">&lt;template</span> <span class="attr">@switch</span>=<span class="str">"status()"</span><span class="tag">&gt;</span>
-  <span class="tag">&lt;template</span> <span class="attr">@case</span>=<span class="str">"'active'"</span><span class="tag">&gt;</span>
-    <span class="tag">&lt;mark</span> <span class="attr">data-status</span>=<span class="str">"active"</span><span class="tag">&gt;</span>Running<span class="tag">&lt;/mark&gt;</span>
-  <span class="tag">&lt;/template&gt;</span>
-  <span class="tag">&lt;template</span> <span class="attr">@default</span><span class="tag">&gt;</span>
-    <span class="tag">&lt;mark</span> <span class="attr">data-status</span>=<span class="str">"idle"</span><span class="tag">&gt;</span>Unknown<span class="tag">&lt;/mark&gt;</span>
-  <span class="tag">&lt;/template&gt;</span>
-<span class="tag">&lt;/template&gt;</span></code></pre>
+    ><code>&lt;template @switch="status()"&gt;
+  &lt;template @case="'active'"&gt;
+    &lt;mark data-status="active"&gt;Running&lt;/mark&gt;
+  &lt;/template&gt;
+  &lt;template @default&gt;
+    &lt;mark data-status="idle"&gt;Unknown&lt;/mark&gt;
+  &lt;/template&gt;
+&lt;/template&gt;</code></pre>
   </article>
 
   <article>
@@ -230,16 +230,16 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
     <pre
       tabindex="0"
       aria-label="Code example: Expression binding"
-    ><code><span class="cmt">&lt;!-- Reactive attribute --&gt;</span>
-<span class="tag">&lt;img</span> <span class="attr">:src</span>=<span class="str">"imageUrl()"</span> <span class="tag">/&gt;</span>
+    ><code>&lt;!-- Reactive attribute --&gt;
+&lt;img :src="imageUrl()" /&gt;
 
-<span class="cmt">&lt;!-- Event handler --&gt;</span>
-<span class="tag">&lt;button</span> <span class="attr">@click</span>=<span class="str">"incrementCount()"</span><span class="tag">&gt;</span>
+&lt;!-- Event handler --&gt;
+&lt;button @click="incrementCount()"&gt;
   Clicked &#123;&#123; count() &#125;&#125; times
-<span class="tag">&lt;/button&gt;</span>
+&lt;/button&gt;
 
-<span class="cmt">&lt;!-- Text interpolation --&gt;</span>
-<span class="tag">&lt;p&gt;</span>Hello, &#123;&#123; name() &#125;&#125;<span class="tag">&lt;/p&gt;</span></code></pre>
+&lt;!-- Text interpolation --&gt;
+&lt;p&gt;Hello, &#123;&#123; name() &#125;&#125;&lt;/p&gt;</code></pre>
   </article>
 </section>
 
@@ -267,19 +267,19 @@ name.<span class="fn">set</span>(<span class="str">'BaseNative'</span>);
       >
     </p>
     <!-- prettier-ignore -->
-    <pre tabindex="0" aria-label="Code example: render(html, context, options?)"><code><span class="kw">import</span> { render } <span class="kw">from</span> <span class="str">'@basenative/server'</span>;
+    <pre tabindex="0" aria-label="Code example: render(html, context, options?)"><code>import { render } from '@basenative/server';
 
-<span class="kw">const</span> html = <span class="fn">render</span>(<span class="str">`
+const html = render(`
   &lt;template @for="item of items; track item.id"&gt;
     &lt;li&gt;&#123;&#123; item.name &#125;&#125;&lt;/li&gt;
   &lt;/template&gt;
-`</span>, {
+`, {
   items: [
-    { id: <span class="num">1</span>, name: <span class="str">'Alpha'</span> },
-    { id: <span class="num">2</span>, name: <span class="str">'Beta'</span> },
+    { id: 1, name: 'Alpha' },
+    { id: 2, name: 'Beta' },
   ]
 });
-<span class="cmt">// → "&lt;li&gt;Alpha&lt;/li&gt;&lt;li&gt;Beta&lt;/li&gt;"</span></code></pre>
+// → "&lt;li&gt;Alpha&lt;/li&gt;&lt;li&gt;Beta&lt;/li&gt;"</code></pre>
   </article>
 </section>
 
