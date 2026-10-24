@@ -1,5 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { resetIds } from './ids.js';
 import * as ui from './components.js';
@@ -123,6 +126,52 @@ test('tab bar overflow is a tab, not a disclosure', () => {
   assert.match(html, /data-bn="bn-tab"/);
   assert.match(html, /<circle /);
   assert.match(html, /href="\/docs"/);
+});
+
+test('a current route behind More marks the More tab and its menu item', () => {
+  resetIds();
+  const html = ui.renderBnTabBar({
+    id: 'tabs',
+    barLimit: 1,
+    tabs: [
+      { label: 'Home', href: '/' },
+      { label: 'Playground', href: '/playground', current: true },
+    ],
+  });
+  // The More tab itself carries the state, so the bar shows where you are
+  // before the menu is ever opened.
+  assert.match(html, /<button data-bn="bn-tab"[^>]*aria-current="page"/);
+  // And the item inside the menu carries it too.
+  assert.match(html, /<a data-bn="bn-menu-item" href="\/playground" aria-current="page">/);
+});
+
+test('sidebar marks its current item', () => {
+  resetIds();
+  const html = ui.renderBnSidebar({
+    sections: [
+      {
+        label: 'Start',
+        items: [
+          { label: 'Home', href: '/' },
+          { label: 'Docs', href: '/docs', current: true },
+        ],
+      },
+    ],
+  });
+  assert.match(html, /<a data-bn="bn-sidebar-item" href="\/docs" aria-current="page">/);
+});
+
+test('tab, menu item, and sidebar share one current treatment in the sheet', () => {
+  const sheet = readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'components.css'), 'utf8');
+  const shared = sheet.match(
+    /\[data-bn='bn-tab'\]\[aria-current='page'\],\s*\[data-bn='bn-menu-item'\]\[aria-current='page'\],\s*\[data-bn='bn-sidebar-item'\]\[aria-current='page'\] \{([^}]*)\}/,
+  );
+  assert.ok(shared, 'the three current selectors share one rule');
+  assert.match(shared[1], /background: var\(--bn-brand\);/);
+  assert.match(shared[1], /color: var\(--bn-brand-ink\);/);
+  assert.match(shared[1], /font-weight: var\(--bn-plat-weight-semibold\);/);
+  // No context may keep a weaker private treatment beside the shared rule.
+  assert.equal(sheet.includes("[data-bn='bn-tab'][aria-current='page'] {\n    color: var(--bn-brand-text);"), false);
 });
 
 test('atom hosts can force hover, pressed, and focus for the catalog', () => {
