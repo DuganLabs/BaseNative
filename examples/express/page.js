@@ -13,6 +13,7 @@ import { raw } from '@basenative/runtime/shared/escape';
 import { catalogBody } from '../../packages/platform/src/catalog.js';
 import { renderBreadcrumb } from '../../packages/components/src/index.js';
 import { renderSiteChrome } from './shell.js';
+import { highlightCodeBlocks } from './highlight.js';
 import {
   getComparePageContext,
   getComponentsPageContext,
@@ -127,7 +128,10 @@ export function renderPage(viewFile, ctx, opts) {
 
   const layout = read('views/layout.html');
   const view = read(`views/${viewFile}`);
-  const content = render(view, ctx);
+  // One highlighting pass for every code block on every page (see
+  // highlight.js). Both hosts — dev server and static export — render
+  // through here, so no page can ship monochrome code again.
+  const content = highlightCodeBlocks(render(view, ctx));
   const version = getAssetVersion();
   return layout
     .replace(/<!--TITLE-->/g, escapeAttr(title))
