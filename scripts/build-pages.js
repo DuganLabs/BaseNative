@@ -140,6 +140,7 @@ console.log('  404.html');
 
 // Copy static assets
 cpSync(join(express, 'public', 'styles.css'), join(dist, 'styles.css'));
+cpSync(join(express, 'public', 'token-bridge.css'), join(dist, 'token-bridge.css'));
 cpSync(join(express, 'public', 'theme.css'), join(dist, 'theme.css'));
 cpSync(join(express, 'public', 'ios.css'), join(dist, 'ios.css'));
 cpSync(join(express, 'public', 'platform-shell.css'), join(dist, 'platform-shell.css'));

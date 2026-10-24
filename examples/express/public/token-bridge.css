@@ -1,0 +1,44 @@
+/* token-bridge.css — Stage 2 of the token migration
+ * (TOKEN-MIGRATION-PLAN, 2026-10-24).
+ *
+ * The step that joins the site's two token families: the steps only
+ * styles.css still defines as literals are re-pointed at the component
+ * catalog's --bn-* tokens, so each bridged name resolves to ONE value
+ * owned by @basenative/components. Every mapping below is
+ * value-identical to the literal it replaces — no visual change:
+ *
+ *   --space-xs  0.25rem  = --bn-space-1
+ *   --space-sm  0.5rem   = --bn-space-2
+ *   --space-md  1rem     = --bn-space-4
+ *   --space-lg  1.5rem   = --bn-space-6
+ *   --space-xl  2rem     = --bn-space-8
+ *   --space-2xl 3rem     = --bn-space-12
+ *   --space-3xl 4rem     = --bn-space-16
+ *   --font-size-md 1rem  = --bn-font-size-base
+ *
+ * Lives in @layer tokens like styles.css's definitions and loads
+ * after it, so these declarations win the tie. Deliberately NOT here:
+ *   - --surface-*: theme.css defines them unlayered (it wins over
+ *     every layer), so the surface bridge lives in theme.css itself,
+ *     where --surface-0/1/2 and --surface-inset now reference the
+ *     --bn-color-surface* values defined in the same sheet.
+ *   - The other --font-size-* steps and the radii: ios.css already
+ *     bridges them onto the --bn-ios-* ladder.
+ *   - --space-page-block-end (6rem): the catalog scale has no step
+ *     above --bn-space-16 (4rem); it stays a site literal until the
+ *     catalog grows the step.
+ *   - --surface-3 (#26221c): no catalog surface step carries it.
+ */
+
+@layer tokens {
+  :root {
+    --space-xs: var(--bn-space-1);
+    --space-sm: var(--bn-space-2);
+    --space-md: var(--bn-space-4);
+    --space-lg: var(--bn-space-6);
+    --space-xl: var(--bn-space-8);
+    --space-2xl: var(--bn-space-12);
+    --space-3xl: var(--bn-space-16);
+    --font-size-md: var(--bn-font-size-base);
+  }
+}
