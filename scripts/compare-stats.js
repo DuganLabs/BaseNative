@@ -35,7 +35,13 @@ const readJson = (...parts) => JSON.parse(read(...parts));
  *             included; the often-quoted smaller figure measures the
  *             react-dom API package without it).
  *   Angular — the default app @angular/cli scaffolds (zoneless by
- *             default in 22), production build, initial JS.
+ *             default in 22), production build, initial JS. Re-measured
+ *             2026-10-24 (@angular/cli 22.2.4): the current default
+ *             scaffold ships no zone.js polyfills chunk at all, so the
+ *             initial JS measures 40.4 KB — the 65.7 KB recorded on
+ *             2026-10-20 is consistent with a scaffold that still
+ *             carried one. React and Svelte re-measured identical the
+ *             same day.
  *   Svelte  — a minimal counter app built with Vite; Svelte has no fixed
  *             runtime, its compiler ships only what the app uses, so the
  *             figure is the shipped bundle of that app.
@@ -62,17 +68,17 @@ export const COMPETITORS = {
     sourceLines: '20K',
     deps: '2 (react, react-dom)',
     source: 'react@19.3.1 + react-dom@19.3.1 hello-world (createRoot), esbuild production bundle, min+gzip',
-    checked: '2026-10-20',
+    checked: '2026-10-24',
   },
   angular: {
     name: 'Angular',
     label: 'Angular 22',
     version: '22.2.3',
-    runtimeGzipKb: 65.7,
+    runtimeGzipKb: 40.4,
     sourceLines: '51K',
     deps: '8 (@angular/* ×6, rxjs, tslib)',
-    source: '@angular/cli@22.2.3 default new app (zoneless), production build initial JS, min+gzip',
-    checked: '2026-10-20',
+    source: '@angular/cli@22.2.4 default new app (zoneless, no polyfills chunk), production build initial JS, min+gzip',
+    checked: '2026-10-24',
   },
   svelte: {
     name: 'Svelte',
@@ -82,7 +88,7 @@ export const COMPETITORS = {
     sourceLines: '16K',
     deps: '0',
     source: 'svelte@5.57.2 minimal counter app, Vite production build, min+gzip',
-    checked: '2026-10-20',
+    checked: '2026-10-24',
   },
 };
 

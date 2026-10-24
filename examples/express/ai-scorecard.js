@@ -139,7 +139,7 @@ export const AI_SCORECARD = [
     from: 'LLM benchmark',
     point: 'More code tokens than React, because HTML templates carry closing tags',
     status: 'Accepted',
-    standing: 'The October 2026 measurement stands: fewer lines, more tokens. The frozen benchmark apps were not rewritten.',
+    standing: 'Re-run fresh on 2026-10-24 against the published 2.3.2 packages: the line count tied and BaseNative used more tokens. The verdict is unchanged, and no code-size win is claimed.',
   },
   {
     id: 'no-break-even',
@@ -153,7 +153,7 @@ export const AI_SCORECARD = [
     from: 'LLM benchmark',
     point: 'An effect that read a signal and a computed derived from it fired twice',
     status: 'Fixed',
-    standing: 'A set() now settles derived computeds and then runs each affected effect once. The historical run still recorded one app-code fix.',
+    standing: 'A set() now settles derived computeds and then runs each affected effect once. The 2026-10-24 benchmark re-run against the published 2.3.2 packages confirms it behaviorally: the log effect fired exactly once per change, and the run needed no app-code fix.',
   },
   {
     id: 'class-replace',
