@@ -818,3 +818,77 @@ test.describe('design system gates', () => {
     }
   }
 });
+
+test.describe('contents scrollspy', () => {
+  test.describe.configure({ timeout: 60_000 });
+
+  async function scrollSectionIntoBand(page, id) {
+    await page.evaluate((targetId) => {
+      // Center puts the section's top edge inside the observer's
+      // -30%/-60% band whichever ancestor actually scrolls.
+      document.getElementById(targetId).scrollIntoView({ block: 'center', behavior: 'instant' });
+    }, id);
+  }
+
+  async function currentTocLink(page, navAttr) {
+    return page.evaluate((attr) => {
+      const nav = document.querySelector(`[${attr}]`);
+      if (!nav) return null;
+      const current = nav.querySelector('a[aria-current="true"]');
+      return current ? current.getAttribute('href') : null;
+    }, navAttr);
+  }
+
+  test('/docs marks the contents link for the section in view', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('/docs', { waitUntil: 'domcontentloaded' });
+    await scrollSectionIntoBand(page, 'server-rendering');
+    await expect
+      .poll(() => currentTocLink(page, 'data-bn-docs-toc'), { timeout: 10_000 })
+      .toBe('#server-rendering');
+    await scrollSectionIntoBand(page, 'api-reference');
+    await expect
+      .poll(() => currentTocLink(page, 'data-bn-docs-toc'), { timeout: 10_000 })
+      .toBe('#api-reference');
+  });
+
+  test('/components marks the category filter for the section in view', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('/components', { waitUntil: 'domcontentloaded' });
+    const lastId = await page.evaluate(() => {
+      const sections = document.querySelectorAll('[data-bn-component-category]');
+      return sections[sections.length - 1].id;
+    });
+    await scrollSectionIntoBand(page, lastId);
+    // The category TOC strip is retired; the surviving nav is the
+    // sticky filter bar, so the mark lands on its filter button.
+    await expect
+      .poll(
+        () =>
+          page.evaluate(() => {
+            const current = document.querySelector(
+              '[data-bn-component-filter][aria-current="true"]',
+            );
+            return current ? current.getAttribute('data-bn-component-filter') : null;
+          }),
+        { timeout: 10_000 },
+      )
+      .toBe(lastId.replace(/^cat-/, ''));
+  });
+
+  test('the marked TOC link carries the brand current treatment', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('/docs', { waitUntil: 'domcontentloaded' });
+    await scrollSectionIntoBand(page, 'template-directives');
+    await expect
+      .poll(() => currentTocLink(page, 'data-bn-docs-toc'), { timeout: 10_000 })
+      .toBe('#template-directives');
+    const paint = await page.evaluate(() => {
+      const link = document.querySelector('[data-bn-docs-toc] a[aria-current="true"]');
+      const style = getComputedStyle(link);
+      return { bg: style.backgroundColor, brand: style.getPropertyValue('--bn-brand') };
+    });
+    expect(paint.bg).toContain('232, 146, 10');
+    expect(paint.brand.trim()).toBe('#e8920a');
+  });
+});
