@@ -86,6 +86,17 @@
       "options": [{ "name": "--json" }, { "name": "--fix" }]
     },
     { "name": "build", "description": "Build for production", "options": [{ "name": "--outdir", "short": "-o" }] },
+    {
+      "name": "site",
+      "description": "Generate static pages from a site input file",
+      "subcommands": ["build"],
+      "options": [
+        { "name": "--input" },
+        { "name": "--outdir" },
+        { "name": "--dry-run" },
+        { "name": "--json" }
+      ]
+    },
     { "name": "generate", "description": "Generate component, route, or page", "args": ["<type>", "<name>"] },
     {
       "name": "env",

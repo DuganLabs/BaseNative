@@ -31,6 +31,7 @@ const COMMANDS = {
 
   // Continuing-utility commands
   build: { mod: './commands/build.js', desc: 'Build for production' },
+  site: { mod: './commands/site.js', desc: 'Generate static pages from a site input file' },
   generate: { mod: './commands/generate.js', desc: 'Generate component, route, or page' },
   env: { mod: './commands/env.js', desc: 'Manage environment variables' },
   analyze: { mod: './commands/analyze.js', desc: 'Analyze bundle size + deps' },
@@ -60,6 +61,7 @@ function showHelp() {
     ${c.accent('deploy')}    ${c.dim(COMMANDS.deploy.desc)}
     ${c.accent('doctor')}    ${c.dim(COMMANDS.doctor.desc)}
     ${c.accent('build')}     ${c.dim(COMMANDS.build.desc)}
+    ${c.accent('site')}      ${c.dim(COMMANDS.site.desc)}
     ${c.accent('generate')}  ${c.dim(COMMANDS.generate.desc)}
     ${c.accent('env')}       ${c.dim(COMMANDS.env.desc)}
     ${c.accent('analyze')}   ${c.dim(COMMANDS.analyze.desc)}

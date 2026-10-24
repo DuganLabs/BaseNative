@@ -12,11 +12,13 @@ import {
 } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
+import { fileURLToPath } from 'node:url';
 
 // We test the create command's template generation logic directly
 import { run as createRun } from './commands/create.js';
 import { run as prdRun } from './commands/prd.js';
 import { run as speckitRun } from './commands/speckit.js';
+import { buildSite } from './lib/site-build.js';
 
 describe('create command', () => {
   let tempDir;
@@ -774,6 +776,101 @@ describe('determinism — same inputs, same output', () => {
     await inDir(a, () => speckitRun(['tasks']));
     assert.equal(read(), first);
     assert.ok(!first.includes('generated_at'), 'the tasks output carries no timestamp');
+  });
+});
+
+describe('site build command', () => {
+  const made = [];
+  const tmp = () => {
+    const d = mkdtempSync(join(tmpdir(), 'bn-site-'));
+    made.push(d);
+    return d;
+  };
+  afterEach(() => {
+    while (made.length) {
+      const d = made.pop();
+      if (existsSync(d)) rmSync(d, { recursive: true, force: true });
+    }
+  });
+
+  const FIXTURE = [
+    'export const siteRoutes = [',
+    "  { path: '/a' },",
+    "  { path: '/b' },",
+    "  { path: '/internal', internal: true },",
+    '];',
+    'export function renderRoute(route, site, spec = {}) {',
+    "  return '<h1>' + route.path + ' ' + (spec.text || '') + '</h1>';",
+    '}',
+    '',
+  ].join('\n');
+
+  const writeFixture = (dir, pages) => {
+    writeFileSync(join(dir, 'page.js'), FIXTURE);
+    writeFileSync(join(dir, 'site.json'), JSON.stringify({ module: './page.js', outdir: './out', pages }));
+    return join(dir, 'site.json');
+  };
+  const readOut = (dir, route) =>
+    readFileSync(join(dir, 'out', route, 'index.html'), 'utf-8');
+
+  it('builds the same tree twice from the same input', async () => {
+    const pages = [
+      { path: '/a', text: 'one' },
+      { path: '/b', text: 'two' },
+    ];
+    const a = tmp();
+    const b = tmp();
+    const first = await buildSite(writeFixture(a, pages));
+    const second = await buildSite(writeFixture(b, pages));
+    assert.deepEqual(first.written, ['/a/', '/b/']);
+    assert.deepEqual(second.written, first.written);
+    assert.equal(readOut(b, 'a'), readOut(a, 'a'));
+    assert.equal(readOut(b, 'b'), readOut(a, 'b'));
+    assert.equal(readOut(a, 'a'), '<h1>/a one</h1>');
+  });
+
+  it('changing one page spec changes only that page', async () => {
+    const dir = tmp();
+    const input = writeFixture(dir, [
+      { path: '/a', text: 'one' },
+      { path: '/b', text: 'two' },
+    ]);
+    await buildSite(input);
+    const beforeA = readOut(dir, 'a');
+    const beforeB = readOut(dir, 'b');
+    writeFileSync(
+      input,
+      JSON.stringify({
+        module: './page.js',
+        outdir: './out',
+        pages: [
+          { path: '/a', text: 'ONE' },
+          { path: '/b', text: 'two' },
+        ],
+      }),
+    );
+    await buildSite(input);
+    assert.notEqual(readOut(dir, 'a'), beforeA);
+    assert.equal(readOut(dir, 'a'), '<h1>/a ONE</h1>');
+    assert.equal(readOut(dir, 'b'), beforeB);
+  });
+
+  it('refuses internal routes and unknown pages', async () => {
+    const dir = tmp();
+    await assert.rejects(buildSite(writeFixture(dir, ['/internal'])), /never published/);
+    await assert.rejects(buildSite(writeFixture(dir, ['/nope'])), /no route/);
+  });
+
+  it('the pilot input generates the real /roadmap exactly as the site renderer does', async () => {
+    const inputPath = fileURLToPath(new URL('../../../examples/express/site.json', import.meta.url));
+    const out = tmp();
+    const result = await buildSite(inputPath, { outdir: out });
+    assert.deepEqual(result.written, ['/roadmap/']);
+    const generated = readFileSync(join(out, 'roadmap', 'index.html'), 'utf-8');
+    const page = await import(new URL('../../../examples/express/page.js', import.meta.url));
+    const route = page.siteRoutes.find((r) => r.path === '/roadmap');
+    const direct = page.renderRoute(route, { tasks: [], hasApi: false });
+    assert.equal(generated, direct);
   });
 });
 
