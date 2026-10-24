@@ -205,7 +205,7 @@ export const siteRoutes = [
     view: 'ai.html',
     title: 'AI',
     description:
-      'Honest scorecard of the points against BaseNative for models: what is fixed, what is mitigated, and what is an accepted tradeoff.',
+      'Honest scorecard of the points against BaseNative for models: what is fixed, and what is an accepted tradeoff.',
     ogTitle: 'BaseNative for models — honest scorecard',
     activePage: 'ai',
     ctx: () => getAiPageContext(),

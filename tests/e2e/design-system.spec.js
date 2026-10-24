@@ -362,10 +362,8 @@ async function catalogTitle(page) {
 async function sharedSectionSurface(page) {
   return page.evaluate(() => {
     const hero = document.querySelector('main [data-bn="bn-hero"]');
-    const card = [...document.querySelectorAll('main > section')].find((el) =>
-      /Where this list came from/.test(el.textContent || ''),
-    );
-    if (!hero || !card) return ['missing provenance card'];
+    const card = document.querySelector('main > section');
+    if (!hero || !card) return ['missing shared section'];
     const a = getComputedStyle(hero);
     const b = getComputedStyle(card);
     const problems = [];
@@ -373,8 +371,8 @@ async function sharedSectionSurface(page) {
       problems.push(`surface ${b.backgroundColor} != hero ${a.backgroundColor}`);
     if (a.backgroundImage !== b.backgroundImage)
       problems.push(`surface image ${b.backgroundImage} != hero ${a.backgroundImage}`);
-    if (a.boxShadow !== b.boxShadow) problems.push('provenance elevation != hero');
-    if (b.backgroundImage !== 'none') problems.push('provenance card paints a gradient');
+    if (a.boxShadow !== b.boxShadow) problems.push('section elevation != hero');
+    if (b.backgroundImage !== 'none') problems.push('section paints a gradient');
     return problems;
   });
 }

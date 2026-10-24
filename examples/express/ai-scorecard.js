@@ -1,8 +1,11 @@
 /**
- * The /ai scorecard. The route was not in git history — no view, no commit
- * by Muse — so the rows are the last committed list of points against
- * BaseNative: /compare ("Where others win", "Probably not", the DX rows),
- * the October 2026 LLM benchmark, and docs/blog/2026-10-llm-benchmark.md.
+ * The /ai scorecard: every point against BaseNative, with its standing.
+ * Rows are sourced from /compare ("Where others win", "Probably not",
+ * the DX rows), the October 2026 LLM benchmark and its 2026-10-24
+ * re-run against the published 2.3.2 packages, and
+ * docs/blog/2026-10-llm-benchmark.md. A row is Fixed only when the
+ * runtime or the docs changed to close it; otherwise the tradeoff is
+ * Accepted, and the standing says so in plain terms.
  *
  * `point` is plain text. The integration test requires every point to
  * appear in the rendered page.
@@ -24,7 +27,6 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const STATUS_VARIANT = {
   Fixed: 'success',
   'Already fixed': 'success',
-  Mitigated: 'primary',
   Accepted: 'warning',
 };
 
@@ -61,8 +63,8 @@ export const AI_SCORECARD = [
     id: 'devtools',
     from: 'Where others win',
     point: 'No React DevTools, no Angular CLI, and no Svelte inspector',
-    status: 'Mitigated',
-    standing: 'enableDevtools() sets globalThis.__BASENATIVE_DEVTOOLS__. That is not a browser extension. The bn CLI scaffolds and deploys.',
+    status: 'Accepted',
+    standing: 'enableDevtools() is wired into the runtime: signals, effects, and hydrations register as they happen, with live values, subscriber counts, and disposed state on globalThis.__BASENATIVE_DEVTOOLS__. It is a console hook. There is no browser extension, and the bn CLI is not an inspector.',
   },
   {
     id: 'bus-factor',
@@ -82,22 +84,22 @@ export const AI_SCORECARD = [
     id: 'enforced-architecture',
     from: 'Probably not',
     point: 'Large team apps that need an enforced architecture',
-    status: 'Mitigated',
-    standing: '@basenative/validate and the MCP server reject foreign syntax. They are not a staff engineer.',
+    status: 'Accepted',
+    standing: '@basenative/validate and the MCP server reject foreign syntax in templates. Nothing enforces architecture — no layering, boundary, or import rules. Structure is the team\'s own discipline.',
   },
   {
     id: 'third-party-integrations',
     from: 'Probably not',
     point: 'Projects that need deep third-party integrations',
-    status: 'Mitigated',
-    standing: 'Auth, db, upload, and the Plaid wrapper exist in this repo. Most of npm does not have a BaseNative adapter.',
+    status: 'Accepted',
+    standing: 'In this repo: auth, WebAuthn, db, and upload packages, plus a Plaid client in @basenative/integrations. The rest of npm has no BaseNative adapter; deep integration means writing to the service\'s API directly.',
   },
   {
     id: 'inspector-critical',
     from: 'Probably not',
     point: 'Apps where a mature devtools inspector is a critical part of the workflow',
-    status: 'Mitigated',
-    standing: 'Same gap as the missing browser extension. Use enableDevtools() or do not pick BaseNative for that workflow.',
+    status: 'Accepted',
+    standing: 'The devtools hook reports live state to the console. It is not a visual inspector, and there is no extension. If a mature inspector is critical to the workflow, do not pick BaseNative for that workflow.',
   },
   {
     id: 'hiring-pool',
@@ -131,8 +133,8 @@ export const AI_SCORECARD = [
     id: 'dx-behind',
     from: 'DX section',
     point: 'The place BaseNative is furthest behind',
-    status: 'Mitigated',
-    standing: 'HMR already ships. A CDN file, bn from-jsx, and agent rules shorten the first hour. Compiled-DX parity is not claimed.',
+    status: 'Accepted',
+    standing: 'Still the furthest behind — the DX table on /compare is the standing. HMR ships, bn from-jsx rewrites React drafts, and the CDN file skips the build; none of it is compiled-toolchain parity.',
   },
   {
     id: 'more-tokens',
@@ -145,8 +147,8 @@ export const AI_SCORECARD = [
     id: 'no-break-even',
     from: 'LLM benchmark',
     point: 'The docs bundle has no break-even through code savings',
-    status: 'Mitigated',
-    standing: 'llms.txt stays an index. docs/llm/START.md is a separate short file, also served as /llms-start.txt. Code savings still do not pay for the index.',
+    status: 'Accepted',
+    standing: 'Measured twice — the October 2026 benchmark and the 2026-10-24 re-run: no break-even. The docs cost tokens and the generated code does not repay them. llms.txt stays an index; the short cheat sheet only lowers the one-time cost.',
   },
   {
     id: 'double-fire',
