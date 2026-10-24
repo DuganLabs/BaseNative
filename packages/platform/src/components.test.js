@@ -130,6 +130,10 @@ test('footer renders groups and carries the site-footer attribute only on reques
     /<nav aria-label="BaseNative"><p>BaseNative<\/p><ul><li><a href="\/">Home<\/a><\/li>/,
   );
   assert.match(grouped, /<nav aria-label="Product">/);
+  const renamed = ui.renderBnFooter({
+    groups: [{ label: 'BaseNative', ariaLabel: 'Project', links: [{ label: 'Home', href: '/' }] }],
+  });
+  assert.match(renamed, /<nav aria-label="Project"><p>BaseNative<\/p>/);
   const plain = ui.renderBnFooter({
     note: 'BaseNative',
     links: [{ label: 'Docs', href: '/docs' }],

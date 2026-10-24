@@ -959,6 +959,14 @@ describe('site footer is rendered from the nav model', () => {
     assert.match(footer, /<footer data-bn="bn-footer" data-bn-site-footer>/);
   });
 
+  it('names its first landmark Project, not BaseNative', () => {
+    // The catalog's demo footers already use "BaseNative" as a nav
+    // name; a second one would trip axe's landmark-unique rule on
+    // pages that embed the catalog.
+    assert.match(footer, /<nav aria-label="Project"><p>BaseNative<\/p>/);
+    assert.ok(!footer.includes('aria-label="BaseNative"'));
+  });
+
   it('links every route in the nav model exactly once', () => {
     for (const item of getAppNavItems()) {
       const count = footer.split(`href="${item.href}"`).length - 1;

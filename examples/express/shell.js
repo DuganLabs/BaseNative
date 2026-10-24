@@ -55,6 +55,11 @@ export function renderSiteFooter() {
   const groups = [
     {
       label: 'BaseNative',
+      // The catalog's own demo footers use "BaseNative" as their nav
+      // name; the site footer's first landmark keeps the accessible
+      // name the hand-written footer used, so the two never collide
+      // (axe landmark-unique) on pages that embed the catalog.
+      ariaLabel: 'Project',
       links: [
         byHref('/'),
         { label: 'GitHub', href: 'https://github.com/DuganLabs/BaseNative' },

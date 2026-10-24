@@ -776,7 +776,7 @@ export function renderBnFooter(options = {}) {
         )
         .join('');
       const title = group.label ? `<p>${escapeHtml(group.label)}</p>` : '';
-      const name = group.label || options.label || 'Footer';
+      const name = group.ariaLabel || group.label || options.label || 'Footer';
       return `<nav aria-label="${escapeAttr(name)}">${title}<ul>${links}</ul></nav>`;
     })
     .join('');
