@@ -14,6 +14,11 @@ const devtoolsState = {
 
 let nextSignalId = 1;
 let nextEffectId = 1;
+// Accessor/handle -> registration id, so a repeat track call relabels
+// the existing registration instead of adding a duplicate. Replaced
+// (not cleared — WeakMaps cannot be) when devtools are disabled.
+let signalIds = new WeakMap();
+let effectIds = new WeakMap();
 
 /**
  * Enables devtools instrumentation.
@@ -42,33 +47,50 @@ export function enableDevtools() {
 }
 
 /**
- * Registers a signal for devtools inspection.
+ * Shared registration path for trackSignal/trackEffect. A repeat call
+ * with the same key updates the existing entry (the label, plus any
+ * defined extras) and returns its id; otherwise a new entry is minted.
  */
-export function trackSignal(accessor, label) {
-  if (!devtoolsState.enabled) return;
-
-  const id = nextSignalId++;
-  devtoolsState.signals.set(id, {
-    label: label || `signal_${id}`,
-    accessor,
-  });
-
+function registerTracked(registry, ids, key, label, prefix, extra, mintId) {
+  const existing = ids.get(key);
+  if (existing !== undefined) {
+    const info = registry.get(existing);
+    if (info) {
+      if (label) info.label = label;
+      if (extra) {
+        for (const k of Object.keys(extra)) {
+          if (extra[k] !== undefined) info[k] = extra[k];
+        }
+      }
+    }
+    return existing;
+  }
+  const id = mintId();
+  ids.set(key, id);
+  registry.set(id, { label: label || `${prefix}_${id}`, ...extra });
   return id;
 }
 
 /**
- * Registers an effect for devtools inspection.
+ * Registers a signal for devtools inspection. signal() calls this on
+ * creation whenever devtools are enabled, so registration is
+ * automatic; call it directly only to attach a label.
  */
-export function trackEffect(handle, label) {
+export function trackSignal(accessor, label, subscriberCount) {
   if (!devtoolsState.enabled) return;
+  return registerTracked(devtoolsState.signals, signalIds, accessor, label, 'signal',
+    { accessor, subscriberCount }, () => nextSignalId++);
+}
 
-  const id = nextEffectId++;
-  devtoolsState.effects.set(id, {
-    label: label || `effect_${id}`,
-    disposed: () => false,
-  });
-
-  return id;
+/**
+ * Registers an effect for devtools inspection. createEffect() calls
+ * this on creation whenever devtools are enabled; call it directly
+ * only to attach a label.
+ */
+export function trackEffect(handle, label, disposed) {
+  if (!devtoolsState.enabled) return;
+  return registerTracked(devtoolsState.effects, effectIds, handle, label, 'effect',
+    { disposed }, () => nextEffectId++);
 }
 
 /**
@@ -93,6 +115,8 @@ export function disableDevtools() {
   devtoolsState.signals.clear();
   devtoolsState.effects.clear();
   devtoolsState.hydrations = [];
+  signalIds = new WeakMap();
+  effectIds = new WeakMap();
 
   if (typeof globalThis !== 'undefined') {
     delete globalThis.__BASENATIVE_DEVTOOLS__;

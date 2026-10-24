@@ -9,6 +9,7 @@ import {
   registerCleanup,
 } from './dom-lifecycle.js';
 import { createRuntimeOptions, emitDiagnostic, reportHydrationMismatch } from './diagnostics.js';
+import { recordHydration } from './devtools.js';
 import { getDirective, listDirectives } from './shared/directives.js';
 
 function insertAfterAnchor(anchor, nodes) {
@@ -450,7 +451,10 @@ function hydrateDeferred(root, ctx, options) {
 
 export function hydrate(root, ctx, options = {}) {
   const runtimeOptions = createRuntimeOptions(options);
+  const startedAt = Date.now();
   const processed = hydrateChildren(root, ctx, runtimeOptions);
+  // No-op unless devtools are enabled.
+  recordHydration(root, { directivesProcessed: processed, duration: Date.now() - startedAt });
   const cleanupDeferred = hydrateDeferred(root, ctx, runtimeOptions);
 
   if (processed === 0) {

@@ -1,3 +1,5 @@
+import { trackSignal, trackEffect } from './devtools.js';
+
 let currentEffect = null;
 let batchDepth = 0;
 const pendingComputed = new Set();
@@ -94,6 +96,8 @@ export function signal(initial) {
     }
   };
   accessor.peek = () => value;
+  // No-op unless devtools are enabled; the count reads the live set.
+  trackSignal(accessor, undefined, () => subs.size);
   return accessor;
 }
 
@@ -126,6 +130,9 @@ function createEffect(fn, computed) {
     effectRef.disposed = true;
     cleanupEffect(effectRef);
   };
+
+  // No-op unless devtools are enabled; disposal reads the live flag.
+  trackEffect(execute, undefined, () => effectRef.disposed);
 
   execute();
   return execute;

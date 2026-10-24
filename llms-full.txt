@@ -3250,13 +3250,13 @@ Turns instrumentation off, clears tracked signals/effects/hydrations, and remove
 Returns whether devtools are currently enabled.
 
 #### `trackSignal(accessor, label?)`
-Registers a signal for inspection. A no-op (returns `undefined`) unless devtools are enabled. Returns a numeric id otherwise.
+Registers a signal for inspection, or relabels the automatic registration `signal()` made. A no-op (returns `undefined`) unless devtools are enabled. Returns the registration's numeric id otherwise.
 
 #### `trackEffect(handle, label?)`
-Registers an effect for inspection. A no-op unless devtools are enabled. Returns a numeric id otherwise.
+Registers an effect for inspection, or relabels the automatic registration `effect()`/`computed()` made. A no-op unless devtools are enabled. Returns the registration's numeric id otherwise.
 
 #### `recordHydration(root, details?)`
-Appends a hydration event (`{ timestamp, root: root.tagName, directivesProcessed, duration }`) to the devtools timeline. A no-op unless devtools are enabled.
+Appends a hydration event (`{ timestamp, root: root.tagName, directivesProcessed, duration }`) to the devtools timeline. A no-op unless devtools are enabled. `hydrate()` calls it on every run.
 ```js
 import { enableDevtools, trackSignal, signal } from '@basenative/runtime';
 

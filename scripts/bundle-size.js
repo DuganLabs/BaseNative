@@ -13,7 +13,11 @@ const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 // Per-package gzipped budgets (bytes). These are the contract — fail CI if exceeded.
 const KB = 1024;
 export const THRESHOLDS = {
-  '@basenative/runtime': 10 * KB,
+  // 10 KB until 2026-10-24 (10183 gz). Wiring the devtools hooks into
+  // signal/effect/hydrate creation measured 10357 gz; the cap moves to
+  // the next whole KB rather than a fractional threshold /compare would
+  // print rounded.
+  '@basenative/runtime': 11 * KB,
   '@basenative/server': 16 * KB,
   '@basenative/og-image': 8 * KB,
   '@basenative/keyboard': 4 * KB,

@@ -54,7 +54,7 @@ hydrate(document.body, { count });
 
 - `emitDiagnostic(diagnostic)` — Emit a structured runtime diagnostic.
 - `reportHydrationMismatch(info)` — Report a server/client HTML mismatch.
-- `enableDevtools()` / `disableDevtools()` / `isDevtoolsEnabled()` — Toggle the BaseNative devtools panel.
+- `enableDevtools()` / `disableDevtools()` / `isDevtoolsEnabled()` — Toggle the BaseNative devtools hooks (live signal/effect/hydration state on `globalThis.__BASENATIVE_DEVTOOLS__`; creation registers automatically while enabled).
 - `trackSignal(signal)` / `trackEffect(effect)` / `recordHydration(info)` — DevTools instrumentation hooks.
 
 ### Debug Mode
