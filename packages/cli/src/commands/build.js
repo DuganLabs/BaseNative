@@ -66,7 +66,7 @@ export async function run(args) {
 
 function copyDirSync(src, dest) {
   mkdirSync(dest, { recursive: true });
-  for (const entry of readdirSync(src)) {
+  for (const entry of readdirSync(src).sort()) {
     const srcPath = join(src, entry);
     const destPath = join(dest, entry);
     if (statSync(srcPath).isDirectory()) {

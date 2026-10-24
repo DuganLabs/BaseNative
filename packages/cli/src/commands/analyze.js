@@ -122,7 +122,7 @@ export async function run(args) {
 
 function collectFiles(dir, baseDir) {
   const results = [];
-  for (const entry of readdirSync(dir)) {
+  for (const entry of readdirSync(dir).sort()) {
     const fullPath = join(dir, entry);
     const stat = statSync(fullPath);
     if (stat.isDirectory()) {

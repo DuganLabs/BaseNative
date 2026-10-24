@@ -37,6 +37,8 @@ function showHelp() {
   ${c.bold('Options')}
     -t, --template <id>   Template id [default: minimal — recommended: webapp]
         --description <s> Project description
+        --compat-date <d> Cloudflare compatibility_date for the scaffold
+                          [default: 2025-09-23, the @basenative/wrangler-preset baseline]
         --no-git          Skip git init + initial commit
         --dry-run         Print what would be written; touch nothing
         --json            Machine-readable output
@@ -63,6 +65,7 @@ export async function run(args) {
     options: {
       template: { type: 'string', short: 't', default: 'minimal' },
       description: { type: 'string' },
+      'compat-date': { type: 'string' },
       'no-git': { type: 'boolean', default: false },
       'dry-run': { type: 'boolean', default: false },
       json: { type: 'boolean', default: false },
@@ -94,7 +97,17 @@ export async function run(args) {
   }
 
   const description = values.description || `A BaseNative ${template} project.`;
-  const compatDate = new Date().toISOString().slice(0, 10);
+  // Deterministic: the compatibility date is an explicit input, never
+  // the wall clock — the same command on any day produces the same
+  // tree. The default is the repo's pinned baseline, the
+  // compatibility_date @basenative/wrangler-preset ships in its
+  // `defaults` (the single source consumers already take it from);
+  // bump it here when that package bumps its baseline.
+  const compatDate = values['compat-date'] || '2025-09-23';
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(compatDate)) {
+    err(`Invalid --compat-date "${compatDate}" — expected YYYY-MM-DD.`);
+    process.exit(1);
+  }
   const tplVars = { name: slug, description, compatDate };
 
   // ---- Disk-backed templates ----

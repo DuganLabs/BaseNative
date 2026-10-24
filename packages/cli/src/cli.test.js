@@ -1,11 +1,22 @@
 import { describe, it, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, rmSync, readFileSync, existsSync, writeFileSync, mkdirSync } from 'node:fs';
+import {
+  mkdtempSync,
+  rmSync,
+  readFileSync,
+  existsSync,
+  writeFileSync,
+  mkdirSync,
+  readdirSync,
+  statSync,
+} from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
 // We test the create command's template generation logic directly
 import { run as createRun } from './commands/create.js';
+import { run as prdRun } from './commands/prd.js';
+import { run as speckitRun } from './commands/speckit.js';
 
 describe('create command', () => {
   let tempDir;
@@ -658,6 +669,111 @@ describe('build command', () => {
     await run(['--outdir', 'output']);
 
     assert.ok(existsSync(join(tempDir, 'output', 'server.js')));
+  });
+});
+
+describe('determinism — same inputs, same output', () => {
+  const made = [];
+  const tmp = () => {
+    const d = mkdtempSync(join(tmpdir(), 'bn-det-'));
+    made.push(d);
+    return d;
+  };
+  afterEach(() => {
+    while (made.length) {
+      const d = made.pop();
+      if (existsSync(d)) rmSync(d, { recursive: true, force: true });
+    }
+  });
+  const inDir = async (dir, fn) => {
+    const prev = process.cwd();
+    process.chdir(dir);
+    try {
+      return await fn();
+    } finally {
+      process.chdir(prev);
+    }
+  };
+  const treeOf = (root) => {
+    const out = {};
+    const walk = (dir) => {
+      for (const entry of readdirSync(dir).sort()) {
+        const abs = join(dir, entry);
+        if (statSync(abs).isDirectory()) walk(abs);
+        else out[abs.slice(root.length + 1)] = readFileSync(abs, 'utf-8');
+      }
+    };
+    walk(root);
+    return out;
+  };
+
+  it('create scaffolds the identical tree twice', async () => {
+    const a = tmp();
+    const b = tmp();
+    await inDir(a, () => createRun(['app', '--template', 'webapp', '--no-git']));
+    await inDir(b, () => createRun(['app', '--template', 'webapp', '--no-git']));
+    assert.deepEqual(treeOf(join(a, 'app')), treeOf(join(b, 'app')));
+  });
+
+  it('create pins the compatibility date and honors --compat-date', async () => {
+    const a = tmp();
+    await inDir(a, () => createRun(['app', '--template', 'webapp', '--no-git']));
+    const wrangler = readFileSync(join(a, 'app', 'wrangler.toml'), 'utf-8');
+    assert.ok(wrangler.includes('compatibility_date = "2025-09-23"'), wrangler);
+    const b = tmp();
+    await inDir(b, () =>
+      createRun(['app', '--template', 'webapp', '--no-git', '--compat-date', '2026-03-01']),
+    );
+    const overridden = readFileSync(join(b, 'app', 'wrangler.toml'), 'utf-8');
+    assert.ok(overridden.includes('compatibility_date = "2026-03-01"'), overridden);
+  });
+
+  it('prd init writes the same scaffold regardless of $USER', async () => {
+    const a = tmp();
+    const b = tmp();
+    const prevUser = process.env.USER;
+    try {
+      process.env.USER = 'alice';
+      await inDir(a, () => prdRun(['init', '--name', 'demo', '--owner', 'team']));
+      process.env.USER = 'bob';
+      await inDir(b, () => prdRun(['init', '--name', 'demo', '--owner', 'team']));
+    } finally {
+      if (prevUser === undefined) delete process.env.USER;
+      else process.env.USER = prevUser;
+    }
+    const pa = readFileSync(join(a, 'docs', 'PRD.md'), 'utf-8');
+    const pb = readFileSync(join(b, 'docs', 'PRD.md'), 'utf-8');
+    assert.equal(pa, pb);
+    assert.ok(!pa.includes('Last updated'), 'the scaffold carries no clock date');
+    assert.ok(!/alice|bob/.test(pa), 'the scaffold carries no $USER');
+  });
+
+  it('prd sync emits byte-identical issues on re-run', async () => {
+    const a = tmp();
+    await inDir(a, () => prdRun(['init', '--name', 'demo']));
+    const read = () => readFileSync(join(a, '.bn', 'prd-issues.json'), 'utf-8');
+    await inDir(a, () => prdRun(['sync']));
+    const first = read();
+    await inDir(a, () => prdRun(['sync']));
+    assert.equal(read(), first);
+    assert.ok(!first.includes('generated_at'), 'the sync output carries no timestamp');
+  });
+
+  it('speckit tasks emits byte-identical issues on re-run', async () => {
+    const a = tmp();
+    await inDir(a, () => speckitRun(['init']));
+    await inDir(a, () => speckitRun(['spec', 'demo-feature']));
+    const read = () => readFileSync(join(a, '.bn', 'speckit-tasks.json'), 'utf-8');
+    // The first tasks run creates tasks.md when it is missing (its
+    // documented job), which changes the input; the determinism
+    // contract is over stable inputs, so settle first, then compare
+    // two runs over the settled tree.
+    await inDir(a, () => speckitRun(['tasks']));
+    await inDir(a, () => speckitRun(['tasks']));
+    const first = read();
+    await inDir(a, () => speckitRun(['tasks']));
+    assert.equal(read(), first);
+    assert.ok(!first.includes('generated_at'), 'the tasks output carries no timestamp');
   });
 });
 
