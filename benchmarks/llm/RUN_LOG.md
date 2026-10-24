@@ -112,3 +112,46 @@ iterated silently before the first test run.
 - Sole environment delta: node-html-parser installed at 9.0.5 (9.0.4 in
   the 2.0.1 run), inside the server's declared ^9.0.4 range. No measured
   value moved.
+
+## Fresh authoring run against published 2.3.2 (2026-10-24)
+- The original benchmark directory was never committed, so this run
+  reconstructed both implementations and both test suites in one first
+  pass each from BENCHMARK.md's task descriptions, against the published
+  npm tarballs (@basenative/* 2.3.2; React 19.3.1; esbuild 0.28.2;
+  jsdom 30.1.3; Node v24.22.1). The reconstructed apps, tests, dataset
+  and measure.mjs are now committed beside this log.
+- Dataset reconstructed per the documented coverage; the one product
+  the documents name is the Aurora Lamp at $49 (featured, in stock),
+  joined by an Ember Mug $24 (standard, out of stock), a Drift Chair
+  $189 (clearance, in stock) and a Halo Bulb $15 (standard, in stock).
+- Documented translations from the original log were applied in the
+  first pass and are not counted as fixes: R-1 (strip React's
+  `<!-- -->`), R-2 (navigator defineProperty), R-5 (esbuild
+  externalizes react/react-dom), the controlled-input native setter,
+  and BaseNative task 2 written directly in the declarative form
+  (BN-2's fairness correction).
+- FIRST RUN (basenative): task 1 — 3/3 pass. Task 2 — 1/1 pass (13
+  assertions). No fixes of any kind. BN-1 did not recur: the log effect
+  (reading count() and doubled(), writing the log via .peek()) fired
+  exactly once per change on 2.3.2, including under batch().
+- FIRST RUN (react): task 1 — 3/3 pass. Task 2 — FAILED before any
+  assertion: react/dist/task2.mjs did not exist
+  (ERR_MODULE_NOT_FOUND), because the build had failed (R2-1).
+- R2-1 (react task 2, harness/tooling, 1 edit): the task-2 esbuild
+  stdin entry read './react/task2/app.jsx' while its resolveDir was
+  already the react/ directory, so esbuild could not resolve it, the
+  build exited non-zero, and the bundle was never emitted. Fix: entry
+  path changed to './task2/app.jsx'. After the fix the React suite
+  passes 4/4. No React app code changed.
+- No other fixes. BaseNative: 0 app-code fixes, 0 harness fixes.
+  React: 0 app-code fixes; harness fixes 0 (task 1) + 1 (task 2).
+- Dependency closures counted transitively in this run (see
+  BENCHMARK.md's 2026-10-24 section): task-1 BaseNative closure is 12
+  with node-html-parser's subtree expanded (3 under the original
+  named-dependencies-only count); all other closures unchanged.
+- Final clean verification: after rm -rf react/dist, npm test produced
+  BaseNative 4/4 pass and React 4/4 pass. React task-2 bundle rebuilt
+  at exactly 1,196,164 bytes (it now also re-exports the React
+  namespace the test mounts with — see the run's measurement notes).
+  node measure.mjs regenerated results.json: BaseNative 107 lines /
+  813 tokens; React 108 lines / 748 tokens.

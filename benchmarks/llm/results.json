@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-10-20T23:48:48.803Z",
+  "generatedAt": "2026-10-24T18:50:55.441Z",
   "tokenMethod": "approxTokens = UTF-8 bytes / 4, rounded (stated approximation, same method for all code)",
   "versions": {
-    "basenativeRuntime": "2.1.0 (published npm tarball)",
-    "basenativeServer": "2.1.0 (published npm tarball)",
-    "basenativeRouter": "2.1.0 (published npm tarball, not exercised by these tasks)",
+    "basenativeRuntime": "2.3.2 (published npm tarball)",
+    "basenativeServer": "2.3.2 (published npm tarball)",
+    "basenativeRouter": "2.3.2 (published npm tarball, not exercised by these tasks)",
     "react": "19.3.1",
     "reactDom": "19.3.1",
-    "esbuild": "0.25.12",
-    "jsdom": "27.4.0",
+    "esbuild": "0.28.2",
+    "jsdom": "30.1.3",
     "nodeHtmlParser": "9.0.5",
-    "node": "v24.20.0"
+    "node": "v24.22.1"
   },
   "sharedInputs": "shared/products.json (excluded from both sides — identical input)",
   "tasks": {
@@ -18,8 +18,8 @@
       "basenative": {
         "files": 2,
         "lines": 36,
-        "bytes": 1258,
-        "approxTokens": 315,
+        "bytes": 1265,
+        "approxTokens": 316,
         "handWrittenFilesList": [
           "basenative/task1/catalog.js",
           "basenative/task1/catalog.html"
@@ -28,11 +28,20 @@
           "@basenative/server"
         ],
         "productionDependencyClosure": [
-          "@basenative/server",
           "@basenative/runtime",
-          "node-html-parser"
+          "@basenative/server",
+          "boolbase",
+          "css-select",
+          "css-what",
+          "dom-serializer",
+          "domelementtype",
+          "domhandler",
+          "domutils",
+          "entities",
+          "node-html-parser",
+          "nth-check"
         ],
-        "productionDependencyCount": 3,
+        "productionDependencyCount": 12,
         "buildStepRequired": false,
         "testsPassed": "3/3",
         "appCodeFixIterations": 0,
@@ -41,9 +50,9 @@
       },
       "react": {
         "files": 1,
-        "lines": 44,
-        "bytes": 1252,
-        "approxTokens": 313,
+        "lines": 40,
+        "bytes": 1140,
+        "approxTokens": 285,
         "handWrittenFilesList": [
           "react/task1/catalog.jsx"
         ],
@@ -61,17 +70,17 @@
         "buildToolingNote": "JSX cannot run in Node directly; esbuild bundle step required before tests/render (see reactBuildToolingOneTime).",
         "testsPassed": "3/3",
         "appCodeFixIterations": 0,
-        "harnessFixIterations": 2,
-        "harnessFixNote": "R-1: React SSR inserts <!-- --> text-separator comments (\"$<!-- -->49\"); the shared price assertion needed a documented normalization in the React test. R-5: esbuild ESM bundling of CJS react-dom/server failed with \"Dynamic require of util is not supported\" once renderToString moved into the bundled entry; fixed by externalizing react/react-dom in react/build.mjs.",
-        "firstPassSuccess": false
+        "harnessFixIterations": 0,
+        "harnessFixNote": "Documented translations from the original RUN_LOG were applied in the first pass and are not counted as fixes in this fresh run: R-1 (strip React SSR <!-- --> separators before the shared assertions) and R-5 (esbuild externalizes react/react-dom for the task-1 bundle). Task 1 passed 3/3 on the first run.",
+        "firstPassSuccess": true
       }
     },
     "task2_interactive_reactive": {
       "basenative": {
         "files": 1,
-        "lines": 59,
-        "bytes": 2049,
-        "approxTokens": 512,
+        "lines": 71,
+        "bytes": 1986,
+        "approxTokens": 497,
         "handWrittenFilesList": [
           "basenative/task2/app.js"
         ],
@@ -84,17 +93,16 @@
         "productionDependencyCount": 1,
         "buildStepRequired": false,
         "testsPassed": "1/1 (13 behavior assertions)",
-        "implementationNote": "Final implementation is the declarative template + hydrate() path (v2). The v1 direct-DOM-binding version (69 lines / 2186 bytes / ~547 tokens) is preserved in RUN_LOG.md.",
-        "appCodeFixIterations": 1,
-        "appFixNote": "BN-1 (in v1): diamond subscription — an effect reading both a signal and a computed derived from it ran twice per change; the fix (subscribe to the computed, read the source with .peek()) is carried into v2, which then passed on its first run.",
+        "implementationNote": "Declarative template + hydrate() path, written that way in the first pass (the BN-2 fairness correction from the original run). The log effect reads count() and a computed derived from it and writes the log via log.peek(); on 2.3.2 one set() settles computeds and runs the effect exactly once (including under batch()), so the original BN-1 diamond fix was not needed and no equivalent fix is counted.",
+        "appCodeFixIterations": 0,
         "harnessFixIterations": 0,
-        "firstPassSuccess": false
+        "firstPassSuccess": true
       },
       "react": {
         "files": 1,
-        "lines": 70,
-        "bytes": 1927,
-        "approxTokens": 482,
+        "lines": 68,
+        "bytes": 1852,
+        "approxTokens": 463,
         "handWrittenFilesList": [
           "react/task2/app.jsx"
         ],
@@ -112,48 +120,49 @@
         "buildToolingNote": "JSX + react-dom/client bundled by esbuild before the jsdom test could import it.",
         "testsPassed": "1/1 (13 behavior assertions)",
         "appCodeFixIterations": 0,
-        "harnessFixIterations": 2,
-        "harnessFixNote": "R-2: Node 24 getter-only global navigator broke jsdom global setup. R-3: React 19 mount effect + setState settle asynchronously — test needed an act()+macrotask settle before asserting; BaseNative effects are synchronous and needed none.",
+        "harnessFixIterations": 1,
+        "harnessFixNote": "R2-1 (tooling, react/build.mjs): the task-2 stdin entry pointed at ./react/task2/app.jsx but its resolveDir was already the react/ directory, so esbuild could not resolve it and react/dist/task2.mjs was never emitted (task-2 test failed with ERR_MODULE_NOT_FOUND). Fixed the entry path to ./task2/app.jsx; the suite then passed 4/4. Documented translations applied in the first pass and not counted: R-2 (navigator via Object.defineProperty), the R-3-family 50 ms macrotask settle instead of act() (the bundled copy has its own React), and the controlled-input native prototype setter.",
         "firstPassSuccess": false
       }
     }
   },
   "reactBuildToolingOneTime": {
     "files": 1,
-    "lines": 27,
-    "bytes": 904,
-    "approxTokens": 226,
+    "lines": 33,
+    "bytes": 1001,
+    "approxTokens": 250,
     "handWrittenFilesList": [
       "react/build.mjs"
     ],
     "note": "One-time hand-written build script React needed in this repo; BaseNative needed no equivalent. Counted once in the amortization, not per task."
   },
   "agentDocsBundle": {
-    "files": 1,
-    "lines": 189,
-    "bytes": 10360,
-    "approxTokens": 2590,
+    "files": 2,
+    "lines": 187,
+    "bytes": 12732,
+    "approxTokens": 3183,
     "handWrittenFilesList": [
-      "agent-docs/llms.txt"
+      "llms.txt",
+      "docs/llm/START.md"
     ],
-    "note": "One-time LLM context cost for BaseNative. React needs no equivalent (its API is in model weights)."
+    "note": "One-time LLM context cost for BaseNative, measured on the repo's current shipped agent docs bundle (llms.txt + docs/llm/START.md in the canonical BaseNative clone). React needs no equivalent (its API is in model weights)."
   },
   "amortization": {
-    "docsBundleTokens": 2590,
-    "reactOneTimeBuildToolingTokens": 226,
-    "netOneTimeCostTokens": 2364,
+    "docsBundleTokens": 3183,
+    "reactOneTimeBuildToolingTokens": 250,
+    "netOneTimeCostTokens": 2933,
     "perTaskCodeTokenSaving": {
-      "task1": -2,
-      "task2": -30,
-      "average": -16
+      "task1": -31,
+      "task2": -34,
+      "average": -32.5
     },
     "breakEvenTasks": null,
-    "explanation": "No break-even exists at this task size: the average per-task code-token saving is -16 (negative — BaseNative code was slightly LARGER than React code on these two small tasks), so the one-time docs cost of 2364 net tokens is never recovered through per-task code-size savings. The docs bundle pays off through avoided syntax errors and zero build/tooling friction (see BENCHMARK.md), not through smaller code. Larger, template-heavy tasks may change the per-task sign; these two tasks do not show it."
+    "explanation": "No break-even exists at this task size: the average per-task code-token saving is -32.5 (negative — BaseNative code was slightly LARGER than React code on these two small tasks), so the one-time docs cost of 2933 net tokens is never recovered through per-task code-size savings. The docs bundle pays off through avoided syntax errors and zero build/tooling friction (see RUN_LOG_REFRESH.md), not through smaller code. Larger, template-heavy tasks may change the per-task sign; these two tasks do not show it."
   },
   "totals": {
-    "basenativeCodeTokensBothTasks": 827,
-    "reactCodeTokensBothTasks": 795,
-    "basenativeLinesBothTasks": 95,
-    "reactLinesBothTasks": 114
+    "basenativeCodeTokensBothTasks": 813,
+    "reactCodeTokensBothTasks": 748,
+    "basenativeLinesBothTasks": 107,
+    "reactLinesBothTasks": 108
   }
 }

@@ -3,6 +3,54 @@
 **Date:** 2026-10-17 · **Node** v24.20.0 · **React** 19.3.1 · **BaseNative** runtime 0.6.4 / server 0.6.4 / router 0.5.2 (vendored)
 **Machine-readable results:** `results.json` · **Full iteration history:** `RUN_LOG.md` · **Agent docs bundle:** `agent-docs/llms.txt`
 
+## Fresh authoring run against the published 2.3.2 packages (2026-10-24)
+
+`results.json` in this folder is now THIS run's output. It is not a
+re-verification in the earlier sense: the original task apps and tests were
+never committed, so they could not be re-run. Both implementations and both
+test suites were reconstructed in one first pass each from the task
+descriptions below, against the **published @basenative/runtime,
+@basenative/server and @basenative/router 2.3.2** npm tarballs. React stays
+19.3.1 — still the current release. Tasks, assertions and measurement
+method are unchanged. **The apps, tests and measurement script are now
+committed in this directory** (`basenative/`, `react/`, `tests/`,
+`shared/products.json`, `measure.mjs`, `package.json`), so future
+refreshes re-run the same code instead of reconstructing it.
+
+Outcome: **measured values changed; the verdict did not.**
+
+- Both suites pass 4/4 on 2.3.2 — BaseNative on the first pass for both
+  tasks (zero app-code fixes, zero harness fixes); React after one
+  harness fix in task 2 (R2-1 in `RUN_LOG.md` — a path bug in the
+  run's own esbuild script, so the task-2 bundle was never emitted).
+- The BN-1 diamond did not recur: on 2.3.2 a single `set()` settles
+  derived computeds and runs each affected effect once, so the log effect
+  fired exactly once per change, including under `batch()`. The runtime
+  follow-up of 2026-10-22 is now confirmed on the published tarball by
+  this benchmark, not only by the runtime's own tests.
+- Lines and tokens: BaseNative 107 lines / 813 tokens, React 108 lines
+  / 748 tokens. The line count is a tie (one line in it); BaseNative
+  still uses more tokens, because HTML templates carry closing tags.
+  No code-size win is claimed.
+- Dependency closures are counted TRANSITIVELY from this run (the
+  definition the numbers are published under from now on): task 1 —
+  BaseNative 12, React 3; task 2 — BaseNative **1**, React 3. The
+  original run's task-1 figure of 3 counted only the server's named
+  dependencies and did not expand `node-html-parser`'s subtree
+  (css-select and friends); the transitive count is the honest one and
+  is recorded in full in `results.json`.
+- React's task-2 bundle rebuilt at **1,196,164 bytes** (was 1,181,977;
+  the delta is the reconstructed app source, esbuild 0.28.2, and the
+  test-mount re-exports the build now includes). The BaseNative
+  runtime source tree at 2.3.2 is **80,331 bytes** (was 78,146 at
+  2.1.0 — the runtime grew with the 2.3.x work).
+- The docs bundle this run used is the repo's shipped agent docs —
+  `llms.txt` + `docs/llm/START.md`, 12,732 bytes ≈ **3,183 tokens**.
+  Per-task code-token savings are negative again (−32.5 average), so
+  the amortization verdict is unchanged: **no break-even** through
+  code savings; the bundle buys avoided errors and zero build
+  friction.
+
 ## Re-verification against the published 2.0.1 packages (2026-10-18)
 
 The original run above used vendored 0.6.4 packages because BaseNative was
@@ -247,13 +295,15 @@ Honest amortization, as defined before measuring:
 ## How to re-run
 
 ```sh
-cd ~/workspace/basenative-benchmark
-npm install            # react, react-dom, esbuild, jsdom, node-html-parser
-sh setup-basenative.sh # REQUIRED after every npm install — npm prunes the
-                       # @basenative symlinks this script creates
+cd benchmarks/llm
+npm ci                 # the published packages pinned in package-lock.json
 npm test               # BaseNative suite, then React build + suite
-node measure.mjs       # regenerates results.json
+npm run measure        # regenerates results.json
 ```
+
+The apps under test are the ones in this directory. If you change them,
+the run is a new authoring run, not a re-verification — say so in
+`RUN_LOG.md` and start its fix log over.
 
 ## Final verification (clean re-run, 2026-10-17)
 

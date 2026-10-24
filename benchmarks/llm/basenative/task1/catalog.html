@@ -1,0 +1,28 @@
+<main>
+  <h1>{{ title }}</h1>
+  <template @if="sale">
+    <p class="banner">Sale now on</p>
+  </template>
+  <ul>
+    <template @for="product of products; track product.id">
+      <li>
+        <span class="name">{{ product.name }}</span>
+        <span class="price">${{ product.price }}</span>
+        <template @if="product.stock > 0">
+          <span class="stock">In stock</span>
+        </template>
+        <template @else>
+          <span class="stock">Out of stock</span>
+        </template>
+        <template @switch="product.status">
+          <template @case="'featured'"><span class="status">Featured</span></template>
+          <template @case="'clearance'"><span class="status">Clearance</span></template>
+          <template @default><span class="status">Standard</span></template>
+        </template>
+      </li>
+    </template>
+    <template @empty>
+      <li class="empty">No products available</li>
+    </template>
+  </ul>
+</main>
