@@ -764,6 +764,11 @@ describe('determinism — same inputs, same output', () => {
     await inDir(a, () => speckitRun(['init']));
     await inDir(a, () => speckitRun(['spec', 'demo-feature']));
     const read = () => readFileSync(join(a, '.bn', 'speckit-tasks.json'), 'utf-8');
+    // The first tasks run creates tasks.md when it is missing (its
+    // documented job), which changes the input; the determinism
+    // contract is over stable inputs, so settle first, then compare
+    // two runs over the settled tree.
+    await inDir(a, () => speckitRun(['tasks']));
     await inDir(a, () => speckitRun(['tasks']));
     const first = read();
     await inDir(a, () => speckitRun(['tasks']));
