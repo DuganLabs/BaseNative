@@ -110,6 +110,36 @@ test('text is escaped', () => {
   assert.match(html, /&lt;script&gt;/);
 });
 
+test('hero renders raw title and lede fragments, header attrs, and a trailing fragment', () => {
+  const html = ui.renderBnHero({
+    eyebrow: 'Docs',
+    titleHtml: 'API <em>Reference</em>',
+    ledeHtml:
+      '<p data-bn="bn-hero-lede">One <code>x</code></p><p data-bn="bn-hero-lede">Two</p>',
+    attrs: 'data-bn-component-hero',
+    after: '<dl><dt>Element</dt></dl>',
+    actions: [{ label: 'Go', href: '/x' }],
+    label: 'Quick links',
+  });
+  assert.match(html, /^<header data-bn="bn-hero" data-bn-component-hero>/);
+  assert.match(html, /<h1>API <em>Reference<\/em><\/h1>/);
+  assert.match(
+    html,
+    /<p data-bn="bn-hero-lede">One <code>x<\/code><\/p><p data-bn="bn-hero-lede">Two<\/p>/,
+  );
+  assert.ok(html.indexOf('<dl>') > html.indexOf('</nav>'), 'after fragment follows the nav');
+  assert.match(html, /aria-label="Quick links"/);
+});
+
+test('hero escapes plain title and lede, and titleHtml wins over title', () => {
+  const plain = ui.renderBnHero({ title: '<b>x</b>', lede: '<i>y</i>' });
+  assert.match(plain, /&lt;b&gt;x&lt;\/b&gt;/);
+  assert.match(plain, /<p data-bn="bn-hero-lede">&lt;i&gt;y&lt;\/i&gt;<\/p>/);
+  const rawTitle = ui.renderBnHero({ title: 'ignored', titleHtml: 'A <em>B</em>' });
+  assert.match(rawTitle, /<h1>A <em>B<\/em><\/h1>/);
+  assert.equal(rawTitle.includes('ignored'), false);
+});
+
 test('footer renders groups and carries the site-footer attribute only on request', () => {
   const grouped = ui.renderBnFooter({
     siteFooter: true,
