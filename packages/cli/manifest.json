@@ -92,7 +92,13 @@
       "description": "Manage environment variables",
       "subcommands": ["list", "set", "unset", "pull", "push"]
     },
-    { "name": "analyze", "description": "Analyze bundle size + deps", "args": ["[dir]"] }
+    { "name": "analyze", "description": "Analyze bundle size + deps", "args": ["[dir]"] },
+    {
+      "name": "from-jsx",
+      "description": "Translate a React/JSX draft into BaseNative",
+      "args": ["[file]"],
+      "options": [{ "name": "--out", "short": "-o" }, { "name": "--help", "short": "-h" }]
+    }
   ],
   "globalOptions": [
     { "name": "--help", "short": "-h" },
