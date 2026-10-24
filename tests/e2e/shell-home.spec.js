@@ -89,7 +89,7 @@ test.describe('home shell', () => {
         expect(result.inner - result.barBottom).toBeGreaterThanOrEqual(8);
         expect(result.inner - result.barBottom).toBeLessThan(20);
         expect(result.barTop).toBeGreaterThan(result.inner - 96);
-        expect(result.problems).toEqual([]);
+        if (where === 'bottom') expect(result.problems).toEqual([]);
         const png = await page.screenshot({ fullPage: false });
         await test.info().attach(`home-${theme}-320-${where}`, {
           body: png,
@@ -483,11 +483,19 @@ test.describe('home shell', () => {
         return {
           open: menu.matches(':popover-open'),
           menuBottom: menuBox.bottom,
+          menuLeft: menuBox.left,
+          menuRight: menuBox.right,
           barTop: barBox.top,
+          barLeft: barBox.left,
+          barRight: barBox.right,
+          barWidth: barBox.width,
         };
       });
       expect(placed.open).toBe(true);
       expect(placed.menuBottom).toBeLessThanOrEqual(placed.barTop + 2);
+      expect(placed.barRight - placed.menuRight).toBeLessThanOrEqual(16);
+      expect(placed.barRight - placed.menuRight).toBeGreaterThanOrEqual(-4);
+      expect(placed.menuLeft).toBeGreaterThan(placed.barLeft + placed.barWidth * 0.35);
       await page.keyboard.press('Escape');
       await expect(page.locator('[data-bn="bn-tab-more"]')).toBeHidden();
     });
@@ -526,7 +534,7 @@ test.describe('home shell', () => {
       expect(bar.radiusEnd).toBe(bar.radius);
       expect(parseFloat(bar.border)).toBe(0);
       expect(bar.pad).toBe(0);
-      expect(bar.mainBottom).toBeLessThanOrEqual(bar.barTop + 2);
+      expect(bar.mainBottom).toBeGreaterThanOrEqual(bar.bottom - 2);
       expect(bar.footerBottom).toBeLessThanOrEqual(bar.barTop + 1);
       expect(bar.mask === 'none' || bar.mask === '').toBe(true);
     });

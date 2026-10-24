@@ -1539,7 +1539,7 @@
 
   /* -- Anchor positioning -- */
   @supports (anchor-name: --x) {
-    [popover] {
+    [popover]:not([data-bn='bn-tab-more']) {
       position: fixed;
       position-try-fallbacks: flip-block, flip-inline;
     }
@@ -4070,6 +4070,43 @@
         font-style: normal;
         color: var(--accent);
       }
+    }
+  }
+
+  /* Phone: one compact sticky search. Chips scroll in a row. Section indexes
+     stay in the scroll, so they do not stack under the search as a second bar. */
+  @media (max-width: 767px) {
+    [data-bn-component-search],
+    [data-bn-showcase-search] {
+      gap: var(--space-xs);
+      margin-block-end: var(--bn-section-space, 12px);
+      padding: var(--space-xs);
+      inset-block-start: 0;
+    }
+
+    [data-bn-component-search] input[type='search'],
+    [data-bn-showcase-search] input[type='search'] {
+      min-block-size: 2.25rem;
+      padding: var(--space-xs) var(--space-sm);
+    }
+
+    [data-bn-component-filters] {
+      flex-wrap: nowrap;
+      min-inline-size: 0;
+      max-inline-size: 100%;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+    }
+
+    [data-bn-component-filters] button {
+      flex: none;
+    }
+
+    [data-bn-component-toc],
+    [data-bn-docs-toc],
+    [data-bn-showcase-toc] {
+      position: static;
+      inset-block-start: auto;
     }
   }
 

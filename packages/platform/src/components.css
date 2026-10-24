@@ -1114,10 +1114,16 @@
 
   [data-bn='bn-tab-more']:popover-open {
     position: fixed;
-    inset: auto var(--bn-len-12)
-      calc(var(--bn-len-62) + var(--bn-len-8) + env(safe-area-inset-bottom, 0px)) auto;
+    inset: auto;
+    inset-inline-end: var(--bn-len-12);
+    inset-block-end: calc(
+      var(--bn-len-62) + var(--bn-len-8) + env(safe-area-inset-bottom, 0px) + var(--bn-len-8)
+    );
     margin: 0;
-    position-area: block-start span-inline-end;
+    /* The shared popover rule flips inline. That parks this menu on the left. */
+    position-area: none;
+    position-try-fallbacks: none;
+    justify-self: end;
     z-index: var(--bn-z-overlay);
     display: flex;
     flex-direction: column;

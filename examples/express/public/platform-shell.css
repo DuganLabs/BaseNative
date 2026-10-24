@@ -270,20 +270,22 @@
 
     main {
       align-self: start;
-      block-size: calc(
-        100dvh - var(--bn-shell-tab) - var(--bn-shell-tab-lift) - env(safe-area-inset-bottom, 0px)
-      );
-      max-block-size: calc(
-        100dvh - var(--bn-shell-tab) - var(--bn-shell-tab-lift) - env(safe-area-inset-bottom, 0px)
-      );
+      block-size: 100dvh;
+      max-block-size: 100dvh;
       min-height: 0;
       overflow: auto;
-      padding: 20px 16px 16px;
+      padding: calc(20px + env(safe-area-inset-top, 0px)) 16px
+        calc(
+          var(--bn-shell-tab) + var(--bn-shell-tab-lift) + env(safe-area-inset-bottom, 0px) + 12px
+        );
       mask-image: none;
     }
 
     body[data-active='home'] main {
-      padding: 28px 16px 16px;
+      padding: calc(28px + env(safe-area-inset-top, 0px)) 16px
+        calc(
+          var(--bn-shell-tab) + var(--bn-shell-tab-lift) + env(safe-area-inset-bottom, 0px) + 12px
+        );
     }
   }
 
