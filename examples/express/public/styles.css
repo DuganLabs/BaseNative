@@ -2392,6 +2392,15 @@
         background: var(--surface-3);
         color: var(--accent);
       }
+
+      /* The section in view, marked by the scrollspy — the same
+         current treatment as the app nav (PR #302): brand fill,
+         brand ink, semibold. */
+      &[aria-current='true'] {
+        background: var(--bn-brand);
+        color: var(--bn-brand-ink);
+        font-weight: var(--font-weight-semibold);
+      }
     }
   }
 

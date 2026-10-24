@@ -126,6 +126,7 @@ cpSync(join(express, 'public', 'theme.css'), join(dist, 'theme.css'));
 cpSync(join(express, 'public', 'ios.css'), join(dist, 'ios.css'));
 cpSync(join(express, 'public', 'platform-shell.css'), join(dist, 'platform-shell.css'));
 cpSync(join(express, 'public', 'platform-shell.js'), join(dist, 'platform-shell.js'));
+cpSync(join(express, 'public', 'scrollspy.js'), join(dist, 'scrollspy.js'));
 cpSync(join(express, 'public', 'basenative.js'), join(dist, 'basenative.js'));
 cpSync(join(express, 'public', 'showcase.js'), join(dist, 'showcase.js'));
 cpSync(join(express, 'public', 'builder.js'), join(dist, 'builder.js'));

@@ -989,3 +989,62 @@ describe('site footer is rendered from the nav model', () => {
     assert.ok(!layout.includes('<footer'));
   });
 });
+
+describe('the contents navs have a working scrollspy', () => {
+  const tocLinks = (html, navAttr) => {
+    const nav = html.slice(html.indexOf(navAttr), html.indexOf('</nav>', html.indexOf(navAttr)));
+    return [...nav.matchAll(/href="#([^"]+)"/g)].map((m) => m[1]);
+  };
+
+  it('/docs: every contents link resolves to a section on the page', () => {
+    const route = siteRoutes.find((r) => r.path === '/docs');
+    const html = renderRoute(route, { tasks: [], hasApi: false });
+    const ids = tocLinks(html, 'data-bn-docs-toc');
+    assert.ok(ids.length >= 4, `expected the /docs contents list, got ${ids.length} links`);
+    for (const id of ids) {
+      assert.ok(html.includes(`id="${id}"`), `/docs contents link #${id} has no target section`);
+      const count = html.split(`id="${id}"`).length - 1;
+      assert.equal(count, 1, `/docs should carry id="${id}" exactly once, got ${count}`);
+    }
+  });
+
+  it('/components: every category link resolves to a section on the page', () => {
+    const route = siteRoutes.find((r) => r.path === '/components');
+    const html = renderRoute(route, { tasks: [], hasApi: false });
+    const ids = tocLinks(html, 'data-bn-component-toc');
+    assert.ok(ids.length >= 3, `expected the /components category TOC, got ${ids.length} links`);
+    for (const id of ids) {
+      assert.ok(html.includes(`id="${id}"`), `/components TOC link #${id} has no target section`);
+    }
+  });
+
+  it('every page loads the scrollspy script', () => {
+    const route = siteRoutes.find((r) => r.path === '/docs');
+    const html = renderRoute(route, { tasks: [], hasApi: false });
+    assert.ok(html.includes('src="/scrollspy.js?v='), 'rendered page should load /scrollspy.js');
+  });
+
+  it('the scrollspy observes the TOC targets and marks the current link', () => {
+    const src = readFileSync(repo('examples/express/public/scrollspy.js'), 'utf8');
+    assert.ok(src.includes('IntersectionObserver'), 'scrollspy should use IntersectionObserver');
+    assert.ok(src.includes('data-bn-docs-toc'), 'scrollspy should cover the /docs contents nav');
+    assert.ok(src.includes('data-bn-component-toc'), 'scrollspy should cover the /components TOC');
+    assert.ok(src.includes("setAttribute('aria-current', 'true')"), 'scrollspy should set aria-current');
+    assert.ok(src.includes("removeAttribute('aria-current')"), 'scrollspy should clear stale marks');
+  });
+
+  it('the current TOC link takes the app nav current treatment', () => {
+    const css = readFileSync(repo('examples/express/public/styles.css'), 'utf8');
+    const tocBlock = css.slice(css.indexOf('[data-bn-component-toc],'));
+    const at = tocBlock.indexOf("&[aria-current='true']");
+    assert.ok(at > -1, 'the TOC block should carry an aria-current rule');
+    const rule = tocBlock.slice(at, at + 300);
+    assert.ok(rule.includes('var(--bn-brand)'), 'current TOC link should fill with --bn-brand');
+    assert.ok(rule.includes('var(--bn-brand-ink)'), 'current TOC link should label with --bn-brand-ink');
+  });
+
+  it('the static export ships the scrollspy script', () => {
+    const build = readFileSync(repo('scripts/build-pages.js'), 'utf8');
+    assert.ok(build.includes("'scrollspy.js'"), 'build-pages.js should copy scrollspy.js into dist');
+  });
+});
