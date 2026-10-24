@@ -670,6 +670,28 @@ async function loadAxe(page) {
   throw last;
 }
 
+async function partsChrome(page) {
+  return page.evaluate(() => {
+    const search = document.querySelector('[data-bn-component-search]');
+    const filters = document.querySelector('[data-bn-component-filters]');
+    const bar = document.querySelector('body > [data-bn="bn-tab-bar"]');
+    const main = document.querySelector('main');
+    if (!search || !filters || !bar || !main) return ['missing parts chrome'];
+    main.scrollTop = search.offsetTop;
+    const searchBox = search.getBoundingClientRect();
+    const filterBox = filters.getBoundingClientRect();
+    const barBox = bar.getBoundingClientRect();
+    const problems = [];
+    if (searchBox.height > 160) problems.push(`search chrome ${searchBox.height.toFixed(0)}px`);
+    if (filterBox.height > 52) problems.push(`chips wrap to ${filterBox.height.toFixed(0)}px`);
+    const room = barBox.top - searchBox.bottom;
+    if (room < 280) problems.push(`content room ${room.toFixed(0)}px`);
+    const stuck = getComputedStyle(search).position;
+    if (stuck !== 'sticky') problems.push(`search is ${stuck}`);
+    return problems;
+  });
+}
+
 async function sidebarAccent(page) {
   return page.evaluate(() => {
     function channels(color) {
@@ -758,6 +780,7 @@ test.describe('design system gates', () => {
           if (path === '/ai') expect(await sharedSectionSurface(page)).toEqual([]);
           if (path === '/builder') expect(await canvasStage(page)).toEqual([]);
           if (path === '/tasks') expect(await tasksCountInsideCard(page)).toEqual([]);
+          if (path === '/components' && width < 768) expect(await partsChrome(page)).toEqual([]);
           expect(await heroPattern(page)).toEqual([]);
           expect(await sidebarAccent(page)).toEqual([]);
           expect(await metricTiles(page)).toEqual([]);

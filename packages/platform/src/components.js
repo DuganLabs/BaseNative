@@ -509,15 +509,18 @@ export function renderBnTabBar(options = {}) {
   const moreId = options.id ? `${options.id}-more` : nextId('tab-more');
   const moreLabel = options.moreLabel || 'More';
   const moreCurrent = rest.some((tab) => tab.current);
-  const more = rest.length
-    ? `<button data-bn="bn-tab" id="${escapeAttr(moreId)}-btn" type="button" popovertarget="${escapeAttr(moreId)}" aria-haspopup="menu"${opt('aria-current', moreCurrent ? 'page' : null)}>${glyph(TAB_ELLIPSIS)}${tabLabel(moreLabel)}</button><menu data-bn="bn-tab-more" id="${escapeAttr(moreId)}" popover="auto" anchor="${escapeAttr(moreId)}-btn" aria-label="${escapeAttr(moreLabel)}">${rest
+  const moreButton = rest.length
+    ? `<button data-bn="bn-tab" id="${escapeAttr(moreId)}-btn" type="button" popovertarget="${escapeAttr(moreId)}" aria-haspopup="menu"${opt('aria-current', moreCurrent ? 'page' : null)}>${glyph(TAB_ELLIPSIS)}${tabLabel(moreLabel)}</button>`
+    : '';
+  const moreMenu = rest.length
+    ? `<menu data-bn="bn-tab-more" id="${escapeAttr(moreId)}" popover="auto" anchor="${escapeAttr(moreId)}-btn" aria-label="${escapeAttr(moreLabel)}">${rest
         .map(
           (tab) =>
             `<li><a data-bn="bn-menu-item" href="${escapeAttr(tab.href || '#')}"${opt('aria-current', tab.current ? 'page' : null)}>${escapeHtml(tab.label)}</a></li>`,
         )
         .join('')}</menu>`
     : '';
-  return `<nav data-bn="bn-tab-bar" aria-label="${escapeAttr(options.label || 'Tabs')}"${opt('id', options.id)}${opt('data-force', options.force)}>${links}${more}</nav>`;
+  return `<nav data-bn="bn-tab-bar" aria-label="${escapeAttr(options.label || 'Tabs')}"${opt('id', options.id)}${opt('data-force', options.force)}>${links}${moreButton}</nav>${moreMenu}`;
 }
 
 /** Toolbar. A menu of commands; each item's li is display:contents. */
