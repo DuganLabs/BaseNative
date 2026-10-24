@@ -942,7 +942,11 @@ describe('the /ai scorecard keeps every point against BaseNative', () => {
 
   it('does not confuse the page with greenput.com/ai', () => {
     assert.match(html, /greenput\.com\/ai/);
-    assert.match(html, /no commit by Muse/);
+    // The sourcing note stays; the internal process narrative that used
+    // to sit above the scorecard (the git-history account, "no commit by
+    // Muse") does not — public pages carry no working notes.
+    assert.doesNotMatch(html, /no commit by Muse/);
+    assert.doesNotMatch(html, /Where this list came from/);
   });
 });
 
