@@ -1117,8 +1117,7 @@
     inset: auto;
     inset-inline-end: var(--bn-len-12);
     inset-block-end: calc(
-      var(--bn-shell-tab, var(--bn-len-62)) + var(--bn-shell-tab-lift, var(--bn-len-8)) +
-        env(safe-area-inset-bottom, 0px) + var(--bn-len-8)
+      var(--bn-len-62) + var(--bn-len-8) + env(safe-area-inset-bottom, 0px) + var(--bn-len-8)
     );
     margin: 0;
     /* The shared popover rule flips inline. That parks this menu on the left. */
