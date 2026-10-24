@@ -2,7 +2,7 @@
  * One syntax-highlighting pass for every code block the site renders.
  *
  * Before this module, highlighting existed only where an author had
- * hand-typed <span class="kw">…</span> into a template — two views out of
+ * hand-typed highlight spans into a template — two views out of
  * the whole site, so /compare's side-by-side code, every component
  * Quick-start and Source pane, and the showcase rendered as plain
  * monochrome while /docs was coloured. The fix belongs in the render
@@ -257,7 +257,9 @@ export function highlightCode(code) {
   return tokenize(code)
     .map((token) =>
       token.cls
-        ? `<span class="${token.cls}">${escapeText(token.text)}</span>`
+        ? // A span is the highlight itself here: it wraps one token of
+          // code text in the sheet's syntax classes, nothing structural.
+          `<span class="${token.cls}">${escapeText(token.text)}</span>`
         : escapeText(token.text),
     )
     .join('');
