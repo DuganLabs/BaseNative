@@ -57,6 +57,7 @@ function getAssetVersion() {
   for (const file of [
     'public/basenative.js',
     'public/styles.css',
+    'public/token-bridge.css',
     'public/ios.css',
     'public/theme.css',
     'public/platform-shell.css',

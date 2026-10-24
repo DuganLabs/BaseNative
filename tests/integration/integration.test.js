@@ -989,3 +989,41 @@ describe('site footer is rendered from the nav model', () => {
     assert.ok(!layout.includes('<footer'));
   });
 });
+
+describe('the token bridge joins the site tokens to the catalog tokens', () => {
+  const bridge = readFileSync(repo('examples/express/public/token-bridge.css'), 'utf8');
+  const theme = readFileSync(repo('examples/express/public/theme.css'), 'utf8');
+  const layout = readFileSync(repo('examples/express/views/layout.html'), 'utf8');
+
+  it('re-points the spacing steps and font-size-md at the catalog tokens', () => {
+    const mappings = [
+      '--space-xs: var(--bn-space-1);',
+      '--space-sm: var(--bn-space-2);',
+      '--space-md: var(--bn-space-4);',
+      '--space-lg: var(--bn-space-6);',
+      '--space-xl: var(--bn-space-8);',
+      '--space-2xl: var(--bn-space-12);',
+      '--space-3xl: var(--bn-space-16);',
+      '--font-size-md: var(--bn-font-size-base);',
+    ];
+    for (const mapping of mappings) assert.ok(bridge.includes(mapping), mapping);
+  });
+
+  it('bridges the theme surfaces onto the core tokens it already defines', () => {
+    assert.ok(theme.includes('--surface-0: var(--bn-color-surface);'));
+    assert.ok(theme.includes('--surface-1: var(--bn-color-surface-subtle);'));
+    assert.ok(theme.includes('--surface-2: var(--bn-color-surface-muted);'));
+    assert.ok(theme.includes('--surface-inset: var(--bn-color-surface-inset);'));
+  });
+
+  it('loads after styles.css and before ios.css, and ships in the static export', () => {
+    const stylesAt = layout.indexOf('/styles.css');
+    const bridgeAt = layout.indexOf('/token-bridge.css');
+    const iosAt = layout.indexOf('/ios.css');
+    assert.ok(stylesAt !== -1 && bridgeAt > stylesAt && iosAt > bridgeAt);
+    const build = readFileSync(repo('scripts/build-pages.js'), 'utf8');
+    assert.ok(build.includes("join(dist, 'token-bridge.css')"));
+    const page = readFileSync(repo('examples/express/page.js'), 'utf8');
+    assert.ok(page.includes("'public/token-bridge.css'"));
+  });
+});

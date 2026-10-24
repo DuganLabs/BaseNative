@@ -95,12 +95,14 @@
 
   /* === Express-specific tokens (for existing styles.css compatibility) === */
 
-  /* Surfaces */
-  --surface-0: #0c0b09;
-  --surface-1: #151310;
-  --surface-2: #1c1916;
+  /* Surfaces — bridged onto the core tokens defined above (Stage 2
+     of the token migration): the same values, one owner. --surface-3
+     has no catalog step and stays a literal. */
+  --surface-0: var(--bn-color-surface);
+  --surface-1: var(--bn-color-surface-subtle);
+  --surface-2: var(--bn-color-surface-muted);
   --surface-3: #26221c;
-  --surface-inset: #080706;
+  --surface-inset: var(--bn-color-surface-inset);
 
   /* Borders */
   --border: #2c2822;
