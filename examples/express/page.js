@@ -61,6 +61,7 @@ function getAssetVersion() {
     'public/theme.css',
     'public/platform-shell.css',
     'public/platform-shell.js',
+    'public/scrollspy.js',
   ]) {
     try {
       hash.update(read(file));
@@ -226,7 +227,6 @@ export const siteRoutes = [
     activePage: 'docs',
     ctx: () => getDocsPageContext(),
     hero: {
-      id: 'api-reference',
       eyebrow: 'Docs',
       titleHtml: 'API <em>Reference</em>',
       ledeHtml:
