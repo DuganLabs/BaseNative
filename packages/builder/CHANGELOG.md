@@ -1,5 +1,16 @@
 # @basenative/builder
 
+## 2.4.0
+
+### Minor Changes
+
+- Brand amber, shared elevation, and Liquid Glass land together. The Builder is a macOS window with an organism palette, canvas, layers, and inspector. Site routes are composed from those organisms, including the scrollbar and refraction materials.
+
+### Patch Changes
+
+- Updated dependencies [4f3a5bb]
+  - @basenative/runtime@2.4.0
+
 ## 2.3.2
 
 ### Patch Changes
