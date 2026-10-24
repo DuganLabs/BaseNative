@@ -110,6 +110,37 @@ test('text is escaped', () => {
   assert.match(html, /&lt;script&gt;/);
 });
 
+test('footer renders groups and carries the site-footer attribute only on request', () => {
+  const grouped = ui.renderBnFooter({
+    siteFooter: true,
+    groups: [
+      {
+        label: 'BaseNative',
+        links: [
+          { label: 'Home', href: '/' },
+          { label: 'GitHub', href: 'https://github.com/DuganLabs/BaseNative' },
+        ],
+      },
+      { label: 'Product', links: [{ label: 'Compare', href: '/compare' }] },
+    ],
+  });
+  assert.match(grouped, /<footer data-bn="bn-footer" data-bn-site-footer>/);
+  assert.match(
+    grouped,
+    /<nav aria-label="BaseNative"><p>BaseNative<\/p><ul><li><a href="\/">Home<\/a><\/li>/,
+  );
+  assert.match(grouped, /<nav aria-label="Product">/);
+  const renamed = ui.renderBnFooter({
+    groups: [{ label: 'BaseNative', ariaLabel: 'Project', links: [{ label: 'Home', href: '/' }] }],
+  });
+  assert.match(renamed, /<nav aria-label="Project"><p>BaseNative<\/p>/);
+  const plain = ui.renderBnFooter({
+    note: 'BaseNative',
+    links: [{ label: 'Docs', href: '/docs' }],
+  });
+  assert.equal(plain.includes('data-bn-site-footer'), false);
+});
+
 test('tab bar overflow is a tab, not a disclosure', () => {
   resetIds();
   const html = ui.renderBnTabBar({

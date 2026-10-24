@@ -30,7 +30,7 @@ import { flatComponents } from '../../examples/express/component-catalog.js';
 import { getDemo } from '../../examples/express/component-demos.js';
 import { getDemoScripts, demoInitialisers } from '../../examples/express/component-demo-scripts.js';
 import { getShowcaseSections } from '../../examples/express/showcase-data.js';
-import { getRoadmapPageContext } from '../../examples/express/site-data.js';
+import { getRoadmapPageContext, getAppNavItems } from '../../examples/express/site-data.js';
 import * as components from '../../packages/components/src/index.js';
 
 const { renderDrawer, renderPagination } = components;
@@ -943,5 +943,45 @@ describe('the /ai scorecard keeps every point against BaseNative', () => {
   it('does not confuse the page with greenput.com/ai', () => {
     assert.match(html, /greenput\.com\/ai/);
     assert.match(html, /no commit by Muse/);
+  });
+});
+
+// ─── 13c. Site footer: rendered from the nav model by the catalog component ──
+// The layout used to hand-write the footer: it omitted five routes and
+// carried a differently-cased GitHub URL. It is now renderBnFooter fed
+// by getAppNavItems, so the footer and the nav cannot drift apart.
+
+describe('site footer is rendered from the nav model', () => {
+  const html = renderRoute(siteRoutes[0], { tasks: [], hasApi: false });
+  const footer = html.slice(html.indexOf('<footer'), html.indexOf('</footer>'));
+
+  it('carries the site-footer contract attribute', () => {
+    assert.match(footer, /<footer data-bn="bn-footer" data-bn-site-footer>/);
+  });
+
+  it('names its first landmark Project, not BaseNative', () => {
+    // The catalog's demo footers already use "BaseNative" as a nav
+    // name; a second one would trip axe's landmark-unique rule on
+    // pages that embed the catalog.
+    assert.match(footer, /<nav aria-label="Project"><p>BaseNative<\/p>/);
+    assert.ok(!footer.includes('aria-label="BaseNative"'));
+  });
+
+  it('links every route in the nav model exactly once', () => {
+    for (const item of getAppNavItems()) {
+      const count = footer.split(`href="${item.href}"`).length - 1;
+      assert.equal(count, 1, `footer should link ${item.href} once, got ${count}`);
+    }
+  });
+
+  it('links GitHub with the canonical casing', () => {
+    assert.ok(footer.includes('href="https://github.com/DuganLabs/BaseNative"'));
+    assert.ok(!footer.includes('DuganLabs/basenative'));
+  });
+
+  it('the layout no longer hand-writes the footer', () => {
+    const layout = readFileSync(repo('examples/express/views/layout.html'), 'utf8');
+    assert.ok(layout.includes('<!--FOOTER-->'));
+    assert.ok(!layout.includes('<footer'));
   });
 });

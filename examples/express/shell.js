@@ -5,7 +5,11 @@
  * stays in the document. A two-word menu bar is not a macOS toolbar, so
  * the window has none.
  */
-import { renderBnSidebar, renderBnTabBar } from '../../packages/platform/src/components.js';
+import {
+  renderBnFooter,
+  renderBnSidebar,
+  renderBnTabBar,
+} from '../../packages/platform/src/components.js';
 import { getAppNavItems } from './site-data.js';
 
 const GROUPS = [
@@ -30,4 +34,41 @@ export function renderSiteChrome(activePage = '') {
       barLimit: 4,
     }),
   ].join('');
+}
+
+const FOOTER_GROUPS = [
+  { label: 'Product', hrefs: ['/compare', '/components', '/playground', '/builder', '/showcase'] },
+  { label: 'Reference', hrefs: ['/docs', '/ai', '/roadmap', '/tasks', '/design-system'] },
+];
+
+/**
+ * The site footer, rendered from the same nav model as the sidebar and
+ * tab bar through the catalog's footer component — every route in the
+ * model appears exactly once, so the footer can no longer drift out of
+ * sync with the nav (it previously omitted five routes and carried a
+ * differently-cased GitHub URL). The GitHub link is the one entry the
+ * nav model does not own.
+ */
+export function renderSiteFooter() {
+  const items = getAppNavItems();
+  const byHref = (href) => items.find((item) => item.href === href);
+  const groups = [
+    {
+      label: 'BaseNative',
+      // The catalog's own demo footers use "BaseNative" as their nav
+      // name; the site footer's first landmark keeps the accessible
+      // name the hand-written footer used, so the two never collide
+      // (axe landmark-unique) on pages that embed the catalog.
+      ariaLabel: 'Project',
+      links: [
+        byHref('/'),
+        { label: 'GitHub', href: 'https://github.com/DuganLabs/BaseNative' },
+      ].filter(Boolean),
+    },
+    ...FOOTER_GROUPS.map((group) => ({
+      label: group.label,
+      links: group.hrefs.map(byHref).filter(Boolean),
+    })),
+  ];
+  return renderBnFooter({ siteFooter: true, groups });
 }
