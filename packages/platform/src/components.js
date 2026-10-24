@@ -780,7 +780,7 @@ export function renderBnFooter(options = {}) {
       return `<nav aria-label="${escapeAttr(name)}">${title}<ul>${links}</ul></nav>`;
     })
     .join('');
-  return `<footer data-bn="bn-footer"${opt('id', options.id)}${opt('data-force', options.force)}>${columns}</footer>`;
+  return `<footer data-bn="bn-footer"${opt('id', options.id)}${opt('data-force', options.force)}${opt('data-bn-site-footer', options.siteFooter)}>${columns}</footer>`;
 }
 
 /** Dock. A glass row of equal targets. Marks are text, not a symbol font. */

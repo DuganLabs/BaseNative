@@ -12,7 +12,7 @@ import { render } from '@basenative/server';
 import { raw } from '@basenative/runtime/shared/escape';
 import { catalogBody } from '../../packages/platform/src/catalog.js';
 import { renderBreadcrumb } from '../../packages/components/src/index.js';
-import { renderSiteChrome } from './shell.js';
+import { renderSiteChrome, renderSiteFooter } from './shell.js';
 import { highlightCodeBlocks } from './highlight.js';
 import {
   getComparePageContext,
@@ -140,6 +140,7 @@ export function renderPage(viewFile, ctx, opts) {
     .replace(/<!--OG_URL-->/g, escapeAttr(SITE_URL + path))
     .replace('<!--APP_NAV_CSS-->', () => shellCriticalCss())
     .replace('<!--APP_NAV-->', () => renderSiteChrome(activePage))
+    .replace('<!--FOOTER-->', () => renderSiteFooter())
     .replaceAll('__ACTIVE__', escapeAttr(activePage))
     .replace('<!--CONTENT-->', content)
     .replace('<!--SCRIPTS-->', scripts)
