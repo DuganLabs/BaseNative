@@ -1,25 +1,7 @@
 <article data-bn-component-page>
   {{ breadcrumb }}
 
-  <header data-bn="bn-hero" data-bn-component-hero>
-    <p data-bn="bn-hero-eyebrow">{{ component.categoryTitle }}</p>
-    <h1>{{ titleLead }}<em>{{ titleAccent }}</em></h1>
-    <p data-bn="bn-hero-lede">{{ component.summary }}</p>
-    <dl data-bn-component-meta>
-      <div>
-        <dt>Element</dt>
-        <dd><code>&lt;{{ component.tag }}&gt;</code></dd>
-      </div>
-      <div>
-        <dt>Module</dt>
-        <dd><code>@basenative/components</code></dd>
-      </div>
-      <div>
-        <dt>Function</dt>
-        <dd><code>{{ component.fn }}</code></dd>
-      </div>
-    </dl>
-  </header>
+  {{ hero }}
 
   <section data-bn-component-quickstart>
     <header>

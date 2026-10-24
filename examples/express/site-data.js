@@ -3,7 +3,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { escapeAttr, escapeText, raw } from '@basenative/runtime/shared/escape';
 import { renderListGroup, renderTabs } from '../../packages/components/src/index.js';
-import { renderBnButton, renderBnList } from '../../packages/platform/src/components.js';
+import { renderBnList } from '../../packages/platform/src/components.js';
 import { computeCompareStats } from '../../scripts/compare-stats.js';
 import { componentCategories, flatComponents } from './component-catalog.js';
 
@@ -206,13 +206,6 @@ export function getHomePageContext() {
   const packages = stats().publicPackages;
   return {
     runtimeVersion,
-    actions: raw(
-      renderBnButton('Try the playground', {
-        variant: 'prominent',
-        size: 'large',
-        href: '/playground',
-      }) + renderBnButton('Read the docs', { variant: 'bordered', size: 'large', href: '/docs' }),
-    ),
     runtimeList: raw(
       renderBnList({
         grouped: true,

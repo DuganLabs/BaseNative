@@ -739,6 +739,15 @@ export function renderBnCardGrid(options = {}) {
 
 /**
  * Hero. A glass window header: eyebrow, large title, lede, capsule actions.
+ *
+ * `title`/`lede` are escaped text. `titleHtml`/`ledeHtml` are the raw
+ * alternatives for titles and ledes that carry markup (an <em> accent,
+ * a <code> name, a second lede paragraph): the caller supplies the
+ * full fragment — for `ledeHtml`, including the <p data-bn="bn-hero-lede">
+ * elements — and asserts it is hand-authored, the same trust the site's
+ * raw() insertions make. `after` is a raw fragment appended inside the
+ * header (a meta list, a notice). `attrs` is a raw attribute string for
+ * the <header> element itself (e.g. `data-bn-component-hero`).
  * @param {object} [options]
  */
 export function renderBnHero(options = {}) {
@@ -754,12 +763,19 @@ export function renderBnHero(options = {}) {
   const eyebrow = options.eyebrow
     ? `<p data-bn="bn-hero-eyebrow">${escapeHtml(options.eyebrow)}</p>`
     : '';
-  const lede = options.lede ? `<p data-bn="bn-hero-lede">${escapeHtml(options.lede)}</p>` : '';
+  const lede = options.ledeHtml
+    ? options.ledeHtml
+    : options.lede
+      ? `<p data-bn="bn-hero-lede">${escapeHtml(options.lede)}</p>`
+      : '';
   const nav = actions
     ? `<nav aria-label="${escapeAttr(options.label || 'Primary')}">${actions}</nav>`
     : '';
   const heading = options.heading === 'h2' ? 'h2' : 'h1';
-  return `<header data-bn="bn-hero"${opt('id', options.id)}${opt('data-force', options.force)}>${eyebrow}<${heading}>${escapeHtml(options.title || '')}</${heading}>${lede}${nav}</header>`;
+  const title = options.titleHtml ?? escapeHtml(options.title || '');
+  const attrs = options.attrs ? ` ${options.attrs}` : '';
+  const after = options.after || '';
+  return `<header data-bn="bn-hero"${attrs}${opt('id', options.id)}${opt('data-force', options.force)}>${eyebrow}<${heading}>${title}</${heading}>${lede}${nav}${after}</header>`;
 }
 
 /**

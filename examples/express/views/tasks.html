@@ -1,14 +1,4 @@
-<header data-bn="bn-hero">
-  <p data-bn="bn-hero-eyebrow">Tasks</p>
-  <h1>Task <em>Manager</em></h1>
-  <p data-bn="bn-hero-lede">
-    Server-rendered initial state with client-side hydration for interactivity.
-  </p>
-  <template @if="!hasApi">
-    <!-- prettier-ignore -->
-    <p data-tasks-static-notice>This is the static demo — tasks you add are kept in your browser and are not saved to a server.</p>
-  </template>
-</header>
+{{ hero }}
 
 <section data-tasks data-has-api="{{ hasApi }}">
   <section data-bn="bn-list" data-grouped="true">
