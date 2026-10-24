@@ -3,7 +3,6 @@
  * @returns {string} HTML document
  */
 import { resetIds } from './ids.js';
-import { VERIFY } from './verify.js';
 import { escapeHtml } from './html.js';
 import {
   renderBnActionSheet,
@@ -1051,9 +1050,6 @@ function measuredStages() {
 /** Catalog sections, without a document shell. */
 export function catalogBody(options = {}) {
   resetIds();
-  const notes = VERIFY.map(
-    (item) => `<li><strong>${item.topic}.</strong> ${item.detail}</li>`,
-  ).join('');
   const typeSample = '<p data-bn="bn-catalog-type">Large Title at xxxLarge</p>';
   const title = options.omitTitle ? '' : '<h1>Platform catalog</h1>\n';
   return `<header data-bn="bn-catalog-header">
@@ -1069,11 +1065,7 @@ ${stage('iOS increased contrast', 'data-bn-platform="ios" data-bn-contrast="more
 ${stage('Dynamic Type xxxLarge', 'data-bn-platform="ios" data-bn-type="xxxlarge"', typeSample)}
 ${stage('macOS', 'data-bn-platform="macos" data-bn-control="medium"', macosBody('light'))}
 ${stage('macOS dark', 'data-bn-platform="macos" data-bn-control="medium" data-theme="dark"', macosBody('dark'))}
-${stage('macOS Large control', 'data-bn-platform="macos" data-bn-control="large"', row('Capsule button', renderBnButton('Save', { variant: 'prominent' })))}
-<section data-bn="bn-catalog-stage">
-<h2 data-bn="bn-catalog-heading">What the screenshots could not settle</h2>
-<ul data-bn="bn-catalog-verify">${notes}</ul>
-</section>`;
+${stage('macOS Large control', 'data-bn-platform="macos" data-bn-control="large"', row('Capsule button', renderBnButton('Save', { variant: 'prominent' })))}`;
 }
 
 /** Full catalog document. */
