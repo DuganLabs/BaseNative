@@ -45,7 +45,6 @@ const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const buttonHtml = await readFile(new URL('../src/button/index.html', import.meta.url), 'utf8');
 const buttonCss = await readFile(new URL('../src/button/styles.css', import.meta.url), 'utf8');
 const buttonJs = await readFile(new URL('../src/button/index.js', import.meta.url), 'utf8');
-const variantsCss = await readFile(new URL('../src/variants.css', import.meta.url), 'utf8');
 
 const page = `<!doctype html>
 <html lang="en">
@@ -103,8 +102,6 @@ ${css}
     <pre>${esc(buttonHtml)}</pre>
     <pre>${esc(buttonCss)}</pre>
     <pre>${esc(buttonJs)}</pre>
-    <h2>Generated from the registry — variants.css</h2>
-    <pre>${esc(variantsCss)}</pre>
   </section>
 </main>
 </body>

@@ -131,22 +131,38 @@ export function createRegistry() {
     return def;
   }
 
-  function variantsCss() {
+  function variantsCssFor(component) {
+    const def = components.get(component);
+    if (!def) {
+      throw new TypeError(`variantsCssFor: component "${component}" is not registered`);
+    }
     const rules = [];
-    for (const name of listComponents().sort()) {
-      const def = components.get(name);
-      for (const variantName of listVariants(name).sort()) {
-        const tokens = variants.get(name).get(variantName);
-        const entries = Object.entries(tokens);
-        if (entries.length === 0) continue;
-        const body = entries.map(([key, value]) => `  ${key}: ${value};`).join('\n');
-        rules.push(`${def.root}[variant="${variantName}"] {\n${body}\n}`);
-      }
+    for (const variantName of listVariants(component).sort()) {
+      const tokens = variants.get(component).get(variantName);
+      const entries = Object.entries(tokens);
+      if (entries.length === 0) continue;
+      const body = entries.map(([key, value]) => `  ${key}: ${value};`).join('\n');
+      rules.push(`${def.root}[variant="${variantName}"] {\n${body}\n}`);
     }
     return rules.join('\n\n');
   }
 
-  return { registerComponent, registerVariant, resolveVariant, listVariants, listComponents, getComponent, variantsCss };
+  /* The generated block that lives at the end of a component's styles.css:
+     variant styles belong to the component, so the registry's rules for a
+     component are spliced into its own sheet between these markers. */
+  function variantsBlockFor(component) {
+    const rules = variantsCssFor(component);
+    return `/* @variants — generated from the registry, do not edit by hand */\n${rules ? `${rules}\n` : ''}/* @endvariants */`;
+  }
+
+  function spliceVariants(css, component) {
+    const block = variantsBlockFor(component);
+    const marked = /\/\* @variants[\s\S]*?\/\* @endvariants \*\//;
+    if (marked.test(css)) return css.replace(marked, block);
+    return `${css.replace(/\s+$/, '')}\n\n${block}\n`;
+  }
+
+  return { registerComponent, registerVariant, resolveVariant, listVariants, listComponents, getComponent, variantsCssFor, variantsBlockFor, spliceVariants };
 }
 
 /** The default registry instance, for apps that do not need isolation. */

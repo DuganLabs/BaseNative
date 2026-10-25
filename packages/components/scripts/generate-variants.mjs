@@ -1,10 +1,20 @@
-// Generates src/variants.css from the registry.
+// Splices each component's registered variant rules into its own styles.css,
+// inside a marked generated block at the end of the sheet. Variant styles
+// belong to the component — there is no central variants file.
 // Run: node packages/components/scripts/generate-variants.mjs
-// CI checks the checked-in file against a fresh generation (drift check).
-import { writeFile } from 'node:fs/promises';
+// The test suite checks the checked-in blocks against a fresh splice (drift).
+import { readFile, writeFile } from 'node:fs/promises';
 import { loadRegistry } from '../src/loader.js';
 
 const registry = await loadRegistry();
-const header = '/* Generated from the component registry by scripts/generate-variants.mjs.\n   Do not edit by hand — register variants in each component\'s index.js. */\n\n';
-await writeFile(new URL('../src/variants.css', import.meta.url), header + registry.variantsCss() + '\n');
-console.log('src/variants.css regenerated from the registry');
+for (const name of registry.listComponents()) {
+  const path = new URL(`../src/${name}/styles.css`, import.meta.url);
+  const css = await readFile(path, 'utf8');
+  const next = registry.spliceVariants(css, name);
+  if (next !== css) {
+    await writeFile(path, next);
+    console.log(`${name}/styles.css — variant block updated`);
+  } else {
+    console.log(`${name}/styles.css — variant block current`);
+  }
+}

@@ -45,18 +45,17 @@ export function renderComponent(registry, renderFn, name, props) {
 }
 
 /**
- * The CSS a page needs: global tokens, then each used component's styles in
- * the components layer, then the generated variant rules.
+ * The CSS a page needs: the token sheet, then each used component's styles.
+ * Variant rules ride inside each component's own styles.css (a generated
+ * block at the end), so there is no separate variants sheet to assemble.
  * @param {Registry} registry
  * @param {string[]} usedNames
  */
 export async function assembleStyles(registry, usedNames) {
-  const tokens = await readFile(new URL('./global-tokens.css', import.meta.url), 'utf8');
+  const tokens = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
   const parts = [tokens];
   for (const name of usedNames) {
     parts.push(registry.getComponent(name).styles);
   }
-  const variantRules = registry.variantsCss();
-  if (variantRules) parts.push(variantRules);
   return parts.join('\n\n');
 }

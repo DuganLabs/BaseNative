@@ -49,3 +49,12 @@ dialog[variant] {
     gap: var(--dialog__footer-gap);
   }
 }
+
+/* @variants — generated from the registry, do not edit by hand */
+dialog[variant="destructive"] {
+  --button-background-color: var(--color-danger);
+  --button-background-color--hover: var(--color-danger-hover);
+  --button-border-color: var(--color-danger);
+  --button-color: var(--color-on-danger);
+}
+/* @endvariants */

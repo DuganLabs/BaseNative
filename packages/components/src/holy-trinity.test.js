@@ -3,7 +3,7 @@
    register and generate, and the pilot trio renders semantic HTML. */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readdir } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 import { createRegistry, validateTemplate, validateCss } from './registry.js';
 import { loadRegistry, renderComponent, assembleStyles } from './loader.js';
 import { render } from '../../server/src/render.js';
@@ -44,7 +44,7 @@ test('a consumer variant registers and generates a scoped rule', async () => {
   assert.deepEqual(registry.resolveVariant('button', 'brand'), {
     '--button-background-color': 'var(--color-danger)',
   });
-  assert.match(registry.variantsCss(), /button\[variant="brand"\] \{\n {2}--button-background-color: var\(--color-danger\);\n\}/);
+  assert.match(registry.variantsCssFor('button'), /button\[variant="brand"\] \{\n {2}--button-background-color: var\(--color-danger\);\n\}/);
 });
 
 test('the registry loads the whole pilot', async () => {
@@ -106,5 +106,14 @@ test('dialog composes nested buttons and its destructive variant re-points them'
   assert.match(html, /<dialog variant="destructive" aria-label="Delete this lead\?">/);
   assert.match(html, /<h2>Delete this lead\?<\/h2>/);
   assert.match(html, /<button variant="default" type="button">Delete lead<\/button>/);
-  assert.match(registry.variantsCss(), /dialog\[variant="destructive"\] \{\n {2}--button-background-color: var\(--color-danger\);/);
+  const dialogStyles = await readFile(new URL('./dialog/styles.css', import.meta.url), 'utf8');
+  assert.match(dialogStyles, /dialog\[variant="destructive"\] \{\n {2}--button-background-color: var\(--color-danger\);/);
+});
+
+test('variant blocks inside each styles.css are current with the registry (no drift)', async () => {
+  const registry = await loadRegistry();
+  for (const name of PILOT) {
+    const css = await readFile(new URL(`./${name}/styles.css`, import.meta.url), 'utf8');
+    assert.equal(registry.spliceVariants(css, name), css, `${name}/styles.css variant block is stale — run scripts/generate-variants.mjs`);
+  }
 });

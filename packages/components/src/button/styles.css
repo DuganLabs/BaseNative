@@ -57,3 +57,29 @@ form:has(:invalid) > button[type="submit"] {
   border-color: var(--button-border-color--disabled);
   color: var(--button-color--disabled);
 }
+
+/* @variants — generated from the registry, do not edit by hand */
+button[variant="destructive"] {
+  --button-background-color: var(--color-danger);
+  --button-background-color--hover: var(--color-danger-hover);
+  --button-background-color--active: var(--color-danger-hover);
+  --button-border-color: var(--color-danger);
+  --button-color: var(--color-on-danger);
+}
+
+button[variant="ghost"] {
+  --button-background-color: var(--color-transparent);
+  --button-background-color--hover: var(--color-surface-muted);
+  --button-background-color--active: var(--color-surface-muted);
+  --button-border-color: var(--color-transparent);
+  --button-color: var(--color-action);
+}
+
+button[variant="primary"] {
+  --button-background-color: var(--color-action);
+  --button-background-color--hover: var(--color-action-hover);
+  --button-background-color--active: var(--color-action-active);
+  --button-border-color: var(--color-action);
+  --button-color: var(--color-on-action);
+}
+/* @endvariants */
