@@ -13,6 +13,7 @@ import {
   siteRoutes,
 } from '../examples/express/page.js';
 import { flatComponents } from '../examples/express/component-catalog.js';
+import { playgroundComponentsCss } from '../examples/express/playground-data.js';
 import { staticTasks } from '../examples/express/site-data.js';
 import { buildSite } from '../packages/cli/src/lib/site-build.js';
 import { checkComparePage } from './check-compare-page.js';
@@ -150,6 +151,20 @@ cpSync(join(express, 'public', 'basenative.js'), join(dist, 'basenative.js'));
 cpSync(join(express, 'public', 'showcase.js'), join(dist, 'showcase.js'));
 cpSync(join(express, 'public', 'builder.js'), join(dist, 'builder.js'));
 cpSync(join(express, 'public', 'compare.js'), join(dist, 'compare.js'));
+cpSync(join(express, 'public', 'playground.css'), join(dist, 'playground.css'));
+cpSync(join(express, 'public', 'playground.js'), join(dist, 'playground.js'));
+cpSync(join(express, 'public', 'playground-preview.js'), join(dist, 'playground-preview.js'));
+// The playground's preview document (the dev server's /playground/preview
+// route): a static page of its own in the export, loading the same
+// /basenative.js bundle and preview script by absolute path.
+mkdirSync(join(dist, 'playground', 'preview'), { recursive: true });
+cpSync(
+  join(express, 'public', 'playground-preview.html'),
+  join(dist, 'playground', 'preview', 'index.html'),
+);
+// The playground's assembled component sheet (the dev server's
+// /playground/components.css route).
+writeFileSync(join(dist, 'playground', 'components.css'), playgroundComponentsCss);
 // Brand assets — favicon bundle (bn-favicon, preset `basenative`) + OG card
 for (const file of [
   'favicon.svg',
