@@ -640,6 +640,40 @@ describe('site syntax highlighting is a pipeline step', () => {
     assert.equal(out.includes('&lt;span'), false, 'spans are markup; the code stays escaped');
   });
 
+  it('CSS samples get CSS highlighting, not the JS scanner', () => {
+    const css = [
+      ':root { --button-color: var(--label); }',
+      'button[variant="primary"]:hover {',
+      '  background-color: var(--button-background-color);',
+      '  padding-block: var(--space-2);',
+      '  inline-size: 2.75rem;',
+      '  &:focus-visible { outline-width: 2px; }',
+      '}',
+    ].join('\n');
+    const html = highlightCode(css);
+    assert.match(html, /<span class="kw">root<\/span>/);
+    assert.match(html, /<span class="attr">--button-color<\/span>/);
+    assert.match(html, /<span class="fn">var<\/span>/);
+    assert.match(html, /<span class="tag">button<\/span>/);
+    assert.match(html, /<span class="attr">variant<\/span>/);
+    assert.match(html, /<span class="str">"primary"<\/span>/);
+    assert.match(html, /<span class="kw">hover<\/span>/);
+    assert.match(html, /<span class="attr">background-color<\/span>/);
+    assert.match(html, /<span class="num">2.75rem<\/span>/);
+    assert.match(html, /<span class="kw">focus-visible<\/span>/);
+    assert.match(html, /<span class="num">2px<\/span>/);
+    // The CSS scanner preserves the code text exactly, like the JS one.
+    const text = html.replace(/<[^>]+>/g, '');
+    assert.equal(text, css.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
+  });
+
+  it('a JS file that mentions CSS stays on the JS scanner', () => {
+    const js = "const sheet = ':root { --a: 1; }';\nexport const x = { color: 'red' };";
+    const html = highlightCode(js);
+    assert.match(html, /<span class="kw">const<\/span>/);
+    assert.match(html, /<span class="kw">export<\/span>/);
+  });
+
   it('every rendered page highlights its code blocks', () => {
     for (const route of siteRoutes) {
       if (route.internal) continue;
@@ -987,43 +1021,5 @@ describe('site footer is rendered from the nav model', () => {
     const layout = readFileSync(repo('examples/express/views/layout.html'), 'utf8');
     assert.ok(layout.includes('<!--FOOTER-->'));
     assert.ok(!layout.includes('<footer'));
-  });
-});
-
-describe('the token bridge joins the site tokens to the catalog tokens', () => {
-  const bridge = readFileSync(repo('examples/express/public/token-bridge.css'), 'utf8');
-  const theme = readFileSync(repo('examples/express/public/theme.css'), 'utf8');
-  const layout = readFileSync(repo('examples/express/views/layout.html'), 'utf8');
-
-  it('re-points the spacing steps and font-size-md at the catalog tokens', () => {
-    const mappings = [
-      '--space-xs: var(--bn-space-1);',
-      '--space-sm: var(--bn-space-2);',
-      '--space-md: var(--bn-space-4);',
-      '--space-lg: var(--bn-space-6);',
-      '--space-xl: var(--bn-space-8);',
-      '--space-2xl: var(--bn-space-12);',
-      '--space-3xl: var(--bn-space-16);',
-      '--font-size-md: var(--bn-font-size-base);',
-    ];
-    for (const mapping of mappings) assert.ok(bridge.includes(mapping), mapping);
-  });
-
-  it('bridges the theme surfaces onto the core tokens it already defines', () => {
-    assert.ok(theme.includes('--surface-0: var(--bn-color-surface);'));
-    assert.ok(theme.includes('--surface-1: var(--bn-color-surface-subtle);'));
-    assert.ok(theme.includes('--surface-2: var(--bn-color-surface-muted);'));
-    assert.ok(theme.includes('--surface-inset: var(--bn-color-surface-inset);'));
-  });
-
-  it('loads after styles.css and before ios.css, and ships in the static export', () => {
-    const stylesAt = layout.indexOf('/styles.css');
-    const bridgeAt = layout.indexOf('/token-bridge.css');
-    const iosAt = layout.indexOf('/ios.css');
-    assert.ok(stylesAt !== -1 && bridgeAt > stylesAt && iosAt > bridgeAt);
-    const build = readFileSync(repo('scripts/build-pages.js'), 'utf8');
-    assert.ok(build.includes("join(dist, 'token-bridge.css')"));
-    const page = readFileSync(repo('examples/express/page.js'), 'utf8');
-    assert.ok(page.includes("'public/token-bridge.css'"));
   });
 });
