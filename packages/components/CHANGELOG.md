@@ -1,5 +1,13 @@
 # @basenative/components
 
+## 2.4.0
+
+### Patch Changes
+
+- Updated dependencies [4f3a5bb]
+  - @basenative/runtime@2.4.0
+  - @basenative/forms@2.4.0
+
 ## 2.3.2
 
 ### Patch Changes
