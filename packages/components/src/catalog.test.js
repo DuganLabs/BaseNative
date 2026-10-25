@@ -594,3 +594,11 @@ test('rating runs the choice paradigm over a star substrate and lights its range
   const ratingCss = await readFile(new URL('./rating/styles.css', import.meta.url), 'utf8');
   assert.match(ratingCss, /fieldset\[variant="rating"\]:has\(> label:nth-of-type\(4\) > input:checked\) > label:nth-of-type\(-n\+4\)/);
 });
+
+test('search-field and toolbar style only their own buttons, never a slotted component', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const searchCss = await readFile(new URL('./search-field/styles.css', import.meta.url), 'utf8');
+  assert.match(searchCss, /& > button:not\(\[variant\]\)/);
+  const toolbarCss = await readFile(new URL('./toolbar/styles.css', import.meta.url), 'utf8');
+  assert.match(toolbarCss, /& > button:not\(\[variant\]\)/);
+});

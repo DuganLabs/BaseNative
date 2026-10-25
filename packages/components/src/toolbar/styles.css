@@ -44,7 +44,7 @@ section[variant="toolbar"] {
   border-color: var(--toolbar-border-color);
   border-radius: var(--toolbar-border-radius);
 
-  & > button {
+  & > button:not([variant]) {
     background-color: var(--toolbar__more-background-color);
     border-width: var(--toolbar__more-border-width);
     border-radius: var(--toolbar__more-border-radius);

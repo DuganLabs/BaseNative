@@ -36,7 +36,7 @@ search[variant="default"] {
     flex-grow: var(--search-field__control-flex-grow);
   }
 
-  & > button {
+  & > button:not([variant]) {
     background-color: var(--search-field__clear-background-color);
     border-width: var(--search-field__clear-border-width);
     border-radius: var(--search-field__clear-border-radius);
