@@ -84,8 +84,8 @@ describe('defaultPairings', () => {
   test('writes the table from the theme, not from a hardcoded namespace', () => {
     assert.ok(rows.length > 20, `expected a real table, got ${rows.length} rows`);
     for (const row of rows) {
-      assert.match(row.fg, /^--bn-theme-/);
-      assert.match(row.bg, /^--bn-theme-/);
+      assert.match(row.fg, /-theme-/);
+      assert.match(row.bg, /-theme-/);
       assert.ok(row.min === AA_TEXT || row.min === AA_NONTEXT);
     }
   });
@@ -127,7 +127,7 @@ describe('assertThemeContrast', () => {
     } catch (err) {
       assert.ok(err instanceof ContrastError);
       assert.match(err.message, /^fixture \(light\) — colour pairings below/);
-      assert.ok(err.failures.every((f) => f.fg === '--bn-theme-border-control'));
+      assert.ok(err.failures.every((f) => f.fg === '--color-border-theme-control'));
     }
   });
 
@@ -155,20 +155,20 @@ describe('assertThemeContrast', () => {
   test('appends extra rows a property declares for itself', () => {
     const theme = defineTheme(minimalTheme());
     assert.throws(
-      () => assertThemeContrast(theme, [['brand on the band', '--bn-theme-ink', '--bn-theme-surface-inverse', AA_TEXT]]),
+      () => assertThemeContrast(theme, [['brand on the band', '--color-text-theme-ink', '--color-bkg-theme-surface-inverse', AA_TEXT]]),
       ContrastError,
     );
   });
 
   test('reads one scheme at a time, so a dual theme is never measured as a blur', () => {
-    // A dual theme emitted in full declares --bn-theme-surface once per
-    // activation context; a flat parse keeps only the last, which is a palette
-    // that never renders. `only` is what makes the audit honest.
+    // A dual theme emitted in full declares --color-bkg-theme-surface once
+    // per activation context; a flat parse keeps only the last, which is a
+    // palette that never renders. `only` is what makes the audit honest.
     const theme = defineTheme(dualTheme());
-    assert.equal(emitThemeCss(theme, { bridge: false }).match(/--bn-theme-surface:/g).length, 4);
+    assert.equal(emitThemeCss(theme, { bridge: false }).match(/--color-bkg-theme-surface:/g).length, 4);
     for (const only of ['light', 'dark']) {
       const css = emitThemeCss(theme, { only, bridge: false });
-      assert.equal(css.match(/--bn-theme-surface:/g).length, 1);
+      assert.equal(css.match(/--color-bkg-theme-surface:/g).length, 1);
     }
   });
 });

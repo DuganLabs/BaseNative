@@ -84,8 +84,8 @@ describe('the starter is a translation of the components default, not a new look
   const upstream = parseCustomProperties(readFileSync(COMPONENTS_TOKENS, 'utf8'));
 
   for (const [ramp, prefix, steps] of [
-    ['neutral', '--bn-color-gray-', [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]],
-    ['primary', '--bn-color-primary-', [50, 100, 200, 300, 400, 500, 600, 700, 800, 900]],
+    ['neutral', '--palette-gray-', [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]],
+    ['primary', '--palette-primary-', [50, 100, 200, 300, 400, 500, 600, 700, 800, 900]],
   ]) {
     test(`its ${ramp} ramp matches ${prefix}*`, () => {
       for (const step of steps) {
@@ -111,7 +111,7 @@ describe('the README teaches an API that exists', () => {
       icons: await import('./icons.js'),
     };
     const listed = {
-      '.': ['defineTheme', 'validateTheme', 'ThemeError', 'toCss', 'bridgeToBn'],
+      '.': ['defineTheme', 'validateTheme', 'ThemeError', 'toCss', 'bridgeToCti'],
       contrast: [
         'relativeLuminance',
         'contrastRatio',

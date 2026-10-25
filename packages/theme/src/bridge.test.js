@@ -4,19 +4,42 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 
-import { BN_BRIDGED, BRIDGE_CSS, UPSTREAM_OWNED, bridgeToBn, validateBridge } from './bridge.js';
+import { CTI_BRIDGED, BRIDGE_CSS, UPSTREAM_OWNED, bridgeToCti, validateBridge } from './bridge.js';
 import { defineTheme, emitThemeCss, toCss } from './theme.js';
 import { parseCustomProperties, resolveColor } from './contrast.js';
 import { darkOnlyTheme, minimalTheme } from './test-fixtures.js';
 
 const BRIDGE_FILE = fileURLToPath(new URL('./bridge.css', import.meta.url));
 const COMPONENTS_SRC = fileURLToPath(new URL('../../components/src/', import.meta.url));
+const COMPONENTS_TOKENS = fileURLToPath(new URL('../../components/tokens/', import.meta.url));
 
 const componentsCss = readdirSync(COMPONENTS_SRC)
   .filter((f) => f.endsWith('.css'))
   .sort()
   .map((f) => readFileSync(join(COMPONENTS_SRC, f), 'utf8'))
   .join('\n');
+
+/**
+ * The names `validateBridge` cannot judge from here: component-tier tokens
+ * (one DTCG file per component) and keyword tokens. Computed from the token
+ * source BY FILE — the taxonomy metadata on the keyword file is unreliable,
+ * so the file boundary, not the metadata, is the authority.
+ */
+const exclude = new Set();
+for (const f of readdirSync(join(COMPONENTS_TOKENS, 'components')).filter((f) =>
+  f.endsWith('.json'),
+)) {
+  for (const key of Object.keys(
+    JSON.parse(readFileSync(join(COMPONENTS_TOKENS, 'components', f), 'utf8')),
+  )) {
+    exclude.add(`--${key}`);
+  }
+}
+for (const key of Object.keys(
+  JSON.parse(readFileSync(join(COMPONENTS_TOKENS, 'keyword.json'), 'utf8')),
+)) {
+  exclude.add(`--${key}`);
+}
 
 describe('bridge.css and BRIDGE_CSS are one artifact', () => {
   test('the shipped stylesheet is byte-identical to the exported string', () => {
@@ -27,27 +50,27 @@ describe('bridge.css and BRIDGE_CSS are one artifact', () => {
     );
   });
 
-  test('bridgeToBn() returns it unchanged', () => {
-    assert.equal(bridgeToBn(), BRIDGE_CSS);
+  test('bridgeToCti() returns it unchanged', () => {
+    assert.equal(bridgeToCti(), BRIDGE_CSS);
   });
 });
 
 describe('the bridge covers what @basenative/components actually reads', () => {
   // This is the price of keeping the bridge here rather than in `components`,
   // paid as a build failure instead of as six silently-unthemed properties.
-  test('every var(--bn-*) is either bridged or explicitly left upstream', () => {
-    const { ok, unbridged } = validateBridge(componentsCss);
+  test('every consumed name is either bridged or explicitly left upstream', () => {
+    const { ok, unbridged } = validateBridge(componentsCss, { exclude });
     assert.equal(
       ok,
       true,
-      `@basenative/components reads --bn-* names this package neither bridges nor lists as ` +
+      `@basenative/components reads names this package neither bridges nor lists as ` +
         `upstream-owned:\n  ${unbridged.join('\n  ')}\n` +
         'Add each to the bridge in src/bridge.js, or to UPSTREAM_OWNED with the reason.',
     );
   });
 
   test('nothing is claimed by both lists', () => {
-    const both = BN_BRIDGED.filter((n) =>
+    const both = CTI_BRIDGED.filter((n) =>
       Object.prototype.hasOwnProperty.call(UPSTREAM_OWNED, n),
     );
     assert.deepEqual(both, []);
@@ -61,15 +84,15 @@ describe('the bridge covers what @basenative/components actually reads', () => {
 
   test('every name it claims to bridge is a name components declares', () => {
     const declared = new Set(
-      [...componentsCss.matchAll(/^\s*(--bn-[a-z0-9-]+)\s*:/gm)].map((m) => m[1]),
+      [...componentsCss.matchAll(/^\s*(--[a-z0-9-]+)\s*:/gm)].map((m) => m[1]),
     );
-    const phantom = BN_BRIDGED.filter((n) => !declared.has(n));
+    const phantom = CTI_BRIDGED.filter((n) => !declared.has(n));
     assert.deepEqual(phantom, [], 'the bridge re-points names components does not declare');
   });
 });
 
-describe('the bridge reads only --bn-theme-* names a theme actually emits', () => {
-  const consumed = [...new Set([...BRIDGE_CSS.matchAll(/var\(\s*(--bn-theme-[a-z0-9-]+)/g)].map((m) => m[1]))];
+describe('the bridge reads only theme names a theme actually emits', () => {
+  const consumed = [...new Set([...BRIDGE_CSS.matchAll(/var\(\s*(--[a-z0-9-]+)/g)].map((m) => m[1]))];
 
   test('there is at least one, and every one resolves against a real theme', () => {
     assert.ok(consumed.length > 50, `expected a real bridge, found ${consumed.length} references`);
@@ -95,10 +118,11 @@ describe('the bridge reads only --bn-theme-* names a theme actually emits', () =
   });
 });
 
-describe('the bridge wins over the components dark layer', () => {
-  // components/theme.css activates dark at :root:not([data-theme="light"])
-  // inside a media query — specificity (0,2,0). A bridge at plain :root loses
-  // to it, which is exactly how upstream dark values leak past a theme.
+describe('the bridge wins over the components dark modes', () => {
+  // The generated token sheet activates dark at :root:not([data-theme="light"])
+  // inside a media query and at :root[data-theme="dark"] — specificity (0,2,0).
+  // A bridge at plain :root loses to both, which is exactly how upstream dark
+  // values leak past a theme.
   test('both selectors carry html + :root + one attribute', () => {
     assert.match(BRIDGE_CSS, /html:root\[data-theme\],\n\s*html:root:not\(\[data-theme="light"\]\) \{/);
   });
@@ -111,8 +135,12 @@ describe('the bridge wins over the components dark layer', () => {
     );
   });
 
-  test('is emitted into @layer tokens, not unlayered above everything', () => {
-    assert.match(BRIDGE_CSS, /^@layer tokens \{/);
+  test('is emitted unlayered, so it can re-point unlayered upstream tokens', () => {
+    // Upstream declares its core tokens unlayered, and a layered declaration
+    // loses to any unlayered one at any specificity — the scrim token is
+    // unlayered, so a layered bridge could never re-point it.
+    assert.equal(BRIDGE_CSS.includes('@layer'), false);
+    assert.match(BRIDGE_CSS, /^\/\* @basenative\/theme — the CTI\+ bridge\./);
   });
 
   test('declares nothing but custom properties', () => {
@@ -125,15 +153,15 @@ describe('the bridge wins over the components dark layer', () => {
 
 describe('a dark-only theme through the bridge', () => {
   // The pendingbusiness.com failure, end to end: a dark site with no
-  // data-theme. --bn-color-error-bg must be the theme's dark tint no matter
+  // data-theme. --color-bkg-error must be the theme's dark tint no matter
   // what the reader's OS says, and there must be no second value anywhere for
   // a media query to reach.
   const css = toCss(defineTheme(darkOnlyTheme()));
 
-  test('--bn-color-error-bg has exactly one source and it is the dark one', () => {
-    assert.equal(css.match(/--bn-color-error-bg:/g).length, 1);
+  test('--color-bkg-error has exactly one source and it is the dark one', () => {
+    assert.equal(css.match(/--color-bkg-error:/g).length, 1);
     const props = parseCustomProperties(css);
-    assert.equal(resolveColor('--bn-color-error-bg', props), '#27272A');
+    assert.equal(resolveColor('--color-bkg-error', props), '#27272A');
   });
 
   test('the emitted theme contributes no prefers-color-scheme rule of its own', () => {

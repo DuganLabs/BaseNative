@@ -151,7 +151,7 @@ export interface EmitOptions {
   only?: 'light' | 'dark' | null;
   /** Wrap in `@layer tokens`. Default `true`. */
   layer?: boolean;
-  /** Append the `--bn-*` bridge. Default `true`. */
+  /** Append the CTI+ bridge. Default `true`. */
   bridge?: boolean;
 }
 
@@ -177,37 +177,46 @@ export declare const GEOMETRY_DEFAULTS: Readonly<{
 export declare const RAW_DEFAULTS: Readonly<RawTokens>;
 
 /* Custom-property name builders, so a consumer's own pairing rows and CSS
- * never hand-spell a `--bn-theme-*` name. */
+ * never hand-spell a theme token name. The names follow the CTI+ taxonomy:
+ * category first, `theme` as the item qualifier. */
 
-/** `--bn-theme-ramp-primary-600` */
+/** `--palette-theme-primary-600` */
 export declare function rampVar(ramp: string, step: string | number): string;
-/** `--bn-theme-surface`, `--bn-theme-surface-raised` */
+/** `--color-bkg-theme-surface`, `--color-bkg-theme-surface-raised` */
 export declare function surfaceVar(key: SurfaceKey): string;
-/** `--bn-theme-ink`, `--bn-theme-ink-muted` */
+/** `--color-text-theme-ink`, `--color-text-theme-ink-muted` */
 export declare function inkVar(key: InkKey): string;
-/** `--bn-theme-primary-hover`, `--bn-theme-border-control` */
+/** `--color-bkg-theme-primary-hover`, `--color-border-theme-control` */
 export declare function roleVar(key: RoleKey): string;
-/** `--bn-theme-signal-good-bg` */
+/** `--color-bkg-theme-signal-good` */
 export declare function signalVar(family: string, channel: SignalChannel): string;
-/** `--bn-theme-slot-error-ink` — what the static bridge reads. */
+/** `--color-text-theme-slot-error` — what the static bridge reads. */
 export declare function slotVar(slot: BadgeSlot, channel: SignalChannel): string;
 
 /* ----------------------------------------------------------------- bridge */
 
-/** The `--bn-*` bridge as text. Byte-identical to `src/bridge.css`. */
+/** The CTI+ bridge as text. Byte-identical to `src/bridge.css`. */
 export declare const BRIDGE_CSS: string;
-/** Every `--bn-*` name the bridge re-points, derived from the text itself. */
-export declare const BN_BRIDGED: readonly string[];
-/** `--bn-*` names deliberately left to `@basenative/components`, each with its reason. */
+/** Every name the bridge re-points, derived from the text itself. */
+export declare const CTI_BRIDGED: readonly string[];
+/** Names deliberately left to `@basenative/components`, each with its reason. */
 export declare const UPSTREAM_OWNED: Readonly<Record<string, string>>;
 
 export interface BridgeResult {
   ok: boolean;
-  /** Consumed `--bn-*` names in neither `BN_BRIDGED` nor `UPSTREAM_OWNED`. */
+  /** Consumed names in neither `CTI_BRIDGED` nor `UPSTREAM_OWNED`. */
   unbridged: string[];
 }
 
-/** Checks the bridge against the CSS a given `@basenative/components` ships. */
-export declare function validateBridge(componentsCss: string): BridgeResult;
+/**
+ * Checks the bridge against the CSS a given `@basenative/components` ships.
+ * Pass `exclude` for the names this package cannot judge: component-tier
+ * tokens (one DTCG file per component in the token source) and keyword
+ * tokens, which a caller computes from the token source by file.
+ */
+export declare function validateBridge(
+  componentsCss: string,
+  options?: { exclude?: Iterable<string> },
+): BridgeResult;
 /** The bridge as a string, for a consumer adopting one constructed stylesheet. */
-export declare function bridgeToBn(): string;
+export declare function bridgeToCti(): string;

@@ -12,7 +12,7 @@
  *   @basenative/theme/audit      the pairing harness that fails the build
  *   @basenative/theme/css        minifyCss
  *   @basenative/theme/icons      one grid, one stroke, enforced
- *   @basenative/theme/bridge.css the --bn-* bridge, as a stylesheet
+ *   @basenative/theme/bridge.css the CTI+ bridge, as a stylesheet
  */
 
 export {
@@ -38,4 +38,4 @@ export {
   slotVar,
 } from './theme.js';
 
-export { BRIDGE_CSS, BN_BRIDGED, UPSTREAM_OWNED, bridgeToBn, validateBridge } from './bridge.js';
+export { BRIDGE_CSS, CTI_BRIDGED, UPSTREAM_OWNED, bridgeToCti, validateBridge } from './bridge.js';
