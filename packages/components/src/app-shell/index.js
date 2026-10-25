@@ -19,6 +19,7 @@ export const root = 'main';
  * @property {string} sidebarHtml Rendered sidebar (the catalog's sidebar).
  * @property {string} appBarHtml Rendered app bar (the catalog's app-bar).
  * @property {string} contentHtml Rendered page content, placed inside main.
+ * @property {string} [mainId] The main landmark's id — the skip link's target.
  * @property {string} [variant] A registered variant name.
  */
 
@@ -32,8 +33,9 @@ export function create(props) {
   const appBarHtml = signal(props.appBarHtml);
   const contentHtml = signal(props.contentHtml);
   const variant = signal(props.variant ?? 'default');
+  const mainId = signal(props.mainId ?? false);
 
-  return { sidebarHtml, appBarHtml, contentHtml, variant, raw };
+  return { sidebarHtml, appBarHtml, contentHtml, variant, mainId, raw };
 }
 
 /** @param {import('../registry.js').Registry} registry */

@@ -26,6 +26,7 @@
   --button-font-weight: var(--font-weight-semibold);
   --button-line-height: var(--text-callout-leading);
   --button-letter-spacing: var(--text-callout-tracking);
+  --button-text-decoration: var(--text-decoration-none);
   --button-cursor: var(--cursor-pointer);
   --button-cursor--disabled: var(--cursor-not-allowed);
   --button-outline-width--focus: var(--border-width-thick);
@@ -38,7 +39,7 @@
   --button-margin-inline-start--adjacent: var(--space-2);
 }
 
-button[variant="default"], button[variant="primary"], button[variant="ghost"], button[variant="destructive"] {
+button[variant="default"], button[variant="primary"], button[variant="ghost"], button[variant="destructive"], a[variant="default"], a[variant="primary"], a[variant="ghost"], a[variant="destructive"] {
   box-sizing: var(--button-box-sizing);
   appearance: var(--button-appearance);
   display: var(--button-display);
@@ -60,6 +61,7 @@ button[variant="default"], button[variant="primary"], button[variant="ghost"], b
   font-weight: var(--button-font-weight);
   line-height: var(--button-line-height);
   letter-spacing: var(--button-letter-spacing);
+  text-decoration: var(--button-text-decoration);
   cursor: var(--button-cursor);
   transition: background-color var(--button-motion-duration) var(--button-motion-curve), border-color var(--button-motion-duration) var(--button-motion-curve), color var(--button-motion-duration) var(--button-motion-curve);
 
@@ -87,6 +89,13 @@ button[variant="default"], button[variant="primary"], button[variant="ghost"], b
     cursor: var(--button-cursor--disabled);
   }
 
+  &[aria-disabled="true"] {
+    background-color: var(--button-background-color--disabled);
+    border-color: var(--button-border-color--disabled);
+    color: var(--button-color--disabled);
+    cursor: var(--button-cursor--disabled);
+  }
+
   & + & {
     margin-inline-start: var(--button-margin-inline-start--adjacent);
   }
@@ -98,7 +107,7 @@ form:has(:invalid) > button[type="submit"] {
   color: var(--button-color--disabled);
 }
 
-button[variant="destructive"] {
+button[variant="destructive"], a[variant="destructive"] {
   --button-background-color: var(--danger);
   --button-background-color--hover: var(--danger-strong);
   --button-background-color--active: var(--danger-strong);
@@ -106,7 +115,7 @@ button[variant="destructive"] {
   --button-color: var(--on-danger);
 }
 
-button[variant="ghost"] {
+button[variant="ghost"], a[variant="ghost"] {
   --button-background-color: var(--color-transparent);
   --button-background-color--hover: var(--fill-3);
   --button-background-color--active: var(--fill-2);
@@ -114,7 +123,7 @@ button[variant="ghost"] {
   --button-color: var(--tint);
 }
 
-button[variant="primary"] {
+button[variant="primary"], a[variant="primary"] {
   --button-background-color: var(--tint);
   --button-background-color--hover: var(--tint-strong);
   --button-background-color--active: var(--tint-strong);

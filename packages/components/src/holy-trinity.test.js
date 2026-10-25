@@ -418,3 +418,23 @@ test('app-shell composes sidebar, main and app bar around the content', async ()
   assert.ok(html.indexOf('<aside') < html.indexOf('<main'), 'sidebar precedes main');
   assert.ok(html.indexOf('</main>') < html.indexOf('variant="app-bar"'), 'app bar follows main');
 });
+
+test('button with an href renders a link carrying the variant', async () => {
+  const registry = await loadRegistry();
+  const { html } = renderComponent(registry, render, 'button', { label: 'Read the docs', variant: 'primary', href: '/docs' });
+  assert.match(html, /<a variant="primary" href="\/docs">Read the docs<\/a>/);
+  assert.doesNotMatch(html, /<button/);
+  const off = renderComponent(registry, render, 'button', { label: 'Later', href: '/later', disabled: true }).html;
+  assert.match(off, /<a variant="default" aria-disabled="true">Later<\/a>/);
+  assert.doesNotMatch(off, /href=/);
+});
+
+test('hero renders afterHtml at the close of its figcaption', async () => {
+  const registry = await loadRegistry();
+  const { html } = renderComponent(registry, render, 'hero', {
+    title: 'Button',
+    afterHtml: '<dl><div><dt>Element</dt><dd><code>&lt;button&gt;</code></dd></div></dl>',
+  });
+  assert.match(html, /<dl><div><dt>Element<\/dt>/);
+  assert.ok(html.indexOf('<dl>') > html.indexOf('</h1>'), 'after content follows the title');
+});

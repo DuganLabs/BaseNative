@@ -45,6 +45,9 @@
           {{ raw(actionsHtml()) }}
         </nav>
       </template>
+      <template @if="hasAfter()">
+        {{ raw(afterHtml()) }}
+      </template>
     </figcaption>
   </figure>
 </template>

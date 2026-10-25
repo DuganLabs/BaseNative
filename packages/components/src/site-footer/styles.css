@@ -1,5 +1,6 @@
 :root {
   --site-footer-display: var(--display-flex);
+  --site-footer-text-align: var(--text-align-start);
   --site-footer-flex-wrap: var(--flex-wrap-wrap);
   --site-footer-gap: var(--space-8);
   --site-footer-border-block-start-width: var(--hairline);
@@ -39,6 +40,7 @@
 
 footer[variant="default"] {
   display: var(--site-footer-display);
+  text-align: var(--site-footer-text-align);
   flex-wrap: var(--site-footer-flex-wrap);
   gap: var(--site-footer-gap);
   border-block-start-width: var(--site-footer-border-block-start-width);

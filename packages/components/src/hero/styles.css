@@ -69,7 +69,7 @@ figure[variant="stacked"], figure[variant="overlay"], figure[variant="split"] {
     display: var(--hero__caption-display);
     gap: var(--hero__caption-gap);
 
-    & > p:first-of-type {
+    & > p:first-child {
       color: var(--hero__eyebrow-color);
       font-family: var(--hero__eyebrow-font-family);
       font-size: var(--hero__eyebrow-font-size);
@@ -89,7 +89,7 @@ figure[variant="stacked"], figure[variant="overlay"], figure[variant="split"] {
       margin: var(--hero__title-margin);
     }
 
-    & > h1 + p, & > h2 + p {
+    & > :is(h1, h2) ~ p {
       color: var(--hero__lede-color);
       font-family: var(--hero__lede-font-family);
       font-size: var(--hero__lede-font-size);

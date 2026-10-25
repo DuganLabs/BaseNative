@@ -25,6 +25,8 @@ export const root = 'figure';
  * @property {string} [mediaAlt] Media alternative text. Default "".
  * @property {string} [mediaHtml] Rendered media (a picture, a video) — takes precedence over mediaSrc.
  * @property {string} [actionsHtml] Rendered actions (catalog buttons), placed in a nav.
+ * @property {string} [afterHtml] Rendered content closing the caption, after
+ *   the actions — a meta strip, a footnote line.
  * @property {string} [actionsLabel] Accessible name for the actions nav. Default "Primary".
  * @property {string} [variant] A registered variant name: "stacked", "overlay" or "split".
  */
@@ -45,18 +47,20 @@ export function create(props) {
   const mediaAlt = signal(props.mediaAlt ?? '');
   const mediaHtml = signal(props.mediaHtml ?? '');
   const actionsHtml = signal(props.actionsHtml ?? '');
+  const afterHtml = signal(props.afterHtml ?? '');
   const actionsLabel = signal(props.actionsLabel ?? 'Primary');
 
   const hasMedia = computed(() => mediaHtml() !== '' || mediaSrc() !== '');
   const hasEyebrow = computed(() => eyebrow() !== '');
   const hasLede = computed(() => ledeHtml() !== '' || lede() !== '');
   const hasActions = computed(() => actionsHtml() !== '');
+  const hasAfter = computed(() => afterHtml() !== '');
   const isH2 = computed(() => props.headingLevel === 'h2');
 
   return {
     variant, eyebrow, title, titleHtml, lede, ledeHtml,
-    mediaSrc, mediaAlt, mediaHtml, actionsHtml, actionsLabel,
-    hasMedia, hasEyebrow, hasLede, hasActions, isH2, raw,
+    mediaSrc, mediaAlt, mediaHtml, actionsHtml, actionsLabel, afterHtml,
+    hasMedia, hasEyebrow, hasLede, hasActions, hasAfter, isH2, raw,
   };
 }
 
