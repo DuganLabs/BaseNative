@@ -7,22 +7,6 @@
     "div-span": 1,
     "control-flow": 0
   },
-  "examples/express/component-demo-scripts.js": {
-    "custom-element": 0,
-    "inline-style": 1,
-    "style-write": 2,
-    "css-outside-layer": 0,
-    "div-span": 11,
-    "control-flow": 0
-  },
-  "examples/express/component-demos.js": {
-    "custom-element": 0,
-    "inline-style": 1,
-    "style-write": 0,
-    "css-outside-layer": 0,
-    "div-span": 14,
-    "control-flow": 0
-  },
   "examples/express/public/showcase.js": {
     "custom-element": 0,
     "inline-style": 0,

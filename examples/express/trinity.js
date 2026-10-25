@@ -6,8 +6,16 @@
  * the content components — comes through here: the catalog is the one
  * source of site markup.
  */
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { render } from '@basenative/server';
 import { loadRegistry, renderComponent, assembleStyles } from '../../packages/components/src/loader.js';
+
+const componentsDir = join(
+  dirname(fileURLToPath(import.meta.url)),
+  '../../packages/components/src',
+);
 
 const registry = await loadRegistry();
 const siteCss = await assembleStyles(registry, [...registry.listComponents()]);
@@ -42,4 +50,29 @@ export function trinityChromeCss() {
  */
 export function trinitySiteCss() {
   return siteCss;
+}
+
+/** Render one catalog component, returning the view model alongside the HTML. */
+export function renderTrinityVm(name, props) {
+  return renderComponent(registry, render, name, props);
+}
+
+/**
+ * Every registered component with the facts the catalog pages present:
+ * its root element, its registered variants, its template and sheet
+ * (from the registry) and its logic file (read from the package — the
+ * component is its three files, and the pages show all three).
+ */
+export function trinityComponentInfo() {
+  return [...registry.listComponents()].map((name) => {
+    const def = registry.getComponent(name);
+    return {
+      name,
+      root: def.root,
+      variants: registry.listVariants(name),
+      template: readFileSync(join(componentsDir, name, 'index.html'), 'utf8'),
+      styles: def.styles,
+      source: readFileSync(join(componentsDir, name, 'index.js'), 'utf8'),
+    };
+  });
 }

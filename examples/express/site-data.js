@@ -1,11 +1,12 @@
 import { readFileSync } from 'node:fs';
+import { trinityComponentInfo } from './trinity.js';
+import { trinityCatalog, trinityCategoriesWith } from './trinity-catalog.js';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { escapeAttr, escapeText, raw } from '@basenative/runtime/shared/escape';
 import { renderListGroup, renderTabs } from '../../packages/components/src/index.js';
 import { renderBnList } from '../../packages/platform/src/components.js';
 import { computeCompareStats } from '../../scripts/compare-stats.js';
-import { componentCategories, flatComponents } from './component-catalog.js';
 
 const siteDir = dirname(fileURLToPath(import.meta.url));
 
@@ -301,10 +302,12 @@ export function getTasksPageContext(tasks, hasApi = true) {
 }
 
 export function getComponentsPageContext() {
+  const entries = trinityCatalog(trinityComponentInfo());
+  const categories = trinityCategoriesWith(entries);
   return {
-    categories: componentCategories,
-    totalCount: flatComponents.length,
-    categoryCount: componentCategories.length,
+    categories,
+    totalCount: entries.length,
+    categoryCount: categories.length,
   };
 }
 

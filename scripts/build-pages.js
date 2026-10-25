@@ -12,12 +12,10 @@ import {
   renderRoute,
   siteRoutes,
 } from '../examples/express/page.js';
-import { trinitySiteCss } from '../examples/express/trinity.js';
-import { flatComponents } from '../examples/express/component-catalog.js';
+import { trinityComponentInfo, trinitySiteCss } from '../examples/express/trinity.js';
 import { staticTasks } from '../examples/express/site-data.js';
 import { buildSite } from '../packages/cli/src/lib/site-build.js';
 import { checkComparePage } from './check-compare-page.js';
-import { demoSnippetProblems, demoClientApiProblems } from './check-demo-snippets.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -85,19 +83,10 @@ if (comparePageProblems.length) {
   process.exit(1);
 }
 
-// Every Source pane on /components/* goes to the reader's clipboard verbatim.
-// Refuse to publish one that does not parse, a page with nothing runnable, or
-// a client snippet that calls a render helper the browser bundle does not have.
-function assertDemoSnippetsParse() {
-  const problems = [...demoSnippetProblems(), ...demoClientApiProblems()];
-  if (problems.length) {
-    console.error('/components/* Source panes are not runnable — refusing to build:\n');
-    for (const problem of problems) console.error(`  • ${problem}`);
-    console.error('\nFix the `code:` strings in examples/express/component-demos.js.');
-    process.exit(1);
-  }
-}
-assertDemoSnippetsParse();
+// The /components/* pages show each component's real three files, read
+// from the package at render time — there are no hand-authored snippet
+// strings left to validate here; the components package's own suite
+// covers the files themselves.
 
 mkdirSync(dist, { recursive: true });
 
@@ -125,10 +114,10 @@ for (const route of siteRoutes) {
   writePage(route.path, renderRoute(route, { tasks: staticTasks, hasApi: false }));
 }
 
-// One page per catalog entry — the catalog links to every slug in flatComponents,
-// so anything missing here is a soft 404 on Cloudflare Pages.
-for (const component of flatComponents) {
-  writePage(`components/${component.slug}`, renderComponentPage(component.slug));
+// One page per catalog entry — the catalog links to every registered
+// component, so anything missing here is a soft 404 on Cloudflare Pages.
+for (const component of trinityComponentInfo()) {
+  writePage(`components/${component.name}`, renderComponentPage(component.name));
 }
 
 // Cloudflare Pages serves dist/404.html with a 404 status for any unknown path
