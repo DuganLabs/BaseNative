@@ -422,8 +422,8 @@ ${css}
   .var { color: var(--syntax-variable); }
   article > p { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: 0; }
   #leads { --virtualizer__spacer-start-count: 0; --virtualizer__spacer-end-count: 88; }
-  section.toast-stage { transform: translateZ(0); min-block-size: 19rem; align-content: start; }
-  section.toast-stage > p.toast-triggers { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0; }
+  section.toast-stage { transform: translateZ(0); min-block-size: 26rem; border: var(--hairline) solid var(--separator); border-radius: var(--radius-container); }
+  p.toast-triggers { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0; }
   section:has(#email) article, section:has(#trade) article { --input-background-color: var(--fill-3); --textarea-background-color: var(--fill-3); --select__native-background-color: var(--fill-3); --select__trigger-background-color: var(--fill-3); }
   article.drawer-stage { position: relative; block-size: 26rem; border: var(--hairline) solid var(--separator); border-radius: var(--radius-container); overflow: hidden; }
   article.drawer-stage > dialog[variant="drawer"] { position: absolute; inset-block: 0; inset-inline-end: 0; }
@@ -649,11 +649,11 @@ ${css}
     <p class="note">Its action starts the flow that fills the surface — here it takes you to the quote form above.</p>
   </section>
 
-  <section class="toast-stage">
+  <section>
     <h2>Toasts — staged in a frame</h2>
     <p class="note">In an app the region pins to the viewport corner and the toasts expire; here they are staged inside a frame so they do not cover the page while you read it. Their Dismiss buttons work, and each one auto-expires after nine seconds, as a real region's would. The triggers fire fresh ones on demand.</p>
     <p class="toast-triggers">${toastTriggers}</p>
-    ${toasts}
+    <section class="toast-stage">${toasts}</section>
   </section>
 
   <section>
@@ -711,9 +711,25 @@ ${css}
       setTimeout(() => li.remove(), 9000);
     };
     toastRegion.querySelectorAll(':scope > li').forEach(armToast);
+    const toastGlyphs = {
+      success: '<circle cx="8" cy="8" r="6"/><path d="M5.5 8.2l1.8 1.8 3.4-3.8"/>',
+      info: '<circle cx="8" cy="8" r="6"/><path d="M8 7.4v3.4"/><path d="M8 5v.1"/>',
+      warning: '<path d="M8 2.9l5.3 9.1H2.7z"/><path d="M8 6.5v2.7"/><path d="M8 11v.1"/>',
+      danger: '<circle cx="8" cy="8" r="6"/><path d="M5.8 5.8l4.4 4.4"/><path d="M10.2 5.8l-4.4 4.4"/>',
+    };
     const fireToast = (tone, message) => {
       const li = document.createElement('li');
       li.setAttribute('variant', tone);
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('aria-hidden', 'true');
+      svg.setAttribute('viewBox', '0 0 16 16');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('stroke-width', '1.5');
+      svg.setAttribute('stroke-linecap', 'round');
+      svg.setAttribute('stroke-linejoin', 'round');
+      svg.innerHTML = toastGlyphs[tone];
+      li.append(svg);
       li.append(message + ' ');
       const button = document.createElement('button');
       button.setAttribute('variant', 'ghost');
