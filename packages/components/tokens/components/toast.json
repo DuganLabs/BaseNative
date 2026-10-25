@@ -1,0 +1,614 @@
+{
+  "position-toast": {
+    "$value": "{position-fixed}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "position",
+          "type": null,
+          "item": "toast",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-toast-inset-block-end": {
+    "$value": "calc(var(--spacing-4) + var(--spacing-safe-bottom))",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "toast",
+          "variant": null,
+          "subitem": "inset-block-end",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-toast-inset-inline-end": {
+    "$value": "calc(var(--spacing-4) + var(--spacing-safe-right))",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "toast",
+          "variant": null,
+          "subitem": "inset-inline-end",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "layer-toast": {
+    "$value": "60",
+    "$type": "number",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "layer",
+          "type": null,
+          "item": "toast",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "display-toast": {
+    "$value": "{display-flex}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "display",
+          "type": null,
+          "item": "toast",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "flex-direction-toast": {
+    "$value": "{flex-direction-column}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "flex-direction",
+          "type": null,
+          "item": "toast",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-toast-gap": {
+    "$value": "{spacing-2}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "toast",
+          "variant": null,
+          "subitem": "gap",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "list-style-toast": {
+    "$value": "{list-style-none}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "list-style",
+          "type": null,
+          "item": "toast",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-toast-margin": {
+    "$value": "{spacing-0}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "toast",
+          "variant": null,
+          "subitem": "margin",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-toast-padding": {
+    "$value": "{spacing-0}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "toast",
+          "variant": null,
+          "subitem": "padding",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "display-toast-item": {
+    "$value": "{display-flex}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "display",
+          "type": null,
+          "item": "toast-item",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "align-toast-item": {
+    "$value": "{align-center}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "align",
+          "type": null,
+          "item": "toast-item",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-toast-item-gap": {
+    "$value": "{spacing-3}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "toast-item",
+          "variant": null,
+          "subitem": "gap",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-toast-item-padding-block": {
+    "$value": "{spacing-3}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "toast-item",
+          "variant": null,
+          "subitem": "padding-block",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-toast-item-padding-inline": {
+    "$value": "{spacing-4}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "toast-item",
+          "variant": null,
+          "subitem": "padding-inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-bkg-toast-item": {
+    "$value": "{color-background-3}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "toast-item",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-toast-item": {
+    "$value": "{color-text-label}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "toast-item",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-border-toast-item": {
+    "$value": "{size-hairline}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "border",
+          "variant": null,
+          "subitem": "toast-item",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "border-style-toast-item": {
+    "$value": "{border-style-solid}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "border-style",
+          "type": null,
+          "item": "toast-item",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-border-toast-item": {
+    "$value": "{color-border-separator}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "border",
+          "item": "toast-item",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-accent-toast-item": {
+    "$value": "{color-text-label-3}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "accent",
+          "item": "toast-item",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-accent-toast-item-info": {
+    "$value": "{color-tint}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "accent",
+          "item": "toast-item",
+          "variant": null,
+          "subitem": "info",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-accent-toast-item-success": {
+    "$value": "{color-success}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "accent",
+          "item": "toast-item",
+          "variant": null,
+          "subitem": "success",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-accent-toast-item-warning": {
+    "$value": "{color-warning}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "accent",
+          "item": "toast-item",
+          "variant": null,
+          "subitem": "warning",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-accent-toast-item-danger": {
+    "$value": "{color-danger}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "accent",
+          "item": "toast-item",
+          "variant": null,
+          "subitem": "danger",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-radius-toast-item": {
+    "$value": "{size-radius-container}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": null,
+          "subitem": "toast-item",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "shadow-toast-item": {
+    "$value": "{shadow-float}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "shadow",
+          "type": null,
+          "item": "toast-item",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-toast-item-icon-inline": {
+    "$value": "{spacing-5}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "toast-item-icon",
+          "variant": null,
+          "subitem": "inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-toast-item-icon-block": {
+    "$value": "{spacing-5}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "toast-item-icon",
+          "variant": null,
+          "subitem": "block",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "flex-toast-item-icon": {
+    "$value": "{flex-none}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "flex",
+          "type": null,
+          "item": "toast-item-icon",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-toast-item-family": {
+    "$value": "{font-body-family}",
+    "$type": "fontFamily",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "toast-item",
+          "variant": null,
+          "subitem": "family",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-toast-item-size": {
+    "$value": "{font-body-size}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "toast-item",
+          "variant": null,
+          "subitem": "size",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-toast-item-leading": {
+    "$value": "{font-body-leading}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "toast-item",
+          "variant": null,
+          "subitem": "leading",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-toast-item-tracking": {
+    "$value": "{font-body-tracking}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "toast-item",
+          "variant": null,
+          "subitem": "tracking",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  }
+}

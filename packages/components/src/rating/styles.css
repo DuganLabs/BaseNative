@@ -1,72 +1,43 @@
-:root {
-  --rating-display: var(--display-inline-flex);
-  --rating-flex-direction: var(--flex-direction-row);
-  --rating-gap: var(--space-1);
-  --rating-margin: var(--space-0);
-  --rating-padding: var(--space-0);
-  --rating-border-width: var(--border-width-none);
-  --rating__legend-position: var(--position-absolute);
-  --rating__legend-inline-size: var(--size-1px);
-  --rating__legend-block-size: var(--size-1px);
-  --rating__legend-overflow: var(--overflow-hidden);
-  --rating__control-position: var(--position-absolute);
-  --rating__control-opacity: var(--opacity-none);
-  --rating__control-inline-size: var(--size-1px);
-  --rating__control-block-size: var(--size-1px);
-  --rating__star-color: var(--label-3);
-  --rating__star-color--lit: var(--warning-strong);
-  --rating__star-color--hover: var(--warning);
-  --rating__star-size: var(--space-6);
-  --rating__option-display: var(--display-inline-flex);
-  --rating__option-padding: var(--space-1);
-  --rating__option-cursor: var(--cursor-pointer);
-  --rating__option-border-radius: var(--radius-control);
-  --rating__option-outline-width--focus: var(--border-width-thick);
-  --rating__option-outline-style--focus: var(--border-style-solid);
-  --rating__option-outline-color--focus: var(--tint);
-  --rating__option-outline-offset--focus: var(--space-1);
-}
-
 fieldset[variant="rating"] {
-  display: var(--rating-display);
-  flex-direction: var(--rating-flex-direction);
-  gap: var(--rating-gap);
-  margin: var(--rating-margin);
-  padding: var(--rating-padding);
-  border-width: var(--rating-border-width);
+  display: var(--display-rating);
+  flex-direction: var(--flex-direction-rating);
+  gap: var(--spacing-rating-gap);
+  margin: var(--spacing-rating-margin);
+  padding: var(--spacing-rating-padding);
+  border-width: var(--size-border-rating);
 
   & > legend {
-    position: var(--rating__legend-position);
-    inline-size: var(--rating__legend-inline-size);
-    block-size: var(--rating__legend-block-size);
-    overflow: var(--rating__legend-overflow);
+    position: var(--position-rating-legend);
+    inline-size: var(--size-rating-legend-inline);
+    block-size: var(--size-rating-legend-block);
+    overflow: var(--overflow-rating-legend);
   }
 
   & > label {
-    display: var(--rating__option-display);
-    padding: var(--rating__option-padding);
-    cursor: var(--rating__option-cursor);
-    border-radius: var(--rating__option-border-radius);
-    color: var(--rating__star-color);
+    display: var(--display-rating-option);
+    padding: var(--spacing-rating-option-padding);
+    cursor: var(--cursor-rating-option);
+    border-radius: var(--size-radius-rating-option);
+    color: var(--color-text-rating-star);
 
     & > input {
-      position: var(--rating__control-position);
-      opacity: var(--rating__control-opacity);
-      inline-size: var(--rating__control-inline-size);
-      block-size: var(--rating__control-block-size);
+      position: var(--position-rating-control);
+      opacity: var(--opacity-rating-control);
+      inline-size: var(--size-rating-control-inline);
+      block-size: var(--size-rating-control-block);
     }
 
     & > svg {
-      inline-size: var(--rating__star-size);
-      block-size: var(--rating__star-size);
+      inline-size: var(--size-rating-star);
+      block-size: var(--size-rating-star);
     }
   }
 
   & > label:has(> input:focus-visible) {
-    outline-width: var(--rating__option-outline-width--focus);
-    outline-style: var(--rating__option-outline-style--focus);
-    outline-color: var(--rating__option-outline-color--focus);
-    outline-offset: var(--rating__option-outline-offset--focus);
+    outline-width: var(--size-border-rating-option-outline-focus);
+    outline-style: var(--border-style-rating-option-outline-focus);
+    outline-color: var(--color-border-rating-option-outline-focus);
+    outline-offset: var(--spacing-rating-option-outline-offset-focus);
   }
 }
 
@@ -74,41 +45,41 @@ fieldset[variant="rating"] {
    every step before it, and hover previews the same range. No script
    paints a star. */
 fieldset[variant="rating"]:has(> label:nth-of-type(1) > input:checked) > label:nth-of-type(-n+1) {
-  color: var(--rating__star-color--lit);
+  color: var(--color-text-rating-star-lit);
 }
 
 fieldset[variant="rating"]:has(> label:nth-of-type(2) > input:checked) > label:nth-of-type(-n+2) {
-  color: var(--rating__star-color--lit);
+  color: var(--color-text-rating-star-lit);
 }
 
 fieldset[variant="rating"]:has(> label:nth-of-type(3) > input:checked) > label:nth-of-type(-n+3) {
-  color: var(--rating__star-color--lit);
+  color: var(--color-text-rating-star-lit);
 }
 
 fieldset[variant="rating"]:has(> label:nth-of-type(4) > input:checked) > label:nth-of-type(-n+4) {
-  color: var(--rating__star-color--lit);
+  color: var(--color-text-rating-star-lit);
 }
 
 fieldset[variant="rating"]:has(> label:nth-of-type(5) > input:checked) > label:nth-of-type(-n+5) {
-  color: var(--rating__star-color--lit);
+  color: var(--color-text-rating-star-lit);
 }
 
 fieldset[variant="rating"]:has(> label:nth-of-type(1):hover) > label:nth-of-type(-n+1) {
-  color: var(--rating__star-color--hover);
+  color: var(--color-text-rating-star-hover);
 }
 
 fieldset[variant="rating"]:has(> label:nth-of-type(2):hover) > label:nth-of-type(-n+2) {
-  color: var(--rating__star-color--hover);
+  color: var(--color-text-rating-star-hover);
 }
 
 fieldset[variant="rating"]:has(> label:nth-of-type(3):hover) > label:nth-of-type(-n+3) {
-  color: var(--rating__star-color--hover);
+  color: var(--color-text-rating-star-hover);
 }
 
 fieldset[variant="rating"]:has(> label:nth-of-type(4):hover) > label:nth-of-type(-n+4) {
-  color: var(--rating__star-color--hover);
+  color: var(--color-text-rating-star-hover);
 }
 
 fieldset[variant="rating"]:has(> label:nth-of-type(5):hover) > label:nth-of-type(-n+5) {
-  color: var(--rating__star-color--hover);
+  color: var(--color-text-rating-star-hover);
 }

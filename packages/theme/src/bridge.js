@@ -1,307 +1,421 @@
 /**
- * The `--bn-*` bridge: one static block that re-points every themeable custom
- * property `@basenative/components` reads at this package's `--bn-theme-*`
- * names.
+ * The CTI+ bridge: one static block that re-points every themeable custom
+ * property `@basenative/components` reads at this package's theme names.
  *
  * WHY IT LIVES HERE AND NOT IN `components`. `components` owns components;
- * its `--bn-*` ladder (`components/tokens-legacy.css`) is already a complete,
- * neutral default theme and it should stay ignorant that themes exist at all.
- * The cost of putting the bridge
- * here is that this package's name list can fall behind a components release —
- * so that cost is measured rather than assumed: `BN_BRIDGED` is the list this
- * block actually emits, `UPSTREAM_OWNED` is the list deliberately left to
- * `components`, and `bridge.test.js` reads every stylesheet in
- * `packages/components/src` and fails if a `var(--bn-*)` appears in neither.
- * A components release that adds a themeable token breaks this package's build,
- * in the same CI run, instead of silently going unthemed in six properties.
+ * its generated token sheet is already a complete, neutral default theme and
+ * it should stay ignorant that themes exist at all. The cost of putting the
+ * bridge here is that this package's name list can fall behind a components
+ * release — so that cost is measured rather than assumed: `CTI_BRIDGED` is
+ * the list this block actually emits, `UPSTREAM_OWNED` is the list
+ * deliberately left to `components`, and `bridge.test.js` reads every
+ * stylesheet in `packages/components/src` and fails if a consumed name
+ * appears in neither. A components release that adds a themeable token
+ * breaks this package's build, in the same CI run, instead of silently
+ * going unthemed in six properties.
  *
- * WHY THE SELECTOR LIST IS WHAT IT IS. `components/theme.css` activates its own
- * dark palette at two specificities:
+ * WHY THE SELECTOR LIST IS WHAT IT IS. The generated token sheet activates
+ * its dark values at two specificities:
  *
  *     @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) }   (0,2,0)
- *     [data-theme="dark"]                                                        (0,1,0)
+ *     :root[data-theme="dark"]                                                   (0,2,0)
  *
- * A bridge at plain `:root` (0,1,0) loses to the first of those, so on an
- * OS-dark machine upstream's dark values would leak past the theme. Both
- * selectors below are (0,2,1) — `html` + `:root` + one attribute — so the
- * bridge wins in every context, and between them they match every possible
- * value of `data-theme` including its absence:
+ * A bridge at plain `:root` (0,1,0) loses to both, so on an OS-dark machine
+ * upstream's dark values would leak past the theme. Both selectors below are
+ * (0,2,1) — `html` + `:root` + one attribute — so the bridge wins in every
+ * context, and between them they match every possible value of `data-theme`
+ * including its absence:
  *
  *     no attribute      -> :not([data-theme="light"])
  *     data-theme=light  -> [data-theme]
  *     data-theme=dark   -> both
  *
- * The theme's own `--bn-theme-*` values decide which palette that is. Upstream's
- * `--bn-dark-*` layer is therefore fully neutralised: the theme, not the
- * component package, decides what dark means.
+ * The theme's own values decide which palette that is. Dark is a mode
+ * carried on the same tokens upstream — there is no separate dark name set —
+ * so re-pointing a token re-points both of its modes at the theme.
  *
- * It is emitted into `@layer tokens` to sit in the declared layer order
- * (`reset, tokens, layout, components, states`) rather than above all of it.
+ * WHY IT IS UNLAYERED. Upstream declares its core tokens unlayered, and a
+ * layered declaration loses to ANY unlayered one regardless of specificity:
+ * the scrim token is unlayered, so a bridge sitting in `@layer tokens` could
+ * never re-point it. This block is therefore emitted bare. The theme's own
+ * emitted values stay in `@layer tokens`; only the bridge steps out of the
+ * layer order.
  */
 
 /** The bridge, as text. Byte-identical to `src/bridge.css`; `bridge.test.js` enforces that. */
-export const BRIDGE_CSS = `@layer tokens {
-  /* @basenative/theme — the --bn-* bridge.
-     Generated from src/bridge.js; edit that, not this. See the rationale there
-     for why both selectors are (0,2,1) and why this block lives in @layer tokens. */
-  html:root[data-theme],
-  html:root:not([data-theme="light"]) {
-    /* Ramps. --bn-color-accent-* already aliases --bn-color-primary-* upstream,
-       so re-pointing primary carries accent with it. */
-    --bn-color-gray-50: var(--bn-theme-ramp-neutral-50);
-    --bn-color-gray-100: var(--bn-theme-ramp-neutral-100);
-    --bn-color-gray-200: var(--bn-theme-ramp-neutral-200);
-    --bn-color-gray-300: var(--bn-theme-ramp-neutral-300);
-    --bn-color-gray-400: var(--bn-theme-ramp-neutral-400);
-    --bn-color-gray-500: var(--bn-theme-ramp-neutral-500);
-    --bn-color-gray-600: var(--bn-theme-ramp-neutral-600);
-    --bn-color-gray-700: var(--bn-theme-ramp-neutral-700);
-    --bn-color-gray-800: var(--bn-theme-ramp-neutral-800);
-    --bn-color-gray-900: var(--bn-theme-ramp-neutral-900);
-    --bn-color-gray-950: var(--bn-theme-ramp-neutral-950);
-    --bn-color-primary-50: var(--bn-theme-ramp-primary-50);
-    --bn-color-primary-100: var(--bn-theme-ramp-primary-100);
-    --bn-color-primary-200: var(--bn-theme-ramp-primary-200);
-    --bn-color-primary-300: var(--bn-theme-ramp-primary-300);
-    --bn-color-primary-400: var(--bn-theme-ramp-primary-400);
-    --bn-color-primary-500: var(--bn-theme-ramp-primary-500);
-    --bn-color-primary-600: var(--bn-theme-ramp-primary-600);
-    --bn-color-primary-700: var(--bn-theme-ramp-primary-700);
-    --bn-color-primary-800: var(--bn-theme-ramp-primary-800);
-    --bn-color-primary-900: var(--bn-theme-ramp-primary-900);
+export const BRIDGE_CSS = `/* @basenative/theme — the CTI+ bridge.
+   Generated from src/bridge.js; edit that, not this. See the rationale there
+   for why both selectors are (0,2,1) and why this block is unlayered. */
+html:root[data-theme],
+html:root:not([data-theme="light"]) {
+  /* Ramps. The accent ramp already aliases the primary ramp upstream, so
+     re-pointing primary carries accent with it. */
+  --palette-gray-50: var(--palette-theme-neutral-50);
+  --palette-gray-100: var(--palette-theme-neutral-100);
+  --palette-gray-200: var(--palette-theme-neutral-200);
+  --palette-gray-300: var(--palette-theme-neutral-300);
+  --palette-gray-400: var(--palette-theme-neutral-400);
+  --palette-gray-500: var(--palette-theme-neutral-500);
+  --palette-gray-600: var(--palette-theme-neutral-600);
+  --palette-gray-700: var(--palette-theme-neutral-700);
+  --palette-gray-800: var(--palette-theme-neutral-800);
+  --palette-gray-900: var(--palette-theme-neutral-900);
+  --palette-gray-950: var(--palette-theme-neutral-950);
+  --palette-primary-50: var(--palette-theme-primary-50);
+  --palette-primary-100: var(--palette-theme-primary-100);
+  --palette-primary-200: var(--palette-theme-primary-200);
+  --palette-primary-300: var(--palette-theme-primary-300);
+  --palette-primary-400: var(--palette-theme-primary-400);
+  --palette-primary-500: var(--palette-theme-primary-500);
+  --palette-primary-600: var(--palette-theme-primary-600);
+  --palette-primary-700: var(--palette-theme-primary-700);
+  --palette-primary-800: var(--palette-theme-primary-800);
+  --palette-primary-900: var(--palette-theme-primary-900);
 
-    /* Surfaces. -control and -card take the RAISED surface, not the page: on a
-       dark theme a control that shares the page colour dissolves into it with
-       nothing but a 1px border left, which is the bug components/tokens.css
-       documents T4BS and PendingBusiness both hitting. */
-    --bn-color-surface: var(--bn-theme-surface);
-    --bn-color-surface-subtle: var(--bn-theme-surface-subtle);
-    --bn-color-surface-muted: var(--bn-theme-surface-sunk);
-    --bn-color-surface-inset: var(--bn-theme-surface-sunk);
-    --bn-color-surface-raised: var(--bn-theme-surface-raised);
-    --bn-color-surface-control: var(--bn-theme-surface-raised);
-    --bn-color-surface-card: var(--bn-theme-surface-raised);
-    --bn-color-surface-inverse: var(--bn-theme-surface-inverse);
+  /* Surfaces. The control and card surfaces take the RAISED surface, not
+     the page: on a dark theme a control that shares the page colour
+     dissolves into it with nothing but a 1px border left, which is the bug
+     the components token sheet documents T4BS and PendingBusiness both
+     hitting. */
+  --color-surface: var(--color-bkg-theme-surface);
+  --color-surface-subtle: var(--color-bkg-theme-surface-subtle);
+  --color-surface-muted: var(--color-bkg-theme-surface-sunk);
+  --color-surface-inset: var(--color-bkg-theme-surface-sunk);
+  --color-surface-raised: var(--color-bkg-theme-surface-raised);
+  --color-surface-control: var(--color-bkg-theme-surface-raised);
+  --color-surface-card: var(--color-bkg-theme-surface-raised);
+  --color-surface-inverse: var(--color-bkg-theme-surface-inverse);
 
-    /* Ink */
-    --bn-color-text: var(--bn-theme-ink);
-    --bn-color-text-muted: var(--bn-theme-ink-muted);
-    --bn-color-text-subtle: var(--bn-theme-ink-subtle);
-    --bn-color-text-inverse: var(--bn-theme-ink-inverse);
-    --bn-color-text-link: var(--bn-theme-ink-link);
+  /* Ink */
+  --color-text: var(--color-text-theme-ink);
+  --color-text-muted: var(--color-text-theme-ink-muted);
+  --color-text-subtle: var(--color-text-theme-ink-subtle);
+  --color-text-inverse: var(--color-text-theme-ink-inverse);
+  --color-text-link: var(--color-text-theme-ink-link);
 
-    /* Borders and focus. --bn-color-border-light is a decorative hairline and
-       rides --bn-theme-border; only -border-control carries SC 1.4.11. */
-    --bn-color-border: var(--bn-theme-border);
-    --bn-color-border-light: var(--bn-theme-border);
-    --bn-color-border-strong: var(--bn-theme-border-strong);
-    --bn-color-border-control: var(--bn-theme-border-control);
-    --bn-color-toggle-track-off: var(--bn-theme-border-control);
-    --bn-color-border-focus: var(--bn-theme-focus);
-    --bn-focus-ring-color: var(--bn-theme-focus);
+  /* Borders and focus. The light border is a decorative hairline and rides
+     the theme border; only the control border carries SC 1.4.11. The toggle
+     track in its off state takes that same control border. */
+  --color-border: var(--color-border-theme);
+  --color-border-light: var(--color-border-theme);
+  --color-border-strong: var(--color-border-theme-strong);
+  --color-border-control: var(--color-border-theme-control);
+  --color-bkg-toggle-track-off: var(--color-border-theme-control);
+  --color-border-focus: var(--color-border-theme-focus);
+  --color-focus-ring: var(--color-border-theme-focus);
 
-    /* Foreground on a filled brand surface. The toggle knob rides the primary
-       track when ON, so it takes the same foreground. */
-    --bn-color-on-primary: var(--bn-theme-on-primary);
-    --bn-color-on-accent: var(--bn-theme-on-primary);
-    --bn-color-toggle-knob: var(--bn-theme-on-primary);
-    --bn-color-on-error: var(--bn-theme-slot-error-on-solid);
+  /* Foreground on a filled brand surface. */
+  --color-text-on-primary: var(--color-text-theme-on-primary);
+  --color-text-on-accent: var(--color-text-theme-on-primary);
+  --color-text-on-error: var(--color-text-theme-slot-error-on-solid);
 
-    /* Selection */
-    --bn-color-selected-bg: var(--bn-theme-selected-bg);
-    --bn-color-selected-text: var(--bn-theme-selected-ink);
-    --bn-color-zebra: var(--bn-theme-zebra);
+  /* Selection, striping, and the scrim — both scrim names, the surface one
+     and the background one, re-point at the theme's scrim. */
+  --color-bkg-selected: var(--color-bkg-theme-selected);
+  --color-text-selected: var(--color-text-theme-selected);
+  --color-bkg-zebra: var(--color-bkg-theme-zebra);
+  --color-scrim: var(--color-bkg-theme-scrim);
+  --color-bkg-scrim: var(--color-bkg-theme-scrim);
 
-    /* The five declared badge/alert variants, driven by whichever signal family
-       the theme assigned to each slot. A theme names its families for its own
-       domain; these five names are the component contract. */
-    --bn-color-info-bg: var(--bn-theme-slot-primary-bg);
-    --bn-color-info-border: var(--bn-theme-slot-primary-line);
-    --bn-color-info-text: var(--bn-theme-slot-primary-ink);
-    --bn-color-info-500: var(--bn-theme-slot-primary-line);
-    --bn-color-info-600: var(--bn-theme-slot-primary-solid);
-    --bn-color-success-bg: var(--bn-theme-slot-success-bg);
-    --bn-color-success-50: var(--bn-theme-slot-success-bg);
-    --bn-color-success-border: var(--bn-theme-slot-success-line);
-    --bn-color-success-text: var(--bn-theme-slot-success-ink);
-    --bn-color-success-500: var(--bn-theme-slot-success-line);
-    --bn-color-success-600: var(--bn-theme-slot-success-solid);
-    --bn-color-warning-bg: var(--bn-theme-slot-warning-bg);
-    --bn-color-warning-50: var(--bn-theme-slot-warning-bg);
-    --bn-color-warning-border: var(--bn-theme-slot-warning-line);
-    --bn-color-warning-text: var(--bn-theme-slot-warning-ink);
-    --bn-color-warning-500: var(--bn-theme-slot-warning-line);
-    --bn-color-warning-600: var(--bn-theme-slot-warning-solid);
-    --bn-color-error-bg: var(--bn-theme-slot-error-bg);
-    --bn-color-error-border: var(--bn-theme-slot-error-line);
-    --bn-color-error-text: var(--bn-theme-slot-error-ink);
-    --bn-color-error-fg: var(--bn-theme-slot-error-ink);
-    --bn-color-error-500: var(--bn-theme-slot-error-line);
-    --bn-color-error-600: var(--bn-theme-slot-error-solid);
-    --bn-color-success-badge-bg: var(--bn-theme-slot-success-bg);
-    --bn-color-success-badge-text: var(--bn-theme-slot-success-ink);
-    --bn-color-warning-badge-bg: var(--bn-theme-slot-warning-bg);
-    --bn-color-warning-badge-text: var(--bn-theme-slot-warning-ink);
-    --bn-color-error-badge-bg: var(--bn-theme-slot-error-bg);
-    --bn-color-error-badge-text: var(--bn-theme-slot-error-ink);
+  /* The four signal families, driven by whichever family the theme
+     assigned to each slot — info rides the primary slot. A theme names its
+     families for its own domain; these names are the component contract.
+     The palette steps re-point at the slot's line and solid, and the two
+     50 steps that exist upstream re-point at the slot's tint. */
+  --color-bkg-info: var(--color-bkg-theme-slot-primary);
+  --color-border-info: var(--color-border-theme-slot-primary);
+  --color-text-info: var(--color-text-theme-slot-primary);
+  --palette-info-500: var(--color-border-theme-slot-primary);
+  --palette-info-600: var(--color-bkg-theme-slot-primary-solid);
+  --color-bkg-success: var(--color-bkg-theme-slot-success);
+  --color-border-success: var(--color-border-theme-slot-success);
+  --color-text-success: var(--color-text-theme-slot-success);
+  --palette-success-500: var(--color-border-theme-slot-success);
+  --palette-success-600: var(--color-bkg-theme-slot-success-solid);
+  --palette-success-50: var(--color-bkg-theme-slot-success);
+  --color-bkg-warning: var(--color-bkg-theme-slot-warning);
+  --color-border-warning: var(--color-border-theme-slot-warning);
+  --color-text-warning: var(--color-text-theme-slot-warning);
+  --palette-warning-500: var(--color-border-theme-slot-warning);
+  --palette-warning-600: var(--color-bkg-theme-slot-warning-solid);
+  --palette-warning-50: var(--color-bkg-theme-slot-warning);
+  --color-bkg-error: var(--color-bkg-theme-slot-error);
+  --color-border-error: var(--color-border-theme-slot-error);
+  --color-text-error: var(--color-text-theme-slot-error);
+  --color-text-error-fg: var(--color-text-theme-slot-error);
+  --palette-error-500: var(--color-border-theme-slot-error);
+  --palette-error-600: var(--color-bkg-theme-slot-error-solid);
+  --color-bkg-success-badge: var(--color-bkg-theme-slot-success);
+  --color-text-success-badge: var(--color-text-theme-slot-success);
+  --color-bkg-warning-badge: var(--color-bkg-theme-slot-warning);
+  --color-text-warning-badge: var(--color-text-theme-slot-warning);
+  --color-bkg-error-badge: var(--color-bkg-theme-slot-error);
+  --color-text-error-badge: var(--color-text-theme-slot-error);
 
-    /* Type, geometry, motion. The size ladder, weights, line heights, the space
-       scale and the easing curves stay upstream — see UPSTREAM_OWNED. */
-    --bn-font-family: var(--bn-theme-font-sans);
-    --bn-font-mono: var(--bn-theme-font-mono);
-    --bn-radius-sm: var(--bn-theme-radius-sm);
-    --bn-radius-md: var(--bn-theme-radius-md);
-    --bn-radius-lg: var(--bn-theme-radius-lg);
-    --bn-radius-xl: var(--bn-theme-radius-xl);
-    --bn-radius-full: var(--bn-theme-radius-full);
-    --bn-control-height: var(--bn-theme-control-h);
-    --bn-control-height-sm: var(--bn-theme-control-h-sm);
-    --bn-control-height-lg: var(--bn-theme-control-h-lg);
-    --bn-target-size-min: var(--bn-theme-tap-min);
-    --bn-control-indicator-size: var(--bn-theme-control-indicator);
-    --bn-transition-fast: var(--bn-theme-motion-fast);
-    --bn-transition-normal: var(--bn-theme-motion-base);
-    --bn-transition-slow: var(--bn-theme-motion-slow);
-    --bn-scrim: var(--bn-theme-scrim);
-  }
+  /* Type, geometry, motion. The size ladder, weights, line heights, the
+     space scale and the easing curves stay upstream — see UPSTREAM_OWNED.
+     The radius rows pin the theme ladder onto upstream's legacy ladder BY
+     VALUE: the theme's sm is upstream's xs, its md is the legacy md, its
+     lg is upstream's sm, its xl is upstream's lg — the same ladder
+     theme.test.js asserts byte-identical defaults against. */
+  --font-family-sans: var(--font-family-theme-sans);
+  --font-family-code: var(--font-family-theme-mono);
+  --size-radius-xs: var(--size-radius-theme-sm);
+  --size-radius-legacy-md: var(--size-radius-theme-md);
+  --size-radius-sm: var(--size-radius-theme-lg);
+  --size-radius-lg: var(--size-radius-theme-xl);
+  --size-radius-pill: var(--size-radius-theme-full);
+  --size-control-height: var(--size-theme-control-h);
+  --size-control-height-sm: var(--size-theme-control-h-sm);
+  --size-control-height-lg: var(--size-theme-control-h-lg);
+  --size-target-floor: var(--size-theme-tap-min);
+  --size-control-indicator: var(--size-theme-control-indicator);
+  --motion-fast: var(--motion-theme-fast);
+  --motion-base: var(--motion-theme-base);
+  --motion-slow: var(--motion-theme-slow);
 }
 `;
 
 /**
- * Every `--bn-*` name the bridge re-points. Derived from the text above so the
- * two cannot disagree.
+ * Every name the bridge re-points. Derived from the text above so the two
+ * cannot disagree.
  *
  * @type {readonly string[]}
  */
-export const BN_BRIDGED = Object.freeze(
-  [...BRIDGE_CSS.matchAll(/^\s*(--bn-[a-z0-9-]+)\s*:/gm)].map((m) => m[1]).sort(),
+export const CTI_BRIDGED = Object.freeze(
+  [...BRIDGE_CSS.matchAll(/^\s*(--[a-z0-9-]+)\s*:/gm)].map((m) => m[1]).sort(),
 );
 
 /**
- * `--bn-*` names `@basenative/components` reads that this bridge deliberately
- * does NOT touch, with the reason. `bridge.test.js` treats anything outside
+ * Names `@basenative/components` reads that this bridge deliberately does
+ * NOT touch, with the reason. `bridge.test.js` treats anything outside
  * these two lists as drift.
  *
  * @type {Readonly<Record<string, string>>}
  */
 export const UPSTREAM_OWNED = Object.freeze({
-  '--bn-color-white': 'a literal, not a theme decision',
-  '--bn-color-black': 'a literal, not a theme decision',
-  '--bn-color-accent-600': 'aliases --bn-color-primary-600 upstream; bridging primary carries it',
-  '--bn-focus-ring': 'composed upstream from --bn-color-surface and --bn-color-border-focus, both bridged',
-  '--bn-border-width': 'structural, not identity',
-  '--bn-border-width-thick': 'structural, not identity',
-  '--bn-size-content-max': 'layout measure — an app decision, not a palette one',
-  '--bn-size-text-max': 'layout measure — an app decision, not a palette one',
-  '--bn-size-app-nav-bar': 'layout measure — an app decision, not a palette one',
-  '--bn-size-nav-rail': 'layout measure — an app decision, not a palette one',
-  '--bn-font-size-xs': 'type scale — see README, "What the bridge leaves alone"',
-  '--bn-font-size-sm': 'type scale',
-  '--bn-font-size-base': 'type scale',
-  '--bn-font-size-lg': 'type scale',
-  '--bn-font-size-xl': 'type scale',
-  '--bn-font-size-2xl': 'type scale',
-  '--bn-font-size-3xl': 'type scale',
-  '--bn-font-size-4xl': 'type scale',
-  '--bn-font-size-component': 'derived from the type scale by the density attribute',
-  '--bn-font-weight-normal': 'type scale',
-  '--bn-font-weight-medium': 'type scale',
-  '--bn-font-weight-semibold': 'type scale',
-  '--bn-font-weight-bold': 'type scale',
-  '--bn-line-height-tight': 'type scale',
-  '--bn-line-height-snug': 'type scale',
-  '--bn-line-height-normal': 'type scale',
-  '--bn-line-height-relaxed': 'type scale',
-  '--bn-letter-spacing-tight': 'type scale',
-  '--bn-letter-spacing-normal': 'type scale',
-  '--bn-letter-spacing-wide': 'type scale',
-  '--bn-space-0': 'space ladder — a 4px grid is not identity; override it in app CSS',
-  '--bn-space-half': 'space ladder',
-  '--bn-space-1': 'space ladder',
-  '--bn-space-2': 'space ladder',
-  '--bn-space-3': 'space ladder',
-  '--bn-space-4': 'space ladder',
-  '--bn-space-5': 'space ladder',
-  '--bn-space-6': 'space ladder',
-  '--bn-space-8': 'space ladder',
-  '--bn-space-10': 'space ladder',
-  '--bn-space-12': 'space ladder',
-  '--bn-space-16': 'space ladder',
-  '--bn-space-component-x': 'derived from the space ladder by the density attribute',
-  '--bn-space-component-y': 'derived from the space ladder by the density attribute',
-  '--bn-radius-control': 'aliases --bn-radius-md upstream',
-  '--bn-radius-indicator':
-    'derived upstream from --bn-radius-control, which aliases the bridged --bn-radius-md',
-  '--bn-color-control-selected':
-    'aliases --bn-color-accent-600 upstream; bridging primary carries it',
-  '--bn-color-on-control-selected': 'aliases --bn-color-on-accent, which is bridged',
-  '--bn-color-border-control-hover':
-    'composed upstream from --bn-color-border-control and --bn-color-text, both bridged',
-  '--bn-toggle-track-inline-size':
-    'derived upstream from --bn-control-indicator-size, which is bridged',
-  '--bn-toggle-track-block-size':
-    'derived upstream from --bn-control-indicator-size, which is bridged',
-  '--bn-toggle-knob-size':
-    'derived upstream from --bn-control-indicator-size, which is bridged',
-  '--bn-toggle-knob-inset': 'structural, not identity',
-  '--bn-radius-container': 'aliases --bn-radius-lg upstream',
-  '--bn-radius-modal': 'aliases --bn-radius-xl upstream',
-  '--bn-shadow-sm': 'elevation is a neutral alpha ramp, not a palette',
-  '--bn-shadow-md': 'elevation',
-  '--bn-shadow-lg': 'elevation',
-  '--bn-shadow-modal': 'aliases --bn-shadow-lg upstream',
-  '--bn-material-bg': 'material — a platform-layer treatment; the platform token layer or app CSS supplies it',
-  '--bn-material-backdrop': 'material — a platform-layer treatment; the platform token layer or app CSS supplies it',
-  '--bn-material-shadow': 'material — a platform-layer treatment; the platform token layer or app CSS supplies it',
-  '--bn-motion-fast': 'aliases --bn-transition-fast upstream',
-  '--bn-motion-base': 'aliases --bn-transition-normal upstream',
-  '--bn-motion-slow': 'aliases --bn-transition-slow upstream',
-  '--bn-ease-out-expo': 'easing curve',
-  '--bn-ease-spring': 'easing curve',
-  '--bn-ease-out-back': 'easing curve',
-  '--bn-z-nav': 'stacking order',
-  '--bn-z-dropdown': 'stacking order',
-  '--bn-z-modal': 'stacking order',
-  '--bn-z-toast': 'stacking order',
-  '--bn-calendar-cols': 'per-instance geometry knob',
-  '--bn-app-nav-visual-inset':
-    'runtime geometry — written by initAppNav from window.visualViewport so the bar clears the on-screen keyboard; measured, not themed',
-  '--bn-calendar-hours': 'per-instance geometry knob',
-  '--bn-calendar-event-rows': 'per-instance geometry knob, set inline by renderCalendar',
-  '--bn-calendar-event-lead': 'per-instance geometry knob, set inline by renderCalendar',
-  '--bn-calendar-event-trail': 'per-instance geometry knob, set inline by renderCalendar',
-  '--bn-calendar-event-color': 'derived upstream from bridged colour tokens',
-  '--bn-avatar-tone':
-    'per-instance identity colour — set by components.css from renderAvatar\'s data-tone (a stable hash of the person\'s name); identity, not theme',
-  '--bn-calendar-event-bg': 'derived upstream from bridged colour tokens',
-  '--bn-calendar-today-bg': 'derived upstream from bridged colour tokens',
-  '--bn-calendar-today-header-bg': 'derived upstream from bridged colour tokens',
-  '--bn-calendar-today-text': 'derived upstream from bridged colour tokens',
-  '--bn-pipeline-status-color': 'set per data-status from bridged colour tokens',
+  '--color-avatar-tone': 'per-instance identity colour — set by components from a stable hash of the person\'s name; identity, not theme',
+  '--color-background': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-background-2': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-background-3': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-background-grouped': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-background-grouped-2': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-bkg-calendar-event': 'derived upstream from bridged colour tokens',
+  '--color-bkg-calendar-today': 'derived upstream from bridged colour tokens',
+  '--color-bkg-calendar-today-header': 'derived upstream from bridged colour tokens',
+  '--color-bkg-control-selected': 'rides the accent chain upstream, which follows the bridged primary ramp',
+  '--color-bkg-material': 'material — a platform-layer treatment; the app supplies it, not the theme',
+  '--color-bkg-toggle-knob-legacy': 'legacy-sheet token — the legacy toggle keeps its own knob colour while that sheet awaits retirement; not themed',
+  '--color-border-control-hover': 'composed upstream from the bridged border-control and text tokens',
+  '--color-border-separator': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
+  '--color-border-separator-opaque': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
+  '--color-danger': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
+  '--color-danger-strong': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
+  '--color-fill': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-fill-2': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-fill-3': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-fill-4': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-pipeline-status': 'set per data-status from bridged colour tokens',
+  '--color-success': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
+  '--color-text-calendar-event': 'derived upstream from bridged colour tokens',
+  '--color-text-calendar-today': 'derived upstream from bridged colour tokens',
+  '--color-text-label': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-text-label-2': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-text-label-3': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-text-label-4': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-text-label-placeholder': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-text-on-control-selected': 'rides the accent chain upstream, which follows the bridged primary ramp',
+  '--color-text-on-tint': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-tint': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-tint-fill': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-tint-strong': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-warning': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
+  '--color-warning-strong': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
+  '--font-body-family': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-body-leading': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-body-size': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-body-tracking': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-body-weight': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-callout-family': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-callout-leading': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-callout-size': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-callout-tracking': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-callout-weight': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-caption-1-family': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-caption-1-leading': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-caption-1-size': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-caption-1-tracking': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-caption-2-family': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-caption-2-leading': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-caption-2-size': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-caption-2-tracking': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-caption-2-weight': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-family-display': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-family-mono': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-family-text': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-footnote-family': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-footnote-leading': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-footnote-size': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-footnote-tracking': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-headline-family': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-headline-leading': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-headline-size': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-headline-tracking': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-headline-weight': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-leading-normal': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-leading-relaxed': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-leading-snug': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-leading-tight': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-size-2xl': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-size-3xl': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-size-4xl': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-size-base': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-size-component': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-size-lg': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-size-sm': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-size-xl': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-size-xs': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-subheadline-family': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-subheadline-leading': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-subheadline-size': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-subheadline-tracking': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-subheadline-weight': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-title-1-family': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-title-1-leading': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-title-1-size': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-title-1-tracking': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-title-2-family': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-title-2-leading': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-title-2-size': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-title-2-tracking': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-title-3-family': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-title-3-leading': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-title-3-size': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-title-3-tracking': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-title-3-weight': 'type system — the trinity text styles and stacks stay upstream',
+  '--font-tracking-tight': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-tracking-wide': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-weight-bold': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-weight-medium': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-weight-regular': 'type scale — see README, "What the bridge leaves alone"',
+  '--font-weight-semibold': 'type scale — see README, "What the bridge leaves alone"',
+  '--layer-legacy-dropdown': 'stacking order',
+  '--layer-legacy-modal': 'stacking order',
+  '--layer-legacy-nav': 'stacking order',
+  '--layer-legacy-toast': 'stacking order',
+  '--layer-overlay': 'stacking order',
+  '--material-backdrop': 'material — a platform-layer treatment; the app supplies it, not the theme',
+  '--motion-ease-out-expo': 'easing curve',
+  '--motion-fade-curve': 'easing curve',
+  '--motion-fade-duration': 'motion detail beyond the three bridged durations — upstream-owned',
+  '--motion-spring-stiff-curve': 'easing curve',
+  '--motion-spring-stiff-duration': 'easing curve',
+  '--number-calendar-cols': 'per-instance or structural number — not a theme decision',
+  '--number-calendar-event-lead': 'per-instance geometry knob, set inline by the calendar renderer',
+  '--number-calendar-event-rows': 'per-instance geometry knob, set inline by the calendar renderer',
+  '--number-calendar-event-trail': 'per-instance geometry knob, set inline by the calendar renderer',
+  '--number-calendar-hours': 'per-instance or structural number — not a theme decision',
+  '--palette-accent-600': 'aliases the primary ramp upstream; bridging primary carries it',
+  '--palette-system-blue': 'the system palette — platform-owned upstream, carries its own modes',
+  '--palette-system-green': 'the system palette — platform-owned upstream, carries its own modes',
+  '--palette-system-orange': 'the system palette — platform-owned upstream, carries its own modes',
+  '--palette-system-red': 'the system palette — platform-owned upstream, carries its own modes',
+  '--palette-transparent': 'a literal, not a theme decision',
+  '--palette-white': 'a literal, not a theme decision',
+  '--shadow-float': 'elevation is a neutral alpha ramp, not a palette',
+  '--shadow-focus': 'elevation is a neutral alpha ramp, not a palette',
+  '--shadow-focus-ring': 'elevation is a neutral alpha ramp, not a palette',
+  '--shadow-lg': 'elevation is a neutral alpha ramp, not a palette',
+  '--shadow-material': 'elevation is a neutral alpha ramp, not a palette',
+  '--shadow-md': 'elevation is a neutral alpha ramp, not a palette',
+  '--shadow-modal': 'elevation is a neutral alpha ramp, not a palette',
+  '--shadow-none': 'elevation is a neutral alpha ramp, not a palette',
+  '--shadow-raised': 'elevation is a neutral alpha ramp, not a palette',
+  '--shadow-sm': 'elevation is a neutral alpha ramp, not a palette',
+  '--size-1px': 'layout measure — an app decision, not a palette one',
+  '--size-app-nav-bar': 'layout measure — an app decision, not a palette one',
+  '--size-app-nav-visual-inset': 'layout measure — an app decision, not a palette one',
+  '--size-border': 'layout measure — an app decision, not a palette one',
+  '--size-border-none': 'layout measure — an app decision, not a palette one',
+  '--size-border-thick': 'layout measure — an app decision, not a palette one',
+  '--size-content-max': 'layout measure — an app decision, not a palette one',
+  '--size-control': 'layout measure — an app decision, not a palette one',
+  '--size-drawer-max': 'layout measure — an app decision, not a palette one',
+  '--size-full': 'layout measure — an app decision, not a palette one',
+  '--size-hairline': 'layout measure — an app decision, not a palette one',
+  '--size-max-content': 'layout measure — an app decision, not a palette one',
+  '--size-menu-min': 'layout measure — an app decision, not a palette one',
+  '--size-nav-rail': 'layout measure — an app decision, not a palette one',
+  '--size-palette-max': 'layout measure — an app decision, not a palette one',
+  '--size-radius-2xl': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-container': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-control': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-indicator': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-legacy-container': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-legacy-control': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-legacy-modal': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-md': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-none': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-sheet': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-xl': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-sheet-max': 'layout measure — an app decision, not a palette one',
+  '--size-switch-block': 'layout measure — an app decision, not a palette one',
+  '--size-switch-inline': 'layout measure — an app decision, not a palette one',
+  '--size-target-min': 'layout measure — an app decision, not a palette one',
+  '--size-text-max': 'layout measure — an app decision, not a palette one',
+  '--size-toggle-knob-legacy': 'layout measure — an app decision, not a palette one',
+  '--size-toggle-track-block': 'layout measure — an app decision, not a palette one',
+  '--size-toggle-track-inline': 'layout measure — an app decision, not a palette one',
+  '--spacing-0': 'space ladder — a grid is not identity; override it in app CSS',
+  '--spacing-1': 'space ladder — a grid is not identity; override it in app CSS',
+  '--spacing-12': 'space ladder — a grid is not identity; override it in app CSS',
+  '--spacing-16': 'space ladder — a grid is not identity; override it in app CSS',
+  '--spacing-2': 'space ladder — a grid is not identity; override it in app CSS',
+  '--spacing-3': 'space ladder — a grid is not identity; override it in app CSS',
+  '--spacing-4': 'space ladder — a grid is not identity; override it in app CSS',
+  '--spacing-5': 'space ladder — a grid is not identity; override it in app CSS',
+  '--spacing-6': 'space ladder — a grid is not identity; override it in app CSS',
+  '--spacing-7': 'space ladder — a grid is not identity; override it in app CSS',
+  '--spacing-8': 'space ladder — a grid is not identity; override it in app CSS',
+  '--spacing-component-x': 'space ladder — a grid is not identity; override it in app CSS',
+  '--spacing-component-y': 'space ladder — a grid is not identity; override it in app CSS',
+  '--spacing-half': 'space ladder — a grid is not identity; override it in app CSS',
+  '--spacing-margin-auto': 'space ladder — a grid is not identity; override it in app CSS',
+  '--spacing-safe-bottom': 'space ladder — a grid is not identity; override it in app CSS',
+  '--spacing-safe-right': 'space ladder — a grid is not identity; override it in app CSS',
+  '--spacing-toggle-knob-inset-legacy': 'space ladder — a grid is not identity; override it in app CSS',
 });
 
 /**
  * Compares the bridge against the CSS a version of `@basenative/components`
  * actually ships.
  *
- * `--bn-dark-*` is skipped wholesale: it is upstream's own dark palette, which
- * the bridge overrides by construction, so a theme never needs to re-point it.
+ * Component-tier tokens (one file per component in the token source) and
+ * keyword tokens are the caller's to pass as `exclude` — `bridge.test.js`
+ * computes them from the DTCG source by file, `tokens/components/*.json`
+ * plus `tokens/keyword.json` — because which names are component-scoped is
+ * a fact about the caller's components version, not about this package.
+ * Theme-emitted names never appear in components CSS, so nothing is skipped
+ * by prefix any more; the dark values upstream are modes on the same names,
+ * not a second name set.
  *
  * @param {string} componentsCss  the concatenated stylesheets to check
+ * @param {object} [options]
+ * @param {Iterable<string>} [options.exclude]  consumed names to ignore
  * @returns {{ ok: boolean, unbridged: string[] }}
  */
-export function validateBridge(componentsCss) {
+export function validateBridge(componentsCss, { exclude = [] } = {}) {
   const consumed = new Set(
-    [...componentsCss.matchAll(/var\(\s*(--bn-[a-z0-9-]+)/g)].map((m) => m[1]),
+    [...componentsCss.matchAll(/var\(\s*(--[a-z0-9-]+)/g)].map((m) => m[1]),
   );
-  const bridged = new Set(BN_BRIDGED);
+  const bridged = new Set(CTI_BRIDGED);
+  const excluded = new Set(exclude);
   const unbridged = [...consumed]
     .filter(
       (name) =>
         !bridged.has(name) &&
         !Object.prototype.hasOwnProperty.call(UPSTREAM_OWNED, name) &&
-        !name.startsWith('--bn-dark-') &&
-        !name.startsWith('--bn-theme-'),
+        !excluded.has(name),
     )
     .sort();
   return { ok: unbridged.length === 0, unbridged };
@@ -313,6 +427,6 @@ export function validateBridge(componentsCss) {
  *
  * @returns {string}
  */
-export function bridgeToBn() {
+export function bridgeToCti() {
   return BRIDGE_CSS;
 }

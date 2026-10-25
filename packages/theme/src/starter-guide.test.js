@@ -22,11 +22,8 @@ import { parseCustomProperties } from './contrast.js';
 
 const README = fileURLToPath(new URL('../README.md', import.meta.url));
 const INDEX = fileURLToPath(new URL('./index.js', import.meta.url));
-// The --bn-* ramps this starter translates live in the components package's
-// legacy ladder sheet (tokens-legacy.css); components' tokens.css is the
-// trinity foundation and declares none of the --bn-* names.
 const COMPONENTS_TOKENS = fileURLToPath(
-  new URL('../../components/src/tokens-legacy.css', import.meta.url),
+  new URL('../../components/src/tokens.css', import.meta.url),
 );
 
 /** The fenced ```js block that defines the starter. */
@@ -87,8 +84,8 @@ describe('the starter is a translation of the components default, not a new look
   const upstream = parseCustomProperties(readFileSync(COMPONENTS_TOKENS, 'utf8'));
 
   for (const [ramp, prefix, steps] of [
-    ['neutral', '--bn-color-gray-', [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]],
-    ['primary', '--bn-color-primary-', [50, 100, 200, 300, 400, 500, 600, 700, 800, 900]],
+    ['neutral', '--palette-gray-', [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]],
+    ['primary', '--palette-primary-', [50, 100, 200, 300, 400, 500, 600, 700, 800, 900]],
   ]) {
     test(`its ${ramp} ramp matches ${prefix}*`, () => {
       for (const step of steps) {
@@ -114,7 +111,7 @@ describe('the README teaches an API that exists', () => {
       icons: await import('./icons.js'),
     };
     const listed = {
-      '.': ['defineTheme', 'validateTheme', 'ThemeError', 'toCss', 'bridgeToBn'],
+      '.': ['defineTheme', 'validateTheme', 'ThemeError', 'toCss', 'bridgeToCti'],
       contrast: [
         'relativeLuminance',
         'contrastRatio',

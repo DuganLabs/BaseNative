@@ -1,0 +1,497 @@
+/* /playground — page layout and editor chrome.
+ *
+ * The controls themselves (toolbar, select, buttons, tabs, list-group)
+ * are @basenative/components, styled by their own sheets, inlined into
+ * the page by playground-data.js. This sheet owns only the page's own
+ * layout: the workspace grid, the editor panes, the preview stage and
+ * the console region.
+ *
+ * Token names are CTI+: category-first, hyphen-joined
+ * (Category–Type–Item–Variant–Subitem–State), no prefix, no underscores.
+ * The --color-text-syntax-* tokens dress the editors' highlighting; the
+ * --color-text-syntax-token-* set colours the segments of a CTI+ custom
+ * property name (see hlCSS in playground.js). */
+:root {
+  --color-bkg-playground: #eef0ee;
+  --color-bkg-playground-surface: #ffffff;
+  --color-bkg-playground-surface-raised: #e4e7e4;
+  --color-bkg-playground-editor: #fcfdfc;
+  --color-bkg-playground-preview: #ffffff;
+  --color-text-playground: #171a1d;
+  --color-text-playground-muted: #5b636d;
+  --color-border-playground: #d3d8d4;
+  --color-text-playground-accent: #0d7a3e;
+  --color-text-playground-danger: #c62f24;
+  --color-text-playground-warn: #9a6a00;
+  --color-text-playground-diag: #0e6e8c;
+  --color-text-syntax-plain: #23272c;
+  --color-text-syntax-comment: #7a8288;
+  --color-text-syntax-tag: #0d7a3e;
+  --color-text-syntax-attr: #8a5a00;
+  --color-text-syntax-directive: #0e6e8c;
+  --color-text-syntax-binding: #a03d63;
+  --color-text-syntax-string: #9c3d1e;
+  --color-text-syntax-keyword: #0e6e8c;
+  --color-text-syntax-function: #6d4fc2;
+  --color-text-syntax-number: #9c3d1e;
+  --color-text-syntax-interpolation: #a03d63;
+  --color-text-syntax-token-category: #0e6e8c;
+  --color-text-syntax-token-type: #6d4fc2;
+  --color-text-syntax-token-item: #23272c;
+  --color-text-syntax-token-state: #a03d63;
+  --font-family-playground-mono:
+    ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+  --font-family-playground-sans:
+    system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bkg-playground: #0f1113;
+    --color-bkg-playground-surface: #17191d;
+    --color-bkg-playground-surface-raised: #1f2226;
+    --color-bkg-playground-editor: #121417;
+    --color-bkg-playground-preview: #131518;
+    --color-text-playground: #eceff1;
+    --color-text-playground-muted: #99a1a9;
+    --color-border-playground: #2b2f34;
+    --color-text-playground-accent: #3fb96f;
+    --color-text-playground-danger: #ff7a6e;
+    --color-text-playground-warn: #e3b341;
+    --color-text-playground-diag: #56c8e8;
+    --color-text-syntax-plain: #d7dce0;
+    --color-text-syntax-comment: #6d767f;
+    --color-text-syntax-tag: #57cc85;
+    --color-text-syntax-attr: #e3b341;
+    --color-text-syntax-directive: #56c8e8;
+    --color-text-syntax-binding: #f08bb4;
+    --color-text-syntax-string: #f09383;
+    --color-text-syntax-keyword: #56c8e8;
+    --color-text-syntax-function: #b7a6f2;
+    --color-text-syntax-number: #f09383;
+    --color-text-syntax-interpolation: #f08bb4;
+    --color-text-syntax-token-category: #56c8e8;
+    --color-text-syntax-token-type: #b7a6f2;
+    --color-text-syntax-token-item: #d7dce0;
+    --color-text-syntax-token-state: #f08bb4;
+  }
+}
+
+/* The workspace sits under the hero, inside the site's content column. */
+.workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 0 0;
+  width: 100%;
+}
+
+/* ---------- controls row: the toolbar component ---------- */
+.workspace section[variant='toolbar'] {
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+.workspace section[variant='toolbar'] > label {
+  font-size: 13px;
+  color: var(--color-text-playground-muted);
+  align-self: center;
+}
+/* The select grows into whatever width the toolbar gives it — up to a
+   cap on wide screens, the full row on phones — so the example name
+   shows in full instead of truncating. */
+.workspace section[variant='native'] {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 340px;
+  display: flex;
+}
+.workspace section[variant='native'] > select {
+  width: 100%;
+}
+.workspace section[variant='toolbar'] > kbd {
+  font-family: var(--font-family-playground-mono);
+  font-size: 11px;
+  color: var(--color-text-playground-muted);
+  white-space: nowrap;
+  align-self: center;
+}
+
+/* ---------- editors: the tabs component's panels ---------- */
+/* Wide screens show every panel side by side (the tab list steps
+   aside); narrow screens get the component's own tab list over one
+   panel at a time. */
+.workspace section[variant='tabs'] > article:not([hidden]) {
+  display: flex;
+  min-width: 0;
+}
+.workspace section[variant='tabs'] > article > .pane {
+  flex: 1;
+}
+@media (min-width: 761px) {
+  .workspace section[variant='tabs'] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .workspace section[variant='tabs'] > ul[role='tablist'] {
+    display: none;
+  }
+  .workspace section[variant='tabs'] > article[hidden] {
+    display: flex;
+  }
+  /* The combined JS + console pane is full height: the pane stretches
+     to the editor area's full height, and inside it the JS editor and
+     the console region flex to share that height. */
+  .pane[data-pane='js'] .editor {
+    flex: 3 1 0;
+    min-height: 0;
+  }
+  .pane[data-pane='js'] .console-region {
+    flex: 2 1 0;
+    min-height: 0;
+  }
+  .pane[data-pane='js'] .console-body {
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+  }
+}
+.pane {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bkg-playground-surface);
+  border: 1px solid var(--color-border-playground);
+  border-radius: 10px;
+  overflow: hidden;
+  min-width: 0;
+}
+.pane-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--color-border-playground);
+  background: var(--color-bkg-playground-surface);
+}
+.pane-head h2 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-text-playground);
+}
+.pane-head p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-text-playground-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* The .editor section is the pane's one scroll container: the sheet
+   inside it is sized to the code, and the gutter, highlight layer and
+   textarea scroll with it natively. The textarea never scrolls
+   internally — drags and wheel events land on the section, which every
+   engine scrolls reliably (a textarea's own touch scrolling is the
+   part WebKit drops). The gutter compensates only the horizontal
+   offset so the line numbers stay pinned to the left. Gestures are
+   axis-locked by attachAxisLock in playground.js: the browser never
+   claims a drag, so it cannot start a diagonal scroll. */
+.editor {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 216px;
+  background: var(--color-bkg-playground-editor);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: none;
+}
+.editor .sheet {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+}
+.editor pre,
+.editor textarea {
+  font-family: var(--font-family-playground-mono);
+  font-size: 12.5px;
+  line-height: 1.62;
+  tab-size: 2;
+}
+.editor .gutter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40px;
+  margin: 0;
+  padding: 10px 8px 10px 0;
+  text-align: right;
+  color: var(--color-text-syntax-comment);
+  opacity: 0.65;
+  overflow: hidden;
+  white-space: pre;
+  pointer-events: none;
+  user-select: none;
+  background: var(--color-bkg-playground-editor);
+  z-index: 2;
+}
+.editor .hl {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 10px 12px 10px 50px;
+  overflow: hidden;
+  white-space: pre;
+  pointer-events: none;
+  color: var(--color-text-syntax-plain);
+}
+.editor .hl code {
+  font: inherit;
+}
+.editor textarea {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 10px 12px 10px 50px;
+  border: 0;
+  resize: none;
+  background: transparent;
+  color: transparent;
+  caret-color: var(--color-text-playground-accent);
+  white-space: pre;
+  overflow: hidden;
+  outline: none;
+}
+.tk-com {
+  color: var(--color-text-syntax-comment);
+  font-style: italic;
+}
+.tk-tag {
+  color: var(--color-text-syntax-tag);
+  font-weight: 600;
+}
+.tk-attr {
+  color: var(--color-text-syntax-attr);
+}
+.tk-dir {
+  color: var(--color-text-syntax-directive);
+  font-weight: 600;
+}
+.tk-bind {
+  color: var(--color-text-syntax-binding);
+  font-weight: 600;
+}
+.tk-str {
+  color: var(--color-text-syntax-string);
+}
+.tk-kw {
+  color: var(--color-text-syntax-keyword);
+}
+.tk-fn {
+  color: var(--color-text-syntax-function);
+}
+.tk-num {
+  color: var(--color-text-syntax-number);
+}
+.tk-interp {
+  color: var(--color-text-syntax-interpolation);
+}
+/* The segments of a CTI+ custom property name. */
+.tk-cp-category {
+  color: var(--color-text-syntax-token-category);
+  font-weight: 600;
+}
+.tk-cp-type {
+  color: var(--color-text-syntax-token-type);
+}
+.tk-cp-item {
+  color: var(--color-text-syntax-token-item);
+}
+.tk-cp-state {
+  color: var(--color-text-syntax-token-state);
+  font-weight: 600;
+}
+
+/* ---------- stage ---------- */
+.stage {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: stretch;
+}
+.preview-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bkg-playground-surface);
+  border: 1px solid var(--color-border-playground);
+  border-radius: 10px;
+  overflow: hidden;
+  min-width: 0;
+}
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--color-border-playground);
+}
+.card-head h2 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-text-playground);
+}
+.card-head output {
+  font-size: 12px;
+  color: var(--color-text-playground-muted);
+  font-family: var(--font-family-playground-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card-head output.bad {
+  color: var(--color-text-playground-danger);
+}
+#preview {
+  border: 0;
+  width: 100%;
+  flex: 1;
+  min-height: 380px;
+  background: var(--color-bkg-playground-preview);
+  display: block;
+}
+
+/* ---------- console, combined into the JS pane ---------- */
+.console-region {
+  border-top: 1px solid var(--color-border-playground);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.console-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px 4px 12px;
+}
+.console-head h3 {
+  margin: 0;
+  flex: 1;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-text-playground);
+}
+.console-head button[variant='ghost'] {
+  block-size: auto;
+  min-inline-size: 0;
+  padding-block: 3px;
+  padding-inline: 9px;
+  font-size: 12.5px;
+}
+.console-body {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  max-height: 218px;
+  min-height: 96px;
+  padding: 0 8px 8px;
+}
+/* The console's list-group, re-pointed to console density and type. */
+.console-body ul[variant='default'] {
+  --list-group-background-color: var(--color-bkg-playground-editor);
+  font-family: var(--font-family-playground-mono);
+  font-size: 12.5px;
+}
+.console-body ul[variant='default'] > li {
+  justify-content: flex-start;
+  align-items: flex-start;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.console-body .lvl {
+  flex: none;
+  font-weight: 700;
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+  padding-top: 2px;
+  min-width: 34px;
+  color: var(--color-text-playground-muted);
+}
+.console-body li[data-tone='error'] .lvl,
+.console-body li[data-tone='error'] .msg {
+  color: var(--color-text-playground-danger);
+}
+.console-body li[data-tone='warn'] .lvl,
+.console-body li[data-tone='warn'] .msg {
+  color: var(--color-text-playground-warn);
+}
+.console-body li[data-tone='diag'] .lvl,
+.console-body li[data-tone='diag'] .msg {
+  color: var(--color-text-playground-diag);
+}
+.console-empty {
+  margin: 0;
+  padding: 8px 4px;
+  color: var(--color-text-playground-muted);
+  font-family: var(--font-family-playground-sans);
+  font-size: 12.5px;
+}
+
+/* ---------- cheat sheet ---------- */
+.cheatsheet {
+  border-top: 1px solid var(--color-border-playground);
+  padding: 10px 0 14px;
+  margin-top: 16px;
+}
+.cheatsheet p {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--color-text-playground-muted);
+  line-height: 2;
+}
+.cheatsheet code {
+  font-family: var(--font-family-playground-mono);
+  font-size: 11.5px;
+  color: var(--color-text-playground);
+  background: var(--color-bkg-playground-surface-raised);
+  border: 1px solid var(--color-border-playground);
+  border-radius: 5px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+.cheatsheet strong {
+  color: var(--color-text-playground);
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 1020px) {
+  #preview {
+    min-height: 340px;
+  }
+}
+@media (max-width: 760px) {
+  .stage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .workspace {
+    gap: 8px;
+  }
+  /* Stacked controls: the select takes the full row instead of the
+     squeezed share next to the buttons. */
+  .workspace section[variant='native'] {
+    max-width: none;
+  }
+  .workspace section[variant='toolbar'] > kbd {
+    display: none;
+  }
+  .editor {
+    min-height: 240px;
+  }
+  .console-body {
+    max-height: 200px;
+  }
+}

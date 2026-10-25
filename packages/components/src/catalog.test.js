@@ -1,4 +1,4 @@
-/* Catalog completion tests: the eighteen components built after the
+/* Catalog completion tests: the components built after the
    pilot, exercised through the same loader + server renderer. */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -340,9 +340,10 @@ test('alert renders an optional dismiss and the toggle hugs its content', async 
   });
   assert.match(html, /<button variant="ghost" type="button">Dismiss<\/button>/);
   const { readFile } = await import('node:fs/promises');
+  const tokens = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
   const toggleCss = await readFile(new URL('./theme-toggle/styles.css', import.meta.url), 'utf8');
-  assert.match(toggleCss, /--theme-toggle-inline-size: var\(--size-max-content\)/);
-  assert.match(toggleCss, /inline-size: var\(--theme-toggle-inline-size\)/);
+  assert.match(tokens, /--size-theme-toggle-inline: var\(--size-max-content\)/);
+  assert.match(toggleCss, /inline-size: var\(--size-theme-toggle-inline\)/);
 });
 
 test('table cells carry aria-current and de-emphasis for the calendar composition', async () => {
@@ -610,86 +611,89 @@ test('the overlay components size like the dialog — border-box, full width, to
     assert.ok(tokens.includes(primitive), 'tokens.css is missing ' + primitive);
   }
   const drawerCss = await readFile(new URL('./drawer/styles.css', import.meta.url), 'utf8');
-  assert.match(drawerCss, /--drawer-inline-size: var\(--size-full\)/);
-  assert.match(drawerCss, /--drawer-max-inline-size: var\(--size-drawer-max\)/);
-  assert.match(drawerCss, /box-sizing: var\(--drawer-box-sizing\)/);
+  assert.match(tokens, /--size-drawer-inline: var\(--size-full\)/);
+  assert.match(tokens, /--size-drawer-max-inline: var\(--size-drawer-max\)/);
+  assert.match(drawerCss, /box-sizing: var\(--box-sizing-drawer\)/);
   const paletteCss = await readFile(new URL('./command-palette/styles.css', import.meta.url), 'utf8');
-  assert.match(paletteCss, /--command-palette-max-inline-size: var\(--size-palette-max\)/);
-  assert.match(paletteCss, /box-sizing: var\(--command-palette-box-sizing\)/);
+  assert.match(tokens, /--size-command-palette-max-inline: var\(--size-palette-max\)/);
+  assert.match(paletteCss, /box-sizing: var\(--box-sizing-command-palette\)/);
   assert.doesNotMatch(drawerCss + paletteCss, /: (24|36)rem;/);
 });
 
 test('the popup composites anchor below their section, and their fields take the fill', async () => {
   const { readFile } = await import('node:fs/promises');
+  const tokens = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
   const comboCss = await readFile(new URL('./combobox/styles.css', import.meta.url), 'utf8');
-  assert.match(comboCss, /--combobox__listbox-inset-block-start: var\(--size-full\)/);
-  assert.match(comboCss, /--input-background-color: var\(--fill-3\)/);
+  assert.match(tokens, /--spacing-combobox-listbox-inset-block-start: var\(--size-full\)/);
+  assert.match(comboCss, /--color-bkg-input: var\(--color-fill-3\)/);
   const multiCss = await readFile(new URL('./multiselect/styles.css', import.meta.url), 'utf8');
-  assert.match(multiCss, /--multiselect__listbox-inset-block-start: var\(--size-full\)/);
-  assert.match(multiCss, /--input-background-color: var\(--fill-3\)/);
+  assert.match(tokens, /--spacing-multiselect-listbox-inset-block-start: var\(--size-full\)/);
+  assert.match(multiCss, /--color-bkg-input: var\(--color-fill-3\)/);
   const paletteCss = await readFile(new URL('./command-palette/styles.css', import.meta.url), 'utf8');
-  assert.match(paletteCss, /--input-background-color: var\(--fill-3\)/);
+  assert.match(paletteCss, /--color-bkg-input: var\(--color-fill-3\)/);
 });
 
 test('virtualizer rows center their content, and the restacked table runs tight', async () => {
   const { readFile } = await import('node:fs/promises');
-  const virtCss = await readFile(new URL('./virtualizer/styles.css', import.meta.url), 'utf8');
-  assert.match(virtCss, /--virtualizer__item-display: var\(--display-flex\)/);
-  assert.match(virtCss, /--virtualizer__item-align-items: var\(--align-center\)/);
-  const tableCss = await readFile(new URL('./table/styles.css', import.meta.url), 'utf8');
-  assert.match(tableCss, /--table__row-padding-block--restack: var\(--space-1\)/);
-  assert.match(tableCss, /--table__cell-padding-block--restack: var\(--space-0\)/);
-  assert.match(tableCss, /--table__row-border-block-end-width--restack: var\(--hairline\)/);
+  const tokens = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
+  assert.match(tokens, /--display-virtualizer-item: var\(--display-flex\)/);
+  assert.match(tokens, /--align-virtualizer-item: var\(--align-center\)/);
+  assert.match(tokens, /--spacing-table-row-padding-block-restack: var\(--spacing-1\)/);
+  assert.match(tokens, /--spacing-table-cell-padding-block-restack: var\(--spacing-0\)/);
+  assert.match(tokens, /--size-border-table-row-block-end-restack: var\(--size-hairline\)/);
 });
 
 test('select anchors its popover to the section edge, and multiselect tiles consecutive selections', async () => {
   const { readFile } = await import('node:fs/promises');
+  const tokens = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
   const selectCss = await readFile(new URL('./select/styles.css', import.meta.url), 'utf8');
-  assert.match(selectCss, /--select__listbox-inset-block-start: var\(--size-full\)/);
+  assert.match(tokens, /--spacing-select-listbox-inset-block-start: var\(--size-full\)/);
   assert.match(selectCss, /section\[variant="native"\]/);
   const multiCss = await readFile(new URL('./multiselect/styles.css', import.meta.url), 'utf8');
   assert.match(multiCss, /li\[aria-selected="true"\] \+ li\[aria-selected="true"\]/);
   assert.match(multiCss, /li\[aria-selected="true"\]:has\(\+ li\[aria-selected="true"\]\)/);
-  const toggleCss = await readFile(new URL('./toggle/styles.css', import.meta.url), 'utf8');
-  assert.match(toggleCss, /--toggle__knob-background-color: var\(--color-white\)/);
+  assert.match(tokens, /--color-bkg-toggle-knob: var\(--palette-white\)/);
 });
 
 test('the select chevron rides the end edge and rotates when the popover opens', async () => {
   const { readFile } = await import('node:fs/promises');
+  const tokens = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
   const css = await readFile(new URL('./select/styles.css', import.meta.url), 'utf8');
-  assert.match(css, /--select__trigger-justify-content: var\(--justify-space-between\)/);
-  assert.match(css, /--select__chevron-margin-inline-start: var\(--margin-auto\)/);
+  assert.match(tokens, /--justify-select-trigger: var\(--justify-space-between\)/);
+  assert.match(tokens, /--spacing-select-chevron-margin-inline-start: var\(--spacing-margin-auto\)/);
   assert.match(css, /button\[aria-expanded="true"\] > svg/);
-  assert.match(css, /--select__chevron-transform--open: rotate\(180deg\)/);
+  assert.match(tokens, /--transform-select-chevron-open: rotate\(180deg\)/);
 });
 
 test('the accordion separator is between items only: the last item drops it', async () => {
   const { readFile } = await import('node:fs/promises');
+  const tokens = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
   const css = await readFile(new URL('./accordion/styles.css', import.meta.url), 'utf8');
-  assert.match(css, /--accordion-border-block-end-width--last: var\(--border-width-none\)/);
-  assert.match(css, /details\[variant="default"\]:last-of-type \{\s*border-block-end-width: var\(--accordion-border-block-end-width--last\)/);
+  assert.match(tokens, /--size-border-accordion-block-end-last: var\(--size-border-none\)/);
+  assert.match(css, /details\[variant="default"\]:last-of-type \{\s*border-block-end-width: var\(--size-border-accordion-block-end-last\)/);
 });
 
 test('the accordion keeps the same space around its separators open and closed', async () => {
   const { readFile } = await import('node:fs/promises');
-  const css = await readFile(new URL('./accordion/styles.css', import.meta.url), 'utf8');
-  assert.match(css, /--accordion__summary-padding-block: var\(--space-3\)/);
-  assert.match(css, /--accordion__content-padding-block-end: var\(--space-3\)/);
+  const tokens = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
+  assert.match(tokens, /--spacing-accordion-summary-padding-block: var\(--spacing-3\)/);
+  assert.match(tokens, /--spacing-accordion-content-padding-block-end: var\(--spacing-3\)/);
 });
 
 test('the accordion trims body edge margins so open spacing matches closed', async () => {
   const { readFile } = await import('node:fs/promises');
+  const tokens = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
   const css = await readFile(new URL('./accordion/styles.css', import.meta.url), 'utf8');
-  assert.match(css, /--accordion__content-margin-block-start: var\(--space-0\)/);
-  assert.match(css, /--accordion__content-margin-block-end: var\(--space-0\)/);
-  assert.match(css, /& > :first-child \{\s*margin-block-start: var\(--accordion__content-margin-block-start\)/);
-  assert.match(css, /& > :last-child \{\s*margin-block-end: var\(--accordion__content-margin-block-end\)/);
+  assert.match(tokens, /--spacing-accordion-content-margin-block-start: var\(--spacing-0\)/);
+  assert.match(tokens, /--spacing-accordion-content-margin-block-end: var\(--spacing-0\)/);
+  assert.match(css, /& > :first-child \{\s*margin-block-start: var\(--spacing-accordion-content-margin-block-start\)/);
+  assert.match(css, /& > :last-child \{\s*margin-block-end: var\(--spacing-accordion-content-margin-block-end\)/);
 });
 
 test('an invalid field colors only its error note; the hint keeps its own color', async () => {
   const { readFile } = await import('node:fs/promises');
   const css = await readFile(new URL('./field/styles.css', import.meta.url), 'utf8');
-  assert.match(css, /&:has\(> input\[aria-invalid="true"\]\) \{\s*--input-border-color: var\(--input-border-color--invalid\);\s*& > small:first-of-type \{/);
+  assert.match(css, /&:has\(> input\[aria-invalid="true"\]\) \{\s*--color-border-input: var\(--color-border-input-invalid\);\s*& > small:first-of-type \{/);
 });
 
 test('the form takes its invalid cue from declared state, never native validity', async () => {
@@ -703,15 +707,16 @@ test('the datagrid shows its sort direction with a chevron that flips', async ()
   const { readFile } = await import('node:fs/promises');
   const html = await readFile(new URL('./datagrid/index.html', import.meta.url), 'utf8');
   const css = await readFile(new URL('./datagrid/styles.css', import.meta.url), 'utf8');
+  const tokens = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
   assert.match(html, /:aria-sort="column\.sort">\{\{ raw\(column\.sortHtml\) \}\}<svg/);
-  assert.match(css, /--datagrid__sort-icon-transform--ascending: rotate\(180deg\)/);
-  assert.match(css, /th\[aria-sort="ascending"\] > svg \{\s*transform: var\(--datagrid__sort-icon-transform--ascending\)/);
+  assert.match(tokens, /--transform-datagrid-sort-icon-ascending: rotate\(180deg\)/);
+  assert.match(css, /th\[aria-sort="ascending"\] > svg \{\s*transform: var\(--transform-datagrid-sort-icon-ascending\)/);
 });
 
 test('a grid header button paints no pill: the cell owns the surface', async () => {
   const { readFile } = await import('node:fs/promises');
   const css = await readFile(new URL('./datagrid/styles.css', import.meta.url), 'utf8');
-  assert.match(css, /thead th > button \{\s*--button-background-color--hover: var\(--color-transparent\);\s*--button-background-color--active: var\(--color-transparent\);/);
+  assert.match(css, /thead th > button \{\s*--color-bkg-button-hover: var\(--palette-transparent\);\s*--color-bkg-button-active: var\(--palette-transparent\);/);
 });
 
 test('a toast carries its tone as a glyph, not a colored edge', async () => {
@@ -719,7 +724,33 @@ test('a toast carries its tone as a glyph, not a colored edge', async () => {
   const css = await readFile(new URL('./toast/styles.css', import.meta.url), 'utf8');
   const js = await readFile(new URL('./toast/index.js', import.meta.url), 'utf8');
   assert.ok(!css.includes('border-inline-start'), 'the accent bar is gone');
-  assert.match(css, /& > li > svg \{\s*inline-size: var\(--toast__item-icon-inline-size\);/);
-  assert.match(css, /color: var\(--toast__item-accent-color\);/);
+  assert.match(css, /& > li > svg \{\s*inline-size: var\(--size-toast-item-icon-inline\);/);
+  assert.match(css, /color: var\(--color-accent-toast-item\);/);
   for (const tone of ['success', 'info', 'warning', 'danger']) assert.ok(js.includes(tone + ':'), 'glyph for ' + tone);
+});
+
+test('code-block renders its caption as the header bar and its code escaped in a pre', async () => {
+  const registry = await loadRegistry();
+  const copy = renderComponent(registry, render, 'button', { label: 'Copy', variant: 'ghost' }).html;
+  const { html } = renderComponent(registry, render, 'code-block', {
+    caption: 'counter.html',
+    code: '<p>{{ count() }}</p>',
+    actionsHtml: copy,
+  });
+  assert.match(html, /<figure variant="code">/);
+  assert.match(html, /<figcaption>counter\.html\s*<button variant="ghost" type="button">Copy<\/button>\s*<\/figcaption>/);
+  assert.match(html, /<pre><code>&lt;p&gt;\{\{ count\(\) \}\}&lt;\/p&gt;<\/code><\/pre>/);
+  assert.doesNotMatch(html, /class=|data-/);
+});
+
+test('code-block drops the header bar when it has neither caption nor actions', async () => {
+  const registry = await loadRegistry();
+  const bare = renderComponent(registry, render, 'code-block', { code: 'count.set(1);' }).html;
+  assert.match(bare, /<figure variant="code">/);
+  assert.doesNotMatch(bare, /<figcaption>/);
+  assert.match(bare, /<pre><code>count\.set\(1\);<\/code><\/pre>/);
+  assert.throws(() => registry.getComponent('code-block').create({}), /code is required/);
+  // The figure element's other addresses stay the avatar's.
+  assert.deepEqual(registry.listVariants('code-block'), ['code']);
+  assert.ok(registry.listVariants('avatar').includes('default'));
 });

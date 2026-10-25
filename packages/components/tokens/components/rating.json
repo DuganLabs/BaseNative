@@ -1,0 +1,470 @@
+{
+  "display-rating": {
+    "$value": "{display-inline-flex}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "display",
+          "type": null,
+          "item": "rating",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "flex-direction-rating": {
+    "$value": "{flex-direction-row}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "flex-direction",
+          "type": null,
+          "item": "rating",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-rating-gap": {
+    "$value": "{spacing-1}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "rating",
+          "variant": null,
+          "subitem": "gap",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-rating-margin": {
+    "$value": "{spacing-0}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "rating",
+          "variant": null,
+          "subitem": "margin",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-rating-padding": {
+    "$value": "{spacing-0}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "rating",
+          "variant": null,
+          "subitem": "padding",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-border-rating": {
+    "$value": "{size-border-none}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "border",
+          "variant": null,
+          "subitem": "rating",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "position-rating-legend": {
+    "$value": "{position-absolute}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "position",
+          "type": null,
+          "item": "rating-legend",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-rating-legend-inline": {
+    "$value": "{size-1px}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "rating-legend",
+          "variant": null,
+          "subitem": "inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-rating-legend-block": {
+    "$value": "{size-1px}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "rating-legend",
+          "variant": null,
+          "subitem": "block",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "overflow-rating-legend": {
+    "$value": "{overflow-hidden}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "overflow",
+          "type": null,
+          "item": "rating-legend",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "position-rating-control": {
+    "$value": "{position-absolute}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "position",
+          "type": null,
+          "item": "rating-control",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "opacity-rating-control": {
+    "$value": "{opacity-none}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "opacity",
+          "type": null,
+          "item": "rating-control",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-rating-control-inline": {
+    "$value": "{size-1px}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "rating-control",
+          "variant": null,
+          "subitem": "inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-rating-control-block": {
+    "$value": "{size-1px}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "rating-control",
+          "variant": null,
+          "subitem": "block",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-rating-star": {
+    "$value": "{color-text-label-3}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "rating-star",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-rating-star-lit": {
+    "$value": "{color-warning-strong}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "rating-star",
+          "variant": null,
+          "subitem": "lit",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-rating-star-hover": {
+    "$value": "{color-warning}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "rating-star",
+          "variant": null,
+          "subitem": null,
+          "state": "hover",
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-rating-star": {
+    "$value": "{spacing-6}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "rating-star",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "display-rating-option": {
+    "$value": "{display-inline-flex}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "display",
+          "type": null,
+          "item": "rating-option",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-rating-option-padding": {
+    "$value": "{spacing-1}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "rating-option",
+          "variant": null,
+          "subitem": "padding",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "cursor-rating-option": {
+    "$value": "{cursor-pointer}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "cursor",
+          "type": null,
+          "item": "rating-option",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-radius-rating-option": {
+    "$value": "{size-radius-control}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": null,
+          "subitem": "rating-option",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-border-rating-option-outline-focus": {
+    "$value": "{size-border-thick}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "border",
+          "variant": "rating-option",
+          "subitem": "outline",
+          "state": "focus",
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "border-style-rating-option-outline-focus": {
+    "$value": "{border-style-solid}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "border-style",
+          "type": null,
+          "item": "rating-option",
+          "variant": null,
+          "subitem": "outline",
+          "state": "focus",
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-border-rating-option-outline-focus": {
+    "$value": "{color-tint}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "border",
+          "item": "rating-option",
+          "variant": null,
+          "subitem": "outline",
+          "state": "focus",
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-rating-option-outline-offset-focus": {
+    "$value": "{spacing-1}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "rating-option",
+          "variant": null,
+          "subitem": "outline-offset",
+          "state": "focus",
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  }
+}

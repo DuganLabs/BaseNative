@@ -28,12 +28,12 @@
   --font-mono: normal;
 
   /* Type scale — the site scale re-pointed at the Dynamic Type ladder. */
-  --font-size-xs: var(--text-caption-1-size);
-  --font-size-sm: var(--text-footnote-size);
-  --font-size-base: var(--text-body-size);
-  --font-size-lg: var(--text-title-3-size);
-  --font-size-xl: var(--text-title-2-size);
-  --font-size-hero: var(--text-large-title-size);
+  --font-size-xs: var(--font-caption-1-size);
+  --font-size-sm: var(--font-footnote-size);
+  --font-size-base: var(--font-body-size);
+  --font-size-lg: var(--font-title-3-size);
+  --font-size-xl: var(--font-title-2-size);
+  --font-size-hero: var(--font-large-title-size);
 
   /* Radii — the site ladder re-pointed at the iOS ladder. */
   --radius-sm: var(--radius-sm);
@@ -43,20 +43,20 @@
   /* Surfaces & ink — the site tokens, from the iOS semantic colors.
      The site is dark-only (data-theme="dark"), so these resolve to the
      package's dark values. */
-  --surface-0: var(--background-grouped);
-  --surface-1: var(--background-grouped-2);
-  --surface-2: var(--background-grouped-3);
-  --surface-3: var(--system-gray-4);
-  --text-0: var(--label);
-  --text-1: var(--label-2);
-  --text-2: var(--label-3);
-  --accent: var(--tint);
-  --accent-strong: var(--tint);
+  --surface-0: var(--color-background-grouped);
+  --surface-1: var(--color-background-grouped-2);
+  --surface-2: var(--color-background-grouped-3);
+  --surface-3: var(--palette-system-gray-4);
+  --text-0: var(--color-text-label);
+  --text-1: var(--color-text-label-2);
+  --text-2: var(--color-text-label-3);
+  --accent: var(--color-tint);
+  --accent-strong: var(--color-tint);
   --accent-dim: rgb(255 159 10 / 0.16);
-  --border: var(--separator);
-  --border-strong: var(--separator-opaque);
-  --border-accent: var(--separator-opaque);
-  --focus: var(--tint);
+  --border: var(--color-border-separator);
+  --border-strong: var(--color-border-separator-opaque);
+  --border-accent: var(--color-border-separator-opaque);
+  --focus: var(--color-tint);
   /* Grouped surfaces sit flat on the grouped background; no lift. */
   --shadow-card: none;
   --shadow-btn: none;
@@ -64,20 +64,20 @@
   /* The same re-pointing for the core tokens the component catalog
      reads, so catalog components (buttons, the grouped list, the app
      nav itself) land in the same language. */
-  --bn-color-surface: var(--background-grouped);
-  --bn-color-surface-card: var(--background-grouped-2);
-  --bn-color-surface-raised: var(--background-grouped-2);
-  --bn-color-surface-muted: var(--background-grouped-3);
-  --bn-color-surface-inset: var(--background-grouped);
-  --bn-color-surface-control: var(--background-grouped-3);
-  --bn-color-text: var(--label);
-  --bn-color-text-muted: var(--label-2);
-  --bn-color-text-subtle: var(--label-3);
-  --bn-color-border: var(--separator);
-  --bn-color-border-strong: var(--separator-opaque);
-  --bn-color-border-focus: var(--tint);
-  --bn-color-text-link: var(--tint);
-  --bn-color-primary-600: var(--tint);
+  --bn-color-surface: var(--color-background-grouped);
+  --bn-color-surface-card: var(--color-background-grouped-2);
+  --bn-color-surface-raised: var(--color-background-grouped-2);
+  --bn-color-surface-muted: var(--color-background-grouped-3);
+  --bn-color-surface-inset: var(--color-background-grouped);
+  --bn-color-surface-control: var(--color-background-grouped-3);
+  --bn-color-text: var(--color-text-label);
+  --bn-color-text-muted: var(--color-text-label-2);
+  --bn-color-text-subtle: var(--color-text-label-3);
+  --bn-color-border: var(--color-border-separator);
+  --bn-color-border-strong: var(--color-border-separator-opaque);
+  --bn-color-border-focus: var(--color-tint);
+  --bn-color-text-link: var(--color-tint);
+  --bn-color-primary-600: var(--color-tint);
   --bn-radius-container: var(--radius-container);
   --bn-radius-modal: var(--radius-sheet);
 
@@ -92,17 +92,17 @@
 
 /* ── Base ─────────────────────────────────────────────────────────── */
 html {
-  background: var(--background-grouped);
+  background: var(--color-background-grouped);
 }
 
 body {
-  background: var(--background-grouped);
-  color: var(--label);
-  font-family: var(--text-body-family);
-  font-size: var(--text-body-size);
-  line-height: var(--text-body-leading);
-  font-weight: var(--text-body-weight);
-  letter-spacing: var(--text-body-tracking);
+  background: var(--color-background-grouped);
+  color: var(--color-text-label);
+  font-family: var(--font-body-family);
+  font-size: var(--font-body-size);
+  line-height: var(--font-body-leading);
+  font-weight: var(--font-body-weight);
+  letter-spacing: var(--font-body-tracking);
 }
 
 /* An ambient warm glow at the top of the page: depth for the eye, and
@@ -133,65 +133,65 @@ body::before {
 [data-hero] > h2,
 [data-bn-page-hero] h2,
 main > section:first-of-type > h2 {
-  font-family: var(--text-large-title-family);
-  font-size: var(--text-large-title-size);
-  line-height: var(--text-large-title-leading);
-  font-weight: var(--text-large-title-weight);
+  font-family: var(--font-large-title-family);
+  font-size: var(--font-large-title-size);
+  line-height: var(--font-large-title-leading);
+  font-weight: var(--font-large-title-weight);
   font-weight: 700;
-  letter-spacing: var(--text-large-title-tracking);
+  letter-spacing: var(--font-large-title-tracking);
 }
 
 section > h2 {
-  font-family: var(--text-title-1-family);
-  font-size: var(--text-title-1-size);
-  line-height: var(--text-title-1-leading);
-  font-weight: var(--text-title-1-weight);
+  font-family: var(--font-title-1-family);
+  font-size: var(--font-title-1-size);
+  line-height: var(--font-title-1-leading);
+  font-weight: var(--font-title-1-weight);
   font-weight: 700;
-  letter-spacing: var(--text-title-1-tracking);
+  letter-spacing: var(--font-title-1-tracking);
 }
 
 h3 {
-  font-family: var(--text-title-3-family);
-  font-size: var(--text-title-3-size);
-  line-height: var(--text-title-3-leading);
-  font-weight: var(--text-title-3-weight);
-  letter-spacing: var(--text-title-3-tracking);
+  font-family: var(--font-title-3-family);
+  font-size: var(--font-title-3-size);
+  line-height: var(--font-title-3-leading);
+  font-weight: var(--font-title-3-weight);
+  letter-spacing: var(--font-title-3-tracking);
 }
 
 /* Heading emphasis is the tint word, never italics. */
 h2 em,
 h3 em {
   font-style: normal;
-  color: var(--tint);
+  color: var(--color-tint);
 }
 
 /* Section intros read as secondary body copy, not display type. */
 section > p {
-  font-family: var(--text-body-family);
-  font-size: var(--text-body-size);
-  line-height: var(--text-body-leading);
-  font-weight: var(--text-body-weight);
-  letter-spacing: var(--text-body-tracking);
-  color: var(--label-2);
+  font-family: var(--font-body-family);
+  font-size: var(--font-body-size);
+  line-height: var(--font-body-leading);
+  font-weight: var(--font-body-weight);
+  letter-spacing: var(--font-body-tracking);
+  color: var(--color-text-label-2);
 }
 
 [data-bn-lede] {
-  font-family: var(--text-title-3-family);
-  font-size: var(--text-title-3-size);
-  line-height: var(--text-title-3-leading);
-  font-weight: var(--text-title-3-weight);
-  letter-spacing: var(--text-title-3-tracking);
-  color: var(--label-2);
+  font-family: var(--font-title-3-family);
+  font-size: var(--font-title-3-size);
+  line-height: var(--font-title-3-leading);
+  font-weight: var(--font-title-3-weight);
+  letter-spacing: var(--font-title-3-tracking);
+  color: var(--color-text-label-2);
 }
 
 [data-bn-eyebrow] {
-  font-family: var(--text-caption-1-family);
-  font-size: var(--text-caption-1-size);
-  line-height: var(--text-caption-1-leading);
-  font-weight: var(--text-caption-1-weight);
+  font-family: var(--font-caption-1-family);
+  font-size: var(--font-caption-1-size);
+  line-height: var(--font-caption-1-leading);
+  font-weight: var(--font-caption-1-weight);
   font-weight: 600;
   letter-spacing: 0.06em;
-  color: var(--label-2);
+  color: var(--color-text-label-2);
 }
 
 /* ── Grouped surfaces ─────────────────────────────────────────────── */
@@ -199,10 +199,10 @@ section > p {
    secondary surface, iOS corner radius, no border (the surface step
    does the separating on black). */
 main > section {
-  background: var(--background-grouped-2);
+  background: var(--color-background-grouped-2);
   border: none;
   border-radius: var(--radius-2xl);
-  padding: var(--space-5);
+  padding: var(--spacing-5);
   margin-block-end: var(--bn-section-space, 12px);
 }
 
@@ -212,7 +212,7 @@ main > section[data-hero],
 main > section[data-bn-page-hero] {
   background: transparent;
   border-radius: 0;
-  padding-inline: var(--space-5);
+  padding-inline: var(--spacing-5);
   text-align: start;
 }
 [data-hero] nav {
@@ -231,12 +231,12 @@ article[data-bn-showcase] {
   padding: 0;
 }
 [data-bn-showcase-header] h2 {
-  font-family: var(--text-large-title-family);
-  font-size: var(--text-large-title-size);
-  line-height: var(--text-large-title-leading);
-  font-weight: var(--text-large-title-weight);
+  font-family: var(--font-large-title-family);
+  font-size: var(--font-large-title-size);
+  line-height: var(--font-large-title-leading);
+  font-weight: var(--font-large-title-weight);
   font-weight: 700;
-  letter-spacing: var(--text-large-title-tracking);
+  letter-spacing: var(--font-large-title-tracking);
 }
 
 /* A section whose children are cards of their own (docs entries, code
@@ -247,10 +247,10 @@ main > section:has(> article) {
   padding: 0;
 }
 article {
-  background: var(--background-grouped-2);
+  background: var(--color-background-grouped-2);
   border: none;
   border-radius: var(--radius-2xl);
-  padding: var(--space-5);
+  padding: var(--spacing-5);
 }
 article:hover {
   border-color: transparent;
@@ -264,11 +264,11 @@ article:hover {
 @media (max-width: 48rem) {
   article,
   main > section {
-    padding: var(--space-4);
+    padding: var(--spacing-4);
   }
   main > section[data-hero],
   main > section[data-bn-page-hero] {
-    padding-inline: var(--space-4);
+    padding-inline: var(--spacing-4);
   }
 }
 
@@ -278,26 +278,26 @@ main > section[data-stats] {
   padding: 0;
 }
 ul[role='list'][data-stat-grid] > li {
-  background: var(--background-grouped-2);
+  background: var(--color-background-grouped-2);
   border: none;
   border-radius: var(--radius-xl);
 }
 ul[role='list'][data-stat-grid] strong {
-  font-family: var(--text-title-2-family);
-  font-size: var(--text-title-2-size);
-  line-height: var(--text-title-2-leading);
-  font-weight: var(--text-title-2-weight);
+  font-family: var(--font-title-2-family);
+  font-size: var(--font-title-2-size);
+  line-height: var(--font-title-2-leading);
+  font-weight: var(--font-title-2-weight);
   font-weight: 700;
-  color: var(--label);
+  color: var(--color-text-label);
   overflow-wrap: normal;
 }
 ul[role='list'][data-stat-grid] span {
-  font-family: var(--text-caption-1-family);
-  font-size: var(--text-caption-1-size);
-  line-height: var(--text-caption-1-leading);
-  font-weight: var(--text-caption-1-weight);
+  font-family: var(--font-caption-1-family);
+  font-size: var(--font-caption-1-size);
+  line-height: var(--font-caption-1-leading);
+  font-weight: var(--font-caption-1-weight);
   letter-spacing: 0.05em;
-  color: var(--label-2);
+  color: var(--color-text-label-2);
 }
 
 /* Plain lists inside a grouped card become grouped rows: hairline
@@ -310,41 +310,41 @@ section ul[role='list']:not([data-stat-grid]) > li {
   border: none;
   border-radius: 0;
   box-shadow: none;
-  padding-block: var(--space-3);
-  border-block-start: 1px solid var(--separator);
+  padding-block: var(--spacing-3);
+  border-block-start: 1px solid var(--color-border-separator);
 }
 section ul[role='list']:not([data-stat-grid]) > li:first-child {
   border-block-start: none;
   padding-block-start: 0;
 }
 section ul[role='list'] > li > time {
-  font-family: var(--text-footnote-family);
-  font-size: var(--text-footnote-size);
-  line-height: var(--text-footnote-leading);
-  font-weight: var(--text-footnote-weight);
-  color: var(--label-3);
+  font-family: var(--font-footnote-family);
+  font-size: var(--font-footnote-size);
+  line-height: var(--font-footnote-leading);
+  font-weight: var(--font-footnote-weight);
+  color: var(--color-text-label-3);
 }
 
 /* Status chips: neutral pills in the fill color, footnote ink. */
 mark[data-status] {
-  background: var(--fill-3);
-  color: var(--label);
-  font-family: var(--text-footnote-family);
-  font-size: var(--text-footnote-size);
-  line-height: var(--text-footnote-leading);
-  font-weight: var(--text-footnote-weight);
+  background: var(--color-fill-3);
+  color: var(--color-text-label);
+  font-family: var(--font-footnote-family);
+  font-size: var(--font-footnote-size);
+  line-height: var(--font-footnote-leading);
+  font-weight: var(--font-footnote-weight);
   padding: 0.125rem 0.5rem;
   border-radius: var(--radius-pill);
 }
 
 /* ── Code ─────────────────────────────────────────────────────────── */
 pre {
-  background: var(--background-grouped-3);
+  background: var(--color-background-grouped-3);
   border: none;
   border-radius: var(--radius-xl);
   font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
-  font-size: var(--text-footnote-size);
-  line-height: var(--text-footnote-leading);
+  font-size: var(--font-footnote-size);
+  line-height: var(--font-footnote-leading);
   /* This sheet re-declares pre last, so the scroll guarantee is stated
      here too: a long line scrolls inside the block, it never pushes
      the block past the card edge and clips. */
@@ -357,35 +357,35 @@ code {
 p code,
 li code,
 td code {
-  background: var(--fill-3);
-  color: var(--label);
+  background: var(--color-fill-3);
+  color: var(--color-text-label);
   border-radius: var(--radius-xs);
 }
 /* Docs article headers are API signatures: mono, label ink, headline
    size — a card's title line, not a display heading. */
 article > header h3 {
   font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
-  font-size: var(--text-headline-size);
+  font-size: var(--font-headline-size);
   font-weight: 600;
   letter-spacing: 0;
-  color: var(--label);
+  color: var(--color-text-label);
 }
 
 /* ── Tables: grouped rows under a caption-style header ────────────── */
 table:not([data-bn]):not([variant]) th {
-  font-family: var(--text-caption-1-family);
-  font-size: var(--text-caption-1-size);
-  line-height: var(--text-caption-1-leading);
-  font-weight: var(--text-caption-1-weight);
+  font-family: var(--font-caption-1-family);
+  font-size: var(--font-caption-1-size);
+  line-height: var(--font-caption-1-leading);
+  font-weight: var(--font-caption-1-weight);
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--label-2);
+  color: var(--color-text-label-2);
 }
 table:not([data-bn]):not([variant]) th,
 table:not([data-bn]):not([variant]) td {
-  border-color: var(--separator);
-  padding: var(--space-3);
+  border-color: var(--color-border-separator);
+  padding: var(--spacing-3);
 }
 [data-bn-table-scroll] {
   border-radius: var(--radius-lg);
@@ -399,42 +399,42 @@ table:not([data-bn]):not([variant]) td {
    neutral fill; toggles fill when pressed; destructive actions take
    the red tint. */
 button:not([data-bn]):not([variant]) {
-  font-family: var(--text-headline-family);
-  font-size: var(--text-headline-size);
-  line-height: var(--text-headline-leading);
-  font-weight: var(--text-headline-weight);
-  letter-spacing: var(--text-headline-tracking);
-  background: var(--fill-3);
-  color: var(--label);
+  font-family: var(--font-headline-family);
+  font-size: var(--font-headline-size);
+  line-height: var(--font-headline-leading);
+  font-weight: var(--font-headline-weight);
+  letter-spacing: var(--font-headline-tracking);
+  background: var(--color-fill-3);
+  color: var(--color-text-label);
   border: none;
   border-radius: var(--radius-pill);
-  padding: var(--space-3) var(--space-5);
+  padding: var(--spacing-3) var(--spacing-5);
 }
 button:not([data-bn]):not([variant]):hover {
-  background: var(--fill-2);
-  color: var(--label);
+  background: var(--color-fill-2);
+  color: var(--color-text-label);
 }
 a[role='button'],
 nav[data-controls]:has(> input) > button:not([data-bn]):not([variant]) {
-  font-family: var(--text-headline-family);
-  font-size: var(--text-headline-size);
-  line-height: var(--text-headline-leading);
-  font-weight: var(--text-headline-weight);
-  letter-spacing: var(--text-headline-tracking);
-  background: var(--tint);
+  font-family: var(--font-headline-family);
+  font-size: var(--font-headline-size);
+  line-height: var(--font-headline-leading);
+  font-weight: var(--font-headline-weight);
+  letter-spacing: var(--font-headline-tracking);
+  background: var(--color-tint);
   color: #000;
   border: none;
   border-radius: var(--radius-pill);
-  padding: var(--space-3) var(--space-5);
+  padding: var(--spacing-3) var(--spacing-5);
 }
 a[role='button']:hover,
 nav[data-controls]:has(> input) > button:not([data-bn]):not([variant]):hover {
-  background: var(--tint);
+  background: var(--color-tint);
   color: #000;
   opacity: 0.85;
 }
 button[aria-pressed='true']:not([data-bn]):not([variant]) {
-  background: var(--tint);
+  background: var(--color-tint);
   color: #000;
 }
 button[data-variant='danger']:not([data-bn]):not([variant]) {
@@ -453,40 +453,40 @@ button[data-variant='danger']:not([data-bn]):not([variant]):hover {
 a[role='button'][data-variant='outline'],
 button:not([data-bn]):not([variant])[data-variant='outline'] {
   background: rgb(255 159 10 / 0.16);
-  color: var(--tint);
+  color: var(--color-tint);
   border: none;
 }
 a[role='button'][data-variant='outline']:hover,
 button:not([data-bn]):not([variant])[data-variant='outline']:hover {
   background: rgb(255 159 10 / 0.24);
-  color: var(--tint);
+  color: var(--color-tint);
   opacity: 1;
 }
 /* The page-hero CTAs share the same two treatments. */
 [data-bn-cta='primary'] {
-  font-family: var(--text-headline-family);
-  font-size: var(--text-headline-size);
-  line-height: var(--text-headline-leading);
-  font-weight: var(--text-headline-weight);
-  background: var(--tint);
+  font-family: var(--font-headline-family);
+  font-size: var(--font-headline-size);
+  line-height: var(--font-headline-leading);
+  font-weight: var(--font-headline-weight);
+  background: var(--color-tint);
   color: #000;
   border: none;
   border-radius: var(--radius-pill);
-  padding: var(--space-3) var(--space-5);
+  padding: var(--spacing-3) var(--spacing-5);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
 }
 [data-bn-cta='secondary'] {
-  font-family: var(--text-headline-family);
-  font-size: var(--text-headline-size);
-  line-height: var(--text-headline-leading);
-  font-weight: var(--text-headline-weight);
+  font-family: var(--font-headline-family);
+  font-size: var(--font-headline-size);
+  line-height: var(--font-headline-leading);
+  font-weight: var(--font-headline-weight);
   background: rgb(255 159 10 / 0.16);
-  color: var(--tint);
+  color: var(--color-tint);
   border: none;
   border-radius: var(--radius-pill);
-  padding: var(--space-3) var(--space-5);
+  padding: var(--spacing-3) var(--spacing-5);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -496,7 +496,7 @@ button:not([data-bn]):not([variant])[data-variant='outline']:hover {
    so the app nav and footer keep their own treatments; catalog
    components carry data-bn and are excluded. */
 main a:where(:not([data-bn]):not([variant]):not([role='button']):not([data-bn-cta])) {
-  color: var(--tint);
+  color: var(--color-tint);
 }
 
 /* Pagination's links are plain <a> inside the [data-bn] nav, so the
@@ -508,25 +508,25 @@ main a:where(:not([data-bn]):not([variant]):not([role='button']):not([data-bn-ct
   color: var(--bn-color-text);
 }
 [data-bn='pagination'] a[aria-current='page'] {
-  color: var(--bn-color-on-primary);
+  color: var(--color-text-on-primary);
 }
 
 /* Filter chips are a segmented choice, not primary actions: neutral
    fill until pressed, the filled tint when pressed. */
 button[data-bn-component-filter] {
-  font-family: var(--text-subheadline-family);
-  font-size: var(--text-subheadline-size);
-  line-height: var(--text-subheadline-leading);
-  font-weight: var(--text-subheadline-weight);
-  background: var(--fill-3);
-  color: var(--label);
+  font-family: var(--font-subheadline-family);
+  font-size: var(--font-subheadline-size);
+  line-height: var(--font-subheadline-leading);
+  font-weight: var(--font-subheadline-weight);
+  background: var(--color-fill-3);
+  color: var(--color-text-label);
   border: none;
   border-radius: var(--radius-pill);
-  padding: var(--space-2) var(--space-4);
+  padding: var(--spacing-2) var(--spacing-4);
 }
 button[data-bn-component-filter]:hover {
-  background: var(--fill-2);
-  color: var(--label);
+  background: var(--color-fill-2);
+  color: var(--color-text-label);
   opacity: 1;
 }
 button[data-bn-component-filter][aria-pressed='true'] {
@@ -534,64 +534,64 @@ button[data-bn-component-filter][aria-pressed='true'] {
   color: var(--bn-brand-ink, #0c0b09);
 }
 button[data-bn-component-reset] {
-  font-family: var(--text-subheadline-family);
-  font-size: var(--text-subheadline-size);
-  line-height: var(--text-subheadline-leading);
-  font-weight: var(--text-subheadline-weight);
+  font-family: var(--font-subheadline-family);
+  font-size: var(--font-subheadline-size);
+  line-height: var(--font-subheadline-leading);
+  font-weight: var(--font-subheadline-weight);
   background: rgb(255 159 10 / 0.16);
-  color: var(--tint);
+  color: var(--color-tint);
   border: none;
   border-radius: var(--radius-pill);
-  padding: var(--space-2) var(--space-4);
+  padding: var(--spacing-2) var(--spacing-4);
 }
 
 /* Text controls sit in the tertiary grouped surface, borderless. */
 input:not([data-bn]):not([variant]),
 textarea:not([data-bn]):not([variant]),
 select:not([data-bn]):not([variant]) {
-  background: var(--background-grouped-3);
-  color: var(--label);
+  background: var(--color-background-grouped-3);
+  color: var(--color-text-label);
   border: 1px solid transparent;
   border-radius: var(--radius-lg);
-  font-family: var(--text-body-family);
-  font-size: var(--text-body-size);
-  line-height: var(--text-body-leading);
-  font-weight: var(--text-body-weight);
+  font-family: var(--font-body-family);
+  font-size: var(--font-body-size);
+  line-height: var(--font-body-leading);
+  font-weight: var(--font-body-weight);
 }
 
 /* Component meta labels: caption ink at the secondary level — small
    text stays at the level that clears contrast. */
 [data-bn-component-meta] dt {
-  color: var(--label-2);
+  color: var(--color-text-label-2);
 }
 
 /* ── Footer: quiet text on the grouped background ─────────────────── */
 body > footer,
 body > [data-bn-site-footer] {
   border-block-start: none;
-  font-family: var(--text-footnote-family);
-  font-size: var(--text-footnote-size);
-  line-height: var(--text-footnote-leading);
-  font-weight: var(--text-footnote-weight);
-  color: var(--label-3);
+  font-family: var(--font-footnote-family);
+  font-size: var(--font-footnote-size);
+  line-height: var(--font-footnote-leading);
+  font-weight: var(--font-footnote-weight);
+  color: var(--color-text-label-3);
 }
 body > footer p,
 body > [data-bn-site-footer] p {
-  font-family: var(--text-footnote-family);
-  font-size: var(--text-footnote-size);
-  line-height: var(--text-footnote-leading);
-  font-weight: var(--text-footnote-weight);
-  color: var(--label-3);
+  font-family: var(--font-footnote-family);
+  font-size: var(--font-footnote-size);
+  line-height: var(--font-footnote-leading);
+  font-weight: var(--font-footnote-weight);
+  color: var(--color-text-label-3);
 }
 body > [data-bn-site-footer] nav a {
-  font-family: var(--text-footnote-family);
-  font-size: var(--text-footnote-size);
-  line-height: var(--text-footnote-leading);
-  font-weight: var(--text-footnote-weight);
-  color: var(--label-2);
+  font-family: var(--font-footnote-family);
+  font-size: var(--font-footnote-size);
+  line-height: var(--font-footnote-leading);
+  font-weight: var(--font-footnote-weight);
+  color: var(--color-text-label-2);
 }
 body > [data-bn-site-footer] nav a:hover {
-  color: var(--tint);
+  color: var(--color-tint);
 }
 
 /* ── The app nav in the site's language ───────────────────────────── */
@@ -607,21 +607,21 @@ body > [data-bn-site-footer] nav a:hover {
     var(--material-thick-highlight), var(--material-thick-shadow);
 }
 [data-bn='app-nav-brand'] strong {
-  font-family: var(--text-headline-family);
-  font-size: var(--text-headline-size);
-  line-height: var(--text-headline-leading);
-  font-weight: var(--text-headline-weight);
-  letter-spacing: var(--text-headline-tracking);
+  font-family: var(--font-headline-family);
+  font-size: var(--font-headline-size);
+  line-height: var(--font-headline-leading);
+  font-weight: var(--font-headline-weight);
+  letter-spacing: var(--font-headline-tracking);
 }
 [data-bn='app-nav-actions'] a {
-  font-family: var(--text-headline-family);
-  font-size: var(--text-headline-size);
-  line-height: var(--text-headline-leading);
-  font-weight: var(--text-headline-weight);
+  font-family: var(--font-headline-family);
+  font-size: var(--font-headline-size);
+  line-height: var(--font-headline-leading);
+  font-weight: var(--font-headline-weight);
   background: rgb(255 159 10 / 0.16);
-  color: var(--tint);
+  color: var(--color-tint);
   border-radius: var(--radius-pill);
-  padding: var(--space-2) var(--space-4);
+  padding: var(--spacing-2) var(--spacing-4);
   text-align: center;
   text-decoration: none;
 }

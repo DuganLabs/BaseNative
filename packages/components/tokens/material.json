@@ -1,0 +1,20 @@
+{
+  "material-backdrop": {
+    "$value": "none",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "material",
+          "type": null,
+          "item": "backdrop",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  }
+}

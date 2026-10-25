@@ -50,12 +50,12 @@ describe('contrastRatio', () => {
   });
 
   test('reproduces values the components token layer documents', () => {
-    // packages/components/src/tokens-legacy.css: "--bn-color-error-fg … 4.83:1 on white"
+    // the palette error-600 step on white — the value --color-text-error-fg carries
     assert.equal(contrastRatio('#dc2626', '#ffffff').toFixed(2), '4.83');
     // "gray-500 clears both: 4.83:1 on white … 3.67:1 on gray-900"
     assert.equal(contrastRatio('#71717a', '#ffffff').toFixed(2), '4.83');
     assert.equal(contrastRatio('#71717a', '#18181b').toFixed(2), '3.67');
-    // theme.css: "gray-400 clears 4.5:1 on both gray-950 (7.76:1) and gray-900 (6.91:1)"
+    // "gray-400 clears 4.5:1 on both gray-950 (7.76:1) and gray-900 (6.91:1)"
     assert.equal(contrastRatio('#a1a1aa', '#09090b').toFixed(2), '7.76');
     assert.equal(contrastRatio('#a1a1aa', '#18181b').toFixed(2), '6.91');
   });

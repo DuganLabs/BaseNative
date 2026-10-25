@@ -19,6 +19,7 @@ import { checkComparePage, capabilityProblems, roadmapProblems } from '../../scr
 import { computeCompareStats } from '../../scripts/compare-stats.js';
 import { renderRoute, renderComponentPage, siteRoutes } from '../../examples/express/page.js';
 import { highlightCode, highlightCodeBlocks } from '../../examples/express/highlight.js';
+import { HIGHLIGHTERS } from '../../examples/express/public/highlight-engine.js';
 import { AI_SCORECARD } from '../../examples/express/ai-scorecard.js';
 import { trinityDemos } from '../../examples/express/trinity-catalog.js';
 import { renderTrinity, renderTrinityVm, trinityComponentInfo } from '../../examples/express/trinity.js';
@@ -510,7 +511,8 @@ describe('every published route is reachable from the navigation', () => {
     const style = html.slice(html.indexOf('<style data-bn-critical="shell">'), html.indexOf('</style>', html.indexOf('<style data-bn-critical="shell">')));
     assert.ok(style.includes('aside[variant="sidebar"]'), 'the sidebar rules are inlined');
     assert.ok(style.includes('nav[variant="app-bar"]'), 'the app bar rules are inlined');
-    assert.ok(style.includes('--app-bar-position: var(--position-fixed)'), 'the bar positioning is inlined');
+    assert.ok(style.includes('nav[variant="app-bar"]'), 'the bar rules are inlined');
+    assert.ok(readFileSync(repo('packages/components/src/tokens.css'), 'utf8').includes('--position-app-bar: var(--position-fixed)'), 'the bar positioning token is in the generated sheet');
   });
 
   it('the inlined shell CSS is self-contained: every token it uses, it defines or falls back', () => {
@@ -531,8 +533,8 @@ describe('every published route is reachable from the navigation', () => {
       if (!hasFallback && !defined.has(name)) missing.push(name);
     }
     assert.deepEqual([...new Set(missing)], [], `shell CSS references tokens it does not define: ${missing.join(', ')}`);
-    assert.ok(style.includes('--app-shell-'), 'the shell layout tokens are inlined');
-    assert.ok(style.includes('--sidebar-'), 'the sidebar tokens are inlined');
+    assert.ok(style.includes('main[variant='), 'the shell layout rules are inlined');
+    assert.ok(style.includes('aside[variant='), 'the sidebar rules are inlined');
   });
 
   it('home names the installed runtime and the effect rule, with no inline style', () => {
@@ -560,29 +562,32 @@ describe('every published route is reachable from the navigation', () => {
 // Highlighting used to exist only where an author hand-wrote spans into a
 // view (docs alone); every other page's code rendered monochrome. The pass
 // in examples/express/highlight.js runs inside renderPage, so a code block
-// is highlighted because it is a code block.
+// is highlighted because it is a code block. The tokenizer is the
+// playground's own engine (public/highlight-engine.js) — one
+// implementation for the editors and the site, tk-* classes throughout;
+// the site pass previously carried a second, divergent scanner.
 
 describe('site syntax highlighting is a pipeline step', () => {
   it('the tokenizer splits the classes the sheet defines', () => {
     const html = highlightCode(
       "import { signal } from '@basenative/runtime';\nconst count = signal(0); // first",
     );
-    assert.match(html, /<span class="kw">import<\/span>/);
-    assert.match(html, /<span class="kw">from<\/span>/);
-    assert.match(html, /<span class="str">'@basenative\/runtime'<\/span>/);
-    assert.match(html, /<span class="fn">signal<\/span>/);
-    assert.match(html, /<span class="num">0<\/span>/);
-    assert.match(html, /<span class="cmt">\/\/ first<\/span>/);
+    assert.match(html, /<span class="tk-kw">const<\/span>/);
+    assert.match(html, /<span class="tk-str">'@basenative\/runtime'<\/span>/);
+    assert.match(html, /<span class="tk-dir">signal<\/span>/);
+    assert.match(html, /<span class="tk-num">0<\/span>/);
+    assert.match(html, /<span class="tk-com">\/\/ first<\/span>/);
   });
 
   it('the tokenizer colours template tags, attributes, and method calls', () => {
     const html = highlightCode('<p class="item" :class="done()">{{ count() }}</p>');
-    assert.match(html, /<span class="tag">p<\/span>/);
-    assert.match(html, /<span class="attr">class<\/span>/);
-    assert.match(html, /<span class="attr">:class<\/span>/);
+    assert.match(html, /<span class="tk-tag">p<\/span>/);
+    assert.match(html, /<span class="tk-attr">class<\/span>/);
+    assert.match(html, /<span class="tk-bind">:class<\/span>/);
+    assert.match(html, /<span class="tk-interp">{{ count\(\) }}<\/span>/);
     const js = highlightCode('count.set(count() + 1);');
-    assert.match(js, /<span class="fn">set<\/span>/);
-    assert.match(js, /<span class="fn">count<\/span>/);
+    assert.match(js, /<span class="tk-fn">set<\/span>/);
+    assert.match(js, /<span class="tk-fn">count<\/span>/);
   });
 
   it('the tokenizer handles @-directives without stalling', () => {
@@ -590,75 +595,86 @@ describe('site syntax highlighting is a pipeline step', () => {
     // the tag scanner forever — its first char was a valid attribute
     // start but not a valid attribute continuation.
     const html = highlightCode('<button @click="save($event)">Save</button>');
-    assert.match(html, /<span class="attr">@click<\/span>/);
-    assert.match(html, /<span class="tag">button<\/span>/);
+    assert.match(html, /<span class="tk-dir">@click<\/span>/);
+    assert.match(html, /<span class="tk-tag">button<\/span>/);
   });
 
   it('highlighting preserves the code text exactly', () => {
     const code = '<div data-x="a<b">{{ a() }}</div>\nif (a < b && c > 2) run("x");';
-    const text = highlightCode(code).replace(/<[^>]+>/g, '');
-    assert.equal(
-      text,
-      code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'),
-    );
+    // Read the highlighted markup back the way a browser serves it:
+    // drop the engine's spans and unescape. The playground's tag
+    // scanner leaves a tag's closing > raw (valid in text content),
+    // so a naive tag-strip would eat it — the contract is that the
+    // text a reader copies is the code, byte for byte.
+    const text = highlightCode(code)
+      .replace(/<span[^>]*>/g, '')
+      .replace(/<\/span>/g, '')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&');
+    assert.equal(text, code);
   });
 
   it('the pass is deterministic and leaves real markup alone', () => {
     const block = '<pre><code>const a = signal(1);</code></pre>';
     assert.equal(highlightCodeBlocks(block), highlightCodeBlocks(block));
-    assert.match(highlightCodeBlocks(block), /class="kw"/);
+    assert.match(highlightCodeBlocks(block), /class="tk-kw"/);
     const placeholder = '<pre><code>// Click <em>Export</em> to render.</code></pre>';
     assert.equal(highlightCodeBlocks(placeholder), placeholder);
   });
 
   it('entity-escaped code round-trips into highlighted markup', () => {
     const out = highlightCodeBlocks('<pre><code>&lt;div&gt;{{ count() }}&lt;/div&gt;</code></pre>');
-    assert.match(out, /<span class="tag">div<\/span>/);
+    assert.match(out, /<span class="tk-tag">div<\/span>/);
     assert.equal(out.includes('&lt;span'), false, 'spans are markup; the code stays escaped');
   });
 
   it('CSS samples get CSS highlighting, not the JS scanner', () => {
     const css = [
-      ':root { --button-color: var(--label); }',
+      ':root { --color-tint: var(--palette-system-blue); }',
       'button[variant="primary"]:hover {',
-      '  background-color: var(--button-background-color);',
-      '  padding-block: var(--space-2);',
+      '  background-color: var(--color-bkg-button-primary);',
+      '  padding-block: var(--spacing-2);',
       '  inline-size: 2.75rem;',
       '  &:focus-visible { outline-width: 2px; }',
       '}',
     ].join('\n');
     const html = highlightCode(css);
-    assert.match(html, /<span class="kw">root<\/span>/);
-    assert.match(html, /<span class="var">--button-color<\/span>/);
-    assert.match(html, /<span class="fn">var<\/span>/);
-    assert.match(html, /<span class="tag">button<\/span>/);
-    assert.match(html, /<span class="attr">variant<\/span>/);
-    assert.match(html, /<span class="str">"primary"<\/span>/);
-    assert.match(html, /<span class="kw">hover<\/span>/);
-    assert.match(html, /<span class="attr">background-color<\/span>/);
-    assert.match(html, /<span class="num">2.75rem<\/span>/);
-    assert.match(html, /<span class="kw">focus-visible<\/span>/);
-    assert.match(html, /<span class="num">2px<\/span>/);
+    // The playground's CSS engine colours comments, custom properties
+    // (segmented — see the next test), braces, property names, strings,
+    // numbers and at-rules; selectors and pseudo-classes stay plain, in
+    // the editors and here alike.
+    assert.match(html, /--<span class="tk-cp-category">color<\/span>-<span class="tk-cp-item">tint<\/span>/);
+    assert.match(html, /--<span class="tk-cp-category">palette<\/span>-<span class="tk-cp-item">system<\/span>-<span class="tk-cp-item">blue<\/span>/);
+    assert.match(html, /<span class="tk-str">"primary"<\/span>/);
+    assert.match(html, /<span class="tk-attr">background-color<\/span>/);
+    assert.match(html, /--<span class="tk-cp-category">color<\/span>-<span class="tk-cp-type">bkg<\/span>-<span class="tk-cp-item">button<\/span>-<span class="tk-cp-item">primary<\/span>/);
+    assert.match(html, /--<span class="tk-cp-category">spacing<\/span>-<span class="tk-cp-item">2<\/span>/);
+    assert.match(html, /<span class="tk-num">2.75rem<\/span>/);
+    assert.match(html, /<span class="tk-attr">outline-width<\/span>/);
+    assert.match(html, /<span class="tk-num">2px<\/span>/);
     // The CSS scanner preserves the code text exactly, like the JS one.
     const text = html.replace(/<[^>]+>/g, '');
     assert.equal(text, css.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
   });
 
-  it('custom properties get the variable class, segmented by the BEM grammar', () => {
+  it('custom properties are segmented by the CTI+ dynamics', () => {
     const css = [
-      ':root { --button__icon-color--disabled: var(--fill-4); }',
-      'button { color: var(--button-background-color--hover); }',
-      '.card__title--large { inline-size: var(--size-full); }',
+      ':root { --color-bkg-button-primary-hover: var(--palette-primary-400); }',
+      'button { color: var(--color-text-label-2); }',
+      '.code-block { inline-size: var(--size-full); }',
     ].join('\n');
     const html = highlightCode(css);
-    // Definition: block in var, __element in fn, trailing --state in kw.
-    assert.match(html, /<span class="var">--button<\/span><span class="fn">__icon-color<\/span><span class="kw">--disabled<\/span>/);
-    // A var() reference segments identically to the definition.
-    assert.match(html, /<span class="var">--button-background-color<\/span><span class="kw">--hover<\/span>/);
-    assert.match(html, /<span class="var">--fill-4<\/span>/);
-    assert.match(html, /<span class="var">--size-full<\/span>/);
-    // Class selectors segment the same way on the tag class.
-    assert.match(html, /<span class="tag">\.card<\/span><span class="fn">__title<\/span><span class="kw">--large<\/span>/);
+    // The playground's segmentation: the -- stays plain, then category,
+    // type, one span per item segment, and the state tail — each dynamic
+    // role reads distinctly, so the taxonomy structure is visible at a
+    // glance.
+    assert.match(html, /--<span class="tk-cp-category">color<\/span>-<span class="tk-cp-type">bkg<\/span>-<span class="tk-cp-item">button<\/span>-<span class="tk-cp-item">primary<\/span>-<span class="tk-cp-state">hover<\/span>/);
+    // A palette weight is a numeric tail: it takes the state class.
+    assert.match(html, /--<span class="tk-cp-category">palette<\/span>-<span class="tk-cp-item">primary<\/span>-<span class="tk-cp-state">400<\/span>/);
+    // A var() reference segments identically to a definition.
+    assert.match(html, /--<span class="tk-cp-category">color<\/span>-<span class="tk-cp-type">text<\/span>-<span class="tk-cp-item">label<\/span>-<span class="tk-cp-state">2<\/span>/);
+    assert.match(html, /--<span class="tk-cp-category">size<\/span>-<span class="tk-cp-item">full<\/span>/);
     const text = html.replace(/<[^>]+>/g, '');
     assert.equal(text, css.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
   });
@@ -666,8 +682,10 @@ describe('site syntax highlighting is a pipeline step', () => {
   it('a JS file that mentions CSS stays on the JS scanner', () => {
     const js = "const sheet = ':root { --a: 1; }';\nexport const x = { color: 'red' };";
     const html = highlightCode(js);
-    assert.match(html, /<span class="kw">const<\/span>/);
-    assert.match(html, /<span class="kw">export<\/span>/);
+    assert.match(html, /<span class="tk-kw">const<\/span>/);
+    // The CSS-looking string is a JS string token, not CSS: the JS
+    // scanner ran.
+    assert.match(html, /<span class="tk-str">':root \{ --a: 1; \}'<\/span>/);
   });
 
   it('every rendered page highlights its code blocks', () => {
@@ -678,6 +696,12 @@ describe('site syntax highlighting is a pipeline step', () => {
         (m) => m[1],
       );
       for (const inner of blocks) {
+        // A block with no code in it has nothing to highlight. The
+        // playground's editor panes ship an empty, aria-hidden
+        // highlight layer (<pre class="hl"><code></code>) that the
+        // page's own script fills as the reader types; the contract
+        // below covers code a page actually renders.
+        if (!inner.trim()) continue;
         if (inner.includes('<') && !inner.includes('<span class=')) continue;
         assert.ok(
           inner.includes('<span class='),
@@ -686,7 +710,25 @@ describe('site syntax highlighting is a pipeline step', () => {
       }
     }
     const componentHtml = renderComponentPage('button');
-    assert.match(componentHtml, /<span class="kw">import<\/span>/);
+    assert.match(componentHtml, /<span class="tk-(kw|dir|tag)">/);
+  });
+
+  it('the site and the playground run the one shared engine', () => {
+    // The engine lives in public/highlight-engine.js. highlight.js
+    // imports it for the server pass; playground.js imports it as a
+    // module for the editors. Neither carries a tokenizer of its own —
+    // a second implementation is what this test exists to prevent.
+    const site = readFileSync(repo('examples/express/highlight.js'), 'utf8');
+    assert.match(site, /from '\.\/public\/highlight-engine\.js'/);
+    assert.equal(site.includes('segmentTokenName('), false);
+    const playground = readFileSync(repo('examples/express/public/playground.js'), 'utf8');
+    assert.match(playground, /from '\/highlight-engine\.js'/);
+    assert.equal(playground.includes('function segmentTokenName'), false);
+    assert.equal(playground.includes('function hlCSS'), false);
+    // Same input, same output: the pass and the pane agree byte for byte.
+    assert.equal(highlightCode('button { color: var(--color-text-label); }'), HIGHLIGHTERS.css('button { color: var(--color-text-label); }'));
+    assert.equal(highlightCode('count.set(count() + 1);'), HIGHLIGHTERS.js('count.set(count() + 1);'));
+    assert.equal(highlightCode('<p class="x">{{ y() }}</p>'), HIGHLIGHTERS.html('<p class="x">{{ y() }}</p>'));
   });
 
   it('no view hand-writes highlight spans any more', () => {
@@ -694,7 +736,7 @@ describe('site syntax highlighting is a pipeline step', () => {
     for (const name of readdirSync(viewsDir)) {
       const text = readFileSync(`${viewsDir}/${name}`, 'utf8');
       assert.equal(
-        /class="(kw|str|fn|num|cmt|tag|attr)"/.test(text),
+        /class="tk-(com|tag|attr|dir|bind|str|kw|fn|num|interp|cp-[a-z]+)"/.test(text),
         false,
         `${name} hand-writes highlight spans`,
       );

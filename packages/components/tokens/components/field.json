@@ -1,0 +1,254 @@
+{
+  "display-field": {
+    "$value": "{display-grid}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "display",
+          "type": null,
+          "item": "field",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-field-gap": {
+    "$value": "{spacing-2}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "field",
+          "variant": null,
+          "subitem": "gap",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-field-margin": {
+    "$value": "{spacing-0}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "field",
+          "variant": null,
+          "subitem": "margin",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "align-field": {
+    "$value": "{align-stretch}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "align",
+          "type": null,
+          "item": "field",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-field-label": {
+    "$value": "{color-text-label}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "field-label",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-field-label-size": {
+    "$value": "{font-subheadline-size}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "field-label",
+          "variant": null,
+          "subitem": "size",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-field-label-weight": {
+    "$value": "{font-weight-medium}",
+    "$type": "fontWeight",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "field-label",
+          "variant": null,
+          "subitem": "weight",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-field-label-leading": {
+    "$value": "{font-subheadline-leading}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "field-label",
+          "variant": null,
+          "subitem": "leading",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-field-hint": {
+    "$value": "{color-text-label-2}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "field-hint",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-field-hint-size": {
+    "$value": "{font-footnote-size}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "field-hint",
+          "variant": null,
+          "subitem": "size",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-field-hint-leading": {
+    "$value": "{font-footnote-leading}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "field-hint",
+          "variant": null,
+          "subitem": "leading",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-field-error": {
+    "$value": "{color-danger-strong}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "field-error",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-field-error-size": {
+    "$value": "{font-footnote-size}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "field-error",
+          "variant": null,
+          "subitem": "size",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-field-error-leading": {
+    "$value": "{font-footnote-leading}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "field-error",
+          "variant": null,
+          "subitem": "leading",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  }
+}

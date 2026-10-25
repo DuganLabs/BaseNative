@@ -1,0 +1,1118 @@
+{
+  "palette-white": {
+    "$value": "#ffffff",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "white",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-black": {
+    "$value": "#09090b",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "black",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-gray-50": {
+    "$value": "#fafafa",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "gray",
+          "subitem": null,
+          "state": "50",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-gray-100": {
+    "$value": "#f4f4f5",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "gray",
+          "subitem": null,
+          "state": "100",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-gray-200": {
+    "$value": "#e4e4e7",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "gray",
+          "subitem": null,
+          "state": "200",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-gray-300": {
+    "$value": "#d4d4d8",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "gray",
+          "subitem": null,
+          "state": "300",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-gray-400": {
+    "$value": "#a1a1aa",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "gray",
+          "subitem": null,
+          "state": "400",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-gray-500": {
+    "$value": "#71717a",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "gray",
+          "subitem": null,
+          "state": "500",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-gray-600": {
+    "$value": "#52525b",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "gray",
+          "subitem": null,
+          "state": "600",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-gray-700": {
+    "$value": "#3f3f46",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "gray",
+          "subitem": null,
+          "state": "700",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-gray-800": {
+    "$value": "#27272a",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "gray",
+          "subitem": null,
+          "state": "800",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-gray-900": {
+    "$value": "#18181b",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "gray",
+          "subitem": null,
+          "state": "900",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-gray-950": {
+    "$value": "#09090b",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "gray",
+          "subitem": null,
+          "state": "950",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-primary-50": {
+    "$value": "#eff6ff",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "primary",
+          "subitem": null,
+          "state": "50",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-primary-100": {
+    "$value": "#dbeafe",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "primary",
+          "subitem": null,
+          "state": "100",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-primary-200": {
+    "$value": "#bfdbfe",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "primary",
+          "subitem": null,
+          "state": "200",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-primary-300": {
+    "$value": "#93c5fd",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "primary",
+          "subitem": null,
+          "state": "300",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-primary-400": {
+    "$value": "#60a5fa",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "primary",
+          "subitem": null,
+          "state": "400",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-primary-500": {
+    "$value": "#3b82f6",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "primary",
+          "subitem": null,
+          "state": "500",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-primary-600": {
+    "$value": "#2563eb",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "primary",
+          "subitem": null,
+          "state": "600",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-primary-700": {
+    "$value": "#1d4ed8",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "primary",
+          "subitem": null,
+          "state": "700",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-primary-800": {
+    "$value": "#1e40af",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "primary",
+          "subitem": null,
+          "state": "800",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-primary-900": {
+    "$value": "#1e3a8a",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "primary",
+          "subitem": null,
+          "state": "900",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-accent-50": {
+    "$value": "{palette-primary-50}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "accent",
+          "subitem": null,
+          "state": "50",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-accent-100": {
+    "$value": "{palette-primary-100}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "accent",
+          "subitem": null,
+          "state": "100",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-accent-200": {
+    "$value": "{palette-primary-200}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "accent",
+          "subitem": null,
+          "state": "200",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-accent-300": {
+    "$value": "{palette-primary-300}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "accent",
+          "subitem": null,
+          "state": "300",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-accent-400": {
+    "$value": "{palette-primary-400}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "accent",
+          "subitem": null,
+          "state": "400",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-accent-500": {
+    "$value": "{palette-primary-500}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "accent",
+          "subitem": null,
+          "state": "500",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-accent-600": {
+    "$value": "{palette-primary-600}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "accent",
+          "subitem": null,
+          "state": "600",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-accent-700": {
+    "$value": "{palette-primary-700}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "accent",
+          "subitem": null,
+          "state": "700",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-accent-800": {
+    "$value": "{palette-primary-800}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "accent",
+          "subitem": null,
+          "state": "800",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-accent-900": {
+    "$value": "{palette-primary-900}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "accent",
+          "subitem": null,
+          "state": "900",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-success-500": {
+    "$value": "#22c55e",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "success",
+          "subitem": null,
+          "state": "500",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-success-600": {
+    "$value": "#16a34a",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "success",
+          "subitem": null,
+          "state": "600",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-warning-500": {
+    "$value": "#f59e0b",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "warning",
+          "subitem": null,
+          "state": "500",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-warning-600": {
+    "$value": "#d97706",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "warning",
+          "subitem": null,
+          "state": "600",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-error-500": {
+    "$value": "#ef4444",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "error",
+          "subitem": null,
+          "state": "500",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-error-600": {
+    "$value": "#dc2626",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "error",
+          "subitem": null,
+          "state": "600",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-info-500": {
+    "$value": "#3b82f6",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "info",
+          "subitem": null,
+          "state": "500",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-info-600": {
+    "$value": "#2563eb",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "info",
+          "subitem": null,
+          "state": "600",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-success-50": {
+    "$value": "#f0fdf4",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "success",
+          "subitem": null,
+          "state": "50",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-warning-50": {
+    "$value": "#fffbeb",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "warning",
+          "subitem": null,
+          "state": "50",
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "palette-system-blue": {
+    "$value": "#007aff",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "system-blue",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "palette-system-green": {
+    "$value": "#34c759",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "system-green",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "palette-system-indigo": {
+    "$value": "#5856d6",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "system-indigo",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "palette-system-orange": {
+    "$value": "#ff9500",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "system-orange",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "palette-system-pink": {
+    "$value": "#ff2d55",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "system-pink",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "palette-system-purple": {
+    "$value": "#af52de",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "system-purple",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "palette-system-red": {
+    "$value": "#ff3b30",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "system-red",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "palette-system-teal": {
+    "$value": "#5ac8fa",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "system-teal",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "palette-system-yellow": {
+    "$value": "#ffcc00",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "system-yellow",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "palette-system-mint": {
+    "$value": "#00c7be",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "system-mint",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "palette-system-cyan": {
+    "$value": "#32ade6",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "system-cyan",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "palette-system-brown": {
+    "$value": "#a2845e",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "system-brown",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "palette-system-gray": {
+    "$value": "#8e8e93",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "system-gray",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "palette-system-gray-2": {
+    "$value": "#aeaeb2",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "system-gray-2",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "palette-system-gray-3": {
+    "$value": "#c7c7cc",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "system-gray-3",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "palette-system-gray-4": {
+    "$value": "#d1d1d6",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "system-gray-4",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "palette-system-gray-5": {
+    "$value": "#e5e5ea",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "system-gray-5",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "palette-system-gray-6": {
+    "$value": "#f2f2f7",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "system-gray-6",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "palette-transparent": {
+    "$value": "transparent",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "palette",
+          "type": null,
+          "item": null,
+          "variant": "transparent",
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  }
+}

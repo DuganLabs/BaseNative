@@ -67,9 +67,9 @@
 
     /* Accent */
     --accent: #e8920a;
-    --accent-dim: color-mix(in oklab, var(--tint) 72%, black);
-    --accent-glow: color-mix(in srgb, var(--tint) 20%, transparent);
-    --accent-glow-strong: color-mix(in srgb, var(--tint) 33%, transparent);
+    --accent-dim: color-mix(in oklab, var(--color-tint) 72%, black);
+    --accent-glow: color-mix(in srgb, var(--color-tint) 20%, transparent);
+    --accent-glow-strong: color-mix(in srgb, var(--color-tint) 33%, transparent);
 
     /* Status */
     --danger: #f07178;
@@ -161,103 +161,97 @@
     --noise-size: 200px;
     --z-noise: 9999;
 
-    /* Syntax highlighting */
-    --syntax-keyword: #c792ea;
-    --syntax-string: #c3e88d;
-    --syntax-function: #82aaff;
-    --syntax-number: #f78c6c;
-    --syntax-comment: #7a98a5;
-    --syntax-tag: #f07178;
-    --syntax-attr: #ffcb6b;
-    --syntax-variable: #89ddff;
-
-    /* Stat grid */
-    --stat-grid-columns: 4;
-    --stat-value-size: var(--font-size-2xl);
-
-    /* Playground */
-    --counter-output-size: var(--font-size-2xl);
-    --log-max-height: 12rem;
-    --log-entry-opacity: 0.7;
-
-    /* Container query breakpoints */
-    --cq-compact: 20rem;
-    --cq-medium: 30rem;
-
-    /* Inset surfaces */
-    --surface-inset: #080706;
-
-    /* Track (range, progress) */
-    --track-bg: #2c2822;
-    --track-fill: var(--accent);
-    --track-height: 0.375rem;
-    --thumb-size: 1.125rem;
-
-    /* Meter */
-    --meter-low: var(--danger);
-    --meter-mid: var(--accent);
-    --meter-high: var(--success);
-
-    /* Mark */
-    --mark-bg: #e8920a22;
-    --mark-text: var(--accent);
-
-    /* Kbd */
-    --kbd-bg: var(--surface-3);
-    --kbd-border: var(--border-accent);
-    --kbd-shadow: 0 2px 0 var(--border);
-
-    /* Blockquote */
-    --blockquote-border: var(--accent-dim);
-
-    /* Table */
-    --table-stripe: #ffffff06;
-    --table-header-bg: var(--surface-2);
-
-    /* Details */
-    --details-marker: var(--accent);
-
-    /* Dialog */
-    --dialog-bg: var(--surface-1);
-    --dialog-border: var(--border-accent);
-    --dialog-backdrop: #0c0b09cc;
-    --dialog-shadow: 0 16px 64px -16px #000a;
-
-    /* Popover */
-    --popover-bg: var(--surface-2);
-    --popover-border: var(--border-accent);
-    --popover-shadow: 0 8px 32px -8px #000a;
-    --popover-radius: var(--radius-md);
-    --anchor-offset: var(--space-sm);
-
-    /* Tooltip */
-    --tooltip-bg: var(--surface-3);
-    --tooltip-text: var(--text-0);
-    --tooltip-font-size: var(--font-size-xs);
-
-    /* Select */
-    --select-bg: var(--surface-0);
-    --select-option-hover: var(--surface-3);
-
-    /* Checkbox / Radio */
-    --control-size: 1.125rem;
-    --control-bg: var(--surface-0);
-    --control-border: var(--border);
-    --control-checked-bg: var(--accent);
-    --control-checked-border: var(--accent);
+    /* Syntax highlighting — the playground's classes and palette.
+     Site code is tokenized by the same engine as the playground's
+     editors (public/highlight-engine.js, shared verbatim), so it
+     wears the tk-* classes; the --color-text-syntax-* tokens are the
+     playground sheet's own, declared here with its values — light,
+     and dark under the same media query the playground uses — so a
+     token reads the same colour on every page as in the editors. */
+  :root {
+    --color-text-syntax-plain: #23272c;
+    --color-text-syntax-comment: #7a8288;
+    --color-text-syntax-tag: #0d7a3e;
+    --color-text-syntax-attr: #8a5a00;
+    --color-text-syntax-directive: #0e6e8c;
+    --color-text-syntax-binding: #a03d63;
+    --color-text-syntax-string: #9c3d1e;
+    --color-text-syntax-keyword: #0e6e8c;
+    --color-text-syntax-function: #6d4fc2;
+    --color-text-syntax-number: #9c3d1e;
+    --color-text-syntax-interpolation: #a03d63;
+    --color-text-syntax-token-category: #0e6e8c;
+    --color-text-syntax-token-type: #6d4fc2;
+    --color-text-syntax-token-item: #23272c;
+    --color-text-syntax-token-state: #a03d63;
   }
-}
-
-@layer layout {
-  body {
-    font-family: var(--font-family);
-    font-stretch: var(--font-serif);
-    background: var(--surface-0);
-    color: var(--text-0);
-    line-height: var(--line-height-body);
-    min-block-size: 100dvh;
-    display: flex;
-    flex-direction: column;
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-text-syntax-plain: #d7dce0;
+      --color-text-syntax-comment: #6d767f;
+      --color-text-syntax-tag: #57cc85;
+      --color-text-syntax-attr: #e3b341;
+      --color-text-syntax-directive: #56c8e8;
+      --color-text-syntax-binding: #f08bb4;
+      --color-text-syntax-string: #f09383;
+      --color-text-syntax-keyword: #56c8e8;
+      --color-text-syntax-function: #b7a6f2;
+      --color-text-syntax-number: #f09383;
+      --color-text-syntax-interpolation: #f08bb4;
+      --color-text-syntax-token-category: #56c8e8;
+      --color-text-syntax-token-type: #b7a6f2;
+      --color-text-syntax-token-item: #d7dce0;
+      --color-text-syntax-token-state: #f08bb4;
+    }
+  }
+  .tk-com {
+    color: var(--color-text-syntax-comment);
+    font-style: italic;
+  }
+  .tk-tag {
+    color: var(--color-text-syntax-tag);
+    font-weight: 600;
+  }
+  .tk-attr {
+    color: var(--color-text-syntax-attr);
+  }
+  .tk-dir {
+    color: var(--color-text-syntax-directive);
+    font-weight: 600;
+  }
+  .tk-bind {
+    color: var(--color-text-syntax-binding);
+    font-weight: 600;
+  }
+  .tk-str {
+    color: var(--color-text-syntax-string);
+  }
+  .tk-kw {
+    color: var(--color-text-syntax-keyword);
+  }
+  .tk-fn {
+    color: var(--color-text-syntax-function);
+  }
+  .tk-num {
+    color: var(--color-text-syntax-number);
+  }
+  .tk-interp {
+    color: var(--color-text-syntax-interpolation);
+  }
+  /* The segments of a CTI+ custom property name. */
+  .tk-cp-category {
+    color: var(--color-text-syntax-token-category);
+    font-weight: 600;
+  }
+  .tk-cp-type {
+    color: var(--color-text-syntax-token-type);
+  }
+  .tk-cp-item {
+    color: var(--color-text-syntax-token-item);
+  }
+  .tk-cp-state {
+    color: var(--color-text-syntax-token-state);
+    font-weight: 600;
   }
 
   body::after {
@@ -406,7 +400,7 @@
      every page's hero sat flush on the surface below it. -- */
   main > figure[variant],
   main > article:not([data-bn-component-page], [data-bn-showcase]) > figure[variant] {
-    --hero-margin: 0 0 var(--bn-section-space, 12px);
+    --spacing-hero-margin: 0 0 var(--bn-section-space, 12px);
   }
 
   section > h2 {
@@ -1109,29 +1103,29 @@
 
   /* Syntax highlighting */
   .kw {
-    color: var(--syntax-keyword);
+    color: var(--color-syntax-keyword);
   }
   .str {
-    color: var(--syntax-string);
+    color: var(--color-syntax-string);
   }
   .fn {
-    color: var(--syntax-function);
+    color: var(--color-syntax-function);
   }
   .num {
-    color: var(--syntax-number);
+    color: var(--color-syntax-number);
   }
   .cmt {
-    color: var(--syntax-comment);
+    color: var(--color-syntax-comment);
     font-style: italic;
   }
   .tag {
-    color: var(--syntax-tag);
+    color: var(--color-syntax-tag);
   }
   .attr {
-    color: var(--syntax-attr);
+    color: var(--color-syntax-attr);
   }
   .var {
-    color: var(--syntax-variable);
+    color: var(--color-syntax-variable);
   }
 
   /* -- Labels -- */
@@ -2292,12 +2286,12 @@
   /* -- Hero shared by /components and /showcase -- */
   [data-bn-page-hero],
   [data-bn-showcase] > figure[variant="stacked"] {
-    --hero-margin: 0 0 var(--bn-section-space, 12px);
-    --hero__title-font-family: var(--font-family);
-    --hero__title-font-size: var(--font-size-hero);
-    --hero__title-font-weight: var(--font-weight-normal);
-    --hero__title-letter-spacing: var(--letter-spacing-tight);
-    --hero__title-margin: 0 0 var(--space-md);
+    --spacing-hero-margin: 0 0 var(--bn-section-space, 12px);
+    --font-hero-title-family: var(--font-family);
+    --font-hero-title-size: var(--font-size-hero);
+    --font-hero-title-weight: var(--font-weight-normal);
+    --font-hero-title-tracking: var(--letter-spacing-tight);
+    --spacing-hero-title-margin: 0 0 var(--space-md);
 
     & > figcaption > :is(h1, h2) {
       font-stretch: var(--font-serif);
@@ -2651,16 +2645,16 @@
   }
 
   figure[variant="stacked"]:has(> figcaption > dl) {
-    --hero-background-color: transparent;
-    --hero-border-width: 0;
-    --hero-padding-block: 0;
-    --hero-padding-inline: 0;
-    --hero-margin: var(--space-lg) 0 var(--space-xl);
-    --hero__title-font-family: var(--font-family);
-    --hero__title-font-size: var(--font-size-hero);
-    --hero__title-font-weight: var(--font-weight-normal);
-    --hero__title-letter-spacing: var(--letter-spacing-tight);
-    --hero__title-margin: 0 0 var(--space-sm);
+    --color-bkg-hero: transparent;
+    --size-border-hero: 0;
+    --spacing-hero-padding-block: 0;
+    --spacing-hero-padding-inline: 0;
+    --spacing-hero-margin: var(--space-lg) 0 var(--space-xl);
+    --font-hero-title-family: var(--font-family);
+    --font-hero-title-size: var(--font-size-hero);
+    --font-hero-title-weight: var(--font-weight-normal);
+    --font-hero-title-tracking: var(--letter-spacing-tight);
+    --spacing-hero-title-margin: 0 0 var(--space-sm);
 
     & > figcaption > :is(h1, h2) {
       font-stretch: var(--font-serif);
@@ -2869,13 +2863,13 @@
      catalog sheet declares it. */
   [data-bn-component-preview],
   [data-bn-showcase-stage] {
-    --select__listbox-position: static;
-    --combobox__listbox-position: static;
-    --multiselect__listbox-position: static;
-    --toast-position: static;
-    --app-bar-position: static;
-    --app-bar__menu-position: static;
-    --tooltip__note-position: static;
+    --position-select-listbox: static;
+    --position-combobox-listbox: static;
+    --position-multiselect-listbox: static;
+    --position-toast: static;
+    --position-app-bar: static;
+    --position-app-bar-menu: static;
+    --position-tooltip-note: static;
 
     & dialog {
       position: static;

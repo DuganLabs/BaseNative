@@ -1,0 +1,956 @@
+{
+  "align-hero-actions": {
+    "$value": "{align-center}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "align",
+          "type": null,
+          "item": "hero-actions",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "backdrop-filter-hero-overlay-caption": {
+    "$value": "blur(var(--material-regular-blur)) saturate(var(--material-regular-saturate))",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "backdrop-filter",
+          "type": null,
+          "item": "hero",
+          "variant": "overlay",
+          "subitem": "caption",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "border-style-hero": {
+    "$value": "{border-style-solid}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "border-style",
+          "type": null,
+          "item": "hero",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-bkg-hero": {
+    "$value": "{color-background-grouped-2}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "hero",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-bkg-hero-overlay-caption": {
+    "$value": "{material-regular-tint}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "hero",
+          "variant": "overlay",
+          "subitem": "caption",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-border-hero": {
+    "$value": "{color-border-separator}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "border",
+          "item": "hero",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-hero-eyebrow": {
+    "$value": "{color-text-label-2}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "hero-eyebrow",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-hero-lede": {
+    "$value": "{color-text-label-2}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "hero-lede",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-hero-title": {
+    "$value": "{color-text-label}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "hero-title",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "display-hero": {
+    "$value": "{display-grid}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "display",
+          "type": null,
+          "item": "hero",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "display-hero-actions": {
+    "$value": "{display-flex}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "display",
+          "type": null,
+          "item": "hero-actions",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "display-hero-caption": {
+    "$value": "{display-grid}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "display",
+          "type": null,
+          "item": "hero-caption",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "flex-wrap-hero-actions": {
+    "$value": "{flex-wrap-wrap}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "flex-wrap",
+          "type": null,
+          "item": "hero-actions",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-hero-eyebrow-family": {
+    "$value": "{font-caption-1-family}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "hero-eyebrow",
+          "variant": null,
+          "subitem": "family",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-hero-eyebrow-leading": {
+    "$value": "{font-caption-1-leading}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "hero-eyebrow",
+          "variant": null,
+          "subitem": "leading",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-hero-eyebrow-size": {
+    "$value": "{font-caption-1-size}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "hero-eyebrow",
+          "variant": null,
+          "subitem": "size",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-hero-eyebrow-tracking": {
+    "$value": "{font-caption-1-tracking}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "hero-eyebrow",
+          "variant": null,
+          "subitem": "tracking",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-hero-eyebrow-weight": {
+    "$value": "{font-weight-semibold}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "hero-eyebrow",
+          "variant": null,
+          "subitem": "weight",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-hero-lede-family": {
+    "$value": "{font-body-family}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "hero-lede",
+          "variant": null,
+          "subitem": "family",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-hero-lede-leading": {
+    "$value": "{font-body-leading}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "hero-lede",
+          "variant": null,
+          "subitem": "leading",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-hero-lede-size": {
+    "$value": "{font-body-size}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "hero-lede",
+          "variant": null,
+          "subitem": "size",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-hero-lede-tracking": {
+    "$value": "{font-body-tracking}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "hero-lede",
+          "variant": null,
+          "subitem": "tracking",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-hero-lede-weight": {
+    "$value": "{font-body-weight}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "hero-lede",
+          "variant": null,
+          "subitem": "weight",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-hero-title-family": {
+    "$value": "{font-title-1-family}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "hero-title",
+          "variant": null,
+          "subitem": "family",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-hero-title-leading": {
+    "$value": "{font-title-1-leading}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "hero-title",
+          "variant": null,
+          "subitem": "leading",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-hero-title-size": {
+    "$value": "{font-title-1-size}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "hero-title",
+          "variant": null,
+          "subitem": "size",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-hero-title-tracking": {
+    "$value": "{font-title-1-tracking}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "hero-title",
+          "variant": null,
+          "subitem": "tracking",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-hero-title-weight": {
+    "$value": "{font-weight-bold}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "hero-title",
+          "variant": null,
+          "subitem": "weight",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "grid-template-hero-split-columns": {
+    "$value": "1fr 1fr",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "grid-template",
+          "type": null,
+          "item": "hero",
+          "variant": "split",
+          "subitem": "columns",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "inset-hero-overlay-caption-block-end": {
+    "$value": "{spacing-4}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "inset",
+          "type": null,
+          "item": "hero",
+          "variant": "overlay",
+          "subitem": "caption-block-end",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "inset-hero-overlay-caption-inline": {
+    "$value": "{spacing-4}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "inset",
+          "type": null,
+          "item": "hero",
+          "variant": "overlay",
+          "subitem": "caption-inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "position-hero": {
+    "$value": "{position-relative}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "position",
+          "type": null,
+          "item": "hero",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "position-hero-overlay-caption": {
+    "$value": "{position-absolute}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "position",
+          "type": null,
+          "item": "hero",
+          "variant": "overlay",
+          "subitem": "caption",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-border-hero": {
+    "$value": "{size-border}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": "border",
+          "item": "hero",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-hero-media-inline": {
+    "$value": "{size-full}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "hero-media",
+          "variant": null,
+          "subitem": "inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-hero-overlay-media-block": {
+    "$value": "{size-full}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "hero",
+          "variant": "overlay",
+          "subitem": "media-block",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-hero-overlay-media-inline": {
+    "$value": "{size-full}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "hero",
+          "variant": "overlay",
+          "subitem": "media-inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-radius-hero": {
+    "$value": "{size-radius-sheet}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": "radius",
+          "item": "hero",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-radius-hero-media": {
+    "$value": "{size-radius-container}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": "radius",
+          "item": "hero-media",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-radius-hero-overlay-caption": {
+    "$value": "{size-radius-container}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": "radius",
+          "item": "hero",
+          "variant": "overlay",
+          "subitem": "caption",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-radius-hero-split-media": {
+    "$value": "{size-radius-container}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": "radius",
+          "item": "hero",
+          "variant": "split",
+          "subitem": "media",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-hero-actions-gap": {
+    "$value": "{spacing-3}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "hero-actions",
+          "variant": null,
+          "subitem": "gap",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-hero-actions-margin-block-start": {
+    "$value": "{spacing-2}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "hero-actions",
+          "variant": null,
+          "subitem": "margin-block-start",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-hero-caption-gap": {
+    "$value": "{spacing-3}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "hero-caption",
+          "variant": null,
+          "subitem": "gap",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-hero-eyebrow-margin": {
+    "$value": "{spacing-0}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "hero-eyebrow",
+          "variant": null,
+          "subitem": "margin",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-hero-gap": {
+    "$value": "{spacing-5}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "hero",
+          "variant": null,
+          "subitem": "gap",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-hero-lede-margin": {
+    "$value": "{spacing-0}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "hero-lede",
+          "variant": null,
+          "subitem": "margin",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-hero-margin": {
+    "$value": "{spacing-0}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "hero",
+          "variant": null,
+          "subitem": "margin",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-hero-overlay-caption-padding-block": {
+    "$value": "{spacing-5}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "hero",
+          "variant": "overlay",
+          "subitem": "caption-padding-block",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-hero-overlay-caption-padding-inline": {
+    "$value": "{spacing-5}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "hero",
+          "variant": "overlay",
+          "subitem": "caption-padding-inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-hero-padding-block": {
+    "$value": "{spacing-6}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "hero",
+          "variant": null,
+          "subitem": "padding-block",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-hero-padding-inline": {
+    "$value": "{spacing-6}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "hero",
+          "variant": null,
+          "subitem": "padding-inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-hero-title-margin": {
+    "$value": "{spacing-0}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "hero-title",
+          "variant": null,
+          "subitem": "margin",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  }
+}

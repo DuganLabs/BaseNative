@@ -33,7 +33,7 @@ describe('minifyCss', () => {
     assert.ok(small.length < css.length, 'expected the comments to cost something');
     assert.equal(small.includes('/*'), false);
     // Every declaration survives — only prose and indentation go.
-    const count = (s) => (s.match(/--bn-[a-z0-9-]+:/g) ?? []).length;
+    const count = (s) => (s.match(/^\s*--[a-z0-9-]+:/gm) ?? []).length;
     assert.equal(count(small), count(css));
   });
 });

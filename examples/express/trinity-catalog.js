@@ -44,6 +44,7 @@ export const trinityCopy = {
   badge: C('Badge', 'feedback', 'A compact status pill — a small element carrying its tone as a variant.', "create({ label: 'Paid', variant: 'success' })"),
   toast: C('Toast', 'feedback', 'A stack of status messages, toned by an SVG glyph and color — meaning never rides color alone.', "create({ items: [{ message: 'Lead delivered', tone: 'success', dismissHtml }] })"),
   'empty-state': C('Empty State', 'feedback', 'The nothing-here-yet surface: media, a title, a body, and one way forward.', "create({ title: 'No leads yet', body: '…', actionHtml })"),
+  'code-block': C('Code Block', 'content', 'A figure for code: the caption is the header bar — a file name or language, plus any caller-rendered actions — and the body is the code itself in a pre, interpolated and escaped like any other text. Highlighting belongs to the reader’s pipeline, never to the component.', "create({ code: '…', caption: 'counter.js' })"),
   card: C('Card', 'content', 'An article with header, body, and footer — and the substrate choice groups select over.', "create({ title: 'Panel upgrade', body: '…', footerHtml })"),
   avatar: C('Avatar', 'content', 'A figure that shows an image, or the initials where the image would be.', "create({ initials: 'WD', variant: 'tone-0' })"),
   accordion: C('Accordion', 'content', 'Native details and summary — disclosure the platform already knows how to run.', "create({ summary: 'What does a lead cost?', bodyHtml: '<p>…</p>', open: true })"),
@@ -497,6 +498,12 @@ export const trinityDemos = {
       label: 'Demo sections',
       sections: [{ label: 'Start', items: [{ label: 'Home', href: '#', current: true }, { label: 'Docs', href: '#' }] }],
     }), 'You are looking at the composition: this page’s own frame is the app shell — the sidebar on the left (or the app bar below, on a phone), the one main in the middle. Its template is the three lines in the source below.'),
+  ],
+  'code-block': (r) => [
+    D('Caption and code', r('code-block', {
+      caption: 'counter.js',
+      code: "import { signal } from '@basenative/runtime';\n\nconst count = signal(0);",
+    }), 'The code is data: it renders escaped, and the site’s highlighting pass colours it the same way it colours every block on the page.'),
   ],
   'site-footer': (r) => [
     D('Columns and a note', r('site-footer', {

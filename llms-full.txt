@@ -575,8 +575,6 @@ Source: `packages/components/src` · Docs: `docs/api/components.md`
 - `./css` → `./src/index.css` (non-JS resource export)
 - `./layers.css` → `./src/layers.css` (non-JS resource export)
 - `./tokens.css` → `./src/tokens.css` (non-JS resource export)
-- `./tokens-legacy.css` → `./src/tokens-legacy.css` (non-JS resource export)
-- `./theme.css` → `./src/theme.css` (non-JS resource export)
 - `./components.css` → `./src/components.css` (non-JS resource export)
 - `./layout.css` → `./src/layout.css` (non-JS resource export)
 - `./reset.css` → `./src/reset.css` (non-JS resource export)
@@ -3667,7 +3665,7 @@ The neutral ramp, one step deeper than primary because components read `gray-950
 packages/theme/src/theme.js · `import { NEUTRAL_RAMP_STEPS } from '@basenative/theme';`
 
 #### `PRIMARY_RAMP_STEPS` (const)
-The ramp every theme must declare, because components read `--bn-color-primary-*`.
+The ramp every theme must declare, because components read `--palette-primary-*`.
 packages/theme/src/theme.js · `import { PRIMARY_RAMP_STEPS } from '@basenative/theme';`
 
 #### `ROLE_KEYS` (const)
@@ -3683,7 +3681,7 @@ Tier 2a. `base` is the page; `sunk` is a well; `raised` is a card or a control.
 packages/theme/src/theme.js · `import { SURFACE_KEYS } from '@basenative/theme';`
 
 #### `GEOMETRY_DEFAULTS` (const)
-Non-colour groups. Defaulted, because a radius ladder is ergonomics and not identity. `theme.test.js` asserts each default is byte-identical to the value `@basenative/components/src/tokens-legacy.css` declares, so a change upstream fails t…
+Non-colour groups. Defaulted, because a radius ladder is ergonomics and not identity. `theme.test.js` asserts each default is byte-identical to the value `@basenative/components/src/tokens.css` declares, so a change upstream fails this pac…
 packages/theme/src/theme.js · `import { GEOMETRY_DEFAULTS } from '@basenative/theme';`
 
 #### `RAW_DEFAULTS` (const)
@@ -3691,46 +3689,46 @@ Roles whose value is a raw CSS colour expression rather than a ramp reference �
 packages/theme/src/theme.js · `import { RAW_DEFAULTS } from '@basenative/theme';`
 
 #### `rampVar(ramp, step)` (function)
-`--bn-theme-ramp-primary-600`
+`--palette-theme-primary-600`
 packages/theme/src/theme.js · `import { rampVar } from '@basenative/theme';`
 
 #### `surfaceVar(key)` (function)
-`--bn-theme-surface`, `--bn-theme-surface-raised`
+`--color-bkg-theme-surface`, `--color-bkg-theme-surface-raised`
 packages/theme/src/theme.js · `import { surfaceVar } from '@basenative/theme';`
 
 #### `inkVar(key)` (function)
-`--bn-theme-ink`, `--bn-theme-ink-muted`
+`--color-text-theme-ink`, `--color-text-theme-ink-muted`
 packages/theme/src/theme.js · `import { inkVar } from '@basenative/theme';`
 
 #### `roleVar(key)` (function)
-`--bn-theme-primary-hover`, `--bn-theme-border-control`
+`--color-bkg-theme-primary-hover`, `--color-border-theme-control`
 packages/theme/src/theme.js · `import { roleVar } from '@basenative/theme';`
 
 #### `signalVar(family, channel)` (function)
-`--bn-theme-signal-good-bg`
+`--color-bkg-theme-signal-good`
 packages/theme/src/theme.js · `import { signalVar } from '@basenative/theme';`
 
 #### `slotVar(slot, channel)` (function)
-`--bn-theme-slot-error-ink` — what the bridge reads, so the bridge can be static.
+`--color-text-theme-slot-error` — what the bridge reads, so the bridge can be static.
 packages/theme/src/theme.js · `import { slotVar } from '@basenative/theme';`
 
 #### `BRIDGE_CSS` (const)
 The bridge, as text. Byte-identical to `src/bridge.css`; `bridge.test.js` enforces that.
 packages/theme/src/bridge.js · `import { BRIDGE_CSS } from '@basenative/theme';`
 
-#### `BN_BRIDGED` (const)
-Every `--bn-*` name the bridge re-points. Derived from the text above so the two cannot disagree.
-packages/theme/src/bridge.js · `import { BN_BRIDGED } from '@basenative/theme';`
+#### `CTI_BRIDGED` (const)
+Every name the bridge re-points. Derived from the text above so the two cannot disagree.
+packages/theme/src/bridge.js · `import { CTI_BRIDGED } from '@basenative/theme';`
 
 #### `UPSTREAM_OWNED` (const)
-`--bn-*` names `@basenative/components` reads that this bridge deliberately does NOT touch, with the reason. `bridge.test.js` treats anything outside these two lists as drift.
+Names `@basenative/components` reads that this bridge deliberately does NOT touch, with the reason. `bridge.test.js` treats anything outside these two lists as drift.
 packages/theme/src/bridge.js · `import { UPSTREAM_OWNED } from '@basenative/theme';`
 
-#### `bridgeToBn()` (function)
+#### `bridgeToCti()` (function)
 The bridge as a string, for a consumer that adopts one constructed stylesheet rather than linking `@basenative/theme/bridge.css`.
-packages/theme/src/bridge.js · `import { bridgeToBn } from '@basenative/theme';`
+packages/theme/src/bridge.js · `import { bridgeToCti } from '@basenative/theme';`
 
-#### `validateBridge(componentsCss)` (function)
+#### `validateBridge(componentsCss, { exclude = [] } = {})` (function)
 Compares the bridge against the CSS a version of `@basenative/components` actually ships.
 packages/theme/src/bridge.js · `import { validateBridge } from '@basenative/theme';`
 

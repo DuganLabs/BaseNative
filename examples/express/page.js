@@ -24,6 +24,7 @@ import {
 import { getAiPageContext } from './ai-scorecard.js';
 import { trinityCatalog, trinityCategoriesWith, trinityDemos } from './trinity-catalog.js';
 import { getDesignSystemContext } from './design-system-data.js';
+import { getPlaygroundPageContext } from './playground-data.js';
 import { getShowcaseContext } from './showcase-data.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -67,6 +68,9 @@ function getAssetVersion() {
     'public/theme.css',
     'public/boot.js',
     'public/scrollspy.js',
+    'public/playground.css',
+    'public/playground.js',
+    'public/playground-preview.js',
   ]) {
     try {
       hash.update(read(file));
@@ -275,7 +279,7 @@ export const siteRoutes = [
     description:
       'Interactive sandbox for signals, computed values, effects, and template directives.',
     activePage: 'playground',
-    ctx: () => ({}),
+    ctx: () => getPlaygroundPageContext(),
     hero: {
       eyebrow: 'Playground',
       titleHtml: 'Signals <em>Playground</em>',

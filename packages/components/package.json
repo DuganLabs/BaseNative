@@ -11,8 +11,6 @@
     "./css": "./src/index.css",
     "./layers.css": "./src/layers.css",
     "./tokens.css": "./src/tokens.css",
-    "./tokens-legacy.css": "./src/tokens-legacy.css",
-    "./theme.css": "./src/theme.css",
     "./components.css": "./src/components.css",
     "./layout.css": "./src/layout.css",
     "./reset.css": "./src/reset.css",
@@ -20,15 +18,19 @@
   },
   "types": "./types/index.d.ts",
   "dependencies": {
-    "@basenative/runtime": "workspace:*",
-    "@basenative/forms": "workspace:*"
+    "@basenative/forms": "workspace:*",
+    "@basenative/runtime": "workspace:*"
   },
   "files": [
     "src",
     "types",
+    "tokens",
     "!**/*.test.js",
     "!**/*.test.mjs"
   ],
+  "scripts": {
+    "build:tokens": "node scripts/build-tokens.mjs"
+  },
   "sideEffects": [
     "**/*.css"
   ],
@@ -53,5 +55,8 @@
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
+  },
+  "devDependencies": {
+    "style-dictionary": "^5.7.1"
   }
 }

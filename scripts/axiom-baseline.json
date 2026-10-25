@@ -7,10 +7,26 @@
     "div-span": 1,
     "control-flow": 0
   },
-  "examples/express/public/showcase.js": {
+  "examples/express/public/highlight-engine.js": {
     "custom-element": 0,
     "inline-style": 0,
-    "style-write": 4,
+    "style-write": 0,
+    "css-outside-layer": 0,
+    "div-span": 1,
+    "control-flow": 0
+  },
+  "examples/express/public/playground.css": {
+    "custom-element": 0,
+    "inline-style": 0,
+    "style-write": 0,
+    "css-outside-layer": 75,
+    "div-span": 0,
+    "control-flow": 0
+  },
+  "examples/express/public/playground.js": {
+    "custom-element": 0,
+    "inline-style": 0,
+    "style-write": 8,
     "css-outside-layer": 0,
     "div-span": 0,
     "control-flow": 0
@@ -21,22 +37,6 @@
     "style-write": 0,
     "css-outside-layer": 1,
     "div-span": 0,
-    "control-flow": 0
-  },
-  "examples/express/showcase-data.js": {
-    "custom-element": 0,
-    "inline-style": 0,
-    "style-write": 1,
-    "css-outside-layer": 0,
-    "div-span": 0,
-    "control-flow": 0
-  },
-  "examples/express/views/ai.html": {
-    "custom-element": 0,
-    "inline-style": 0,
-    "style-write": 0,
-    "css-outside-layer": 0,
-    "div-span": 1,
     "control-flow": 0
   },
   "examples/express/views/builder.html": {
@@ -52,7 +52,7 @@
     "inline-style": 0,
     "style-write": 0,
     "css-outside-layer": 0,
-    "div-span": 12,
+    "div-span": 2,
     "control-flow": 0
   },
   "examples/express/views/component.html": {
@@ -60,7 +60,7 @@
     "inline-style": 0,
     "style-write": 0,
     "css-outside-layer": 0,
-    "div-span": 11,
+    "div-span": 7,
     "control-flow": 0
   },
   "examples/express/views/components.html": {
@@ -71,36 +71,12 @@
     "div-span": 2,
     "control-flow": 0
   },
-  "examples/express/views/docs.html": {
-    "custom-element": 0,
-    "inline-style": 0,
-    "style-write": 0,
-    "css-outside-layer": 0,
-    "div-span": 41,
-    "control-flow": 0
-  },
   "examples/express/views/design-system.html": {
     "custom-element": 0,
     "inline-style": 1,
     "style-write": 0,
     "css-outside-layer": 0,
     "div-span": 0,
-    "control-flow": 0
-  },
-  "examples/express/views/roadmap.html": {
-    "custom-element": 0,
-    "inline-style": 0,
-    "style-write": 0,
-    "css-outside-layer": 0,
-    "div-span": 8,
-    "control-flow": 0
-  },
-  "examples/express/views/showcase.html": {
-    "custom-element": 0,
-    "inline-style": 0,
-    "style-write": 0,
-    "css-outside-layer": 0,
-    "div-span": 2,
     "control-flow": 0
   },
   "examples/express/views/tasks.html": {

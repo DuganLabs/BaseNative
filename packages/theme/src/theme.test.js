@@ -15,12 +15,8 @@ import {
 import { parseCustomProperties, resolveColor } from './contrast.js';
 import { darkOnlyTheme, dualTheme, minimalTheme } from './test-fixtures.js';
 
-// The --bn-* defaults this package tracks live in the components package's
-// legacy ladder sheet. Since the Holy Trinity restructure, components'
-// tokens.css is the trinity foundation (layer-0 roles) and declares none of
-// the --bn-* names; tokens-legacy.css declares all of them.
 const COMPONENTS_TOKENS = fileURLToPath(
-  new URL('../../components/src/tokens-legacy.css', import.meta.url),
+  new URL('../../components/src/tokens.css', import.meta.url),
 );
 
 /** The first error mentioning `needle`, for readable assertions. */
@@ -128,7 +124,7 @@ describe('validateTheme — the value grammar', () => {
     const spec = minimalTheme();
     spec.roles.focus = '#FF00FF';
     assert.equal(validateTheme(spec).ok, true);
-    assert.match(emitThemeCss(spec, { layer: false, bridge: false }), /--bn-theme-focus: #ff00ff;/);
+    assert.match(emitThemeCss(spec, { layer: false, bridge: false }), /--color-border-theme-focus: #ff00ff;/);
   });
 });
 
@@ -172,8 +168,8 @@ describe('validateTheme — signal families and the five slots', () => {
     };
     assert.equal(validateTheme(spec).ok, true);
     const css = emitThemeCss(spec, { layer: false, bridge: false });
-    assert.match(css, /--bn-theme-signal-idle-bg:/);
-    assert.match(css, /--bn-theme-slot-error-ink: var\(--bn-theme-signal-dead-ink\);/);
+    assert.match(css, /--color-bkg-theme-signal-idle:/);
+    assert.match(css, /--color-text-theme-slot-error: var\(--color-text-theme-signal-dead\);/);
   });
 });
 
@@ -206,7 +202,7 @@ describe('defineTheme', () => {
     const theme = defineTheme(minimalTheme({ control: { tapMin: '2.75rem' } }));
     assert.equal(theme.control.tapMin, '2.75rem');
     assert.equal(theme.control.height, GEOMETRY_DEFAULTS.control.height);
-    assert.match(emitThemeCss(theme, { bridge: false }), /--bn-theme-tap-min: 2\.75rem;/);
+    assert.match(emitThemeCss(theme, { bridge: false }), /--size-theme-tap-min: 2\.75rem;/);
   });
 });
 
@@ -215,22 +211,26 @@ describe('the geometry defaults track @basenative/components', () => {
 
   // A default that silently drifts from the package it is bridging to would
   // re-style every property on a components release. These pin it.
+  // The upstream side of each pin is the CTI+ name the bridge re-points at
+  // the theme's default. The radius ladder pins BY VALUE onto upstream's
+  // legacy ladder: upstream's md step at the theme's md value lives on the
+  // legacy-md name, and the theme's lg/xl values live on upstream's sm/lg.
   const pinned = [
-    ['--bn-font-family', GEOMETRY_DEFAULTS.font.sans],
-    ['--bn-font-mono', GEOMETRY_DEFAULTS.font.mono],
-    ['--bn-radius-sm', GEOMETRY_DEFAULTS.radius.sm],
-    ['--bn-radius-md', GEOMETRY_DEFAULTS.radius.md],
-    ['--bn-radius-lg', GEOMETRY_DEFAULTS.radius.lg],
-    ['--bn-radius-xl', GEOMETRY_DEFAULTS.radius.xl],
-    ['--bn-radius-full', GEOMETRY_DEFAULTS.radius.full],
-    ['--bn-control-height', GEOMETRY_DEFAULTS.control.height],
-    ['--bn-control-height-sm', GEOMETRY_DEFAULTS.control.heightSm],
-    ['--bn-control-height-lg', GEOMETRY_DEFAULTS.control.heightLg],
-    ['--bn-target-size-min', GEOMETRY_DEFAULTS.control.tapMin],
-    ['--bn-transition-fast', GEOMETRY_DEFAULTS.motion.fast],
-    ['--bn-transition-normal', GEOMETRY_DEFAULTS.motion.base],
-    ['--bn-transition-slow', GEOMETRY_DEFAULTS.motion.slow],
-    ['--bn-scrim', RAW_DEFAULTS.scrim],
+    ['--font-family-sans', GEOMETRY_DEFAULTS.font.sans],
+    ['--font-family-code', GEOMETRY_DEFAULTS.font.mono],
+    ['--size-radius-xs', GEOMETRY_DEFAULTS.radius.sm],
+    ['--size-radius-legacy-md', GEOMETRY_DEFAULTS.radius.md],
+    ['--size-radius-sm', GEOMETRY_DEFAULTS.radius.lg],
+    ['--size-radius-lg', GEOMETRY_DEFAULTS.radius.xl],
+    ['--size-radius-pill', GEOMETRY_DEFAULTS.radius.full],
+    ['--size-control-height', GEOMETRY_DEFAULTS.control.height],
+    ['--size-control-height-sm', GEOMETRY_DEFAULTS.control.heightSm],
+    ['--size-control-height-lg', GEOMETRY_DEFAULTS.control.heightLg],
+    ['--size-target-floor', GEOMETRY_DEFAULTS.control.tapMin],
+    ['--motion-fast', GEOMETRY_DEFAULTS.motion.fast],
+    ['--motion-base', GEOMETRY_DEFAULTS.motion.base],
+    ['--motion-slow', GEOMETRY_DEFAULTS.motion.slow],
+    ['--color-scrim', RAW_DEFAULTS.scrim],
   ];
 
   for (const [name, ours] of pinned) {
@@ -268,12 +268,12 @@ describe('emitThemeCss — a single-scheme theme cannot be flipped by the OS', (
   });
 
   // The exact token pendingbusiness.com got wrong: an OS-light reader saw
-  // --bn-color-error-bg resolve to the near-white #fef2f2 on a near-black page.
+  // --color-bkg-error resolve to the near-white #fef2f2 on a near-black page.
   // Here the only value it can resolve to is the dark one, in every context.
   test('resolves the error slot background to the dark value, with no other value declared', () => {
     const props = parseCustomProperties(css);
-    assert.equal(resolveColor('--bn-theme-slot-error-bg', props), '#27272A');
-    assert.equal(css.match(/--bn-theme-slot-error-bg:/g).length, 1);
+    assert.equal(resolveColor('--color-bkg-theme-slot-error', props), '#27272A');
+    assert.equal(css.match(/--color-bkg-theme-slot-error:/g).length, 1);
   });
 });
 
@@ -291,8 +291,8 @@ describe('emitThemeCss — a dual theme', () => {
   test('flattens to one scheme on request, which is what the audit reads', () => {
     const light = parseCustomProperties(emitThemeCss(theme, { only: 'light', bridge: false }));
     const dark = parseCustomProperties(emitThemeCss(theme, { only: 'dark', bridge: false }));
-    assert.equal(resolveColor('--bn-theme-surface', light), '#FFFFFF');
-    assert.equal(resolveColor('--bn-theme-surface', dark), '#09090B');
+    assert.equal(resolveColor('--color-bkg-theme-surface', light), '#FFFFFF');
+    assert.equal(resolveColor('--color-bkg-theme-surface', dark), '#09090B');
     assert.equal(emitThemeCss(theme, { only: 'dark', bridge: false }).includes('@media'), false);
   });
 });
@@ -306,8 +306,8 @@ describe('emitThemeCss — output shape', () => {
   });
 
   test('appends the bridge by default and can be asked not to', () => {
-    assert.match(toCss(theme), /--bn-color-surface: var\(--bn-theme-surface\)/);
-    assert.equal(toCss(theme, { bridge: false }).includes('--bn-color-surface:'), false);
+    assert.match(toCss(theme), /--color-surface: var\(--color-bkg-theme-surface\)/);
+    assert.equal(toCss(theme, { bridge: false }).includes('--color-surface:'), false);
   });
 
   test('names the theme and its scheme in the emitted header', () => {
@@ -316,9 +316,9 @@ describe('emitThemeCss — output shape', () => {
 
   test('emits ramps as literals and every tier above them as a var() chain', () => {
     const css = emitThemeCss(theme, { layer: false, bridge: false });
-    assert.match(css, /--bn-theme-ramp-primary-600: #2563eb;/);
-    assert.match(css, /--bn-theme-primary: var\(--bn-theme-ramp-primary-600\);/);
-    assert.match(css, /--bn-theme-slot-success-bg: var\(--bn-theme-signal-plain-bg\);/);
+    assert.match(css, /--palette-theme-primary-600: #2563eb;/);
+    assert.match(css, /--color-bkg-theme-primary: var\(--palette-theme-primary-600\);/);
+    assert.match(css, /--color-bkg-theme-slot-success: var\(--color-bkg-theme-signal-plain\);/);
   });
 
   test('is stable — the same theme emits the same bytes', () => {

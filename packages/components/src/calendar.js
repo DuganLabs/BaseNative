@@ -291,10 +291,10 @@ export function renderCalendar(options = {}) {
       const trail = lastRow - endOffset;
       const statusAttr = ev.status ? ` data-status="${escapeAttr(ev.status)}"` : '';
       const continuesAttr = continues ? ` data-continues="${continues}"` : '';
-      const colorStyle = ev.color ? ` --bn-calendar-event-color: ${escapeAttr(ev.color)};` : '';
+      const colorStyle = ev.color ? ` --color-text-calendar-event: ${escapeAttr(ev.color)};` : '';
       const offsetStyle =
         lead > 0 || trail > 0
-          ? ` --bn-calendar-event-rows: ${rows}; --bn-calendar-event-lead: ${lead}; --bn-calendar-event-trail: ${trail};`
+          ? ` --number-calendar-event-rows: ${rows}; --number-calendar-event-lead: ${lead}; --number-calendar-event-trail: ${trail};`
           : '';
       // The block's visible start, for the keyboard path's initial target.
       let startHour = Math.floor(clampedFrom);
@@ -326,7 +326,7 @@ export function renderCalendar(options = {}) {
   }).join('');
 
   return `<div data-bn="calendar" id="${escapeAttr(id)}"${attrsSuffix(attrs)}>
-  <div data-bn="calendar-grid" style="--bn-calendar-hours: ${totalHours}; --bn-calendar-cols: 7;">
+  <div data-bn="calendar-grid" style="--number-calendar-hours: ${totalHours}; --number-calendar-cols: 7;">
     <div data-bn="calendar-corner"></div>
     ${headerCells}
     <div data-bn="calendar-time-gutter">

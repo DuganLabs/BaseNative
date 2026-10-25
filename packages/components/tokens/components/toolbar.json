@@ -1,0 +1,524 @@
+{
+  "display-toolbar": {
+    "$value": "{display-flex}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "display",
+          "type": null,
+          "item": "toolbar",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "flex-direction-toolbar": {
+    "$value": "{flex-direction-row}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "flex-direction",
+          "type": null,
+          "item": "toolbar",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "align-toolbar": {
+    "$value": "{align-center}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "align",
+          "type": null,
+          "item": "toolbar",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-toolbar-gap": {
+    "$value": "{spacing-2}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "toolbar",
+          "variant": null,
+          "subitem": "gap",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "position-toolbar": {
+    "$value": "{position-relative}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "position",
+          "type": null,
+          "item": "toolbar",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-toolbar-padding-block": {
+    "$value": "{spacing-2}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "toolbar",
+          "variant": null,
+          "subitem": "padding-block",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-toolbar-padding-inline": {
+    "$value": "{spacing-2}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "toolbar",
+          "variant": null,
+          "subitem": "padding-inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-bkg-toolbar": {
+    "$value": "{color-background-grouped-2}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "toolbar",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-border-toolbar": {
+    "$value": "{size-hairline}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "border",
+          "variant": null,
+          "subitem": "toolbar",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "border-style-toolbar": {
+    "$value": "{border-style-solid}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "border-style",
+          "type": null,
+          "item": "toolbar",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-border-toolbar": {
+    "$value": "{color-border-separator}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "border",
+          "item": "toolbar",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-radius-toolbar": {
+    "$value": "{size-radius-container}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": null,
+          "subitem": "toolbar",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-bkg-toolbar-more": {
+    "$value": "{palette-transparent}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "toolbar-more",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-border-toolbar-more": {
+    "$value": "{size-border-none}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "border",
+          "variant": null,
+          "subitem": "toolbar-more",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-radius-toolbar-more": {
+    "$value": "{size-radius-control}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": null,
+          "subitem": "toolbar-more",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-toolbar-more": {
+    "$value": "{color-tint}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "toolbar-more",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "cursor-toolbar-more": {
+    "$value": "{cursor-pointer}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "cursor",
+          "type": null,
+          "item": "toolbar-more",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-toolbar-more-margin-inline-start": {
+    "$value": "{spacing-margin-auto}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "toolbar-more",
+          "variant": null,
+          "subitem": "margin-inline-start",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-toolbar-more-padding-block": {
+    "$value": "{spacing-2}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "toolbar-more",
+          "variant": null,
+          "subitem": "padding-block",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-toolbar-more-padding-inline": {
+    "$value": "{spacing-3}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "toolbar-more",
+          "variant": null,
+          "subitem": "padding-inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-toolbar-more-family": {
+    "$value": "{font-subheadline-family}",
+    "$type": "fontFamily",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "toolbar-more",
+          "variant": null,
+          "subitem": "family",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-toolbar-more-size": {
+    "$value": "{font-subheadline-size}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "toolbar-more",
+          "variant": null,
+          "subitem": "size",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-toolbar-more-weight": {
+    "$value": "{font-weight-medium}",
+    "$type": "fontWeight",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "toolbar-more",
+          "variant": null,
+          "subitem": "weight",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-toolbar-more-leading": {
+    "$value": "{font-subheadline-leading}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "toolbar-more",
+          "variant": null,
+          "subitem": "leading",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-toolbar-more-tracking": {
+    "$value": "{font-subheadline-tracking}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "toolbar-more",
+          "variant": null,
+          "subitem": "tracking",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "position-toolbar-menu": {
+    "$value": "{position-absolute}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "position",
+          "type": null,
+          "item": "toolbar-menu",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-toolbar-menu-inset-block-start": {
+    "$value": "calc(var(--size-control) + var(--spacing-3))",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "toolbar-menu",
+          "variant": null,
+          "subitem": "inset-block-start",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-toolbar-menu-inset-inline-end": {
+    "$value": "{spacing-2}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "toolbar-menu",
+          "variant": null,
+          "subitem": "inset-inline-end",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "layer-toolbar-menu": {
+    "$value": "{layer-overlay}",
+    "$type": "number",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "layer",
+          "type": null,
+          "item": "toolbar-menu",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  }
+}

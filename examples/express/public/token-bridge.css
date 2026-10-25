@@ -7,15 +7,15 @@
  * owned by @basenative/components. Every mapping below is
  * value-identical to the literal it replaces — no visual change:
  *
- *   --space-xs  0.25rem  = --space-1
- *   --space-sm  0.5rem   = --space-2
- *   --space-md  1rem     = --space-4
- *   --space-lg  1.5rem   = --space-6
- *   --space-xl  2rem     = --space-7
- *   --space-2xl 3rem     = --space-12
- *   --space-3xl 4rem     = --space-16
- *   --font-size-md 1rem  = --text-callout-size
- *   --bn-section-space 0.75rem = --space-3 — the page-flow rhythm.
+ *   --space-xs  0.25rem  = --spacing-1
+ *   --space-sm  0.5rem   = --spacing-2
+ *   --space-md  1rem     = --spacing-4
+ *   --space-lg  1.5rem   = --spacing-6
+ *   --space-xl  2rem     = --spacing-7
+ *   --space-2xl 3rem     = --spacing-12
+ *   --space-3xl 4rem     = --spacing-16
+ *   --font-size-md 1rem  = --font-callout-size
+ *   --bn-section-space 0.75rem = --spacing-3 — the page-flow rhythm.
  *     Until now the name existed only as a fallback (12px) repeated at
  *     every use site; defined once here, at the identical value.
  *
@@ -28,21 +28,21 @@
  *   - The other --font-size-* steps and the radii: ios.css already
  *     bridges them onto the trinity type and radius roles.
  *   - --space-page-block-end (6rem): the catalog scale has no step
- *     above --space-16 (4rem); it stays a site literal until the
+ *     above --spacing-16 (4rem); it stays a site literal until the
  *     catalog grows the step.
  *   - --surface-3 (#26221c): no catalog surface step carries it.
  */
 
 @layer tokens {
   :root {
-    --space-xs: var(--space-1);
-    --space-sm: var(--space-2);
-    --space-md: var(--space-4);
-    --space-lg: var(--space-6);
-    --space-xl: var(--space-7);
-    --space-2xl: calc(var(--space-8) + var(--space-2));
-    --space-3xl: calc(var(--space-8) + var(--space-6));
-    --font-size-md: var(--text-callout-size);
-    --bn-section-space: var(--space-3);
+    --space-xs: var(--spacing-1);
+    --space-sm: var(--spacing-2);
+    --space-md: var(--spacing-4);
+    --space-lg: var(--spacing-6);
+    --space-xl: var(--spacing-7);
+    --space-2xl: calc(var(--spacing-8) + var(--spacing-2));
+    --space-3xl: calc(var(--spacing-8) + var(--spacing-6));
+    --font-size-md: var(--font-callout-size);
+    --bn-section-space: var(--spacing-3);
   }
 }

@@ -1,61 +1,33 @@
-:root {
-  --tooltip-position: var(--position-relative);
-  --tooltip-display: var(--display-inline-flex);
-  --tooltip__note-position: var(--position-absolute);
-  --tooltip__note-inset-block-end: calc(var(--size-full) + var(--space-1));
-  --tooltip__note-inset-inline-start: var(--space-0);
-  --tooltip__note-z-index: var(--layer-overlay);
-  --tooltip__note-margin: var(--space-0);
-  --tooltip__note-padding-block: var(--space-1);
-  --tooltip__note-padding-inline: var(--space-2);
-  --tooltip__note-background-color: var(--label);
-  --tooltip__note-color: var(--background);
-  --tooltip__note-border-radius: var(--radius-md);
-  --tooltip__note-font-family: var(--text-caption-1-family);
-  --tooltip__note-font-size: var(--text-caption-1-size);
-  --tooltip__note-line-height: var(--text-caption-1-leading);
-  --tooltip__note-letter-spacing: var(--text-caption-1-tracking);
-  --tooltip__note-white-space: var(--white-space-nowrap);
-  --tooltip__note-opacity: var(--opacity-none);
-  --tooltip__note-opacity--shown: var(--opacity-full);
-  --tooltip__note-visibility: var(--visibility-hidden);
-  --tooltip__note-visibility--shown: var(--visibility-visible);
-  --tooltip__note-pointer-events: var(--pointer-events-none);
-  --tooltip__note-transition-property: opacity, visibility;
-  --tooltip__note-transition-duration: var(--motion-fade-duration);
-  --tooltip__note-transition-curve: var(--motion-fade-curve);
-}
-
 aside[variant="default"] {
-  position: var(--tooltip-position);
-  display: var(--tooltip-display);
+  position: var(--position-tooltip);
+  display: var(--display-tooltip);
 
   & > p {
-    position: var(--tooltip__note-position);
-    inset-block-end: var(--tooltip__note-inset-block-end);
-    inset-inline-start: var(--tooltip__note-inset-inline-start);
-    z-index: var(--tooltip__note-z-index);
-    margin: var(--tooltip__note-margin);
-    padding-block: var(--tooltip__note-padding-block);
-    padding-inline: var(--tooltip__note-padding-inline);
-    background-color: var(--tooltip__note-background-color);
-    color: var(--tooltip__note-color);
-    border-radius: var(--tooltip__note-border-radius);
-    font-family: var(--tooltip__note-font-family);
-    font-size: var(--tooltip__note-font-size);
-    line-height: var(--tooltip__note-line-height);
-    letter-spacing: var(--tooltip__note-letter-spacing);
-    white-space: var(--tooltip__note-white-space);
-    opacity: var(--tooltip__note-opacity);
-    visibility: var(--tooltip__note-visibility);
-    pointer-events: var(--tooltip__note-pointer-events);
-    transition-property: var(--tooltip__note-transition-property);
-    transition-duration: var(--tooltip__note-transition-duration);
-    transition-timing-function: var(--tooltip__note-transition-curve);
+    position: var(--position-tooltip-note);
+    inset-block-end: var(--spacing-tooltip-note-inset-block-end);
+    inset-inline-start: var(--spacing-tooltip-note-inset-inline-start);
+    z-index: var(--layer-tooltip-note);
+    margin: var(--spacing-tooltip-note-margin);
+    padding-block: var(--spacing-tooltip-note-padding-block);
+    padding-inline: var(--spacing-tooltip-note-padding-inline);
+    background-color: var(--color-bkg-tooltip-note);
+    color: var(--color-text-tooltip-note);
+    border-radius: var(--size-radius-tooltip-note);
+    font-family: var(--font-tooltip-note-family);
+    font-size: var(--font-tooltip-note-size);
+    line-height: var(--font-tooltip-note-leading);
+    letter-spacing: var(--font-tooltip-note-tracking);
+    white-space: var(--white-space-tooltip-note);
+    opacity: var(--opacity-tooltip-note);
+    visibility: var(--visibility-tooltip-note);
+    pointer-events: var(--pointer-events-tooltip-note);
+    transition-property: var(--transition-property-tooltip-note);
+    transition-duration: var(--motion-tooltip-note-duration);
+    transition-timing-function: var(--motion-tooltip-note-curve);
   }
 
   &:hover > p, &:focus-within > p {
-    opacity: var(--tooltip__note-opacity--shown);
-    visibility: var(--tooltip__note-visibility--shown);
+    opacity: var(--opacity-tooltip-note-shown);
+    visibility: var(--visibility-tooltip-note-shown);
   }
 }

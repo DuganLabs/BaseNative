@@ -1,0 +1,398 @@
+{
+  "spacing-0": {
+    "$value": "0",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "0",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "spacing-1": {
+    "$value": "0.25rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "1",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "spacing-2": {
+    "$value": "0.5rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "2",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "spacing-3": {
+    "$value": "0.75rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "3",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "spacing-4": {
+    "$value": "1rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "4",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "spacing-5": {
+    "$value": "1.25rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "5",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "spacing-6": {
+    "$value": "1.5rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "6",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "spacing-7": {
+    "$value": "2rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "7",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "spacing-8": {
+    "$value": "2.5rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "8",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "spacing-12": {
+    "$value": "3rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "12",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "spacing-16": {
+    "$value": "4rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "16",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "spacing-half": {
+    "$value": "0.125rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "half",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "spacing-toggle-knob-inset-legacy": {
+    "$value": "0.1875rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "toggle",
+          "variant": "knob",
+          "subitem": "inset-legacy",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "spacing-component-x": {
+    "$value": "{spacing-3}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "component",
+          "variant": null,
+          "subitem": "x",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "spacing-component-y": {
+    "$value": "{spacing-2}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "component",
+          "variant": null,
+          "subitem": "y",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "spacing-margin": {
+    "$value": "1rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "margin",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-margin-wide": {
+    "$value": "1.25rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "margin",
+          "variant": null,
+          "subitem": "wide",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-safe-top": {
+    "$value": "env(safe-area-inset-top, 0px)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "safe",
+          "variant": null,
+          "subitem": "top",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-safe-right": {
+    "$value": "env(safe-area-inset-right, 0px)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "safe",
+          "variant": null,
+          "subitem": "right",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-safe-bottom": {
+    "$value": "env(safe-area-inset-bottom, 0px)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "safe",
+          "variant": null,
+          "subitem": "bottom",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-safe-left": {
+    "$value": "env(safe-area-inset-left, 0px)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "safe",
+          "variant": null,
+          "subitem": "left",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-margin-auto": {
+    "$value": "auto",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "margin",
+          "variant": null,
+          "subitem": "auto",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  }
+}

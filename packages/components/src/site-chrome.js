@@ -324,7 +324,7 @@ export function renderAppNav(options = {}) {
  * It also keeps the bar clear of the on-screen keyboard: the bar is
  * fixed against the layout viewport while the keyboard shrinks the
  * visual one, so the covered strip is measured through visualViewport
- * and written to --bn-app-nav-visual-inset on the nav root, which the
+ * and written to --size-app-nav-visual-inset on the nav root, which the
  * bar's and sheet's bottom offsets in components.css read.
  *
  * The nav's postures need no wiring at all (the fold is one media
@@ -344,7 +344,7 @@ export function initAppNav(root, options = {}) {
      viewport, but a software keyboard shrinks the VISUAL viewport — on
      iOS the bar then floats mid-screen with its labels sliced by the
      keyboard. Track the visual viewport and keep the covered strip in
-     --bn-app-nav-visual-inset (read by the bar's and the sheet's bottom
+     --size-app-nav-visual-inset (read by the bar's and the sheet's bottom
      offsets in components.css), so the bar rides on top of the keyboard,
      whole. Pinch-zoom also shrinks the visual viewport without covering
      anything, so a scaled viewport reports no inset. Guarded to a no-op
@@ -400,7 +400,7 @@ export function initAppNav(root, options = {}) {
       if (measured === 0) heldInset = 0;
       else if (textEntryFocused()) heldInset = Math.max(heldInset, measured);
       else heldInset = measured;
-      root.style.setProperty('--bn-app-nav-visual-inset', `${heldInset}px`);
+      root.style.setProperty('--size-app-nav-visual-inset', `${heldInset}px`);
     };
     vv.addEventListener('resize', syncViewportInset);
     vv.addEventListener('scroll', syncViewportInset);
@@ -494,7 +494,7 @@ export function initAppNav(root, options = {}) {
         vv.removeEventListener('resize', syncViewportInset);
         vv.removeEventListener('scroll', syncViewportInset);
         if (typeof root.style.removeProperty === 'function') {
-          root.style.removeProperty('--bn-app-nav-visual-inset');
+          root.style.removeProperty('--size-app-nav-visual-inset');
         }
       }
       if (syncViewportInset) {

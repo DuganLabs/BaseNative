@@ -1,120 +1,68 @@
-:root {
-  --table-inline-size: var(--size-full);
-  --table-border-collapse: separate;
-  --table-border-spacing: var(--space-0);
-  --table__caption-text-align: var(--text-align-start);
-  --table__caption-padding-block-end: var(--space-2);
-  --table__caption-color: var(--label-2);
-  --table__caption-font-family: var(--text-subheadline-family);
-  --table__caption-font-size: var(--text-subheadline-size);
-  --table__caption-line-height: var(--text-subheadline-leading);
-  --table__caption-letter-spacing: var(--text-subheadline-tracking);
-  --table__head-background-color: var(--fill-3);
-  --table__head-color: var(--label-2);
-  --table__head-font-family: var(--text-subheadline-family);
-  --table__head-font-size: var(--text-subheadline-size);
-  --table__head-font-weight: var(--font-weight-semibold);
-  --table__head-line-height: var(--text-subheadline-leading);
-  --table__head-letter-spacing: var(--text-subheadline-tracking);
-  --table__cell-padding-block: var(--space-2);
-  --table__cell-padding-inline: var(--space-3);
-  --table__cell-border-block-end-width: var(--hairline);
-  --table__cell-border-block-end-style: var(--border-style-solid);
-  --table__cell-border-block-end-color: var(--separator);
-  --table__cell-font-family: var(--text-body-family);
-  --table__cell-font-size: var(--text-body-size);
-  --table__cell-line-height: var(--text-body-leading);
-  --table__cell-letter-spacing: var(--text-body-tracking);
-  --table__cell-color: var(--label);
-  --table__cell-text-align: var(--text-align-start);
-  --table__cell-vertical-align: var(--vertical-align-middle);
-  --table__row-header-font-weight: var(--font-weight-semibold);
-  --table__cell-border-inline-end-width: var(--border-width-none);
-  --table__cell-border-inline-end-style: var(--border-style-solid);
-  --table__cell-border-inline-end-color: var(--separator);
-  --table__cell-background-color--today: var(--tint-fill);
-  --table__cell-font-weight--current: var(--font-weight-semibold);
-  --table__cell-box-shadow--selected: var(--focus-ring);
-  --table__cell-color--small: var(--label-3);
-  --table__head-position--restack: var(--position-absolute);
-  --table__head-inline-size--restack: var(--size-1px);
-  --table__head-block-size--restack: var(--size-1px);
-  --table__row-display--restack: var(--display-block);
-  --table__cell-display--restack: var(--display-block);
-  --table__cell-border-block-end-width--restack: var(--border-width-none);
-  --table__row-padding-block--restack: var(--space-1);
-  --table__cell-padding-block--restack: var(--space-0);
-  --table__row-border-block-end-width--restack: var(--hairline);
-  --table__row-border-block-end-style--restack: var(--border-style-solid);
-  --table__row-border-block-end-color--restack: var(--separator);
-  --table__row-background-color--striped: var(--fill-4);
-}
-
 table[variant="default"], table[variant="striped"] {
-  inline-size: var(--table-inline-size);
-  border-collapse: var(--table-border-collapse);
-  border-spacing: var(--table-border-spacing);
+  inline-size: var(--size-table-inline);
+  border-collapse: var(--border-collapse-table);
+  border-spacing: var(--spacing-table-border-spacing);
 
   & > caption {
-    text-align: var(--table__caption-text-align);
-    padding-block-end: var(--table__caption-padding-block-end);
-    color: var(--table__caption-color);
-    font-family: var(--table__caption-font-family);
-    font-size: var(--table__caption-font-size);
-    line-height: var(--table__caption-line-height);
-    letter-spacing: var(--table__caption-letter-spacing);
+    text-align: var(--text-align-table-caption);
+    padding-block-end: var(--spacing-table-caption-padding-block-end);
+    color: var(--color-text-table-caption);
+    font-family: var(--font-table-caption-family);
+    font-size: var(--font-table-caption-size);
+    line-height: var(--font-table-caption-leading);
+    letter-spacing: var(--font-table-caption-tracking);
   }
 
   & th, & td {
-    padding-block: var(--table__cell-padding-block);
-    padding-inline: var(--table__cell-padding-inline);
-    border-block-end-width: var(--table__cell-border-block-end-width);
-    border-inline-end-width: var(--table__cell-border-inline-end-width);
-    border-inline-end-style: var(--table__cell-border-inline-end-style);
-    border-inline-end-color: var(--table__cell-border-inline-end-color);
-    border-block-end-style: var(--table__cell-border-block-end-style);
-    border-block-end-color: var(--table__cell-border-block-end-color);
-    font-family: var(--table__cell-font-family);
-    font-size: var(--table__cell-font-size);
-    line-height: var(--table__cell-line-height);
-    letter-spacing: var(--table__cell-letter-spacing);
-    color: var(--table__cell-color);
-    text-align: var(--table__cell-text-align);
-    vertical-align: var(--table__cell-vertical-align);
+    padding-block: var(--spacing-table-cell-padding-block);
+    padding-inline: var(--spacing-table-cell-padding-inline);
+    border-block-end-width: var(--size-border-table-cell-block-end);
+    border-inline-end-width: var(--size-border-table-cell-inline-end);
+    border-inline-end-style: var(--border-style-table-cell-inline-end);
+    border-inline-end-color: var(--color-border-table-cell-inline-end);
+    border-block-end-style: var(--border-style-table-cell-block-end);
+    border-block-end-color: var(--color-border-table-cell-block-end);
+    font-family: var(--font-table-cell-family);
+    font-size: var(--font-table-cell-size);
+    line-height: var(--font-table-cell-leading);
+    letter-spacing: var(--font-table-cell-tracking);
+    color: var(--color-text-table-cell);
+    text-align: var(--text-align-table-cell);
+    vertical-align: var(--vertical-align-table-cell);
   }
 
   & > thead th {
-    background-color: var(--table__head-background-color);
-    color: var(--table__head-color);
-    font-family: var(--table__head-font-family);
-    font-size: var(--table__head-font-size);
-    font-weight: var(--table__head-font-weight);
-    line-height: var(--table__head-line-height);
-    letter-spacing: var(--table__head-letter-spacing);
+    background-color: var(--color-bkg-table-head);
+    color: var(--color-text-table-head);
+    font-family: var(--font-table-head-family);
+    font-size: var(--font-table-head-size);
+    font-weight: var(--font-table-head-weight);
+    line-height: var(--font-table-head-leading);
+    letter-spacing: var(--font-table-head-tracking);
   }
 
   & > tbody th {
-    font-weight: var(--table__row-header-font-weight);
+    font-weight: var(--font-table-row-header-weight);
   }
 
   & td[aria-current="date"], & th[aria-current="date"] {
-    background-color: var(--table__cell-background-color--today);
-    font-weight: var(--table__cell-font-weight--current);
+    background-color: var(--color-bkg-table-cell-today);
+    font-weight: var(--font-table-cell-weight-current);
   }
 
   & td[aria-current="true"], & th[aria-current="true"] {
-    box-shadow: var(--table__cell-box-shadow--selected);
-    font-weight: var(--table__cell-font-weight--current);
+    box-shadow: var(--shadow-table-cell-selected);
+    font-weight: var(--font-table-cell-weight-current);
   }
 
   & td > small, & th > small {
-    color: var(--table__cell-color--small);
-    font-size: var(--table__cell-font-size);
+    color: var(--color-text-table-cell-small);
+    font-size: var(--font-table-cell-size);
   }
 }
 
 table[variant="striped"] > tbody > tr:nth-child(even) {
-  background-color: var(--table__row-background-color--striped);
+  background-color: var(--color-bkg-table-row-striped);
 }
 
 /* Narrow restack without stamped data-labels. The row header becomes
@@ -123,24 +71,24 @@ table[variant="striped"] > tbody > tr:nth-child(even) {
 @media (max-width: 40rem) {
   table[variant="default"], table[variant="striped"] {
     & > thead {
-      position: var(--table__head-position--restack);
-      inline-size: var(--table__head-inline-size--restack);
-      block-size: var(--table__head-block-size--restack);
+      position: var(--position-table-head-restack);
+      inline-size: var(--size-table-head-inline-restack);
+      block-size: var(--size-table-head-block-restack);
       overflow: var(--overflow-hidden);
     }
 
     & > tbody > tr {
-      display: var(--table__row-display--restack);
-      padding-block: var(--table__row-padding-block--restack);
-      border-block-end-width: var(--table__row-border-block-end-width--restack);
-      border-block-end-style: var(--table__row-border-block-end-style--restack);
-      border-block-end-color: var(--table__row-border-block-end-color--restack);
+      display: var(--display-table-row-restack);
+      padding-block: var(--spacing-table-row-padding-block-restack);
+      border-block-end-width: var(--size-border-table-row-block-end-restack);
+      border-block-end-style: var(--border-style-table-row-block-end-restack);
+      border-block-end-color: var(--color-border-table-row-block-end-restack);
     }
 
     & > tbody th, & > tbody td {
-      display: var(--table__cell-display--restack);
-      border-block-end-width: var(--table__cell-border-block-end-width--restack);
-      padding-block: var(--table__cell-padding-block--restack);
+      display: var(--display-table-cell-restack);
+      border-block-end-width: var(--size-border-table-cell-block-end-restack);
+      padding-block: var(--spacing-table-cell-padding-block-restack);
     }
   }
 }

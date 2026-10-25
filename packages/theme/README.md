@@ -10,14 +10,14 @@ here and there is not going to be one.
 Zero production dependencies. Hand-written JS, hand-written types, `node --test`.
 
 ```
-@basenative/theme            defineTheme, validateTheme, ThemeError, toCss, bridgeToBn
+@basenative/theme            defineTheme, validateTheme, ThemeError, toCss, bridgeToCti
 @basenative/theme/contrast   relativeLuminance, contrastRatio, parseCustomProperties,
                              resolveColor, AA_TEXT, AA_LARGE, AA_NONTEXT
 @basenative/theme/audit      auditPairings, assertPairings, defaultPairings,
                              assertThemeContrast, ContrastError
 @basenative/theme/css        minifyCss
 @basenative/theme/icons      defineIconSet, renderIcon, validateIconSet, IconSetError
-@basenative/theme/bridge.css the --bn-* bridge, as a stylesheet
+@basenative/theme/bridge.css the CTI+ bridge, as a stylesheet
 ```
 
 ---
@@ -158,7 +158,7 @@ import { toCss } from '@basenative/theme';
 import { minifyCss } from '@basenative/theme/css';
 import { theme } from './theme.js';
 
-// Emits @layer tokens { … } plus the --bn-* bridge. Comments carry the
+// Emits @layer tokens { … } plus the CTI+ bridge. Comments carry the
 // rationale for whoever opens the file; strip them at the point of serving.
 export const THEME_CSS = minifyCss(toCss(theme));
 ```
@@ -201,7 +201,7 @@ import { toCss } from '@basenative/theme';
 
 assertPairings(toCss(theme, { only: 'light', bridge: false }), [
   ...defaultPairings(theme),
-  ['logo on the header band', '--bn-theme-signal-info-line', '--bn-theme-surface-inverse', AA_NONTEXT],
+  ['logo on the header band', '--color-border-theme-signal-info', '--color-bkg-theme-surface-inverse', AA_NONTEXT],
 ]);
 ```
 
@@ -217,7 +217,7 @@ assertPairings(toCss(theme, { only: 'light', bridge: false }), [
 | `ramps.primary.600 is "var(--x)" — a ramp step must be a literal` | `defineTheme` | A chain that never terminates in a colour. |
 | `theme.signals.slots.warning is unassigned` | `defineTheme` | `renderBadge({ variant: 'warning' })` would have had no colours. |
 | `muted text on sunk surface: … is 4.40:1, below 4.5:1` | `assertThemeContrast` | A real WCAG miss, with the real number. |
-| a `--bn-*` name in neither `BN_BRIDGED` nor `UPSTREAM_OWNED` | this package's own `bridge.test.js` | `@basenative/components` grew a themeable token and the bridge has not caught up. |
+| a token name in neither `CTI_BRIDGED` nor `UPSTREAM_OWNED` | this package's own `bridge.test.js` | `@basenative/components` grew a themeable token and the bridge has not caught up. |
 
 ---
 
@@ -256,7 +256,7 @@ signals: {
 ```
 
 Families are not limited to five and two slots may share one. Every family gets
-its own `--bn-theme-signal-<name>-*` properties for your own CSS, and — this is
+its own `--color-*-theme-signal-<name>` properties for your own CSS, and — this is
 the part that matters — **every family gets contrast rows whether or not it is
 assigned to a slot**. There is no way to add a status colour that is never
 measured.
@@ -265,9 +265,9 @@ Each family carries five channels: `bg` (the tint a badge sits on), `ink` (text
 on that tint *and* on the page), `line` (the family's rule, gated at 3:1 for SC
 1.4.11), `solid` (the filled version) and `onSolid` (text on the fill).
 
-> Measured while writing this: white on `--bn-color-success-600` (#16a34a) is
-> 3.30:1 and on `--bn-color-warning-600` (#d97706) is 3.19:1, while
-> `--bn-color-error-600` is 4.83:1. Upstream only ever paints text on the error
+> Measured while writing this: white on `--palette-success-600` (#16a34a) is
+> 3.30:1 and on `--palette-warning-600` (#d97706) is 3.19:1, while
+> `--palette-error-600` is 4.83:1. Upstream only ever paints text on the error
 > fill, so it ships nothing broken — but a green "Approve" button built from
 > `-600` would. The starter's success and warning solids are one step darker.
 
@@ -280,7 +280,7 @@ A single-scheme theme emits **exactly one block, unconditioned** — no media
 query, no `data-theme` variants. That is the whole fix for the failure this
 package was built after: pendingbusiness.com is a dark site that never set
 `data-theme`, so a reader whose OS was in light mode fell through
-`@media (prefers-color-scheme: dark)` and got `--bn-color-error-bg: #fef2f2` — a
+`@media (prefers-color-scheme: dark)` and got `--color-bkg-error: #fef2f2` — a
 near-white alert on a near-black page.
 
 With `scheme: 'dark'` there is nothing to fall through. The dark values are
@@ -300,15 +300,18 @@ already a complete neutral default and it should stay ignorant that themes
 exist. The cost — this package's
 name list can fall behind a components release — is **measured, not assumed**:
 
-- `BN_BRIDGED` is the list the bridge emits (92 names today).
+- `CTI_BRIDGED` is the list the bridge emits (93 names today).
 - `UPSTREAM_OWNED` is the list deliberately left alone, each with its reason.
 - `bridge.test.js` reads every stylesheet in `packages/components/src` and fails
-  if a `var(--bn-*)` appears in neither list.
+  if a `var(--*)` appears in neither list.
 
 A components release that adds a themeable token breaks this package's build in
 the same CI run, instead of silently going unthemed in six properties.
-`validateBridge(css)` is exported so a consumer can run the same check against
-whatever version it has installed.
+`validateBridge(css, { exclude })` is exported so a consumer can run the same
+check against whatever version it has installed; `exclude` carries the
+component-tier and keyword token names, computed from the token source by
+file (`tokens/components/*.json` plus `tokens/keyword.json`), which are a
+fact about the consumer's components version rather than about this package.
 
 **What the bridge leaves alone:** the type scale, font weights, line heights,
 the space ladder, shadows, easing curves, z-indices, and per-instance geometry
@@ -316,19 +319,25 @@ knobs. Those are app decisions, not palette ones — override them in your own
 CSS. Colour, font family, the radius ladder, control heights, the tap-target
 minimum and the three motion durations are all bridged.
 
-**How the bridge wins.** `components/theme.css` activates its dark palette at
-`:root:not([data-theme="light"])` inside a media query — specificity (0,2,0). A
-bridge at plain `:root` (0,1,0) would lose to it, which is how upstream dark
-values leak past a theme. Both bridge selectors are (0,2,1):
+**How the bridge wins.** The generated token sheet in `components` activates
+its dark values at `:root:not([data-theme="light"])` inside a media query and
+at `:root[data-theme="dark"]` — specificity (0,2,0). A bridge at plain `:root`
+(0,1,0) would lose to both, which is how upstream dark values leak past a
+theme. Both bridge selectors are (0,2,1):
 
 ```css
 html:root[data-theme],
 html:root:not([data-theme="light"]) { … }
 ```
 
-Between them they match every value of `data-theme`, including its absence, and
-they beat upstream everywhere. Upstream's `--bn-dark-*` layer is therefore fully
-neutralised: the theme decides what dark means.
+Between them they match every value of `data-theme`, including its absence,
+and they beat upstream everywhere. The bridge is also UNLAYERED, on purpose:
+upstream declares its core tokens unlayered, and a layered declaration loses
+to any unlayered one at any specificity — the scrim token is unlayered, so a
+bridge inside `@layer tokens` could never re-point it. There is no separate
+dark name set to neutralise: dark is a mode carried on the same tokens, so
+re-pointing a name re-points both of its modes at the theme, and the theme
+decides what dark means.
 
 ---
 

@@ -23,6 +23,7 @@ const COMPONENTS = [
   'form', 'search-field', 'segmented-control', 'stepper',
   'tabs', 'empty-state', 'toolbar', 'rating',
   'hero', 'sidebar', 'app-bar', 'site-footer', 'app-shell',
+  'code-block',
 ];
 
 /** @param {string} html */

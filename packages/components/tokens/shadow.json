@@ -1,0 +1,182 @@
+{
+  "shadow-material": {
+    "$value": "none",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "shadow",
+          "type": null,
+          "item": "material",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "shadow-sm": {
+    "$value": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "shadow",
+          "type": null,
+          "item": "sm",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "shadow-md": {
+    "$value": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "shadow",
+          "type": null,
+          "item": "md",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "shadow-lg": {
+    "$value": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "shadow",
+          "type": null,
+          "item": "lg",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "shadow-modal": {
+    "$value": "{shadow-lg}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "shadow",
+          "type": null,
+          "item": "modal",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "shadow-focus": {
+    "$value": "0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-border-focus)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "shadow",
+          "type": null,
+          "item": "focus",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "shadow-none": {
+    "$value": "none",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "shadow",
+          "type": null,
+          "item": "none",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "shadow-float": {
+    "$value": "0 12px 32px rgb(0 0 0 / 0.12)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "shadow",
+          "type": null,
+          "item": "float",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "shadow-raised": {
+    "$value": "0 8px 24px rgb(0 0 0 / 0.08)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "shadow",
+          "type": null,
+          "item": "raised",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "shadow-focus-ring": {
+    "$value": "0 0 0 2px var(--color-background), 0 0 0 4px var(--color-tint)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "shadow",
+          "type": null,
+          "item": "focus-ring",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  }
+}
