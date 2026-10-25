@@ -707,6 +707,12 @@ describe('site syntax highlighting is a pipeline step', () => {
         (m) => m[1],
       );
       for (const inner of blocks) {
+        // A block with no code in it has nothing to highlight. The
+        // playground's editor panes ship an empty, aria-hidden
+        // highlight layer (<pre class="hl"><code></code>) that the
+        // page's own script fills as the reader types; the contract
+        // below covers code a page actually renders.
+        if (!inner.trim()) continue;
         if (inner.includes('<') && !inner.includes('<span class=')) continue;
         assert.ok(
           inner.includes('<span class='),
