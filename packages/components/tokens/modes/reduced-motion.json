@@ -1,0 +1,74 @@
+{
+  "motion-spring-duration": {
+    "$value": "0.01ms",
+    "$type": "duration",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "motion",
+          "type": null,
+          "item": "spring-duration",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "motion-spring-bouncy-duration": {
+    "$value": "0.01ms",
+    "$type": "duration",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "motion",
+          "type": null,
+          "item": "spring-bouncy-duration",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "motion-spring-stiff-duration": {
+    "$value": "0.01ms",
+    "$type": "duration",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "motion",
+          "type": null,
+          "item": "spring-stiff-duration",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "motion-fade-duration": {
+    "$value": "0.01ms",
+    "$type": "duration",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "motion",
+          "type": null,
+          "item": "fade-duration",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  }
+}

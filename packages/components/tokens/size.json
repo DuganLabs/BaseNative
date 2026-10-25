@@ -1,0 +1,830 @@
+{
+  "size-content-max": {
+    "$value": "64rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "content-max",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-text-max": {
+    "$value": "65ch",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "text-max",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-target-floor": {
+    "$value": "1.5rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "target",
+          "variant": null,
+          "subitem": "floor",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-app-nav-bar": {
+    "$value": "3.5rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "app-nav-bar",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-nav-rail": {
+    "$value": "15rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "nav-rail",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-app-nav-visual-inset": {
+    "$value": "0px",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "app-nav",
+          "variant": null,
+          "subitem": "visual-inset",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-border": {
+    "$value": "1px",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "border",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-border-thick": {
+    "$value": "2px",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "border",
+          "variant": null,
+          "subitem": "thick",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-radius-xs": {
+    "$value": "0.25rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": null,
+          "subitem": "xs",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-radius-legacy-md": {
+    "$value": "0.375rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": "legacy",
+          "subitem": "md",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-radius-sm": {
+    "$value": "0.5rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": null,
+          "subitem": "sm",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-radius-lg": {
+    "$value": "0.75rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": null,
+          "subitem": "lg",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-radius-pill": {
+    "$value": "9999px",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": null,
+          "subitem": "pill",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-radius-legacy-control": {
+    "$value": "{size-radius-legacy-md}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": "legacy",
+          "subitem": "control",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-radius-legacy-container": {
+    "$value": "{size-radius-sm}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": "legacy",
+          "subitem": "container",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-radius-legacy-modal": {
+    "$value": "{size-radius-lg}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": "legacy",
+          "subitem": "modal",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-control-height-sm": {
+    "$value": "2rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "control",
+          "variant": "height",
+          "subitem": "sm",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-control-height": {
+    "$value": "2.5rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "control",
+          "variant": null,
+          "subitem": "height",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-control-height-lg": {
+    "$value": "3rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "control",
+          "variant": "height",
+          "subitem": "lg",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-control-indicator": {
+    "$value": "1.125rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "control",
+          "variant": null,
+          "subitem": "indicator",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-radius-indicator": {
+    "$value": "min(var(--size-radius-legacy-control), 0.25rem)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": null,
+          "subitem": "indicator",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-toggle-track-inline": {
+    "$value": "calc(var(--size-control-indicator) * 2)",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "toggle",
+          "variant": "track",
+          "subitem": "inline",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-toggle-track-block": {
+    "$value": "calc(var(--size-control-indicator) + 0.125rem)",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "toggle",
+          "variant": "track",
+          "subitem": "block",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-toggle-knob-legacy": {
+    "$value": "calc(var(--size-control-indicator) - 0.25rem)",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "toggle",
+          "variant": "knob",
+          "subitem": "legacy",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "size-radius-none": {
+    "$value": "0",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": null,
+          "subitem": "none",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-radius-md": {
+    "$value": "0.625rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": null,
+          "subitem": "md",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-radius-xl": {
+    "$value": "1rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": null,
+          "subitem": "xl",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-radius-2xl": {
+    "$value": "1.25rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": null,
+          "subitem": "2xl",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-radius-3xl": {
+    "$value": "1.5rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": null,
+          "subitem": "3xl",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-radius-4xl": {
+    "$value": "1.75rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": null,
+          "subitem": "4xl",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-radius-control": {
+    "$value": "{size-radius-md}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": null,
+          "subitem": "control",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-radius-container": {
+    "$value": "{size-radius-xl}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": null,
+          "subitem": "container",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-radius-sheet": {
+    "$value": "{size-radius-2xl}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": null,
+          "subitem": "sheet",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-hairline": {
+    "$value": "0.5px",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "hairline",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-border-none": {
+    "$value": "0",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "border",
+          "variant": null,
+          "subitem": "none",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-full": {
+    "$value": "100%",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "full",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-control": {
+    "$value": "2.75rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "control",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-max-content": {
+    "$value": "max-content",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "max-content",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-target-min": {
+    "$value": "2.75rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "target-min",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-sheet-max": {
+    "$value": "32rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "sheet-max",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-drawer-max": {
+    "$value": "24rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "drawer-max",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-palette-max": {
+    "$value": "36rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "palette-max",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-menu-min": {
+    "$value": "12rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "menu-min",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-switch-inline": {
+    "$value": "3.25rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "switch-inline",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-switch-block": {
+    "$value": "2rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "switch-block",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-1px": {
+    "$value": "1px",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "1px",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  }
+}

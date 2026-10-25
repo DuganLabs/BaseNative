@@ -1,0 +1,1604 @@
+{
+  "color-surface": {
+    "$value": "{palette-white}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "surface",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-surface-subtle": {
+    "$value": "{palette-gray-50}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "surface",
+          "variant": null,
+          "subitem": "subtle",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-surface-muted": {
+    "$value": "{palette-gray-100}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "surface",
+          "variant": null,
+          "subitem": "muted",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-surface-raised": {
+    "$value": "{palette-white}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "surface",
+          "variant": null,
+          "subitem": "raised",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-surface-inset": {
+    "$value": "{palette-gray-50}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "surface",
+          "variant": null,
+          "subitem": "inset",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-surface-inverse": {
+    "$value": "{palette-gray-900}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "surface",
+          "variant": null,
+          "subitem": "inverse",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text": {
+    "$value": "{palette-gray-900}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": null,
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text-muted": {
+    "$value": "{palette-gray-500}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "muted",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text-subtle": {
+    "$value": "{palette-gray-500}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "subtle",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text-inverse": {
+    "$value": "{palette-white}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "inverse",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text-link": {
+    "$value": "{palette-primary-600}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "link",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-border": {
+    "$value": "{palette-gray-300}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "border",
+          "item": null,
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-border-strong": {
+    "$value": "{palette-gray-400}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "border",
+          "item": "strong",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text-error-fg": {
+    "$value": "{palette-error-600}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "error",
+          "variant": null,
+          "subitem": "fg",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-bkg-selected": {
+    "$value": "{palette-primary-50}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "selected",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text-selected": {
+    "$value": "{palette-primary-700}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "selected",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-bkg-zebra": {
+    "$value": "rgb(0 0 0 / 0.02)",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "zebra",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-bkg-info": {
+    "$value": "{palette-primary-50}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "info",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-border-info": {
+    "$value": "{palette-primary-200}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "border",
+          "item": "info",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text-info": {
+    "$value": "{palette-primary-800}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "info",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-bkg-success": {
+    "$value": "#f0fdf4",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "success",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-border-success": {
+    "$value": "#bbf7d0",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "border",
+          "item": "success",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text-success": {
+    "$value": "#166534",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "success",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-bkg-warning": {
+    "$value": "#fffbeb",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "warning",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-border-warning": {
+    "$value": "#fde68a",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "border",
+          "item": "warning",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text-warning": {
+    "$value": "#92400e",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "warning",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-bkg-error": {
+    "$value": "#fef2f2",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "error",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-border-error": {
+    "$value": "#fecaca",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "border",
+          "item": "error",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text-error": {
+    "$value": "#991b1b",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "error",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-bkg-success-badge": {
+    "$value": "#dcfce7",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "success",
+          "variant": null,
+          "subitem": "badge",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text-success-badge": {
+    "$value": "#166534",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "success",
+          "variant": null,
+          "subitem": "badge",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-bkg-warning-badge": {
+    "$value": "#fef3c7",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "warning",
+          "variant": null,
+          "subitem": "badge",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text-warning-badge": {
+    "$value": "#92400e",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "warning",
+          "variant": null,
+          "subitem": "badge",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-bkg-error-badge": {
+    "$value": "#fee2e2",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "error",
+          "variant": null,
+          "subitem": "badge",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text-error-badge": {
+    "$value": "#991b1b",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "error",
+          "variant": null,
+          "subitem": "badge",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text-calendar-event": {
+    "$value": "{palette-primary-600}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "calendar",
+          "variant": null,
+          "subitem": "event",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-bkg-calendar-event": {
+    "$value": "{color-bkg-info}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "calendar",
+          "variant": null,
+          "subitem": "event",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-bkg-calendar-today-header": {
+    "$value": "{color-bkg-selected}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "calendar",
+          "variant": "today",
+          "subitem": "header",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text-calendar-today": {
+    "$value": "{color-text-selected}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "calendar",
+          "variant": null,
+          "subitem": "today",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-bkg-calendar-today": {
+    "$value": "color-mix(in srgb, var(--color-bkg-selected) 50%, transparent)",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "calendar",
+          "variant": null,
+          "subitem": "today",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-pipeline-status": {
+    "$value": "{color-border-strong}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "pipeline",
+          "variant": null,
+          "subitem": "status",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-bkg-toggle-track-off": {
+    "$value": "{color-surface-control}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "toggle",
+          "variant": "track",
+          "subitem": "off",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-surface-control": {
+    "$value": "{color-surface}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "surface",
+          "variant": null,
+          "subitem": "control",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-surface-card": {
+    "$value": "{color-surface}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "surface",
+          "variant": null,
+          "subitem": "card",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text-on-primary": {
+    "$value": "{palette-white}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "on-primary",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text-on-accent": {
+    "$value": "{color-text-on-primary}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "on-accent",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text-on-error": {
+    "$value": "{palette-white}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "on-error",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-bkg-control-selected": {
+    "$value": "{palette-accent-600}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "control-selected",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text-on-control-selected": {
+    "$value": "{color-text-on-accent}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "on-control-selected",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-bkg-toggle-knob-legacy": {
+    "$value": "{color-border-control}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "toggle",
+          "variant": "knob",
+          "subitem": "legacy",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-border-control": {
+    "$value": "{palette-gray-500}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "border",
+          "item": "control",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-border-control-hover": {
+    "$value": "color-mix( in srgb, var(--color-border-control) 55%, var(--color-text) )",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "border",
+          "item": "control-hover",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-border-focus": {
+    "$value": "{palette-primary-500}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "border",
+          "item": "focus",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-border-light": {
+    "$value": "{palette-gray-100}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "border",
+          "item": "light",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-focus-ring": {
+    "$value": "{color-border-focus}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "focus-ring",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-bkg-material": {
+    "$value": "{color-surface}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "material",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-bkg-scrim": {
+    "$value": "rgb(0 0 0 / 0.4)",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "scrim",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "color-text-label": {
+    "$value": "#000000",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "label",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-label-2": {
+    "$value": "rgb(60 60 67 / 0.6)",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "label",
+          "variant": null,
+          "subitem": "2",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-label-3": {
+    "$value": "rgb(60 60 67 / 0.3)",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "label",
+          "variant": null,
+          "subitem": "3",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-label-4": {
+    "$value": "rgb(60 60 67 / 0.18)",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "label",
+          "variant": null,
+          "subitem": "4",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-label-placeholder": {
+    "$value": "rgb(60 60 67 / 0.3)",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "label",
+          "variant": null,
+          "subitem": null,
+          "state": "placeholder",
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-background": {
+    "$value": "#ffffff",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "background",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-background-2": {
+    "$value": "#f2f2f7",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "background",
+          "variant": null,
+          "subitem": "2",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-background-3": {
+    "$value": "#ffffff",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "background",
+          "variant": null,
+          "subitem": "3",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-background-grouped": {
+    "$value": "#f2f2f7",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "background",
+          "variant": null,
+          "subitem": "grouped",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-background-grouped-2": {
+    "$value": "#ffffff",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "background",
+          "variant": null,
+          "subitem": "grouped-2",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-background-grouped-3": {
+    "$value": "#f2f2f7",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "background",
+          "variant": null,
+          "subitem": "grouped-3",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-fill": {
+    "$value": "rgb(120 120 128 / 0.2)",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "fill",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-fill-2": {
+    "$value": "rgb(120 120 128 / 0.16)",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "fill",
+          "variant": null,
+          "subitem": "2",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-fill-3": {
+    "$value": "rgb(118 118 128 / 0.12)",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "fill",
+          "variant": null,
+          "subitem": "3",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-fill-4": {
+    "$value": "rgb(116 116 128 / 0.08)",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "fill",
+          "variant": null,
+          "subitem": "4",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-border-separator": {
+    "$value": "rgb(60 60 67 / 0.29)",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "border",
+          "item": "separator",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-border-separator-opaque": {
+    "$value": "#c6c6c8",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "border",
+          "item": "separator",
+          "variant": null,
+          "subitem": "opaque",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-tint": {
+    "$value": "{palette-system-blue}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "tint",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-tint-strong": {
+    "$value": "#0062cc",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "tint",
+          "variant": null,
+          "subitem": "strong",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-on-tint": {
+    "$value": "#ffffff",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "on-tint",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-danger": {
+    "$value": "{palette-system-red}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "danger",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-danger-strong": {
+    "$value": "#d70015",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "danger",
+          "variant": null,
+          "subitem": "strong",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-on-danger": {
+    "$value": "#ffffff",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "on-danger",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-success": {
+    "$value": "{palette-system-green}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "success",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-warning": {
+    "$value": "{palette-system-orange}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "warning",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-scrim": {
+    "$value": "rgb(0 0 0 / 0.4)",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "scrim",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-tint-fill": {
+    "$value": "rgb(0 122 255 / 0.12)",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "tint",
+          "variant": null,
+          "subitem": "fill",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-danger-fill": {
+    "$value": "rgb(255 59 48 / 0.12)",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "danger",
+          "variant": null,
+          "subitem": "fill",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-success-fill": {
+    "$value": "rgb(52 199 89 / 0.14)",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "success",
+          "variant": null,
+          "subitem": "fill",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-success-strong": {
+    "$value": "#1f7a33",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "success",
+          "variant": null,
+          "subitem": "strong",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-warning-fill": {
+    "$value": "rgb(255 149 0 / 0.16)",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "warning",
+          "variant": null,
+          "subitem": "fill",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-warning-strong": {
+    "$value": "#9a5700",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "warning",
+          "variant": null,
+          "subitem": "strong",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  }
+}

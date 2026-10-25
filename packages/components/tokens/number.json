@@ -1,0 +1,92 @@
+{
+  "number-calendar-cols": {
+    "$value": "7",
+    "$type": "number",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "number",
+          "type": null,
+          "item": "calendar",
+          "variant": null,
+          "subitem": "cols",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "number-calendar-hours": {
+    "$value": "12",
+    "$type": "number",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "number",
+          "type": null,
+          "item": "calendar",
+          "variant": null,
+          "subitem": "hours",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "number-virtualizer-viewport-rows": {
+    "$value": "8",
+    "$type": "number",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "number",
+          "type": null,
+          "item": "virtualizer-viewport",
+          "variant": null,
+          "subitem": "rows",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "number-virtualizer-spacer-start-count": {
+    "$value": "0",
+    "$type": "number",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "number",
+          "type": null,
+          "item": "virtualizer-spacer-start",
+          "variant": null,
+          "subitem": "count",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "number-virtualizer-spacer-end-count": {
+    "$value": "0",
+    "$type": "number",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "number",
+          "type": null,
+          "item": "virtualizer-spacer-end",
+          "variant": null,
+          "subitem": "count",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  }
+}

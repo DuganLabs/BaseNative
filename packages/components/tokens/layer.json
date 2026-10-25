@@ -1,0 +1,128 @@
+{
+  "layer-legacy-nav": {
+    "$value": "900",
+    "$type": "number",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "layer",
+          "type": null,
+          "item": "legacy",
+          "variant": null,
+          "subitem": "nav",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "layer-legacy-dropdown": {
+    "$value": "1000",
+    "$type": "number",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "layer",
+          "type": null,
+          "item": "legacy",
+          "variant": null,
+          "subitem": "dropdown",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "layer-legacy-modal": {
+    "$value": "1100",
+    "$type": "number",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "layer",
+          "type": null,
+          "item": "legacy",
+          "variant": null,
+          "subitem": "modal",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "layer-legacy-toast": {
+    "$value": "1200",
+    "$type": "number",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "layer",
+          "type": null,
+          "item": "legacy",
+          "variant": null,
+          "subitem": "toast",
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
+  "layer-raised": {
+    "$value": "1",
+    "$type": "number",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "layer",
+          "type": null,
+          "item": "raised",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "layer-overlay": {
+    "$value": "20",
+    "$type": "number",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "layer",
+          "type": null,
+          "item": "overlay",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "layer-modal": {
+    "$value": "40",
+    "$type": "number",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "layer",
+          "type": null,
+          "item": "modal",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  }
+}
