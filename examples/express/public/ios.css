@@ -374,8 +374,11 @@ td code {
   border-radius: var(--radius-xs);
 }
 /* Docs article headers are API signatures: mono, label ink, headline
-   size — a card's title line, not a display heading. */
-article > header h3 {
+   size — a card's title line, not a display heading. The first docs
+   section's entries sit under the page h1, so they are h2 at the same
+   treatment. */
+article > header h3,
+#api-reference > article > header > h2 {
   font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
   font-size: var(--font-headline-size);
   font-weight: 600;

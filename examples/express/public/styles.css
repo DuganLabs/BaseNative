@@ -530,8 +530,7 @@
     gap: var(--space-sm);
   }
 
-  article > header h3,
-  #api-reference > article > header > h2 {
+  article > header h3 {
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
     font-size: var(--font-size-sm);
