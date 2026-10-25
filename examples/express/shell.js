@@ -1,15 +1,12 @@
 /**
- * Site chrome. One file: the active page, the grouping, and the markup.
- * Desktop is the sidebar. The phone bar keeps the first four destinations;
- * the rest sit behind a More tab that matches the others, so every route
- * stays in the document. A two-word menu bar is not a macOS toolbar, so
- * the window has none.
+ * Site chrome. One file: the active page, the grouping, and the markup —
+ * all of it rendered by the Holy Trinity catalog (@basenative/components):
+ * the sidebar and the app bar are the same destinations in desktop and
+ * phone form, and page.js composes them around the content through the
+ * app-shell. The phone bar keeps the first four destinations; the rest
+ * sit behind its More menu, so every route stays reachable.
  */
-import {
-  renderBnFooter,
-  renderBnSidebar,
-  renderBnTabBar,
-} from '../../packages/platform/src/components.js';
+import { renderTrinity } from './trinity.js';
 import { getAppNavItems } from './site-data.js';
 
 const GROUPS = [
@@ -19,21 +16,32 @@ const GROUPS = [
   { label: 'System', hrefs: ['/design-system'] },
 ];
 
+const toItem = (item) => ({
+  label: item.label,
+  href: item.href,
+  current: item.current,
+  iconHtml: item.icon,
+});
+
+/** The shell's two chrome pieces; page.js composes them via app-shell. */
 export function renderSiteChrome(activePage = '') {
   const items = getAppNavItems(activePage);
   const sections = GROUPS.map((group) => ({
     label: group.label,
-    items: group.hrefs.map((href) => items.find((item) => item.href === href)).filter(Boolean),
+    items: group.hrefs
+      .map((href) => items.find((item) => item.href === href))
+      .filter(Boolean)
+      .map(toItem),
   }));
-  return [
-    renderBnSidebar({ id: 'site-nav', label: 'Sections', sections }),
-    renderBnTabBar({
+  return {
+    sidebarHtml: renderTrinity('sidebar', { label: 'Sections', sections }),
+    appBarHtml: renderTrinity('app-bar', {
       id: 'site-tabs',
       label: 'Tabs',
-      tabs: items,
+      items: items.map(toItem),
       barLimit: 4,
     }),
-  ].join('');
+  };
 }
 
 const FOOTER_GROUPS = [
@@ -43,11 +51,10 @@ const FOOTER_GROUPS = [
 
 /**
  * The site footer, rendered from the same nav model as the sidebar and
- * tab bar through the catalog's footer component — every route in the
- * model appears exactly once, so the footer can no longer drift out of
- * sync with the nav (it previously omitted five routes and carried a
- * differently-cased GitHub URL). The GitHub link is the one entry the
- * nav model does not own.
+ * app bar through the catalog's site-footer — every route in the model
+ * appears exactly once, so the footer can no longer drift out of sync
+ * with the nav. The GitHub link is the one entry the nav model does
+ * not own.
  */
 export function renderSiteFooter() {
   const items = getAppNavItems();
@@ -70,5 +77,5 @@ export function renderSiteFooter() {
       links: group.hrefs.map(byHref).filter(Boolean),
     })),
   ];
-  return renderBnFooter({ siteFooter: true, groups });
+  return renderTrinity('site-footer', { groups });
 }
