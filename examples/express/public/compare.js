@@ -1,10 +1,11 @@
 /**
- * /compare — activates the counter tab strip rendered by renderTabs().
+ * /compare — activates the counter tab strip rendered by the catalog's
+ * tabs composite.
  *
  * The markup and its ARIA wiring come from @basenative/components; this only
- * supplies the WAI-ARIA APG keyboard behaviour on the client, the same way
- * showcase.js does for the showcase page. Without it the first panel still
- * renders server-side, so the page is readable with JavaScript off.
+ * supplies the WAI-ARIA APG keyboard behaviour on the client. Without it
+ * the first panel still renders server-side, so the page is readable
+ * with JavaScript off.
  */
 const ready = (fn) =>
   document.readyState === 'loading'
@@ -12,9 +13,9 @@ const ready = (fn) =>
     : fn();
 
 ready(() => {
-  for (const widget of document.querySelectorAll('[data-bn="tabs"]')) {
-    const tabs = [...widget.querySelectorAll('[data-bn="tab"]')];
-    const panels = [...widget.querySelectorAll('[data-bn="tab-panel"]')];
+  for (const widget of document.querySelectorAll('section[variant="tabs"]')) {
+    const tabs = [...widget.querySelectorAll('[role="tab"]')];
+    const panels = [...widget.querySelectorAll('[role="tabpanel"]')];
     if (!tabs.length) continue;
 
     const activate = (tab) => {

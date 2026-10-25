@@ -67,15 +67,15 @@
 
     /* Accent */
     --accent: #e8920a;
-    --accent-dim: #b06f08;
-    --accent-glow: #e8920a33;
-    --accent-glow-strong: #e8920a55;
+    --accent-dim: color-mix(in oklab, var(--tint) 72%, black);
+    --accent-glow: color-mix(in srgb, var(--tint) 20%, transparent);
+    --accent-glow-strong: color-mix(in srgb, var(--tint) 33%, transparent);
 
     /* Status */
     --danger: #f07178;
-    --danger-glow: #f0717833;
+    --danger-glow: color-mix(in srgb, var(--danger) 20%, transparent);
     --success: #c3e88d;
-    --success-glow: #c3e88d33;
+    --success-glow: color-mix(in srgb, var(--success) 20%, transparent);
     --info: #82aaff;
 
     /* Fonts — single family, style-switch via font-stretch */
@@ -628,7 +628,7 @@
   }
 
   /* -- Buttons -- */
-  button:not([data-bn]),
+  button:not([data-bn]):not([variant]),
   a[role='button'] {
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
@@ -650,23 +650,23 @@
       color var(--duration-fast),
       box-shadow var(--duration-med);
   }
-  button:not([data-bn]):hover,
+  button:not([data-bn]):not([variant]):hover,
   a[role='button']:hover {
     background: var(--accent-dim);
     border-color: var(--accent);
     color: var(--surface-0);
     box-shadow: var(--shadow-btn);
   }
-  button:not([data-bn]):focus-visible,
+  button:not([data-bn]):not([variant]):focus-visible,
   a[role='button']:focus-visible {
     outline: var(--border-inline-width) solid var(--accent);
     outline-offset: var(--border-inline-width);
   }
-  button:not([data-bn])[data-variant='danger'] {
+  button:not([data-bn]):not([variant])[data-variant='danger'] {
     border-color: var(--bn-danger-label, #9d1c1c);
     color: var(--bn-danger-label, #9d1c1c);
   }
-  button:not([data-bn])[data-variant='danger']:hover {
+  button:not([data-bn]):not([variant])[data-variant='danger']:hover {
     background: var(--danger);
     color: var(--surface-0);
   }
@@ -683,24 +683,24 @@
   }
 
   /* -- Icons in buttons -- */
-  button:not([data-bn]) > img[src*='/icons/'] {
+  button:not([data-bn]):not([variant]) > img[src*='/icons/'] {
     inline-size: 1em;
     block-size: 1em;
     vertical-align: middle;
     filter: brightness(0);
   }
-  [data-theme='dark'] button:not([data-bn]) > img[src*='/icons/'] {
+  [data-theme='dark'] button:not([data-bn]):not([variant]) > img[src*='/icons/'] {
     filter: brightness(0) invert(1);
   }
-  button:not([data-bn]):hover > img[src*='/icons/'] {
+  button:not([data-bn]):not([variant]):hover > img[src*='/icons/'] {
     filter: brightness(0) invert(1);
   }
-  [data-theme='dark'] button:not([data-bn]):hover > img[src*='/icons/'] {
+  [data-theme='dark'] button:not([data-bn]):not([variant]):hover > img[src*='/icons/'] {
     filter: brightness(0);
   }
 
   /* -- Inputs -- */
-  input[type='text']:not([data-bn]) {
+  input[type='text']:not([data-bn]):not([variant]) {
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
     font-size: var(--font-size-base);
@@ -714,16 +714,16 @@
       border-color var(--duration-med),
       box-shadow var(--duration-med);
   }
-  input[type='text']:not([data-bn]):focus {
+  input[type='text']:not([data-bn]):not([variant]):focus {
     border-color: var(--accent);
     box-shadow: var(--shadow-input), var(--shadow-btn);
   }
-  input[type='text']:not([data-bn])::placeholder {
+  input[type='text']:not([data-bn]):not([variant])::placeholder {
     color: var(--text-2);
   }
 
   /* -- Textarea -- */
-  textarea:not([data-bn]) {
+  textarea:not([data-bn]):not([variant]) {
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
     font-size: var(--font-size-base);
@@ -741,16 +741,16 @@
       border-color var(--duration-med),
       box-shadow var(--duration-med);
   }
-  textarea:not([data-bn]):focus {
+  textarea:not([data-bn]):not([variant]):focus {
     border-color: var(--accent);
     box-shadow: var(--shadow-input), var(--shadow-btn);
   }
-  textarea:not([data-bn])::placeholder {
+  textarea:not([data-bn]):not([variant])::placeholder {
     color: var(--text-2);
   }
 
   /* -- Checkbox -- */
-  input[type='checkbox']:not([data-bn]) {
+  input[type='checkbox']:not([data-bn]):not([variant]) {
     appearance: none;
     inline-size: var(--control-size);
     block-size: var(--control-size);
@@ -767,11 +767,11 @@
       border-color var(--duration-fast),
       box-shadow var(--duration-fast);
   }
-  input[type='checkbox']:not([data-bn]):checked {
+  input[type='checkbox']:not([data-bn]):not([variant]):checked {
     background: var(--control-checked-bg);
     border-color: var(--control-checked-border);
   }
-  input[type='checkbox']:not([data-bn]):checked::after {
+  input[type='checkbox']:not([data-bn]):not([variant]):checked::after {
     content: '';
     position: absolute;
     inset-block-start: 0.125rem;
@@ -782,13 +782,13 @@
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
   }
-  input[type='checkbox']:not([data-bn]):focus-visible {
+  input[type='checkbox']:not([data-bn]):not([variant]):focus-visible {
     outline: var(--border-inline-width) solid var(--accent);
     outline-offset: var(--border-inline-width);
   }
 
   /* -- Radio -- */
-  input[type='radio']:not([data-bn]) {
+  input[type='radio']:not([data-bn]):not([variant]) {
     appearance: none;
     inline-size: var(--control-size);
     block-size: var(--control-size);
@@ -804,10 +804,10 @@
       background var(--duration-fast),
       border-color var(--duration-fast);
   }
-  input[type='radio']:not([data-bn]):checked {
+  input[type='radio']:not([data-bn]):not([variant]):checked {
     border-color: var(--control-checked-border);
   }
-  input[type='radio']:not([data-bn]):checked::after {
+  input[type='radio']:not([data-bn]):not([variant]):checked::after {
     content: '';
     position: absolute;
     inset-block-start: 50%;
@@ -818,7 +818,7 @@
     border-radius: 50%;
     transform: translate(-50%, -50%);
   }
-  input[type='radio']:not([data-bn]):focus-visible {
+  input[type='radio']:not([data-bn]):not([variant]):focus-visible {
     outline: var(--border-inline-width) solid var(--accent);
     outline-offset: var(--border-inline-width);
   }
@@ -884,7 +884,7 @@
   }
 
   /* -- Select (base-select) -- */
-  select:not([data-bn]) {
+  select:not([data-bn]):not([variant]) {
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
     font-size: var(--font-size-base);
@@ -905,18 +905,18 @@
       border-color var(--duration-med),
       box-shadow var(--duration-med);
   }
-  select:not([data-bn]):focus {
+  select:not([data-bn]):not([variant]):focus {
     border-color: var(--accent);
     box-shadow: var(--shadow-input), var(--shadow-btn);
   }
 
   @supports (appearance: base-select) {
-    select:not([data-bn]),
-    select:not([data-bn])::picker(select) {
+    select:not([data-bn]):not([variant]),
+    select:not([data-bn]):not([variant])::picker(select) {
       appearance: base-select;
     }
 
-    select:not([data-bn]) {
+    select:not([data-bn]):not([variant]) {
       padding-inline-end: var(--space-md);
       background-image: none;
       display: flex;
@@ -924,16 +924,16 @@
       justify-content: space-between;
     }
 
-    select:not([data-bn])::picker-icon {
+    select:not([data-bn]):not([variant])::picker-icon {
       content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' width='10' height='7'%3E%3Cpath d='M1.5 1.5l4.5 4.5 4.5-4.5' stroke='%23e8a44a' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
       margin-inline-start: auto;
       transition: rotate var(--duration-fast);
     }
-    select:not([data-bn]):open::picker-icon {
+    select:not([data-bn]):not([variant]):open::picker-icon {
       rotate: 180deg;
     }
 
-    select:not([data-bn])::picker(select) {
+    select:not([data-bn]):not([variant])::picker(select) {
       background: var(--popover-bg);
       border: var(--border-width) solid var(--popover-border);
       border-radius: var(--popover-radius);
@@ -948,13 +948,13 @@
     }
 
     @starting-style {
-      select:not([data-bn])::picker(select) {
+      select:not([data-bn]):not([variant])::picker(select) {
         opacity: 0;
         scale: 0.96;
       }
     }
 
-    select:not([data-bn]) option {
+    select:not([data-bn]):not([variant]) option {
       font-family: var(--font-family);
       font-stretch: var(--font-mono);
       font-size: var(--font-size-base);
@@ -963,20 +963,20 @@
       color: var(--text-0);
       transition: background var(--duration-fast);
     }
-    select:not([data-bn]) option:hover {
+    select:not([data-bn]):not([variant]) option:hover {
       background: var(--select-option-hover);
     }
-    select:not([data-bn]) option:checked {
+    select:not([data-bn]):not([variant]) option:checked {
       color: var(--accent);
       font-weight: var(--font-weight-semibold);
     }
 
-    select:not([data-bn]) option::checkmark {
+    select:not([data-bn]):not([variant]) option::checkmark {
       color: var(--accent);
       margin-inline-end: var(--space-sm);
     }
 
-    select:not([data-bn]) optgroup {
+    select:not([data-bn]):not([variant]) optgroup {
       font-family: var(--font-family);
       font-stretch: var(--font-mono);
       font-size: var(--font-size-xs);
@@ -988,7 +988,7 @@
   }
 
   /* -- Progress -- */
-  progress:not([data-bn]) {
+  progress:not([data-bn]):not([variant]) {
     appearance: none;
     inline-size: 100%;
     block-size: var(--track-height);
@@ -997,16 +997,16 @@
     overflow: hidden;
     background: var(--track-bg);
   }
-  progress:not([data-bn])::-webkit-progress-bar {
+  progress:not([data-bn]):not([variant])::-webkit-progress-bar {
     background: var(--track-bg);
     border-radius: var(--radius-pill);
   }
-  progress:not([data-bn])::-webkit-progress-value {
+  progress:not([data-bn]):not([variant])::-webkit-progress-value {
     background: var(--track-fill);
     border-radius: var(--radius-pill);
     transition: inline-size var(--duration-med);
   }
-  progress:not([data-bn])::-moz-progress-bar {
+  progress:not([data-bn]):not([variant])::-moz-progress-bar {
     background: var(--track-fill);
     border-radius: var(--radius-pill);
   }
@@ -1114,7 +1114,7 @@
   }
 
   /* -- Labels -- */
-  label:not([data-bn]) {
+  label:not([data-bn]):not([variant]) {
     display: flex;
     flex-direction: column;
     gap: var(--space-xs);
@@ -1205,8 +1205,8 @@
   }
 
   /* -- Inline label (for checkbox/radio rows) -- */
-  label:not([data-bn]):has(input[type='checkbox']),
-  label:not([data-bn]):has(input[type='radio']) {
+  label:not([data-bn]):not([variant]):has(input[type='checkbox']),
+  label:not([data-bn]):not([variant]):has(input[type='radio']) {
     flex-direction: row;
     align-items: center;
     gap: var(--space-sm);
@@ -1228,19 +1228,19 @@
   }
 
   /* -- Table (express pages only, not data-bn components) -- */
-  table:not([data-bn]) {
+  table:not([data-bn]):not([variant]) {
     inline-size: 100%;
     border-collapse: collapse;
     font-size: var(--font-size-base);
   }
 
-  table:not([data-bn]) thead {
+  table:not([data-bn]):not([variant]) thead {
     position: sticky;
     inset-block-start: 0;
     z-index: 1;
   }
 
-  table:not([data-bn]) th {
+  table:not([data-bn]):not([variant]) th {
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
     font-size: var(--font-size-xs);
@@ -1254,19 +1254,19 @@
     border-block-end: var(--border-width) solid var(--border-accent);
   }
 
-  table:not([data-bn]) td {
+  table:not([data-bn]):not([variant]) td {
     padding: var(--space-sm) var(--space-md);
     border-block-end: var(--border-width) solid var(--border);
     color: var(--text-1);
   }
 
-  table:not([data-bn]) tbody tr:nth-child(even) {
+  table:not([data-bn]):not([variant]) tbody tr:nth-child(even) {
     background: var(--table-stripe);
   }
-  table:not([data-bn]) tbody tr {
+  table:not([data-bn]):not([variant]) tbody tr {
     transition: background var(--duration-fast);
   }
-  table:not([data-bn]) tbody tr:hover {
+  table:not([data-bn]):not([variant]) tbody tr:hover {
     background: var(--surface-2);
   }
 
@@ -1324,14 +1324,14 @@
   }
 
   /* -- Details / Summary -- */
-  details:not([data-bn]) {
+  details:not([data-bn]):not([variant]):not([variant]) {
     border: var(--border-width) solid var(--border);
     border-radius: var(--radius-md);
     margin-block-end: var(--space-sm);
     interpolate-size: allow-keywords;
   }
 
-  details:not([data-bn]) > summary {
+  details:not([data-bn]):not([variant]):not([variant]) > summary {
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
     font-size: var(--font-size-sm);
@@ -1348,35 +1348,35 @@
       color var(--duration-fast);
     border-radius: var(--radius-md);
   }
-  details:not([data-bn]) > summary:hover {
+  details:not([data-bn]):not([variant]):not([variant]) > summary:hover {
     background: var(--surface-2);
     color: var(--accent);
   }
-  details:not([data-bn]) > summary::-webkit-details-marker {
+  details:not([data-bn]):not([variant]):not([variant]) > summary::-webkit-details-marker {
     display: none;
   }
 
-  details:not([data-bn]) > summary::before {
+  details:not([data-bn]):not([variant]):not([variant]) > summary::before {
     content: '▸';
     color: var(--details-marker);
     font-size: 0.85em;
     transition: rotate var(--duration-fast);
   }
-  details:not([data-bn])[open] > summary::before {
+  details:not([data-bn]):not([variant]):not([variant])[open] > summary::before {
     rotate: 90deg;
   }
-  details:not([data-bn])[open] > summary {
+  details:not([data-bn]):not([variant]):not([variant])[open] > summary {
     margin-block-end: 0;
   }
 
-  details:not([data-bn]) > :not(summary) {
+  details:not([data-bn]):not([variant]):not([variant]) > :not(summary) {
     padding: var(--space-sm) var(--space-md) var(--space-md);
     color: var(--text-1);
     font-size: var(--font-size-base);
   }
 
   /* -- Dialog -- */
-  dialog:not([data-bn]) {
+  dialog:not([data-bn]):not([variant]) {
     margin: auto;
     background: var(--dialog-bg);
     color: var(--text-0);
@@ -1393,7 +1393,7 @@
     transition-behavior: allow-discrete;
   }
 
-  dialog:not([data-bn])::backdrop {
+  dialog:not([data-bn]):not([variant])::backdrop {
     background: var(--dialog-backdrop);
     transition:
       opacity var(--duration-med),
@@ -1402,35 +1402,35 @@
     transition-behavior: allow-discrete;
   }
 
-  dialog:not([data-bn])[open] {
+  dialog:not([data-bn]):not([variant])[open] {
     opacity: 1;
     scale: 1;
   }
 
   @starting-style {
-    dialog:not([data-bn])[open] {
+    dialog:not([data-bn]):not([variant])[open] {
       opacity: 0;
       scale: 0.95;
     }
-    dialog:not([data-bn])[open]::backdrop {
+    dialog:not([data-bn]):not([variant])[open]::backdrop {
       opacity: 0;
     }
   }
 
-  dialog:not([data-bn]) > header {
+  dialog:not([data-bn]):not([variant]) > header {
     margin-block-end: var(--space-md);
     padding-block-end: var(--space-md);
     border-block-end: var(--border-width) solid var(--border);
   }
 
-  dialog:not([data-bn]) > header h3 {
+  dialog:not([data-bn]):not([variant]) > header h3 {
     font-family: var(--font-family);
     font-stretch: var(--font-serif);
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-normal);
   }
 
-  dialog:not([data-bn]) > footer {
+  dialog:not([data-bn]):not([variant]) > footer {
     margin-block-start: var(--space-lg);
     display: flex;
     justify-content: flex-end;
@@ -1441,7 +1441,7 @@
   }
 
   /* -- Popover -- */
-  [popover]:not([data-bn]) {
+  [popover]:not([data-bn]):not([variant]) {
     margin: 0;
     padding: var(--space-md);
     background: var(--popover-bg);
@@ -1460,12 +1460,12 @@
     scale: 1;
   }
 
-  [popover]:not([data-bn])::backdrop {
+  [popover]:not([data-bn]):not([variant])::backdrop {
     background: transparent;
   }
 
   @starting-style {
-    [popover]:not([data-bn]):popover-open {
+    [popover]:not([data-bn]):not([variant]):popover-open {
       opacity: 0;
       scale: 0.96;
     }
@@ -1674,7 +1674,7 @@
   }
 
   /* -- Tasks page -- */
-  [data-tasks] > [data-bn='bn-list'] > output,
+  [data-tasks] > output,
   [data-hydrate] [data-bn='bn-list'] > output {
     margin: 0;
     padding: var(--space-md) var(--space-lg);
@@ -2270,16 +2270,16 @@
 
   /* -- Hero shared by /components and /showcase -- */
   [data-bn-page-hero],
-  [data-bn-showcase-header] {
-    margin-block-end: var(--bn-section-space, 12px);
+  [data-bn-showcase] > figure[variant="stacked"] {
+    --hero-margin: 0 0 var(--bn-section-space, 12px);
+    --hero__title-font-family: var(--font-family);
+    --hero__title-font-size: var(--font-size-hero);
+    --hero__title-font-weight: var(--font-weight-normal);
+    --hero__title-letter-spacing: var(--letter-spacing-tight);
+    --hero__title-margin: 0 0 var(--space-md);
 
-    & h2 {
-      font-family: var(--font-family);
+    & > figcaption > :is(h1, h2) {
       font-stretch: var(--font-serif);
-      font-size: var(--font-size-hero);
-      font-weight: var(--font-weight-normal);
-      letter-spacing: var(--letter-spacing-tight);
-      margin-block-end: var(--space-md);
 
       & em {
         font-style: normal;
@@ -2517,7 +2517,7 @@
       border: none;
       background: none;
 
-      & [data-bn-component-fn] {
+      & [data-bn-component-variants] {
         color: var(--text-2);
         font-size: var(--font-size-xs);
       }
@@ -2621,20 +2621,20 @@
     }
   }
 
-  [data-bn-component-hero] {
-    display: block;
-    margin-block: var(--space-lg) var(--space-xl);
-    background: none;
-    border: none;
-    padding: 0;
+  figure[variant="stacked"]:has(> figcaption > dl) {
+    --hero-background-color: transparent;
+    --hero-border-width: 0;
+    --hero-padding-block: 0;
+    --hero-padding-inline: 0;
+    --hero-margin: var(--space-lg) 0 var(--space-xl);
+    --hero__title-font-family: var(--font-family);
+    --hero__title-font-size: var(--font-size-hero);
+    --hero__title-font-weight: var(--font-weight-normal);
+    --hero__title-letter-spacing: var(--letter-spacing-tight);
+    --hero__title-margin: 0 0 var(--space-sm);
 
-    & h2 {
-      font-family: var(--font-family);
+    & > figcaption > :is(h1, h2) {
       font-stretch: var(--font-serif);
-      font-size: var(--font-size-hero);
-      font-weight: var(--font-weight-normal);
-      margin-block-end: var(--space-sm);
-      letter-spacing: var(--letter-spacing-tight);
     }
   }
 
@@ -2643,7 +2643,7 @@
      (the grouped-list pattern) instead of three airy grid cells that ate
      a third of the first screen; the grid returns when there is room
      for the columns to sit side by side. */
-  [data-bn-component-meta] {
+  figure[variant="stacked"] > figcaption > dl {
     display: flex;
     flex-direction: column;
     margin-block-start: var(--space-md);
@@ -2712,14 +2712,14 @@
   /* Section heading style shared across the component-page sections. */
   [data-bn-component-quickstart] > header,
   [data-bn-component-examples] > header,
-  [data-bn-component-api] > header {
+  [data-bn-component-files] > header {
     display: block;
     background: none;
     border: none;
     padding: 0;
     margin-block-end: var(--space-md);
 
-    & > h3 {
+    & > h2 {
       font-family: var(--font-family);
       font-stretch: var(--font-serif);
       font-size: var(--font-size-xl);
@@ -2766,7 +2766,7 @@
       border: none;
       padding: 0;
 
-      & > h4 {
+      & > h3 {
         font-family: var(--font-family);
         font-stretch: var(--font-serif);
         font-size: var(--font-size-lg);
@@ -2829,6 +2829,27 @@
       padding: var(--space-xs) var(--space-md);
       background: var(--surface-2);
       border-block-end: var(--border-width) solid var(--border);
+    }
+  }
+
+  /* Specimen staging: an open dialog, drawer, palette, or listbox is
+     staged in flow inside a preview (and on the showcase stage) instead
+     of escaping over the page. The listbox positions are the components'
+     own tokens, overridden here per the token contract; the dialog
+     position is the UA stylesheet's, which author CSS outranks — no
+     catalog sheet declares it. */
+  [data-bn-component-preview],
+  [data-bn-showcase-stage] {
+    --select__listbox-position: static;
+    --combobox__listbox-position: static;
+    --multiselect__listbox-position: static;
+    --toast-position: static;
+    --app-bar-position: static;
+    --app-bar__menu-position: static;
+    --tooltip__note-position: static;
+
+    & dialog {
+      position: static;
     }
   }
 
@@ -3292,7 +3313,7 @@
       align-items: start;
     }
 
-    [data-bn-showcase] > [data-bn='bn-hero'],
+    [data-bn-showcase] > figure[variant="stacked"],
     [data-bn-showcase] > [data-bn-showcase-search] {
       grid-column: 1 / -1;
     }
@@ -3728,7 +3749,7 @@
     }
 
     /* The site-wide disclosure rules a thousand lines above match this block
-       too — `details:not([data-bn])` is true of data-bn-showcase-source, which
+       too — `details:not([data-bn]):not([variant]):not([variant])` is true of data-bn-showcase-source, which
        is a different attribute — so the summary was rendering the generic "▸"
        marker AND this block's own chevron, and the code block was picking up
        the generic body padding on top of its own. Suppress both here rather
@@ -4063,7 +4084,7 @@
     padding-block-start: var(--bn-section-space, 12px);
     border-block-start: var(--border-width) solid var(--border);
 
-    & > h3 {
+    & > h2 {
       font-family: var(--font-family);
       font-stretch: var(--font-serif);
       font-size: var(--font-size-xl);
@@ -4142,22 +4163,21 @@
 
 /* -- /compare ------------------------------------------------------------- */
 @layer components {
-  /* Verdict colouring. Plain coloured text rather than <mark> badges: a
-     five-column table with a pill in every cell reads as noise, and the point
-     of these tables is scanning one row against another. */
-  [data-compare-table] th[scope='row'] {
-    color: var(--text-0);
-    white-space: nowrap;
-    text-align: start;
-  }
-  [data-compare-table] td[data-tone='win'] {
+  /* Verdict colouring. The tables are the catalog table now; the verdict
+     rides a span in the cell content — the same app-level device as the
+     verdict cards' [data-compare-card] hooks below — because tone is this
+     page's editorial layer, not the table's structure. Plain coloured text
+     rather than a pill in every cell: a five-column table reads as noise
+     that way, and the point of these tables is scanning one row against
+     another. */
+  [data-compare-table] span[data-tone='win'] {
     color: var(--success);
     font-weight: var(--font-weight-semibold);
   }
-  [data-compare-table] td[data-tone='cost'] {
+  [data-compare-table] span[data-tone='cost'] {
     color: var(--accent);
   }
-  [data-compare-table] td[data-tone='even'] {
+  [data-compare-table] span[data-tone='even'] {
     color: var(--text-1);
   }
 
@@ -4229,8 +4249,57 @@
     margin-block-start: var(--space-sm);
   }
 
-  [data-compare-tabs] {
+  [data-compare-counter] > section[variant='tabs'] {
     margin-block-start: var(--space-md);
+  }
+
+  /* The stat strip: four headline numbers over the comparison. Its
+     styling lived in the platform sheet until the site stopped
+     linking it; the surface is compare-specific, so it lives here
+     now, on the app's own tokens. */
+  [data-bn='bn-card-grid'] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9.25rem, 1fr));
+    gap: var(--space-md);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    align-items: stretch;
+  }
+
+  [data-bn='bn-card-grid'] > li {
+    display: flex;
+    min-inline-size: 0;
+  }
+
+  [data-bn='bn-metric'] {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    min-block-size: 7rem;
+    margin: 0;
+    padding: var(--space-md);
+    background: var(--surface-1);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+
+  [data-bn='bn-metric-value'] {
+    margin: 0;
+    font-size: var(--font-size-2xl);
+    line-height: 1.1;
+    font-weight: var(--font-weight-bold);
+    overflow-wrap: anywhere;
+  }
+
+  [data-bn='bn-metric-label'] {
+    margin: 0;
+    color: var(--text-2);
+    font-size: var(--font-size-sm);
+    line-height: 1.3;
+    font-weight: var(--font-weight-semibold);
   }
 
   [data-compare-cta] {
@@ -4241,5 +4310,70 @@
     gap: var(--space-md);
     justify-content: center;
     flex-wrap: wrap;
+  }
+}
+
+@layer components {
+  [data-bn-design-system] {
+    display: grid;
+    gap: var(--space-2xl);
+
+    & > section {
+      display: grid;
+      gap: var(--space-md);
+      align-content: start;
+    }
+  }
+
+  ul[role='list'][data-bn-ds-swatches] {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+    gap: var(--space-sm);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & li {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: var(--space-sm);
+    }
+
+    & li > span:first-child {
+      flex: none;
+      inline-size: 1.75rem;
+      block-size: 1.75rem;
+      border-radius: var(--radius-sm);
+      box-shadow: inset 0 0 0 var(--border-width) var(--border);
+    }
+
+    & code {
+      font-size: var(--font-size-sm);
+    }
+
+    & li > span:last-child {
+      color: var(--text-2);
+      font-size: var(--font-size-xs);
+    }
+  }
+
+  ul[role='list'][data-bn-ds-fonts] {
+    display: grid;
+    gap: var(--space-xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & li {
+      display: flex;
+      justify-content: flex-start;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+    }
+
+    & span {
+      color: var(--text-2);
+    }
   }
 }

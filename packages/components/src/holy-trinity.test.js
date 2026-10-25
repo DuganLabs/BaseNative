@@ -19,6 +19,7 @@ const PILOT = [
   'theme-toggle',
   'form', 'search-field', 'segmented-control', 'stepper',
   'tabs', 'empty-state', 'toolbar', 'rating',
+  'hero', 'sidebar', 'app-bar', 'site-footer', 'app-shell',
 ];
 
 test('each pilot component directory holds exactly the three files', async () => {
@@ -259,6 +260,19 @@ test('progress renders a value, or no value when indeterminate', async () => {
   assert.doesNotMatch(spin, /value=/);
 });
 
+test('table renders an HTML cell raw and a text cell escaped', async () => {
+  const registry = await loadRegistry();
+  const badge = renderComponent(registry, render, 'badge', { label: 'Fixed', variant: 'success' }).html;
+  const { html } = renderComponent(registry, render, 'table', {
+    columns: ['Point', 'Status'],
+    rows: [
+      [{ text: 'A < b', header: true }, { contentHtml: badge }],
+    ],
+  });
+  assert.ok(html.includes('A &lt; b'), 'text cells stay escaped');
+  assert.ok(html.includes('<small variant="success">Fixed</small>'), 'HTML cells render as markup');
+});
+
 test('card composes a footer of buttons', async () => {
   const registry = await loadRegistry();
   const open = renderComponent(registry, render, 'button', { label: 'Open job', variant: 'primary' }).html;
@@ -322,4 +336,118 @@ test('card renders its footer only when footer HTML is given', async () => {
   const registry = await loadRegistry();
   const bare = renderComponent(registry, render, 'card', { title: 'T', body: 'B' }).html;
   assert.doesNotMatch(bare, /<footer>/);
+});
+
+test('hero renders a figure whose figcaption carries eyebrow, title, lede and actions', async () => {
+  const registry = await loadRegistry();
+  const { html } = renderComponent(registry, render, 'hero', {
+    eyebrow: 'Compare',
+    title: 'How it compares',
+    lede: 'An honest look.',
+    actionsHtml: '<button variant="primary" type="button">Try it</button>',
+  });
+  assert.match(html, /<figure variant="stacked">/);
+  assert.match(html, /<figcaption>/);
+  assert.match(html, /<p>Compare<\/p>/);
+  assert.match(html, /<h1>\s*How it compares\s*<\/h1>/);
+  assert.match(html, /<p>An honest look\.<\/p>/);
+  assert.match(html, /<nav aria-label="Primary">/);
+  assert.doesNotMatch(html, /<img/);
+  assert.doesNotMatch(html, /class=|data-/);
+});
+
+test('hero overlay renders its media and an h2 when asked', async () => {
+  const registry = await loadRegistry();
+  const { html } = renderComponent(registry, render, 'hero', {
+    variant: 'overlay',
+    headingLevel: 'h2',
+    title: 'On the water',
+    mediaSrc: '/hero.jpg',
+    mediaAlt: 'A boat at dawn',
+  });
+  assert.match(html, /<figure variant="overlay">/);
+  assert.match(html, /<img src="\/hero\.jpg" alt="A boat at dawn">/);
+  assert.match(html, /<h2>\s*On the water\s*<\/h2>/);
+});
+
+test('sidebar renders grouped destinations with the current one marked', async () => {
+  const registry = await loadRegistry();
+  const { html } = renderComponent(registry, render, 'sidebar', {
+    label: 'Site',
+    sections: [
+      { label: 'Start', items: [
+        { label: 'Home', href: '/' },
+        { label: 'Compare', href: '/compare', current: true },
+      ] },
+      { items: [{ label: 'Docs', href: '/docs' }] },
+    ],
+  });
+  assert.match(html, /<aside variant="sidebar">/);
+  assert.match(html, /<nav aria-label="Site">/);
+  assert.match(html, /<h2>Start<\/h2>/);
+  assert.match(html, /<a href="\/compare" aria-current="page">\s*Compare\s*<\/a>/);
+  assert.doesNotMatch(html, /<a href="\/" aria-current/);
+  assert.doesNotMatch(html, /class=|data-/);
+});
+
+test('app-bar rides the first destinations and overflows the rest behind More', async () => {
+  const registry = await loadRegistry();
+  const items = ['Home', 'Compare', 'Components', 'Docs', 'AI', 'Tasks']
+    .map((label) => ({ label, href: `/${label.toLowerCase()}` }));
+  items[5].current = true;
+  const { html } = renderComponent(registry, render, 'app-bar', { items, barLimit: 4 });
+  assert.match(html, /<nav variant="app-bar" aria-label="Primary">/);
+  assert.match(html, /<button type="button" id="app-bar-more-btn" popovertarget="app-bar-more" aria-haspopup="menu" aria-current="page">/);
+  assert.match(html, /<menu id="app-bar-more" popover="auto" aria-label="More">/);
+  assert.match(html, /<a href="\/tasks" aria-current="page">Tasks<\/a>/);
+  assert.doesNotMatch(html, /class=|data-/);
+});
+
+test('site-footer renders its groups as nav columns', async () => {
+  const registry = await loadRegistry();
+  const { html } = renderComponent(registry, render, 'site-footer', {
+    groups: [
+      { label: 'Product', links: [{ label: 'Components', href: '/components' }, { label: 'Docs', href: '/docs' }] },
+      { label: 'Project', links: [{ label: 'Roadmap', href: '/roadmap' }] },
+    ],
+    noteHtml: '<p>Built with BaseNative.</p>',
+  });
+  assert.match(html, /<footer variant="default">/);
+  assert.match(html, /<nav aria-label="Product">/);
+  assert.match(html, /<p>Product<\/p>/);
+  assert.match(html, /<a href="\/roadmap">Roadmap<\/a>/);
+  assert.match(html, /<p>Built with BaseNative\.<\/p>/);
+  assert.doesNotMatch(html, /class=|data-/);
+});
+
+test('app-shell composes sidebar, main and app bar around the content', async () => {
+  const registry = await loadRegistry();
+  const { html } = renderComponent(registry, render, 'app-shell', {
+    sidebarHtml: '<aside variant="sidebar"><nav aria-label="Sidebar"></nav></aside>',
+    appBarHtml: '<nav variant="app-bar" aria-label="Primary"></nav>',
+    contentHtml: '<p>Body</p>',
+  });
+  assert.match(html, /<main variant="default">\s*<p>Body<\/p>\s*<\/main>/);
+  assert.ok(html.indexOf('<aside') < html.indexOf('<main'), 'sidebar precedes main');
+  assert.ok(html.indexOf('</main>') < html.indexOf('variant="app-bar"'), 'app bar follows main');
+});
+
+test('button with an href renders a link carrying the variant', async () => {
+  const registry = await loadRegistry();
+  const { html } = renderComponent(registry, render, 'button', { label: 'Read the docs', variant: 'primary', href: '/docs' });
+  assert.match(html, /<a variant="primary" href="\/docs">Read the docs<\/a>/);
+  assert.doesNotMatch(html, /<button/);
+  const off = renderComponent(registry, render, 'button', { label: 'Later', href: '/later', disabled: true }).html;
+  assert.match(off, /<a variant="default" aria-disabled="true">Later<\/a>/);
+  assert.doesNotMatch(off, /href=/);
+});
+
+test('hero renders afterHtml at the close of its figcaption', async () => {
+  const registry = await loadRegistry();
+  const { html } = renderComponent(registry, render, 'hero', {
+    title: 'Button',
+    afterHtml: '<dl><div><dt>Element</dt><dd><code>&lt;button&gt;</code></dd></div></dl>',
+  });
+  assert.match(html, /<dl><div><dt>Element<\/dt>/);
+  assert.ok(html.indexOf('<dl>') > html.indexOf('</h1>'), 'after content follows the title');
 });

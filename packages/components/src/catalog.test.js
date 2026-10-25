@@ -327,9 +327,9 @@ test('applyTheme stamps data-theme for forced modes and clears it for system', a
 test('the token sheet carries all three appearance scopes', async () => {
   const { readFile } = await import('node:fs/promises');
   const tokens = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
-  assert.match(tokens, /@media \(prefers-color-scheme: dark\) \{\n  :root:not\(\[data-theme="light"\]\)/);
-  assert.match(tokens, /:root\[data-theme="dark"\] \{\n  color-scheme: dark;/);
-  assert.match(tokens, /:root\[data-theme="light"\] \{\n    color-scheme: light;/);
+  assert.match(tokens, /@media \(prefers-color-scheme: dark\) \{\n {2}:root:not\(\[data-theme="light"\]\)/);
+  assert.match(tokens, /:root\[data-theme="dark"\] \{\n {2}color-scheme: dark;/);
+  assert.match(tokens, /:root\[data-theme="light"\] \{\n {4}color-scheme: light;/);
 });
 
 test('alert renders an optional dismiss and the toggle hugs its content', async () => {

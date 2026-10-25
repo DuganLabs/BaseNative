@@ -7,8 +7,10 @@
  * and those rot the moment they are maintained away from the code that
  * produces them. Two checks together make that impossible:
  *
- *   1. The view must *bind* every BaseNative number (`{{ stats.x }}`), so no
- *      one can type a figure into the template.
+ *   1. The page's sources must *bind* every BaseNative number — the view
+ *      with `{{ stats.x }}`, the tables (examples/express/compare-tables.js)
+ *      by composing `${stats.x}` into their measured cells — so no one can
+ *      type a figure into either file.
  *   2. The rendered page must contain the value that `computeCompareStats()`
  *      measures from source right now, so a binding cannot render something
  *      stale.
@@ -24,6 +26,7 @@
  */
 import { pathToFileURL } from 'node:url';
 import {
+  COMPARE_TABLES,
   COMPARE_VIEW,
   RENDERED_CLAIMS,
   computeCompareStats,
@@ -120,13 +123,16 @@ export function roadmapProblems(stats) {
 export function checkComparePage() {
   const stats = computeCompareStats();
   const view = readRepoFile(COMPARE_VIEW);
+  const tablesSource = readRepoFile(COMPARE_TABLES);
   const problems = [];
 
   for (const claim of RENDERED_CLAIMS) {
-    if (!new RegExp(`\\{\\{\\s*stats\\.${claim}\\s*\\}\\}`).test(view)) {
+    const boundInView = new RegExp(`\\{\\{\\s*stats\\.${claim}\\s*\\}\\}`).test(view);
+    const boundInTables = new RegExp(`stats\\.${claim}\\b`).test(tablesSource);
+    if (!boundInView && !boundInTables) {
       problems.push(
-        `${COMPARE_VIEW} never binds {{ stats.${claim} }}. Every BaseNative number on /compare ` +
-          `must be rendered from scripts/compare-stats.js, never typed into the view.`,
+        `Neither ${COMPARE_VIEW} nor ${COMPARE_TABLES} binds stats.${claim}. Every BaseNative ` +
+          `number on /compare must be rendered from scripts/compare-stats.js, never typed in.`,
       );
     }
   }
@@ -136,10 +142,18 @@ export function checkComparePage() {
   // Without this, adding a correct binding elsewhere on the page would let a
   // hand-typed number sit in the slot the reader actually looks at.
   const claimSlots = [...view.matchAll(/<([a-z]+)\b[^>]*\bdata-claim\b[^>]*>([\s\S]*?)<\/\1>/g)];
-  if (claimSlots.length < RENDERED_CLAIMS.length) {
+  // The tables' measured cells hold the same kind of slot in the other
+  // source file: an m(`…`) literal in compare-tables.js, whose text must
+  // likewise come entirely from `${stats.…}` interpolations.
+  const tableClaimSlots = [...tablesSource.matchAll(/(?:^|\s)m\(`([^`]*)`/g)].map(
+    (entry) => entry[1],
+  );
+  if (claimSlots.length + tableClaimSlots.length < RENDERED_CLAIMS.length) {
     problems.push(
-      `${COMPARE_VIEW} marks only ${claimSlots.length} elements with data-claim but the page makes ` +
-        `${RENDERED_CLAIMS.length} measured claims. Mark every slot that states one.`,
+      `${COMPARE_VIEW} and ${COMPARE_TABLES} mark only ` +
+        `${claimSlots.length + tableClaimSlots.length} measured slots (data-claim elements and ` +
+        `m() cells) but the page makes ${RENDERED_CLAIMS.length} measured claims. ` +
+        `Mark every slot that states one.`,
     );
   }
   for (const [, tag, inner] of claimSlots) {
@@ -149,6 +163,16 @@ export function checkComparePage() {
       problems.push(
         `${COMPARE_VIEW} has a hand-typed ${digits.join(', ')} inside a <${tag} data-claim> slot: ` +
           `"${inner.trim().replace(/\s+/g, ' ').slice(0, 90)}". Bind it to scripts/compare-stats.js.`,
+      );
+    }
+  }
+  for (const inner of tableClaimSlots) {
+    const literal = inner.replace(/\$\{[^}]*\}/g, '');
+    const digits = literal.match(/\d[\d,.]*/g);
+    if (digits) {
+      problems.push(
+        `${COMPARE_TABLES} has a hand-typed ${digits.join(', ')} inside an m() measured cell: ` +
+          `"${inner.trim().replace(/\s+/g, ' ').slice(0, 90)}". Compose it from stats instead.`,
       );
     }
   }
@@ -174,17 +198,23 @@ export function checkComparePage() {
 
   // Belt and braces for the two claims that were actually wrong when the page
   // moved here: a "~5 KB" runtime that measures 9.6 KB, and a line count typed
-  // in by hand. Either one reappearing as a literal is a regression.
-  if (/~\s*5\s*KB/i.test(view)) {
-    problems.push(
-      `${COMPARE_VIEW} hardcodes a "~5 KB" runtime size. The measured size is ` +
-        `${stats.runtimeGzipKb} KB — bind {{ stats.runtimeGzipKb }} instead.`,
-    );
-  }
-  if (/\b\d{2,}\s+lines\b/.test(view)) {
-    problems.push(
-      `${COMPARE_VIEW} hardcodes a line count. Bind it to scripts/compare-stats.js instead.`,
-    );
+  // in by hand. Either one reappearing as a literal, in either source file,
+  // is a regression.
+  for (const [file, source] of [
+    [COMPARE_VIEW, view],
+    [COMPARE_TABLES, tablesSource],
+  ]) {
+    if (/~\s*5\s*KB/i.test(source)) {
+      problems.push(
+        `${file} hardcodes a "~5 KB" runtime size. The measured size is ` +
+          `${stats.runtimeGzipKb} KB — bind stats.runtimeGzipKb instead.`,
+      );
+    }
+    if (/\b\d{2,}\s+lines\b/.test(source)) {
+      problems.push(
+        `${file} hardcodes a line count. Bind it to scripts/compare-stats.js instead.`,
+      );
+    }
   }
 
   problems.push(...capabilityProblems(html));

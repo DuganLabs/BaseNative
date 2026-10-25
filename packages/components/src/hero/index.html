@@ -1,0 +1,53 @@
+<template>
+  <figure :variant="variant()">
+    <template @if="hasMedia()">
+      <template @if="mediaHtml()">
+        {{ raw(mediaHtml()) }}
+      </template>
+      <template @else>
+        <img :src="mediaSrc()" :alt="mediaAlt()" />
+      </template>
+    </template>
+    <figcaption>
+      <template @if="hasEyebrow()">
+        <p>{{ eyebrow() }}</p>
+      </template>
+      <template @if="isH2()">
+        <h2>
+          <template @if="titleHtml()">
+            {{ raw(titleHtml()) }}
+          </template>
+          <template @else>
+            {{ title() }}
+          </template>
+        </h2>
+      </template>
+      <template @else>
+        <h1>
+          <template @if="titleHtml()">
+            {{ raw(titleHtml()) }}
+          </template>
+          <template @else>
+            {{ title() }}
+          </template>
+        </h1>
+      </template>
+      <template @if="hasLede()">
+        <template @if="ledeHtml()">
+          {{ raw(ledeHtml()) }}
+        </template>
+        <template @else>
+          <p>{{ lede() }}</p>
+        </template>
+      </template>
+      <template @if="hasActions()">
+        <nav :aria-label="actionsLabel()">
+          {{ raw(actionsHtml()) }}
+        </nav>
+      </template>
+      <template @if="hasAfter()">
+        {{ raw(afterHtml()) }}
+      </template>
+    </figcaption>
+  </figure>
+</template>

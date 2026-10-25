@@ -1,20 +1,8 @@
 {{ hero }}
 
 <section data-tasks data-has-api="{{ hasApi }}">
-  <section data-bn="bn-list" data-grouped="true">
-    <output>{{ tasks.length }} tasks total</output>
-    <ul role="list">
-      <template @for="task of tasks; track task.id">
-        <li data-bn="bn-list-row">
-          <p data-bn="bn-list-title">{{ task.title }}</p>
-          <p data-bn="bn-list-value">{{ task.status }}</p>
-        </li>
-      </template>
-      <template @empty>
-        <li data-bn="bn-list-row"><p data-bn="bn-list-title">No tasks yet — add one below</p></li>
-      </template>
-    </ul>
-  </section>
+  <output>{{ tasks.length }} tasks total</output>
+  {{ taskList }}
 </section>
 
 <section data-hydrate>
@@ -171,7 +159,12 @@
   // keep it in sync with the same taskSignal directly instead of letting it
   // freeze at the initial count while the interactive list below moves on.
   const ssrOutput = document.querySelector('[data-tasks] output');
-  const ssrList = document.querySelector('[data-tasks] ul[role="list"]');
+  const ssrList = document.querySelector('[data-tasks] ul');
+  // The server-rendered list above is the catalog list-group (built in
+  // site-data.js): a row is a title paragraph with the status badge — a
+  // <small variant> — pinned to its end. Rebuild that same shape here, with
+  // the same status → variant map the server used.
+  const STATUS_VARIANT = { done: 'success', active: 'success', pending: 'default' };
   effect(() => {
     const list = taskSignal();
     if (ssrOutput) ssrOutput.textContent = `${list.length} tasks total`;
@@ -179,23 +172,21 @@
       ssrList.replaceChildren();
       if (list.length === 0) {
         const li = document.createElement('li');
-        li.dataset.bn = 'bn-list-row';
         const title = document.createElement('p');
-        title.dataset.bn = 'bn-list-title';
         title.textContent = 'No tasks yet — add one below';
         li.appendChild(title);
         ssrList.appendChild(li);
       } else {
         for (const task of list) {
           const li = document.createElement('li');
-          li.dataset.bn = 'bn-list-row';
           const title = document.createElement('p');
-          title.dataset.bn = 'bn-list-title';
-          title.textContent = task.title;
-          const value = document.createElement('p');
-          value.dataset.bn = 'bn-list-value';
-          value.textContent = task.status;
-          li.append(title, value);
+          const strong = document.createElement('strong');
+          strong.textContent = task.title;
+          title.appendChild(strong);
+          const badge = document.createElement('small');
+          badge.setAttribute('variant', STATUS_VARIANT[task.status] || 'default');
+          badge.textContent = task.status;
+          li.append(title, badge);
           ssrList.appendChild(li);
         }
       }

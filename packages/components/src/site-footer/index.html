@@ -1,0 +1,21 @@
+<template>
+  <footer :variant="variant()">
+    <template @for="group of groups()">
+      <nav :aria-label="groupLabel(group)">
+        <template @if="group.label">
+          <p>{{ group.label }}</p>
+        </template>
+        <ul>
+          <template @for="link of group.links">
+            <li>
+              <a :href="link.href">{{ link.label }}</a>
+            </li>
+          </template>
+        </ul>
+      </nav>
+    </template>
+    <template @if="noteHtml()">
+      {{ raw(noteHtml()) }}
+    </template>
+  </footer>
+</template>
