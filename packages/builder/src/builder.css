@@ -75,6 +75,18 @@
     backdrop-filter: saturate(var(--bn-glass-saturate, 180%)) blur(var(--bn-glass-blur, 30px));
   }
 
+  /* Stacked phone layout (below) shares the window's height between
+     canvas, tools, and inspector; the app needs more of the screen
+     there than the desktop workbench clamp gives it. Keyed to the
+     viewport because a container query cannot size the container
+     itself; the window is full-bleed at this width, so the two
+     breakpoints describe the same moment. */
+  @media (max-width: 48rem) {
+    .bn-builder {
+      block-size: 86dvh;
+    }
+  }
+
   .bn-builder__body {
     min-block-size: 0;
     display: grid;
@@ -175,6 +187,7 @@
   .bn-palette__btn:focus-visible,
   .bn-palette__query:focus-visible,
   .bn-tree__label:focus-visible,
+  .bn-tree__toggle:focus-visible,
   .bn-inspector__input:focus-visible,
   .bn-inspector__select:focus-visible {
     outline: 2px solid var(--bn-brand, #e8920a);
@@ -182,12 +195,15 @@
   }
 
   /* ── Panes ─────────────────────────────────────────────────────────
-     Wide: palette | canvas | rail (layers over inspector, one column
-     of tools beside the stage instead of two). Narrow: the canvas
-     leads, tools stack beneath it. */
+     Wide: one left column — Components over Layers, Figma-style — the
+     canvas in the middle, and a full-height inspector rail on the
+     right. Both left sections stay visible at once (adding a component
+     shows it land in the tree) and each scrolls on its own. Narrow:
+     the canvas leads, the left column stacks beneath it, inspector
+     last. */
   .bn-builder__panes {
     display: grid;
-    grid-template-areas: 'palette canvas rail';
+    grid-template-areas: 'sidebar canvas inspector';
     grid-template-columns: 16rem minmax(0, 1fr) 18rem;
     block-size: 100%;
     min-block-size: 0;
@@ -207,10 +223,14 @@
     .bn-builder__panes {
       grid-template-areas:
         'canvas'
-        'palette'
-        'rail';
+        'sidebar'
+        'inspector';
       grid-template-columns: minmax(0, 1fr);
-      grid-template-rows: minmax(24rem, 55dvh) auto auto;
+      /* Definite fractional tracks: content-sized rows collapse in
+         this frame (the sections' scrollers contribute no intrinsic
+         height), so the stacked sections share the window's height
+         and each scrolls internally — canvas largest, inspector last. */
+      grid-template-rows: minmax(0, 1.55fr) minmax(0, 1.45fr) minmax(0, 0.9fr);
       block-size: auto;
     }
 
@@ -223,14 +243,42 @@
     overflow: auto;
     padding: var(--bn-len-12, 12px);
     min-block-size: 0;
+    /* The host sheet puts a block-end margin on <section>; inside the
+       window frame the panes sit flush, marginless. */
+    margin: 0;
+  }
+
+  .bn-builder__sidebar {
+    grid-area: sidebar;
+    display: flex;
+    flex-direction: column;
+    min-block-size: 0;
+    border-inline-end: 1px solid var(--bn-plat-color-separator, GrayText);
   }
 
   .bn-builder__pane--palette {
-    grid-area: palette;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    border-inline-end: 1px solid var(--bn-plat-color-separator, GrayText);
+    flex: 0 1 55%;
+    min-block-size: 0;
+  }
+
+  .bn-builder__pane--layers {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex: 1 1 auto;
+    min-block-size: 0;
+    border-block-start: 1px solid var(--bn-plat-color-separator, GrayText);
+  }
+
+  /* bn-builder-tree is display:contents, so the tree list itself is
+     the pane's scrolling child. */
+  .bn-builder__pane--layers .bn-tree {
+    flex: 1;
+    min-block-size: 0;
+    overflow-y: auto;
   }
 
   .bn-builder__pane--canvas {
@@ -241,49 +289,32 @@
     background-image: var(--bn-stage-glow, none);
   }
 
-  .bn-builder__rail {
-    grid-area: rail;
-    display: flex;
-    flex-direction: column;
-    min-block-size: 0;
+  .bn-builder__pane--inspector {
+    grid-area: inspector;
     border-inline-start: var(--bn-len-1, 1px) solid var(--bn-plat-color-separator, GrayText);
   }
 
-  .bn-builder__rail .bn-builder__pane {
-    border: 0;
-  }
-
-  .bn-builder__pane--layers {
-    flex: 0 1 38%;
-    overflow: auto;
-    border-block-end: 1px solid var(--bn-plat-color-separator, GrayText);
-  }
-
-  .bn-builder__pane--inspector {
-    flex: 1 1 auto;
-    overflow: auto;
-  }
-
   @container builder (max-width: 46rem) {
-    .bn-builder__pane--palette {
-      overflow: auto;
-      max-block-size: 21rem;
+    .bn-builder__sidebar {
       border-inline-end: 0;
       border-block-start: 1px solid var(--bn-plat-color-separator, GrayText);
     }
 
-    .bn-builder__rail {
+    .bn-builder__pane--inspector {
       border-inline-start: 0;
       border-block-start: 1px solid var(--bn-plat-color-separator, GrayText);
     }
 
-    .bn-builder__pane--layers {
-      flex: none;
-      max-block-size: 15rem;
-    }
-
-    .bn-builder__pane--inspector {
-      flex: none;
+    /* The palette section is short when stacked: the search field's
+       label goes (its placeholder carries the same words) so the
+       list keeps a full row visible above the fold of its scroller. */
+    .bn-palette__search-label {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
     }
   }
 
@@ -416,12 +447,6 @@
     padding-inline-end: var(--bn-len-2, 2px);
   }
 
-  @container builder (max-width: 46rem) {
-    .bn-palette [data-bn-palette-groups] {
-      overflow-y: visible;
-    }
-  }
-
   .bn-palette__heading {
     margin: 0 0 var(--bn-len-4, 4px);
     font-size: var(--bn-type-13, 13px);
@@ -493,7 +518,10 @@
     margin: 0;
   }
 
-  /* ── Layers (tree) ───────────────────────────────────────────────── */
+  /* ── Layers (tree) ─────────────────────────────────────────────────
+     Rows share the palette's density (32px, 1px gaps): a disclosure
+     toggle and the label on one line, the children group wrapped
+     beneath and indented so nesting reads at a glance. */
   .bn-tree {
     list-style: none;
     margin: 0;
@@ -507,19 +535,64 @@
     list-style: none;
     margin: 0;
     padding: 0;
+    padding-inline-start: var(--bn-len-12, 12px);
     display: flex;
     flex-direction: column;
     gap: var(--bn-len-1, 1px);
   }
 
+  .bn-tree__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .bn-tree__row > .bn-tree__children {
+    flex: 1 1 100%;
+  }
+
+  .bn-tree__toggle {
+    appearance: none;
+    flex: none;
+    display: grid;
+    place-items: center;
+    inline-size: var(--bn-len-16, 16px);
+    block-size: var(--bn-len-16, 16px);
+    padding: 0;
+    border: 0;
+    border-radius: var(--bn-plat-radius-8, 8px);
+    background: transparent;
+    color: var(--bn-content-secondary, CanvasText);
+    cursor: pointer;
+  }
+
+  button.bn-tree__toggle:hover {
+    background: var(--bn-plat-color-fills-tertiary, transparent);
+  }
+
+  span.bn-tree__toggle {
+    cursor: default;
+  }
+
+  .bn-tree__toggle svg {
+    inline-size: var(--bn-len-12, 12px);
+    block-size: var(--bn-len-12, 12px);
+    rotate: 90deg;
+    transition: rotate 120ms ease;
+  }
+
+  .bn-tree__row--collapsed > .bn-tree__toggle svg {
+    rotate: 0deg;
+  }
+
   .bn-tree__label {
     display: flex;
-    width: 100%;
+    flex: 1;
+    min-inline-size: 0;
     gap: var(--bn-len-8, 8px);
     min-height: var(--bn-len-32, 32px);
-    min-inline-size: 0;
     align-items: center;
-    padding: var(--bn-len-2, 2px) var(--bn-len-8, 8px);
+    padding: var(--bn-len-4, 4px) var(--bn-len-8, 8px);
     border: 0;
     border-radius: var(--bn-plat-radius-8, 8px);
     background: transparent;
@@ -530,7 +603,8 @@
     cursor: pointer;
   }
 
-  .bn-tree__label:hover {
+  .bn-tree__label:hover,
+  .bn-tree__row--hover > .bn-tree__label {
     background: var(--bn-plat-color-fills-tertiary, transparent);
   }
 
