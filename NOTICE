@@ -1,12 +1,14 @@
-BaseNative platform materials are translated from these MIT-licensed sources.
+BaseNative's design materials draw on these MIT-licensed sources.
 The Apple Design Resources kits were used as visual comparison only. Their
 assets, glyphs, and exported text are not included in this repository.
 
 ---
 
 Puppertino 2.0 — https://github.com/codedgar/Puppertino
-Glass fills, blur, saturation, and the layered edge in
-packages/platform/src/materials.css follow dist/css/materials.css.
+Glass fills, blur, and saturation were translated from dist/css/materials.css
+into the platform package's materials stylesheet, removed with
+@basenative/platform. The glass values that treatment informed are now
+declared in packages/components/src/tokens.css.
 
 MIT License
 
@@ -89,8 +91,9 @@ SOFTWARE.
 ---
 
 liquid-glass — https://github.com/dpawlikowski/liquid-glass
-The chromatic inset on --bn-glass-edge is translated from the stylesheet's
-edge treatment into box-shadow, without an extra element.
+The chromatic inset edge treatment is carried in the material highlights of
+packages/components/src/tokens.css, translated into box-shadow without an
+extra element.
 
 MIT License
 
