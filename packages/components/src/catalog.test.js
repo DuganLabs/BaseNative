@@ -669,3 +669,19 @@ test('the accordion separator is between items only: the last item drops it', as
   assert.match(css, /--accordion-border-block-end-width--last: var\(--border-width-none\)/);
   assert.match(css, /details\[variant="default"\]:last-of-type \{\s*border-block-end-width: var\(--accordion-border-block-end-width--last\)/);
 });
+
+test('the accordion keeps the same space around its separators open and closed', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const css = await readFile(new URL('./accordion/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /--accordion__summary-padding-block: var\(--space-3\)/);
+  assert.match(css, /--accordion__content-padding-block-end: var\(--space-3\)/);
+});
+
+test('the accordion trims body edge margins so open spacing matches closed', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const css = await readFile(new URL('./accordion/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /--accordion__content-margin-block-start: var\(--space-0\)/);
+  assert.match(css, /--accordion__content-margin-block-end: var\(--space-0\)/);
+  assert.match(css, /& > :first-child \{\s*margin-block-start: var\(--accordion__content-margin-block-start\)/);
+  assert.match(css, /& > :last-child \{\s*margin-block-end: var\(--accordion__content-margin-block-end\)/);
+});

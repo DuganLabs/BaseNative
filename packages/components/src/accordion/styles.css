@@ -18,7 +18,9 @@
   --accordion__summary-letter-spacing: var(--text-headline-tracking);
   --accordion__summary-color: var(--label);
   --accordion__marker-display: var(--display-none);
-  --accordion__content-padding-block-end: var(--space-4);
+  --accordion__content-padding-block-end: var(--space-3);
+  --accordion__content-margin-block-start: var(--space-0);
+  --accordion__content-margin-block-end: var(--space-0);
   --accordion__content-padding-inline: var(--space-1);
   --accordion__content-color: var(--label-2);
   --accordion__content-font-family: var(--text-body-family);
@@ -55,6 +57,14 @@ details[variant="default"] {
 
   & > section {
     padding-block-end: var(--accordion__content-padding-block-end);
+
+    & > :first-child {
+      margin-block-start: var(--accordion__content-margin-block-start);
+    }
+
+    & > :last-child {
+      margin-block-end: var(--accordion__content-margin-block-end);
+    }
     padding-inline: var(--accordion__content-padding-inline);
     color: var(--accordion__content-color);
     font-family: var(--accordion__content-font-family);
