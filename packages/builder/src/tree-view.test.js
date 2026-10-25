@@ -8,7 +8,7 @@ describe('renderTreeView', () => {
     const s = createBuilderState();
     const html = renderTreeView(s);
     assert.ok(html.includes('bn-tree--empty'));
-    assert.ok(html.includes('No components yet'));
+    assert.ok(html.includes('Nothing on the canvas yet'));
   });
 
   test('renders a tree with role=tree and aria-label', () => {
@@ -44,5 +44,28 @@ describe('renderTreeView', () => {
     const html = renderTreeView(s);
     assert.ok(html.includes('&lt;bad&gt;'));
     assert.ok(!html.includes('<bad>'));
+  });
+
+  test('parents carry a disclosure toggle, leaves a spacer', () => {
+    const s = createBuilderState();
+    const root = s.addNode(null, { type: 'section' });
+    s.addNode(root.id, { type: 'text' });
+    s.addNode(null, { type: 'button' });
+    const html = renderTreeView(s);
+    assert.ok(html.includes(`data-bn-tree-toggle="${root.id}"`));
+    assert.ok(html.includes('aria-label="Collapse section"'));
+    assert.equal((html.match(/bn-tree__toggle/g) || []).length, 3);
+  });
+
+  test('a collapsed parent hides its children and reports aria-expanded=false', () => {
+    const s = createBuilderState();
+    const root = s.addNode(null, { type: 'section' });
+    const child = s.addNode(root.id, { type: 'text' });
+    const html = renderTreeView(s, { collapsed: new Set([root.id]) });
+    assert.ok(html.includes('aria-expanded="false"'));
+    assert.ok(html.includes('bn-tree__row--collapsed'));
+    assert.ok(html.includes('aria-label="Expand section"'));
+    assert.ok(!html.includes(`data-bn-tree-id="${child.id}"`));
+    assert.ok(!html.includes('role="group"'));
   });
 });
