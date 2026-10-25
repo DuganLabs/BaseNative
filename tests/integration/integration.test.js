@@ -642,23 +642,26 @@ describe('site syntax highlighting is a pipeline step', () => {
 
   it('CSS samples get CSS highlighting, not the JS scanner', () => {
     const css = [
-      ':root { --button-color: var(--label); }',
+      ':root { --color-tint: var(--palette-system-blue); }',
       'button[variant="primary"]:hover {',
-      '  background-color: var(--button-background-color);',
-      '  padding-block: var(--space-2);',
+      '  background-color: var(--color-bkg-button-primary);',
+      '  padding-block: var(--spacing-2);',
       '  inline-size: 2.75rem;',
       '  &:focus-visible { outline-width: 2px; }',
       '}',
     ].join('\n');
     const html = highlightCode(css);
     assert.match(html, /<span class="kw">root<\/span>/);
-    assert.match(html, /<span class="var">--button-color<\/span>/);
+    assert.match(html, /<span class="var">--color<\/span><span class="fn">-tint<\/span>/);
     assert.match(html, /<span class="fn">var<\/span>/);
+    assert.match(html, /<span class="var">--palette<\/span><span class="fn">-system-blue<\/span>/);
     assert.match(html, /<span class="tag">button<\/span>/);
     assert.match(html, /<span class="attr">variant<\/span>/);
     assert.match(html, /<span class="str">"primary"<\/span>/);
     assert.match(html, /<span class="kw">hover<\/span>/);
     assert.match(html, /<span class="attr">background-color<\/span>/);
+    assert.match(html, /<span class="var">--color<\/span><span class="attr">-bkg<\/span><span class="fn">-button-primary<\/span>/);
+    assert.match(html, /<span class="var">--spacing<\/span><span class="num">-2<\/span>/);
     assert.match(html, /<span class="num">2.75rem<\/span>/);
     assert.match(html, /<span class="kw">focus-visible<\/span>/);
     assert.match(html, /<span class="num">2px<\/span>/);
@@ -667,21 +670,24 @@ describe('site syntax highlighting is a pipeline step', () => {
     assert.equal(text, css.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
   });
 
-  it('custom properties get the variable class, segmented by the BEM grammar', () => {
+  it('custom properties are segmented by the CTI+ dynamics', () => {
     const css = [
-      ':root { --button__icon-color--disabled: var(--fill-4); }',
-      'button { color: var(--button-background-color--hover); }',
-      '.card__title--large { inline-size: var(--size-full); }',
+      ':root { --color-bkg-button-primary-hover: var(--palette-primary-400); }',
+      'button { color: var(--color-text-label-2); }',
+      '.code-block { inline-size: var(--size-full); }',
     ].join('\n');
     const html = highlightCode(css);
-    // Definition: block in var, __element in fn, trailing --state in kw.
-    assert.match(html, /<span class="var">--button<\/span><span class="fn">__icon-color<\/span><span class="kw">--disabled<\/span>/);
-    // A var() reference segments identically to the definition.
-    assert.match(html, /<span class="var">--button-background-color<\/span><span class="kw">--hover<\/span>/);
-    assert.match(html, /<span class="var">--fill-4<\/span>/);
-    assert.match(html, /<span class="var">--size-full<\/span>/);
+    // Definition: category in var, type in attr, the item/variant
+    // middle in fn, the state tail in kw — each dynamic role reads
+    // distinctly, so the taxonomy structure is visible at a glance.
+    assert.match(html, /<span class="var">--color<\/span><span class="attr">-bkg<\/span><span class="fn">-button-primary<\/span><span class="kw">-hover<\/span>/);
+    // A palette weight is a numeric tail: it takes the number class.
+    assert.match(html, /<span class="var">--palette<\/span><span class="fn">-primary<\/span><span class="num">-400<\/span>/);
+    // A var() reference segments identically to a definition.
+    assert.match(html, /<span class="var">--color<\/span><span class="attr">-text<\/span><span class="fn">-label<\/span><span class="num">-2<\/span>/);
+    assert.match(html, /<span class="var">--size<\/span><span class="fn">-full<\/span>/);
     // Class selectors segment the same way on the tag class.
-    assert.match(html, /<span class="tag">\.card<\/span><span class="fn">__title<\/span><span class="kw">--large<\/span>/);
+    assert.match(html, /<span class="tag">\.code<\/span><span class="fn">-block<\/span>/);
     const text = html.replace(/<[^>]+>/g, '');
     assert.equal(text, css.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
   });
