@@ -652,7 +652,7 @@ describe('site syntax highlighting is a pipeline step', () => {
     ].join('\n');
     const html = highlightCode(css);
     assert.match(html, /<span class="kw">root<\/span>/);
-    assert.match(html, /<span class="attr">--button-color<\/span>/);
+    assert.match(html, /<span class="var">--button-color<\/span>/);
     assert.match(html, /<span class="fn">var<\/span>/);
     assert.match(html, /<span class="tag">button<\/span>/);
     assert.match(html, /<span class="attr">variant<\/span>/);
@@ -663,6 +663,25 @@ describe('site syntax highlighting is a pipeline step', () => {
     assert.match(html, /<span class="kw">focus-visible<\/span>/);
     assert.match(html, /<span class="num">2px<\/span>/);
     // The CSS scanner preserves the code text exactly, like the JS one.
+    const text = html.replace(/<[^>]+>/g, '');
+    assert.equal(text, css.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
+  });
+
+  it('custom properties get the variable class, segmented by the BEM grammar', () => {
+    const css = [
+      ':root { --button__icon-color--disabled: var(--fill-4); }',
+      'button { color: var(--button-background-color--hover); }',
+      '.card__title--large { inline-size: var(--size-full); }',
+    ].join('\n');
+    const html = highlightCode(css);
+    // Definition: block in var, __element in fn, trailing --state in kw.
+    assert.match(html, /<span class="var">--button<\/span><span class="fn">__icon-color<\/span><span class="kw">--disabled<\/span>/);
+    // A var() reference segments identically to the definition.
+    assert.match(html, /<span class="var">--button-background-color<\/span><span class="kw">--hover<\/span>/);
+    assert.match(html, /<span class="var">--fill-4<\/span>/);
+    assert.match(html, /<span class="var">--size-full<\/span>/);
+    // Class selectors segment the same way on the tag class.
+    assert.match(html, /<span class="tag">\.card<\/span><span class="fn">__title<\/span><span class="kw">--large<\/span>/);
     const text = html.replace(/<[^>]+>/g, '');
     assert.equal(text, css.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
   });

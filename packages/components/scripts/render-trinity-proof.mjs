@@ -144,7 +144,7 @@ ${css}
   article { background: var(--background-grouped-2); border: 1px solid var(--separator); border-radius: .75rem; padding: 1.25rem; display: grid; gap: 1rem; }
   dialog { position: static; }
   pre { background: #111827; color: #f3f4f6; padding: 1rem; border-radius: .5rem; overflow-x: auto; font-size: .78rem; line-height: 1.5;
-    --syntax-keyword: #c792ea; --syntax-string: #c3e88d; --syntax-function: #82aaff; --syntax-number: #f78c6c; --syntax-comment: #7a98a5; --syntax-tag: #f07178; --syntax-attr: #ffcb6b; }
+    --syntax-keyword: #c792ea; --syntax-string: #c3e88d; --syntax-function: #82aaff; --syntax-number: #f78c6c; --syntax-comment: #7a98a5; --syntax-tag: #f07178; --syntax-attr: #ffcb6b; --syntax-variable: #89ddff; }
   .kw { color: var(--syntax-keyword); }
   .str { color: var(--syntax-string); }
   .fn { color: var(--syntax-function); }
@@ -152,6 +152,7 @@ ${css}
   .cmt { color: var(--syntax-comment); font-style: italic; }
   .tag { color: var(--syntax-tag); }
   .attr { color: var(--syntax-attr); }
+  .var { color: var(--syntax-variable); }
   article > p { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: 0; }
 </style>
 </head>

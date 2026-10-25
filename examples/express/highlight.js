@@ -81,9 +81,14 @@ export function looksLikeCss(code) {
  * selector, property, value — over a brace stack, so nested rules
  * (&:hover { … }) parse as selectors inside blocks, and a declaration's
  * property is told from a pseudo-class by what terminates the run.
- * Class mapping: elements/classes/pseudos' hosts → tag, property and
- * custom-property names → attr, pseudo-classes and at-rules → kw,
- * functions → fn, numbers with units and hex colours → num.
+ * Class mapping: elements/classes/pseudos' hosts → tag, property names
+ * → attr, pseudo-classes and at-rules → kw, functions → fn, numbers
+ * with units and hex colours → num. Custom properties get their own
+ * class (var) and BEM-aware segmentation, in definitions, in var()
+ * references, and in class selectors alike: the block segment takes
+ * the base class, a __element segment takes fn, and a trailing --state
+ * segment takes kw — so --button__icon-color--disabled reads as its
+ * grammar, not as one long name.
  */
 export function tokenizeCss(code) {
   const tokens = [];
@@ -119,6 +124,32 @@ export function tokenizeCss(code) {
     while (j < n && /[-\w]/.test(code[j])) j += 1;
     return j;
   };
+  // Push a BEM-grammar name in segments: the block part in baseCls, a
+  // __element part in fn, a trailing --state part in kw. `name` excludes
+  // its prefix ('--' or '.'); the caller pushes the first segment with
+  // the prefix attached.
+  const splitState = (seg) => {
+    const at = seg.lastIndexOf('--');
+    return at > 0 ? [seg.slice(0, at), seg.slice(at + 2)] : [seg, ''];
+  };
+  const pushSegmented = (name, prefix, baseCls) => {
+    let rest = name;
+    let element = '';
+    const elAt = rest.indexOf('__');
+    if (elAt !== -1) {
+      element = rest.slice(elAt + 2);
+      rest = rest.slice(0, elAt);
+    }
+    const [base, baseState] = splitState(rest);
+    push(baseCls, prefix + base);
+    if (element) {
+      const [el, elState] = splitState(element);
+      push('fn', `__${el}`);
+      if (elState) push('kw', `--${elState}`);
+    }
+    if (baseState) push('kw', `--${baseState}`);
+  };
+  const pushCustomProperty = (name) => pushSegmented(name.slice(2), '--', 'var');
   const readNumber = (from) => {
     let j = from;
     if (code[j] === '-' || code[j] === '+') j += 1;
@@ -215,7 +246,8 @@ export function tokenizeCss(code) {
       if (ch === '.' || ch === '#') {
         const j = readName(i + 1);
         if (j > i + 1) {
-          push('tag', code.slice(i, j));
+          if (ch === '.') pushSegmented(code.slice(i + 1, j), '.', 'tag');
+          else push('tag', code.slice(i, j));
           i = j;
           continue;
         }
@@ -279,7 +311,8 @@ export function tokenizeCss(code) {
         let k = j;
         while (k < n && /\s/.test(code[k])) k += 1;
         if (code[k] === ':' && (name.startsWith('--') || nextTerminator(k + 1) !== '{')) {
-          push('attr', name);
+          if (name.startsWith('--')) pushCustomProperty(name);
+          else push('attr', name);
           if (k > j) push(null, code.slice(j, k));
           push(null, ':');
           mode = 'value';
@@ -364,7 +397,7 @@ export function tokenizeCss(code) {
     if (/[A-Za-z-]/.test(ch)) {
       const j = readName(i);
       const word = code.slice(i, j);
-      if (word.startsWith('--')) push('attr', word);
+      if (word.startsWith('--')) pushCustomProperty(word);
       else if (code[j] === '(') push('fn', word);
       else push(null, word);
       i = j;
