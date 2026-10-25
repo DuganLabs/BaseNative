@@ -2270,16 +2270,16 @@
 
   /* -- Hero shared by /components and /showcase -- */
   [data-bn-page-hero],
-  [data-bn-showcase-header] {
-    margin-block-end: var(--bn-section-space, 12px);
+  [data-bn-showcase] > figure[variant="stacked"] {
+    --hero-margin: 0 0 var(--bn-section-space, 12px);
+    --hero__title-font-family: var(--font-family);
+    --hero__title-font-size: var(--font-size-hero);
+    --hero__title-font-weight: var(--font-weight-normal);
+    --hero__title-letter-spacing: var(--letter-spacing-tight);
+    --hero__title-margin: 0 0 var(--space-md);
 
-    & h2 {
-      font-family: var(--font-family);
+    & > figcaption > :is(h1, h2) {
       font-stretch: var(--font-serif);
-      font-size: var(--font-size-hero);
-      font-weight: var(--font-weight-normal);
-      letter-spacing: var(--letter-spacing-tight);
-      margin-block-end: var(--space-md);
 
       & em {
         font-style: normal;
@@ -2621,20 +2621,20 @@
     }
   }
 
-  [data-bn-component-hero] {
-    display: block;
-    margin-block: var(--space-lg) var(--space-xl);
-    background: none;
-    border: none;
-    padding: 0;
+  figure[variant="stacked"]:has(> figcaption > dl) {
+    --hero-background-color: transparent;
+    --hero-border-width: 0;
+    --hero-padding-block: 0;
+    --hero-padding-inline: 0;
+    --hero-margin: var(--space-lg) 0 var(--space-xl);
+    --hero__title-font-family: var(--font-family);
+    --hero__title-font-size: var(--font-size-hero);
+    --hero__title-font-weight: var(--font-weight-normal);
+    --hero__title-letter-spacing: var(--letter-spacing-tight);
+    --hero__title-margin: 0 0 var(--space-sm);
 
-    & h2 {
-      font-family: var(--font-family);
+    & > figcaption > :is(h1, h2) {
       font-stretch: var(--font-serif);
-      font-size: var(--font-size-hero);
-      font-weight: var(--font-weight-normal);
-      margin-block-end: var(--space-sm);
-      letter-spacing: var(--letter-spacing-tight);
     }
   }
 
@@ -2643,7 +2643,7 @@
      (the grouped-list pattern) instead of three airy grid cells that ate
      a third of the first screen; the grid returns when there is room
      for the columns to sit side by side. */
-  [data-bn-component-meta] {
+  figure[variant="stacked"] > figcaption > dl {
     display: flex;
     flex-direction: column;
     margin-block-start: var(--space-md);
@@ -3292,7 +3292,7 @@
       align-items: start;
     }
 
-    [data-bn-showcase] > [data-bn='bn-hero'],
+    [data-bn-showcase] > figure[variant="stacked"],
     [data-bn-showcase] > [data-bn-showcase-search] {
       grid-column: 1 / -1;
     }

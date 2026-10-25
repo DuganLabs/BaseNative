@@ -12,6 +12,7 @@ import {
   renderRoute,
   siteRoutes,
 } from '../examples/express/page.js';
+import { trinitySiteCss } from '../examples/express/trinity.js';
 import { flatComponents } from '../examples/express/component-catalog.js';
 import { staticTasks } from '../examples/express/site-data.js';
 import { buildSite } from '../packages/cli/src/lib/site-build.js';
@@ -143,8 +144,7 @@ cpSync(join(express, 'public', 'styles.css'), join(dist, 'styles.css'));
 cpSync(join(express, 'public', 'token-bridge.css'), join(dist, 'token-bridge.css'));
 cpSync(join(express, 'public', 'theme.css'), join(dist, 'theme.css'));
 cpSync(join(express, 'public', 'ios.css'), join(dist, 'ios.css'));
-cpSync(join(express, 'public', 'platform-shell.css'), join(dist, 'platform-shell.css'));
-cpSync(join(express, 'public', 'platform-shell.js'), join(dist, 'platform-shell.js'));
+cpSync(join(express, 'public', 'boot.js'), join(dist, 'boot.js'));
 cpSync(join(express, 'public', 'scrollspy.js'), join(dist, 'scrollspy.js'));
 cpSync(join(express, 'public', 'basenative.js'), join(dist, 'basenative.js'));
 cpSync(join(express, 'public', 'showcase.js'), join(dist, 'showcase.js'));
@@ -168,6 +168,7 @@ cpSync(join(express, 'public', 'avatar-eve.svg'), join(dist, 'avatar-eve.svg'));
 // Copy component CSS (served as /bn-css/ in Express, must exist in dist)
 const bnCssDir = join(dist, 'bn-css');
 mkdirSync(bnCssDir, { recursive: true });
+writeFileSync(join(bnCssDir, 'trinity.css'), trinitySiteCss());
 const componentSrc = join(root, 'packages', 'components', 'src');
 const componentCssFiles = [
   'index.css',

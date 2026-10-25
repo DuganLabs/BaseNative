@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { render } from '@basenative/server';
 import { escapeText, raw } from '@basenative/runtime/shared/escape';
 import { catalogBody } from '../../packages/platform/src/catalog.js';
-import { renderBnHero } from '../../packages/platform/src/components.js';
+import { renderTrinity, trinityChromeCss } from './trinity.js';
 import { renderBreadcrumb } from '../../packages/components/src/index.js';
 import { renderSiteChrome, renderSiteFooter } from './shell.js';
 import { highlightCodeBlocks } from './highlight.js';
@@ -60,8 +60,7 @@ function getAssetVersion() {
     'public/token-bridge.css',
     'public/ios.css',
     'public/theme.css',
-    'public/platform-shell.css',
-    'public/platform-shell.js',
+    'public/boot.js',
   ]) {
     try {
       hash.update(read(file));
@@ -70,7 +69,7 @@ function getAssetVersion() {
     }
   }
   try {
-    for (const dir of ['../../packages/components/src', '../../packages/platform/src']) {
+    for (const dir of ['../../packages/components/src']) {
       const cssDir = join(__dirname, dir);
       for (const name of readdirSync(cssDir)
         .filter((n) => n.endsWith('.css'))
@@ -88,13 +87,12 @@ function getAssetVersion() {
 /**
  * Shell CSS inlined into every page. Pages caches stylesheets for hours
  * and revalidates HTML immediately, so the window chrome cannot depend
- * on /platform-shell.css arriving fresh (the 2026-10-20 phone incident).
- * The sheet defines its own --bn-shell-* properties and gives every
- * --bn-plat-* reference a fallback, so a stale tokens.css cannot collapse
- * the grid or the tab bar clearance.
+ * on a linked sheet arriving fresh (the 2026-10-20 phone incident).
+ * The chrome is the catalog's now, so the critical block is the chrome
+ * components' own sheets, assembled by trinity.js.
  */
 function shellCriticalCss() {
-  return read('public/platform-shell.css').trim();
+  return trinityChromeCss();
 }
 
 export const SITE_URL = 'https://basenative.com';
@@ -141,10 +139,19 @@ export function renderPage(viewFile, ctx, opts) {
     .replace(/<!--OG_TITLE-->/g, escapeAttr(ogTitle))
     .replace(/<!--OG_URL-->/g, escapeAttr(SITE_URL + path))
     .replace('<!--APP_NAV_CSS-->', () => shellCriticalCss())
-    .replace('<!--APP_NAV-->', () => renderSiteChrome(activePage))
+    .replace('<!--APP_SHELL-->', () => {
+      const { sidebarHtml, appBarHtml } = renderSiteChrome(activePage);
+      return renderTrinity('app-shell', {
+        sidebarHtml,
+        appBarHtml,
+        mainId: 'main-content',
+        contentHtml:
+          '<output role="status" aria-live="polite" data-bn-visually-hidden></output>' +
+          content,
+      });
+    })
     .replace('<!--FOOTER-->', () => renderSiteFooter())
     .replaceAll('__ACTIVE__', escapeAttr(activePage))
-    .replace('<!--CONTENT-->', content)
     .replace('<!--SCRIPTS-->', scripts)
     .replace(/((?:href|src)=")(\/[^"]+\.(?:css|js))"/g, `$1$2?v=${version}"`)
     .replaceAll(`'/basenative.js'`, `'/basenative.js?v=${version}'`)
@@ -176,7 +183,7 @@ export const siteRoutes = [
       eyebrow: `Runtime ${ctx.runtimeVersion}`,
       titleHtml: 'Base<em>Native</em>',
       ledeHtml:
-        '<p data-bn="bn-hero-lede">Signals over semantic HTML. One <code>set()</code> settles derived computeds, then runs each affected effect once. The expression language is an allowlist. Install <code>@basenative/runtime</code> and <code>@basenative/server</code> from npmjs.org, with no token and no <code>.npmrc</code>.</p>',
+        '<p>Signals over semantic HTML. One <code>set()</code> settles derived computeds, then runs each affected effect once. The expression language is an allowlist. Install <code>@basenative/runtime</code> and <code>@basenative/server</code> from npmjs.org, with no token and no <code>.npmrc</code>.</p>',
       actions: [
         { label: 'Try the playground', href: '/playground' },
         { label: 'Read the docs', href: '/docs' },
@@ -210,7 +217,7 @@ export const siteRoutes = [
     hero: (site, ctx) => ({
       eyebrow: 'Component library',
       titleHtml: 'Semantic <em>by construction</em>',
-      ledeHtml: `<p data-bn="bn-hero-lede">${ctx.totalCount} components across ${ctx.categoryCount} categories. Every one is built on a real HTML element — <code>&lt;button&gt;</code>, <code>&lt;dialog&gt;</code>, <code>&lt;details&gt;</code>, <code>&lt;table&gt;</code> — with <code>data-bn-*</code> attributes for variants and zero CSS classes.</p>`,
+      ledeHtml: `<p>${ctx.totalCount} components across ${ctx.categoryCount} categories. Every one is built on a real HTML element — <code>&lt;button&gt;</code>, <code>&lt;dialog&gt;</code>, <code>&lt;details&gt;</code>, <code>&lt;table&gt;</code> — with <code>data-bn-*</code> attributes for variants and zero CSS classes.</p>`,
       actions: [
         { label: 'Read the API docs', href: '/docs' },
         { label: 'View live showcase', href: '/showcase' },
@@ -231,8 +238,8 @@ export const siteRoutes = [
       eyebrow: 'Docs',
       titleHtml: 'API <em>Reference</em>',
       ledeHtml:
-        '<p data-bn="bn-hero-lede">BaseNative currently exposes a small runtime/server surface and an intentionally constrained expression model. The goal in `v0.x` is correctness and trust, not arbitrary template execution.</p>' +
-        '<p data-bn="bn-hero-lede"><code>@basenative/*</code> publishes to <strong>npmjs.org</strong>: the release pipeline publishes there directly, using OIDC trusted publishing — no registry tokens and no <code>.npmrc</code> redirect. A plain <code>npm install @basenative/runtime</code> gets the current release line (<code>2.3.0</code>). The <code>0.2.x</code>/<code>0.3.x</code> builds are the old pre-1.0 line, not stale mirrors of current releases.</p>',
+        '<p>BaseNative currently exposes a small runtime/server surface and an intentionally constrained expression model. The goal in `v0.x` is correctness and trust, not arbitrary template execution.</p>' +
+        '<p><code>@basenative/*</code> publishes to <strong>npmjs.org</strong>: the release pipeline publishes there directly, using OIDC trusted publishing — no registry tokens and no <code>.npmrc</code> redirect. A plain <code>npm install @basenative/runtime</code> gets the current release line (<code>2.3.0</code>). The <code>0.2.x</code>/<code>0.3.x</code> builds are the old pre-1.0 line, not stale mirrors of current releases.</p>',
     },
   },
   {
@@ -297,7 +304,7 @@ export const siteRoutes = [
       eyebrow: 'Live gallery',
       titleHtml: 'Component <em>showcase</em>',
       ledeHtml:
-        '<p data-bn="bn-hero-lede">Every component, server-rendered and interactive. Each demo is a real <code>render*()</code> call from <code>@basenative/components</code> — no mockups, no screenshots, no virtual DOM.</p>',
+        '<p>Every component, server-rendered and interactive. Each demo is a real <code>render*()</code> call from <code>@basenative/components</code> — no mockups, no screenshots, no virtual DOM.</p>',
       actions: [
         { label: 'Browse the catalog', href: '/components' },
         { label: 'Open the playground', href: '/playground' },
@@ -375,7 +382,40 @@ export function renderRoute(route, site = {}) {
   // route's hero spec (data, or a function of the site state and the
   // route's own context) — no view hand-writes a <header> any more.
   const hero = typeof route.hero === 'function' ? route.hero(site, ctx) : route.hero;
-  return renderPage(route.view, hero ? { ...ctx, hero: raw(renderBnHero(hero)) } : ctx, route);
+  return renderPage(route.view, hero ? { ...ctx, hero: raw(renderHero(hero)) } : ctx, route);
+}
+
+/**
+ * Render a route's hero spec through the catalog's hero. The specs keep
+ * the shape they have always had (data, or a function of site state);
+ * the translation lives here: platform action variants map onto the
+ * catalog button's (prominent -> primary, bordered -> default), actions
+ * render as catalog buttons (links, since they carry hrefs), and the
+ * spec's `after` rides the hero's closing slot.
+ */
+function renderHero(spec) {
+  const { actions, label, heading, after, attrs, force, ...rest } = spec;
+  const actionsHtml = (actions ?? [])
+    .map((action, index) =>
+      renderTrinity('button', {
+        label: action.label,
+        href: action.href,
+        variant:
+          action.variant === 'prominent'
+            ? 'primary'
+            : action.variant === 'bordered'
+              ? 'default'
+              : (action.variant ?? (index === 0 ? 'primary' : 'default')),
+      }),
+    )
+    .join('');
+  return renderTrinity('hero', {
+    ...rest,
+    headingLevel: heading === 'h2' ? 'h2' : 'h1',
+    actionsHtml,
+    actionsLabel: label ?? 'Primary',
+    afterHtml: after ?? '',
+  });
 }
 
 /** Render /components/<slug>; returns null for a slug the catalog does not list. */
@@ -406,13 +446,12 @@ export function renderComponentPage(slug) {
     titleLead,
     titleAccent,
     hero: raw(
-      renderBnHero({
+      renderHero({
         eyebrow: component.categoryTitle,
         titleHtml: `${escapeText(titleLead)}<em>${escapeText(titleAccent)}</em>`,
         lede: component.summary,
-        attrs: 'data-bn-component-hero',
         after:
-          `<dl data-bn-component-meta>` +
+          `<dl>` +
           metaPair('Element', `&lt;${escapeText(component.tag)}&gt;`) +
           metaPair('Module', '@basenative/components') +
           metaPair('Function', escapeText(component.fn)) +
@@ -460,11 +499,10 @@ export function renderNotFoundPage() {
     'not-found.html',
     {
       hero: raw(
-        renderBnHero({
+        renderHero({
           eyebrow: '404',
           titleHtml: 'Page <em>not found</em>',
           lede: 'There is nothing at this address. The link may be out of date, or the URL may have a typo — every page on the site is reachable from the navigation.',
-          attrs: 'data-bn-not-found',
           actions: [
             { label: 'Back to home', href: '/' },
             { label: 'Browse components', href: '/components' },
