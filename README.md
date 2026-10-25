@@ -133,7 +133,6 @@ Read [docs/llm/START.md](docs/llm/START.md) first (deployed as `/llms-start.txt`
 | [`@basenative/router`](packages/router)                   | SSR-aware routing with params, wildcards, query helpers                                                                               |
 | [`@basenative/forms`](packages/forms)                     | Signal-based field state, validators, Zod adapter                                                                                     |
 | [`@basenative/components`](packages/components)           | 15 semantic UI components with design token theming                                                                                   |
-| [`@basenative/platform`](packages/platform)               | Apple 27 kit tokens and semantic controls for iOS, iPadOS, and macOS                                                                  |
 | [`@basenative/auth`](packages/auth)                       | Session management, RBAC, password hashing, OAuth providers                                                                           |
 | [`@basenative/db`](packages/db)                           | Query builder + SQLite/PostgreSQL/D1 adapters                                                                                         |
 | [`@basenative/hmr`](packages/hmr)                         | Dev-only hot module replacement — patches the DOM, keeps focus and caret                                                              |

@@ -512,3 +512,51 @@
     --material-thick-shadow: 0 16px 40px rgb(0 0 0 / 0.16);
   }
 }
+
+/* Builder tokens — declared here, in the components package's foundation
+   sheet, when @basenative/platform and @basenative/ios were deleted.
+   packages/builder's stylesheet references these names with a literal
+   fallback on every use, and the deleted sheets were never linked on the
+   site, so the fallbacks are the values that have always rendered; they
+   are declared at exactly those values (the site's own sheets reference
+   three of them with the same fallbacks), which keeps the token
+   constitution (ds-lint DS006) satisfied through this package's exports
+   without changing what anything renders. */
+:root {
+  --bn-brand: #e8920a;
+  --bn-brand-ink: #0c0b09;
+  --bn-brand-text: #9a5f05;
+  --bn-content-leading: 22px;
+  --bn-content-secondary: CanvasText;
+  --bn-content-size: 15px;
+  --bn-elev-2: 0 8px 24px rgba(0, 0, 0, 0.16);
+  --bn-glass-blur: 30px;
+  --bn-glass-rim: Canvas;
+  --bn-glass-saturate: 180%;
+  --bn-glass-sheen: none;
+  --bn-len-1: 1px;
+  --bn-len-2: 2px;
+  --bn-len-4: 4px;
+  --bn-len-6: 6px;
+  --bn-len-8: 8px;
+  --bn-len-12: 12px;
+  --bn-len-16: 16px;
+  --bn-len-32: 32px;
+  --bn-len-36: 36px;
+  --bn-len-44: 44px;
+  --bn-list-surface: Canvas;
+  --bn-plat-color-accents-green: #28c840;
+  --bn-plat-color-accents-orange: #febc2e;
+  --bn-plat-color-accents-red: #ff5f57;
+  --bn-plat-color-fills-tertiary: transparent;
+  --bn-plat-color-labels-primary: CanvasText;
+  --bn-plat-color-separator: GrayText;
+  --bn-plat-material-thick: transparent;
+  --bn-plat-radius-8: 8px;
+  --bn-plat-radius-10: 10px;
+  --bn-plat-radius-12: 12px;
+  --bn-plat-radius-1000: 999px;
+  --bn-stage-glow: none;
+  --bn-stage-paper: canvas;
+  --bn-type-13: 13px;
+}

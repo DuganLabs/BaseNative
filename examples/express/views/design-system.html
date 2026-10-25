@@ -1,2 +1,71 @@
 {{ hero }}
-<article data-bn-wallpaper="true">{{ catalog }}</article>
+
+<article data-bn-design-system>
+  <section>
+    <h2>One sheet, <em>{{ tokenCount }} tokens</em></h2>
+    <p>
+      Everything on this page is parsed from <code>packages/components/src/tokens.css</code> — the
+      sheet every page links and every component maps from. Primitives first, then the roles the
+      components actually consume; each role carries its light and dark values side by side.
+    </p>
+  </section>
+
+  <section>
+    <h2>Roles</h2>
+    <p>
+      {{ roleCount }} semantic roles — labels, backgrounds, fills, separators, and the status
+      colors. A component never names a primitive; it maps a role onto its own token and styles
+      with that.
+    </p>
+    {{ rolesTable }}
+  </section>
+
+  <section>
+    <h2>System colors</h2>
+    <p>The primitive palette the roles are built from.</p>
+    <ul role="list" data-bn-ds-swatches>
+      <template @for="c of systemColors; track c.name">
+        <li>
+          <!-- A colour swatch: a plain span, filled with the token it names. -->
+          <span style="background: {{ c.value }}" aria-hidden="true"></span>
+          <code>{{ c.name }}</code>
+          <!-- The token's value as a text run beside its name. -->
+          <span>{{ c.value }}</span>
+        </li>
+      </template>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Materials</h2>
+    <p>
+      Four glass grades, each the same five facets — blur, saturation, tint, highlight, and shadow —
+      so a surface can change grade without changing recipe.
+    </p>
+    {{ materialsTable }}
+  </section>
+
+  <section>
+    <h2>Type</h2>
+    <p>
+      Recipes, not sizes: each name fixes its size, leading, weight, and tracking together. The
+      families and weights they draw from follow the table.
+    </p>
+    {{ typeTable }}
+    <ul role="list" data-bn-ds-fonts>
+      <template @for="f of fonts; track f.name">
+        <!-- The family name and its stack as a text run. -->
+        <li><code>{{ f.name }}</code> <span>{{ f.value }}</span></li>
+      </template>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Scales</h2>
+    <p>The ladders components step along — space, radius, size, motion, and layer.</p>
+    <template @for="group of scaleTables; track group.title">
+      <h3>{{ group.title }}</h3>
+      {{ group.table }}
+    </template>
+  </section>
+</article>

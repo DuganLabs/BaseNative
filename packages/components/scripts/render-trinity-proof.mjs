@@ -372,11 +372,78 @@ const jobRating = R('rating', {
   legend: 'Rate this job', name: 'job-rating', starHtml: starSvg, value: 4,
 });
 
+const navIcon = (paths) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+const homeIcon = navIcon('<path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/>');
+const chartIcon = navIcon('<path d="M5 20V10"/><path d="M12 20V4"/><path d="M19 20v-7"/>');
+const gridIcon = navIcon('<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>');
+const bookIcon = navIcon('<path d="M12 6c-1.8-1.5-4-2-8-2v14c4 0 6.2.5 8 2 1.8-1.5 4-2 8-2V4c-4 0-6.2.5-8 2z"/><path d="M12 6v14"/>');
+const sparkIcon = navIcon('<path d="M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.4z"/>');
+const checkIcon = navIcon('<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/>');
+
+const chromeDestinations = [
+  { label: 'Home', href: '#home', iconHtml: homeIcon },
+  { label: 'Compare', href: '#compare', iconHtml: chartIcon },
+  { label: 'Components', href: '#components', iconHtml: gridIcon, current: true },
+  { label: 'Docs', href: '#docs', iconHtml: bookIcon },
+  { label: 'AI', href: '#ai', iconHtml: sparkIcon },
+  { label: 'Tasks', href: '#tasks', iconHtml: checkIcon },
+];
+
+const chromeSidebar = R('sidebar', {
+  label: 'Site',
+  sections: [
+    { label: 'Start', items: chromeDestinations.slice(0, 4) },
+    { label: 'Build', items: chromeDestinations.slice(4) },
+  ],
+});
+
+const chromeAppBar = R('app-bar', { items: chromeDestinations, barLimit: 4 });
+
+const chromeHero = R('hero', {
+  eyebrow: 'GreenPut',
+  title: 'The operating system for trade contractors',
+  lede: 'Lead to job to payment in one pipeline — priced flat per delivered lead, tracked from quote to paid.',
+  actionsHtml: R('button', { label: 'Start a quote', variant: 'primary' }) + R('button', { label: 'See how it works', variant: 'ghost' }),
+});
+
+const heroScene = '<svg viewBox="0 0 800 450" role="img" aria-label="Rooftops at sunset"><defs><linearGradient id="hero-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7b733"/><stop offset="1" stop-color="#e8920a"/></linearGradient></defs><rect width="800" height="450" fill="url(#hero-sky)"/><circle cx="620" cy="120" r="52" fill="#fff3d6"/><path d="M0 450 L300 250 L520 450 Z" fill="#3a2c14"/><path d="M380 450 L610 290 L800 450 Z" fill="#2a200e"/></svg>';
+
+const chromeHeroOverlay = R('hero', {
+  variant: 'overlay',
+  title: 'Every job, one pipeline',
+  lede: 'The caption rides the media on glass — eyebrow, title, lede and actions are the figcaption.',
+  mediaHtml: heroScene,
+  actionsHtml: R('button', { label: 'Start a quote', variant: 'primary' }),
+});
+
+const chromeHeroSplit = R('hero', {
+  variant: 'split',
+  headingLevel: 'h2',
+  eyebrow: 'Field notes',
+  title: 'Quoted right, the first time',
+  lede: 'Qualification so complete the quote is effectively the invoice.',
+  mediaHtml: heroScene,
+});
+
+const chromeFooter = R('site-footer', {
+  groups: [
+    { label: 'Product', links: [{ label: 'Components', href: '#components' }, { label: 'Docs', href: '#docs' }, { label: 'Playground', href: '#playground' }] },
+    { label: 'Project', links: [{ label: 'Roadmap', href: '#roadmap' }, { label: 'Tasks', href: '#tasks' }] },
+  ],
+  noteHtml: '<p>GreenPut — built on BaseNative.</p>',
+});
+
+const chromeShell = R('app-shell', {
+  sidebarHtml: chromeSidebar,
+  appBarHtml: chromeAppBar,
+  contentHtml: chromeHero,
+});
+
 const reopenArchive = R('button', { label: 'Reopen the dialog', variant: 'ghost' }).replace('<button', '<button id="reopen-archive" hidden');
 const reopenDelete = R('button', { label: 'Reopen the dialog', variant: 'ghost' }).replace('<button', '<button id="reopen-delete" hidden');
 const reopenDrawer = R('button', { label: 'Reopen the drawer', variant: 'ghost' }).replace('<button', '<button id="reopen-drawer" hidden');
 
-const css = await assembleStyles(registry, ['button', 'input', 'field', 'dialog', 'badge', 'checkbox', 'toggle', 'radio', 'textarea', 'select', 'alert', 'progress', 'card', 'choice-group', 'avatar', 'accordion', 'breadcrumb', 'pagination', 'list-group', 'combobox', 'multiselect', 'drawer', 'dropdown-menu', 'command-palette', 'tooltip', 'toast', 'table', 'datagrid', 'tree', 'virtualizer', 'calendar', 'pipeline', 'theme-toggle', 'form', 'search-field', 'segmented-control', 'stepper', 'tabs', 'empty-state', 'toolbar', 'rating']);
+const css = await assembleStyles(registry, ['button', 'input', 'field', 'dialog', 'badge', 'checkbox', 'toggle', 'radio', 'textarea', 'select', 'alert', 'progress', 'card', 'choice-group', 'avatar', 'accordion', 'breadcrumb', 'pagination', 'list-group', 'combobox', 'multiselect', 'drawer', 'dropdown-menu', 'command-palette', 'tooltip', 'toast', 'table', 'datagrid', 'tree', 'virtualizer', 'calendar', 'pipeline', 'theme-toggle', 'form', 'search-field', 'segmented-control', 'stepper', 'tabs', 'empty-state', 'toolbar', 'rating', 'hero', 'sidebar', 'app-bar', 'site-footer', 'app-shell']);
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const buttonHtml = await readFile(new URL('../src/button/index.html', import.meta.url), 'utf8');
 const buttonCss = await readFile(new URL('../src/button/styles.css', import.meta.url), 'utf8');
@@ -433,7 +500,7 @@ ${css}
 <main>
   <section>
     <h1>Holy Trinity pilot — rendered proof</h1>
-    <p class="note">The full catalog — thirty-one components and ten composites (choice-group, theme-toggle, form, search-field, segmented-control, stepper, tabs, empty-state, toolbar, rating) — each a directory of index.html / styles.css / index.js, rendered server-side through @basenative/server. Every style below comes from global tokens — the component sheets declare no values of their own. The theme toggle at the top of this page is live: it stamps the document and the token sheet answers in system, light, or dark. So is everything else that looks interactive — dismiss the alerts and toasts, submit the form, switch the tabs, drive the stepper, open the toolbar menu, rate the job.</p>
+    <p class="note">The full catalog — thirty-five components and eleven composites (choice-group, theme-toggle, form, search-field, segmented-control, stepper, tabs, empty-state, toolbar, rating, app-shell) — each a directory of index.html / styles.css / index.js, rendered server-side through @basenative/server. Every style below comes from global tokens — the component sheets declare no values of their own. The theme toggle at the top of this page is live: it stamps the document and the token sheet answers in system, light, or dark. So is everything else that looks interactive — dismiss the alerts and toasts, submit the form, switch the tabs, drive the stepper, open the toolbar menu, rate the job.</p>
     ${themeToggle}
   </section>
 
@@ -556,6 +623,23 @@ ${css}
       <p class="note" id="search-status">Showing every lead.</p>
     </article>
     <p class="note">The control the combobox and the palette used to take as caller-rendered HTML, owned by one composite — label, input, a clear button that exists exactly while the field holds text, and the app's submit button. Search (or press Enter) and it reports the query; clear it and it reports that.</p>
+  </section>
+
+  <section>
+    <h2>Site chrome — hero, sidebar, app bar, app shell, site footer</h2>
+    <p class="note">The five additions that let a whole site draw every line of its markup from this one package. The hero is a figure: its media is the content, its eyebrow, title, lede and actions the figcaption — stacked below, split beside, or riding the media on glass. The sidebar and the app bar are the same destinations in desktop and phone form; the app shell composes them around the page's one main. On a phone the app bar below is live at the bottom of this page, More menu and all.</p>
+    <article>
+      ${chromeShell}
+    </article>
+    <article>
+      ${chromeHeroOverlay}
+    </article>
+    <article>
+      ${chromeHeroSplit}
+    </article>
+    <article>
+      ${chromeFooter}
+    </article>
   </section>
 
   <section>

@@ -1,0 +1,25 @@
+<template>
+  <aside :variant="variant()">
+    <nav :aria-label="label()">
+      <template @for="section of sections()">
+        <section>
+          <template @if="section.label">
+            <h2>{{ section.label }}</h2>
+          </template>
+          <ul>
+            <template @for="item of section.items">
+              <li>
+                <a :href="item.href" :aria-current="item.ariaCurrent">
+                  <template @if="item.iconHtml">
+                    {{ raw(item.iconHtml) }}
+                  </template>
+                  {{ item.label }}
+                </a>
+              </li>
+            </template>
+          </ul>
+        </section>
+      </template>
+    </nav>
+  </aside>
+</template>

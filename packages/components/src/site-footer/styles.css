@@ -1,0 +1,97 @@
+:root {
+  --site-footer-display: var(--display-flex);
+  --site-footer-text-align: var(--text-align-start);
+  --site-footer-flex-wrap: var(--flex-wrap-wrap);
+  --site-footer-gap: var(--space-8);
+  --site-footer-border-block-start-width: var(--hairline);
+  --site-footer-border-block-start-style: var(--border-style-solid);
+  --site-footer-border-block-start-color: var(--separator);
+  --site-footer-padding-block: var(--space-8);
+  --site-footer-padding-inline: var(--space-6);
+  --site-footer__column-display: var(--display-grid);
+  --site-footer__column-gap: var(--space-3);
+  --site-footer__heading-color: var(--label);
+  --site-footer__heading-font-family: var(--text-subheadline-family);
+  --site-footer__heading-font-size: var(--text-subheadline-size);
+  --site-footer__heading-font-weight: var(--font-weight-semibold);
+  --site-footer__heading-line-height: var(--text-subheadline-leading);
+  --site-footer__heading-letter-spacing: var(--text-subheadline-tracking);
+  --site-footer__heading-margin: var(--space-0);
+  --site-footer__list-display: var(--display-grid);
+  --site-footer__list-gap: var(--space-2);
+  --site-footer__list-list-style: var(--list-style-none);
+  --site-footer__list-margin: var(--space-0);
+  --site-footer__list-padding: var(--space-0);
+  --site-footer__link-color: var(--label-2);
+  --site-footer__link-font-family: var(--text-callout-family);
+  --site-footer__link-font-size: var(--text-callout-size);
+  --site-footer__link-font-weight: var(--text-callout-weight);
+  --site-footer__link-line-height: var(--text-callout-leading);
+  --site-footer__link-letter-spacing: var(--text-callout-tracking);
+  --site-footer__link-text-decoration: var(--text-decoration-none);
+  --site-footer__link-color--hover: var(--label);
+  --site-footer__note-flex-basis: var(--size-full);
+  --site-footer__note-color: var(--label-3);
+  --site-footer__note-font-family: var(--text-footnote-family);
+  --site-footer__note-font-size: var(--text-footnote-size);
+  --site-footer__note-line-height: var(--text-footnote-leading);
+  --site-footer__note-letter-spacing: var(--text-footnote-tracking);
+}
+
+footer[variant="default"] {
+  display: var(--site-footer-display);
+  text-align: var(--site-footer-text-align);
+  flex-wrap: var(--site-footer-flex-wrap);
+  gap: var(--site-footer-gap);
+  border-block-start-width: var(--site-footer-border-block-start-width);
+  border-block-start-style: var(--site-footer-border-block-start-style);
+  border-block-start-color: var(--site-footer-border-block-start-color);
+  padding-block: var(--site-footer-padding-block);
+  padding-inline: var(--site-footer-padding-inline);
+
+  & > nav {
+    display: var(--site-footer__column-display);
+    gap: var(--site-footer__column-gap);
+
+    & > p {
+      color: var(--site-footer__heading-color);
+      font-family: var(--site-footer__heading-font-family);
+      font-size: var(--site-footer__heading-font-size);
+      font-weight: var(--site-footer__heading-font-weight);
+      line-height: var(--site-footer__heading-line-height);
+      letter-spacing: var(--site-footer__heading-letter-spacing);
+      margin: var(--site-footer__heading-margin);
+    }
+
+    & > ul {
+      display: var(--site-footer__list-display);
+      gap: var(--site-footer__list-gap);
+      list-style: var(--site-footer__list-list-style);
+      margin: var(--site-footer__list-margin);
+      padding: var(--site-footer__list-padding);
+
+      & > li > a {
+        color: var(--site-footer__link-color);
+        font-family: var(--site-footer__link-font-family);
+        font-size: var(--site-footer__link-font-size);
+        font-weight: var(--site-footer__link-font-weight);
+        line-height: var(--site-footer__link-line-height);
+        letter-spacing: var(--site-footer__link-letter-spacing);
+        text-decoration: var(--site-footer__link-text-decoration);
+
+        &:hover {
+          color: var(--site-footer__link-color--hover);
+        }
+      }
+    }
+  }
+
+  & > p {
+    flex-basis: var(--site-footer__note-flex-basis);
+    color: var(--site-footer__note-color);
+    font-family: var(--site-footer__note-font-family);
+    font-size: var(--site-footer__note-font-size);
+    line-height: var(--site-footer__note-line-height);
+    letter-spacing: var(--site-footer__note-letter-spacing);
+  }
+}

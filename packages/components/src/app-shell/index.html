@@ -1,0 +1,7 @@
+<template>
+  {{ raw(sidebarHtml()) }}
+  <main :variant="variant()" :id="mainId()">
+    {{ raw(contentHtml()) }}
+  </main>
+  {{ raw(appBarHtml()) }}
+</template>

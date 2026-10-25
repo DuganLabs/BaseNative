@@ -1,14 +1,16 @@
-/* ios.css — the site's iOS adoption layer.
+/* ios.css — the site's design-language layer.
  *
- * basenative.com renders in the iOS design language by consuming the
- * real @basenative/ios tokens (served from /bn-ios/tokens.css, loaded
- * before this sheet): this file is the bridge that points the site's
- * semantic tokens and the component catalog's core tokens at the iOS
- * values, then applies the platform's surface grammar — grouped
- * surfaces, the Dynamic Type hierarchy with the large-title pattern,
- * semantic label colors, and Liquid Glass on the app nav through the
- * catalog's --bn-material-* tokens. Nothing here invents a value the
- * token package owns; where a choice had to be made it is noted.
+ * basenative.com renders in the Holy Trinity design system: this file
+ * points the site's semantic tokens and the legacy catalog's core
+ * tokens at the roles in @basenative/components tokens.css (the
+ * foundation sheet, linked before theme.css), then applies the
+ * system's surface grammar — grouped surfaces, the Dynamic Type
+ * hierarchy with the large-title pattern, semantic label colors, and
+ * Liquid Glass materials on the app nav. It once bridged to
+ * @basenative/ios directly; the trinity sheet carries the same Apple
+ * values as roles, so the bridge was folded onto it and the separate
+ * ios sheet is no longer loaded. Nothing here invents a value the
+ * foundation owns; where a choice had to be made it is noted.
  *
  * Lives in @layer components, after styles.css has ordered the layers.
  * The Apple 27 shell sheet loads later in the same layer and wins the
@@ -26,37 +28,35 @@
   --font-mono: normal;
 
   /* Type scale — the site scale re-pointed at the Dynamic Type ladder. */
-  --font-size-xs: var(--bn-ios-font-caption-1-size);
-  --font-size-sm: var(--bn-ios-font-footnote-size);
-  --font-size-base: var(--bn-ios-font-body-size);
-  --font-size-lg: var(--bn-ios-font-title-3-size);
-  --font-size-xl: var(--bn-ios-font-title-2-size);
-  --font-size-hero: var(--bn-ios-font-large-title-size);
+  --font-size-xs: var(--text-caption-1-size);
+  --font-size-sm: var(--text-footnote-size);
+  --font-size-base: var(--text-body-size);
+  --font-size-lg: var(--text-title-3-size);
+  --font-size-xl: var(--text-title-2-size);
+  --font-size-hero: var(--text-large-title-size);
 
   /* Radii — the site ladder re-pointed at the iOS ladder. */
-  --radius-sm: var(--bn-ios-radius-sm);
-  --radius-md: var(--bn-ios-radius-lg);
-  --radius-lg: var(--bn-ios-radius-xl);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-lg);
+  --radius-lg: var(--radius-xl);
 
   /* Surfaces & ink — the site tokens, from the iOS semantic colors.
      The site is dark-only (data-theme="dark"), so these resolve to the
      package's dark values. */
-  --surface-0: var(--bn-ios-color-bg-grouped);
-  --surface-1: var(--bn-ios-color-bg-grouped-secondary);
-  --surface-2: var(--bn-ios-color-bg-grouped-tertiary);
-  --surface-3: var(--bn-ios-color-gray-4);
-  --text-0: var(--bn-ios-color-label);
-  --text-1: var(--bn-ios-color-label-secondary);
-  --text-2: var(--bn-ios-color-label-tertiary);
-  --accent: var(--bn-ios-color-orange);
-  --accent-strong: var(--bn-ios-color-orange);
+  --surface-0: var(--background-grouped);
+  --surface-1: var(--background-grouped-2);
+  --surface-2: var(--background-grouped-3);
+  --surface-3: var(--system-gray-4);
+  --text-0: var(--label);
+  --text-1: var(--label-2);
+  --text-2: var(--label-3);
+  --accent: var(--tint);
+  --accent-strong: var(--tint);
   --accent-dim: rgb(255 159 10 / 0.16);
-  --border: var(--bn-ios-color-separator);
-  --border-strong: var(--bn-ios-color-separator-opaque);
-  --border-accent: var(--bn-ios-color-separator-opaque);
-  --focus: var(--bn-ios-color-orange);
-  --danger: var(--bn-ios-color-red);
-  --success: var(--bn-ios-color-green);
+  --border: var(--separator);
+  --border-strong: var(--separator-opaque);
+  --border-accent: var(--separator-opaque);
+  --focus: var(--tint);
   /* Grouped surfaces sit flat on the grouped background; no lift. */
   --shadow-card: none;
   --shadow-btn: none;
@@ -64,42 +64,45 @@
   /* The same re-pointing for the core tokens the component catalog
      reads, so catalog components (buttons, the grouped list, the app
      nav itself) land in the same language. */
-  --bn-color-surface: var(--bn-ios-color-bg-grouped);
-  --bn-color-surface-card: var(--bn-ios-color-bg-grouped-secondary);
-  --bn-color-surface-raised: var(--bn-ios-color-bg-grouped-secondary);
-  --bn-color-surface-muted: var(--bn-ios-color-bg-grouped-tertiary);
-  --bn-color-surface-inset: var(--bn-ios-color-bg-grouped);
-  --bn-color-surface-control: var(--bn-ios-color-bg-grouped-tertiary);
-  --bn-color-text: var(--bn-ios-color-label);
-  --bn-color-text-muted: var(--bn-ios-color-label-secondary);
-  --bn-color-text-subtle: var(--bn-ios-color-label-tertiary);
-  --bn-color-border: var(--bn-ios-color-separator);
-  --bn-color-border-strong: var(--bn-ios-color-separator-opaque);
-  --bn-color-border-focus: var(--bn-ios-color-orange);
-  --bn-color-text-link: var(--bn-ios-color-orange);
-  --bn-color-primary-600: var(--bn-ios-color-orange);
-  --bn-radius-container: var(--bn-ios-radius-xl);
-  --bn-radius-modal: var(--bn-ios-radius-2xl);
+  --bn-color-surface: var(--background-grouped);
+  --bn-color-surface-card: var(--background-grouped-2);
+  --bn-color-surface-raised: var(--background-grouped-2);
+  --bn-color-surface-muted: var(--background-grouped-3);
+  --bn-color-surface-inset: var(--background-grouped);
+  --bn-color-surface-control: var(--background-grouped-3);
+  --bn-color-text: var(--label);
+  --bn-color-text-muted: var(--label-2);
+  --bn-color-text-subtle: var(--label-3);
+  --bn-color-border: var(--separator);
+  --bn-color-border-strong: var(--separator-opaque);
+  --bn-color-border-focus: var(--tint);
+  --bn-color-text-link: var(--tint);
+  --bn-color-primary-600: var(--tint);
+  --bn-radius-container: var(--radius-container);
+  --bn-radius-modal: var(--radius-sheet);
 
   /* Liquid Glass for the app nav (bar, rail and More sheet): the
      catalog's material tokens pointed at the package's regular glass —
      tint, backdrop and the composed highlight-plus-shadow. */
-  --bn-material-bg: var(--bn-ios-glass-regular-tint);
-  --bn-material-backdrop: var(--bn-ios-glass-regular-backdrop);
+  --bn-material-bg: var(--material-regular-tint);
+  --bn-material-backdrop: blur(var(--material-regular-blur)) saturate(var(--material-regular-saturate));
   --bn-material-shadow:
-    var(--bn-ios-glass-regular-highlight), var(--bn-ios-glass-regular-shadow);
+    var(--material-regular-highlight), var(--material-regular-shadow);
 }
 
 /* ── Base ─────────────────────────────────────────────────────────── */
 html {
-  background: var(--bn-ios-color-bg-grouped);
+  background: var(--background-grouped);
 }
 
 body {
-  background: var(--bn-ios-color-bg-grouped);
-  color: var(--bn-ios-color-label);
-  font: var(--bn-ios-font-body);
-  letter-spacing: var(--bn-ios-font-body-tracking);
+  background: var(--background-grouped);
+  color: var(--label);
+  font-family: var(--text-body-family);
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-leading);
+  font-weight: var(--text-body-weight);
+  letter-spacing: var(--text-body-tracking);
 }
 
 /* An ambient warm glow at the top of the page: depth for the eye, and
@@ -130,47 +133,65 @@ body::before {
 [data-hero] > h2,
 [data-bn-page-hero] h2,
 main > section:first-of-type > h2 {
-  font: var(--bn-ios-font-large-title);
+  font-family: var(--text-large-title-family);
+  font-size: var(--text-large-title-size);
+  line-height: var(--text-large-title-leading);
+  font-weight: var(--text-large-title-weight);
   font-weight: 700;
-  letter-spacing: var(--bn-ios-font-large-title-tracking);
+  letter-spacing: var(--text-large-title-tracking);
 }
 
 section > h2 {
-  font: var(--bn-ios-font-title-1);
+  font-family: var(--text-title-1-family);
+  font-size: var(--text-title-1-size);
+  line-height: var(--text-title-1-leading);
+  font-weight: var(--text-title-1-weight);
   font-weight: 700;
-  letter-spacing: var(--bn-ios-font-title-1-tracking);
+  letter-spacing: var(--text-title-1-tracking);
 }
 
 h3 {
-  font: var(--bn-ios-font-title-3);
-  letter-spacing: var(--bn-ios-font-title-3-tracking);
+  font-family: var(--text-title-3-family);
+  font-size: var(--text-title-3-size);
+  line-height: var(--text-title-3-leading);
+  font-weight: var(--text-title-3-weight);
+  letter-spacing: var(--text-title-3-tracking);
 }
 
 /* Heading emphasis is the tint word, never italics. */
 h2 em,
 h3 em {
   font-style: normal;
-  color: var(--bn-ios-color-orange);
+  color: var(--tint);
 }
 
 /* Section intros read as secondary body copy, not display type. */
 section > p {
-  font: var(--bn-ios-font-body);
-  letter-spacing: var(--bn-ios-font-body-tracking);
-  color: var(--bn-ios-color-label-secondary);
+  font-family: var(--text-body-family);
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-leading);
+  font-weight: var(--text-body-weight);
+  letter-spacing: var(--text-body-tracking);
+  color: var(--label-2);
 }
 
 [data-bn-lede] {
-  font: var(--bn-ios-font-title-3);
-  letter-spacing: var(--bn-ios-font-title-3-tracking);
-  color: var(--bn-ios-color-label-secondary);
+  font-family: var(--text-title-3-family);
+  font-size: var(--text-title-3-size);
+  line-height: var(--text-title-3-leading);
+  font-weight: var(--text-title-3-weight);
+  letter-spacing: var(--text-title-3-tracking);
+  color: var(--label-2);
 }
 
 [data-bn-eyebrow] {
-  font: var(--bn-ios-font-caption-1);
+  font-family: var(--text-caption-1-family);
+  font-size: var(--text-caption-1-size);
+  line-height: var(--text-caption-1-leading);
+  font-weight: var(--text-caption-1-weight);
   font-weight: 600;
   letter-spacing: 0.06em;
-  color: var(--bn-ios-color-label-secondary);
+  color: var(--label-2);
 }
 
 /* ── Grouped surfaces ─────────────────────────────────────────────── */
@@ -178,10 +199,10 @@ section > p {
    secondary surface, iOS corner radius, no border (the surface step
    does the separating on black). */
 main > section {
-  background: var(--bn-ios-color-bg-grouped-secondary);
+  background: var(--background-grouped-2);
   border: none;
-  border-radius: var(--bn-ios-radius-2xl);
-  padding: var(--bn-ios-space-5);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-5);
   margin-block-end: var(--bn-section-space, 12px);
 }
 
@@ -191,7 +212,7 @@ main > section[data-hero],
 main > section[data-bn-page-hero] {
   background: transparent;
   border-radius: 0;
-  padding-inline: var(--bn-ios-space-5);
+  padding-inline: var(--space-5);
   text-align: start;
 }
 [data-hero] nav {
@@ -210,9 +231,12 @@ article[data-bn-showcase] {
   padding: 0;
 }
 [data-bn-showcase-header] h2 {
-  font: var(--bn-ios-font-large-title);
+  font-family: var(--text-large-title-family);
+  font-size: var(--text-large-title-size);
+  line-height: var(--text-large-title-leading);
+  font-weight: var(--text-large-title-weight);
   font-weight: 700;
-  letter-spacing: var(--bn-ios-font-large-title-tracking);
+  letter-spacing: var(--text-large-title-tracking);
 }
 
 /* A section whose children are cards of their own (docs entries, code
@@ -223,10 +247,10 @@ main > section:has(> article) {
   padding: 0;
 }
 article {
-  background: var(--bn-ios-color-bg-grouped-secondary);
+  background: var(--background-grouped-2);
   border: none;
-  border-radius: var(--bn-ios-radius-2xl);
-  padding: var(--bn-ios-space-5);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-5);
 }
 article:hover {
   border-color: transparent;
@@ -240,11 +264,11 @@ article:hover {
 @media (max-width: 48rem) {
   article,
   main > section {
-    padding: var(--bn-ios-space-4);
+    padding: var(--space-4);
   }
   main > section[data-hero],
   main > section[data-bn-page-hero] {
-    padding-inline: var(--bn-ios-space-4);
+    padding-inline: var(--space-4);
   }
 }
 
@@ -254,20 +278,26 @@ main > section[data-stats] {
   padding: 0;
 }
 ul[role='list'][data-stat-grid] > li {
-  background: var(--bn-ios-color-bg-grouped-secondary);
+  background: var(--background-grouped-2);
   border: none;
-  border-radius: var(--bn-ios-radius-xl);
+  border-radius: var(--radius-xl);
 }
 ul[role='list'][data-stat-grid] strong {
-  font: var(--bn-ios-font-title-2);
+  font-family: var(--text-title-2-family);
+  font-size: var(--text-title-2-size);
+  line-height: var(--text-title-2-leading);
+  font-weight: var(--text-title-2-weight);
   font-weight: 700;
-  color: var(--bn-ios-color-label);
+  color: var(--label);
   overflow-wrap: normal;
 }
 ul[role='list'][data-stat-grid] span {
-  font: var(--bn-ios-font-caption-1);
+  font-family: var(--text-caption-1-family);
+  font-size: var(--text-caption-1-size);
+  line-height: var(--text-caption-1-leading);
+  font-weight: var(--text-caption-1-weight);
   letter-spacing: 0.05em;
-  color: var(--bn-ios-color-label-secondary);
+  color: var(--label-2);
 }
 
 /* Plain lists inside a grouped card become grouped rows: hairline
@@ -280,35 +310,41 @@ section ul[role='list']:not([data-stat-grid]) > li {
   border: none;
   border-radius: 0;
   box-shadow: none;
-  padding-block: var(--bn-ios-space-3);
-  border-block-start: 1px solid var(--bn-ios-color-separator);
+  padding-block: var(--space-3);
+  border-block-start: 1px solid var(--separator);
 }
 section ul[role='list']:not([data-stat-grid]) > li:first-child {
   border-block-start: none;
   padding-block-start: 0;
 }
 section ul[role='list'] > li > time {
-  font: var(--bn-ios-font-footnote);
-  color: var(--bn-ios-color-label-tertiary);
+  font-family: var(--text-footnote-family);
+  font-size: var(--text-footnote-size);
+  line-height: var(--text-footnote-leading);
+  font-weight: var(--text-footnote-weight);
+  color: var(--label-3);
 }
 
 /* Status chips: neutral pills in the fill color, footnote ink. */
 mark[data-status] {
-  background: var(--bn-ios-color-fill-tertiary);
-  color: var(--bn-ios-color-label);
-  font: var(--bn-ios-font-footnote);
+  background: var(--fill-3);
+  color: var(--label);
+  font-family: var(--text-footnote-family);
+  font-size: var(--text-footnote-size);
+  line-height: var(--text-footnote-leading);
+  font-weight: var(--text-footnote-weight);
   padding: 0.125rem 0.5rem;
-  border-radius: var(--bn-ios-radius-pill);
+  border-radius: var(--radius-pill);
 }
 
 /* ── Code ─────────────────────────────────────────────────────────── */
 pre {
-  background: var(--bn-ios-color-bg-grouped-tertiary);
+  background: var(--background-grouped-3);
   border: none;
-  border-radius: var(--bn-ios-radius-xl);
+  border-radius: var(--radius-xl);
   font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
-  font-size: var(--bn-ios-font-footnote-size);
-  line-height: var(--bn-ios-font-footnote-leading);
+  font-size: var(--text-footnote-size);
+  line-height: var(--text-footnote-leading);
   /* This sheet re-declares pre last, so the scroll guarantee is stated
      here too: a long line scrolls inside the block, it never pushes
      the block past the card edge and clips. */
@@ -321,35 +357,38 @@ code {
 p code,
 li code,
 td code {
-  background: var(--bn-ios-color-fill-tertiary);
-  color: var(--bn-ios-color-label);
-  border-radius: var(--bn-ios-radius-xs);
+  background: var(--fill-3);
+  color: var(--label);
+  border-radius: var(--radius-xs);
 }
 /* Docs article headers are API signatures: mono, label ink, headline
    size — a card's title line, not a display heading. */
 article > header h3 {
   font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
-  font-size: var(--bn-ios-font-headline-size);
+  font-size: var(--text-headline-size);
   font-weight: 600;
   letter-spacing: 0;
-  color: var(--bn-ios-color-label);
+  color: var(--label);
 }
 
 /* ── Tables: grouped rows under a caption-style header ────────────── */
-table:not([data-bn]) th {
-  font: var(--bn-ios-font-caption-1);
+table:not([data-bn]):not([variant]) th {
+  font-family: var(--text-caption-1-family);
+  font-size: var(--text-caption-1-size);
+  line-height: var(--text-caption-1-leading);
+  font-weight: var(--text-caption-1-weight);
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--bn-ios-color-label-secondary);
+  color: var(--label-2);
 }
-table:not([data-bn]) th,
-table:not([data-bn]) td {
-  border-color: var(--bn-ios-color-separator);
-  padding: var(--bn-ios-space-3);
+table:not([data-bn]):not([variant]) th,
+table:not([data-bn]):not([variant]) td {
+  border-color: var(--separator);
+  padding: var(--space-3);
 }
 [data-bn-table-scroll] {
-  border-radius: var(--bn-ios-radius-lg);
+  border-radius: var(--radius-lg);
 }
 
 /* ── Controls ─────────────────────────────────────────────────────── */
@@ -359,83 +398,95 @@ table:not([data-bn]) td {
    an input in a controls row. Plain content buttons sit in the
    neutral fill; toggles fill when pressed; destructive actions take
    the red tint. */
-button:not([data-bn]) {
-  font: var(--bn-ios-font-headline);
-  letter-spacing: var(--bn-ios-font-headline-tracking);
-  background: var(--bn-ios-color-fill-tertiary);
-  color: var(--bn-ios-color-label);
+button:not([data-bn]):not([variant]) {
+  font-family: var(--text-headline-family);
+  font-size: var(--text-headline-size);
+  line-height: var(--text-headline-leading);
+  font-weight: var(--text-headline-weight);
+  letter-spacing: var(--text-headline-tracking);
+  background: var(--fill-3);
+  color: var(--label);
   border: none;
-  border-radius: var(--bn-ios-radius-pill);
-  padding: var(--bn-ios-space-3) var(--bn-ios-space-5);
+  border-radius: var(--radius-pill);
+  padding: var(--space-3) var(--space-5);
 }
-button:not([data-bn]):hover {
-  background: var(--bn-ios-color-fill-secondary);
-  color: var(--bn-ios-color-label);
+button:not([data-bn]):not([variant]):hover {
+  background: var(--fill-2);
+  color: var(--label);
 }
 a[role='button'],
-nav[data-controls]:has(> input) > button:not([data-bn]) {
-  font: var(--bn-ios-font-headline);
-  letter-spacing: var(--bn-ios-font-headline-tracking);
-  background: var(--bn-ios-color-orange);
+nav[data-controls]:has(> input) > button:not([data-bn]):not([variant]) {
+  font-family: var(--text-headline-family);
+  font-size: var(--text-headline-size);
+  line-height: var(--text-headline-leading);
+  font-weight: var(--text-headline-weight);
+  letter-spacing: var(--text-headline-tracking);
+  background: var(--tint);
   color: #000;
   border: none;
-  border-radius: var(--bn-ios-radius-pill);
-  padding: var(--bn-ios-space-3) var(--bn-ios-space-5);
+  border-radius: var(--radius-pill);
+  padding: var(--space-3) var(--space-5);
 }
 a[role='button']:hover,
-nav[data-controls]:has(> input) > button:not([data-bn]):hover {
-  background: var(--bn-ios-color-orange);
+nav[data-controls]:has(> input) > button:not([data-bn]):not([variant]):hover {
+  background: var(--tint);
   color: #000;
   opacity: 0.85;
 }
-button[aria-pressed='true']:not([data-bn]) {
-  background: var(--bn-ios-color-orange);
+button[aria-pressed='true']:not([data-bn]):not([variant]) {
+  background: var(--tint);
   color: #000;
 }
-button[data-variant='danger']:not([data-bn]) {
+button[data-variant='danger']:not([data-bn]):not([variant]) {
   background: rgb(255 69 58 / 0.16);
   color: var(--bn-danger-label, #9d1c1c);
 }
-button[data-variant='danger']:not([data-bn]):hover {
+button[data-variant='danger']:not([data-bn]):not([variant]):hover {
   background: rgb(255 69 58 / 0.24);
   color: var(--bn-danger-label, #9d1c1c);
 }
 /* Kit red on the 16% wash is 4.1:1 over a dark card. This lighter red clears 4.5. */
-[data-theme='dark'] button[data-variant='danger']:not([data-bn]),
-[data-theme='dark'] button[data-variant='danger']:not([data-bn]):hover {
+[data-theme='dark'] button[data-variant='danger']:not([data-bn]):not([variant]),
+[data-theme='dark'] button[data-variant='danger']:not([data-bn]):not([variant]):hover {
   color: #ff6b6d;
 }
 a[role='button'][data-variant='outline'],
-button:not([data-bn])[data-variant='outline'] {
+button:not([data-bn]):not([variant])[data-variant='outline'] {
   background: rgb(255 159 10 / 0.16);
-  color: var(--bn-ios-color-orange);
+  color: var(--tint);
   border: none;
 }
 a[role='button'][data-variant='outline']:hover,
-button:not([data-bn])[data-variant='outline']:hover {
+button:not([data-bn]):not([variant])[data-variant='outline']:hover {
   background: rgb(255 159 10 / 0.24);
-  color: var(--bn-ios-color-orange);
+  color: var(--tint);
   opacity: 1;
 }
 /* The page-hero CTAs share the same two treatments. */
 [data-bn-cta='primary'] {
-  font: var(--bn-ios-font-headline);
-  background: var(--bn-ios-color-orange);
+  font-family: var(--text-headline-family);
+  font-size: var(--text-headline-size);
+  line-height: var(--text-headline-leading);
+  font-weight: var(--text-headline-weight);
+  background: var(--tint);
   color: #000;
   border: none;
-  border-radius: var(--bn-ios-radius-pill);
-  padding: var(--bn-ios-space-3) var(--bn-ios-space-5);
+  border-radius: var(--radius-pill);
+  padding: var(--space-3) var(--space-5);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
 }
 [data-bn-cta='secondary'] {
-  font: var(--bn-ios-font-headline);
+  font-family: var(--text-headline-family);
+  font-size: var(--text-headline-size);
+  line-height: var(--text-headline-leading);
+  font-weight: var(--text-headline-weight);
   background: rgb(255 159 10 / 0.16);
-  color: var(--bn-ios-color-orange);
+  color: var(--tint);
   border: none;
-  border-radius: var(--bn-ios-radius-pill);
-  padding: var(--bn-ios-space-3) var(--bn-ios-space-5);
+  border-radius: var(--radius-pill);
+  padding: var(--space-3) var(--space-5);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -444,8 +495,8 @@ button:not([data-bn])[data-variant='outline']:hover {
 /* Plain content links take the tint, as iOS links do. Scoped to <main>
    so the app nav and footer keep their own treatments; catalog
    components carry data-bn and are excluded. */
-main a:where(:not([data-bn]):not([role='button']):not([data-bn-cta])) {
-  color: var(--bn-ios-color-orange);
+main a:where(:not([data-bn]):not([variant]):not([role='button']):not([data-bn-cta])) {
+  color: var(--tint);
 }
 
 /* Pagination's links are plain <a> inside the [data-bn] nav, so the
@@ -463,16 +514,19 @@ main a:where(:not([data-bn]):not([role='button']):not([data-bn-cta])) {
 /* Filter chips are a segmented choice, not primary actions: neutral
    fill until pressed, the filled tint when pressed. */
 button[data-bn-component-filter] {
-  font: var(--bn-ios-font-subheadline);
-  background: var(--bn-ios-color-fill-tertiary);
-  color: var(--bn-ios-color-label);
+  font-family: var(--text-subheadline-family);
+  font-size: var(--text-subheadline-size);
+  line-height: var(--text-subheadline-leading);
+  font-weight: var(--text-subheadline-weight);
+  background: var(--fill-3);
+  color: var(--label);
   border: none;
-  border-radius: var(--bn-ios-radius-pill);
-  padding: var(--bn-ios-space-2) var(--bn-ios-space-4);
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-4);
 }
 button[data-bn-component-filter]:hover {
-  background: var(--bn-ios-color-fill-secondary);
-  color: var(--bn-ios-color-label);
+  background: var(--fill-2);
+  color: var(--label);
   opacity: 1;
 }
 button[data-bn-component-filter][aria-pressed='true'] {
@@ -480,49 +534,64 @@ button[data-bn-component-filter][aria-pressed='true'] {
   color: var(--bn-brand-ink, #0c0b09);
 }
 button[data-bn-component-reset] {
-  font: var(--bn-ios-font-subheadline);
+  font-family: var(--text-subheadline-family);
+  font-size: var(--text-subheadline-size);
+  line-height: var(--text-subheadline-leading);
+  font-weight: var(--text-subheadline-weight);
   background: rgb(255 159 10 / 0.16);
-  color: var(--bn-ios-color-orange);
+  color: var(--tint);
   border: none;
-  border-radius: var(--bn-ios-radius-pill);
-  padding: var(--bn-ios-space-2) var(--bn-ios-space-4);
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-4);
 }
 
 /* Text controls sit in the tertiary grouped surface, borderless. */
-input:not([data-bn]),
-textarea:not([data-bn]),
-select:not([data-bn]) {
-  background: var(--bn-ios-color-bg-grouped-tertiary);
-  color: var(--bn-ios-color-label);
+input:not([data-bn]):not([variant]),
+textarea:not([data-bn]):not([variant]),
+select:not([data-bn]):not([variant]) {
+  background: var(--background-grouped-3);
+  color: var(--label);
   border: 1px solid transparent;
-  border-radius: var(--bn-ios-radius-lg);
-  font: var(--bn-ios-font-body);
+  border-radius: var(--radius-lg);
+  font-family: var(--text-body-family);
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-leading);
+  font-weight: var(--text-body-weight);
 }
 
 /* Component meta labels: caption ink at the secondary level — small
    text stays at the level that clears contrast. */
 [data-bn-component-meta] dt {
-  color: var(--bn-ios-color-label-secondary);
+  color: var(--label-2);
 }
 
 /* ── Footer: quiet text on the grouped background ─────────────────── */
 body > footer,
 body > [data-bn-site-footer] {
   border-block-start: none;
-  font: var(--bn-ios-font-footnote);
-  color: var(--bn-ios-color-label-tertiary);
+  font-family: var(--text-footnote-family);
+  font-size: var(--text-footnote-size);
+  line-height: var(--text-footnote-leading);
+  font-weight: var(--text-footnote-weight);
+  color: var(--label-3);
 }
 body > footer p,
 body > [data-bn-site-footer] p {
-  font: var(--bn-ios-font-footnote);
-  color: var(--bn-ios-color-label-tertiary);
+  font-family: var(--text-footnote-family);
+  font-size: var(--text-footnote-size);
+  line-height: var(--text-footnote-leading);
+  font-weight: var(--text-footnote-weight);
+  color: var(--label-3);
 }
 body > [data-bn-site-footer] nav a {
-  font: var(--bn-ios-font-footnote);
-  color: var(--bn-ios-color-label-secondary);
+  font-family: var(--text-footnote-family);
+  font-size: var(--text-footnote-size);
+  line-height: var(--text-footnote-leading);
+  font-weight: var(--text-footnote-weight);
+  color: var(--label-2);
 }
 body > [data-bn-site-footer] nav a:hover {
-  color: var(--bn-ios-color-orange);
+  color: var(--tint);
 }
 
 /* ── The app nav in the site's language ───────────────────────────── */
@@ -533,20 +602,26 @@ body > [data-bn-site-footer] nav a:hover {
    regular material a tab bar uses. The tokens are re-pointed on the
    sheet element; the component reads its local values. */
 [data-bn='app-nav-sheet'] {
-  --bn-material-bg: var(--bn-ios-glass-thick-tint);
+  --bn-material-bg: var(--material-thick-tint);
   --bn-material-shadow:
-    var(--bn-ios-glass-thick-highlight), var(--bn-ios-glass-thick-shadow);
+    var(--material-thick-highlight), var(--material-thick-shadow);
 }
 [data-bn='app-nav-brand'] strong {
-  font: var(--bn-ios-font-headline);
-  letter-spacing: var(--bn-ios-font-headline-tracking);
+  font-family: var(--text-headline-family);
+  font-size: var(--text-headline-size);
+  line-height: var(--text-headline-leading);
+  font-weight: var(--text-headline-weight);
+  letter-spacing: var(--text-headline-tracking);
 }
 [data-bn='app-nav-actions'] a {
-  font: var(--bn-ios-font-headline);
+  font-family: var(--text-headline-family);
+  font-size: var(--text-headline-size);
+  line-height: var(--text-headline-leading);
+  font-weight: var(--text-headline-weight);
   background: rgb(255 159 10 / 0.16);
-  color: var(--bn-ios-color-orange);
-  border-radius: var(--bn-ios-radius-pill);
-  padding: var(--bn-ios-space-2) var(--bn-ios-space-4);
+  color: var(--tint);
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-4);
   text-align: center;
   text-decoration: none;
 }

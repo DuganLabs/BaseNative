@@ -1,5 +1,4 @@
 ---
-'@basenative/platform': minor
 '@basenative/builder': minor
 ---
 

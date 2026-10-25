@@ -23,30 +23,7 @@
 
   <article>
     <header><h3>Milestone plan</h3></header>
-    <div data-bn="table-container">
-      <table data-bn="table">
-        <thead>
-          <tr>
-            <th>Milestone</th>
-            <th>Focus</th>
-            <th>Status</th>
-            <th>Outcome</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template @for="stage of releaseStages; track stage.milestone">
-            <tr>
-              <td data-label="Milestone">{{ stage.milestone }}</td>
-              <td data-label="Focus">{{ stage.focus }}</td>
-              <td data-label="Status">
-                <mark data-status="{{ stage.tone }}">{{ stage.status }}</mark>
-              </td>
-              <td data-label="Outcome">{{ stage.outcome }}</td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
-    </div>
+    {{ milestoneTable }}
   </article>
 </section>
 
@@ -59,28 +36,7 @@
 
   <article>
     <header><h3>v0.2 trust release scope</h3></header>
-    <div data-bn="table-container">
-      <table data-bn="table">
-        <thead>
-          <tr>
-            <th>Area</th>
-            <th>State</th>
-            <th>Notes</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template @for="item of trustBlockers; track item.item">
-            <tr>
-              <td data-label="Area">{{ item.item }}</td>
-              <td data-label="State">
-                <mark data-status="{{ item.tone }}">{{ item.state }}</mark>
-              </td>
-              <td data-label="Notes">{{ item.notes }}</td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
-    </div>
+    {{ trustTable }}
   </article>
 </section>
 
@@ -94,28 +50,7 @@
 
   <article>
     <header><h3>Public packages</h3></header>
-    <div data-bn="table-container">
-      <table data-bn="table">
-        <thead>
-          <tr>
-            <th>Package</th>
-            <th>Status</th>
-            <th>Responsibility</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template @for="pkg of packageSurface; track pkg.pkg">
-            <tr>
-              <td data-label="Package"><code>{{ pkg.pkg }}</code></td>
-              <td data-label="Status">
-                <mark data-status="{{ pkg.tone }}">{{ pkg.status }}</mark>
-              </td>
-              <td data-label="Responsibility">{{ pkg.scope }}</td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
-    </div>
+    {{ packageTable }}
   </article>
 </section>
 
@@ -128,28 +63,7 @@
 
   <article>
     <header><h3>Enterprise workflow coverage</h3></header>
-    <div data-bn="table-container">
-      <table data-bn="table">
-        <thead>
-          <tr>
-            <th>Category</th>
-            <th>Status</th>
-            <th>Detail</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template @for="workflow of workflowParity; track workflow.category">
-            <tr>
-              <td data-label="Category">{{ workflow.category }}</td>
-              <td data-label="Status">
-                <mark data-status="{{ workflow.tone }}">{{ workflow.status }}</mark>
-              </td>
-              <td data-label="Detail">{{ workflow.detail }}</td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
-    </div>
+    {{ workflowTable }}
   </article>
 </section>
 
@@ -163,30 +77,7 @@
 
   <article>
     <header><h3>Pilot component order</h3></header>
-    <div data-bn="table-container">
-      <table data-bn="table">
-        <thead>
-          <tr>
-            <th>Component</th>
-            <th>Target release</th>
-            <th>Status</th>
-            <th>Notes</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template @for="component of p0Components; track component.component">
-            <tr>
-              <td data-label="Component">{{ component.component }}</td>
-              <td data-label="Target release">{{ component.release }}</td>
-              <td data-label="Status">
-                <mark data-status="{{ component.tone }}">{{ component.status }}</mark>
-              </td>
-              <td data-label="Notes">{{ component.notes }}</td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
-    </div>
+    {{ p0Table }}
   </article>
 </section>
 
@@ -199,28 +90,7 @@
 
   <article>
     <header><h3>Capability and fallback matrix</h3></header>
-    <div data-bn="table-container">
-      <table data-bn="table">
-        <thead>
-          <tr>
-            <th>Feature</th>
-            <th>Status</th>
-            <th>Fallback</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template @for="browser of browserSupport; track browser.feature">
-            <tr>
-              <td data-label="Feature">{{ browser.feature }}</td>
-              <td data-label="Status">
-                <mark data-status="{{ browser.tone }}">{{ browser.status }}</mark>
-              </td>
-              <td data-label="Fallback">{{ browser.fallback }}</td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
-    </div>
+    {{ browserTable }}
   </article>
 </section>
 
@@ -233,24 +103,7 @@
 
   <article>
     <header><h3>Explicitly deferred</h3></header>
-    <div data-bn="table-container">
-      <table data-bn="table">
-        <thead>
-          <tr>
-            <th>Scope</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template @for="item of deferredWork; track item.item">
-            <tr>
-              <td data-label="Scope">{{ item.item }}</td>
-              <td data-label="Status">{{ item.reason }}</td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
-    </div>
+    {{ deferredTable }}
   </article>
 </section>
 
