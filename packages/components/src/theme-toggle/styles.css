@@ -1,0 +1,104 @@
+:root {
+  --theme-toggle-display: var(--display-inline-flex);
+  --theme-toggle-flex-direction: var(--flex-direction-row);
+  --theme-toggle-gap: var(--space-1);
+  --theme-toggle-margin: var(--space-0);
+  --theme-toggle-padding: var(--space-1);
+  --theme-toggle-border-width: var(--border-width-none);
+  --theme-toggle-background-color: var(--fill-2);
+  --theme-toggle-border-radius: var(--radius-pill);
+  --theme-toggle__legend-position: var(--position-absolute);
+  --theme-toggle__legend-inline-size: var(--size-1px);
+  --theme-toggle__legend-block-size: var(--size-1px);
+  --theme-toggle__legend-overflow: var(--overflow-hidden);
+  --theme-toggle__control-position: var(--position-absolute);
+  --theme-toggle__control-opacity: var(--opacity-none);
+  --theme-toggle__control-inline-size: var(--size-1px);
+  --theme-toggle__control-block-size: var(--size-1px);
+  --theme-toggle__option-display: var(--display-inline-flex);
+  --theme-toggle__option-align-items: var(--align-center);
+  --theme-toggle__option-padding-block: var(--space-1);
+  --theme-toggle__option-padding-inline: var(--space-3);
+  --theme-toggle__option-background-color: var(--color-transparent);
+  --theme-toggle__option-background-color--checked: var(--background);
+  --theme-toggle__option-border-width: var(--border-width-none);
+  --theme-toggle__option-border-radius: var(--radius-pill);
+  --theme-toggle__option-box-shadow--checked: var(--shadow-raised);
+  --theme-toggle__option-color: var(--label-2);
+  --theme-toggle__option-color--checked: var(--label);
+  --theme-toggle__option-cursor: var(--cursor-pointer);
+  --theme-toggle__option-font-family: var(--text-subheadline-family);
+  --theme-toggle__option-font-size: var(--text-subheadline-size);
+  --theme-toggle__option-font-weight: var(--font-weight-medium);
+  --theme-toggle__option-font-weight--checked: var(--font-weight-semibold);
+  --theme-toggle__option-line-height: var(--text-subheadline-leading);
+  --theme-toggle__option-letter-spacing: var(--text-subheadline-tracking);
+  --theme-toggle__option-outline-width--focus: var(--border-width-thick);
+  --theme-toggle__option-outline-style--focus: var(--border-style-solid);
+  --theme-toggle__option-outline-color--focus: var(--tint);
+  --theme-toggle__option-outline-offset--focus: var(--space-1);
+}
+
+fieldset[variant="theme-toggle"] {
+  display: var(--theme-toggle-display);
+  flex-direction: var(--theme-toggle-flex-direction);
+  gap: var(--theme-toggle-gap);
+  margin: var(--theme-toggle-margin);
+  padding: var(--theme-toggle-padding);
+  border-width: var(--theme-toggle-border-width);
+  background-color: var(--theme-toggle-background-color);
+  border-radius: var(--theme-toggle-border-radius);
+
+  & > legend {
+    position: var(--theme-toggle__legend-position);
+    inline-size: var(--theme-toggle__legend-inline-size);
+    block-size: var(--theme-toggle__legend-block-size);
+    overflow: var(--theme-toggle__legend-overflow);
+  }
+
+  & > label {
+    display: var(--theme-toggle-display);
+    cursor: var(--theme-toggle__option-cursor);
+
+    & > input {
+      position: var(--theme-toggle__control-position);
+      opacity: var(--theme-toggle__control-opacity);
+      inline-size: var(--theme-toggle__control-inline-size);
+      block-size: var(--theme-toggle__control-block-size);
+    }
+
+    & > button {
+      display: var(--theme-toggle__option-display);
+      align-items: var(--theme-toggle__option-align-items);
+      padding-block: var(--theme-toggle__option-padding-block);
+      padding-inline: var(--theme-toggle__option-padding-inline);
+      background-color: var(--theme-toggle__option-background-color);
+      border-width: var(--theme-toggle__option-border-width);
+      border-radius: var(--theme-toggle__option-border-radius);
+      color: var(--theme-toggle__option-color);
+      font-family: var(--theme-toggle__option-font-family);
+      font-size: var(--theme-toggle__option-font-size);
+      font-weight: var(--theme-toggle__option-font-weight);
+      line-height: var(--theme-toggle__option-line-height);
+      letter-spacing: var(--theme-toggle__option-letter-spacing);
+      cursor: var(--theme-toggle__option-cursor);
+    }
+  }
+
+  /* The substrate declares its own selected appearance, the choice
+     contract — here the substrate is internal, so its sheet is this
+     one and the re-point happens through the option tokens. */
+  & > label:has(> input:checked) > button {
+    background-color: var(--theme-toggle__option-background-color--checked);
+    box-shadow: var(--theme-toggle__option-box-shadow--checked);
+    color: var(--theme-toggle__option-color--checked);
+    font-weight: var(--theme-toggle__option-font-weight--checked);
+  }
+
+  & > label:has(> input:focus-visible) > button {
+    outline-width: var(--theme-toggle__option-outline-width--focus);
+    outline-style: var(--theme-toggle__option-outline-style--focus);
+    outline-color: var(--theme-toggle__option-outline-color--focus);
+    outline-offset: var(--theme-toggle__option-outline-offset--focus);
+  }
+}

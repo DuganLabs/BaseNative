@@ -292,3 +292,39 @@ test('pipeline renders stage columns of rendered cards', async () => {
   assert.match(html, /<h3>Quoted<\/h3>/);
   assert.match(html, /<article variant="default">/);
 });
+
+test('theme-toggle renders the three appearances as a radio choice over buttons', async () => {
+  const registry = await loadRegistry();
+  let event = null;
+  const { html, viewModel } = renderComponent(registry, render, 'theme-toggle', {
+    onThemeChange: (e) => { event = e; },
+  });
+  assert.match(html, /<fieldset variant="theme-toggle">/);
+  assert.match(html, /<legend>Theme<\/legend>/);
+  assert.match(html, /<input variant="default" type="radio" name="theme" value="system" checked="true">/);
+  assert.match(html, /<button type="button">System<\/button>/);
+  assert.match(html, /<button type="button">Light<\/button>/);
+  assert.match(html, /<button type="button">Dark<\/button>/);
+  viewModel.change({ value: 'dark' });
+  assert.deepEqual(event, { name: 'theme', mode: 'dark', previousMode: 'system' });
+  assert.equal(viewModel.isChecked({ value: 'dark' }), true);
+});
+
+test('applyTheme stamps data-theme for forced modes and clears it for system', async () => {
+  const { applyTheme } = await import('./theme-toggle/index.js');
+  const el = { dataset: {}, style: { colorScheme: '' } };
+  applyTheme('dark', el);
+  assert.equal(el.dataset.theme, 'dark');
+  assert.equal(el.style.colorScheme, 'dark');
+  applyTheme('system', el);
+  assert.equal(el.dataset.theme, undefined);
+  assert.equal(el.style.colorScheme, '');
+});
+
+test('the token sheet carries all three appearance scopes', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const tokens = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
+  assert.match(tokens, /@media \(prefers-color-scheme: dark\) \{\n  :root:not\(\[data-theme="light"\]\)/);
+  assert.match(tokens, /:root\[data-theme="dark"\] \{\n  color-scheme: dark;/);
+  assert.match(tokens, /:root\[data-theme="light"\] \{\n    color-scheme: light;/);
+});

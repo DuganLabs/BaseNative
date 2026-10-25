@@ -296,7 +296,8 @@
 /* Dark appearance — every paired role and palette step resolves here.
    Values are Apple's documented dark values (glass tints estimated). */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
     --system-blue: #0a84ff;
     --system-green: #30d158;
     --system-indigo: #5e5ce6;
@@ -371,5 +372,134 @@
     --motion-spring-bouncy-duration: 0.01ms;
     --motion-spring-stiff-duration: 0.01ms;
     --motion-fade-duration: 0.01ms;
+  }
+}
+
+/* Forced appearances. The app shell owns the document element and
+   stamps data-theme there (the theme-toggle composite is the
+   control). Forced dark restates the dark values without the media
+   query. Forced light restates the light values inside it. System
+   is the absence of the attribute. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --system-blue: #0a84ff;
+  --system-green: #30d158;
+  --system-indigo: #5e5ce6;
+  --system-orange: #ff9f0a;
+  --system-pink: #ff375f;
+  --system-purple: #bf5af2;
+  --system-red: #ff453a;
+  --system-teal: #64d2ff;
+  --system-yellow: #ffd60a;
+  --system-mint: #66d4cf;
+  --system-cyan: #64d2ff;
+  --system-brown: #ac8e68;
+  --system-gray-2: #636366;
+  --system-gray-3: #48484a;
+  --system-gray-4: #3a3a3c;
+  --system-gray-5: #2c2c2e;
+  --system-gray-6: #1c1c1e;
+  --label: #ffffff;
+  --label-2: rgb(235 235 245 / 0.6);
+  --label-3: rgb(235 235 245 / 0.3);
+  --label-4: rgb(235 235 245 / 0.16);
+  --label-placeholder: rgb(235 235 245 / 0.3);
+  --background: #000000;
+  --background-2: #1c1c1e;
+  --background-3: #2c2c2e;
+  --background-grouped: #000000;
+  --background-grouped-2: #1c1c1e;
+  --background-grouped-3: #2c2c2e;
+  --fill: rgb(120 120 128 / 0.36);
+  --fill-2: rgb(120 120 128 / 0.32);
+  --fill-3: rgb(118 118 128 / 0.24);
+  --fill-4: rgb(118 118 128 / 0.18);
+  --separator: rgb(84 84 88 / 0.6);
+  --separator-opaque: #38383a;
+  --danger-strong: #ff6961;
+  --tint-fill: rgb(10 132 255 / 0.16);
+  --danger-fill: rgb(255 69 58 / 0.16);
+  --success-fill: rgb(48 209 88 / 0.18);
+  --success-strong: #30d158;
+  --warning-fill: rgb(255 159 10 / 0.18);
+  --warning-strong: #ff9f0a;
+  --tint-strong: #409cff;
+  --scrim: rgb(0 0 0 / 0.55);
+  --shadow-float: 0 12px 32px rgb(0 0 0 / 0.45);
+  --shadow-raised: 0 8px 24px rgb(0 0 0 / 0.35);
+  --material-ultra-thin-tint: rgb(28 28 30 / 0.35);
+  --material-ultra-thin-highlight: inset 0 1px 0 rgb(255 255 255 / 0.12);
+  --material-ultra-thin-shadow: 0 8px 24px rgb(0 0 0 / 0.35);
+  --material-thin-tint: rgb(28 28 30 / 0.45);
+  --material-thin-highlight: inset 0 1px 0 rgb(255 255 255 / 0.15);
+  --material-thin-shadow: 0 10px 28px rgb(0 0 0 / 0.4);
+  --material-regular-tint: rgb(30 30 32 / 0.55);
+  --material-regular-highlight: inset 0 1px 0 rgb(255 255 255 / 0.18);
+  --material-regular-shadow: 0 12px 32px rgb(0 0 0 / 0.45);
+  --material-thick-tint: rgb(28 28 30 / 0.78);
+  --material-thick-highlight: inset 0 1px 0 rgb(255 255 255 / 0.22);
+  --material-thick-shadow: 0 16px 40px rgb(0 0 0 / 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --system-blue: #007aff;
+    --system-green: #34c759;
+    --system-indigo: #5856d6;
+    --system-orange: #ff9500;
+    --system-pink: #ff2d55;
+    --system-purple: #af52de;
+    --system-red: #ff3b30;
+    --system-teal: #5ac8fa;
+    --system-yellow: #ffcc00;
+    --system-mint: #00c7be;
+    --system-cyan: #32ade6;
+    --system-brown: #a2845e;
+    --system-gray-2: #aeaeb2;
+    --system-gray-3: #c7c7cc;
+    --system-gray-4: #d1d1d6;
+    --system-gray-5: #e5e5ea;
+    --system-gray-6: #f2f2f7;
+    --label: #000000;
+    --label-2: rgb(60 60 67 / 0.6);
+    --label-3: rgb(60 60 67 / 0.3);
+    --label-4: rgb(60 60 67 / 0.18);
+    --label-placeholder: rgb(60 60 67 / 0.3);
+    --background: #ffffff;
+    --background-2: #f2f2f7;
+    --background-3: #ffffff;
+    --background-grouped: #f2f2f7;
+    --background-grouped-2: #ffffff;
+    --background-grouped-3: #f2f2f7;
+    --fill: rgb(120 120 128 / 0.2);
+    --fill-2: rgb(120 120 128 / 0.16);
+    --fill-3: rgb(118 118 128 / 0.12);
+    --fill-4: rgb(116 116 128 / 0.08);
+    --separator: rgb(60 60 67 / 0.29);
+    --separator-opaque: #c6c6c8;
+    --danger-strong: #d70015;
+    --tint-fill: rgb(0 122 255 / 0.12);
+    --danger-fill: rgb(255 59 48 / 0.12);
+    --success-fill: rgb(52 199 89 / 0.14);
+    --success-strong: #1f7a33;
+    --warning-fill: rgb(255 149 0 / 0.16);
+    --warning-strong: #9a5700;
+    --tint-strong: #0062cc;
+    --scrim: rgb(0 0 0 / 0.4);
+    --shadow-float: 0 12px 32px rgb(0 0 0 / 0.12);
+    --shadow-raised: 0 8px 24px rgb(0 0 0 / 0.08);
+    --material-ultra-thin-tint: rgb(255 255 255 / 0.35);
+    --material-ultra-thin-highlight: inset 0 1px 0 rgb(255 255 255 / 0.4);
+    --material-ultra-thin-shadow: 0 8px 24px rgb(0 0 0 / 0.08);
+    --material-thin-tint: rgb(255 255 255 / 0.45);
+    --material-thin-highlight: inset 0 1px 0 rgb(255 255 255 / 0.45);
+    --material-thin-shadow: 0 10px 28px rgb(0 0 0 / 0.1);
+    --material-regular-tint: rgb(255 255 255 / 0.55);
+    --material-regular-highlight: inset 0 1px 0 rgb(255 255 255 / 0.5);
+    --material-regular-shadow: 0 12px 32px rgb(0 0 0 / 0.12);
+    --material-thick-tint: rgb(249 249 249 / 0.78);
+    --material-thick-highlight: inset 0 1px 0 rgb(255 255 255 / 0.55);
+    --material-thick-shadow: 0 16px 40px rgb(0 0 0 / 0.16);
   }
 }

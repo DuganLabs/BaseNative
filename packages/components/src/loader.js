@@ -19,6 +19,7 @@ const COMPONENTS = [
   'combobox', 'multiselect',
   'drawer', 'dropdown-menu', 'command-palette', 'tooltip', 'toast',
   'table', 'datagrid', 'tree', 'virtualizer', 'calendar', 'pipeline',
+  'theme-toggle',
 ];
 
 /** @param {string} html */
