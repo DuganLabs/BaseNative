@@ -1,0 +1,118 @@
+:root {
+  --multiselect-position: var(--position-relative);
+  --multiselect-display: var(--display-flex);
+  --multiselect-flex-direction: var(--flex-direction-column);
+  --multiselect-gap: var(--space-2);
+  --multiselect__selected-display: var(--display-flex);
+  --multiselect__selected-flex-direction: var(--flex-direction-row);
+  --multiselect__selected-flex-wrap: var(--flex-wrap-wrap);
+  --multiselect__selected-gap: var(--space-1);
+  --multiselect__selected-list-style: var(--list-style-none);
+  --multiselect__selected-margin: var(--space-0);
+  --multiselect__selected-padding: var(--space-0);
+  --multiselect__chip-display: var(--display-inline-flex);
+  --multiselect__chip-align-items: var(--align-center);
+  --multiselect__chip-gap: var(--space-1);
+  --multiselect__chip-padding-block: var(--space-1);
+  --multiselect__chip-padding-inline-start: var(--space-3);
+  --multiselect__chip-padding-inline-end: var(--space-1);
+  --multiselect__chip-background-color: var(--fill-2);
+  --multiselect__chip-color: var(--label);
+  --multiselect__chip-border-radius: var(--radius-pill);
+  --multiselect__chip-font-family: var(--text-subheadline-family);
+  --multiselect__chip-font-size: var(--text-subheadline-size);
+  --multiselect__chip-line-height: var(--text-subheadline-leading);
+  --multiselect__chip-letter-spacing: var(--text-subheadline-tracking);
+  --multiselect__listbox-position: var(--position-absolute);
+  --multiselect__listbox-inset-block-start: calc(var(--size-control) + var(--space-1));
+  --multiselect__listbox-inset-inline: var(--space-0);
+  --multiselect__listbox-z-index: var(--layer-overlay);
+  --multiselect__listbox-list-style: var(--list-style-none);
+  --multiselect__listbox-margin: var(--space-0);
+  --multiselect__listbox-padding: var(--space-1);
+  --multiselect__listbox-background-color: var(--background-3);
+  --multiselect__listbox-border-width: var(--hairline);
+  --multiselect__listbox-border-style: var(--border-style-solid);
+  --multiselect__listbox-border-color: var(--separator);
+  --multiselect__listbox-border-radius: var(--radius-container);
+  --multiselect__listbox-box-shadow: var(--shadow-float);
+  --multiselect__listbox-max-block-size: calc(var(--size-control) * 6);
+  --multiselect__listbox-overflow: var(--overflow-auto);
+  --multiselect__option-padding-block: var(--space-2);
+  --multiselect__option-padding-inline: var(--space-3);
+  --multiselect__option-border-radius: var(--radius-md);
+  --multiselect__option-color: var(--label);
+  --multiselect__option-font-family: var(--text-body-family);
+  --multiselect__option-font-size: var(--text-body-size);
+  --multiselect__option-line-height: var(--text-body-leading);
+  --multiselect__option-letter-spacing: var(--text-body-tracking);
+  --multiselect__option-cursor: var(--cursor-pointer);
+  --multiselect__option-background-color--selected: var(--fill-2);
+}
+
+section[variant="multiselect"] {
+  position: var(--multiselect-position);
+  display: var(--multiselect-display);
+  flex-direction: var(--multiselect-flex-direction);
+  gap: var(--multiselect-gap);
+
+  & > ul:not([role="listbox"]) {
+    display: var(--multiselect__selected-display);
+    flex-direction: var(--multiselect__selected-flex-direction);
+    flex-wrap: var(--multiselect__selected-flex-wrap);
+    gap: var(--multiselect__selected-gap);
+    list-style: var(--multiselect__selected-list-style);
+    margin: var(--multiselect__selected-margin);
+    padding: var(--multiselect__selected-padding);
+
+    & > li {
+      display: var(--multiselect__chip-display);
+      align-items: var(--multiselect__chip-align-items);
+      gap: var(--multiselect__chip-gap);
+      padding-block: var(--multiselect__chip-padding-block);
+      padding-inline-start: var(--multiselect__chip-padding-inline-start);
+      padding-inline-end: var(--multiselect__chip-padding-inline-end);
+      background-color: var(--multiselect__chip-background-color);
+      color: var(--multiselect__chip-color);
+      border-radius: var(--multiselect__chip-border-radius);
+      font-family: var(--multiselect__chip-font-family);
+      font-size: var(--multiselect__chip-font-size);
+      line-height: var(--multiselect__chip-line-height);
+      letter-spacing: var(--multiselect__chip-letter-spacing);
+    }
+  }
+
+  & > ul[role="listbox"] {
+    position: var(--multiselect__listbox-position);
+    inset-block-start: var(--multiselect__listbox-inset-block-start);
+    inset-inline: var(--multiselect__listbox-inset-inline);
+    z-index: var(--multiselect__listbox-z-index);
+    list-style: var(--multiselect__listbox-list-style);
+    margin: var(--multiselect__listbox-margin);
+    padding: var(--multiselect__listbox-padding);
+    background-color: var(--multiselect__listbox-background-color);
+    border-width: var(--multiselect__listbox-border-width);
+    border-style: var(--multiselect__listbox-border-style);
+    border-color: var(--multiselect__listbox-border-color);
+    border-radius: var(--multiselect__listbox-border-radius);
+    box-shadow: var(--multiselect__listbox-box-shadow);
+    max-block-size: var(--multiselect__listbox-max-block-size);
+    overflow: var(--multiselect__listbox-overflow);
+  }
+
+  & > ul[role="listbox"] > li {
+    padding-block: var(--multiselect__option-padding-block);
+    padding-inline: var(--multiselect__option-padding-inline);
+    border-radius: var(--multiselect__option-border-radius);
+    color: var(--multiselect__option-color);
+    font-family: var(--multiselect__option-font-family);
+    font-size: var(--multiselect__option-font-size);
+    line-height: var(--multiselect__option-line-height);
+    letter-spacing: var(--multiselect__option-letter-spacing);
+    cursor: var(--multiselect__option-cursor);
+  }
+
+  & > ul[role="listbox"] > li[aria-selected="true"] {
+    background-color: var(--multiselect__option-background-color--selected);
+  }
+}
