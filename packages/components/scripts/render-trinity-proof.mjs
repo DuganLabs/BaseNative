@@ -870,7 +870,7 @@ ${css}
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && !comboList.hidden) { comboEscaped = true; setComboOpen(false); }
     });
-    document.addEventListener('click', (event) => {
+    document.addEventListener('pointerdown', (event) => {
       if (!combo.contains(event.target)) setComboOpen(false);
     });
     options.forEach((option) => {
@@ -927,7 +927,7 @@ ${css}
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && !multiList.hidden) { multiEscaped = true; setMultiOpen(false); }
     });
-    document.addEventListener('click', (event) => {
+    document.addEventListener('pointerdown', (event) => {
       if (!multi.contains(event.target)) setMultiOpen(false);
     });
     multiOptions.forEach((option) => {
@@ -973,9 +973,8 @@ ${css}
       });
       rowBoxes.forEach((b) => b.addEventListener('change', syncHead));
     }
-    grid.querySelectorAll('thead th button').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const th = btn.closest('th');
+    grid.querySelectorAll('thead th[aria-sort]').forEach((th) => {
+      th.addEventListener('click', () => {
         const idx = [...th.parentElement.children].indexOf(th);
         const next = th.getAttribute('aria-sort') === 'ascending' ? 'descending' : 'ascending';
         th.setAttribute('aria-sort', next);
@@ -1133,6 +1132,7 @@ ${css}
       });
     });
     document.addEventListener('keydown', (event) => { if (event.key === 'Escape') setTradeOpen(false); });
+    document.addEventListener('pointerdown', (event) => { if (!tradeSection.contains(event.target)) setTradeOpen(false); });
   }
 </script>
 </body>
