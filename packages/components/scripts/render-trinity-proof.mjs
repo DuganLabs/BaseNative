@@ -853,12 +853,7 @@ ${css}
       comboList.hidden = !openState;
       county.setAttribute('aria-expanded', openState ? 'true' : 'false');
     };
-    let committed = county.value;
     const filterCombo = () => {
-      if (county.value === committed) {
-        options.forEach((option) => { option.hidden = false; });
-        return;
-      }
       const query = county.value.trim().toLowerCase();
       options.forEach((option) => {
         option.hidden = !option.textContent.toLowerCase().includes(query);
@@ -869,7 +864,7 @@ ${css}
     county.addEventListener('focus', () => { setComboOpen(true); filterCombo(); });
     county.addEventListener('click', () => { setComboOpen(true); filterCombo(); });
     county.addEventListener('input', () => {
-      if (comboEscaped) { comboEscaped = false; return; }
+      if (comboEscaped) { comboEscaped = false; filterCombo(); return; }
       setComboOpen(true); filterCombo();
     });
     document.addEventListener('keydown', (event) => {
@@ -880,8 +875,7 @@ ${css}
     });
     options.forEach((option) => {
       option.addEventListener('click', () => {
-        committed = option.textContent.trim();
-        county.value = committed;
+        county.value = option.textContent.trim();
         options.forEach((other) => other.setAttribute('aria-selected', 'false'));
         option.setAttribute('aria-selected', 'true');
         options.forEach((other) => { other.hidden = false; });
@@ -915,17 +909,20 @@ ${css}
       });
     };
     chips.querySelectorAll('li').forEach(wireChip);
+    const filterMulti = () => {
+      const query = multiInput.value.trim().toLowerCase();
+      multiOptions.forEach((option) => {
+        option.hidden = !option.textContent.toLowerCase().includes(query);
+      });
+    };
     let multiEscaped = false;
     setMultiOpen(false);
     multiInput.addEventListener('focus', () => setMultiOpen(true));
     multiInput.addEventListener('click', () => setMultiOpen(true));
     multiInput.addEventListener('input', () => {
-      if (multiEscaped) { multiEscaped = false; return; }
+      if (multiEscaped) { multiEscaped = false; filterMulti(); return; }
       setMultiOpen(true);
-      const query = multiInput.value.trim().toLowerCase();
-      multiOptions.forEach((option) => {
-        option.hidden = !option.textContent.toLowerCase().includes(query);
-      });
+      filterMulti();
     });
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && !multiList.hidden) { multiEscaped = true; setMultiOpen(false); }
@@ -953,6 +950,43 @@ ${css}
         li.append(button);
         wireChip(li);
         chips.append(li);
+      });
+    });
+  }
+
+  // ---- Datagrid: select-all and the row boxes keep each other
+  // true (some selected reads indeterminate), and the sort button
+  // sorts, flipping aria-sort as it goes.
+  const grid = document.querySelector('table[variant="datagrid"]');
+  if (grid) {
+    const headBox = grid.querySelector('thead input[type="checkbox"]');
+    const rowBoxes = [...grid.querySelectorAll('tbody input[type="checkbox"]')];
+    const syncHead = () => {
+      const n = rowBoxes.filter((b) => b.checked).length;
+      headBox.checked = n > 0 && n === rowBoxes.length;
+      headBox.indeterminate = n > 0 && n < rowBoxes.length;
+    };
+    if (headBox) {
+      headBox.addEventListener('change', () => {
+        rowBoxes.forEach((b) => { b.checked = headBox.checked; });
+        syncHead();
+      });
+      rowBoxes.forEach((b) => b.addEventListener('change', syncHead));
+    }
+    grid.querySelectorAll('thead th button').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const th = btn.closest('th');
+        const idx = [...th.parentElement.children].indexOf(th);
+        const next = th.getAttribute('aria-sort') === 'ascending' ? 'descending' : 'ascending';
+        th.setAttribute('aria-sort', next);
+        const tbody = grid.querySelector('tbody');
+        const rows = [...tbody.querySelectorAll('tr')];
+        rows.sort((a, b) => {
+          const x = a.children[idx].textContent.trim();
+          const y = b.children[idx].textContent.trim();
+          return next === 'ascending' ? x.localeCompare(y) : y.localeCompare(x);
+        });
+        rows.forEach((r) => tbody.append(r));
       });
     });
   }
