@@ -653,3 +653,19 @@ test('select anchors its popover to the section edge, and multiselect tiles cons
   const toggleCss = await readFile(new URL('./toggle/styles.css', import.meta.url), 'utf8');
   assert.match(toggleCss, /--toggle__knob-background-color: var\(--color-white\)/);
 });
+
+test('the select chevron rides the end edge and rotates when the popover opens', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const css = await readFile(new URL('./select/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /--select__trigger-justify-content: var\(--justify-space-between\)/);
+  assert.match(css, /--select__chevron-margin-inline-start: var\(--margin-auto\)/);
+  assert.match(css, /button\[aria-expanded="true"\] > svg/);
+  assert.match(css, /--select__chevron-transform--open: rotate\(180deg\)/);
+});
+
+test('the accordion separator is between items only: the last item drops it', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const css = await readFile(new URL('./accordion/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /--accordion-border-block-end-width--last: var\(--border-width-none\)/);
+  assert.match(css, /details\[variant="default"\]:last-of-type \{\s*border-block-end-width: var\(--accordion-border-block-end-width--last\)/);
+});

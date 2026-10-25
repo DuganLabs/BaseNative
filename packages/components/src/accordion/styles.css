@@ -1,5 +1,6 @@
 :root {
   --accordion-border-block-end-width: var(--hairline);
+  --accordion-border-block-end-width--last: var(--border-width-none);
   --accordion-border-block-end-style: var(--border-style-solid);
   --accordion-border-block-end-color: var(--separator);
   --accordion__summary-display: var(--display-flex);
@@ -61,4 +62,8 @@ details[variant="default"] {
     line-height: var(--accordion__content-line-height);
     letter-spacing: var(--accordion__content-letter-spacing);
   }
+}
+
+details[variant="default"]:last-of-type {
+  border-block-end-width: var(--accordion-border-block-end-width--last);
 }

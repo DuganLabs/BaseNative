@@ -27,7 +27,7 @@
   --select__trigger-box-sizing: var(--box-sizing-border);
   --select__trigger-display: var(--display-flex);
   --select__trigger-align-items: var(--align-center);
-  --select__trigger-justify-content: var(--justify-between);
+  --select__trigger-justify-content: var(--justify-space-between);
   --select__trigger-gap: var(--space-2);
   --select__trigger-inline-size: var(--size-full);
   --select__trigger-block-size: var(--size-control);
@@ -56,6 +56,8 @@
   --select__chevron-inline-size: var(--space-5);
   --select__chevron-block-size: var(--space-5);
   --select__chevron-color: var(--label-3);
+  --select__chevron-margin-inline-start: var(--margin-auto);
+  --select__chevron-transform--open: rotate(180deg);
   --select__listbox-position: var(--position-absolute);
   --select__listbox-inset-block-start: var(--size-full);
   --select__listbox-inset-inline: var(--space-0);
@@ -119,6 +121,12 @@ section[variant="select"] {
     inline-size: var(--select__chevron-inline-size);
     block-size: var(--select__chevron-block-size);
     color: var(--select__chevron-color);
+    margin-inline-start: var(--select__chevron-margin-inline-start);
+    transition: transform var(--select-motion-duration) var(--select-motion-curve);
+  }
+
+  & > button[aria-expanded="true"] > svg {
+    transform: var(--select__chevron-transform--open);
   }
 
   & > button:hover {
