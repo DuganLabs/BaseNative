@@ -1,8 +1,8 @@
 /**
- * Constitution check for @basenative/platform and the basenative.com site.
+ * Constitution check for the basenative.com site.
  *
- * Hard failures: the platform package, plus site files that have been rebuilt
- * onto the Apple 27 shell (see ENFORCED). Everything else is ratcheted by
+ * Hard failures: site files that have been rebuilt onto the Holy Trinity
+ * catalog shell (see ENFORCED). Everything else is ratcheted by
  * scripts/axiom-baseline.json — a count may fall, and a rise fails the run.
  *
  *   node scripts/axiom-check.js            # fail on regressions
@@ -18,7 +18,6 @@ const baselinePath = join(root, 'scripts', 'axiom-baseline.json');
 
 /** Zero-tolerance paths. A violation here fails even when a baseline exists. */
 export const ENFORCED = [
-  'packages/platform/',
   'examples/express/views/layout.html',
   'examples/express/views/home.html',
   'examples/express/shell.js',
@@ -53,7 +52,6 @@ function walk(dir, out) {
 
 function files() {
   const found = [];
-  walk(join(root, 'packages', 'platform'), found);
   walk(join(root, 'examples', 'express'), found);
   return found.filter((abs) => {
     const rel = relative(root, abs).split('\\').join('/');

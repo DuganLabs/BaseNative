@@ -191,12 +191,6 @@ for (const file of componentCssFiles) {
 }
 
 
-const bnPlatformDir = join(dist, 'bn-platform');
-mkdirSync(bnPlatformDir, { recursive: true });
-cpSync(join(root, 'packages', 'platform', 'src', 'tokens.css'), join(bnPlatformDir, 'tokens.css'));
-cpSync(join(root, 'packages', 'platform', 'src', 'materials.css'), join(bnPlatformDir, 'materials.css'));
-cpSync(join(root, 'packages', 'platform', 'src', 'components.css'), join(bnPlatformDir, 'components.css'));
-
 // Copy builder CSS (served as /bn-builder-css/ in Express, must exist in dist)
 const bnBuilderCssDir = join(dist, 'bn-builder-css');
 mkdirSync(bnBuilderCssDir, { recursive: true });

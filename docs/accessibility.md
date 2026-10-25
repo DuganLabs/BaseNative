@@ -163,9 +163,9 @@ BaseNative components are built on native HTML elements with semantic defaults. 
 | `Arrow Keys` | Navigate radio groups, select options |
 | `Escape` | Close dialogs, dismiss toasts |
 
-## Platform catalog (`@basenative/platform`)
+## Component catalog (`@basenative/components`)
 
-Kit controls use the same native hosts: `button`, `dialog`, `details`,
+Catalog controls use the same native hosts: `button`, `dialog`, `details`,
 `input`, `select`, `fieldset`, `progress`, `table`, and the popover API.
 Menus respond to Arrow keys, Home, End, and Escape. Segmented controls
 and page controls are radiogroups. Toolbars move with Arrow keys.
