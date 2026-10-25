@@ -1,0 +1,107 @@
+:root {
+  --table-inline-size: var(--size-full);
+  --table-border-collapse: separate;
+  --table-border-spacing: var(--space-0);
+  --table__caption-text-align: var(--text-align-start);
+  --table__caption-padding-block-end: var(--space-2);
+  --table__caption-color: var(--label-2);
+  --table__caption-font-family: var(--text-subheadline-family);
+  --table__caption-font-size: var(--text-subheadline-size);
+  --table__caption-line-height: var(--text-subheadline-leading);
+  --table__caption-letter-spacing: var(--text-subheadline-tracking);
+  --table__head-background-color: var(--fill-3);
+  --table__head-color: var(--label-2);
+  --table__head-font-family: var(--text-subheadline-family);
+  --table__head-font-size: var(--text-subheadline-size);
+  --table__head-font-weight: var(--font-weight-semibold);
+  --table__head-line-height: var(--text-subheadline-leading);
+  --table__head-letter-spacing: var(--text-subheadline-tracking);
+  --table__cell-padding-block: var(--space-2);
+  --table__cell-padding-inline: var(--space-3);
+  --table__cell-border-block-end-width: var(--hairline);
+  --table__cell-border-block-end-style: var(--border-style-solid);
+  --table__cell-border-block-end-color: var(--separator);
+  --table__cell-font-family: var(--text-body-family);
+  --table__cell-font-size: var(--text-body-size);
+  --table__cell-line-height: var(--text-body-leading);
+  --table__cell-letter-spacing: var(--text-body-tracking);
+  --table__cell-color: var(--label);
+  --table__cell-text-align: var(--text-align-start);
+  --table__cell-vertical-align: var(--vertical-align-middle);
+  --table__row-header-font-weight: var(--font-weight-semibold);
+  --table__row-background-color--striped: var(--fill-4);
+}
+
+table[variant="default"], table[variant="striped"] {
+  inline-size: var(--table-inline-size);
+  border-collapse: var(--table-border-collapse);
+  border-spacing: var(--table-border-spacing);
+
+  & > caption {
+    text-align: var(--table__caption-text-align);
+    padding-block-end: var(--table__caption-padding-block-end);
+    color: var(--table__caption-color);
+    font-family: var(--table__caption-font-family);
+    font-size: var(--table__caption-font-size);
+    line-height: var(--table__caption-line-height);
+    letter-spacing: var(--table__caption-letter-spacing);
+  }
+
+  & th, & td {
+    padding-block: var(--table__cell-padding-block);
+    padding-inline: var(--table__cell-padding-inline);
+    border-block-end-width: var(--table__cell-border-block-end-width);
+    border-block-end-style: var(--table__cell-border-block-end-style);
+    border-block-end-color: var(--table__cell-border-block-end-color);
+    font-family: var(--table__cell-font-family);
+    font-size: var(--table__cell-font-size);
+    line-height: var(--table__cell-line-height);
+    letter-spacing: var(--table__cell-letter-spacing);
+    color: var(--table__cell-color);
+    text-align: var(--table__cell-text-align);
+    vertical-align: var(--table__cell-vertical-align);
+  }
+
+  & > thead th {
+    background-color: var(--table__head-background-color);
+    color: var(--table__head-color);
+    font-family: var(--table__head-font-family);
+    font-size: var(--table__head-font-size);
+    font-weight: var(--table__head-font-weight);
+    line-height: var(--table__head-line-height);
+    letter-spacing: var(--table__head-letter-spacing);
+  }
+
+  & > tbody th {
+    font-weight: var(--table__row-header-font-weight);
+  }
+}
+
+table[variant="striped"] > tbody > tr:nth-child(even) {
+  background-color: var(--table__row-background-color--striped);
+}
+
+/* Narrow restack without stamped data-labels. The row header becomes
+   the row's label line and the header row steps out of the visual
+   flow while staying in the accessibility tree. */
+@media (max-width: 40rem) {
+  table[variant="default"], table[variant="striped"] {
+    & > thead {
+      position: var(--position-absolute);
+      inline-size: var(--size-1px);
+      block-size: var(--size-1px);
+      overflow: var(--overflow-hidden);
+    }
+
+    & > tbody > tr {
+      display: var(--display-block);
+      padding-block: var(--space-2);
+    }
+
+    & > tbody th, & > tbody td {
+      display: var(--display-block);
+      border-block-end-width: var(--border-width-none);
+      padding-block: var(--space-1);
+    }
+  }
+}

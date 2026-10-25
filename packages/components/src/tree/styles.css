@@ -1,0 +1,39 @@
+:root {
+  --tree-list-style: var(--list-style-none);
+  --tree-margin: var(--space-0);
+  --tree-padding: var(--space-0);
+  --tree__item-padding-block: var(--space-1);
+  --tree__item-padding-inline: var(--space-1);
+  --tree__item-color: var(--label);
+  --tree__item-font-family: var(--text-body-family);
+  --tree__item-font-size: var(--text-body-size);
+  --tree__item-line-height: var(--text-body-leading);
+  --tree__item-letter-spacing: var(--text-body-tracking);
+  --tree__group-list-style: var(--list-style-none);
+  --tree__group-margin: var(--space-0);
+  --tree__group-padding-inline-start: var(--space-5);
+  --tree__group-padding-block: var(--space-0);
+}
+
+ul[variant="tree"], ul[variant="treegrid"] {
+  list-style: var(--tree-list-style);
+  margin: var(--tree-margin);
+  padding: var(--tree-padding);
+
+  & > li {
+    padding-block: var(--tree__item-padding-block);
+    padding-inline: var(--tree__item-padding-inline);
+    color: var(--tree__item-color);
+    font-family: var(--tree__item-font-family);
+    font-size: var(--tree__item-font-size);
+    line-height: var(--tree__item-line-height);
+    letter-spacing: var(--tree__item-letter-spacing);
+  }
+
+  & > li > ul {
+    list-style: var(--tree__group-list-style);
+    margin: var(--tree__group-margin);
+    padding-inline-start: var(--tree__group-padding-inline-start);
+    padding-block: var(--tree__group-padding-block);
+  }
+}

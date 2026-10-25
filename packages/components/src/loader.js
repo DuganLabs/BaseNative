@@ -18,6 +18,7 @@ const COMPONENTS = [
   'avatar', 'accordion', 'breadcrumb', 'pagination', 'list-group',
   'combobox', 'multiselect',
   'drawer', 'dropdown-menu', 'command-palette', 'tooltip', 'toast',
+  'table', 'datagrid', 'tree', 'virtualizer', 'calendar', 'pipeline',
 ];
 
 /** @param {string} html */

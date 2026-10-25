@@ -1,0 +1,31 @@
+<template>
+  <section :variant="variant()" :aria-label="title()">
+    <header>
+      <h2>{{ title() }}</h2>
+      {{ raw(prevHtml()) }}
+      {{ raw(nextHtml()) }}
+    </header>
+    <template @if="isMonth()">
+      {{ raw(bodyHtml()) }}
+    </template>
+    <template @else>
+      <ol>
+        <template @for="day of days()">
+          <li>
+            <time :datetime="day.date">{{ day.label }}</time>
+            <ul>
+              <template @for="event of day.events">
+                <li>
+                  <article>
+                    <h3>{{ event.title }}</h3>
+                    <time :datetime="event.at">{{ event.timeLabel }}</time>
+                  </article>
+                </li>
+              </template>
+            </ul>
+          </li>
+        </template>
+      </ol>
+    </template>
+  </section>
+</template>

@@ -1,0 +1,28 @@
+<template>
+  <table :variant="variant()">
+    <template @if="hasCaption()">
+      <caption>{{ caption() }}</caption>
+    </template>
+    <thead>
+      <tr>
+        <template @for="column of columns()">
+          <th scope="col">{{ column }}</th>
+        </template>
+      </tr>
+    </thead>
+    <tbody>
+      <template @for="row of rows()">
+        <tr>
+          <template @for="cell of row">
+            <template @if="cell.header">
+              <th scope="row">{{ cell.text }}</th>
+            </template>
+            <template @else>
+              <td>{{ cell.text }}</td>
+            </template>
+          </template>
+        </tr>
+      </template>
+    </tbody>
+  </table>
+</template>

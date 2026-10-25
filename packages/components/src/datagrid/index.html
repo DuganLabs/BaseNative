@@ -1,0 +1,34 @@
+<template>
+  <table :variant="variant()">
+    <template @if="hasCaption()">
+      <caption>{{ caption() }}</caption>
+    </template>
+    <thead>
+      <tr>
+        <template @if="selectable()">
+          <th scope="col">{{ raw(selectAllHtml()) }}</th>
+        </template>
+        <template @for="column of columns()">
+          <template @if="column.sort">
+            <th scope="col" :aria-sort="column.sort">{{ raw(column.sortHtml) }}</th>
+          </template>
+          <template @else>
+            <th scope="col">{{ column.label }}</th>
+          </template>
+        </template>
+      </tr>
+    </thead>
+    <tbody>
+      <template @for="row of rows()">
+        <tr>
+          <template @if="selectable()">
+            <td>{{ raw(row.selectHtml) }}</td>
+          </template>
+          <template @for="cell of row.cells">
+            <td>{{ raw(cell) }}</td>
+          </template>
+        </tr>
+      </template>
+    </tbody>
+  </table>
+</template>

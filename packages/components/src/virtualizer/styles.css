@@ -1,0 +1,36 @@
+:root {
+  --virtualizer-display: var(--display-block);
+  --virtualizer-list-style: var(--list-style-none);
+  --virtualizer-margin: var(--space-0);
+  --virtualizer-padding: var(--space-0);
+  --virtualizer-overflow: var(--overflow-auto);
+  --virtualizer__item-block-size: var(--size-control);
+  --virtualizer__viewport-block-size: calc(var(--virtualizer__item-block-size) * var(--virtualizer__viewport-rows));
+  --virtualizer__viewport-rows: 8;
+  --virtualizer-block-size: var(--virtualizer__viewport-block-size);
+  --virtualizer__spacer-start-count: 0;
+  --virtualizer__spacer-end-count: 0;
+  --virtualizer__spacer-start-block-size: calc(var(--virtualizer__item-block-size) * var(--virtualizer__spacer-start-count));
+  --virtualizer__spacer-end-block-size: calc(var(--virtualizer__item-block-size) * var(--virtualizer__spacer-end-count));
+}
+
+ol[variant="virtualizer"] {
+  display: var(--virtualizer-display);
+  list-style: var(--virtualizer-list-style);
+  margin: var(--virtualizer-margin);
+  padding: var(--virtualizer-padding);
+  overflow: var(--virtualizer-overflow);
+  block-size: var(--virtualizer-block-size);
+
+  & > li {
+    block-size: var(--virtualizer__item-block-size);
+  }
+
+  & > li:first-child {
+    block-size: var(--virtualizer__spacer-start-block-size);
+  }
+
+  & > li:last-child {
+    block-size: var(--virtualizer__spacer-end-block-size);
+  }
+}

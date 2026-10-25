@@ -186,3 +186,109 @@ test('toast lists toned items in a live region and the toaster queues them', asy
   toaster.dismiss(0);
   assert.deepEqual(toaster.items().map((item) => item.message), ['Two']);
 });
+
+test('table renders semantic structure with row headers and a caption', async () => {
+  const registry = await loadRegistry();
+  const { html } = renderComponent(registry, render, 'table', {
+    caption: 'Delivered leads',
+    columns: ['Lead', 'Service', 'Fee'],
+    rows: [
+      [{ text: 'Garcia', header: true }, 'Panel upgrade', '$85'],
+      [{ text: 'Nguyen', header: true }, 'EV charger', '$65'],
+    ],
+    variant: 'striped',
+  });
+  assert.match(html, /<table variant="striped">/);
+  assert.match(html, /<caption>Delivered leads<\/caption>/);
+  assert.match(html, /<th scope="col">Service<\/th>/);
+  assert.match(html, /<th scope="row">Garcia<\/th>\s*<td>Panel upgrade<\/td>\s*<td>\$85<\/td>/);
+});
+
+test('datagrid nests sort buttons and selection checkboxes in the table skeleton', async () => {
+  const registry = await loadRegistry();
+  const sortButton = renderComponent(registry, render, 'button', { label: 'Lead', variant: 'ghost' }).html;
+  const box = renderComponent(registry, render, 'checkbox', { label: 'Select Garcia', name: 'sel', value: '1' }).html;
+  const { html } = renderComponent(registry, render, 'datagrid', {
+    selectable: true,
+    selectAllHtml: box,
+    columns: [
+      { key: 'lead', label: 'Lead', sort: 'ascending', sortHtml: sortButton },
+      { key: 'fee', label: 'Fee' },
+    ],
+    rows: [{ cells: ['Garcia', '$85'], selectHtml: box }],
+  });
+  assert.match(html, /<table variant="datagrid">/);
+  assert.match(html, /<th scope="col" aria-sort="ascending">\s*<button variant="ghost" type="button">Lead<\/button>\s*<\/th>/);
+  assert.match(html, /<td>\s*<label>\s*<input variant="checkbox" type="checkbox">\s*Select Garcia\s*<\/label>\s*<\/td>/);
+});
+
+test('tree nests a rendered child tree inside branch items', async () => {
+  const registry = await loadRegistry();
+  const toggle = renderComponent(registry, render, 'button', { label: 'Toggle', variant: 'ghost' }).html;
+  const children = renderComponent(registry, render, 'tree', {
+    items: [{ label: 'Panel upgrade' }, { label: 'EV charger' }],
+  }).html;
+  const { html } = renderComponent(registry, render, 'tree', {
+    items: [
+      { label: 'Services', expanded: true, toggleHtml: toggle, childrenHtml: children },
+      { label: 'Settings' },
+    ],
+  });
+  assert.match(html, /<ul variant="tree" role="tree">/);
+  assert.match(html, /<li role="treeitem" aria-expanded="true">/);
+  assert.match(html, /<ul role="group">\s*<ul variant="tree" role="tree">/);
+  assert.match(html, /<li role="treeitem">Settings<\/li>/);
+});
+
+test('virtualizer windows the list: indices and spacer counts from scroll math', async () => {
+  const registry = await loadRegistry();
+  const { html, viewModel } = renderComponent(registry, render, 'virtualizer', {
+    id: 'leads', total: 100, scrollTop: 44 * 20, rowHeight: 44, viewportRows: 8, overscan: 2,
+    labelFor: (index) => `Lead ${index + 1}`,
+  });
+  assert.equal(viewModel.startIndex(), 18);
+  assert.equal(viewModel.endIndex(), 30);
+  assert.equal(viewModel.spacerStartCount(), 18);
+  assert.equal(viewModel.spacerEndCount(), 70);
+  assert.match(html, /<ol variant="virtualizer" id="leads">/);
+  assert.match(html, /<li>\s*Lead 19\s*<\/li>/);
+  assert.match(html, /<li>\s*Lead 30\s*<\/li>/);
+  assert.doesNotMatch(html, /Lead 31/);
+});
+
+test('calendar computes the month grid and groups schedule events by day', async () => {
+  const registry = await loadRegistry();
+  const vm = renderComponent(registry, render, 'calendar', { year: 2026, month: 10, today: '2026-10-24' }).viewModel;
+  assert.equal(vm.title(), 'October 2026');
+  const weeks = vm.weeks();
+  assert.equal(weeks.length, 6);
+  assert.equal(weeks[0][0].date, '2026-09-27');
+  const oct24 = weeks.flat().find((day) => day.date === '2026-10-24');
+  assert.equal(oct24.isToday, true);
+  assert.equal(oct24.inMonth, true);
+  const { html } = renderComponent(registry, render, 'calendar', {
+    year: 2026, month: 10, variant: 'schedule', today: '2026-10-24',
+    events: [
+      { date: '2026-10-26', title: 'Panel upgrade', at: '2026-10-26T09:00', timeLabel: '9:00 AM' },
+      { date: '2026-10-26', title: 'Site survey', at: '2026-10-26T13:00', timeLabel: '1:00 PM' },
+    ],
+  });
+  assert.match(html, /<section variant="schedule" aria-label="October 2026">/);
+  assert.match(html, /<time datetime="2026-10-26">Mon, October 26<\/time>/);
+  assert.match(html, /<h3>Panel upgrade<\/h3>/);
+});
+
+test('pipeline renders stage columns of rendered cards', async () => {
+  const registry = await loadRegistry();
+  const card = renderComponent(registry, render, 'card', { title: 'Garcia', body: 'Panel upgrade' }).html;
+  const { html } = renderComponent(registry, render, 'pipeline', {
+    columns: [
+      { title: 'Quoted', cardsHtml: [card] },
+      { title: 'Scheduled', cardsHtml: [] },
+      { title: 'Paid', cardsHtml: [] },
+    ],
+  });
+  assert.match(html, /<ol variant="pipeline">/);
+  assert.match(html, /<h3>Quoted<\/h3>/);
+  assert.match(html, /<article variant="default">/);
+});

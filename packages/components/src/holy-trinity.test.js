@@ -15,6 +15,7 @@ const PILOT = [
   'avatar', 'accordion', 'breadcrumb', 'pagination', 'list-group',
   'combobox', 'multiselect',
   'drawer', 'dropdown-menu', 'command-palette', 'tooltip', 'toast',
+  'table', 'datagrid', 'tree', 'virtualizer', 'calendar', 'pipeline',
 ];
 
 test('each pilot component directory holds exactly the three files', async () => {

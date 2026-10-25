@@ -1,0 +1,16 @@
+<template>
+  <ol :variant="variant()" :id="id()">
+    <li aria-hidden="true"></li>
+    <template @for="index of windowIndices()">
+      <li>
+        <template @if="hasItemHtml()">
+          {{ raw(itemHtml(index)) }}
+        </template>
+        <template @else>
+          {{ labelFor(index) }}
+        </template>
+      </li>
+    </template>
+    <li aria-hidden="true"></li>
+  </ol>
+</template>

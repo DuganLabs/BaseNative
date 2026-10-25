@@ -1,0 +1,15 @@
+<template>
+  <ul :variant="variant()" :role="role()">
+    <template @for="item of items()">
+      <template @if="item.childrenHtml">
+        <li role="treeitem" :aria-expanded="expandedState(item)">
+          {{ raw(item.toggleHtml) }} {{ item.label }}
+          <ul role="group">{{ raw(item.childrenHtml) }}</ul>
+        </li>
+      </template>
+      <template @else>
+        <li role="treeitem">{{ item.label }}</li>
+      </template>
+    </template>
+  </ul>
+</template>

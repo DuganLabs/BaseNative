@@ -1,0 +1,82 @@
+:root {
+  --datagrid-inline-size: var(--size-full);
+  --datagrid-border-collapse: separate;
+  --datagrid-border-spacing: var(--space-0);
+  --datagrid__caption-text-align: var(--text-align-start);
+  --datagrid__caption-padding-block-end: var(--space-2);
+  --datagrid__caption-color: var(--label-2);
+  --datagrid__caption-font-family: var(--text-subheadline-family);
+  --datagrid__caption-font-size: var(--text-subheadline-size);
+  --datagrid__caption-line-height: var(--text-subheadline-leading);
+  --datagrid__caption-letter-spacing: var(--text-subheadline-tracking);
+  --datagrid__head-background-color: var(--fill-3);
+  --datagrid__head-color: var(--label-2);
+  --datagrid__head-font-family: var(--text-subheadline-family);
+  --datagrid__head-font-size: var(--text-subheadline-size);
+  --datagrid__head-font-weight: var(--font-weight-semibold);
+  --datagrid__head-line-height: var(--text-subheadline-leading);
+  --datagrid__head-letter-spacing: var(--text-subheadline-tracking);
+  --datagrid__cell-padding-block: var(--space-2);
+  --datagrid__cell-padding-inline: var(--space-3);
+  --datagrid__cell-border-block-end-width: var(--hairline);
+  --datagrid__cell-border-block-end-style: var(--border-style-solid);
+  --datagrid__cell-border-block-end-color: var(--separator);
+  --datagrid__cell-font-family: var(--text-body-family);
+  --datagrid__cell-font-size: var(--text-body-size);
+  --datagrid__cell-line-height: var(--text-body-leading);
+  --datagrid__cell-letter-spacing: var(--text-body-tracking);
+  --datagrid__cell-color: var(--label);
+  --datagrid__cell-text-align: var(--text-align-start);
+  --datagrid__cell-vertical-align: var(--vertical-align-middle);
+  --datagrid__row-header-font-weight: var(--font-weight-semibold);
+  --datagrid__sorted-background-color: var(--fill-2);
+}
+
+table[variant="datagrid"] {
+  inline-size: var(--datagrid-inline-size);
+  border-collapse: var(--datagrid-border-collapse);
+  border-spacing: var(--datagrid-border-spacing);
+
+  & > caption {
+    text-align: var(--datagrid__caption-text-align);
+    padding-block-end: var(--datagrid__caption-padding-block-end);
+    color: var(--datagrid__caption-color);
+    font-family: var(--datagrid__caption-font-family);
+    font-size: var(--datagrid__caption-font-size);
+    line-height: var(--datagrid__caption-line-height);
+    letter-spacing: var(--datagrid__caption-letter-spacing);
+  }
+
+  & th, & td {
+    padding-block: var(--datagrid__cell-padding-block);
+    padding-inline: var(--datagrid__cell-padding-inline);
+    border-block-end-width: var(--datagrid__cell-border-block-end-width);
+    border-block-end-style: var(--datagrid__cell-border-block-end-style);
+    border-block-end-color: var(--datagrid__cell-border-block-end-color);
+    font-family: var(--datagrid__cell-font-family);
+    font-size: var(--datagrid__cell-font-size);
+    line-height: var(--datagrid__cell-line-height);
+    letter-spacing: var(--datagrid__cell-letter-spacing);
+    color: var(--datagrid__cell-color);
+    text-align: var(--datagrid__cell-text-align);
+    vertical-align: var(--datagrid__cell-vertical-align);
+  }
+
+  & > thead th {
+    background-color: var(--datagrid__head-background-color);
+    color: var(--datagrid__head-color);
+    font-family: var(--datagrid__head-font-family);
+    font-size: var(--datagrid__head-font-size);
+    font-weight: var(--datagrid__head-font-weight);
+    line-height: var(--datagrid__head-line-height);
+    letter-spacing: var(--datagrid__head-letter-spacing);
+  }
+
+  & > tbody th {
+    font-weight: var(--datagrid__row-header-font-weight);
+  }
+}
+
+table[variant="datagrid"] > thead th[aria-sort] {
+  background-color: var(--datagrid__sorted-background-color);
+}
