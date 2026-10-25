@@ -42,6 +42,7 @@
 }
 
 dialog[variant="command-palette"] {
+  --input-background-color: var(--fill-3);
   box-sizing: var(--command-palette-box-sizing);
   inline-size: var(--command-palette-inline-size);
   max-inline-size: var(--command-palette-max-inline-size);

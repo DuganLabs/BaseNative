@@ -24,11 +24,12 @@
   --multiselect__chip-line-height: var(--text-subheadline-leading);
   --multiselect__chip-letter-spacing: var(--text-subheadline-tracking);
   --multiselect__listbox-position: var(--position-absolute);
-  --multiselect__listbox-inset-block-start: calc(var(--size-control) + var(--space-1));
+  --multiselect__listbox-inset-block-start: var(--size-full);
   --multiselect__listbox-inset-inline: var(--space-0);
   --multiselect__listbox-z-index: var(--layer-overlay);
   --multiselect__listbox-list-style: var(--list-style-none);
   --multiselect__listbox-margin: var(--space-0);
+  --multiselect__listbox-margin-block-start: var(--space-1);
   --multiselect__listbox-padding: var(--space-1);
   --multiselect__listbox-background-color: var(--background-3);
   --multiselect__listbox-border-width: var(--hairline);
@@ -51,6 +52,7 @@
 }
 
 section[variant="multiselect"] {
+  --input-background-color: var(--fill-3);
   position: var(--multiselect-position);
   display: var(--multiselect-display);
   flex-direction: var(--multiselect-flex-direction);
@@ -89,6 +91,7 @@ section[variant="multiselect"] {
     z-index: var(--multiselect__listbox-z-index);
     list-style: var(--multiselect__listbox-list-style);
     margin: var(--multiselect__listbox-margin);
+    margin-block-start: var(--multiselect__listbox-margin-block-start);
     padding: var(--multiselect__listbox-padding);
     background-color: var(--multiselect__listbox-background-color);
     border-width: var(--multiselect__listbox-border-width);

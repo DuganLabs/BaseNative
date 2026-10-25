@@ -2,11 +2,12 @@
   --combobox-position: var(--position-relative);
   --combobox-display: var(--display-block);
   --combobox__listbox-position: var(--position-absolute);
-  --combobox__listbox-inset-block-start: calc(var(--size-control) + var(--space-1));
+  --combobox__listbox-inset-block-start: var(--size-full);
   --combobox__listbox-inset-inline: var(--space-0);
   --combobox__listbox-z-index: var(--layer-overlay);
   --combobox__listbox-list-style: var(--list-style-none);
   --combobox__listbox-margin: var(--space-0);
+  --combobox__listbox-margin-block-start: var(--space-1);
   --combobox__listbox-padding: var(--space-1);
   --combobox__listbox-background-color: var(--background-3);
   --combobox__listbox-border-width: var(--hairline);
@@ -29,6 +30,7 @@
 }
 
 section[variant="default"] {
+  --input-background-color: var(--fill-3);
   position: var(--combobox-position);
   display: var(--combobox-display);
 
@@ -39,6 +41,7 @@ section[variant="default"] {
     z-index: var(--combobox__listbox-z-index);
     list-style: var(--combobox__listbox-list-style);
     margin: var(--combobox__listbox-margin);
+    margin-block-start: var(--combobox__listbox-margin-block-start);
     padding: var(--combobox__listbox-padding);
     background-color: var(--combobox__listbox-background-color);
     border-width: var(--combobox__listbox-border-width);

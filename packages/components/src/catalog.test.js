@@ -618,3 +618,26 @@ test('the overlay components size like the dialog — border-box, full width, to
   assert.match(paletteCss, /box-sizing: var\(--command-palette-box-sizing\)/);
   assert.doesNotMatch(drawerCss + paletteCss, /: (24|36)rem;/);
 });
+
+test('the popup composites anchor below their section, and their fields take the fill', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const comboCss = await readFile(new URL('./combobox/styles.css', import.meta.url), 'utf8');
+  assert.match(comboCss, /--combobox__listbox-inset-block-start: var\(--size-full\)/);
+  assert.match(comboCss, /--input-background-color: var\(--fill-3\)/);
+  const multiCss = await readFile(new URL('./multiselect/styles.css', import.meta.url), 'utf8');
+  assert.match(multiCss, /--multiselect__listbox-inset-block-start: var\(--size-full\)/);
+  assert.match(multiCss, /--input-background-color: var\(--fill-3\)/);
+  const paletteCss = await readFile(new URL('./command-palette/styles.css', import.meta.url), 'utf8');
+  assert.match(paletteCss, /--input-background-color: var\(--fill-3\)/);
+});
+
+test('virtualizer rows center their content, and the restacked table runs tight', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const virtCss = await readFile(new URL('./virtualizer/styles.css', import.meta.url), 'utf8');
+  assert.match(virtCss, /--virtualizer__item-display: var\(--display-flex\)/);
+  assert.match(virtCss, /--virtualizer__item-align-items: var\(--align-center\)/);
+  const tableCss = await readFile(new URL('./table/styles.css', import.meta.url), 'utf8');
+  assert.match(tableCss, /--table__row-padding-block--restack: var\(--space-1\)/);
+  assert.match(tableCss, /--table__cell-padding-block--restack: var\(--space-0\)/);
+  assert.match(tableCss, /--table__row-border-block-end-width--restack: var\(--hairline\)/);
+});

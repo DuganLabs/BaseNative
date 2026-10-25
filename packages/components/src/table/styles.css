@@ -42,6 +42,11 @@
   --table__row-display--restack: var(--display-block);
   --table__cell-display--restack: var(--display-block);
   --table__cell-border-block-end-width--restack: var(--border-width-none);
+  --table__row-padding-block--restack: var(--space-1);
+  --table__cell-padding-block--restack: var(--space-0);
+  --table__row-border-block-end-width--restack: var(--hairline);
+  --table__row-border-block-end-style--restack: var(--border-style-solid);
+  --table__row-border-block-end-color--restack: var(--separator);
   --table__row-background-color--striped: var(--fill-4);
 }
 
@@ -126,13 +131,16 @@ table[variant="striped"] > tbody > tr:nth-child(even) {
 
     & > tbody > tr {
       display: var(--table__row-display--restack);
-      padding-block: var(--space-2);
+      padding-block: var(--table__row-padding-block--restack);
+      border-block-end-width: var(--table__row-border-block-end-width--restack);
+      border-block-end-style: var(--table__row-border-block-end-style--restack);
+      border-block-end-color: var(--table__row-border-block-end-color--restack);
     }
 
     & > tbody th, & > tbody td {
       display: var(--table__cell-display--restack);
       border-block-end-width: var(--table__cell-border-block-end-width--restack);
-      padding-block: var(--space-1);
+      padding-block: var(--table__cell-padding-block--restack);
     }
   }
 }

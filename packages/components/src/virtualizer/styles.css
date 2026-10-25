@@ -5,6 +5,8 @@
   --virtualizer-padding: var(--space-0);
   --virtualizer-overflow: var(--overflow-auto);
   --virtualizer__item-block-size: var(--size-control);
+  --virtualizer__item-display: var(--display-flex);
+  --virtualizer__item-align-items: var(--align-center);
   --virtualizer__viewport-rows: 8;
   --virtualizer__spacer-start-count: 0;
   --virtualizer__spacer-end-count: 0;
@@ -26,6 +28,8 @@ ol[variant="virtualizer"] {
   block-size: var(--virtualizer-block-size);
 
   & > li {
+    display: var(--virtualizer__item-display);
+    align-items: var(--virtualizer__item-align-items);
     block-size: var(--virtualizer__item-block-size);
   }
 
