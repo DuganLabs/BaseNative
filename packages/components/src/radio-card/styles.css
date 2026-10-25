@@ -1,0 +1,75 @@
+:root {
+  --radio-card-display: var(--display-grid);
+  --radio-card-gap: var(--space-3);
+  --radio-card-margin: var(--space-0);
+  --radio-card-padding: var(--space-0);
+  --radio-card-border-width: var(--border-width-none);
+  --radio-card__legend-color: var(--label);
+  --radio-card__legend-font-family: var(--text-subheadline-family);
+  --radio-card__legend-font-size: var(--text-subheadline-size);
+  --radio-card__legend-font-weight: var(--font-weight-medium);
+  --radio-card__legend-line-height: var(--text-subheadline-leading);
+  --radio-card__legend-margin-block-end: var(--space-2);
+  --radio-card__option-display: var(--display-flex);
+  --radio-card__option-align-items: var(--align-start);
+  --radio-card__option-gap: var(--space-3);
+  --radio-card__option-cursor: var(--cursor-pointer);
+  --radio-card__control-size: var(--space-5);
+  --radio-card__control-accent-color: var(--tint);
+  --radio-card__control-margin: var(--space-0);
+  --radio-card__control-margin-block-start: var(--space-1);
+  --radio-card__card-flex: 1;
+}
+
+fieldset[variant="radio-card"] {
+  display: var(--radio-card-display);
+  gap: var(--radio-card-gap);
+  margin: var(--radio-card-margin);
+  padding: var(--radio-card-padding);
+  border-width: var(--radio-card-border-width);
+
+  & > legend {
+    color: var(--radio-card__legend-color);
+    font-family: var(--radio-card__legend-font-family);
+    font-size: var(--radio-card__legend-font-size);
+    font-weight: var(--radio-card__legend-font-weight);
+    line-height: var(--radio-card__legend-line-height);
+    margin-block-end: var(--radio-card__legend-margin-block-end);
+  }
+
+  & > label {
+    display: var(--radio-card__option-display);
+    align-items: var(--radio-card__option-align-items);
+    gap: var(--radio-card__option-gap);
+    cursor: var(--radio-card__option-cursor);
+
+    & > input {
+      inline-size: var(--radio-card__control-size);
+      block-size: var(--radio-card__control-size);
+      accent-color: var(--radio-card__control-accent-color);
+      margin: var(--radio-card__control-margin);
+      margin-block-start: var(--radio-card__control-margin-block-start);
+    }
+
+    & > article {
+      flex: var(--radio-card__card-flex);
+    }
+
+    &:hover {
+      --card-border-color: var(--label-3);
+    }
+
+    &:has(> input:checked) {
+      --card-border-color: var(--tint);
+      --card-background-color: var(--tint-fill);
+      --card-box-shadow: var(--focus-ring);
+    }
+
+    &:has(> input:focus-visible) {
+      --card-box-shadow: var(--focus-ring);
+    }
+  }
+}
+
+/* @variants — generated from the registry, do not edit by hand */
+/* @endvariants */

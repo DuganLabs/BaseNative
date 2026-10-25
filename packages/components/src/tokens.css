@@ -246,6 +246,7 @@
   --border-style-solid: solid;
   --box-sizing-border: border-box;
   --align-center: center;
+  --align-start: start;
   --align-stretch: stretch;
   --position-relative: relative;
   --position-absolute: absolute;

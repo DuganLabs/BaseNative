@@ -1,5 +1,5 @@
 // @ts-check
-import { signal } from '@basenative/runtime';
+import { signal, computed } from '@basenative/runtime';
 import { raw } from '@basenative/runtime/shared/escape';
 
 export const name = 'card';
@@ -21,8 +21,9 @@ export function create(props) {
   const body = signal(props.body ?? '');
   const variant = signal(props.variant ?? 'default');
   const footerHtml = signal(props.footerHtml ?? '');
+  const hasFooter = computed(() => footerHtml().length > 0);
 
-  return { title, body, variant, footerHtml, raw };
+  return { title, body, variant, footerHtml, hasFooter, raw };
 }
 
 /** @param {import('../registry.js').Registry} registry */

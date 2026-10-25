@@ -4,6 +4,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { render } from '../../server/src/render.js';
 import { loadRegistry, renderComponent, assembleStyles } from '../src/loader.js';
+import { highlightCodeBlocks } from '../../../examples/express/highlight.js';
 
 const registry = await loadRegistry();
 const R = (name, props) => renderComponent(registry, render, name, props).html;
@@ -92,7 +93,17 @@ const jobCard = R('card', {
 });
 const uploadBar = R('progress', { value: 60 });
 
-const css = await assembleStyles(registry, ['button', 'input', 'field', 'dialog', 'badge', 'checkbox', 'toggle', 'radio', 'textarea', 'select', 'alert', 'progress', 'card']);
+
+const planCards = R('radio-card', {
+  legend: 'Pick a plan', name: 'plan', value: 'schedule',
+  options: [
+    { value: 'leads', cardHtml: R('card', { title: 'Pay per delivered lead', body: 'One flat price per lead delivered into your schedule. No subscription, no tiers.' }) },
+    { value: 'schedule', cardHtml: R('card', { title: 'Leads + schedule management', body: 'Auto-booking inside your availability windows, with instant notification and undo.' }) },
+    { value: 'platform', cardHtml: R('card', { title: 'Full platform', body: 'Every job from first click to payment — Tesla work and everything else the shop runs.' }) },
+  ],
+});
+
+const css = await assembleStyles(registry, ['button', 'input', 'field', 'dialog', 'badge', 'checkbox', 'toggle', 'radio', 'textarea', 'select', 'alert', 'progress', 'card', 'radio-card']);
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const buttonHtml = await readFile(new URL('../src/button/index.html', import.meta.url), 'utf8');
 const buttonCss = await readFile(new URL('../src/button/styles.css', import.meta.url), 'utf8');
@@ -123,21 +134,30 @@ ${css}
   p.note { color: var(--label-2); font-size: .875rem; margin: 0; }
   article { background: var(--background-grouped-2); border: 1px solid var(--separator); border-radius: .75rem; padding: 1.25rem; display: grid; gap: 1rem; }
   dialog { position: static; }
-  pre { background: #111827; color: #f3f4f6; padding: 1rem; border-radius: .5rem; overflow-x: auto; font-size: .78rem; line-height: 1.5; }
+  pre { background: #111827; color: #f3f4f6; padding: 1rem; border-radius: .5rem; overflow-x: auto; font-size: .78rem; line-height: 1.5;
+    --syntax-keyword: #c792ea; --syntax-string: #c3e88d; --syntax-function: #82aaff; --syntax-number: #f78c6c; --syntax-comment: #7a98a5; --syntax-tag: #f07178; --syntax-attr: #ffcb6b; }
+  .kw { color: var(--syntax-keyword); }
+  .str { color: var(--syntax-string); }
+  .fn { color: var(--syntax-function); }
+  .num { color: var(--syntax-number); }
+  .cmt { color: var(--syntax-comment); font-style: italic; }
+  .tag { color: var(--syntax-tag); }
+  .attr { color: var(--syntax-attr); }
+  article > p { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: 0; }
 </style>
 </head>
 <body>
 <main>
   <section>
     <h1>Holy Trinity pilot — rendered proof</h1>
-    <p class="note">Thirteen components — button, field+input, dialog, badge, checkbox, toggle, radio, textarea, select, alert, progress, card — each a directory of index.html / styles.css / index.js, rendered server-side through @basenative/server. Every style below comes from global tokens — the component sheets declare no values of their own.</p>
+    <p class="note">Thirteen catalog components plus one composite — button, field+input, dialog, badge, checkbox, toggle, radio, textarea, select, alert, progress, card, and radio-card (radio + card) — each a directory of index.html / styles.css / index.js, rendered server-side through @basenative/server. Every style below comes from global tokens — the component sheets declare no values of their own.</p>
   </section>
 
   <section>
     <h2>Buttons — four registered variants, one disabled, one vanilla</h2>
     <article>
       <p>${buttons}</p>
-      <p><button>Vanilla button — no variant attribute, untouched by the catalog</button></p>
+      <p>Vanilla, for contrast — no variant attribute, untouched by the catalog: <button>Plain button</button></p>
     </article>
   </section>
 
@@ -178,6 +198,11 @@ ${css}
   </section>
 
   <section>
+    <h2>Radio cards — a composite: the radio group, the card component, token re-pointing</h2>
+    ${planCards}
+  </section>
+
+  <section>
     <h2>Dialog — composed of buttons</h2>
     ${archiveDialog}
     ${deleteDialog}
@@ -185,9 +210,9 @@ ${css}
 
   <section>
     <h2>The work — button/ in full</h2>
-    <pre>${esc(buttonHtml)}</pre>
-    <pre>${esc(buttonCss)}</pre>
-    <pre>${esc(buttonJs)}</pre>
+    <pre><code>${esc(buttonHtml)}</code></pre>
+    <pre><code>${esc(buttonCss)}</code></pre>
+    <pre><code>${esc(buttonJs)}</code></pre>
   </section>
 </main>
 </body>
@@ -195,5 +220,5 @@ ${css}
 `;
 
 const output = process.argv[2] ?? new URL('./trinity-proof.html', import.meta.url);
-await writeFile(output, page);
+await writeFile(output, highlightCodeBlocks(page));
 console.log(`proof written to ${output}`);

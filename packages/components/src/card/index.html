@@ -4,6 +4,8 @@
       <h3>{{ title() }}</h3>
     </header>
     <p>{{ body() }}</p>
-    <footer>{{ raw(footerHtml()) }}</footer>
+    <template @if="hasFooter()">
+      <footer>{{ raw(footerHtml()) }}</footer>
+    </template>
   </article>
 </template>

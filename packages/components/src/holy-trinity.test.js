@@ -11,7 +11,7 @@ import { render } from '../../server/src/render.js';
 const PILOT = [
   'button', 'input', 'field', 'dialog',
   'badge', 'checkbox', 'toggle', 'radio', 'textarea', 'select',
-  'alert', 'progress', 'card',
+  'alert', 'progress', 'card', 'radio-card',
 ];
 
 test('each pilot component directory holds exactly the three files', async () => {
@@ -247,4 +247,28 @@ test('card composes a footer of buttons', async () => {
   assert.match(html, /<article variant="default">/);
   assert.match(html, /<h3>Panel upgrade<\/h3>/);
   assert.match(html, /<button variant="primary" type="button">Open job<\/button>/);
+});
+
+test('radio-card composes cards into a radio group and re-points the chosen card', async () => {
+  const registry = await loadRegistry();
+  const cardFor = (title, body) => renderComponent(registry, render, 'card', { title, body }).html;
+  const { html } = renderComponent(registry, render, 'radio-card', {
+    legend: 'Pick a plan', name: 'plan', value: 'schedule',
+    options: [
+      { value: 'leads', cardHtml: cardFor('Pay per lead', 'Flat price per delivered lead.') },
+      { value: 'schedule', cardHtml: cardFor('Leads + scheduling', 'Auto-booking in your windows.') },
+    ],
+  });
+  assert.match(html, /<fieldset variant="radio-card">/);
+  assert.match(html, /<legend>Pick a plan<\/legend>/);
+  assert.equal((html.match(/<article variant="default">/g) ?? []).length, 2);
+  assert.match(html, /<input type="radio" name="plan" value="schedule" checked="true">/);
+  const styles = await readFile(new URL('radio-card/styles.css', import.meta.url), 'utf8');
+  assert.match(styles, /&:has\(> input:checked\) \{\s+--card-border-color: var\(--tint\);/);
+});
+
+test('card renders its footer only when footer HTML is given', async () => {
+  const registry = await loadRegistry();
+  const bare = renderComponent(registry, render, 'card', { title: 'T', body: 'B' }).html;
+  assert.doesNotMatch(bare, /<footer>/);
 });
