@@ -344,7 +344,7 @@ export function getRoadmapPageContext() {
       tone: 'done',
     },
   ];
-  return {
+  const data = {
     // Measured or derived, never typed: the package count read "39" while the
     // workspace published 42, and "4 engines" counted four browsers that share
     // three engines. 'Shipped' is a judgement, not a measurement, so it stays.
@@ -556,6 +556,74 @@ export function getRoadmapPageContext() {
           'Implemented — dialog, drawer, tabs, accordion, breadcrumb, tooltip, dropdown menu, and command palette shipped.',
       },
     ],
+  };
+
+  // The tables are the catalog table; a status is the catalog badge, the
+  // same carrier /ai's scorecard uses. The view binds the rendered tables —
+  // the data above stays the single source the rows are built from.
+  const STATUS_VARIANT = { done: 'success' };
+  const statusCell = (text, tone) => ({
+    contentHtml: renderTrinity('badge', {
+      label: text,
+      variant: STATUS_VARIANT[tone] || 'default',
+    }),
+  });
+  const roadmapTable = (columns, rows) => raw(renderTrinity('table', { columns, rows }));
+
+  return {
+    readinessStats: data.readinessStats,
+    targetBrowserList: data.targetBrowserList,
+    releaseStages: data.releaseStages,
+    milestoneTable: roadmapTable(
+      ['Milestone', 'Focus', 'Status', 'Outcome'],
+      data.releaseStages.map((stage) => [
+        stage.milestone,
+        stage.focus,
+        statusCell(stage.status, stage.tone),
+        stage.outcome,
+      ]),
+    ),
+    trustTable: roadmapTable(
+      ['Area', 'State', 'Notes'],
+      data.trustBlockers.map((item) => [item.item, statusCell(item.state, item.tone), item.notes]),
+    ),
+    packageTable: roadmapTable(
+      ['Package', 'Status', 'Responsibility'],
+      data.packageSurface.map((pkg) => [
+        { contentHtml: `<code>${escapeText(pkg.pkg)}</code>` },
+        statusCell(pkg.status, pkg.tone),
+        pkg.scope,
+      ]),
+    ),
+    workflowTable: roadmapTable(
+      ['Category', 'Status', 'Detail'],
+      data.workflowParity.map((workflow) => [
+        workflow.category,
+        statusCell(workflow.status, workflow.tone),
+        workflow.detail,
+      ]),
+    ),
+    p0Table: roadmapTable(
+      ['Component', 'Target release', 'Status', 'Notes'],
+      data.p0Components.map((component) => [
+        component.component,
+        component.release,
+        statusCell(component.status, component.tone),
+        component.notes,
+      ]),
+    ),
+    browserTable: roadmapTable(
+      ['Feature', 'Status', 'Fallback'],
+      data.browserSupport.map((browser) => [
+        browser.feature,
+        statusCell(browser.status, browser.tone),
+        browser.fallback,
+      ]),
+    ),
+    deferredTable: roadmapTable(
+      ['Scope', 'Status'],
+      data.deferredWork.map((item) => [item.item, item.reason]),
+    ),
   };
 }
 
