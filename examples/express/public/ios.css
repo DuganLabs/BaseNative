@@ -131,8 +131,7 @@ body::before {
    the package's size/leading/tracking. Page-leading titles only: the
    hero of a page, or the first section's heading. */
 [data-hero] > h2,
-[data-bn-page-hero] h2,
-main > section:first-of-type > h2 {
+[data-bn-page-hero] h2 {
   font-family: var(--font-large-title-family);
   font-size: var(--font-large-title-size);
   line-height: var(--font-large-title-leading);
@@ -141,13 +140,26 @@ main > section:first-of-type > h2 {
   letter-spacing: var(--font-large-title-tracking);
 }
 
-section > h2 {
+section > h2,
+main > section > header > h2,
+main > article section > header > h2,
+[data-playground] article > header > h2 {
   font-family: var(--font-title-1-family);
   font-size: var(--font-title-1-size);
   line-height: var(--font-title-1-leading);
   font-weight: var(--font-title-1-weight);
   font-weight: 700;
   letter-spacing: var(--font-title-1-tracking);
+}
+
+/* A sub-panel heading inside an article (a demo's log rail, a card's
+   aside) sits one rung below the article's own section heading. */
+article aside > header > h2 {
+  font-family: var(--font-title-2-family);
+  font-size: var(--font-title-2-size);
+  line-height: var(--font-title-2-leading);
+  font-weight: 600;
+  letter-spacing: var(--font-title-2-tracking);
 }
 
 h3 {
