@@ -24,6 +24,7 @@ import {
   getTasksPageContext,
 } from './site-data.js';
 import { getAiPageContext } from './ai-scorecard.js';
+import { getPlaygroundPageContext } from './playground-data.js';
 import { componentCategories, flatComponents, findComponent } from './component-catalog.js';
 import { getDemo } from './component-demos.js';
 import { getDemoScripts } from './component-demo-scripts.js';
@@ -62,6 +63,9 @@ function getAssetVersion() {
     'public/theme.css',
     'public/platform-shell.css',
     'public/platform-shell.js',
+    'public/playground.css',
+    'public/playground.js',
+    'public/playground-preview.js',
   ]) {
     try {
       hash.update(read(file));
@@ -263,7 +267,7 @@ export const siteRoutes = [
     description:
       'Interactive sandbox for signals, computed values, effects, and template directives.',
     activePage: 'playground',
-    ctx: () => ({}),
+    ctx: () => getPlaygroundPageContext(),
     hero: {
       eyebrow: 'Playground',
       titleHtml: 'Signals <em>Playground</em>',

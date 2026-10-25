@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { hmrMiddleware } from '@basenative/hmr';
 import { renderRoute, renderComponentPage, renderNotFoundPage, siteRoutes } from './page.js';
+import { playgroundComponentsCss } from './playground-data.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pkgRoot = join(__dirname, '..', '..');
@@ -50,6 +51,20 @@ for (const route of siteRoutes) {
     res.send(renderRoute(route, { tasks, hasApi: true, measure: req.query.measure === '1' }));
   });
 }
+
+// The playground's preview document: a real route (never a srcdoc
+// document — WebKit resolves a srcdoc document's relative script URLs
+// against about:srcdoc, which lost the runtime on iPhones). It loads
+// the site's runtime bundle by absolute path and runs the editor panes
+// the parent page posts to it.
+app.get('/playground/preview', (req, res) => {
+  res.sendFile(join(__dirname, 'public', 'playground-preview.html'));
+});
+
+// The playground's assembled component sheet (see playground-data.js).
+app.get('/playground/components.css', (req, res) => {
+  res.type('css').send(playgroundComponentsCss);
+});
 
 app.get('/components/:slug', (req, res) => {
   const html = renderComponentPage(req.params.slug);
