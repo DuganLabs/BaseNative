@@ -3,7 +3,7 @@ import { escapeHtml } from './escape.js';
 function renderField(nodeId, prop, value, binding) {
   const id = `bn-prop-${nodeId}-${prop.name}`;
   const label = escapeHtml(prop.label || prop.name);
-  const dataAttrs = `data-bn-prop="${escapeHtml(prop.name)}" data-bn-node="${escapeHtml(nodeId)}"`;
+  const dataAttrs = `data-bn="bn-inspector-field" data-bn-prop="${escapeHtml(prop.name)}" data-bn-node="${escapeHtml(nodeId)}"`;
 
   if (prop.kind === 'signal') {
     const ref = binding ? binding.ref : '';
@@ -52,6 +52,7 @@ export function renderInspector(state, palette) {
   if (!selectedId) {
     return '<aside class="bn-inspector" aria-label="Property inspector">'
       + '<p class="bn-inspector__empty">Select a component to edit its properties.</p>'
+      + '<p class="bn-inspector__empty">Click a component on the canvas to select it — its properties, duplicate, and remove live here.</p>'
       + '</aside>';
   }
 
@@ -79,8 +80,8 @@ export function renderInspector(state, palette) {
     .join('\n');
 
   const actions = `<footer class="bn-inspector__actions">`
-    + `<button type="button" data-bn-action="duplicate" data-bn-node="${escapeHtml(node.id)}" class="bn-inspector__btn">Duplicate</button>`
-    + `<button type="button" data-bn-action="remove" data-bn-node="${escapeHtml(node.id)}" class="bn-inspector__btn bn-inspector__btn--danger">Remove</button>`
+    + `<button type="button" data-bn="bn-inspector-action" data-bn-action="duplicate" data-bn-node="${escapeHtml(node.id)}" class="bn-inspector__btn">Duplicate</button>`
+    + `<button type="button" data-bn="bn-inspector-action" data-bn-action="remove" data-bn-node="${escapeHtml(node.id)}" class="bn-inspector__btn bn-inspector__btn--danger">Remove</button>`
     + `</footer>`;
 
   return `<aside class="bn-inspector" aria-label="Property inspector">${heading}`

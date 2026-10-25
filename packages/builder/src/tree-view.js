@@ -13,7 +13,7 @@ function renderRow(node, depth, selectedId, hoverId) {
   const expanded = node.children && node.children.length > 0 ? ' aria-expanded="true"' : '';
 
   return `${indent}<li role="treeitem"${ariaSelected}${expanded} data-bn-tree-id="${escapeHtml(node.id)}" class="${classes.join(' ')}">`
-    + `<button type="button" data-bn-tree-select="${escapeHtml(node.id)}" class="bn-tree__label">`
+    + `<button type="button" data-bn="bn-tree-label" data-bn-tree-select="${escapeHtml(node.id)}" class="bn-tree__label">`
     + `<span class="bn-tree__type">${escapeHtml(node.type)}</span>`
     + `<span class="bn-tree__summary">${summary}</span>`
     + `</button>`;

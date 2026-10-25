@@ -141,9 +141,21 @@ export class BnBuilderCanvas extends HTMLElement {
       }
       e.preventDefault();
       e.dataTransfer.dropEffect = isPaletteDrag ? 'copy' : 'move';
+      this._root.dataset.bnDropActive = 'true';
+    });
+
+    this._root.addEventListener('dragleave', (e) => {
+      if (!this._root.contains(e.relatedTarget)) {
+        delete this._root.dataset.bnDropActive;
+      }
+    });
+
+    this._root.addEventListener('dragend', () => {
+      delete this._root.dataset.bnDropActive;
     });
 
     this._root.addEventListener('drop', (e) => {
+      delete this._root.dataset.bnDropActive;
       e.preventDefault();
       const moveId = e.dataTransfer.getData('application/x-bn-node-id');
       const newType = e.dataTransfer.getData('application/x-bn-component-type');

@@ -22,5 +22,29 @@ ready(() => {
   builder.addEventListener('bn-builder-export', (event) => {
     panel.hidden = false;
     output.textContent = event.detail?.code ?? '';
+    panel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   });
+
+  const copy = document.querySelector('[data-bn-builder-export-copy]');
+  if (copy) {
+    copy.addEventListener('click', async () => {
+      const code = output.textContent ?? '';
+      if (!code) return;
+      try {
+        await navigator.clipboard.writeText(code);
+      } catch {
+        const range = document.createRange();
+        range.selectNodeContents(output);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        return;
+      }
+      const original = copy.textContent;
+      copy.textContent = 'Copied';
+      setTimeout(() => {
+        copy.textContent = original;
+      }, 1600);
+    });
+  }
 });

@@ -1,3 +1,4 @@
+import { effect } from '@basenative/runtime';
 import { createBuilderState } from './state.js';
 import { defaultPalette } from './palette.js';
 import { generateBaseNative } from './codegen.js';
@@ -14,10 +15,10 @@ const LAYOUT_HTML = `
     <p class="bn-builder__traffic" aria-hidden="true"><i></i><i></i><i></i></p>
     <h2 class="bn-builder__title">Builder</h2>
     <nav aria-label="Builder actions">
-      <button type="button" data-bn-builder-action="undo" class="bn-builder__btn">Undo</button>
-      <button type="button" data-bn-builder-action="redo" class="bn-builder__btn">Redo</button>
-      <button type="button" data-bn-builder-action="clear" class="bn-builder__btn">Clear</button>
-      <button type="button" data-bn-builder-action="export" class="bn-builder__btn">Export Code</button>
+      <button type="button" data-bn="bn-builder-action" data-bn-builder-action="undo" class="bn-builder__btn" title="Undo (Ctrl+Z)">Undo</button>
+      <button type="button" data-bn="bn-builder-action" data-bn-builder-action="redo" class="bn-builder__btn" title="Redo (Ctrl+Shift+Z)">Redo</button>
+      <button type="button" data-bn="bn-builder-action" data-bn-builder-action="clear" class="bn-builder__btn" title="Remove every component from the canvas">Clear</button>
+      <button type="button" data-bn="bn-builder-action" data-bn-builder-action="export" class="bn-builder__btn" title="Render the canvas as BaseNative source">Export Code</button>
     </nav>
   </header>
   <section class="bn-builder__body" data-bn="bn-window-body">
@@ -30,14 +31,16 @@ const LAYOUT_HTML = `
         <h2 class="bn-builder__heading">Canvas</h2>
         <bn-builder-canvas></bn-builder-canvas>
       </section>
-      <aside class="bn-builder__pane bn-builder__pane--layers" aria-label="Layers">
-        <h2 class="bn-builder__heading">Layers</h2>
-        <bn-builder-tree></bn-builder-tree>
-      </aside>
-      <aside class="bn-builder__pane bn-builder__pane--inspector" data-bn="bn-inspector" aria-label="Inspector">
-        <h2 class="bn-builder__heading">Inspector</h2>
-        <bn-builder-inspector></bn-builder-inspector>
-      </aside>
+      <div class="bn-builder__rail">
+        <aside class="bn-builder__pane bn-builder__pane--layers" aria-label="Layers">
+          <h2 class="bn-builder__heading">Layers</h2>
+          <bn-builder-tree></bn-builder-tree>
+        </aside>
+        <aside class="bn-builder__pane bn-builder__pane--inspector" data-bn="bn-inspector" aria-label="Inspector">
+          <h2 class="bn-builder__heading">Inspector</h2>
+          <bn-builder-inspector></bn-builder-inspector>
+        </aside>
+      </div>
     </div>
   </section>
 </section>`;
@@ -74,12 +77,70 @@ export class BnBuilder extends HTMLElement {
 
     this._wireToolbar();
     this._wirePaletteAdd();
+    this._wireToolbarState();
+    this._centerOnViewport();
+    if (!this._onResize) {
+      this._onResize = () => this._centerOnViewport();
+      window.addEventListener('resize', this._onResize);
+    }
+  }
+
+  disconnectedCallback() {
+    if (this._toolbarEffect) {
+      this._toolbarEffect.dispose();
+      this._toolbarEffect = null;
+      this._toolbarEffectState = null;
+    }
+    if (this._onResize) {
+      window.removeEventListener('resize', this._onResize);
+      this._onResize = null;
+    }
+  }
+
+  // The window breaks out of its (narrow) host column to near-viewport
+  // width. The host column is not always viewport-centered (an app
+  // shell rail offsets it), so measure the offset and hand it to CSS:
+  // the breakout then centers on the viewport, not the column, and
+  // never clips off the left edge. The shift is set on the host so the
+  // export panel (a sibling in the host view) inherits the same value.
+  _centerOnViewport() {
+    const host = this.parentElement;
+    if (!host) return;
+    const rect = host.getBoundingClientRect();
+    if (!rect.width) return;
+    const shift = window.innerWidth / 2 - (rect.left + rect.width / 2);
+    host.style.setProperty('--bn-builder-center-shift', `${Math.round(shift)}px`);
   }
 
   attach({ state, palette }) {
     if (state) this.state = state;
     if (palette) this.palette = palette;
     if (this.isConnected) this.connectedCallback();
+  }
+
+  // Toolbar buttons tell the truth about availability: Undo/Redo dim
+  // when their stacks are empty, Clear/Export dim on an empty canvas.
+  _wireToolbarState() {
+    if (!this.state) return;
+    if (this._toolbarEffect) {
+      if (this._toolbarEffectState === this.state) return;
+      this._toolbarEffect.dispose();
+      this._toolbarEffect = null;
+    }
+    this._toolbarEffectState = this.state;
+    const undo = this.querySelector('[data-bn-builder-action="undo"]');
+    const redo = this.querySelector('[data-bn-builder-action="redo"]');
+    const clear = this.querySelector('[data-bn-builder-action="clear"]');
+    const exp = this.querySelector('[data-bn-builder-action="export"]');
+    if (!undo || !redo || !clear || !exp) return;
+    const state = this.state;
+    this._toolbarEffect = effect(() => {
+      undo.disabled = !state.canUndo();
+      redo.disabled = !state.canRedo();
+      const empty = state.tree().length === 0;
+      clear.disabled = empty;
+      exp.disabled = empty;
+    });
   }
 
   generateCode(options) {
