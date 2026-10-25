@@ -23,12 +23,6 @@
   </p>
 </search>
 
-<nav data-bn-component-toc aria-label="Component categories">
-  <template @for="cat of categories; track cat.id">
-    <a href="#cat-{{ cat.id }}">{{ cat.title }}</a>
-  </template>
-</nav>
-
 <template @for="cat of categories; track cat.id">
   <section data-bn-component-category id="cat-{{ cat.id }}" data-bn-category="{{ cat.id }}">
     <header data-bn-component-category-head>

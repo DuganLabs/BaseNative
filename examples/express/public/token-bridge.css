@@ -15,6 +15,9 @@
  *   --space-2xl 3rem     = --space-12
  *   --space-3xl 4rem     = --space-16
  *   --font-size-md 1rem  = --text-callout-size
+ *   --bn-section-space 0.75rem = --space-3 — the page-flow rhythm.
+ *     Until now the name existed only as a fallback (12px) repeated at
+ *     every use site; defined once here, at the identical value.
  *
  * Lives in @layer tokens like styles.css's definitions and loads
  * after it, so these declarations win the tie. Deliberately NOT here:
@@ -40,5 +43,6 @@
     --space-2xl: calc(var(--space-8) + var(--space-2));
     --space-3xl: calc(var(--space-8) + var(--space-6));
     --font-size-md: var(--text-callout-size);
+    --bn-section-space: var(--space-3);
   }
 }
