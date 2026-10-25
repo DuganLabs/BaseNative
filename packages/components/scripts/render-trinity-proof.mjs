@@ -218,6 +218,11 @@ const tip = R('tooltip', {
   invokerHtml: R('button', { label: 'What counts as delivered?', variant: 'ghost' }),
 });
 
+const toastTriggers =
+  R('button', { label: 'Success toast', variant: 'default' }).replace('<button', '<button id="toast-fire-success"') +
+  R('button', { label: 'Warning toast', variant: 'default' }).replace('<button', '<button id="toast-fire-warning"') +
+  R('button', { label: 'Danger toast', variant: 'default' }).replace('<button', '<button id="toast-fire-danger"');
+
 const toasts = R('toast', {
   items: [
     { message: 'Lead delivered — Garcia, panel upgrade', tone: 'success', dismissHtml: R('button', { label: 'Dismiss', variant: 'ghost' }) },
@@ -418,6 +423,7 @@ ${css}
   article > p { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: 0; }
   #leads { --virtualizer__spacer-start-count: 0; --virtualizer__spacer-end-count: 88; }
   section.toast-stage { transform: translateZ(0); min-block-size: 19rem; align-content: start; }
+  section.toast-stage > p.toast-triggers { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0; }
   section:has(#email) article, section:has(#trade) article { --input-background-color: var(--fill-3); --textarea-background-color: var(--fill-3); --select__native-background-color: var(--fill-3); --select__trigger-background-color: var(--fill-3); }
   article.drawer-stage { position: relative; block-size: 26rem; border: var(--hairline) solid var(--separator); border-radius: var(--radius-container); overflow: hidden; }
   article.drawer-stage > dialog[variant="drawer"] { position: absolute; inset-block: 0; inset-inline-end: 0; }
@@ -645,7 +651,8 @@ ${css}
 
   <section class="toast-stage">
     <h2>Toasts — staged in a frame</h2>
-    <p class="note">In an app the region pins to the viewport corner and the toasts expire; here they are staged inside a frame so they do not cover the page while you read it. Their Dismiss buttons work, and the pair auto-expires after nine seconds, as a real region's would.</p>
+    <p class="note">In an app the region pins to the viewport corner and the toasts expire; here they are staged inside a frame so they do not cover the page while you read it. Their Dismiss buttons work, and each one auto-expires after nine seconds, as a real region's would. The triggers fire fresh ones on demand.</p>
+    <p class="toast-triggers">${toastTriggers}</p>
     ${toasts}
   </section>
 
@@ -694,13 +701,38 @@ ${css}
     button.addEventListener('click', () => button.closest('aside').remove());
   });
 
-  // Toast dismissals, plus the auto-expire a live region runs.
-  document.querySelectorAll('ol[aria-live] > li > button, ol[aria-live] > li > label').forEach((button) => {
-    button.addEventListener('click', () => button.closest('li').remove());
-  });
-  setTimeout(() => {
-    document.querySelectorAll('section.toast-stage ol[aria-live] > li').forEach((li) => li.remove());
-  }, 9000);
+  // Toasts: dismiss removes, nine seconds expires, and the staged
+  // region's triggers fire fresh ones in its tones.
+  const toastRegion = document.querySelector('section.toast-stage ol[aria-live]');
+  if (toastRegion) {
+    const armToast = (li) => {
+      const button = li.querySelector('button');
+      if (button) button.addEventListener('click', () => li.remove());
+      setTimeout(() => li.remove(), 9000);
+    };
+    toastRegion.querySelectorAll(':scope > li').forEach(armToast);
+    const fireToast = (tone, message) => {
+      const li = document.createElement('li');
+      li.setAttribute('variant', tone);
+      li.append(message + ' ');
+      const button = document.createElement('button');
+      button.setAttribute('variant', 'ghost');
+      button.setAttribute('type', 'button');
+      button.textContent = 'Dismiss';
+      li.append(button);
+      toastRegion.append(li);
+      armToast(li);
+    };
+    const toastTriggers = [
+      ['toast-fire-success', 'success', 'Lead delivered — Garcia, panel upgrade'],
+      ['toast-fire-warning', 'warning', 'Crew running late — traffic on the 55'],
+      ['toast-fire-danger', 'danger', 'Payment failed — retry scheduled'],
+    ];
+    toastTriggers.forEach(([id, tone, message]) => {
+      const trigger = document.querySelector('#' + id);
+      if (trigger) trigger.addEventListener('click', () => fireToast(tone, message));
+    });
+  }
 
   // Email revalidation: the error clears as soon as the value parses,
   // and returns when it stops parsing.
