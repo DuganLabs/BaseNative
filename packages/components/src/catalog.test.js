@@ -641,3 +641,15 @@ test('virtualizer rows center their content, and the restacked table runs tight'
   assert.match(tableCss, /--table__cell-padding-block--restack: var\(--space-0\)/);
   assert.match(tableCss, /--table__row-border-block-end-width--restack: var\(--hairline\)/);
 });
+
+test('select anchors its popover to the section edge, and multiselect tiles consecutive selections', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const selectCss = await readFile(new URL('./select/styles.css', import.meta.url), 'utf8');
+  assert.match(selectCss, /--select__listbox-inset-block-start: var\(--size-full\)/);
+  assert.match(selectCss, /section\[variant="native"\]/);
+  const multiCss = await readFile(new URL('./multiselect/styles.css', import.meta.url), 'utf8');
+  assert.match(multiCss, /li\[aria-selected="true"\] \+ li\[aria-selected="true"\]/);
+  assert.match(multiCss, /li\[aria-selected="true"\]:has\(\+ li\[aria-selected="true"\]\)/);
+  const toggleCss = await readFile(new URL('./toggle/styles.css', import.meta.url), 'utf8');
+  assert.match(toggleCss, /--toggle__knob-background-color: var\(--color-white\)/);
+});

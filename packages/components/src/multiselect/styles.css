@@ -48,6 +48,7 @@
   --multiselect__option-line-height: var(--text-body-leading);
   --multiselect__option-letter-spacing: var(--text-body-tracking);
   --multiselect__option-cursor: var(--cursor-pointer);
+  --multiselect__option-border-radius--tiled: var(--radius-none);
   --multiselect__option-background-color--selected: var(--fill-2);
 }
 
@@ -117,5 +118,15 @@ section[variant="multiselect"] {
 
   & > ul[role="listbox"] > li[aria-selected="true"] {
     background-color: var(--multiselect__option-background-color--selected);
+  }
+
+  & > ul[role="listbox"] > li[aria-selected="true"] + li[aria-selected="true"] {
+    border-start-start-radius: var(--multiselect__option-border-radius--tiled);
+    border-start-end-radius: var(--multiselect__option-border-radius--tiled);
+  }
+
+  & > ul[role="listbox"] > li[aria-selected="true"]:has(+ li[aria-selected="true"]) {
+    border-end-start-radius: var(--multiselect__option-border-radius--tiled);
+    border-end-end-radius: var(--multiselect__option-border-radius--tiled);
   }
 }

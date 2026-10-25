@@ -32,7 +32,7 @@
   --toggle__knob-size: calc(var(--size-switch-block) - var(--space-1));
   --toggle__knob-inset: calc(var(--space-1) / 2);
   --toggle__knob-travel: calc(var(--size-switch-inline) - var(--size-switch-block));
-  --toggle__knob-background-color: var(--background);
+  --toggle__knob-background-color: var(--color-white);
   --toggle__knob-border-radius: var(--radius-pill);
   --toggle__knob-box-shadow: var(--shadow-raised);
 }

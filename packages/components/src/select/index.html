@@ -1,7 +1,21 @@
 <template>
-  <select :variant="variant()" :id="controlId()" :value="value()" :disabled="disabled()" @change="choose($event)">
-    <template @for="option of options(); track option.value">
-      <option :value="option.value" :selected="isSelected(option)">{{ option.label }}</option>
+  <section :variant="variant()" @keydown="keydown($event)">
+    <template @if="isNative()">
+      <select :id="controlId()" :value="value()" :disabled="disabled()" @change="chooseNative($event)">
+        <template @for="option of options(); track option.value">
+          <option :value="option.value" :selected="isSelected(option)">{{ option.label }}</option>
+        </template>
+      </select>
     </template>
-  </select>
+    <template @if="isPopover()">
+      <button type="button" :id="controlId()" :disabled="disabled()" aria-haspopup="listbox" :aria-expanded="expandedAttr()" :aria-controls="listboxId()" @click="toggle()">{{ selectedLabel() }}<svg aria-hidden="true" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></button>
+      <template @if="open()">
+        <ul role="listbox" :id="listboxId()" :aria-label="label()">
+          <template @for="option of options(); track option.value">
+            <li role="option" :id="optionId(option)" :aria-selected="selectedAttr(option)" @click="choose(option)">{{ option.label }}</li>
+          </template>
+        </ul>
+      </template>
+    </template>
+  </section>
 </template>

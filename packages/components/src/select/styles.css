@@ -1,61 +1,211 @@
 :root {
-  --select-box-sizing: var(--box-sizing-border);
+  --select-position: var(--position-relative);
   --select-display: var(--display-block);
-  --select-inline-size: var(--size-full);
-  --select-block-size: var(--size-control);
-  --select-padding-block: var(--space-2);
-  --select-padding-inline: var(--space-3);
-  --select-background-color: var(--background);
-  --select-color: var(--label);
-  --select-border-width: var(--border-width);
-  --select-border-style: var(--border-style-solid);
-  --select-border-color: var(--separator-opaque);
-  --select-border-color--hover: var(--label-3);
-  --select-border-radius: var(--radius-control);
-  --select-font-family: var(--text-body-family);
-  --select-font-size: var(--text-body-size);
-  --select-font-weight: var(--text-body-weight);
-  --select-line-height: var(--text-body-leading);
-  --select-cursor: var(--cursor-pointer);
-  --select-outline-width--focus: var(--border-width-thick);
-  --select-outline-style--focus: var(--border-style-solid);
-  --select-outline-color--focus: var(--tint);
-  --select-outline-offset--focus: var(--space-1);
-  --select-box-shadow--focus: var(--focus-ring);
+  --select__native-box-sizing: var(--box-sizing-border);
+  --select__native-display: var(--display-block);
+  --select__native-inline-size: var(--size-full);
+  --select__native-block-size: var(--size-control);
+  --select__native-padding-block: var(--space-2);
+  --select__native-padding-inline: var(--space-3);
+  --select__native-background-color: var(--background);
+  --select__native-color: var(--label);
+  --select__native-border-width: var(--border-width);
+  --select__native-border-style: var(--border-style-solid);
+  --select__native-border-color: var(--separator-opaque);
+  --select__native-border-color--hover: var(--label-3);
+  --select__native-border-radius: var(--radius-control);
+  --select__native-font-family: var(--text-body-family);
+  --select__native-font-size: var(--text-body-size);
+  --select__native-font-weight: var(--text-body-weight);
+  --select__native-line-height: var(--text-body-leading);
+  --select__native-cursor: var(--cursor-pointer);
+  --select__native-outline-width--focus: var(--border-width-thick);
+  --select__native-outline-style--focus: var(--border-style-solid);
+  --select__native-outline-color--focus: var(--tint);
+  --select__native-outline-offset--focus: var(--space-1);
+  --select__native-box-shadow--focus: var(--focus-ring);
+  --select__trigger-box-sizing: var(--box-sizing-border);
+  --select__trigger-display: var(--display-flex);
+  --select__trigger-align-items: var(--align-center);
+  --select__trigger-justify-content: var(--justify-between);
+  --select__trigger-gap: var(--space-2);
+  --select__trigger-inline-size: var(--size-full);
+  --select__trigger-block-size: var(--size-control);
+  --select__trigger-padding-block: var(--space-2);
+  --select__trigger-padding-inline: var(--space-3);
+  --select__trigger-background-color: var(--background);
+  --select__trigger-color: var(--label);
+  --select__trigger-color--disabled: var(--label-3);
+  --select__trigger-border-width: var(--border-width);
+  --select__trigger-border-style: var(--border-style-solid);
+  --select__trigger-border-color: var(--separator-opaque);
+  --select__trigger-border-color--hover: var(--label-3);
+  --select__trigger-border-radius: var(--radius-control);
+  --select__trigger-font-family: var(--text-body-family);
+  --select__trigger-font-size: var(--text-body-size);
+  --select__trigger-font-weight: var(--text-body-weight);
+  --select__trigger-line-height: var(--text-body-leading);
+  --select__trigger-letter-spacing: var(--text-body-tracking);
+  --select__trigger-cursor: var(--cursor-pointer);
+  --select__trigger-cursor--disabled: var(--cursor-not-allowed);
+  --select__trigger-outline-width--focus: var(--border-width-thick);
+  --select__trigger-outline-style--focus: var(--border-style-solid);
+  --select__trigger-outline-color--focus: var(--tint);
+  --select__trigger-outline-offset--focus: var(--space-1);
+  --select__trigger-box-shadow--focus: var(--focus-ring);
+  --select__chevron-inline-size: var(--space-5);
+  --select__chevron-block-size: var(--space-5);
+  --select__chevron-color: var(--label-3);
+  --select__listbox-position: var(--position-absolute);
+  --select__listbox-inset-block-start: var(--size-full);
+  --select__listbox-inset-inline: var(--space-0);
+  --select__listbox-margin: var(--space-0);
+  --select__listbox-margin-block-start: var(--space-1);
+  --select__listbox-z-index: var(--layer-overlay);
+  --select__listbox-list-style: var(--list-style-none);
+  --select__listbox-padding: var(--space-1);
+  --select__listbox-background-color: var(--background-3);
+  --select__listbox-border-width: var(--hairline);
+  --select__listbox-border-style: var(--border-style-solid);
+  --select__listbox-border-color: var(--separator);
+  --select__listbox-border-radius: var(--radius-container);
+  --select__listbox-box-shadow: var(--shadow-float);
+  --select__listbox-max-block-size: calc(var(--size-control) * 6);
+  --select__listbox-overflow: var(--overflow-auto);
+  --select__option-padding-block: var(--space-2);
+  --select__option-padding-inline: var(--space-3);
+  --select__option-border-radius: var(--radius-md);
+  --select__option-color: var(--label);
+  --select__option-font-family: var(--text-body-family);
+  --select__option-font-size: var(--text-body-size);
+  --select__option-line-height: var(--text-body-leading);
+  --select__option-letter-spacing: var(--text-body-tracking);
+  --select__option-cursor: var(--cursor-pointer);
+  --select__option-background-color--selected: var(--fill-2);
   --select-motion-duration: var(--motion-fade-duration);
   --select-motion-curve: var(--motion-fade-curve);
 }
 
-select[variant="default"] {
-  box-sizing: var(--select-box-sizing);
+section[variant="select"] {
+  position: var(--select-position);
   display: var(--select-display);
-  inline-size: var(--select-inline-size);
-  block-size: var(--select-block-size);
-  padding-block: var(--select-padding-block);
-  padding-inline: var(--select-padding-inline);
-  background-color: var(--select-background-color);
-  color: var(--select-color);
-  border-width: var(--select-border-width);
-  border-style: var(--select-border-style);
-  border-color: var(--select-border-color);
-  border-radius: var(--select-border-radius);
-  font-family: var(--select-font-family);
-  font-size: var(--select-font-size);
-  font-weight: var(--select-font-weight);
-  line-height: var(--select-line-height);
-  cursor: var(--select-cursor);
-  transition: border-color var(--select-motion-duration) var(--select-motion-curve), box-shadow var(--select-motion-duration) var(--select-motion-curve);
 
-  &:hover {
-    border-color: var(--select-border-color--hover);
+  & > button {
+    box-sizing: var(--select__trigger-box-sizing);
+    display: var(--select__trigger-display);
+    align-items: var(--select__trigger-align-items);
+    justify-content: var(--select__trigger-justify-content);
+    gap: var(--select__trigger-gap);
+    inline-size: var(--select__trigger-inline-size);
+    block-size: var(--select__trigger-block-size);
+    padding-block: var(--select__trigger-padding-block);
+    padding-inline: var(--select__trigger-padding-inline);
+    background-color: var(--select__trigger-background-color);
+    color: var(--select__trigger-color);
+    border-width: var(--select__trigger-border-width);
+    border-style: var(--select__trigger-border-style);
+    border-color: var(--select__trigger-border-color);
+    border-radius: var(--select__trigger-border-radius);
+    font-family: var(--select__trigger-font-family);
+    font-size: var(--select__trigger-font-size);
+    font-weight: var(--select__trigger-font-weight);
+    line-height: var(--select__trigger-line-height);
+    letter-spacing: var(--select__trigger-letter-spacing);
+    cursor: var(--select__trigger-cursor);
+    transition: border-color var(--select-motion-duration) var(--select-motion-curve), box-shadow var(--select-motion-duration) var(--select-motion-curve);
   }
 
-  &:focus-visible {
-    outline-width: var(--select-outline-width--focus);
-    outline-style: var(--select-outline-style--focus);
-    outline-color: var(--select-outline-color--focus);
-    outline-offset: var(--select-outline-offset--focus);
-    box-shadow: var(--select-box-shadow--focus);
+  & > button > svg {
+    inline-size: var(--select__chevron-inline-size);
+    block-size: var(--select__chevron-block-size);
+    color: var(--select__chevron-color);
+  }
+
+  & > button:hover {
+    border-color: var(--select__trigger-border-color--hover);
+  }
+
+  & > button:focus-visible {
+    outline-width: var(--select__trigger-outline-width--focus);
+    outline-style: var(--select__trigger-outline-style--focus);
+    outline-color: var(--select__trigger-outline-color--focus);
+    outline-offset: var(--select__trigger-outline-offset--focus);
+    box-shadow: var(--select__trigger-box-shadow--focus);
+  }
+
+  & > button:disabled {
+    color: var(--select__trigger-color--disabled);
+    cursor: var(--select__trigger-cursor--disabled);
+  }
+
+  & > ul {
+    position: var(--select__listbox-position);
+    inset-block-start: var(--select__listbox-inset-block-start);
+    inset-inline: var(--select__listbox-inset-inline);
+    margin: var(--select__listbox-margin);
+    margin-block-start: var(--select__listbox-margin-block-start);
+    z-index: var(--select__listbox-z-index);
+    list-style: var(--select__listbox-list-style);
+    padding: var(--select__listbox-padding);
+    background-color: var(--select__listbox-background-color);
+    border-width: var(--select__listbox-border-width);
+    border-style: var(--select__listbox-border-style);
+    border-color: var(--select__listbox-border-color);
+    border-radius: var(--select__listbox-border-radius);
+    box-shadow: var(--select__listbox-box-shadow);
+    max-block-size: var(--select__listbox-max-block-size);
+    overflow: var(--select__listbox-overflow);
+  }
+
+  & > ul > li {
+    padding-block: var(--select__option-padding-block);
+    padding-inline: var(--select__option-padding-inline);
+    border-radius: var(--select__option-border-radius);
+    color: var(--select__option-color);
+    font-family: var(--select__option-font-family);
+    font-size: var(--select__option-font-size);
+    line-height: var(--select__option-line-height);
+    letter-spacing: var(--select__option-letter-spacing);
+    cursor: var(--select__option-cursor);
+  }
+
+  & > ul > li[aria-selected="true"] {
+    background-color: var(--select__option-background-color--selected);
   }
 }
 
+section[variant="native"] {
+
+  & > select {
+    box-sizing: var(--select__native-box-sizing);
+    display: var(--select__native-display);
+    inline-size: var(--select__native-inline-size);
+    block-size: var(--select__native-block-size);
+    padding-block: var(--select__native-padding-block);
+    padding-inline: var(--select__native-padding-inline);
+    background-color: var(--select__native-background-color);
+    color: var(--select__native-color);
+    border-width: var(--select__native-border-width);
+    border-style: var(--select__native-border-style);
+    border-color: var(--select__native-border-color);
+    border-radius: var(--select__native-border-radius);
+    font-family: var(--select__native-font-family);
+    font-size: var(--select__native-font-size);
+    font-weight: var(--select__native-font-weight);
+    line-height: var(--select__native-line-height);
+    cursor: var(--select__native-cursor);
+    transition: border-color var(--select-motion-duration) var(--select-motion-curve), box-shadow var(--select-motion-duration) var(--select-motion-curve);
+  }
+
+  & > select:hover {
+    border-color: var(--select__native-border-color--hover);
+  }
+
+  & > select:focus-visible {
+    outline-width: var(--select__native-outline-width--focus);
+    outline-style: var(--select__native-outline-style--focus);
+    outline-color: var(--select__native-outline-color--focus);
+    outline-offset: var(--select__native-outline-offset--focus);
+    box-shadow: var(--select__native-box-shadow--focus);
+  }
+}

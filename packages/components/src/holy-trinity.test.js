@@ -192,18 +192,48 @@ test('radio renders a fieldset of options with the selected one checked', async 
   assert.doesNotMatch(html, /value="am" checked/);
 });
 
-test('select renders its options with the chosen one selected', async () => {
+test('select defaults to a positioned popover — a trigger button and its listbox', async () => {
+  const registry = await loadRegistry();
+  const options = [
+    { value: 'electrical', label: 'Electrical' },
+    { value: 'hvac', label: 'HVAC' },
+  ];
+  const closed = renderComponent(registry, render, 'select', { id: 'trade', value: 'hvac', label: 'Trade', options }).html;
+  assert.match(closed, /<section variant="select">/);
+  assert.match(closed, /<button type="button" id="trade" aria-haspopup="listbox" aria-expanded="false" aria-controls="trade-listbox">HVAC</);
+  assert.doesNotMatch(closed, /role="listbox"/);
+  assert.doesNotMatch(closed, /<select/);
+
+  const { html, viewModel } = renderComponent(registry, render, 'select', { id: 'trade', value: 'hvac', label: 'Trade', open: true, options });
+  assert.match(html, /<ul role="listbox" id="trade-listbox" aria-label="Trade">/);
+  assert.match(html, /<li role="option" id="trade-option-hvac" aria-selected="true">HVAC<\/li>/);
+  assert.match(html, /<li role="option" id="trade-option-electrical" aria-selected="false">Electrical<\/li>/);
+
+  let chosen = '';
+  const vm = renderComponent(registry, render, 'select', { options, onChoose: (v) => { chosen = v; } }).viewModel;
+  vm.toggle();
+  assert.equal(vm.open(), true);
+  vm.choose({ value: 'electrical', label: 'Electrical' });
+  assert.equal(vm.value(), 'electrical');
+  assert.equal(vm.open(), false);
+  assert.equal(chosen, 'electrical');
+  assert.equal(viewModel.expandedAttr(), 'true');
+});
+
+test('select native variant renders the platform element and its options', async () => {
   const registry = await loadRegistry();
   const { html } = renderComponent(registry, render, 'select', {
-    id: 'trade', value: 'hvac',
+    id: 'trade', value: 'hvac', variant: 'native',
     options: [
       { value: 'electrical', label: 'Electrical' },
       { value: 'hvac', label: 'HVAC' },
     ],
   });
-  assert.match(html, /<select variant="default" id="trade"/);
+  assert.match(html, /<section variant="native">/);
+  assert.match(html, /<select id="trade"/);
   assert.match(html, /<option value="hvac" selected="true">HVAC<\/option>/);
   assert.match(html, /<option value="electrical">Electrical<\/option>/);
+  assert.doesNotMatch(html, /aria-haspopup/);
 });
 
 test('textarea renders its value as content so SSR shows it before hydration', async () => {
