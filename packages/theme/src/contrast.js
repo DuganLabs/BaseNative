@@ -52,7 +52,7 @@ export function parseCustomProperties(css) {
   //
   // The name is taken from the END of the text before the colon, not the whole
   // of it: a chunk routinely opens with the tail of the previous line, as in
-  // `/* 12px */\n  --bn-font-family`, and `@basenative/components`' own token
+  // `/* 12px */\n  --font-family-sans`, and `@basenative/components`' own token
   // sheet is written that way throughout.
   for (const chunk of css.split(/[;{}]/)) {
     const colon = chunk.indexOf(':');

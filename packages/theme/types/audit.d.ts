@@ -19,7 +19,7 @@ export {
 export interface Pairing {
   /** Human-readable, and what a failure is reported under. */
   label: string;
-  /** Foreground custom-property name, e.g. `--bn-theme-ink-muted`. */
+  /** Foreground custom-property name, e.g. `--color-text-theme-ink-muted`. */
   fg: string;
   /** Background custom-property name. */
   bg: string;

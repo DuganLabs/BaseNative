@@ -113,7 +113,7 @@ export function assertPairings(themeCss, pairings, summary = 'Colour pairings be
  * boundary of a control and for a focus indicator (SC 1.4.11 Non-text
  * Contrast). Note the two rows per signal family that are easy to forget and
  * that components renders anyway — the family's ink on the PAGE, not only on
- * its own tint (`--bn-color-error-text` is painted on the surface), and the
+ * its own tint (`--color-text-error` is painted on the surface), and the
  * family's rule at 3:1, which is what caught `--gp-ink-400` at 4.07:1 being
  * used as 11px type on Greenput.
  *

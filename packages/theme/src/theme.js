@@ -39,7 +39,7 @@ export class ThemeError extends Error {
   }
 }
 
-/** The ramp every theme must declare, because components read `--bn-color-primary-*`. */
+/** The ramp every theme must declare, because components read `--palette-primary-*`. */
 export const PRIMARY_RAMP_STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
 
 /** The neutral ramp, one step deeper than primary because components read `gray-950`. */
@@ -141,34 +141,68 @@ function kebab(key) {
   return key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
 }
 
-/** `--bn-theme-ramp-primary-600` */
+/**
+ * The names follow the CTI+ taxonomy `@basenative/components` is built on:
+ * Category – Type – Item – Variant – Subitem – State – Context, hyphen-joined,
+ * category first, `theme` as the item qualifier throughout — so a theme's ramp
+ * step is palette-category, a surface is a background colour, and the two can
+ * never collide with the component names they sit beside.
+ */
+
+/** `--palette-theme-primary-600` */
 export function rampVar(ramp, step) {
-  return `--bn-theme-ramp-${ramp}-${step}`;
+  return `--palette-theme-${ramp}-${step}`;
 }
 
-/** `--bn-theme-surface`, `--bn-theme-surface-raised` */
+/** `--color-bkg-theme-surface`, `--color-bkg-theme-surface-raised` */
 export function surfaceVar(key) {
-  return key === 'base' ? '--bn-theme-surface' : `--bn-theme-surface-${kebab(key)}`;
+  return key === 'base'
+    ? '--color-bkg-theme-surface'
+    : `--color-bkg-theme-surface-${kebab(key)}`;
 }
 
-/** `--bn-theme-ink`, `--bn-theme-ink-muted` */
+/** `--color-text-theme-ink`, `--color-text-theme-ink-muted` */
 export function inkVar(key) {
-  return key === 'base' ? '--bn-theme-ink' : `--bn-theme-ink-${kebab(key)}`;
+  return key === 'base' ? '--color-text-theme-ink' : `--color-text-theme-ink-${kebab(key)}`;
 }
 
-/** `--bn-theme-primary-hover`, `--bn-theme-border-control` */
+/** A role's name is set by what kind of token the role paints as. */
+const ROLE_VARS = {
+  primary: '--color-bkg-theme-primary',
+  primaryHover: '--color-bkg-theme-primary-hover',
+  onPrimary: '--color-text-theme-on-primary',
+  primaryTint: '--color-bkg-theme-primary-tint',
+  border: '--color-border-theme',
+  borderStrong: '--color-border-theme-strong',
+  borderControl: '--color-border-theme-control',
+  focus: '--color-border-theme-focus',
+  focusOnInverse: '--color-border-theme-focus-inverse',
+  selectedBg: '--color-bkg-theme-selected',
+  selectedInk: '--color-text-theme-selected',
+};
+
+/** `--color-bkg-theme-primary-hover`, `--color-border-theme-control` */
 export function roleVar(key) {
-  return `--bn-theme-${kebab(key)}`;
+  return ROLE_VARS[key];
 }
 
-/** `--bn-theme-signal-good-bg` */
+/** A channel's name is set by what the channel paints: a fill, text, or a rule. */
+const CHANNEL_VARS = {
+  bg: (kind, name) => `--color-bkg-theme-${kind}-${name}`,
+  ink: (kind, name) => `--color-text-theme-${kind}-${name}`,
+  line: (kind, name) => `--color-border-theme-${kind}-${name}`,
+  solid: (kind, name) => `--color-bkg-theme-${kind}-${name}-solid`,
+  onSolid: (kind, name) => `--color-text-theme-${kind}-${name}-on-solid`,
+};
+
+/** `--color-bkg-theme-signal-good` */
 export function signalVar(family, channel) {
-  return `--bn-theme-signal-${family}-${kebab(channel)}`;
+  return CHANNEL_VARS[channel]('signal', family);
 }
 
-/** `--bn-theme-slot-error-ink` — what the bridge reads, so the bridge can be static. */
+/** `--color-text-theme-slot-error` — what the bridge reads, so the bridge can be static. */
 export function slotVar(slot, channel) {
-  return `--bn-theme-slot-${slot}-${kebab(channel)}`;
+  return CHANNEL_VARS[channel]('slot', slot);
 }
 
 /* -------------------------------------------------------------- validate */
@@ -262,7 +296,7 @@ function checkRamps(ramps, errors) {
     if (!isPlainObject(ramp)) {
       errors.push(
         `ramps.${required} is missing — @basenative/components reads ` +
-          `--bn-color-${required === 'neutral' ? 'gray' : 'primary'}-* directly, so every theme declares it`,
+          `--palette-${required === 'neutral' ? 'gray' : 'primary'}-* directly, so every theme declares it`,
       );
       continue;
     }
@@ -422,7 +456,7 @@ export function validateTheme(spec) {
   return { ok: errors.length === 0, errors };
 }
 
-/** Every `--bn-theme-*` name that must resolve to a literal colour. */
+/** Every theme-emitted colour name that must resolve to a literal colour. */
 function colorVarNames(spec) {
   const names = [];
   for (const [ramp, steps] of Object.entries(spec.ramps)) {
@@ -514,19 +548,19 @@ function geometryDeclarations(theme) {
   const motion = { ...GEOMETRY_DEFAULTS.motion, ...(theme.motion ?? {}) };
   const raw = { ...RAW_DEFAULTS, ...(theme.raw ?? {}) };
   return [
-    ['--bn-theme-font-sans', font.sans],
-    ['--bn-theme-font-mono', font.mono],
-    ...Object.entries(radius).map(([k, v]) => [`--bn-theme-radius-${kebab(k)}`, v]),
-    ['--bn-theme-control-h', control.height],
-    ['--bn-theme-control-h-sm', control.heightSm],
-    ['--bn-theme-control-h-lg', control.heightLg],
-    ['--bn-theme-tap-min', control.tapMin],
-    ['--bn-theme-control-indicator', control.indicator],
-    ['--bn-theme-motion-fast', motion.fast],
-    ['--bn-theme-motion-base', motion.base],
-    ['--bn-theme-motion-slow', motion.slow],
-    ['--bn-theme-zebra', raw.zebra],
-    ['--bn-theme-scrim', raw.scrim],
+    ['--font-family-theme-sans', font.sans],
+    ['--font-family-theme-mono', font.mono],
+    ...Object.entries(radius).map(([k, v]) => [`--size-radius-theme-${kebab(k)}`, v]),
+    ['--size-theme-control-h', control.height],
+    ['--size-theme-control-h-sm', control.heightSm],
+    ['--size-theme-control-h-lg', control.heightLg],
+    ['--size-theme-tap-min', control.tapMin],
+    ['--size-theme-control-indicator', control.indicator],
+    ['--motion-theme-fast', motion.fast],
+    ['--motion-theme-base', motion.base],
+    ['--motion-theme-slow', motion.slow],
+    ['--color-bkg-theme-zebra', raw.zebra],
+    ['--color-bkg-theme-scrim', raw.scrim],
   ];
 }
 
@@ -537,14 +571,15 @@ function geometryDeclarations(theme) {
  * deliberate and it is the whole fix for the failure this package was built
  * after: pendingbusiness.com is a dark site that never set `data-theme`, so a
  * reader whose OS was in light mode fell through `@media (prefers-color-scheme:
- * dark)` and got `--bn-color-error-bg: #fef2f2` — a near-white alert on a
+ * dark)` and got `--color-bkg-error: #fef2f2` — a near-white alert on a
  * near-black page. A theme that says `scheme: 'dark'` here emits its dark values
  * in every context, with no media query to fall through and nothing for the
  * reader's OS to decide. The `data-theme` attribute becomes optional rather
  * than load-bearing.
  *
- * A dual theme mirrors the activation model `@basenative/components/theme.css`
- * uses, at matching specificity, so its own dark palette wins over upstream's.
+ * A dual theme mirrors the activation model the generated token sheet in
+ * `@basenative/components` uses, at matching specificity, so its own dark
+ * palette wins over upstream's.
  */
 function activationBlocks(spec, only) {
   const light = schemeDeclarations(spec, spec);
@@ -576,7 +611,7 @@ function activationBlocks(spec, only) {
  *   audit harness passes, since `parseCustomProperties` reads a stylesheet as
  *   one flat map and would otherwise blur a dual theme's two palettes together
  * @param {boolean} [options.layer=true]  wrap in `@layer tokens`
- * @param {boolean} [options.bridge=true] append the `--bn-*` bridge
+ * @param {boolean} [options.bridge=true] append the CTI+ bridge
  * @returns {string}
  */
 export function emitThemeCss(theme, options = {}) {
