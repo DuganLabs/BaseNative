@@ -29,7 +29,6 @@ const CSS = [
   'layers.css',
   'reset.css',
   'tokens.css',
-  'theme.css',
   'layout.css',
   'components.css',
   'states.css',
