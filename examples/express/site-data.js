@@ -556,7 +556,7 @@ export function getRoadmapPageContext() {
 /**
  * The counter written four ways.
  *
- * Code is pre-escaped: it is handed to renderTabs() as an HTML slot, and the
+ * Code is pre-escaped: it is handed to the tabs composite as a panel slot, and the
  * BaseNative and Angular samples both contain `{{ … }}`, which `render()` would
  * otherwise evaluate as a live interpolation instead of printing.
  */
@@ -637,9 +637,9 @@ export class CounterComponent {
  */
 export function getComparePageContext() {
   const tabs = COUNTER_EXAMPLES.map((example) => ({
-    id: example.id,
+    value: example.id,
     label: example.label,
-    content: `<figure data-compare-code>
+    panelHtml: `<figure data-compare-code>
   <figcaption>${escapeText(example.file)}</figcaption>
   <pre tabindex="0" aria-label="Counter example: ${escapeAttr(example.label)}"><code>${example.code}</code></pre>
   <p data-compare-note>${escapeText(example.note)}</p>
@@ -648,6 +648,13 @@ export function getComparePageContext() {
 
   return {
     stats: stats(),
-    counterTabs: raw(renderTabs({ tabs, attrs: 'data-compare-tabs' })),
+    counterTabs: raw(
+      renderTrinity('tabs', {
+        id: 'counter',
+        label: 'Counter examples',
+        name: 'counter-examples',
+        tabs,
+      }),
+    ),
   };
 }
