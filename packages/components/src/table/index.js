@@ -1,5 +1,6 @@
 // @ts-check
 import { signal, computed } from '@basenative/runtime';
+import { raw } from '@basenative/runtime/shared/escape';
 
 export const name = 'table';
 export const root = 'table';
@@ -7,6 +8,7 @@ export const root = 'table';
 /**
  * @typedef {object} TableCell
  * @property {string} text
+ * @property {string} [contentHtml] Rendered HTML (a nested component) — takes precedence over text.
  * @property {boolean} [header] Render as the row's <th scope="row">.
  *
  * @typedef {object} TableProps
@@ -29,7 +31,7 @@ export function create(props) {
   const variant = signal(props.variant ?? 'default');
   const hasCaption = computed(() => caption() !== '');
 
-  return { columns, rows, caption, variant, hasCaption };
+  return { columns, rows, caption, variant, hasCaption, raw };
 }
 
 /** @param {import('../registry.js').Registry} registry */

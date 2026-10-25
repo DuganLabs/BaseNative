@@ -260,6 +260,19 @@ test('progress renders a value, or no value when indeterminate', async () => {
   assert.doesNotMatch(spin, /value=/);
 });
 
+test('table renders an HTML cell raw and a text cell escaped', async () => {
+  const registry = await loadRegistry();
+  const badge = renderComponent(registry, render, 'badge', { label: 'Fixed', variant: 'success' }).html;
+  const { html } = renderComponent(registry, render, 'table', {
+    columns: ['Point', 'Status'],
+    rows: [
+      [{ text: 'A < b', header: true }, { contentHtml: badge }],
+    ],
+  });
+  assert.ok(html.includes('A &lt; b'), 'text cells stay escaped');
+  assert.ok(html.includes('<small variant="success">Fixed</small>'), 'HTML cells render as markup');
+});
+
 test('card composes a footer of buttons', async () => {
   const registry = await loadRegistry();
   const open = renderComponent(registry, render, 'button', { label: 'Open job', variant: 'primary' }).html;

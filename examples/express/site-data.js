@@ -4,7 +4,6 @@ import { trinityCatalog, trinityCategoriesWith } from './trinity-catalog.js';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { escapeAttr, escapeText, raw } from '@basenative/runtime/shared/escape';
-import { renderListGroup, renderTabs } from '../../packages/components/src/index.js';
 import { computeCompareStats } from '../../scripts/compare-stats.js';
 
 const siteDir = dirname(fileURLToPath(import.meta.url));
@@ -139,11 +138,12 @@ export function getAppNavItems(activePage = '') {
 }
 
 /**
- * The docs page's "Full API reference" list, rendered as a grouped list
- * (renderListGroup from the one catalog) instead of a hand-rolled <ul>.
- * Every link and description is the text the list has always carried.
+ * The docs page's "Full API reference" list, rendered as the catalog's
+ * list-group instead of a hand-rolled <ul>. Every link and description
+ * is the text the list has always carried.
  */
 export function getDocsPageContext() {
+  const runtimeVersion = pkgVersion('runtime');
   const apiRefs = [
     {
       label: '@basenative/runtime — signal, computed, effect, batch, hydrate, directives, devtools',
@@ -167,9 +167,16 @@ export function getDocsPageContext() {
     },
   ];
   return {
+    runtimeVersion,
     // Assembled from hand-authored data by the catalog's own renderer —
     // the same raw() trust assertion the other assembled contexts make.
-    apiRefs: raw(renderListGroup({ label: 'Full API reference by package', items: apiRefs })),
+    apiRefs: raw(
+      renderTrinity('list-group', {
+        items: apiRefs.map((ref) => ({
+          contentHtml: `<a href="${ref.href}">${escapeText(ref.label)}</a>`,
+        })),
+      }),
+    ),
   };
 }
 

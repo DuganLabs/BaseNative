@@ -16,18 +16,18 @@
           <template @for="cell of row">
             <template @if="cell.header">
               <template @if="cell.current">
-                <th scope="row" :aria-current="cell.current"><template @if="cell.small"><small>{{ cell.text }}</small></template><template @else>{{ cell.text }}</template></th>
+                <th scope="row" :aria-current="cell.current"><template @if="cell.contentHtml">{{ raw(cell.contentHtml) }}</template><template @else><template @if="cell.small"><small>{{ cell.text }}</small></template><template @else>{{ cell.text }}</template></template></th>
               </template>
               <template @else>
-                <th scope="row"><template @if="cell.small"><small>{{ cell.text }}</small></template><template @else>{{ cell.text }}</template></th>
+                <th scope="row"><template @if="cell.contentHtml">{{ raw(cell.contentHtml) }}</template><template @else><template @if="cell.small"><small>{{ cell.text }}</small></template><template @else>{{ cell.text }}</template></template></th>
               </template>
             </template>
             <template @else>
               <template @if="cell.current">
-                <td :aria-current="cell.current"><template @if="cell.small"><small>{{ cell.text }}</small></template><template @else>{{ cell.text }}</template></td>
+                <td :aria-current="cell.current"><template @if="cell.contentHtml">{{ raw(cell.contentHtml) }}</template><template @else><template @if="cell.small"><small>{{ cell.text }}</small></template><template @else>{{ cell.text }}</template></template></td>
               </template>
               <template @else>
-                <td><template @if="cell.small"><small>{{ cell.text }}</small></template><template @else>{{ cell.text }}</template></td>
+                <td><template @if="cell.contentHtml">{{ raw(cell.contentHtml) }}</template><template @else><template @if="cell.small"><small>{{ cell.text }}</small></template><template @else>{{ cell.text }}</template></template></td>
               </template>
             </template>
           </template>
