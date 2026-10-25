@@ -17,32 +17,32 @@
      so every value on the site has exactly one owner. The hue scales
      and alert/badge literals further down are the legacy palette the
      old components consume; they retire with the surface migration. */
-  --tint: var(--system-orange);
-  --tint-strong: color-mix(in oklab, var(--system-orange) 82%, black);
+  --color-tint: var(--palette-system-orange);
+  --color-tint-strong: color-mix(in oklab, var(--palette-system-orange) 82%, black);
   --font-text: 'BaseNative', system-ui, sans-serif;
   --font-display: 'BaseNative', system-ui, sans-serif;
 
   /* === Core token overrides === */
 
   /* Surfaces — dark */
-  --bn-color-surface: var(--background-grouped);
-  --bn-color-surface-subtle: var(--background-grouped-2);
-  --bn-color-surface-muted: var(--background-grouped-3);
-  --bn-color-surface-raised: var(--background-grouped-2);
-  --bn-color-surface-inset: var(--background-grouped);
-  --bn-color-surface-inverse: var(--label);
+  --bn-color-surface: var(--color-background-grouped);
+  --bn-color-surface-subtle: var(--color-background-grouped-2);
+  --bn-color-surface-muted: var(--color-background-grouped-3);
+  --bn-color-surface-raised: var(--color-background-grouped-2);
+  --bn-color-surface-inset: var(--color-background-grouped);
+  --bn-color-surface-inverse: var(--color-text-label);
 
   /* Text — light on dark */
-  --bn-color-text: var(--label);
-  --bn-color-text-muted: var(--label-2);
-  --bn-color-text-subtle: var(--label-3);
-  --bn-color-text-inverse: var(--background);
-  --bn-color-text-link: var(--tint);
+  --bn-color-text: var(--color-text-label);
+  --bn-color-text-muted: var(--color-text-label-2);
+  --bn-color-text-subtle: var(--color-text-label-3);
+  --bn-color-text-inverse: var(--color-background);
+  --bn-color-text-link: var(--color-tint);
 
   /* Borders — dark */
-  --bn-color-border: var(--separator);
-  --bn-color-border-strong: var(--separator-opaque);
-  --bn-color-border-focus: var(--tint);
+  --bn-color-border: var(--color-border-separator);
+  --bn-color-border-strong: var(--color-border-separator-opaque);
+  --bn-color-border-focus: var(--color-tint);
 
   /* Font — BaseNative with font-stretch */
   --bn-font-family: 'BaseNative', system-ui, sans-serif;
@@ -99,7 +99,7 @@
   --bn-color-error-badge-text: #f07178;
 
   /* Focus ring — golden */
-  --bn-focus-ring: var(--focus-ring);
+  --bn-focus-ring: var(--shadow-focus-ring);
 
   /* Shadows — dark-optimized */
   --bn-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
@@ -111,29 +111,29 @@
   /* Surfaces — bridged onto the core tokens defined above (Stage 2
      of the token migration): the same values, one owner. --surface-3
      has no catalog step and stays a literal. */
-  --surface-0: var(--background-grouped);
-  --surface-1: var(--background-grouped-2);
-  --surface-2: var(--background-grouped-3);
-  --surface-3: var(--system-gray-4);
-  --surface-inset: var(--background-grouped);
+  --surface-0: var(--color-background-grouped);
+  --surface-1: var(--color-background-grouped-2);
+  --surface-2: var(--color-background-grouped-3);
+  --surface-3: var(--palette-system-gray-4);
+  --surface-inset: var(--color-background-grouped);
 
   /* Borders */
-  --border: var(--separator);
-  --border-accent: var(--separator-opaque);
+  --border: var(--color-border-separator);
+  --border-accent: var(--color-border-separator-opaque);
 
   /* Text */
-  --text-0: var(--label);
-  --text-1: var(--label-2);
-  --text-2: var(--label-3);
+  --text-0: var(--color-text-label);
+  --text-1: var(--color-text-label-2);
+  --text-2: var(--color-text-label-3);
 
   /* Accent */
-  --accent: var(--tint);
-  --accent-dim: color-mix(in oklab, var(--tint) 72%, black);
-  --accent-glow: color-mix(in srgb, var(--tint) 20%, transparent);
-  --accent-glow-strong: color-mix(in srgb, var(--tint) 33%, transparent);
+  --accent: var(--color-tint);
+  --accent-dim: color-mix(in oklab, var(--color-tint) 72%, black);
+  --accent-glow: color-mix(in srgb, var(--color-tint) 20%, transparent);
+  --accent-glow-strong: color-mix(in srgb, var(--color-tint) 33%, transparent);
 
   /* Status */
   --danger-glow: color-mix(in srgb, var(--danger) 20%, transparent);
   --success-glow: color-mix(in srgb, var(--success) 20%, transparent);
-  --info: var(--system-blue);
+  --info: var(--palette-system-blue);
 }

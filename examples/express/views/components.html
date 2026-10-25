@@ -50,7 +50,7 @@
             </header>
             <p>{{ comp.summary }}</p>
             <footer>
-              <code data-bn-component-fn>{{ comp.fn }}</code>
+              <code data-bn-component-variants>{{ comp.variantLabel }}</code>
               <span aria-hidden="true">→</span>
               <span data-bn-visually-hidden>View {{ comp.title }} demo</span>
             </footer>
@@ -74,17 +74,26 @@
     <li>
       <h3>Zero inline styles</h3>
       <p>
-        All CSS lives in cascade layers. No <code>style=""</code>, no CSS-in-JS. Variants are
-        addressed with <code>data-variant=""</code>.
+        All CSS lives in the component's own sheet. No <code>style=""</code>, no CSS-in-JS, no
+        classes. A component is addressed by its element and its <code>variant</code> attribute —
+        that is the whole selector contract.
       </p>
     </li>
     <li>
-      <h3><code>display: contents</code> on hosts</h3>
-      <p>Wrappers don't affect layout. The component you ask for is the box you get.</p>
+      <h3>Tokens, all the way down</h3>
+      <p>
+        Every sheet opens with a <code>:root</code> block mapping the design system's roles onto
+        the component's own tokens. Change a role and every component follows — no component
+        hard-codes a color, a size, or a radius.
+      </p>
     </li>
     <li>
-      <h3>Trinity standard</h3>
-      <p>State, logic, and template fuse in one file. No splitting across three.</p>
+      <h3>One component, three files</h3>
+      <p>
+        <code>index.html</code> holds structure and bindings, <code>styles.css</code> holds tokens
+        and selectors, <code>index.js</code> holds the view model. Templates carry no literal
+        text; state is carried by ARIA, never by a hook attribute.
+      </p>
     </li>
   </ol>
 </section>

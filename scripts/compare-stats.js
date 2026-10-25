@@ -4,7 +4,8 @@
  * This page's whole pitch is honesty, so none of its numbers may be typed by
  * hand. `computeCompareStats()` measures them from the repository on each
  * build and `examples/express/views/compare.html` renders only `{{ }}`
- * bindings against the result — there is no literal in the view to go stale.
+ * bindings against the result (the tables are composed from the same object
+ * in `examples/express/compare-tables.js`) — there is no literal to go stale.
  *
  *   node scripts/compare-stats.js           print the derived numbers
  *   node scripts/compare-stats.js --check   fail if the page disagrees with source
@@ -462,6 +463,9 @@ export const RENDERED_CLAIMS = [
 
 /** The view whose every BaseNative number must be a binding, not a literal. */
 export const COMPARE_VIEW = 'examples/express/views/compare.html';
+
+/** The module that composes /compare's tables from the same measured stats. */
+export const COMPARE_TABLES = 'examples/express/compare-tables.js';
 
 /** Read a repo-relative file. Exported so the checker reads through one path helper. */
 export const readRepoFile = read;

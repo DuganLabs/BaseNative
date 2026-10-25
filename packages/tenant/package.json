@@ -1,6 +1,6 @@
 {
   "name": "@basenative/tenant",
-  "version": "2.3.2",
+  "version": "2.4.0",
   "description": "Multi-tenant middleware with subdomain/path resolution and row-level query scoping",
   "type": "module",
   "exports": {

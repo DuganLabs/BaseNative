@@ -7,38 +7,6 @@
     "div-span": 1,
     "control-flow": 0
   },
-  "examples/express/component-demo-scripts.js": {
-    "custom-element": 0,
-    "inline-style": 1,
-    "style-write": 2,
-    "css-outside-layer": 0,
-    "div-span": 11,
-    "control-flow": 0
-  },
-  "examples/express/component-demos.js": {
-    "custom-element": 0,
-    "inline-style": 1,
-    "style-write": 0,
-    "css-outside-layer": 0,
-    "div-span": 14,
-    "control-flow": 0
-  },
-  "examples/express/public/playground.css": {
-    "custom-element": 0,
-    "inline-style": 0,
-    "style-write": 0,
-    "css-outside-layer": 75,
-    "div-span": 0,
-    "control-flow": 0
-  },
-  "examples/express/public/playground.js": {
-    "custom-element": 0,
-    "inline-style": 0,
-    "style-write": 8,
-    "css-outside-layer": 0,
-    "div-span": 1,
-    "control-flow": 0
-  },
   "examples/express/public/showcase.js": {
     "custom-element": 0,
     "inline-style": 0,
@@ -111,6 +79,14 @@
     "div-span": 41,
     "control-flow": 0
   },
+  "examples/express/views/design-system.html": {
+    "custom-element": 0,
+    "inline-style": 1,
+    "style-write": 0,
+    "css-outside-layer": 0,
+    "div-span": 0,
+    "control-flow": 0
+  },
   "examples/express/views/roadmap.html": {
     "custom-element": 0,
     "inline-style": 0,
@@ -133,6 +109,22 @@
     "style-write": 0,
     "css-outside-layer": 0,
     "div-span": 2,
+    "control-flow": 0
+  },
+  "examples/express/public/playground.css": {
+    "custom-element": 0,
+    "inline-style": 0,
+    "style-write": 0,
+    "css-outside-layer": 75,
+    "div-span": 0,
+    "control-flow": 0
+  },
+  "examples/express/public/playground.js": {
+    "custom-element": 0,
+    "inline-style": 0,
+    "style-write": 8,
+    "css-outside-layer": 0,
+    "div-span": 1,
     "control-flow": 0
   }
 }

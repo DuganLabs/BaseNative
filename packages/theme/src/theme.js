@@ -87,8 +87,8 @@ export const BADGE_SLOTS = ['default', 'primary', 'success', 'warning', 'error']
 /**
  * Non-colour groups. Defaulted, because a radius ladder is ergonomics and not
  * identity. `theme.test.js` asserts each default is byte-identical to the value
- * `@basenative/components/src/tokens.css` declares, so a change upstream fails
- * this package's build instead of quietly re-styling every property.
+ * `@basenative/components/src/tokens.css` declares, so a change upstream
+ * fails this package's build instead of quietly re-styling every property.
  */
 export const GEOMETRY_DEFAULTS = Object.freeze({
   font: Object.freeze({

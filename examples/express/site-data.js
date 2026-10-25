@@ -1,11 +1,11 @@
 import { readFileSync } from 'node:fs';
+import { renderTrinity, trinityComponentInfo } from './trinity.js';
+import { trinityCatalog, trinityCategoriesWith } from './trinity-catalog.js';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { escapeAttr, escapeText, raw } from '@basenative/runtime/shared/escape';
-import { renderListGroup, renderTabs } from '../../packages/components/src/index.js';
-import { renderBnList } from '../../packages/platform/src/components.js';
 import { computeCompareStats } from '../../scripts/compare-stats.js';
-import { componentCategories, flatComponents } from './component-catalog.js';
+import { getCompareTables } from './compare-tables.js';
 
 const siteDir = dirname(fileURLToPath(import.meta.url));
 
@@ -139,11 +139,12 @@ export function getAppNavItems(activePage = '') {
 }
 
 /**
- * The docs page's "Full API reference" list, rendered as a grouped list
- * (renderListGroup from the one catalog) instead of a hand-rolled <ul>.
- * Every link and description is the text the list has always carried.
+ * The docs page's "Full API reference" list, rendered as the catalog's
+ * list-group instead of a hand-rolled <ul>. Every link and description
+ * is the text the list has always carried.
  */
 export function getDocsPageContext() {
+  const runtimeVersion = pkgVersion('runtime');
   const apiRefs = [
     {
       label: '@basenative/runtime — signal, computed, effect, batch, hydrate, directives, devtools',
@@ -167,9 +168,16 @@ export function getDocsPageContext() {
     },
   ];
   return {
+    runtimeVersion,
     // Assembled from hand-authored data by the catalog's own renderer —
     // the same raw() trust assertion the other assembled contexts make.
-    apiRefs: raw(renderListGroup({ label: 'Full API reference by package', items: apiRefs })),
+    apiRefs: raw(
+      renderTrinity('list-group', {
+        items: apiRefs.map((ref) => ({
+          contentHtml: `<a href="${ref.href}">${escapeText(ref.label)}</a>`,
+        })),
+      }),
+    ),
   };
 }
 
@@ -202,109 +210,126 @@ export const staticTasks = [
 
 export function getHomePageContext() {
   const runtimeVersion = pkgVersion('runtime');
-  const platformVersion = pkgVersion('platform');
   const packages = stats().publicPackages;
+  // The home lists are the catalog's list-group: each row is one
+  // paragraph — the row's mark as a badge, its title, its detail — so
+  // the item is a single child of the row, the shape the component's
+  // layout is built for. The platform's renderBnList left with the
+  // platform.
+  const tones = ['info', 'warning', 'success', 'danger'];
+  const listOf = (rows) =>
+    raw(
+      renderTrinity('list-group', {
+        items: rows.map((row, i) => ({
+          contentHtml:
+            `<p>${renderTrinity('badge', { label: row.mark, variant: tones[i % tones.length] })} ` +
+            `<strong>${row.title}</strong> ${row.detail}</p>`,
+        })),
+      }),
+    );
   return {
     runtimeVersion,
-    runtimeList: raw(
-      renderBnList({
-        grouped: true,
-        rows: [
-          {
-            title: 'One set()',
-            detail: 'Derived computeds settle, then each affected effect runs once.',
-            tint: 'blue',
-            mark: '1',
-          },
-          {
-            title: 'BN_EFFECT_LOOP',
-            detail:
-              'An effect that writes a signal it also read throws. Use .peek(), or write a different signal.',
-            tint: 'orange',
-            mark: '!',
-          },
-          {
-            title: 'class and :class',
-            detail: 'The two merge. A false binding adds nothing.',
-            tint: 'green',
-            mark: 'C',
-          },
-          {
-            title: ':value and :checked',
-            detail: 'Those bindings write the DOM property.',
-            tint: 'purple',
-            mark: 'V',
-          },
-          {
-            title: 'Evaluator',
-            detail: `An allowlist. Gzip ${runtimeSizeStat()}.`,
-            tint: 'teal',
-            mark: 'E',
-          },
-        ],
-      }),
-    ),
-    platformList: raw(
-      renderBnList({
-        grouped: true,
-        rows: [
-          {
-            title: `@basenative/platform ${platformVersion}`,
-            detail: 'Apple 27 controls for iOS, iPadOS, and macOS, in light and dark.',
-            tint: 'indigo',
-            mark: 'P',
-          },
-          {
-            title: 'npmjs.org',
-            detail: 'npm install @basenative/runtime @basenative/server. No token.',
-            tint: 'mint',
-            mark: 'N',
-          },
-          {
-            title: '/ai',
-            detail:
-              'The model scorecard. Pass rates stay unpublished while the prompt corpus is empty.',
-            tint: 'pink',
-            mark: 'A',
-          },
-          {
-            title: '@basenative/validate',
-            detail:
-              'Flags className, htmlFor, onClick, {expr} text, useState, useEffect, and useMemo, and names the replacement.',
-            tint: 'cyan',
-            mark: 'V',
-          },
-          {
-            title: 'bn from-jsx',
-            detail: 'Rewrites a React or JSX draft into BaseNative.',
-            tint: 'brown',
-            mark: 'J',
-          },
-          {
-            title: 'Public packages',
-            detail: `${packages} on npmjs.org.`,
-            tint: 'yellow',
-            mark: '#',
-          },
-        ],
-      }),
-    ),
+    runtimeList: listOf([
+      {
+        title: 'One set()',
+        detail: 'Derived computeds settle, then each affected effect runs once.',
+        mark: '1',
+      },
+      {
+        title: 'BN_EFFECT_LOOP',
+        detail:
+          'An effect that writes a signal it also read throws. Use .peek(), or write a different signal.',
+        mark: '!',
+      },
+      {
+        title: 'class and :class',
+        detail: 'The two merge. A false binding adds nothing.',
+        mark: 'C',
+      },
+      {
+        title: ':value and :checked',
+        detail: 'Those bindings write the DOM property.',
+        mark: 'V',
+      },
+      {
+        title: 'Evaluator',
+        detail: `An allowlist. Gzip ${runtimeSizeStat()}.`,
+        mark: 'E',
+      },
+    ]),
+    catalogList: listOf([
+      {
+        title: '@basenative/components',
+        detail:
+          'The Holy Trinity catalog — every component three files: a template, a token sheet, and its logic, in light and dark.',
+        mark: 'C',
+      },
+      {
+        title: 'npmjs.org',
+        detail: 'npm install @basenative/runtime @basenative/server. No token.',
+        mark: 'N',
+      },
+      {
+        title: '/ai',
+        detail:
+          'The model scorecard. Pass rates stay unpublished while the prompt corpus is empty.',
+        mark: 'A',
+      },
+      {
+        title: '@basenative/validate',
+        detail:
+          'Flags className, htmlFor, onClick, {expr} text, useState, useEffect, and useMemo, and names the replacement.',
+        mark: 'V',
+      },
+      {
+        title: 'bn from-jsx',
+        detail: 'Rewrites a React or JSX draft into BaseNative.',
+        mark: 'J',
+      },
+      {
+        title: 'Public packages',
+        detail: `${packages} on npmjs.org.`,
+        mark: '#',
+      },
+    ]),
   };
 }
 
+// Status → badge variant for the /tasks list, following the page's own
+// status language (the mark[data-status] rules group active with done).
+const TASK_STATUS_VARIANT = { done: 'success', active: 'success', pending: 'default' };
+
 export function getTasksPageContext(tasks, hasApi = true) {
+  // The server-rendered list is the catalog list-group: the title in a
+  // paragraph, the status as the catalog badge pinned to the row's end.
+  // The client script in tasks.html keeps this list in sync in the same
+  // shape as the signals move.
+  const taskList = renderTrinity('list-group', {
+    items: tasks.length
+      ? tasks.map((task) => ({
+          contentHtml: `<p><strong>${escapeText(task.title)}</strong></p>`,
+          trailingHtml: renderTrinity('badge', {
+            label: task.status,
+            variant: TASK_STATUS_VARIANT[task.status] || 'default',
+          }),
+        }))
+      : [{ contentHtml: '<p>No tasks yet — add one below</p>' }],
+  });
   return {
     tasks,
+    taskList: raw(taskList),
     tasksJson: JSON.stringify(tasks),
     hasApi,
   };
 }
 
 export function getComponentsPageContext() {
+  const entries = trinityCatalog(trinityComponentInfo());
+  const categories = trinityCategoriesWith(entries);
   return {
-    categories: componentCategories,
-    totalCount: flatComponents.length,
-    categoryCount: componentCategories.length,
+    categories,
+    totalCount: entries.length,
+    categoryCount: categories.length,
   };
 }
 
@@ -339,7 +364,7 @@ export function getRoadmapPageContext() {
       tone: 'done',
     },
   ];
-  return {
+  const data = {
     // Measured or derived, never typed: the package count read "39" while the
     // workspace published 42, and "4 engines" counted four browsers that share
     // three engines. 'Shipped' is a judgement, not a measurement, so it stays.
@@ -552,6 +577,74 @@ export function getRoadmapPageContext() {
       },
     ],
   };
+
+  // The tables are the catalog table; a status is the catalog badge, the
+  // same carrier /ai's scorecard uses. The view binds the rendered tables —
+  // the data above stays the single source the rows are built from.
+  const STATUS_VARIANT = { done: 'success' };
+  const statusCell = (text, tone) => ({
+    contentHtml: renderTrinity('badge', {
+      label: text,
+      variant: STATUS_VARIANT[tone] || 'default',
+    }),
+  });
+  const roadmapTable = (columns, rows) => raw(renderTrinity('table', { columns, rows }));
+
+  return {
+    readinessStats: data.readinessStats,
+    targetBrowserList: data.targetBrowserList,
+    releaseStages: data.releaseStages,
+    milestoneTable: roadmapTable(
+      ['Milestone', 'Focus', 'Status', 'Outcome'],
+      data.releaseStages.map((stage) => [
+        stage.milestone,
+        stage.focus,
+        statusCell(stage.status, stage.tone),
+        stage.outcome,
+      ]),
+    ),
+    trustTable: roadmapTable(
+      ['Area', 'State', 'Notes'],
+      data.trustBlockers.map((item) => [item.item, statusCell(item.state, item.tone), item.notes]),
+    ),
+    packageTable: roadmapTable(
+      ['Package', 'Status', 'Responsibility'],
+      data.packageSurface.map((pkg) => [
+        { contentHtml: `<code>${escapeText(pkg.pkg)}</code>` },
+        statusCell(pkg.status, pkg.tone),
+        pkg.scope,
+      ]),
+    ),
+    workflowTable: roadmapTable(
+      ['Category', 'Status', 'Detail'],
+      data.workflowParity.map((workflow) => [
+        workflow.category,
+        statusCell(workflow.status, workflow.tone),
+        workflow.detail,
+      ]),
+    ),
+    p0Table: roadmapTable(
+      ['Component', 'Target release', 'Status', 'Notes'],
+      data.p0Components.map((component) => [
+        component.component,
+        component.release,
+        statusCell(component.status, component.tone),
+        component.notes,
+      ]),
+    ),
+    browserTable: roadmapTable(
+      ['Feature', 'Status', 'Fallback'],
+      data.browserSupport.map((browser) => [
+        browser.feature,
+        statusCell(browser.status, browser.tone),
+        browser.fallback,
+      ]),
+    ),
+    deferredTable: roadmapTable(
+      ['Scope', 'Status'],
+      data.deferredWork.map((item) => [item.item, item.reason]),
+    ),
+  };
 }
 
 // ─── /compare ────────────────────────────────────────────────────────────────
@@ -559,7 +652,7 @@ export function getRoadmapPageContext() {
 /**
  * The counter written four ways.
  *
- * Code is pre-escaped: it is handed to renderTabs() as an HTML slot, and the
+ * Code is pre-escaped: it is handed to the tabs composite as a panel slot, and the
  * BaseNative and Angular samples both contain `{{ … }}`, which `render()` would
  * otherwise evaluate as a live interpolation instead of printing.
  */
@@ -634,15 +727,17 @@ export class CounterComponent {
 /**
  * Context for /compare.
  *
- * `stats` is measured from source by scripts/compare-stats.js and the view
- * binds every BaseNative number to it rather than stating one, so the page
- * cannot drift from the runtime it describes.
+ * `stats` is measured from source by scripts/compare-stats.js and every
+ * BaseNative number on the page is bound to it rather than stated — the
+ * view's prose binds `{{ stats.… }}`, and compare-tables.js composes the
+ * tables from the same object — so the page cannot drift from the runtime
+ * it describes.
  */
 export function getComparePageContext() {
   const tabs = COUNTER_EXAMPLES.map((example) => ({
-    id: example.id,
+    value: example.id,
     label: example.label,
-    content: `<figure data-compare-code>
+    panelHtml: `<figure data-compare-code>
   <figcaption>${escapeText(example.file)}</figcaption>
   <pre tabindex="0" aria-label="Counter example: ${escapeAttr(example.label)}"><code>${example.code}</code></pre>
   <p data-compare-note>${escapeText(example.note)}</p>
@@ -651,6 +746,14 @@ export function getComparePageContext() {
 
   return {
     stats: stats(),
-    counterTabs: raw(renderTabs({ tabs, attrs: 'data-compare-tabs' })),
+    ...getCompareTables(stats()),
+    counterTabs: raw(
+      renderTrinity('tabs', {
+        id: 'counter',
+        label: 'Counter examples',
+        name: 'counter-examples',
+        tabs,
+      }),
+    ),
   };
 }

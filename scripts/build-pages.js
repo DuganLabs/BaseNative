@@ -12,12 +12,11 @@ import {
   renderRoute,
   siteRoutes,
 } from '../examples/express/page.js';
-import { flatComponents } from '../examples/express/component-catalog.js';
+import { trinityComponentInfo, trinitySiteCss } from '../examples/express/trinity.js';
 import { playgroundComponentsCss } from '../examples/express/playground-data.js';
 import { staticTasks } from '../examples/express/site-data.js';
 import { buildSite } from '../packages/cli/src/lib/site-build.js';
 import { checkComparePage } from './check-compare-page.js';
-import { demoSnippetProblems, demoClientApiProblems } from './check-demo-snippets.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -85,19 +84,10 @@ if (comparePageProblems.length) {
   process.exit(1);
 }
 
-// Every Source pane on /components/* goes to the reader's clipboard verbatim.
-// Refuse to publish one that does not parse, a page with nothing runnable, or
-// a client snippet that calls a render helper the browser bundle does not have.
-function assertDemoSnippetsParse() {
-  const problems = [...demoSnippetProblems(), ...demoClientApiProblems()];
-  if (problems.length) {
-    console.error('/components/* Source panes are not runnable — refusing to build:\n');
-    for (const problem of problems) console.error(`  • ${problem}`);
-    console.error('\nFix the `code:` strings in examples/express/component-demos.js.');
-    process.exit(1);
-  }
-}
-assertDemoSnippetsParse();
+// The /components/* pages show each component's real three files, read
+// from the package at render time — there are no hand-authored snippet
+// strings left to validate here; the components package's own suite
+// covers the files themselves.
 
 mkdirSync(dist, { recursive: true });
 
@@ -125,10 +115,10 @@ for (const route of siteRoutes) {
   writePage(route.path, renderRoute(route, { tasks: staticTasks, hasApi: false }));
 }
 
-// One page per catalog entry — the catalog links to every slug in flatComponents,
-// so anything missing here is a soft 404 on Cloudflare Pages.
-for (const component of flatComponents) {
-  writePage(`components/${component.slug}`, renderComponentPage(component.slug));
+// One page per catalog entry — the catalog links to every registered
+// component, so anything missing here is a soft 404 on Cloudflare Pages.
+for (const component of trinityComponentInfo()) {
+  writePage(`components/${component.name}`, renderComponentPage(component.name));
 }
 
 // Cloudflare Pages serves dist/404.html with a 404 status for any unknown path
@@ -144,8 +134,7 @@ cpSync(join(express, 'public', 'styles.css'), join(dist, 'styles.css'));
 cpSync(join(express, 'public', 'token-bridge.css'), join(dist, 'token-bridge.css'));
 cpSync(join(express, 'public', 'theme.css'), join(dist, 'theme.css'));
 cpSync(join(express, 'public', 'ios.css'), join(dist, 'ios.css'));
-cpSync(join(express, 'public', 'platform-shell.css'), join(dist, 'platform-shell.css'));
-cpSync(join(express, 'public', 'platform-shell.js'), join(dist, 'platform-shell.js'));
+cpSync(join(express, 'public', 'boot.js'), join(dist, 'boot.js'));
 cpSync(join(express, 'public', 'scrollspy.js'), join(dist, 'scrollspy.js'));
 cpSync(join(express, 'public', 'basenative.js'), join(dist, 'basenative.js'));
 cpSync(join(express, 'public', 'showcase.js'), join(dist, 'showcase.js'));
@@ -183,14 +172,13 @@ cpSync(join(express, 'public', 'avatar-eve.svg'), join(dist, 'avatar-eve.svg'));
 // Copy component CSS (served as /bn-css/ in Express, must exist in dist)
 const bnCssDir = join(dist, 'bn-css');
 mkdirSync(bnCssDir, { recursive: true });
+writeFileSync(join(bnCssDir, 'trinity.css'), trinitySiteCss());
 const componentSrc = join(root, 'packages', 'components', 'src');
 const componentCssFiles = [
   'index.css',
   'layers.css',
   'reset.css',
   'tokens.css',
-  'tokens-legacy.css',
-  'theme.css',
   'layout.css',
   'components.css',
   'states.css',
@@ -216,11 +204,6 @@ for (const file of componentCssFiles) {
 }
 
 
-const bnPlatformDir = join(dist, 'bn-platform');
-mkdirSync(bnPlatformDir, { recursive: true });
-cpSync(join(root, 'packages', 'platform', 'src', 'tokens.css'), join(bnPlatformDir, 'tokens.css'));
-cpSync(join(root, 'packages', 'platform', 'src', 'materials.css'), join(bnPlatformDir, 'materials.css'));
-cpSync(join(root, 'packages', 'platform', 'src', 'components.css'), join(bnPlatformDir, 'components.css'));
 
 // Copy builder CSS (served as /bn-builder-css/ in Express, must exist in dist)
 const bnBuilderCssDir = join(dist, 'bn-builder-css');

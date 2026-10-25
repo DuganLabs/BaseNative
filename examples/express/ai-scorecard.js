@@ -14,12 +14,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { escapeAttr, escapeText, raw } from '@basenative/runtime/shared/escape';
-import {
-  renderBadge,
-  renderFaq,
-  renderStatCard,
-  renderTable,
-} from '../../packages/components/src/index.js';
+import { renderTrinity } from './trinity.js';
 import { getMeasuredStats } from './site-data.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -217,42 +212,38 @@ function codeBlock(label, source) {
 }
 
 function statusBadge(status) {
-  return renderBadge('', { text: status, variant: STATUS_VARIANT[status] || 'default' });
+  return renderTrinity('badge', { label: status, variant: STATUS_VARIANT[status] || 'default' });
 }
 
 export function getAiPageContext() {
   const measured = getMeasuredStats();
   const tokens = cheatSheetTokens();
-  const scorecard = renderTable({
+  const scorecard = renderTrinity('table', {
     caption: 'Points against BaseNative, and where each one stands',
-    columns: [
-      { key: 'from', label: 'From' },
-      { key: 'point', label: 'Point' },
-      { key: 'status', label: 'Status', render: (value) => statusBadge(value) },
-      { key: 'standing', label: 'Standing' },
-    ],
-    rows: AI_SCORECARD,
+    columns: ['From', 'Point', 'Status', 'Standing'],
+    rows: AI_SCORECARD.map((row) => [
+      row.from,
+      row.point,
+      { contentHtml: statusBadge(row.status) },
+      row.standing,
+    ]),
   });
-  const statsRow = [
-    renderStatCard({
-      value: `${measured.runtimeGzipKb} KB`,
-      label: 'Runtime gzip, measured at render',
-    }),
-    renderStatCard({
-      value: String(measured.unsafeEvalUses),
-      label: 'eval and new Function uses in the runtime',
-    }),
-    renderStatCard({
-      value: String(tokens),
-      label: 'Cheat sheet tokens, bytes divided by four',
-    }),
-    renderStatCard({
-      value: `${measured.benchBnTokens} vs ${measured.benchReactTokens}`,
-      label: 'Historical code tokens, BaseNative vs React',
-    }),
-  ].join('\n');
-  const mistakes = renderFaq({
-    items: [
+  // The measured strip is the same stat surface /compare carries —
+  // app markup on the app's tokens (styles.css, bn-metric).
+  const statCard = (value, label) =>
+    `<li><article data-bn="bn-metric"><p data-bn="bn-metric-value">${escapeText(value)}</p>` +
+    `<p data-bn="bn-metric-label">${escapeText(label)}</p></article></li>`;
+  const statsRow =
+    statCard(`${measured.runtimeGzipKb} KB`, 'Runtime gzip, measured at render') +
+    statCard(String(measured.unsafeEvalUses), 'eval and new Function uses in the runtime') +
+    statCard(String(tokens), 'Cheat sheet tokens, bytes divided by four') +
+    statCard(
+      `${measured.benchBnTokens} vs ${measured.benchReactTokens}`,
+      'Historical code tokens, BaseNative vs React',
+    );
+  const mistakes = [
+    ...[
+
       {
         question: 'className and htmlFor',
         answerText: 'Use class and for. An expression goes in :class, and it merges with the static class.',
@@ -277,8 +268,13 @@ export function getAiPageContext() {
         question: 'Putting every class token inside :class',
         answerText: 'That was the workaround when :class replaced the attribute. Write class="item" :class="done() ? \'done\' : \'\'" now.',
       },
-    ],
-  });
+    ].map((item) =>
+      renderTrinity('accordion', {
+        summary: item.question,
+        bodyHtml: `<p>${escapeText(item.answerText)}</p>`,
+      }),
+    ),
+  ].join('\n');
 
   return {
     scorecard: raw(scorecard),

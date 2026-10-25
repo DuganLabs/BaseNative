@@ -26,7 +26,6 @@ check() {
   echo "── lint"; pnpm exec nx run-many --target=lint
   echo "── test"; pnpm exec nx run-many --target=test
   echo "── axiom check"; node scripts/axiom-check.js
-  echo "── platform token lint"; node scripts/platform-token-lint.js
   echo "── publish gate"; node scripts/publish-check.mjs
 }
 

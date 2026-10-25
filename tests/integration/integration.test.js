@@ -16,24 +16,15 @@ import { createFlagManager, createMemoryProvider } from '../../packages/flags/sr
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { checkComparePage, capabilityProblems, roadmapProblems } from '../../scripts/check-compare-page.js';
-import {
-  demoSnippets,
-  demoSnippetProblems,
-  demoClientApiProblems,
-  snippetSyntaxError,
-} from '../../scripts/check-demo-snippets.js';
 import { computeCompareStats } from '../../scripts/compare-stats.js';
 import { renderRoute, renderComponentPage, siteRoutes } from '../../examples/express/page.js';
 import { highlightCode, highlightCodeBlocks } from '../../examples/express/highlight.js';
 import { AI_SCORECARD } from '../../examples/express/ai-scorecard.js';
-import { flatComponents } from '../../examples/express/component-catalog.js';
-import { getDemo } from '../../examples/express/component-demos.js';
-import { getDemoScripts, demoInitialisers } from '../../examples/express/component-demo-scripts.js';
-import { getShowcaseSections } from '../../examples/express/showcase-data.js';
+import { trinityDemos } from '../../examples/express/trinity-catalog.js';
+import { renderTrinity, renderTrinityVm, trinityComponentInfo } from '../../examples/express/trinity.js';
 import { getRoadmapPageContext, getAppNavItems } from '../../examples/express/site-data.js';
 import * as components from '../../packages/components/src/index.js';
 
-const { renderDrawer, renderPagination } = components;
 
 // ─── 1. SSR + Runtime: Context Pipeline ──────────────────────────────────────
 
@@ -433,59 +424,37 @@ describe('/roadmap derives its readiness tiles', () => {
   });
 });
 
-describe('component catalogue summaries describe shipped behaviour', () => {
-  const summaryOf = (slug) => flatComponents.find((c) => c.slug === slug).summary;
-  const css = readFileSync(repo('packages/components/src/components.css'), 'utf8');
 
-  it('pagination claims only the controls renderPagination emits', () => {
-    const html = renderPagination({ currentPage: 3, totalPages: 10 });
-    for (const control of ['first', 'last']) {
-      if (!new RegExp(`\\b${control}\\b`, 'i').test(summaryOf('pagination'))) continue;
-      assert.match(html, new RegExp(`aria-label="${control} page"`, 'i'),
-        `the pagination summary promises a ${control} control the component does not render`);
+describe('the trinity specimens stay inside the page', () => {
+  const slugs = trinityComponentInfo().map((entry) => entry.name);
+
+  it('every registered component has at least one specimen, and it renders', () => {
+    for (const slug of slugs) {
+      const demos = (trinityDemos[slug] ?? (() => []))(renderTrinity, renderTrinityVm);
+      assert.ok(demos.length >= 1, `${slug} has no specimen in trinity-catalog.js`);
+      for (const demo of demos) {
+        assert.ok(demo.html.trim().length > 0, `${slug}/${demo.title} rendered empty`);
+      }
     }
-    assert.match(summaryOf('pagination'), /\bprev\b/i);
-    assert.match(summaryOf('pagination'), /\bnext\b/i);
   });
 
-  it('drawer claims only the edges the stylesheet positions', () => {
-    const summary = summaryOf('drawer');
-    for (const edge of ['top', 'bottom', 'left', 'right', 'any edge']) {
-      if (!new RegExp(`\\b${edge}\\b`, 'i').test(summary)) continue;
-      assert.notEqual(edge, 'any edge', 'the drawer summary promises every edge');
-      const positioned =
-        edge === 'right' || css.includes(`[data-bn="drawer"][data-position="${edge}"]`);
-      assert.ok(positioned, `the drawer summary promises "${edge}" but no rule positions it`);
+  it('no specimen links to a real site route', () => {
+    for (const slug of slugs) {
+      for (const demo of trinityDemos[slug](renderTrinity, renderTrinityVm)) {
+        assert.doesNotMatch(demo.html, /href="\/(?!#)/,
+          `${slug}/${demo.title} navigates to a real route — a specimen click must stay on the page`);
+      }
     }
-    assert.match(renderDrawer({ title: 'x', content: 'y', position: 'left' }), /data-position="left"/);
   });
 
-  it('textarea and select summaries name declarations the stylesheet ships', () => {
-    assert.match(summaryOf('textarea'), /field-sizing: content/);
-    assert.match(css, /\[data-bn="textarea"\][^{]*\{[^}]*field-sizing:\s*content/s);
-    assert.match(summaryOf('select'), /base-select/);
-    assert.match(css, /\[data-bn="select"\][^{]*\{[^}]*appearance:\s*base-select/s);
-  });
-});
-
-describe('component demos do what their controls say', () => {
-  it('the expand-all accordion demo renders a non-exclusive group', () => {
-    const html = getDemo('accordion').examples.find((e) => e.title === 'Expand / collapse all').html;
-    const names = [...html.matchAll(/<details[^>]*\sname="/g)];
-    assert.equal(names.length, 0, 'the expand-all demo must render a non-exclusive accordion');
-    assert.ok(html.includes('<details'), 'the demo renders no accordion at all');
-  });
-
-  it('the dialog demo does not promise backdrop dismissal', () => {
-    const example = getDemo('dialog').examples.find((e) => e.title === 'Modal dialog');
-    assert.doesNotMatch(example.description, /backdrop/i);
-    assert.doesNotMatch(example.code, /backdrop/i);
-  });
-
-  it('no demo on /showcase renders a navigation to a real site route', () => {
-    const all = JSON.stringify(getShowcaseSections());
-    assert.doesNotMatch(all, /href="\/showcase\?/,
-      'a /showcase demo links to a real route — Cloudflare Pages ignores the query string and the click reloads the page');
+  it('every component page renders, with its three files shown', () => {
+    for (const slug of slugs) {
+      const html = renderComponentPage(slug);
+      assert.ok(html, `renderComponentPage(${slug}) returned nothing`);
+      assert.match(html, /index\.html — the template/);
+      assert.match(html, /styles\.css — the token sheet/);
+      assert.match(html, /index\.js — the logic/);
+    }
   });
 });
 
@@ -509,19 +478,20 @@ describe('/tasks tells the static visitor where their tasks go', () => {
 });
 
 describe('every published route is reachable from the navigation', () => {
-  // The shell is the platform sidebar and tab bar, rendered from the
-  // route table (shell.js), not hand-written in layout.html.
+  // The shell is the catalog's app-shell — a sidebar and an app bar
+  // composed by shell.js from the nav model, not hand-written in
+  // layout.html.
   it('links every non-internal route from the rendered navigation', () => {
     for (const route of siteRoutes) {
       if (route.internal) continue;
       const html = renderRoute(route, { tasks: [], hasApi: false });
       assert.ok(
-        html.includes('data-bn="bn-sidebar"'),
+        html.includes('<aside variant="sidebar"'),
         `${route.path} renders without the sidebar`,
       );
       assert.ok(
-        html.includes('data-bn="bn-tab-bar"'),
-        `${route.path} renders without the tab bar`,
+        html.includes('<nav variant="app-bar"'),
+        `${route.path} renders without the app bar`,
       );
       assert.ok(
         html.includes(`href="${route.path}"`),
@@ -532,32 +502,37 @@ describe('every published route is reachable from the navigation', () => {
 
   it('carries the shell-critical CSS inline, independent of the cached stylesheet chain', () => {
     // Pages' assets are cached for hours while the HTML is revalidated
-    // per visit. The window chrome is inlined so a stale platform-shell.css
-    // cannot drop the grid or the phone tab bar (the 2026-10-20 incident).
+    // per visit. The window chrome is inlined so a stale stylesheet
+    // cannot drop the shell grid or the phone app bar (the 2026-10-20
+    // incident).
     const html = renderRoute(siteRoutes[0], { tasks: [], hasApi: false });
     assert.ok(html.includes('<style data-bn-critical="shell">'), 'the shell-critical style block renders');
     const style = html.slice(html.indexOf('<style data-bn-critical="shell">'), html.indexOf('</style>', html.indexOf('<style data-bn-critical="shell">')));
-    assert.ok(style.includes('[data-bn=\'bn-sidebar\']') || style.includes('[data-bn="bn-sidebar"]'), 'the sidebar rules are inlined');
-    assert.ok(style.includes('[data-bn=\'bn-tab-bar\']') || style.includes('[data-bn="bn-tab-bar"]'), 'the tab bar rules are inlined');
-    assert.ok(style.includes('position: fixed'), 'the bar positioning is inlined');
+    assert.ok(style.includes('aside[variant="sidebar"]'), 'the sidebar rules are inlined');
+    assert.ok(style.includes('nav[variant="app-bar"]'), 'the app bar rules are inlined');
+    assert.ok(style.includes('--app-bar-position: var(--position-fixed)'), 'the bar positioning is inlined');
   });
 
   it('the inlined shell CSS is self-contained: every token it uses, it defines or falls back', () => {
-    // A var(--bn-*) with no fallback still has to be defined in the
-    // same block. A fallback is enough: the shell must lay out when
-    // tokens.css is stale.
+    // A var(--*) with no fallback still has to be defined — in the
+    // block itself (the components' own tokens) or in tokens.css (the
+    // layer-0 primitives the block maps from). A fallback is enough:
+    // the shell must lay out when the stylesheet chain is stale.
     const html = renderRoute(siteRoutes[0], { tasks: [], hasApi: false });
     const style = html.slice(html.indexOf('<style data-bn-critical="shell">'), html.indexOf('</style>', html.indexOf('<style data-bn-critical="shell">')));
-    const defined = new Set([...style.matchAll(/(--bn-[a-z0-9-]+)\s*:/g)].map((m) => m[1]));
+    const tokensCss = readFileSync(repo('packages/components/src/tokens.css'), 'utf8');
+    const defined = new Set(
+      [...(style + tokensCss).matchAll(/(--[a-z0-9_-]+)\s*:/g)].map((m) => m[1]),
+    );
     const missing = [];
-    for (const match of style.matchAll(/var\(\s*(--bn-[a-z0-9-]+)([^)]*)\)/g)) {
+    for (const match of style.matchAll(/var\(\s*(--[a-z0-9_-]+)([^)]*)\)/g)) {
       const name = match[1];
       const hasFallback = match[2].trimStart().startsWith(',');
       if (!hasFallback && !defined.has(name)) missing.push(name);
     }
     assert.deepEqual([...new Set(missing)], [], `shell CSS references tokens it does not define: ${missing.join(', ')}`);
-    assert.ok(style.includes('--bn-shell-sidebar:'), 'the sidebar track is inlined');
-    assert.ok(style.includes('--bn-shell-tab:'), 'the tab bar size is inlined');
+    assert.ok(style.includes('--app-shell-'), 'the shell layout tokens are inlined');
+    assert.ok(style.includes('--sidebar-'), 'the sidebar tokens are inlined');
   });
 
   it('home names the installed runtime and the effect rule, with no inline style', () => {
@@ -566,8 +541,10 @@ describe('every published route is reachable from the navigation', () => {
     assert.ok(html.includes(runtime), 'home names the runtime version');
     assert.match(html, /BN_EFFECT_LOOP/);
     assert.equal(html.includes('style='), false);
-    assert.match(html, /data-bn="bn-button"/);
-    assert.match(html, /data-bn="bn-list"/);
+    // The hero's actions are the catalog's link-form buttons.
+    assert.match(html, /<a variant="primary" href="\/playground">/);
+    // Home's lists are the catalog's list-group.
+    assert.match(html, /<ul variant="default">/);
   });
 
   it('a route with no nav entry is marked internal, and an internal route has no nav entry', () => {
@@ -721,7 +698,7 @@ describe('site syntax highlighting is a pipeline step', () => {
       }
     }
     const componentHtml = renderComponentPage('button');
-    assert.match(componentHtml, /<pre[^>]*><code><span class="kw">import<\/span>/);
+    assert.match(componentHtml, /<span class="kw">import<\/span>/);
   });
 
   it('no view hand-writes highlight spans any more', () => {
@@ -737,38 +714,6 @@ describe('site syntax highlighting is a pipeline step', () => {
   });
 });
 
-// ─── 14. /components/*: every Source pane is code a reader can run ───────────
-// The pane's string is authored apart from the render beside it and from the
-// client script; the Copy button hands it over verbatim. Fifteen of them
-// shipped `items: [...]`, six taught a browser-side renderX() that the client
-// bundle does not export, and four pages had nothing parseable at all.
-
-describe('component Source panes are runnable JavaScript', () => {
-  it('the syntax check rejects an elision and accepts real ESM', () => {
-    assert.match(
-      snippetSyntaxError("import { renderCombobox } from '@basenative/components';\nrenderCombobox({ items: [...] });"),
-      /Unexpected token/,
-    );
-    assert.equal(snippetSyntaxError("import { renderCombobox } from '@basenative/components';\nrenderCombobox({ items: ['React'] });"), null);
-  });
-
-  it('every quickstart and example snippet parses, and every component page has one', () => {
-    assert.ok(demoSnippets().length >= 78, `expected the catalogue's snippets, found ${demoSnippets().length}`);
-    const problems = demoSnippetProblems();
-    assert.deepEqual(problems, [], `Source panes that are not runnable:\n  ${problems.join('\n  ')}`);
-  });
-
-  it('no Source pane contains an elided array', () => {
-    for (const { slug, label, code } of demoSnippets()) {
-      assert.ok(!code.includes('[...]'), `${slug}/${label} still elides its data with [...]`);
-    }
-  });
-
-  it('scripted panes use the client API the page itself uses, not a server render helper', () => {
-    const problems = demoClientApiProblems();
-    assert.deepEqual(problems, [], problems.join('\n'));
-  });
-});
 
 // ─── 15. /docs: import samples name published packages, and the page leads on ─
 // Five samples imported from 'basenative' — a package that does not exist —
@@ -857,113 +802,19 @@ describe('the site bundle ships every client initialiser the package exports', (
   });
 });
 
-describe('component demos call the package initialisers instead of copying them', () => {
-  const initOf = (fn) => fn.replace(/^render/, 'init');
-  const withInit = flatComponents.filter((c) => typeof components[initOf(c.fn)] === 'function');
-  const importsOf = (script) => /import \{([^}]*)\} from '\/basenative\.js'/.exec(script)[1];
 
-  it('the shared script hands every tablist to initTabs and no longer sets aria-selected by hand', () => {
-    const script = getDemoScripts('button');
-    assert.match(importsOf(script), /\binitTabs\b/);
-    assert.match(script, /initTabs\(/);
-    assert.doesNotMatch(script, /aria-selected/);
-    assert.doesNotMatch(script, /tabindex/);
-  });
 
-  it('every component with an initialiser is listed, and its demo page imports and calls it', () => {
-    assert.ok(withInit.length >= 8, `expected the eight initialised components, found ${withInit.length}`);
-    for (const { slug, fn } of withInit) {
-      const init = initOf(fn);
-      if (slug !== 'tabs') {
-        assert.equal(demoInitialisers[slug], init, `demoInitialisers has no ${init} for /components/${slug}`);
-      }
-      const script = getDemoScripts(slug);
-      assert.match(importsOf(script), new RegExp(`\\b${init}\\b`), `/components/${slug} does not import ${init}`);
-      assert.match(script, new RegExp(`${init}\\(`), `/components/${slug} never calls ${init}`);
-    }
-    for (const [slug, init] of Object.entries(demoInitialisers)) {
-      assert.ok(flatComponents.some((c) => c.slug === slug), `demoInitialisers names an unknown slug ${slug}`);
-      assert.equal(typeof components[init], 'function', `${init} is not exported by @basenative/components`);
-    }
-  });
-
-  it('/components/drawer opens through initDrawer and never toggles hidden or data-open itself (BN-019)', () => {
-    const script = getDemoScripts('drawer');
-    assert.match(script, /const panel = initDrawer\(drawer\)/);
-    assert.match(script, /panel\.open\(\)/);
-    assert.doesNotMatch(script, /data-open|'hidden'|inert/);
-  });
-
-  it('/components/command-palette binds the Ctrl+K its demo advertises', () => {
-    const script = getDemoScripts('command-palette');
-    assert.match(script, /initCommandPalette\(cmd, \{ hotkey: 'Mod\+K' \}\)/);
-    assert.doesNotMatch(script, /showModal/);
-  });
-
-  it('the virtual list demo rebuilds the full list from the total the markup carries', () => {
-    const html = getDemo('virtual-list').examples[0].html;
-    const total = Number(/data-total="(\d+)"/.exec(html)[1]);
-    assert.equal(total, 1000);
-    assert.match(getDemoScripts('virtual-list'), /dataset\.total/);
-  });
-});
-
-describe('catalogue copy promises only what a shipped initialiser delivers', () => {
-  const initOf = (fn) => fn.replace(/^render/, 'init');
-  // The capability verbs the 2026-09-12 audit found advertised with nothing
-  // behind them. A summary may use one only when the package ships the
-  // component's initialiser and the summary names it, as docs/api/components.md does.
-  const FORBIDDEN = [/arrow-key/i, /fuzzy filter/i, /expand\/collapse/i, /chip removal/i, /visible slice/i, /re-slices/i, /close-on-select/i];
-
-  it('a summary using a capability verb names the shipped initialiser that provides it', () => {
-    for (const { slug, fn, summary } of flatComponents) {
-      const hit = FORBIDDEN.find((re) => re.test(summary));
-      if (!hit) continue;
-      const init = initOf(fn);
-      assert.equal(typeof components[init], 'function',
-        `/components/${slug} promises "${summary}" but the package ships no ${init}`);
-      assert.ok(summary.includes(init), `/components/${slug} promises "${summary}" without naming ${init}`);
-    }
-  });
-
-  it('nothing on the site calls the command filter fuzzy — it is a substring match', () => {
-    for (const { slug, summary } of flatComponents) assert.doesNotMatch(summary, /fuzzy/i, slug);
-    for (const { slug } of flatComponents) {
-      for (const ex of getDemo(slug).examples || []) {
-        assert.doesNotMatch(`${ex.title} ${ex.description}`, /fuzzy/i, `${slug}: ${ex.title}`);
-      }
-    }
-    assert.match(summaryOf(flatComponents, 'command-palette'), /substring filter/);
-  });
-
-  it('the tooltip demo says the invoker opens on activation, not hover', () => {
-    const [example] = getDemo('tooltip').examples;
-    assert.doesNotMatch(`${example.title} ${example.html}`, /hover/i);
-    assert.match(example.html, /Click or press Enter/);
-    assert.match(example.html, /popovertarget=/, 'the trigger must be a popover invoker');
-  });
-
-  function summaryOf(list, slug) {
-    return list.find((c) => c.slug === slug).summary;
-  }
-});
-
-describe('/showcase runs the package initialisers rather than its own copies', () => {
+describe('/showcase client script wires only the page furniture', () => {
   const showcase = readFileSync(repo('examples/express/public/showcase.js'), 'utf8');
-  const imports = /import \{([^}]*)\} from '\/basenative\.js'/.exec(showcase)[1];
 
-  it('imports and calls the tabs, drawer, dropdown, palette and virtual list initialisers', () => {
-    for (const init of ['initTabs', 'initDrawer', 'initDropdownMenu', 'initCommandPalette', 'initVirtualList']) {
-      assert.match(imports, new RegExp(`\\b${init}\\b`), `showcase.js does not import ${init}`);
-      assert.match(showcase, new RegExp(`${init}\\(`), `showcase.js never calls ${init}`);
-    }
+  it('wires the section filter and the TOC tracking', () => {
+    assert.match(showcase, /wireShowcaseFilter\(\);/);
+    assert.match(showcase, /wireShowcaseToc\(\);/);
   });
 
-  it('no longer flips aria-selected, hides popovers or moves the virtual window by hand', () => {
-    assert.doesNotMatch(showcase, /aria-selected/);
-    assert.doesNotMatch(showcase, /"dropdown-item"|"command-item"|menu\.hidePopover/);
-    assert.doesNotMatch(showcase, /translateY|virtual-item', |data-index/);
-    assert.doesNotMatch(showcase, /drawer-close|drawer-overlay|inert/);
+  it('carries no wiring for markup the trinity showcase no longer renders', () => {
+    assert.doesNotMatch(showcase, /init(Tabs|Drawer|DropdownMenu|CommandPalette|VirtualList)/);
+    assert.doesNotMatch(showcase, /data-bn="(tabs|dialog|drawer|dropdown|command-palette|virtualizer)"/);
   });
 });
 
@@ -1017,22 +868,23 @@ describe('the /ai scorecard keeps every point against BaseNative', () => {
 
 // ─── 13c. Site footer: rendered from the nav model by the catalog component ──
 // The layout used to hand-write the footer: it omitted five routes and
-// carried a differently-cased GitHub URL. It is now renderBnFooter fed
-// by getAppNavItems, so the footer and the nav cannot drift apart.
+// carried a differently-cased GitHub URL. It is now the catalog's
+// site-footer fed by getAppNavItems, so the footer and the nav cannot
+// drift apart.
 
 describe('site footer is rendered from the nav model', () => {
   const html = renderRoute(siteRoutes[0], { tasks: [], hasApi: false });
   const footer = html.slice(html.indexOf('<footer'), html.indexOf('</footer>'));
 
-  it('carries the site-footer contract attribute', () => {
-    assert.match(footer, /<footer data-bn="bn-footer" data-bn-site-footer>/);
+  it('carries the trinity site-footer contract', () => {
+    assert.match(footer, /<footer variant="default">/);
   });
 
   it('names its first landmark Project, not BaseNative', () => {
     // The catalog's demo footers already use "BaseNative" as a nav
     // name; a second one would trip axe's landmark-unique rule on
     // pages that embed the catalog.
-    assert.match(footer, /<nav aria-label="Project"><p>BaseNative<\/p>/);
+    assert.match(footer, /<nav aria-label="Project">\s*<p>BaseNative<\/p>/);
     assert.ok(!footer.includes('aria-label="BaseNative"'));
   });
 
@@ -1052,5 +904,81 @@ describe('site footer is rendered from the nav model', () => {
     const layout = readFileSync(repo('examples/express/views/layout.html'), 'utf8');
     assert.ok(layout.includes('<!--FOOTER-->'));
     assert.ok(!layout.includes('<footer'));
+  });
+});
+
+describe('the contents navs have a working scrollspy', () => {
+  const tocLinks = (html, navAttr) => {
+    const nav = html.slice(html.indexOf(navAttr), html.indexOf('</nav>', html.indexOf(navAttr)));
+    return [...nav.matchAll(/href="#([^"]+)"/g)].map((m) => m[1]);
+  };
+
+  it('/docs: every contents link resolves to a section on the page', () => {
+    const route = siteRoutes.find((r) => r.path === '/docs');
+    const html = renderRoute(route, { tasks: [], hasApi: false });
+    const ids = tocLinks(html, 'data-bn-docs-toc');
+    assert.ok(ids.length >= 4, `expected the /docs contents list, got ${ids.length} links`);
+    for (const id of ids) {
+      assert.ok(html.includes(`id="${id}"`), `/docs contents link #${id} has no target section`);
+      const count = html.split(`id="${id}"`).length - 1;
+      assert.equal(count, 1, `/docs should carry id="${id}" exactly once, got ${count}`);
+    }
+  });
+
+  it('/components: every category filter maps to a section on the page', () => {
+    const route = siteRoutes.find((r) => r.path === '/components');
+    const html = renderRoute(route, { tasks: [], hasApi: false });
+    const barAt = html.indexOf('data-bn-component-filters');
+    const bar = html.slice(barAt, html.indexOf('</nav>', barAt));
+    const cats = [...bar.matchAll(/data-bn-component-filter="([^"]+)"/g)]
+      .map((m) => m[1])
+      .filter((c) => c !== 'all');
+    assert.ok(cats.length >= 3, `expected the /components category filters, got ${cats.length}`);
+    for (const cat of cats) {
+      assert.ok(
+        html.includes(`id="cat-${cat}"`),
+        `/components filter "${cat}" has no target section`,
+      );
+    }
+  });
+
+  it('every page loads the scrollspy script', () => {
+    const route = siteRoutes.find((r) => r.path === '/docs');
+    const html = renderRoute(route, { tasks: [], hasApi: false });
+    assert.ok(html.includes('src="/scrollspy.js?v='), 'rendered page should load /scrollspy.js');
+  });
+
+  it('the scrollspy observes the TOC targets and marks the current link', () => {
+    const src = readFileSync(repo('examples/express/public/scrollspy.js'), 'utf8');
+    assert.ok(src.includes('IntersectionObserver'), 'scrollspy should use IntersectionObserver');
+    assert.ok(src.includes('data-bn-docs-toc'), 'scrollspy should cover the /docs contents nav');
+    assert.ok(src.includes('data-bn-component-toc'), 'scrollspy should cover the /components TOC');
+    assert.ok(
+      src.includes('data-bn-component-filter'),
+      'scrollspy should mark the /components filter bar (the surviving nav)',
+    );
+    assert.ok(src.includes("setAttribute('aria-current', 'true')"), 'scrollspy should set aria-current');
+    assert.ok(src.includes("removeAttribute('aria-current')"), 'scrollspy should clear stale marks');
+  });
+
+  it('the current TOC link takes the app nav current treatment', () => {
+    const css = readFileSync(repo('examples/express/public/styles.css'), 'utf8');
+    const tocBlock = css.slice(css.indexOf('[data-bn-component-toc],'));
+    const at = tocBlock.indexOf("&[aria-current='true']");
+    assert.ok(at > -1, 'the TOC block should carry an aria-current rule');
+    const rule = tocBlock.slice(at, at + 300);
+    assert.ok(rule.includes('var(--bn-brand)'), 'current TOC link should fill with --bn-brand');
+    assert.ok(rule.includes('var(--bn-brand-ink)'), 'current TOC link should label with --bn-brand-ink');
+    const filtersBlock = css.slice(css.indexOf('[data-bn-component-filters]'));
+    const fat = filtersBlock.indexOf("&[aria-current='true']");
+    assert.ok(fat > -1, 'the filter buttons should carry an aria-current rule');
+    const frule = filtersBlock.slice(fat, fat + 300);
+    assert.ok(frule.includes('var(--bn-brand)'), 'current filter should fill with --bn-brand');
+    assert.ok(frule.includes('var(--bn-brand-ink)'), 'current filter should label with --bn-brand-ink');
+  });
+
+  it('the static export ships the scrollspy script', () => {
+    const build = readFileSync(repo('scripts/build-pages.js'), 'utf8');
+    assert.ok(build.includes("'scrollspy.js'"), 'build-pages.js should copy scrollspy.js into dist');
   });
 });
