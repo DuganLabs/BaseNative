@@ -9,27 +9,40 @@
  */
 
 :root {
+  /* === The brand, expressed in the Holy Trinity token system ===
+     The site's foundation is @basenative/components tokens.css
+     (linked before this sheet). This theme pins the brand onto its
+     roles — signal orange as the tint — and maps the legacy --bn-*
+     names the pre-migration components still read onto those roles,
+     so every value on the site has exactly one owner. The hue scales
+     and alert/badge literals further down are the legacy palette the
+     old components consume; they retire with the surface migration. */
+  --tint: var(--system-orange);
+  --tint-strong: color-mix(in oklab, var(--system-orange) 82%, black);
+  --font-text: 'BaseNative', system-ui, sans-serif;
+  --font-display: 'BaseNative', system-ui, sans-serif;
+
   /* === Core token overrides === */
 
   /* Surfaces — dark */
-  --bn-color-surface: #0c0b09;
-  --bn-color-surface-subtle: #151310;
-  --bn-color-surface-muted: #1c1916;
-  --bn-color-surface-raised: #151310;
-  --bn-color-surface-inset: #080706;
-  --bn-color-surface-inverse: #f0ede4;
+  --bn-color-surface: var(--background-grouped);
+  --bn-color-surface-subtle: var(--background-grouped-2);
+  --bn-color-surface-muted: var(--background-grouped-3);
+  --bn-color-surface-raised: var(--background-grouped-2);
+  --bn-color-surface-inset: var(--background-grouped);
+  --bn-color-surface-inverse: var(--label);
 
   /* Text — light on dark */
-  --bn-color-text: #f0ede4;
-  --bn-color-text-muted: #b5ae9e;
-  --bn-color-text-subtle: #857c6b;
-  --bn-color-text-inverse: #0c0b09;
-  --bn-color-text-link: #e8920a;
+  --bn-color-text: var(--label);
+  --bn-color-text-muted: var(--label-2);
+  --bn-color-text-subtle: var(--label-3);
+  --bn-color-text-inverse: var(--background);
+  --bn-color-text-link: var(--tint);
 
   /* Borders — dark */
-  --bn-color-border: #2c2822;
-  --bn-color-border-strong: #3f3930;
-  --bn-color-border-focus: #e8920a;
+  --bn-color-border: var(--separator);
+  --bn-color-border-strong: var(--separator-opaque);
+  --bn-color-border-focus: var(--tint);
 
   /* Font — BaseNative with font-stretch */
   --bn-font-family: 'BaseNative', system-ui, sans-serif;
@@ -47,10 +60,10 @@
   --bn-color-primary-900: #4a2f03;
 
   /* Radius — tighter for BaseNative aesthetic */
-  --bn-radius-sm: 0.15rem;
-  --bn-radius-md: 0.25rem;
-  --bn-radius-lg: 0.5rem;
-  --bn-radius-xl: 0.75rem;
+  --bn-radius-sm: var(--radius-sm);
+  --bn-radius-md: var(--radius-md);
+  --bn-radius-lg: var(--radius-lg);
+  --bn-radius-xl: var(--radius-xl);
 
   /* Accent — golden amber (overrides primary-as-accent) */
   --bn-color-accent-50: #fdf6ea;
@@ -86,7 +99,7 @@
   --bn-color-error-badge-text: #f07178;
 
   /* Focus ring — golden */
-  --bn-focus-ring: 0 0 0 2px #0c0b09, 0 0 0 4px #e8920a;
+  --bn-focus-ring: var(--focus-ring);
 
   /* Shadows — dark-optimized */
   --bn-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
@@ -98,31 +111,29 @@
   /* Surfaces — bridged onto the core tokens defined above (Stage 2
      of the token migration): the same values, one owner. --surface-3
      has no catalog step and stays a literal. */
-  --surface-0: var(--bn-color-surface);
-  --surface-1: var(--bn-color-surface-subtle);
-  --surface-2: var(--bn-color-surface-muted);
-  --surface-3: #26221c;
-  --surface-inset: var(--bn-color-surface-inset);
+  --surface-0: var(--background-grouped);
+  --surface-1: var(--background-grouped-2);
+  --surface-2: var(--background-grouped-3);
+  --surface-3: var(--system-gray-4);
+  --surface-inset: var(--background-grouped);
 
   /* Borders */
-  --border: #2c2822;
-  --border-accent: #3f3930;
+  --border: var(--separator);
+  --border-accent: var(--separator-opaque);
 
   /* Text */
-  --text-0: #f0ede4;
-  --text-1: #b5ae9e;
-  --text-2: #9a917f;
+  --text-0: var(--label);
+  --text-1: var(--label-2);
+  --text-2: var(--label-3);
 
   /* Accent */
-  --accent: #e8920a;
-  --accent-dim: #b06f08;
-  --accent-glow: #e8920a33;
-  --accent-glow-strong: #e8920a55;
+  --accent: var(--tint);
+  --accent-dim: color-mix(in oklab, var(--tint) 72%, black);
+  --accent-glow: color-mix(in srgb, var(--tint) 20%, transparent);
+  --accent-glow-strong: color-mix(in srgb, var(--tint) 33%, transparent);
 
   /* Status */
-  --danger: #f07178;
-  --danger-glow: #f0717833;
-  --success: #c3e88d;
-  --success-glow: #c3e88d33;
-  --info: #82aaff;
+  --danger-glow: color-mix(in srgb, var(--danger) 20%, transparent);
+  --success-glow: color-mix(in srgb, var(--success) 20%, transparent);
+  --info: var(--system-blue);
 }
