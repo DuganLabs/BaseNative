@@ -90,7 +90,7 @@ const jobCard = R('card', {
   title: 'Panel upgrade — 200A service',
   body: 'Permit pulled. Materials on site. Progress is tracked against the quote.',
   footerHtml: R('button', { label: 'Open job', variant: 'primary' }),
-});
+}).replace('<dialog', '<dialog open');
 const uploadBar = R('progress', { value: 60 });
 
 
@@ -164,7 +164,12 @@ const tradesMulti = R('multiselect', {
   id: 'trades', label: 'Trades',
   inputHtml: R('input', { id: 'trades', type: 'text', value: '', ariaLabel: 'Trades' }),
   selected: [{ value: 'ev', label: 'EV charging', dismissHtml: R('button', { label: 'Remove', variant: 'ghost' }) }],
-  options: [],
+  open: true,
+  options: [
+    { value: 'ev', label: 'EV charging' },
+    { value: 'panel', label: 'Panel upgrade' },
+    { value: 'lighting', label: 'Lighting' },
+  ],
 });
 
 const leadDrawer = R('drawer', {
@@ -172,7 +177,7 @@ const leadDrawer = R('drawer', {
   body: 'Quoted $2,400. Site survey done, permit pulled, awaiting the bilateral confirmation.',
   closeHtml: R('button', { label: 'Close', variant: 'ghost' }),
   footerHtml: R('button', { label: 'Open job', variant: 'primary' }),
-});
+}).replace('<dialog', '<dialog open');
 
 const actionsMenu = R('dropdown-menu', {
   label: 'Lead actions',
@@ -194,7 +199,7 @@ const palette = R('command-palette', {
     { heading: 'Leads', options: [{ value: 'new-lead', label: 'New lead' }, { value: 'import', label: 'Import leads' }] },
     { heading: 'Jobs', options: [{ value: 'schedule', label: "Today's schedule" }] },
   ],
-});
+}).replace('<dialog', '<dialog open');
 
 const tip = R('tooltip', {
   text: 'Delivered into the schedule',
@@ -275,7 +280,86 @@ const board = R('pipeline', {
   ],
 });
 
-const css = await assembleStyles(registry, ['button', 'input', 'field', 'dialog', 'badge', 'checkbox', 'toggle', 'radio', 'textarea', 'select', 'alert', 'progress', 'card', 'choice-group', 'avatar', 'accordion', 'breadcrumb', 'pagination', 'list-group', 'combobox', 'multiselect', 'drawer', 'dropdown-menu', 'command-palette', 'tooltip', 'toast', 'table', 'datagrid', 'tree', 'virtualizer', 'calendar', 'pipeline', 'theme-toggle']);
+const quoteForm = R('form', {
+  name: 'quote', heading: 'Request a quote',
+  summaryHtml: R('alert', { title: 'Check the form', body: 'Enter a valid email address so we can send the quote.', variant: 'danger' }),
+  fieldsHtml:
+    R('field', {
+      label: 'Name', controlId: 'quote-name',
+      controlHtml: R('input', { id: 'quote-name', value: '' }),
+      hint: 'Whoever the crew should ask for on site.',
+    }) +
+    R('field', {
+      label: 'Email', controlId: 'quote-email',
+      controlHtml: R('input', { id: 'quote-email', type: 'email', value: 'not-an-email', invalid: true }),
+      hint: 'We send the exact quote here.', error: 'Enter a valid email address.',
+    }),
+  actionsHtml:
+    R('button', { label: 'Cancel', variant: 'ghost' }) +
+    R('button', { label: 'Request quote', variant: 'primary' }),
+});
+
+const leadSearch = R('search-field', {
+  label: 'Search leads', controlId: 'lead-q', name: 'lead-search', value: 'panel',
+  submitHtml: R('button', { label: 'Search', variant: 'primary' }),
+});
+
+const calSegmented = R('segmented-control', {
+  legend: 'Calendar view', name: 'cal-view', value: 'month',
+  options: [
+    { value: 'month', label: 'Month' },
+    { value: 'schedule', label: 'Schedule' },
+  ],
+});
+
+const jobStepper = R('stepper', {
+  name: 'job-flow', current: 'confirm',
+  steps: [
+    { value: 'quote', label: 'Quote', detail: 'Exact price up front' },
+    { value: 'confirm', label: 'Confirm', detail: 'Both ends confirm' },
+    { value: 'schedule', label: 'Schedule', detail: 'In your windows' },
+    { value: 'pay', label: 'Pay', detail: 'When the job is done' },
+  ],
+});
+const stepBack = R('button', { label: 'Back', variant: 'ghost' }).replace('<button', '<button id="step-back"');
+const stepNext = R('button', { label: 'Continue', variant: 'primary' }).replace('<button', '<button id="step-next"');
+
+const jobTabs = R('tabs', {
+  id: 'job', label: 'Job views', name: 'job-tabs',
+  tabs: [
+    { value: 'details', label: 'Details', panelHtml: '<p>Panel upgrade — 200A service. Permit pulled, materials on site, quoted at $2,400 exactly.</p>' },
+    { value: 'activity', label: 'Activity', panelHtml: '<p>Quote sent Monday. The customer confirmed in-platform Tuesday; the crew is booked for the 26th.</p>' },
+    { value: 'billing', label: 'Billing', panelHtml: '<p>Flat lead fee charged on delivery. The job invoice is issued when the work is done.</p>' },
+  ],
+});
+
+const gridToolbar = R('toolbar', {
+  label: 'Lead actions',
+  actionsHtml: R('button', { label: 'New lead', variant: 'primary' }) + R('button', { label: 'Import', variant: 'ghost' }),
+  overflowHtml: R('dropdown-menu', {
+    label: 'More lead actions',
+    items: [{ label: 'Export leads' }, { label: 'Archive delivered' }],
+  }),
+  overflowOpen: true,
+}).replace('<menu ', '<menu hidden ');
+
+const noLeads = R('empty-state', {
+  title: 'No leads yet',
+  body: 'Delivered leads land here — priced flat per service, tracked from quote to payment.',
+  mediaHtml: R('avatar', { initials: 'GP' }),
+  actionHtml: R('button', { label: 'Open the quote form', variant: 'primary' }).replace('<button', '<button id="empty-action"'),
+});
+
+const starSvg = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z"/></svg>';
+const jobRating = R('rating', {
+  legend: 'Rate this job', name: 'job-rating', starHtml: starSvg, value: 4,
+});
+
+const reopenArchive = R('button', { label: 'Reopen the dialog', variant: 'ghost' }).replace('<button', '<button id="reopen-archive" hidden');
+const reopenDelete = R('button', { label: 'Reopen the dialog', variant: 'ghost' }).replace('<button', '<button id="reopen-delete" hidden');
+const reopenDrawer = R('button', { label: 'Reopen the drawer', variant: 'ghost' }).replace('<button', '<button id="reopen-drawer" hidden');
+
+const css = await assembleStyles(registry, ['button', 'input', 'field', 'dialog', 'badge', 'checkbox', 'toggle', 'radio', 'textarea', 'select', 'alert', 'progress', 'card', 'choice-group', 'avatar', 'accordion', 'breadcrumb', 'pagination', 'list-group', 'combobox', 'multiselect', 'drawer', 'dropdown-menu', 'command-palette', 'tooltip', 'toast', 'table', 'datagrid', 'tree', 'virtualizer', 'calendar', 'pipeline', 'theme-toggle', 'form', 'search-field', 'segmented-control', 'stepper', 'tabs', 'empty-state', 'toolbar', 'rating']);
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const buttonHtml = await readFile(new URL('../src/button/index.html', import.meta.url), 'utf8');
 const buttonCss = await readFile(new URL('../src/button/styles.css', import.meta.url), 'utf8');
@@ -306,6 +390,7 @@ ${css}
   p.note { color: var(--label-2); font-size: .875rem; margin: 0; }
   main > section > article { background: var(--background-grouped-2); border: 1px solid var(--separator); border-radius: .75rem; padding: 1.25rem; display: grid; gap: 1rem; }
   dialog { position: static; }
+  main [hidden] { display: none !important; }
   pre { background: #111827; color: #f3f4f6; padding: 1rem; border-radius: .5rem; overflow-x: auto; font-size: .78rem; line-height: 1.5;
     --syntax-keyword: #c792ea; --syntax-string: #c3e88d; --syntax-function: #82aaff; --syntax-number: #f78c6c; --syntax-comment: #7a98a5; --syntax-tag: #f07178; --syntax-attr: #ffcb6b; --syntax-variable: #89ddff; }
   .kw { color: var(--syntax-keyword); }
@@ -325,7 +410,7 @@ ${css}
 <main>
   <section>
     <h1>Holy Trinity pilot — rendered proof</h1>
-    <p class="note">The full catalog — thirty-one components and two composites (choice-group, theme-toggle) — each a directory of index.html / styles.css / index.js, rendered server-side through @basenative/server. Every style below comes from global tokens — the component sheets declare no values of their own. The theme toggle at the top of this page is live: it stamps the document and the token sheet answers in system, light, or dark.</p>
+    <p class="note">The full catalog — thirty-one components and ten composites (choice-group, theme-toggle, form, search-field, segmented-control, stepper, tabs, empty-state, toolbar, rating) — each a directory of index.html / styles.css / index.js, rendered server-side through @basenative/server. Every style below comes from global tokens — the component sheets declare no values of their own. The theme toggle at the top of this page is live: it stamps the document and the token sheet answers in system, light, or dark. So is everything else that looks interactive — dismiss the alerts and toasts, submit the form, switch the tabs, drive the stepper, open the toolbar menu, rate the job.</p>
     ${themeToggle}
   </section>
 
@@ -345,6 +430,13 @@ ${css}
     </article>
   </section>
 
+
+  <section id="quote-form">
+    <h2>Form — the quote flow, composed and live</h2>
+    ${quoteForm}
+    <p class="note" id="quote-sent" hidden>Quote requested — the exact price goes to the email above.</p>
+    <p class="note">The composite owns the shape — heading, error summary, fields, actions. Submit with the bad email and the summary appears; fix the email and the error clears as you type, and the actions row undims — that dimming is the form's own sheet, reading :invalid relationally. In an app the same moments are the view model's: submit fires onSubmit, field errors live on the fields.</p>
+  </section>
 
   <section>
     <h2>Badges — one element, five registered tones</h2>
@@ -382,9 +474,23 @@ ${css}
   </section>
 
   <section>
+    <h2>Stepper — the job flow as a rail</h2>
+    ${jobStepper}
+    <p>${stepBack} ${stepNext}</p>
+    <p class="note">Back and Continue move the same state the view model owns — goTo, next, previous, one event per move. What changes hands here is the item variant; the rail, the disc, and the label weight follow from the sheet.</p>
+  </section>
+
+  <section>
+    <h2>Tabs — one job, three views</h2>
+    ${jobTabs}
+    <p class="note">Every tab is paired to its panel by id, the selected one announced with aria-selected; the rest are present and hidden, as the pattern wants.</p>
+  </section>
+
+  <section>
     <h2>Dialog — composed of buttons</h2>
     ${archiveDialog}
     ${deleteDialog}
+    <p>${reopenArchive} ${reopenDelete}</p>
   </section>
 
 
@@ -421,6 +527,15 @@ ${css}
   </section>
 
   <section>
+    <h2>Search field — the standardized search control</h2>
+    <article>
+      ${leadSearch}
+      <p class="note" id="search-status">Showing every lead.</p>
+    </article>
+    <p class="note">The control the combobox and the palette used to take as caller-rendered HTML, owned by one composite — label, input, a clear button that exists exactly while the field holds text, and the app's submit button. Search (or press Enter) and it reports the query; clear it and it reports that.</p>
+  </section>
+
+  <section>
     <h2>Combobox — an input and its listbox</h2>
     <article style="padding-block-end: 10rem">
       ${countyCombo}
@@ -434,6 +549,7 @@ ${css}
   <section>
     <h2>Drawer — the dialog skeleton at the edge</h2>
     ${leadDrawer}
+    <p>${reopenDrawer}</p>
   </section>
 
   <section>
@@ -452,6 +568,12 @@ ${css}
   </section>
 
   <section>
+    <h2>Toolbar — a bar of actions, with overflow</h2>
+    ${gridToolbar}
+    <p class="note">The overflow set rides in a dropdown menu behind More — the view model owns the open state and the expanded announcement; the bar only places the menu at its end edge. This is the header a datagrid wears.</p>
+  </section>
+
+  <section>
     <h2>Table — real semantics, striped variant</h2>
     <article>
       ${leadsTable}
@@ -459,6 +581,14 @@ ${css}
     <h2>Datagrid — sort buttons and selection composed into the skeleton</h2>
     <article>
       ${grid}
+    </article>
+  </section>
+
+  <section>
+    <h2>Rating — the choice paradigm over a star</h2>
+    <article>
+      ${jobRating}
+      <p class="note">Click a star. The lit range is pure CSS — the sheet lights the checked step and every step before it through :has, so the document order stays the value order and no script paints anything.</p>
     </article>
   </section>
 
@@ -478,6 +608,7 @@ ${css}
 
   <section>
     <h2>Calendar — month (composed with the table) and schedule</h2>
+    ${calSegmented}
     ${calMonth}
     ${calSchedule}
   </section>
@@ -485,6 +616,12 @@ ${css}
   <section>
     <h2>Pipeline — stage columns of cards</h2>
     ${board}
+  </section>
+
+  <section>
+    <h2>Empty state — a surface before its first lead</h2>
+    ${noLeads}
+    <p class="note">Its action starts the flow that fills the surface — here it takes you to the quote form above.</p>
   </section>
 
   <section class="toast-stage">
@@ -529,6 +666,303 @@ ${css}
 
   // Email revalidation: the error clears as soon as the value parses,
   // and returns when it stops parsing.
+  // ---- The quote form: a failed submit surfaces the summary, typing
+  // a valid email clears the field error live, a good submit confirms.
+  const quoteForm = document.querySelector('#quote-form form');
+  if (quoteForm) {
+    const summary = quoteForm.querySelector('aside');
+    const emailInput = quoteForm.querySelector('#quote-email');
+    const emailField = emailInput.closest('p');
+    const errorNote = emailField.querySelector('small');
+    const sent = document.querySelector('#quote-sent');
+    const validEmail = (value) => {
+      const parts = value.split('@');
+      return parts.length === 2 && parts[0] !== '' && parts[1].includes('.') && !value.includes(' ');
+    };
+    const showError = () => {
+      emailInput.setAttribute('aria-invalid', 'true');
+      if (errorNote) errorNote.hidden = false;
+      if (summary) summary.hidden = false;
+    };
+    const clearError = () => {
+      emailInput.removeAttribute('aria-invalid');
+      if (errorNote) errorNote.hidden = true;
+      if (summary) summary.hidden = true;
+    };
+    clearError();
+    emailInput.addEventListener('input', () => {
+      if (validEmail(emailInput.value)) clearError();
+    });
+    const attemptSubmit = () => {
+      if (!validEmail(emailInput.value)) {
+        showError();
+        emailInput.focus();
+        return;
+      }
+      clearError();
+      if (sent) sent.hidden = false;
+    };
+    quoteForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      attemptSubmit();
+    });
+    quoteForm.querySelectorAll('footer button').forEach((button) => {
+      if (button.textContent.trim() === 'Request quote') {
+        button.addEventListener('click', attemptSubmit);
+      } else {
+        button.addEventListener('click', () => {
+          quoteForm.querySelectorAll('input').forEach((input) => { input.value = ''; });
+          clearError();
+          if (sent) sent.hidden = true;
+        });
+      }
+    });
+  }
+
+  // ---- Search field: submit reports the query, clear reports itself.
+  const search = document.querySelector('search[variant="default"]');
+  if (search) {
+    const input = search.querySelector('input');
+    const clearButton = [...search.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Clear');
+    const status = document.querySelector('#search-status');
+    const report = (text) => { if (status) status.textContent = text; };
+    const runSearch = () => report(input.value ? 'Showing leads matching \u201c' + input.value + '\u201d.' : 'Showing every lead.');
+    input.addEventListener('input', () => {
+      if (clearButton) clearButton.hidden = input.value === '';
+    });
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') { event.preventDefault(); runSearch(); }
+    });
+    search.querySelectorAll('button').forEach((button) => {
+      if (button.textContent.trim() === 'Search') button.addEventListener('click', runSearch);
+    });
+    if (clearButton) {
+      clearButton.addEventListener('click', () => {
+        input.value = '';
+        clearButton.hidden = true;
+        report('Showing every lead.');
+        input.focus();
+      });
+    }
+  }
+
+  // ---- Dialogs and the drawer: their buttons close them, and a
+  // reopen button appears in their place.
+  const closables = [
+    { dialog: document.querySelector('dialog[variant="default"]'), reopen: document.querySelector('#reopen-archive') },
+    { dialog: document.querySelector('dialog[variant="destructive"]'), reopen: document.querySelector('#reopen-delete') },
+    { dialog: document.querySelector('dialog[variant="drawer"]'), reopen: document.querySelector('#reopen-drawer') },
+  ];
+  closables.forEach(({ dialog, reopen }) => {
+    if (!dialog) return;
+    dialog.querySelectorAll('button').forEach((button) => {
+      button.addEventListener('click', () => {
+        dialog.removeAttribute('open');
+        if (reopen) reopen.hidden = false;
+      });
+    });
+    if (reopen) {
+      reopen.addEventListener('click', () => {
+        dialog.setAttribute('open', '');
+        reopen.hidden = true;
+      });
+    }
+  });
+
+  // ---- Command palette: typing filters its options, group by group.
+  const paletteSearch = document.querySelector('#palette-search');
+  if (paletteSearch) {
+    const palette = paletteSearch.closest('dialog');
+    paletteSearch.addEventListener('input', () => {
+      const query = paletteSearch.value.trim().toLowerCase();
+      palette.querySelectorAll('li[role="group"]').forEach((group) => {
+        let anyVisible = false;
+        group.querySelectorAll('li[role="option"]').forEach((option) => {
+          const matches = option.textContent.toLowerCase().includes(query);
+          option.hidden = !matches;
+          if (matches) anyVisible = true;
+        });
+        group.hidden = !anyVisible;
+      });
+    });
+  }
+
+  // ---- Combobox: typing filters the listbox, clicking an option
+  // chooses it.
+  const county = document.querySelector('#county');
+  if (county) {
+    const combo = county.closest('section');
+    const options = [...combo.querySelectorAll('li[role="option"]')];
+    county.addEventListener('input', () => {
+      const query = county.value.trim().toLowerCase();
+      options.forEach((option) => {
+        option.hidden = !option.textContent.toLowerCase().includes(query);
+      });
+    });
+    options.forEach((option) => {
+      option.addEventListener('click', () => {
+        county.value = option.textContent.trim();
+        options.forEach((other) => other.removeAttribute('aria-selected'));
+        option.setAttribute('aria-selected', 'true');
+        options.forEach((other) => { other.hidden = false; });
+      });
+    });
+  }
+
+  // ---- Multiselect: clicking an option adds its chip, a chip's
+  // Remove takes it back out.
+  const multi = document.querySelector('section[variant="multiselect"]');
+  if (multi) {
+    const chips = multi.querySelector('ul:not([role])');
+    const wireChip = (li) => {
+      const button = li.querySelector('button');
+      if (button) button.addEventListener('click', () => {
+        const label = li.textContent.replace('Remove', '').trim();
+        li.remove();
+        multi.querySelectorAll('li[role="option"]').forEach((option) => {
+          if (option.textContent.trim() === label) option.removeAttribute('aria-selected');
+        });
+      });
+    };
+    chips.querySelectorAll('li').forEach(wireChip);
+    multi.querySelectorAll('li[role="option"]').forEach((option) => {
+      option.addEventListener('click', () => {
+        if (option.getAttribute('aria-selected') === 'true') return;
+        option.setAttribute('aria-selected', 'true');
+        const li = document.createElement('li');
+        li.append(option.textContent.trim() + ' ');
+        const button = document.createElement('button');
+        button.setAttribute('variant', 'ghost');
+        button.setAttribute('type', 'button');
+        button.textContent = 'Remove';
+        li.append(button);
+        wireChip(li);
+        chips.append(li);
+      });
+    });
+  }
+
+  // ---- Tree: the branch toggle folds its group away.
+  const branch = document.querySelector('li[aria-expanded]');
+  if (branch) {
+    const toggle = branch.querySelector('button');
+    const group = branch.querySelector('ul[role="group"]');
+    toggle.addEventListener('click', () => {
+      const expanded = branch.getAttribute('aria-expanded') === 'true';
+      branch.setAttribute('aria-expanded', String(!expanded));
+      group.hidden = expanded;
+    });
+  }
+
+  // ---- Pagination: clicking a page number moves the current mark.
+  const pager = document.querySelector('nav[variant="pagination"]');
+  if (pager) {
+    pager.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        const label = link.textContent.trim();
+        if (label === '' || Number.isNaN(Number(label))) return;
+        const current = pager.querySelector('a[aria-current="page"]');
+        if (current && current !== link) {
+          current.removeAttribute('aria-current');
+          current.setAttribute('href', '#');
+        }
+        link.setAttribute('aria-current', 'page');
+        link.removeAttribute('href');
+      });
+    });
+  }
+
+  // ---- Stepper: Back and Continue move the current step.
+  const stepper = document.querySelector('ol[variant="stepper"]');
+  if (stepper) {
+    const items = [...stepper.querySelectorAll('li')];
+    const back = document.querySelector('#step-back');
+    const next = document.querySelector('#step-next');
+    const states = ['complete', 'current', 'upcoming'];
+    const renderStepper = () => {
+      const currentIndex = items.findIndex((li) => li.getAttribute('variant') === 'current');
+      if (back) back.disabled = currentIndex <= 0;
+      if (next) next.disabled = currentIndex >= items.length - 1;
+    };
+    const move = (delta) => {
+      const currentIndex = items.findIndex((li) => li.getAttribute('variant') === 'current');
+      const target = currentIndex + delta;
+      if (target < 0 || target >= items.length) return;
+      items.forEach((li, index) => {
+        li.setAttribute('variant', states[index < target ? 0 : index === target ? 1 : 2]);
+        if (index === target) li.setAttribute('aria-current', 'step');
+        else li.removeAttribute('aria-current');
+      });
+      renderStepper();
+    };
+    if (back) back.addEventListener('click', () => move(-1));
+    if (next) next.addEventListener('click', () => move(1));
+    renderStepper();
+  }
+
+  // ---- Segmented control: switches the calendar between its views.
+  const calView = document.querySelector('fieldset[variant="segmented-control"]');
+  if (calView) {
+    const month = document.querySelector('section[variant="month"]');
+    const schedule = document.querySelector('section[variant="schedule"]');
+    const applyView = (value) => {
+      if (month) month.hidden = value !== 'month';
+      if (schedule) schedule.hidden = value !== 'schedule';
+    };
+    calView.querySelectorAll('input').forEach((input) => {
+      input.addEventListener('change', () => applyView(input.value));
+    });
+    applyView('month');
+  }
+
+  // ---- Tabs: clicking a tab selects it and shows its panel.
+  document.querySelectorAll('section[variant="tabs"]').forEach((tabsRoot) => {
+    const tabButtons = [...tabsRoot.querySelectorAll('button[role="tab"]')];
+    tabButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        tabButtons.forEach((other) => other.setAttribute('aria-selected', 'false'));
+        button.setAttribute('aria-selected', 'true');
+        tabsRoot.querySelectorAll('article[role="tabpanel"]').forEach((panel) => {
+          panel.hidden = panel.id !== button.getAttribute('aria-controls');
+        });
+      });
+    });
+  });
+
+  // ---- Toolbar: More opens and closes the overflow menu, and
+  // choosing an item closes it.
+  const toolbar = document.querySelector('section[variant="toolbar"]');
+  if (toolbar) {
+    const more = [...toolbar.querySelectorAll('button')].find((b) => b.textContent.trim() === 'More');
+    const menu = toolbar.querySelector('menu');
+    if (more && menu) {
+      more.setAttribute('aria-expanded', 'false');
+      more.addEventListener('click', () => {
+        const open = menu.hidden;
+        menu.hidden = !open;
+        more.setAttribute('aria-expanded', String(open));
+      });
+      menu.querySelectorAll('a, button').forEach((item) => {
+        item.addEventListener('click', () => {
+          menu.hidden = true;
+          more.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+  }
+
+  // ---- Empty state: its action goes to the quote form.
+  const emptyAction = document.querySelector('#empty-action');
+  if (emptyAction) {
+    emptyAction.addEventListener('click', () => {
+      const formSection = document.querySelector('#quote-form');
+      formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const firstInput = formSection.querySelector('input');
+      if (firstInput) firstInput.focus({ preventScroll: true });
+    });
+  }
+
   const email = document.querySelector('#email2');
   if (email) {
     const field = email.closest('p');
