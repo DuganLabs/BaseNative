@@ -602,3 +602,19 @@ test('search-field and toolbar style only their own buttons, never a slotted com
   const toolbarCss = await readFile(new URL('./toolbar/styles.css', import.meta.url), 'utf8');
   assert.match(toolbarCss, /& > button:not\(\[variant\]\)/);
 });
+
+test('the overlay components size like the dialog — border-box, full width, token caps', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const tokens = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
+  for (const primitive of ['--size-drawer-max:', '--size-palette-max:', '--size-menu-min:']) {
+    assert.ok(tokens.includes(primitive), 'tokens.css is missing ' + primitive);
+  }
+  const drawerCss = await readFile(new URL('./drawer/styles.css', import.meta.url), 'utf8');
+  assert.match(drawerCss, /--drawer-inline-size: var\(--size-full\)/);
+  assert.match(drawerCss, /--drawer-max-inline-size: var\(--size-drawer-max\)/);
+  assert.match(drawerCss, /box-sizing: var\(--drawer-box-sizing\)/);
+  const paletteCss = await readFile(new URL('./command-palette/styles.css', import.meta.url), 'utf8');
+  assert.match(paletteCss, /--command-palette-max-inline-size: var\(--size-palette-max\)/);
+  assert.match(paletteCss, /box-sizing: var\(--command-palette-box-sizing\)/);
+  assert.doesNotMatch(drawerCss + paletteCss, /: (24|36)rem;/);
+});

@@ -1,5 +1,5 @@
 :root {
-  --dropdown-menu-min-inline-size: 12rem;
+  --dropdown-menu-min-inline-size: var(--size-menu-min);
   --dropdown-menu-list-style: var(--list-style-none);
   --dropdown-menu-margin: var(--space-0);
   --dropdown-menu-padding: var(--space-1);

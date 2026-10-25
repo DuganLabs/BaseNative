@@ -1,6 +1,7 @@
 :root {
-  --drawer-inline-size: 24rem;
-  --drawer-max-inline-size: var(--size-full);
+  --drawer-box-sizing: var(--box-sizing-border);
+  --drawer-inline-size: var(--size-full);
+  --drawer-max-inline-size: var(--size-drawer-max);
   --drawer-block-size: var(--size-full);
   --drawer-margin-block: var(--space-0);
   --drawer-margin-inline-start: var(--margin-auto);
@@ -35,6 +36,7 @@
 }
 
 dialog[variant="drawer"] {
+  box-sizing: var(--drawer-box-sizing);
   inline-size: var(--drawer-inline-size);
   max-inline-size: var(--drawer-max-inline-size);
   block-size: var(--drawer-block-size);

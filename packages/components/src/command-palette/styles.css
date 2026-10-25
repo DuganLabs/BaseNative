@@ -1,6 +1,7 @@
 :root {
-  --command-palette-inline-size: 36rem;
-  --command-palette-max-inline-size: var(--size-full);
+  --command-palette-box-sizing: var(--box-sizing-border);
+  --command-palette-inline-size: var(--size-full);
+  --command-palette-max-inline-size: var(--size-palette-max);
   --command-palette-margin-block-start: var(--space-8);
   --command-palette-padding: var(--space-0);
   --command-palette-background-color: var(--background);
@@ -41,6 +42,7 @@
 }
 
 dialog[variant="command-palette"] {
+  box-sizing: var(--command-palette-box-sizing);
   inline-size: var(--command-palette-inline-size);
   max-inline-size: var(--command-palette-max-inline-size);
   margin-block-start: var(--command-palette-margin-block-start);

@@ -216,6 +216,9 @@
   --size-max-content: max-content;
   --size-target-min: 2.75rem;
   --size-sheet-max: 32rem;
+  --size-drawer-max: 24rem;
+  --size-palette-max: 36rem;
+  --size-menu-min: 12rem;
   --size-switch-inline: 3.25rem;
   --size-switch-block: 2rem;
 
