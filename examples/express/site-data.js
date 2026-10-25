@@ -1,11 +1,10 @@
 import { readFileSync } from 'node:fs';
-import { trinityComponentInfo } from './trinity.js';
+import { renderTrinity, trinityComponentInfo } from './trinity.js';
 import { trinityCatalog, trinityCategoriesWith } from './trinity-catalog.js';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { escapeAttr, escapeText, raw } from '@basenative/runtime/shared/escape';
 import { renderListGroup, renderTabs } from '../../packages/components/src/index.js';
-import { renderBnList } from '../../packages/platform/src/components.js';
 import { computeCompareStats } from '../../scripts/compare-stats.js';
 
 const siteDir = dirname(fileURLToPath(import.meta.url));
@@ -203,93 +202,88 @@ export const staticTasks = [
 
 export function getHomePageContext() {
   const runtimeVersion = pkgVersion('runtime');
-  const platformVersion = pkgVersion('platform');
   const packages = stats().publicPackages;
+  // The home lists are the catalog's list-group: each row is one
+  // paragraph — the row's mark as a badge, its title, its detail — so
+  // the item is a single child of the row, the shape the component's
+  // layout is built for. The platform's renderBnList left with the
+  // platform.
+  const tones = ['info', 'warning', 'success', 'danger'];
+  const listOf = (rows) =>
+    raw(
+      renderTrinity('list-group', {
+        items: rows.map((row, i) => ({
+          contentHtml:
+            `<p>${renderTrinity('badge', { label: row.mark, variant: tones[i % tones.length] })} ` +
+            `<strong>${row.title}</strong> ${row.detail}</p>`,
+        })),
+      }),
+    );
   return {
     runtimeVersion,
-    runtimeList: raw(
-      renderBnList({
-        grouped: true,
-        rows: [
-          {
-            title: 'One set()',
-            detail: 'Derived computeds settle, then each affected effect runs once.',
-            tint: 'blue',
-            mark: '1',
-          },
-          {
-            title: 'BN_EFFECT_LOOP',
-            detail:
-              'An effect that writes a signal it also read throws. Use .peek(), or write a different signal.',
-            tint: 'orange',
-            mark: '!',
-          },
-          {
-            title: 'class and :class',
-            detail: 'The two merge. A false binding adds nothing.',
-            tint: 'green',
-            mark: 'C',
-          },
-          {
-            title: ':value and :checked',
-            detail: 'Those bindings write the DOM property.',
-            tint: 'purple',
-            mark: 'V',
-          },
-          {
-            title: 'Evaluator',
-            detail: `An allowlist. Gzip ${runtimeSizeStat()}.`,
-            tint: 'teal',
-            mark: 'E',
-          },
-        ],
-      }),
-    ),
-    platformList: raw(
-      renderBnList({
-        grouped: true,
-        rows: [
-          {
-            title: `@basenative/platform ${platformVersion}`,
-            detail: 'Apple 27 controls for iOS, iPadOS, and macOS, in light and dark.',
-            tint: 'indigo',
-            mark: 'P',
-          },
-          {
-            title: 'npmjs.org',
-            detail: 'npm install @basenative/runtime @basenative/server. No token.',
-            tint: 'mint',
-            mark: 'N',
-          },
-          {
-            title: '/ai',
-            detail:
-              'The model scorecard. Pass rates stay unpublished while the prompt corpus is empty.',
-            tint: 'pink',
-            mark: 'A',
-          },
-          {
-            title: '@basenative/validate',
-            detail:
-              'Flags className, htmlFor, onClick, {expr} text, useState, useEffect, and useMemo, and names the replacement.',
-            tint: 'cyan',
-            mark: 'V',
-          },
-          {
-            title: 'bn from-jsx',
-            detail: 'Rewrites a React or JSX draft into BaseNative.',
-            tint: 'brown',
-            mark: 'J',
-          },
-          {
-            title: 'Public packages',
-            detail: `${packages} on npmjs.org.`,
-            tint: 'yellow',
-            mark: '#',
-          },
-        ],
-      }),
-    ),
+    runtimeList: listOf([
+      {
+        title: 'One set()',
+        detail: 'Derived computeds settle, then each affected effect runs once.',
+        mark: '1',
+      },
+      {
+        title: 'BN_EFFECT_LOOP',
+        detail:
+          'An effect that writes a signal it also read throws. Use .peek(), or write a different signal.',
+        mark: '!',
+      },
+      {
+        title: 'class and :class',
+        detail: 'The two merge. A false binding adds nothing.',
+        mark: 'C',
+      },
+      {
+        title: ':value and :checked',
+        detail: 'Those bindings write the DOM property.',
+        mark: 'V',
+      },
+      {
+        title: 'Evaluator',
+        detail: `An allowlist. Gzip ${runtimeSizeStat()}.`,
+        mark: 'E',
+      },
+    ]),
+    catalogList: listOf([
+      {
+        title: '@basenative/components',
+        detail:
+          'The Holy Trinity catalog — every component three files: a template, a token sheet, and its logic, in light and dark.',
+        mark: 'C',
+      },
+      {
+        title: 'npmjs.org',
+        detail: 'npm install @basenative/runtime @basenative/server. No token.',
+        mark: 'N',
+      },
+      {
+        title: '/ai',
+        detail:
+          'The model scorecard. Pass rates stay unpublished while the prompt corpus is empty.',
+        mark: 'A',
+      },
+      {
+        title: '@basenative/validate',
+        detail:
+          'Flags className, htmlFor, onClick, {expr} text, useState, useEffect, and useMemo, and names the replacement.',
+        mark: 'V',
+      },
+      {
+        title: 'bn from-jsx',
+        detail: 'Rewrites a React or JSX draft into BaseNative.',
+        mark: 'J',
+      },
+      {
+        title: 'Public packages',
+        detail: `${packages} on npmjs.org.`,
+        mark: '#',
+      },
+    ]),
   };
 }
 

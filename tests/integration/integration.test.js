@@ -543,9 +543,8 @@ describe('every published route is reachable from the navigation', () => {
     assert.equal(html.includes('style='), false);
     // The hero's actions are the catalog's link-form buttons.
     assert.match(html, /<a variant="primary" href="\/playground">/);
-    // Home's lists are the last platform surface on the site; Stage 3
-    // migrates them to the catalog's list-group and re-points this.
-    assert.match(html, /data-bn="bn-list"/);
+    // Home's lists are the catalog's list-group.
+    assert.match(html, /<ul variant="default">/);
   });
 
   it('a route with no nav entry is marked internal, and an internal route has no nav entry', () => {
