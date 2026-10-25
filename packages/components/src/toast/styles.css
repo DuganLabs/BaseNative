@@ -19,7 +19,6 @@
   --toast__item-border-width: var(--hairline);
   --toast__item-border-style: var(--border-style-solid);
   --toast__item-border-color: var(--separator);
-  --toast__item-border-inline-start-width: var(--border-width-thick);
   --toast__item-accent-color: var(--label-3);
   --toast__item-accent-color--info: var(--tint);
   --toast__item-accent-color--success: var(--success);
@@ -27,6 +26,9 @@
   --toast__item-accent-color--danger: var(--danger);
   --toast__item-border-radius: var(--radius-container);
   --toast__item-box-shadow: var(--shadow-float);
+  --toast__item-icon-inline-size: var(--space-5);
+  --toast__item-icon-block-size: var(--space-5);
+  --toast__item-icon-flex: var(--flex-none);
   --toast__item-font-family: var(--text-body-family);
   --toast__item-font-size: var(--text-body-size);
   --toast__item-line-height: var(--text-body-leading);
@@ -56,14 +58,19 @@ ol[variant="default"] {
     border-width: var(--toast__item-border-width);
     border-style: var(--toast__item-border-style);
     border-color: var(--toast__item-border-color);
-    border-inline-start-width: var(--toast__item-border-inline-start-width);
-    border-inline-start-color: var(--toast__item-accent-color);
     border-radius: var(--toast__item-border-radius);
     box-shadow: var(--toast__item-box-shadow);
     font-family: var(--toast__item-font-family);
     font-size: var(--toast__item-font-size);
     line-height: var(--toast__item-line-height);
     letter-spacing: var(--toast__item-letter-spacing);
+  }
+
+  & > li > svg {
+    inline-size: var(--toast__item-icon-inline-size);
+    block-size: var(--toast__item-icon-block-size);
+    flex: var(--toast__item-icon-flex);
+    color: var(--toast__item-accent-color);
   }
 
   /* Item tones are element-level registrations: the item element is

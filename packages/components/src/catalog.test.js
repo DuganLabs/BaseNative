@@ -176,8 +176,8 @@ test('toast lists toned items in a live region and the toaster queues them', asy
     ],
   });
   assert.match(html, /<ol variant="default" aria-live="polite">/);
-  assert.match(html, /<li variant="success">Lead delivered/);
-  assert.match(html, /<li variant="danger">Payment failed/);
+  assert.match(html, /<li variant="success"><svg[^>]*>.*Lead delivered/);
+  assert.match(html, /<li variant="danger"><svg[^>]*>.*Payment failed/);
   const { createToaster } = await import('./toast/index.js');
   const toaster = createToaster();
   toaster.push({ message: 'One' });
@@ -712,4 +712,14 @@ test('a grid header button paints no pill: the cell owns the surface', async () 
   const { readFile } = await import('node:fs/promises');
   const css = await readFile(new URL('./datagrid/styles.css', import.meta.url), 'utf8');
   assert.match(css, /thead th > button \{\s*--button-background-color--hover: var\(--color-transparent\);\s*--button-background-color--active: var\(--color-transparent\);/);
+});
+
+test('a toast carries its tone as a glyph, not a colored edge', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const css = await readFile(new URL('./toast/styles.css', import.meta.url), 'utf8');
+  const js = await readFile(new URL('./toast/index.js', import.meta.url), 'utf8');
+  assert.ok(!css.includes('border-inline-start'), 'the accent bar is gone');
+  assert.match(css, /& > li > svg \{\s*inline-size: var\(--toast__item-icon-inline-size\);/);
+  assert.match(css, /color: var\(--toast__item-accent-color\);/);
+  for (const tone of ['success', 'info', 'warning', 'danger']) assert.ok(js.includes(tone + ':'), 'glyph for ' + tone);
 });
