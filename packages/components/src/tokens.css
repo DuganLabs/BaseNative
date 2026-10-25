@@ -239,6 +239,7 @@
   --display-flex: flex;
   --display-inline-flex: inline-flex;
   --display-grid: grid;
+  --display-none: none;
   --appearance-none: none;
   --cursor-pointer: pointer;
   --cursor-not-allowed: not-allowed;
@@ -250,12 +251,46 @@
   --align-stretch: stretch;
   --position-relative: relative;
   --position-absolute: absolute;
+  --position-fixed: fixed;
+  --position-sticky: sticky;
   --resize-vertical: vertical;
   --justify-center: center;
   --justify-end: flex-end;
   --justify-space-between: space-between;
   --margin-auto: auto;
   --color-transparent: transparent;
+  --overflow-hidden: hidden;
+  --overflow-auto: auto;
+  --visibility-hidden: hidden;
+  --visibility-visible: visible;
+  --opacity-none: 0;
+  --opacity-half: 0.5;
+  --opacity-full: 1;
+  --list-style-none: none;
+  --text-decoration-none: none;
+  --text-decoration-underline: underline;
+  --flex-direction-row: row;
+  --flex-direction-column: column;
+  --flex-wrap-wrap: wrap;
+  --flex-grow: 1;
+  --flex-none: none;
+  --white-space-nowrap: nowrap;
+  --text-align-start: start;
+  --text-align-center: center;
+  --text-align-end: end;
+  --vertical-align-middle: middle;
+  --object-fit-cover: cover;
+  --pointer-events-none: none;
+  --user-select-none: none;
+
+  /* Layering — z-index steps for floating surfaces */
+  --layer-raised: 1;
+  --layer-overlay: 20;
+  --layer-modal: 40;
+  --layer-toast: 60;
+
+  /* A single CSS pixel, for visually-hidden techniques */
+  --size-1px: 1px;
 }
 
 /* Dark appearance — every paired role and palette step resolves here.

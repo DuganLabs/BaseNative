@@ -1,0 +1,71 @@
+:root {
+  --pagination-display: var(--display-block);
+  --pagination__list-display: var(--display-flex);
+  --pagination__list-flex-direction: var(--flex-direction-row);
+  --pagination__list-flex-wrap: var(--flex-wrap-wrap);
+  --pagination__list-align-items: var(--align-center);
+  --pagination__list-gap: var(--space-2);
+  --pagination__list-list-style: var(--list-style-none);
+  --pagination__list-margin: var(--space-0);
+  --pagination__list-padding: var(--space-0);
+  --pagination__item-display: var(--display-inline-flex);
+  --pagination__item-align-items: var(--align-center);
+  --pagination__item-gap: var(--space-2);
+  --pagination__separator-content: "";
+  --pagination__separator-color: var(--label-4);
+  --pagination__link-color: var(--tint);
+  --pagination__link-color--hover: var(--tint-strong);
+  --pagination__link-text-decoration: var(--text-decoration-none);
+  --pagination__link-text-decoration--hover: var(--text-decoration-underline);
+  --pagination__link-font-family: var(--text-subheadline-family);
+  --pagination__link-font-size: var(--text-subheadline-size);
+  --pagination__link-line-height: var(--text-subheadline-leading);
+  --pagination__link-letter-spacing: var(--text-subheadline-tracking);
+  --pagination__current-color: var(--label);
+  --pagination__current-font-weight: var(--font-weight-semibold);
+}
+
+nav[variant="pagination"] {
+  display: var(--pagination-display);
+
+  & > ol {
+    display: var(--pagination__list-display);
+    flex-direction: var(--pagination__list-flex-direction);
+    flex-wrap: var(--pagination__list-flex-wrap);
+    align-items: var(--pagination__list-align-items);
+    gap: var(--pagination__list-gap);
+    list-style: var(--pagination__list-list-style);
+    margin: var(--pagination__list-margin);
+    padding: var(--pagination__list-padding);
+  }
+
+  & > ol > li {
+    display: var(--pagination__item-display);
+    align-items: var(--pagination__item-align-items);
+    gap: var(--pagination__item-gap);
+  }
+
+  & > ol > li + li::before {
+    content: var(--pagination__separator-content);
+    color: var(--pagination__separator-color);
+  }
+
+  & > ol > li > a {
+    color: var(--pagination__link-color);
+    text-decoration: var(--pagination__link-text-decoration);
+    font-family: var(--pagination__link-font-family);
+    font-size: var(--pagination__link-font-size);
+    line-height: var(--pagination__link-line-height);
+    letter-spacing: var(--pagination__link-letter-spacing);
+
+    &:hover {
+      color: var(--pagination__link-color--hover);
+      text-decoration: var(--pagination__link-text-decoration--hover);
+    }
+  }
+
+  & > ol > li > a[aria-current] {
+    color: var(--pagination__current-color);
+    font-weight: var(--pagination__current-font-weight);
+  }
+}

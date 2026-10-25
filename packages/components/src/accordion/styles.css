@@ -1,0 +1,64 @@
+:root {
+  --accordion-border-block-end-width: var(--hairline);
+  --accordion-border-block-end-style: var(--border-style-solid);
+  --accordion-border-block-end-color: var(--separator);
+  --accordion__summary-display: var(--display-flex);
+  --accordion__summary-align-items: var(--align-center);
+  --accordion__summary-justify-content: var(--justify-space-between);
+  --accordion__summary-gap: var(--space-3);
+  --accordion__summary-padding-block: var(--space-3);
+  --accordion__summary-padding-inline: var(--space-1);
+  --accordion__summary-cursor: var(--cursor-pointer);
+  --accordion__summary-list-style: var(--list-style-none);
+  --accordion__summary-font-family: var(--text-headline-family);
+  --accordion__summary-font-size: var(--text-headline-size);
+  --accordion__summary-font-weight: var(--text-headline-weight);
+  --accordion__summary-line-height: var(--text-headline-leading);
+  --accordion__summary-letter-spacing: var(--text-headline-tracking);
+  --accordion__summary-color: var(--label);
+  --accordion__marker-display: var(--display-none);
+  --accordion__content-padding-block-end: var(--space-4);
+  --accordion__content-padding-inline: var(--space-1);
+  --accordion__content-color: var(--label-2);
+  --accordion__content-font-family: var(--text-body-family);
+  --accordion__content-font-size: var(--text-body-size);
+  --accordion__content-line-height: var(--text-body-leading);
+  --accordion__content-letter-spacing: var(--text-body-tracking);
+}
+
+details[variant="default"] {
+  border-block-end-width: var(--accordion-border-block-end-width);
+  border-block-end-style: var(--accordion-border-block-end-style);
+  border-block-end-color: var(--accordion-border-block-end-color);
+
+  & > summary {
+    display: var(--accordion__summary-display);
+    align-items: var(--accordion__summary-align-items);
+    justify-content: var(--accordion__summary-justify-content);
+    gap: var(--accordion__summary-gap);
+    padding-block: var(--accordion__summary-padding-block);
+    padding-inline: var(--accordion__summary-padding-inline);
+    cursor: var(--accordion__summary-cursor);
+    list-style: var(--accordion__summary-list-style);
+    font-family: var(--accordion__summary-font-family);
+    font-size: var(--accordion__summary-font-size);
+    font-weight: var(--accordion__summary-font-weight);
+    line-height: var(--accordion__summary-line-height);
+    letter-spacing: var(--accordion__summary-letter-spacing);
+    color: var(--accordion__summary-color);
+
+    &::-webkit-details-marker {
+      display: var(--accordion__marker-display);
+    }
+  }
+
+  & > section {
+    padding-block-end: var(--accordion__content-padding-block-end);
+    padding-inline: var(--accordion__content-padding-inline);
+    color: var(--accordion__content-color);
+    font-family: var(--accordion__content-font-family);
+    font-size: var(--accordion__content-font-size);
+    line-height: var(--accordion__content-line-height);
+    letter-spacing: var(--accordion__content-letter-spacing);
+  }
+}

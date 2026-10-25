@@ -15,6 +15,7 @@ const COMPONENTS = [
   'button', 'input', 'field', 'dialog',
   'badge', 'checkbox', 'toggle', 'radio', 'textarea', 'select',
   'alert', 'progress', 'card', 'choice-group',
+  'avatar', 'accordion', 'breadcrumb', 'pagination', 'list-group',
 ];
 
 /** @param {string} html */

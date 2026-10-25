@@ -1,0 +1,17 @@
+<template>
+  <ul :variant="variant()">
+    <template @for="item of items()">
+      <li>
+        <template @if="item.contentHtml">
+          {{ raw(item.contentHtml) }}
+        </template>
+        <template @else>
+          {{ item.label }}
+        </template>
+        <template @if="item.trailingHtml">
+          {{ raw(item.trailingHtml) }}
+        </template>
+      </li>
+    </template>
+  </ul>
+</template>

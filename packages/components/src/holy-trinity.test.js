@@ -12,6 +12,7 @@ const PILOT = [
   'button', 'input', 'field', 'dialog',
   'badge', 'checkbox', 'toggle', 'radio', 'textarea', 'select',
   'alert', 'progress', 'card', 'choice-group',
+  'avatar', 'accordion', 'breadcrumb', 'pagination', 'list-group',
 ];
 
 test('each pilot component directory holds exactly the three files', async () => {
