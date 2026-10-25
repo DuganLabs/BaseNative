@@ -79,6 +79,14 @@
     "div-span": 41,
     "control-flow": 0
   },
+  "examples/express/views/design-system.html": {
+    "custom-element": 0,
+    "inline-style": 1,
+    "style-write": 0,
+    "css-outside-layer": 0,
+    "div-span": 0,
+    "control-flow": 0
+  },
   "examples/express/views/roadmap.html": {
     "custom-element": 0,
     "inline-style": 0,
