@@ -32,11 +32,9 @@ app.get('/bn-css/trinity.css', (req, res) => {
   res.type('css').send(trinitySiteCss());
 });
 app.use('/bn-css', express.static(join(pkgRoot, 'packages', 'components', 'src')));
-app.use('/bn-ios', express.static(join(pkgRoot, 'packages', 'ios', 'src')));
 app.use('/fonts', express.static(join(pkgRoot, 'packages', 'fonts')));
 app.use('/icons', express.static(join(pkgRoot, 'packages', 'icons', 'src')));
 app.use('/bn-builder-css', express.static(join(pkgRoot, 'packages', 'builder', 'src')));
-app.use('/bn-platform', express.static(join(pkgRoot, 'packages', 'platform', 'src')));
 
 // -- In-memory task store --
 let nextId = 5;

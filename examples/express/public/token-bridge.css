@@ -23,7 +23,7 @@
  *     where --surface-0/1/2 and --surface-inset now reference the
  *     --bn-color-surface* values defined in the same sheet.
  *   - The other --font-size-* steps and the radii: ios.css already
- *     bridges them onto the --bn-ios-* ladder.
+ *     bridges them onto the trinity type and radius roles.
  *   - --space-page-block-end (6rem): the catalog scale has no step
  *     above --space-16 (4rem); it stays a site literal until the
  *     catalog grows the step.
