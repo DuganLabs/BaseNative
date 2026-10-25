@@ -54,25 +54,45 @@ describe('defaultPalette', () => {
     assert.ok(p.get('signal-text'));
   });
 
-  test('organism palette previews the kit contract', () => {
+  test('catalogue organisms carry the catalog contract, the rest keep the legacy kit', () => {
     const p = defaultPalette();
-    for (const type of [
-      'hero',
-      'list',
-      'window',
-      'sheet',
-      'sidebar',
-      'inspector',
-      'scrollbar',
-      'refraction',
-    ]) {
+    // Organisms with a Holy Trinity counterpart emit that component's
+    // markup: a catalog name, a root variant, no data-bn token, and a
+    // preview shaped like the component's rendered output.
+    const catalog = {
+      hero: 'hero',
+      list: 'list-group',
+      sidebar: 'sidebar',
+      toolbar: 'toolbar',
+      alert: 'alert',
+      'empty-state': 'empty-state',
+      'form-organism': 'form',
+      'menu-organism': 'dropdown-menu',
+      'search-field': 'search-field',
+    };
+    for (const [type, name] of Object.entries(catalog)) {
+      const def = p.get(type);
+      assert.ok(def, type);
+      assert.equal(def.category, 'organisms', type);
+      assert.equal(def.catalog, name, type);
+      assert.equal(def.bn, undefined, type);
+      assert.ok(def.variant, `${type} stamps a root variant`);
+      assert.doesNotMatch(def.preview({ text: 'X' }), /data-bn/, type);
+    }
+    assert.match(p.get('hero').preview({ text: 'Notes' }), /<figcaption><p>Organism<\/p><h1>Notes<\/h1>/);
+    assert.match(p.get('list').preview({ text: 'Inbox' }), /<li>Inbox<\/li><li>Drafts<\/li>/);
+    assert.match(
+      p.get('sidebar').preview({ text: 'Library' }),
+      /<nav aria-label="Sidebar"><section><h2>Library<\/h2>/,
+    );
+    // Organisms with no catalog counterpart keep the legacy kit contract.
+    for (const type of ['window', 'sheet', 'inspector', 'nav-bar', 'metric', 'card-grid', 'scrollbar', 'refraction']) {
       const def = p.get(type);
       assert.ok(def, type);
       assert.equal(def.category, 'organisms', type);
       assert.match(def.bn, /^bn-/, type);
+      assert.equal(def.catalog, undefined, type);
     }
-    assert.match(p.get('hero').preview({ text: 'Notes' }), /data-bn="bn-hero-eyebrow"/);
-    assert.match(p.get('list').preview({ text: 'Inbox' }), /data-bn="bn-list-row"/);
     assert.match(p.get('refraction').preview({ text: 'Glass' }), /<figcaption>Glass<\/figcaption>/);
   });
 
@@ -94,47 +114,65 @@ describe('defaultPalette', () => {
   });
 });
 
-describe('component attribute contract (bn / dataProps)', () => {
-  test('register normalises bn and dataProps', () => {
+describe('component attribute contract (catalog / bn / dataProps)', () => {
+  test('register normalises bn, catalog and the prop-serialisation lists', () => {
     const p = createPalette();
     const plain = p.register({ type: 'foo' });
     assert.equal(plain.bn, undefined);
+    assert.equal(plain.catalog, undefined);
     assert.deepEqual(plain.dataProps, []);
+    assert.deepEqual(plain.variantProps, []);
     const props = ['variant'];
     const def = p.register({ type: 'bar', bn: 'bar', dataProps: props });
     assert.equal(def.bn, 'bar');
     assert.deepEqual(def.dataProps, ['variant']);
     assert.notEqual(def.dataProps, props, 'dataProps is copied, not shared');
+    const cat = p.register({ type: 'baz', catalog: 'button', variantProps: props });
+    assert.equal(cat.catalog, 'button');
+    assert.deepEqual(cat.variantProps, ['variant']);
+    assert.notEqual(cat.variantProps, props, 'variantProps is copied, not shared');
   });
 
-  test('the button declares the token and data props renderButton emits', () => {
+  test('the button declares the catalog contract, not the legacy token', () => {
     const def = defaultPalette().get('button');
-    assert.equal(def.bn, 'button');
-    assert.deepEqual([...def.dataProps].sort(), ['size', 'variant']);
+    assert.equal(def.catalog, 'button');
+    assert.equal(def.bn, undefined);
+    assert.deepEqual(def.dataProps, []);
+    assert.deepEqual(def.variantProps, ['variant']);
     assert.equal(def.defaults.variant, 'primary');
-    assert.equal(def.defaults.size, 'default');
+    // The catalog button has no size axis; the palette no longer offers one.
+    assert.equal(def.props.some((p) => p.name === 'size'), false);
+    const variant = def.props.find((p) => p.name === 'variant');
+    assert.deepEqual(variant.options, ['default', 'primary', 'ghost', 'destructive']);
   });
 
-  test('every dataProp is a declared prop with a default', () => {
-    // A dataProp that is not in the schema cannot be edited in the inspector,
-    // and one without a default exports nothing — either way the contract
-    // the palette promises is not what the export carries.
+  test('every dataProp and variantProp is a declared prop with a default', () => {
+    // A serialised prop that is not in the schema cannot be edited in the
+    // inspector, and one without a default exports nothing — either way the
+    // contract the palette promises is not what the export carries.
     for (const def of defaultPalette().list()) {
-      for (const name of def.dataProps) {
+      for (const name of [...def.dataProps, ...def.variantProps]) {
         assert.ok(
           def.props.some((p) => p.name === name),
-          `${def.type}: dataProp "${name}" is not in props`,
+          `${def.type}: serialised prop "${name}" is not in props`,
         );
-        assert.ok(name in def.defaults, `${def.type}: dataProp "${name}" has no default`);
+        assert.ok(name in def.defaults, `${def.type}: serialised prop "${name}" has no default`);
       }
     }
   });
 
-  test('the form controls that have a component counterpart carry its data-bn token', () => {
+  test('the form controls that have a catalog counterpart carry its catalog name', () => {
     const palette = defaultPalette();
-    assert.equal(palette.get('input').bn, 'input');
-    assert.equal(palette.get('textarea').bn, 'textarea');
-    assert.equal(palette.get('checkbox').bn, 'checkbox');
+    assert.equal(palette.get('input').catalog, 'input');
+    assert.equal(palette.get('input').variant, 'default');
+    assert.equal(palette.get('textarea').catalog, 'textarea');
+    assert.equal(palette.get('textarea').variant, 'default');
+    assert.equal(palette.get('checkbox').catalog, 'checkbox');
+    assert.equal(palette.get('checkbox').tag, 'label');
+    assert.equal(palette.get('link').catalog, 'button');
+    for (const type of ['input', 'textarea', 'checkbox', 'link']) {
+      assert.equal(palette.get(type).bn, undefined, `${type} no longer stamps data-bn`);
+    }
     for (const type of [
       'section',
       'stack',
@@ -143,14 +181,18 @@ describe('component attribute contract (bn / dataProps)', () => {
       'text',
       'label',
       'form',
-      'link',
       'image',
       'signal-text',
     ]) {
       assert.equal(
         palette.get(type).bn,
         undefined,
-        `${type} has no @basenative/components render function`,
+        `${type} has no legacy @basenative/components render function`,
+      );
+      assert.equal(
+        palette.get(type).catalog,
+        undefined,
+        `${type} has no catalog component of its own`,
       );
     }
   });

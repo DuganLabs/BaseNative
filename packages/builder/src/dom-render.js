@@ -41,13 +41,21 @@ export function renderNodeToElement(doc, node, palette) {
   }
 
   // Same attribute contract as codegen.js, so the canvas preview is styled by
-  // the same [data-bn] rules as the exported markup.
+  // the same rules as the exported markup. Catalog components address their
+  // root by variant, never data-bn; the legacy kit defs still stamp data-bn.
+  if (def?.catalog && def?.variant) {
+    el.setAttribute('variant', def.variant);
+  }
   if (def?.bn && node.props['data-bn'] == null) {
     el.setAttribute('data-bn', def.bn);
   }
 
+  const skipAttrs = new Set(
+    (def?.props || []).filter((p) => p.attr === false).map((p) => p.name),
+  );
   for (const key of Object.keys(node.props)) {
     if (key === 'text' || key === 'level') continue;
+    if (skipAttrs.has(key)) continue;
     const value = node.props[key];
     if (value === false || value == null) continue;
     const name = def?.dataProps?.includes(key) ? `data-${attrName(key)}` : key;

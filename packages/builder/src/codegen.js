@@ -106,15 +106,24 @@ function renderNode(node, palette, depth, indent) {
     attrs += renderAttr('role', def.role);
   }
 
-  // The library's CSS is keyed on data-bn="<token>" plus data-<prop> for the
-  // props a component serialises that way (button: data-variant, data-size),
-  // so an export without them is unstyled. The palette declares both.
+  // Two addressing contracts, declared per def. Catalog components are
+  // styled by element + variant selectors in the trinity sheet, so their
+  // root carries variant="…" and no data-bn. The legacy kit's CSS is keyed
+  // on data-bn="<token>" plus data-<prop> for the props a component
+  // serialises that way, so an export without them is unstyled there.
+  if (def && def.catalog && def.variant) {
+    attrs += renderAttr('variant', def.variant);
+  }
   if (def && def.bn && node.props['data-bn'] == null) {
     attrs += renderAttr('data-bn', def.bn);
   }
 
+  const skipAttrs = new Set(
+    (def?.props || []).filter((p) => p.attr === false).map((p) => p.name),
+  );
   for (const key of Object.keys(node.props)) {
     if (key === 'text' || key === 'children' || key === 'level') continue;
+    if (skipAttrs.has(key)) continue;
     if (node.bindings && node.bindings[key]) continue;
     const value = node.props[key];
     if (def && def.dataProps && def.dataProps.includes(key)) {
