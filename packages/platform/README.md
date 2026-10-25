@@ -1,5 +1,9 @@
 # @basenative/platform
 
+> **Deprecated at repo level.** All BaseNative markup comes from
+> `@basenative/components`. This package's renderers are retired and were
+> not ported.
+
 Apple iOS, iPadOS, and macOS 27 kit tokens, plus a semantic-HTML control
 for every control in both kits. Colour, type, Liquid Glass parameters,
 device dimensions, macOS control sizes, and macOS materials are the

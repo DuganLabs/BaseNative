@@ -1,5 +1,9 @@
 # @basenative/ios
 
+> **Deprecated at repo level.** The BaseNative design system lives in
+> `@basenative/components`. This package is retired; its token values live
+> on in `@basenative/components`' tokens.css.
+
 The iOS platform layer for BaseNative — the foundation tokens an app needs
 to look and move like it belongs on an iPhone: Liquid Glass materials, the
 system colours, the Dynamic Type scale, the layout constants and the

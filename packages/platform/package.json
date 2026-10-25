@@ -2,6 +2,7 @@
   "bugs": {
     "url": "https://github.com/DuganLabs/BaseNative/issues"
   },
+  "deprecated": "Deprecated at repo level: all BaseNative markup comes from @basenative/components. This package's renderers are retired and were not ported.",
   "description": "Apple iOS, iPadOS, and macOS 27 kit tokens and semantic controls for BaseNative — colour, type, materials, and data-bn controls that do not restyle @basenative/components",
   "exports": {
     ".": {
