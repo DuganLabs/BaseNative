@@ -10,6 +10,8 @@ export const root = 'table';
  * @property {string} text
  * @property {string} [contentHtml] Rendered HTML (a nested component) — takes precedence over text.
  * @property {boolean} [header] Render as the row's <th scope="row">.
+ * @property {boolean} [small] Render the content de-emphasised, wrapped in a <small>.
+ * @property {string} [current] An aria-current value for the cell (e.g. 'date', 'true').
  *
  * @typedef {object} TableProps
  * @property {string[]} columns Column headings.

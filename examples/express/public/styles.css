@@ -4163,22 +4163,21 @@
 
 /* -- /compare ------------------------------------------------------------- */
 @layer components {
-  /* Verdict colouring. Plain coloured text rather than <mark> badges: a
-     five-column table with a pill in every cell reads as noise, and the point
-     of these tables is scanning one row against another. */
-  [data-compare-table] th[scope='row'] {
-    color: var(--text-0);
-    white-space: nowrap;
-    text-align: start;
-  }
-  [data-compare-table] td[data-tone='win'] {
+  /* Verdict colouring. The tables are the catalog table now; the verdict
+     rides a span in the cell content — the same app-level device as the
+     verdict cards' [data-compare-card] hooks below — because tone is this
+     page's editorial layer, not the table's structure. Plain coloured text
+     rather than a pill in every cell: a five-column table reads as noise
+     that way, and the point of these tables is scanning one row against
+     another. */
+  [data-compare-table] span[data-tone='win'] {
     color: var(--success);
     font-weight: var(--font-weight-semibold);
   }
-  [data-compare-table] td[data-tone='cost'] {
+  [data-compare-table] span[data-tone='cost'] {
     color: var(--accent);
   }
-  [data-compare-table] td[data-tone='even'] {
+  [data-compare-table] span[data-tone='even'] {
     color: var(--text-1);
   }
 

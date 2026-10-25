@@ -5,6 +5,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { escapeAttr, escapeText, raw } from '@basenative/runtime/shared/escape';
 import { computeCompareStats } from '../../scripts/compare-stats.js';
+import { getCompareTables } from './compare-tables.js';
 
 const siteDir = dirname(fileURLToPath(import.meta.url));
 
@@ -638,9 +639,11 @@ export class CounterComponent {
 /**
  * Context for /compare.
  *
- * `stats` is measured from source by scripts/compare-stats.js and the view
- * binds every BaseNative number to it rather than stating one, so the page
- * cannot drift from the runtime it describes.
+ * `stats` is measured from source by scripts/compare-stats.js and every
+ * BaseNative number on the page is bound to it rather than stated — the
+ * view's prose binds `{{ stats.… }}`, and compare-tables.js composes the
+ * tables from the same object — so the page cannot drift from the runtime
+ * it describes.
  */
 export function getComparePageContext() {
   const tabs = COUNTER_EXAMPLES.map((example) => ({
@@ -655,6 +658,7 @@ export function getComparePageContext() {
 
   return {
     stats: stats(),
+    ...getCompareTables(stats()),
     counterTabs: raw(
       renderTrinity('tabs', {
         id: 'counter',
