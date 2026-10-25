@@ -1,0 +1,59 @@
+button[variant] {
+  box-sizing: var(--button-box-sizing);
+  appearance: var(--button-appearance);
+  display: var(--button-display);
+  align-items: var(--button-align-items);
+  justify-content: var(--button-justify-content);
+  gap: var(--button-gap);
+  block-size: var(--button-block-size);
+  min-inline-size: var(--button-min-inline-size);
+  padding-block: var(--button-padding-block);
+  padding-inline: var(--button-padding-inline);
+  border-width: var(--button-border-width);
+  border-style: var(--button-border-style);
+  border-color: var(--button-border-color);
+  border-radius: var(--button-border-radius);
+  background-color: var(--button-background-color);
+  color: var(--button-color);
+  font-family: var(--button-font-family);
+  font-size: var(--button-font-size);
+  font-weight: var(--button-font-weight);
+  line-height: var(--button-line-height);
+  letter-spacing: var(--button-letter-spacing);
+  cursor: var(--button-cursor);
+  transition: background-color var(--button-motion-duration), border-color var(--button-motion-duration), color var(--button-motion-duration);
+
+  &:hover {
+    background-color: var(--button-background-color--hover);
+    border-color: var(--button-border-color--hover);
+  }
+
+  &:focus-visible {
+    outline-width: var(--button-outline-width--focus);
+    outline-style: var(--button-outline-style--focus);
+    outline-color: var(--button-outline-color--focus);
+    outline-offset: var(--button-outline-offset--focus);
+    box-shadow: var(--button-box-shadow--focus);
+  }
+
+  &:active {
+    background-color: var(--button-background-color--active);
+  }
+
+  &:disabled {
+    background-color: var(--button-background-color--disabled);
+    border-color: var(--button-border-color--disabled);
+    color: var(--button-color--disabled);
+    cursor: var(--button-cursor--disabled);
+  }
+
+  & + & {
+    margin-inline-start: var(--button-margin-inline-start--adjacent);
+  }
+}
+
+form:has(:invalid) > button[type="submit"] {
+  background-color: var(--button-background-color--disabled);
+  border-color: var(--button-border-color--disabled);
+  color: var(--button-color--disabled);
+}

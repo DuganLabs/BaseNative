@@ -1,0 +1,51 @@
+dialog[variant] {
+  box-sizing: var(--dialog-box-sizing);
+  background-color: var(--dialog-background-color);
+  color: var(--dialog-color);
+  border-width: var(--dialog-border-width);
+  border-style: var(--dialog-border-style);
+  border-color: var(--dialog-border-color);
+  border-radius: var(--dialog-border-radius);
+  box-shadow: var(--dialog-box-shadow);
+  padding: var(--dialog-padding);
+  inline-size: var(--dialog-inline-size);
+  margin: var(--dialog-margin);
+
+  &[open] {
+    display: var(--dialog-display);
+    gap: var(--dialog-gap);
+  }
+
+  &::backdrop {
+    background-color: var(--dialog__backdrop-background-color);
+  }
+
+  & > header {
+    display: var(--dialog__header-display);
+    align-items: var(--dialog__header-align-items);
+    justify-content: var(--dialog__header-justify-content);
+    gap: var(--dialog__header-gap);
+
+    & > h2 {
+      font-family: var(--dialog__title-font-family);
+      font-size: var(--dialog__title-font-size);
+      font-weight: var(--dialog__title-font-weight);
+      line-height: var(--dialog__title-line-height);
+      margin: var(--dialog__title-margin);
+    }
+  }
+
+  & > p {
+    color: var(--dialog__body-color);
+    font-family: var(--dialog__body-font-family);
+    font-size: var(--dialog__body-font-size);
+    line-height: var(--dialog__body-line-height);
+    margin: var(--dialog__body-margin);
+  }
+
+  & > footer {
+    display: var(--dialog__footer-display);
+    justify-content: var(--dialog__footer-justify-content);
+    gap: var(--dialog__footer-gap);
+  }
+}

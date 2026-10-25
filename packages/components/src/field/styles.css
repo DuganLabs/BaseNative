@@ -1,0 +1,29 @@
+p[variant] {
+  display: var(--field-display);
+  gap: var(--field-gap);
+  margin: var(--field-margin);
+  align-items: var(--field-align-items);
+
+  & > label {
+    color: var(--field__label-color);
+    font-size: var(--field__label-font-size);
+    font-weight: var(--field__label-font-weight);
+    line-height: var(--field__label-line-height);
+  }
+
+  & > small {
+    color: var(--field__hint-color);
+    font-size: var(--field__hint-font-size);
+    line-height: var(--field__hint-line-height);
+  }
+
+  &:has(> input[aria-invalid="true"]) {
+    --input-border-color: var(--input-border-color--invalid);
+
+    & > small {
+      color: var(--field__error-color);
+      font-size: var(--field__error-font-size);
+      line-height: var(--field__error-line-height);
+    }
+  }
+}
