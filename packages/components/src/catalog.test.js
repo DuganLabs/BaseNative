@@ -218,7 +218,7 @@ test('datagrid nests sort buttons and selection checkboxes in the table skeleton
     rows: [{ cells: ['Garcia', '$85'], selectHtml: box }],
   });
   assert.match(html, /<table variant="datagrid">/);
-  assert.match(html, /<th scope="col" aria-sort="ascending">\s*<button variant="ghost" type="button">Lead<\/button><svg/);
+  assert.match(html, /<th scope="col" aria-sort="ascending">\s*<button variant="ghost" type="button">Lead<\/button>\s*<svg/);
   assert.match(html, /<td>\s*<label>\s*<input variant="checkbox" type="checkbox">\s*Select Garcia\s*<\/label>\s*<\/td>/);
 });
 
