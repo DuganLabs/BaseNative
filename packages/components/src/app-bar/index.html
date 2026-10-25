@@ -1,0 +1,33 @@
+<template>
+  <nav :variant="variant()" :aria-label="label()">
+    <ul>
+      <template @for="item of primaryItems()">
+        <li>
+          <a :href="item.href" :aria-current="item.ariaCurrent">
+            <template @if="item.iconHtml">
+              {{ raw(item.iconHtml) }}
+            </template>
+            {{ item.label }}
+          </a>
+        </li>
+      </template>
+      <template @if="hasOverflow()">
+        <li>
+          <button type="button" :id="moreButtonId()" :popovertarget="moreId()" aria-haspopup="menu" :aria-current="moreAriaCurrent()">
+            {{ raw(moreIconHtml()) }}
+            {{ moreLabel() }}
+          </button>
+        </li>
+      </template>
+    </ul>
+    <template @if="hasOverflow()">
+      <menu :id="moreId()" popover="auto" :aria-label="moreLabel()">
+        <template @for="item of overflowItems()">
+          <li>
+            <a :href="item.href" :aria-current="item.ariaCurrent">{{ item.label }}</a>
+          </li>
+        </template>
+      </menu>
+    </template>
+  </nav>
+</template>
