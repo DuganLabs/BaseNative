@@ -4,8 +4,9 @@
  * names.
  *
  * WHY IT LIVES HERE AND NOT IN `components`. `components` owns components;
- * `components/tokens.css` is already a complete, neutral default theme and it
- * should stay ignorant that themes exist at all. The cost of putting the bridge
+ * its `--bn-*` ladder (`components/tokens-legacy.css`) is already a complete,
+ * neutral default theme and it should stay ignorant that themes exist at all.
+ * The cost of putting the bridge
  * here is that this package's name list can fall behind a components release —
  * so that cost is measured rather than assumed: `BN_BRIDGED` is the list this
  * block actually emits, `UPSTREAM_OWNED` is the list deliberately left to

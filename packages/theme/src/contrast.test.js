@@ -50,7 +50,7 @@ describe('contrastRatio', () => {
   });
 
   test('reproduces values the components token layer documents', () => {
-    // packages/components/src/tokens.css: "--bn-color-error-fg … 4.83:1 on white"
+    // packages/components/src/tokens-legacy.css: "--bn-color-error-fg … 4.83:1 on white"
     assert.equal(contrastRatio('#dc2626', '#ffffff').toFixed(2), '4.83');
     // "gray-500 clears both: 4.83:1 on white … 3.67:1 on gray-900"
     assert.equal(contrastRatio('#71717a', '#ffffff').toFixed(2), '4.83');
