@@ -163,7 +163,7 @@ const settingsList = R('list-group', {
 
 const countyCombo = R('combobox', {
   id: 'county', label: 'County',
-  inputHtml: R('input', { id: 'county', type: 'search', value: 'Orange', ariaLabel: 'County' }),
+  inputHtml: R('input', { id: 'county', type: 'search', value: 'Orange County', ariaLabel: 'County' }),
   open: true, activeValue: 'orange',
   options: [
     { value: 'orange', label: 'Orange County' },
@@ -294,7 +294,7 @@ const board = R('pipeline', {
 
 const quoteForm = R('form', {
   name: 'quote', heading: 'Request a quote',
-  summaryHtml: R('alert', { title: 'Check the form', body: 'Enter a valid email address so we can send the quote.', variant: 'danger' }),
+  summaryHtml: R('alert', { title: 'Check the form', body: 'Enter a valid email address so we can send the quote.', variant: 'danger' }).replace('>', ' hidden>'),
   fieldsHtml:
     R('field', {
       label: 'Name', controlId: 'quote-name',
@@ -303,8 +303,8 @@ const quoteForm = R('form', {
     }) +
     R('field', {
       label: 'Email', controlId: 'quote-email',
-      controlHtml: R('input', { id: 'quote-email', type: 'email', value: 'not-an-email', invalid: true }),
-      hint: 'We send the exact quote here.', error: 'Enter a valid email address.',
+      controlHtml: R('input', { id: 'quote-email', type: 'email', value: '' }),
+      hint: 'We send the exact quote here.',
     }),
   actionsHtml:
     R('button', { label: 'Cancel', variant: 'ghost' }) +
@@ -554,7 +554,7 @@ ${css}
 
   <section>
     <h2>Combobox — an input and its listbox</h2>
-    <article style="padding-block-end: 10rem">
+    <article>
       ${countyCombo}
     </article>
     <h2>Multiselect — the same popup, a set of chips</h2>
@@ -710,8 +710,15 @@ ${css}
   if (quoteForm) {
     const summary = quoteForm.querySelector('aside');
     const emailInput = quoteForm.querySelector('#quote-email');
-    const emailField = emailInput.closest('p');
-    const errorNote = emailField.querySelector('small');
+    let errorNote = null;
+    const ensureErrorNote = () => {
+      if (!errorNote) {
+        errorNote = document.createElement('small');
+        errorNote.textContent = 'Enter a valid email address.';
+        emailInput.after(errorNote);
+      }
+      return errorNote;
+    };
     const sent = document.querySelector('#quote-sent');
     const validEmail = (value) => {
       const parts = value.split('@');
@@ -719,15 +726,14 @@ ${css}
     };
     const showFieldError = () => {
       emailInput.setAttribute('aria-invalid', 'true');
-      if (errorNote) errorNote.hidden = false;
+      ensureErrorNote().hidden = false;
     };
     const clearFieldError = () => {
       emailInput.removeAttribute('aria-invalid');
       if (errorNote) errorNote.hidden = true;
     };
     const showError = () => {
-      emailInput.setAttribute('aria-invalid', 'true');
-      if (errorNote) errorNote.hidden = false;
+      showFieldError();
       if (summary) summary.hidden = false;
     };
     const clearError = () => {
@@ -847,7 +853,12 @@ ${css}
       comboList.hidden = !openState;
       county.setAttribute('aria-expanded', openState ? 'true' : 'false');
     };
+    let committed = county.value;
     const filterCombo = () => {
+      if (county.value === committed) {
+        options.forEach((option) => { option.hidden = false; });
+        return;
+      }
       const query = county.value.trim().toLowerCase();
       options.forEach((option) => {
         option.hidden = !option.textContent.toLowerCase().includes(query);
@@ -855,8 +866,8 @@ ${css}
     };
     let comboEscaped = false;
     setComboOpen(false);
-    county.addEventListener('focus', () => setComboOpen(true));
-    county.addEventListener('click', () => setComboOpen(true));
+    county.addEventListener('focus', () => { setComboOpen(true); filterCombo(); });
+    county.addEventListener('click', () => { setComboOpen(true); filterCombo(); });
     county.addEventListener('input', () => {
       if (comboEscaped) { comboEscaped = false; return; }
       setComboOpen(true); filterCombo();
@@ -869,7 +880,8 @@ ${css}
     });
     options.forEach((option) => {
       option.addEventListener('click', () => {
-        county.value = option.textContent.trim();
+        committed = option.textContent.trim();
+        county.value = committed;
         options.forEach((other) => other.setAttribute('aria-selected', 'false'));
         option.setAttribute('aria-selected', 'true');
         options.forEach((other) => { other.hidden = false; });
