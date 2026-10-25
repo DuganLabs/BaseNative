@@ -10,7 +10,7 @@ test('avatar renders initials on a toned figure, or the image when given one', a
   const initials = renderComponent(registry, render, 'avatar', { initials: 'WD', variant: 'tone-2' }).html;
   assert.match(initials, /<figure variant="tone-2">\s*WD\s*<\/figure>/);
   const image = renderComponent(registry, render, 'avatar', { src: '/me.jpg', alt: 'Warren' }).html;
-  assert.match(image, /<figure variant="default">\s*<img src="\/me.jpg" alt="Warren" \/>\s*<\/figure>/);
+  assert.match(image, /<figure variant="default">\s*<img src="\/me.jpg" alt="Warren">\s*<\/figure>/);
 });
 
 test('accordion is a details whose summary and section carry the content', async () => {
