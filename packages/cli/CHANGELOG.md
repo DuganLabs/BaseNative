@@ -1,5 +1,17 @@
 # @basenative/cli Changelog
 
+## 2.4.0
+
+### Minor Changes
+
+- 5459ba5: New `bn site build` command: generate static pages from a JSON input that names the site's page module, an output directory, and the pages to render (route paths or `{ path, ...spec }` objects whose extra fields reach the renderer as data). Generation is deterministic — sorted page order, no clock, environment, or randomness — and renders through the site's own `renderRoute`, so generated output and server output agree. The BaseNative site's /roadmap page is the pilot: the deploy build now produces it through this generator from `examples/express/site.json`.
+
+### Patch Changes
+
+- 41eacef: Generated artifacts are now deterministic — same inputs, same output. `bn create` takes its Cloudflare compatibility date from a new `--compat-date` option (default: the pinned @basenative/wrangler-preset baseline, 2025-09-23) instead of the wall clock. `bn prd init` no longer embeds $USER or the date (owner is `--owner` or TBD), and the `generated_at` timestamp is gone from `bn prd sync` and `bn speckit tasks` output; speckit spec scaffolds no longer stamp $USER as owner. Template and directory walks are sorted, so file order no longer depends on the filesystem.
+- af2aa0b: The CLI manifest now enumerates `from-jsx`. The manifest is documented as the machine-readable enumeration of every command, but the JSX translator — registered in the dispatcher and printed in `bn --help` — was missing from it, so shell completion and any tooling reading the manifest did not know the command exists. A test now asserts the manifest and the dispatcher's command map cannot drift apart again.
+- @basenative/hmr@2.4.0
+
 ## 2.3.2
 
 ### Patch Changes
