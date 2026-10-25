@@ -213,6 +213,7 @@
   /* Sizing */
   --size-full: 100%;
   --size-control: 2.75rem;
+  --size-max-content: max-content;
   --size-target-min: 2.75rem;
   --size-sheet-max: 32rem;
   --size-switch-inline: 3.25rem;

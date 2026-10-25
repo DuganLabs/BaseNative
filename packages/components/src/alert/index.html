@@ -2,5 +2,8 @@
   <aside :variant="variant()" :role="role()">
     <h3>{{ title() }}</h3>
     <p>{{ body() }}</p>
+    <template @if="hasDismiss()">
+      {{ raw(dismissHtml()) }}
+    </template>
   </aside>
 </template>

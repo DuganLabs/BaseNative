@@ -1,5 +1,6 @@
 // @ts-check
 import { signal, computed } from '@basenative/runtime';
+import { raw } from '@basenative/runtime/shared/escape';
 
 export const name = 'alert';
 export const root = 'aside';
@@ -8,6 +9,8 @@ export const root = 'aside';
  * @typedef {object} AlertProps
  * @property {string} title
  * @property {string} body
+ * @property {string} [dismissHtml] A rendered dismiss button (usually a ghost
+ *   button); when present the alert is dismissible and reserves room for it.
  * @property {string} [variant] info (default), success, warning, or danger.
  *   The variant also picks the ARIA role: danger announces as "alert",
  *   the rest as "status" — semantics follow the registered variant.
@@ -21,8 +24,10 @@ export function create(props) {
   const body = signal(props.body ?? '');
   const variant = signal(props.variant ?? 'info');
   const role = computed(() => (variant() === 'danger' ? 'alert' : 'status'));
+  const dismissHtml = signal(props.dismissHtml ?? '');
+  const hasDismiss = computed(() => dismissHtml() !== '');
 
-  return { title, body, variant, role };
+  return { title, body, variant, role, dismissHtml, hasDismiss, raw };
 }
 
 /** @param {import('../registry.js').Registry} registry */

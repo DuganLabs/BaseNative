@@ -330,3 +330,16 @@ test('the token sheet carries all three appearance scopes', async () => {
   assert.match(tokens, /:root\[data-theme="dark"\] \{\n  color-scheme: dark;/);
   assert.match(tokens, /:root\[data-theme="light"\] \{\n    color-scheme: light;/);
 });
+
+test('alert renders an optional dismiss and the toggle hugs its content', async () => {
+  const registry = await loadRegistry();
+  const dismiss = renderComponent(registry, render, 'button', { label: 'Dismiss', variant: 'ghost' }).html;
+  const { html } = renderComponent(registry, render, 'alert', {
+    title: 'Payment failed', body: 'Card declined.', variant: 'danger', dismissHtml: dismiss,
+  });
+  assert.match(html, /<button variant="ghost" type="button">Dismiss<\/button>/);
+  const { readFile } = await import('node:fs/promises');
+  const toggleCss = await readFile(new URL('./theme-toggle/styles.css', import.meta.url), 'utf8');
+  assert.match(toggleCss, /--theme-toggle-inline-size: var\(--size-max-content\)/);
+  assert.match(toggleCss, /inline-size: var\(--theme-toggle-inline-size\)/);
+});

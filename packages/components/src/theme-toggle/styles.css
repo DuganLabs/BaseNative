@@ -1,5 +1,6 @@
 :root {
   --theme-toggle-display: var(--display-inline-flex);
+  --theme-toggle-inline-size: var(--size-max-content);
   --theme-toggle-flex-direction: var(--flex-direction-row);
   --theme-toggle-gap: var(--space-1);
   --theme-toggle-margin: var(--space-0);
@@ -41,6 +42,7 @@
 
 fieldset[variant="theme-toggle"] {
   display: var(--theme-toggle-display);
+  inline-size: var(--theme-toggle-inline-size);
   flex-direction: var(--theme-toggle-flex-direction);
   gap: var(--theme-toggle-gap);
   margin: var(--theme-toggle-margin);
