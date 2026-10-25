@@ -19,10 +19,10 @@ const buttons = [
 
 const emailField = R('field', {
   label: 'Email', controlId: 'email',
-  controlHtml: R('input', { id: 'email', value: '' }),
+  controlHtml: R('input', { id: 'email', type: 'email', value: '' }),
   hint: 'We only email about your jobs.',
 });
-const badInput = R('input', { id: 'email2', value: 'not-an-email', invalid: true });
+const badInput = R('input', { id: 'email2', type: 'email', value: 'not-an-email', invalid: true });
 const errorField = R('field', {
   label: 'Email', controlId: 'email2', controlHtml: badInput,
   hint: 'We only email about your jobs.', error: 'Enter a valid email address.',
@@ -151,7 +151,7 @@ const settingsList = R('list-group', {
 
 const countyCombo = R('combobox', {
   id: 'county', label: 'County',
-  inputHtml: R('input', { id: 'county', type: 'text', value: 'Orange', ariaLabel: 'County' }),
+  inputHtml: R('input', { id: 'county', type: 'search', value: 'Orange', ariaLabel: 'County' }),
   open: true, activeValue: 'orange',
   options: [
     { value: 'orange', label: 'Orange County' },
@@ -162,7 +162,7 @@ const countyCombo = R('combobox', {
 
 const tradesMulti = R('multiselect', {
   id: 'trades', label: 'Trades',
-  inputHtml: R('input', { id: 'trades', type: 'text', value: '', ariaLabel: 'Trades' }),
+  inputHtml: R('input', { id: 'trades', type: 'search', value: '', ariaLabel: 'Trades' }),
   selected: [{ value: 'ev', label: 'EV charging', dismissHtml: R('button', { label: 'Remove', variant: 'ghost' }) }],
   open: true,
   options: [
@@ -193,7 +193,7 @@ const palette = R('command-palette', {
   id: 'palette', label: 'Command palette', activeValue: 'new-lead',
   searchHtml: R('field', {
     label: 'Search commands', controlId: 'palette-search',
-    controlHtml: R('input', { id: 'palette-search', type: 'text', value: '', ariaLabel: 'Search commands' }),
+    controlHtml: R('input', { id: 'palette-search', type: 'search', value: '', ariaLabel: 'Search commands' }),
   }),
   groups: [
     { heading: 'Leads', options: [{ value: 'new-lead', label: 'New lead' }, { value: 'import', label: 'Import leads' }] },
@@ -245,7 +245,7 @@ const treeDemo = R('tree', {
 });
 
 const virt = R('virtualizer', {
-  id: 'leads', total: 100, scrollTop: 44 * 20, rowHeight: 44, viewportRows: 8, overscan: 2,
+  id: 'leads', total: 100, scrollTop: 0, rowHeight: 44, viewportRows: 8, overscan: 2,
   labelFor: (i) => `Lead ${i + 1} — Orange County`,
 });
 
@@ -402,8 +402,11 @@ ${css}
   .attr { color: var(--syntax-attr); }
   .var { color: var(--syntax-variable); }
   article > p { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: 0; }
-  #leads { --virtualizer__spacer-start-count: 18; --virtualizer__spacer-end-count: 70; }
+  #leads { --virtualizer__spacer-start-count: 0; --virtualizer__spacer-end-count: 88; }
   section.toast-stage { transform: translateZ(0); min-block-size: 19rem; align-content: start; }
+  section:has(#county), section:has(#trades) { padding-block-end: 8.5rem; }
+  article.drawer-stage { position: relative; block-size: 26rem; border: var(--hairline) solid var(--separator); border-radius: var(--radius-container); overflow: hidden; }
+  article.drawer-stage > dialog[variant="drawer"] { position: absolute; inset-block: 0; inset-inline-end: 0; }
 </style>
 </head>
 <body>
@@ -548,7 +551,9 @@ ${css}
 
   <section>
     <h2>Drawer — the dialog skeleton at the edge</h2>
-    ${leadDrawer}
+    <article class="drawer-stage">
+      ${leadDrawer}
+    </article>
     <p>${reopenDrawer}</p>
   </section>
 
@@ -600,7 +605,7 @@ ${css}
   </section>
 
   <section>
-    <h2>Virtualizer — rows 19–30 of 100, spacers sized by tokens</h2>
+    <h2>Virtualizer — the first window of 100 rows, spacers sized by tokens</h2>
     <article>
       ${virt}
     </article>
