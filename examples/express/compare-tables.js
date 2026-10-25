@@ -21,6 +21,9 @@ import { renderTrinity } from './trinity.js';
 /** A toned cell: the verdict is editorial content, carried by a span. */
 function toned(text, tone) {
   if (!tone) return text;
+  // A span because the verdict is a run of coloured text inside the cell's
+  // content slot — the page's sheet colours it; nothing is stamped on the
+  // catalog table itself.
   return { contentHtml: `<span data-tone="${tone}">${escapeText(text)}</span>` };
 }
 

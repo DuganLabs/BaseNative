@@ -26,8 +26,10 @@
     <ul role="list" data-bn-ds-swatches>
       <template @for="c of systemColors; track c.name">
         <li>
+          <!-- A colour swatch: a plain span, filled with the token it names. -->
           <span style="background: {{ c.value }}" aria-hidden="true"></span>
           <code>{{ c.name }}</code>
+          <!-- The token's value as a text run beside its name. -->
           <span>{{ c.value }}</span>
         </li>
       </template>
@@ -52,6 +54,7 @@
     {{ typeTable }}
     <ul role="list" data-bn-ds-fonts>
       <template @for="f of fonts; track f.name">
+        <!-- The family name and its stack as a text run. -->
         <li><code>{{ f.name }}</code> <span>{{ f.value }}</span></li>
       </template>
     </ul>
