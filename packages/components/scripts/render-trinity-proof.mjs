@@ -211,7 +211,7 @@ ${css}
     ${planCards}
     <h2>Same group, choose many (checkbox) — a different mode, the same substrate</h2>
     ${addOns}
-    <p class="note">Every change in either group reaches the app as one event — group, mode, values, and what changed — whatever the options are made of. The selected look lives in the card's own sheet; the group never styles inside its options.</p>
+    <p class="note">Every change in either group reaches the app as one event — group, mode, values, and what changed — whatever the options are made of. The control notches into the card: the group positions the input, and the selected look plus the notch reservation live in the card's own sheet; the group never styles inside its options.</p>
   </section>
 
   <section>
