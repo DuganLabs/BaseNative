@@ -1,0 +1,63 @@
+:root {
+  --select-box-sizing: var(--box-sizing-border);
+  --select-display: var(--display-block);
+  --select-inline-size: var(--size-full);
+  --select-block-size: var(--size-control);
+  --select-padding-block: var(--space-2);
+  --select-padding-inline: var(--space-3);
+  --select-background-color: var(--background);
+  --select-color: var(--label);
+  --select-border-width: var(--border-width);
+  --select-border-style: var(--border-style-solid);
+  --select-border-color: var(--separator-opaque);
+  --select-border-color--hover: var(--label-3);
+  --select-border-radius: var(--radius-control);
+  --select-font-family: var(--text-body-family);
+  --select-font-size: var(--text-body-size);
+  --select-font-weight: var(--text-body-weight);
+  --select-line-height: var(--text-body-leading);
+  --select-cursor: var(--cursor-pointer);
+  --select-outline-width--focus: var(--border-width-thick);
+  --select-outline-style--focus: var(--border-style-solid);
+  --select-outline-color--focus: var(--tint);
+  --select-outline-offset--focus: var(--space-1);
+  --select-box-shadow--focus: var(--focus-ring);
+  --select-motion-duration: var(--motion-fade-duration);
+  --select-motion-curve: var(--motion-fade-curve);
+}
+
+select[variant] {
+  box-sizing: var(--select-box-sizing);
+  display: var(--select-display);
+  inline-size: var(--select-inline-size);
+  block-size: var(--select-block-size);
+  padding-block: var(--select-padding-block);
+  padding-inline: var(--select-padding-inline);
+  background-color: var(--select-background-color);
+  color: var(--select-color);
+  border-width: var(--select-border-width);
+  border-style: var(--select-border-style);
+  border-color: var(--select-border-color);
+  border-radius: var(--select-border-radius);
+  font-family: var(--select-font-family);
+  font-size: var(--select-font-size);
+  font-weight: var(--select-font-weight);
+  line-height: var(--select-line-height);
+  cursor: var(--select-cursor);
+  transition: border-color var(--select-motion-duration) var(--select-motion-curve), box-shadow var(--select-motion-duration) var(--select-motion-curve);
+
+  &:hover {
+    border-color: var(--select-border-color--hover);
+  }
+
+  &:focus-visible {
+    outline-width: var(--select-outline-width--focus);
+    outline-style: var(--select-outline-style--focus);
+    outline-color: var(--select-outline-color--focus);
+    outline-offset: var(--select-outline-offset--focus);
+    box-shadow: var(--select-box-shadow--focus);
+  }
+}
+
+/* @variants — generated from the registry, do not edit by hand */
+/* @endvariants */

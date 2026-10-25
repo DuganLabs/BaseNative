@@ -40,7 +40,59 @@ const deleteDialog = R('dialog', {
   footerHtml: R('button', { label: 'Cancel', variant: 'ghost' }) + R('button', { label: 'Delete lead' }),
 }).replace('<dialog', '<dialog open');
 
-const css = await assembleStyles(registry, ['button', 'input', 'field', 'dialog']);
+
+const badges = [
+  R('badge', { label: 'Draft' }),
+  R('badge', { label: 'New lead', variant: 'info' }),
+  R('badge', { label: 'Paid', variant: 'success' }),
+  R('badge', { label: 'Due soon', variant: 'warning' }),
+  R('badge', { label: 'Overdue', variant: 'danger' }),
+].join('\n      ');
+
+const controls = [
+  R('checkbox', { label: 'Licensed & insured', checked: true }),
+  R('checkbox', { label: 'Offers financing' }),
+  R('toggle', { label: 'Auto-book confirmed jobs', checked: true }),
+  R('toggle', { label: 'Weekend work' }),
+  R('radio', {
+    legend: 'Arrival window', name: 'window', value: 'pm',
+    options: [
+      { value: 'am', label: 'Morning' },
+      { value: 'pm', label: 'Afternoon' },
+      { value: 'eve', label: 'Evening' },
+    ],
+  }),
+  R('field', {
+    label: 'Trade', controlId: 'trade',
+    controlHtml: R('select', {
+      id: 'trade', value: 'hvac',
+      options: [
+        { value: 'electrical', label: 'Electrical' },
+        { value: 'plumbing', label: 'Plumbing' },
+        { value: 'hvac', label: 'HVAC' },
+      ],
+    }),
+    hint: 'The trade decides which pricing engine runs.',
+  }),
+  R('field', {
+    label: 'Job notes', controlId: 'notes',
+    controlHtml: R('textarea', { id: 'notes', rows: 3, value: 'Gate code 4211. Dog on site.' }),
+  }),
+].join('\n      ');
+
+const alerts = [
+  R('alert', { title: 'Schedule updated', body: 'Two crews are out today; afternoon windows shifted by an hour.' }),
+  R('alert', { title: 'Payment failed', body: 'The card on file was declined. Ask the customer for another method.', variant: 'danger' }),
+].join('\n      ');
+
+const jobCard = R('card', {
+  title: 'Panel upgrade — 200A service',
+  body: 'Permit pulled. Materials on site. Progress is tracked against the quote.',
+  footerHtml: R('button', { label: 'Open job', variant: 'primary' }),
+});
+const uploadBar = R('progress', { value: 60 });
+
+const css = await assembleStyles(registry, ['button', 'input', 'field', 'dialog', 'badge', 'checkbox', 'toggle', 'radio', 'textarea', 'select', 'alert', 'progress', 'card']);
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const buttonHtml = await readFile(new URL('../src/button/index.html', import.meta.url), 'utf8');
 const buttonCss = await readFile(new URL('../src/button/styles.css', import.meta.url), 'utf8');
@@ -72,7 +124,7 @@ ${css}
 <main>
   <section>
     <h1>Holy Trinity pilot — rendered proof</h1>
-    <p class="note">Button, field+input, and dialog, each a directory of index.html / styles.css / index.js, rendered server-side through @basenative/server. Every style below comes from global tokens — the component sheets declare no values of their own.</p>
+    <p class="note">Thirteen components — button, field+input, dialog, badge, checkbox, toggle, radio, textarea, select, alert, progress, card — each a directory of index.html / styles.css / index.js, rendered server-side through @basenative/server. Every style below comes from global tokens — the component sheets declare no values of their own.</p>
   </section>
 
   <section>
@@ -88,6 +140,34 @@ ${css}
     <article>
       ${emailField}
       ${errorField}
+    </article>
+  </section>
+
+
+  <section>
+    <h2>Badges — one element, five registered tones</h2>
+    <article>
+      <p>${badges}</p>
+    </article>
+  </section>
+
+  <section>
+    <h2>Form controls — checkbox, switch, radio, select, textarea</h2>
+    <article>
+      ${controls}
+    </article>
+  </section>
+
+  <section>
+    <h2>Alerts — the variant picks the tone and the ARIA role</h2>
+    ${alerts}
+  </section>
+
+  <section>
+    <h2>Card + progress</h2>
+    ${jobCard}
+    <article>
+      ${uploadBar}
     </article>
   </section>
 

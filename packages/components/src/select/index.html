@@ -1,0 +1,7 @@
+<template>
+  <select :variant="variant()" :id="controlId()" :value="value()" :disabled="disabled()" @change="choose($event)">
+    <template @for="option of options(); track option.value">
+      <option :value="option.value" :selected="isSelected(option)">{{ option.label }}</option>
+    </template>
+  </select>
+</template>

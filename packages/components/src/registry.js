@@ -90,6 +90,14 @@ export function createRegistry() {
     if (!components.has(component)) {
       throw new TypeError(`registerVariant: component "${component}" is not registered — register it before its variants`);
     }
+    // A (root element, variant) pair is a global address: two components
+    // may share a root element only if their variant names never collide.
+    const root = components.get(component).root;
+    for (const [otherName, otherDef] of components) {
+      if (otherName !== component && otherDef.root === root && variants.get(otherName)?.has(name)) {
+        throw new TypeError(`registerVariant: "${root}[variant=\\"${name}\\"]" is already registered by "${otherName}" — the registration tag must identify one component`);
+      }
+    }
     for (const [key, value] of Object.entries(tokens ?? {})) {
       if (!TOKEN_KEY.test(key)) {
         throw new TypeError(`registerVariant: "${key}" does not match the token taxonomy --<block>-<property>(__<element>)(--<state>)`);

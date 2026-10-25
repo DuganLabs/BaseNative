@@ -1,0 +1,62 @@
+:root {
+  --alert-display: var(--display-grid);
+  --alert-gap: var(--space-1);
+  --alert-padding-block: var(--space-3);
+  --alert-padding-inline: var(--space-4);
+  --alert-background-color: var(--tint-fill);
+  --alert-border-radius: var(--radius-container);
+  --alert__title-color: var(--tint);
+  --alert__title-font-family: var(--text-headline-family);
+  --alert__title-font-size: var(--text-headline-size);
+  --alert__title-font-weight: var(--text-headline-weight);
+  --alert__title-line-height: var(--text-headline-leading);
+  --alert__title-margin: var(--space-0);
+  --alert__body-color: var(--label);
+  --alert__body-font-family: var(--text-callout-family);
+  --alert__body-font-size: var(--text-callout-size);
+  --alert__body-line-height: var(--text-callout-leading);
+  --alert__body-margin: var(--space-0);
+}
+
+aside[variant] {
+  display: var(--alert-display);
+  gap: var(--alert-gap);
+  padding-block: var(--alert-padding-block);
+  padding-inline: var(--alert-padding-inline);
+  background-color: var(--alert-background-color);
+  border-radius: var(--alert-border-radius);
+
+  & > h3 {
+    color: var(--alert__title-color);
+    font-family: var(--alert__title-font-family);
+    font-size: var(--alert__title-font-size);
+    font-weight: var(--alert__title-font-weight);
+    line-height: var(--alert__title-line-height);
+    margin: var(--alert__title-margin);
+  }
+
+  & > p {
+    color: var(--alert__body-color);
+    font-family: var(--alert__body-font-family);
+    font-size: var(--alert__body-font-size);
+    line-height: var(--alert__body-line-height);
+    margin: var(--alert__body-margin);
+  }
+}
+
+/* @variants — generated from the registry, do not edit by hand */
+aside[variant="danger"] {
+  --alert-background-color: var(--danger-fill);
+  --alert__title-color: var(--danger-strong);
+}
+
+aside[variant="success"] {
+  --alert-background-color: var(--success-fill);
+  --alert__title-color: var(--success-strong);
+}
+
+aside[variant="warning"] {
+  --alert-background-color: var(--warning-fill);
+  --alert__title-color: var(--warning-strong);
+}
+/* @endvariants */

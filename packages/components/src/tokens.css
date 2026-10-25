@@ -72,7 +72,16 @@
   --warning: var(--system-orange);
   --scrim: rgb(0 0 0 / 0.4);
 
+  /* Roles — status fills and strong text (badge/alert tones) */
+  --tint-fill: rgb(0 122 255 / 0.12);
+  --danger-fill: rgb(255 59 48 / 0.12);
+  --success-fill: rgb(52 199 89 / 0.14);
+  --success-strong: #1f7a33;
+  --warning-fill: rgb(255 149 0 / 0.16);
+  --warning-strong: #9a5700;
+
   /* Elevation — shadows belong to floating layers only */
+  --shadow-none: none;
   --shadow-float: 0 12px 32px rgb(0 0 0 / 0.12);
   --shadow-raised: 0 8px 24px rgb(0 0 0 / 0.08);
   --focus-ring: 0 0 0 2px var(--background), 0 0 0 4px var(--tint);
@@ -197,6 +206,7 @@
 
   /* Hairline and borders */
   --hairline: 0.5px;
+  --border-width-none: 0;
   --border-width: 1px;
   --border-width-thick: 2px;
 
@@ -205,6 +215,8 @@
   --size-control: 2.75rem;
   --size-target-min: 2.75rem;
   --size-sheet-max: 32rem;
+  --size-switch-inline: 3.25rem;
+  --size-switch-block: 2rem;
 
   /* Safe area — supplied by the device at runtime */
   --safe-top: env(safe-area-inset-top, 0px);
@@ -235,6 +247,9 @@
   --box-sizing-border: border-box;
   --align-center: center;
   --align-stretch: stretch;
+  --position-relative: relative;
+  --position-absolute: absolute;
+  --resize-vertical: vertical;
   --justify-center: center;
   --justify-end: flex-end;
   --justify-space-between: space-between;
@@ -286,6 +301,12 @@
     --separator-opaque: #38383a;
 
     --danger-strong: #ff6961;
+    --tint-fill: rgb(10 132 255 / 0.16);
+    --danger-fill: rgb(255 69 58 / 0.16);
+    --success-fill: rgb(48 209 88 / 0.18);
+    --success-strong: #30d158;
+    --warning-fill: rgb(255 159 10 / 0.18);
+    --warning-strong: #ff9f0a;
     --tint-strong: #409cff;
     --scrim: rgb(0 0 0 / 0.55);
 

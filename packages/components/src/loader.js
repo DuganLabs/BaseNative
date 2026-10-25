@@ -11,7 +11,11 @@ import { createRegistry } from './registry.js';
 
 /** @typedef {import('./registry.js').Registry} Registry */
 
-const PILOT = ['button', 'input', 'field', 'dialog'];
+const COMPONENTS = [
+  'button', 'input', 'field', 'dialog',
+  'badge', 'checkbox', 'toggle', 'radio', 'textarea', 'select',
+  'alert', 'progress', 'card',
+];
 
 /** @param {string} html */
 function unwrapTemplate(html) {
@@ -20,7 +24,7 @@ function unwrapTemplate(html) {
 
 export async function loadRegistry() {
   const registry = createRegistry();
-  for (const name of PILOT) {
+  for (const name of COMPONENTS) {
     const dir = new URL(`./${name}/`, import.meta.url);
     const mod = await import(new URL('./index.js', dir));
     const template = unwrapTemplate(await readFile(new URL('./index.html', dir), 'utf8'));

@@ -1,0 +1,68 @@
+:root {
+  --card-display: var(--display-grid);
+  --card-gap: var(--space-3);
+  --card-background-color: var(--background-grouped-2);
+  --card-border-width: var(--border-width);
+  --card-border-style: var(--border-style-solid);
+  --card-border-color: var(--separator);
+  --card-border-radius: var(--radius-container);
+  --card-box-shadow: var(--shadow-none);
+  --card-padding: var(--space-5);
+  --card__title-color: var(--label);
+  --card__title-font-family: var(--text-title-3-family);
+  --card__title-font-size: var(--text-title-3-size);
+  --card__title-font-weight: var(--font-weight-semibold);
+  --card__title-line-height: var(--text-title-3-leading);
+  --card__title-margin: var(--space-0);
+  --card__body-color: var(--label-2);
+  --card__body-font-family: var(--text-body-family);
+  --card__body-font-size: var(--text-body-size);
+  --card__body-line-height: var(--text-body-leading);
+  --card__body-margin: var(--space-0);
+  --card__footer-display: var(--display-flex);
+  --card__footer-justify-content: var(--justify-end);
+  --card__footer-gap: var(--space-2);
+}
+
+article[variant] {
+  display: var(--card-display);
+  gap: var(--card-gap);
+  background-color: var(--card-background-color);
+  border-width: var(--card-border-width);
+  border-style: var(--card-border-style);
+  border-color: var(--card-border-color);
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--card-box-shadow);
+  padding: var(--card-padding);
+
+  & > header > h3 {
+    color: var(--card__title-color);
+    font-family: var(--card__title-font-family);
+    font-size: var(--card__title-font-size);
+    font-weight: var(--card__title-font-weight);
+    line-height: var(--card__title-line-height);
+    margin: var(--card__title-margin);
+  }
+
+  & > p {
+    color: var(--card__body-color);
+    font-family: var(--card__body-font-family);
+    font-size: var(--card__body-font-size);
+    line-height: var(--card__body-line-height);
+    margin: var(--card__body-margin);
+  }
+
+  & > footer {
+    display: var(--card__footer-display);
+    justify-content: var(--card__footer-justify-content);
+    gap: var(--card__footer-gap);
+  }
+}
+
+/* @variants — generated from the registry, do not edit by hand */
+article[variant="floating"] {
+  --card-background-color: var(--background-3);
+  --card-border-color: var(--color-transparent);
+  --card-box-shadow: var(--shadow-float);
+}
+/* @endvariants */

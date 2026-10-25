@@ -8,7 +8,11 @@ import { createRegistry, validateTemplate, validateCss } from './registry.js';
 import { loadRegistry, renderComponent, assembleStyles } from './loader.js';
 import { render } from '../../server/src/render.js';
 
-const PILOT = ['button', 'input', 'field', 'dialog'];
+const PILOT = [
+  'button', 'input', 'field', 'dialog',
+  'badge', 'checkbox', 'toggle', 'radio', 'textarea', 'select',
+  'alert', 'progress', 'card',
+];
 
 test('each pilot component directory holds exactly the three files', async () => {
   for (const name of PILOT) {
@@ -67,7 +71,7 @@ test('component styles never select a bare element — vanilla elements stay unt
   const registry = await loadRegistry();
   for (const name of PILOT) {
     const { styles, root } = registry.getComponent(name);
-    assert.match(styles, new RegExp(`${root}\\[variant\\]`), name);
+    assert.match(styles, new RegExp(`${root}\\[variant`), name);
     assert.doesNotMatch(styles, new RegExp(`(^|\\n)${root} \\{`), name);
   }
   const css = await assembleStyles(registry, PILOT);
@@ -94,8 +98,7 @@ test('field composes a labelled input and swaps hint for error', async () => {
   assert.doesNotMatch(bad, /We only email about your jobs\./);
 });
 
-test('dialog composes nested buttons and its destructive variant re-points them', async () => {
-  const registry = await loadRegistry();
+test('dialog composes nested buttons and its destructive variant re-points them', async () => {  const registry = await loadRegistry();
   const close = renderComponent(registry, render, 'button', { label: 'Close', variant: 'ghost' }).html;
   const cancel = renderComponent(registry, render, 'button', { label: 'Cancel', variant: 'ghost' }).html;
   const confirm = renderComponent(registry, render, 'button', { label: 'Delete lead' }).html;
@@ -141,4 +144,95 @@ test('variant blocks inside each styles.css are current with the registry (no dr
     const css = await readFile(new URL(`./${name}/styles.css`, import.meta.url), 'utf8');
     assert.equal(registry.spliceVariants(css, name), css, `${name}/styles.css variant block is stale — run scripts/generate-variants.mjs`);
   }
+});
+
+test('the registry refuses a (root element, variant) collision across components', () => {
+  const registry = createRegistry();
+  registry.registerComponent({ name: 'one', root: 'aside', create: () => ({}) });
+  registry.registerVariant('one', 'info', {});
+  registry.registerComponent({ name: 'two', root: 'aside', create: () => ({}) });
+  assert.throws(() => registry.registerVariant('two', 'info', {}), /already registered by "one"/);
+  registry.registerVariant('two', 'notice', {});
+  assert.deepEqual(registry.listVariants('two'), ['notice']);
+});
+
+test('badge renders a small carrying its tone variant', async () => {
+  const registry = await loadRegistry();
+  const { html } = renderComponent(registry, render, 'badge', { label: 'Paid', variant: 'success' });
+  assert.match(html, /<small variant="success">Paid<\/small>/);
+  assert.match(registry.variantsCssFor('badge'), /small\[variant="danger"\] \{\n {2}--badge-background-color: var\(--danger-fill\);/);
+});
+
+test('checkbox and toggle register distinct tags on the shared input element', async () => {
+  const registry = await loadRegistry();
+  const box = renderComponent(registry, render, 'checkbox', { label: 'Licensed & insured', checked: true }).html;
+  assert.match(box, /<input variant="checkbox" type="checkbox" checked/);
+  assert.match(box, /Licensed &amp; insured/);
+  const sw = renderComponent(registry, render, 'toggle', { label: 'Auto-book', checked: true }).html;
+  assert.match(sw, /<input variant="switch" type="checkbox" role="switch" checked/);
+});
+
+test('radio renders a fieldset of options with the selected one checked', async () => {
+  const registry = await loadRegistry();
+  const { html } = renderComponent(registry, render, 'radio', {
+    legend: 'Arrival window', name: 'window', value: 'pm',
+    options: [
+      { value: 'am', label: 'Morning' },
+      { value: 'pm', label: 'Afternoon' },
+      { value: 'eve', label: 'Evening' },
+    ],
+  });
+  assert.match(html, /<fieldset variant="default">/);
+  assert.match(html, /<legend>Arrival window<\/legend>/);
+  assert.equal((html.match(/<label>/g) ?? []).length, 3);
+  assert.match(html, /<input type="radio" name="window" value="pm" checked="true">/);
+  assert.doesNotMatch(html, /value="am" checked/);
+});
+
+test('select renders its options with the chosen one selected', async () => {
+  const registry = await loadRegistry();
+  const { html } = renderComponent(registry, render, 'select', {
+    id: 'trade', value: 'hvac',
+    options: [
+      { value: 'electrical', label: 'Electrical' },
+      { value: 'hvac', label: 'HVAC' },
+    ],
+  });
+  assert.match(html, /<select variant="default" id="trade"/);
+  assert.match(html, /<option value="hvac" selected="true">HVAC<\/option>/);
+  assert.match(html, /<option value="electrical">Electrical<\/option>/);
+});
+
+test('textarea renders its value as content so SSR shows it before hydration', async () => {
+  const registry = await loadRegistry();
+  const { html } = renderComponent(registry, render, 'textarea', { id: 'notes', rows: 3, value: 'Gate code 4211.' });
+  assert.match(html, /<textarea variant="default" id="notes" rows="3"[^>]*>Gate code 4211\.<\/textarea>/);
+});
+
+test('alert picks its ARIA role from the variant', async () => {
+  const registry = await loadRegistry();
+  const info = renderComponent(registry, render, 'alert', { title: 'Heads up', body: 'Two crews are out today.' }).html;
+  assert.match(info, /<aside variant="info" role="status">/);
+  const danger = renderComponent(registry, render, 'alert', { title: 'Payment failed', body: 'Card declined.', variant: 'danger' }).html;
+  assert.match(danger, /<aside variant="danger" role="alert">/);
+});
+
+test('progress renders a value, or no value when indeterminate', async () => {
+  const registry = await loadRegistry();
+  const bar = renderComponent(registry, render, 'progress', { value: 60 }).html;
+  assert.match(bar, /<progress variant="default" value="60" max="100"><\/progress>/);
+  const spin = renderComponent(registry, render, 'progress', {}).html;
+  assert.match(spin, /<progress variant="default" max="100"><\/progress>/);
+  assert.doesNotMatch(spin, /value=/);
+});
+
+test('card composes a footer of buttons', async () => {
+  const registry = await loadRegistry();
+  const open = renderComponent(registry, render, 'button', { label: 'Open job', variant: 'primary' }).html;
+  const { html } = renderComponent(registry, render, 'card', {
+    title: 'Panel upgrade', body: '200A service, permit pulled.', footerHtml: open,
+  });
+  assert.match(html, /<article variant="default">/);
+  assert.match(html, /<h3>Panel upgrade<\/h3>/);
+  assert.match(html, /<button variant="primary" type="button">Open job<\/button>/);
 });

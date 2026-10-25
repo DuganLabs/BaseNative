@@ -1,0 +1,9 @@
+<template>
+  <article :variant="variant()">
+    <header>
+      <h3>{{ title() }}</h3>
+    </header>
+    <p>{{ body() }}</p>
+    <footer>{{ raw(footerHtml()) }}</footer>
+  </article>
+</template>

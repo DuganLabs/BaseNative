@@ -1,0 +1,6 @@
+<template>
+  <label>
+    <input :variant="variant()" type="checkbox" :checked="checked()" :disabled="disabled()" @change="toggle($event)">
+    {{ label() }}
+  </label>
+</template>

@@ -1,0 +1,40 @@
+:root {
+  --checkbox-display: var(--display-flex);
+  --checkbox-align-items: var(--align-center);
+  --checkbox-gap: var(--space-2);
+  --checkbox-color: var(--label);
+  --checkbox-font-family: var(--text-subheadline-family);
+  --checkbox-font-size: var(--text-subheadline-size);
+  --checkbox-line-height: var(--text-subheadline-leading);
+  --checkbox-cursor: var(--cursor-pointer);
+  --checkbox-size: var(--space-5);
+  --checkbox-accent-color: var(--tint);
+  --checkbox-margin: var(--space-0);
+}
+
+label:has(> input[variant="checkbox"]) {
+  display: var(--checkbox-display);
+  align-items: var(--checkbox-align-items);
+  gap: var(--checkbox-gap);
+  color: var(--checkbox-color);
+  font-family: var(--checkbox-font-family);
+  font-size: var(--checkbox-font-size);
+  line-height: var(--checkbox-line-height);
+  cursor: var(--checkbox-cursor);
+
+  &:has(> input:disabled) {
+    --checkbox-color: var(--label-3);
+    --checkbox-cursor: var(--cursor-not-allowed);
+  }
+}
+
+input[variant="checkbox"] {
+  inline-size: var(--checkbox-size);
+  block-size: var(--checkbox-size);
+  accent-color: var(--checkbox-accent-color);
+  margin: var(--checkbox-margin);
+  cursor: var(--checkbox-cursor);
+}
+
+/* @variants — generated from the registry, do not edit by hand */
+/* @endvariants */
