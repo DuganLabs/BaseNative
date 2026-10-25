@@ -74,6 +74,14 @@ export const trinityCopy = {
 
 const D = (title, html, note) => ({ title, html, ...(note ? { note } : {}) });
 
+/**
+ * Demo factories take (renderTrinity, renderTrinityVm, live). A demo
+ * whose behaviour the site boot drives — the popovers and the
+ * virtualizer, whose closed/resting markup does not carry their data —
+ * calls live(spec) with the very props it renders from, and the page
+ * ships those specs to public/specimens.js as JSON. One source: the
+ * props a specimen renders with are the props its behaviour runs on.
+ */
 export const trinityDemos = {
   button: (r) => [
     D('Variants', [
@@ -105,16 +113,21 @@ export const trinityDemos = {
   textarea: (r) => [
     D('Notes', r('textarea', { id: 'demo-notes', rows: 3, value: 'Gate code 4211. Dog on site.' })),
   ],
-  select: (r) => [
-    D('Trade, popover open', r('field', {
+  select: (r, _vm, live) => {
+    const options = [
+      { value: 'electrical', label: 'Electrical' },
+      { value: 'plumbing', label: 'Plumbing' },
+      { value: 'hvac', label: 'HVAC' },
+    ];
+    // The popover composes closed — its rest state. The site boot
+    // (public/specimens.js) opens it on demand from this live spec.
+    live?.({ kind: 'select', id: 'demo-trade', label: 'Trade', value: 'hvac', options });
+    return [
+    D('Trade, popover', r('field', {
       label: 'Trade', controlId: 'demo-trade',
       controlHtml: r('select', {
-        id: 'demo-trade', value: 'hvac', label: 'Trade', open: true,
-        options: [
-          { value: 'electrical', label: 'Electrical' },
-          { value: 'plumbing', label: 'Plumbing' },
-          { value: 'hvac', label: 'HVAC' },
-        ],
+        id: 'demo-trade', value: 'hvac', label: 'Trade',
+        options,
       }),
       hint: 'The trade decides which pricing engine runs.',
     })),
@@ -122,15 +135,12 @@ export const trinityDemos = {
       label: 'Trade (native)', controlId: 'demo-trade-native',
       controlHtml: r('select', {
         id: 'demo-trade-native', value: 'hvac', variant: 'native',
-        options: [
-          { value: 'electrical', label: 'Electrical' },
-          { value: 'plumbing', label: 'Plumbing' },
-          { value: 'hvac', label: 'HVAC' },
-        ],
+        options,
       }),
       hint: 'The native variant keeps the platform element, its menu, and native form submission.',
     }), 'A positioned popover by default; the native control is the variant, not the other way around.'),
-  ],
+    ];
+  },
   checkbox: (r) => [
     D('Add-ons', [
       r('checkbox', { label: 'Permit handling', name: 'demo-addon', value: 'permit', checked: true }),
@@ -152,31 +162,41 @@ export const trinityDemos = {
       r('toggle', { label: 'Text notifications', name: 'demo-text' }),
     ].join('\n')),
   ],
-  combobox: (r) => [
-    D('County, open', r('combobox', {
+  combobox: (r, _vm, live) => {
+    const options = [
+      { value: 'orange', label: 'Orange County' },
+      { value: 'la', label: 'Los Angeles' },
+      { value: 'riverside', label: 'Riverside' },
+    ];
+    // Composes closed — the popup's rest state. specimens.js opens it
+    // on focus from this live spec and filters purely by the field text.
+    live?.({ kind: 'combobox', id: 'demo-combo', label: 'County', options });
+    return [
+    D('County', r('combobox', {
       id: 'demo-combo', label: 'County',
       inputHtml: r('input', { id: 'demo-combo', type: 'search', value: 'Orange County', ariaLabel: 'County' }),
-      open: true, activeValue: 'orange',
-      options: [
-        { value: 'orange', label: 'Orange County' },
-        { value: 'la', label: 'Los Angeles' },
-        { value: 'riverside', label: 'Riverside' },
-      ],
+      options,
     })),
-  ],
-  multiselect: (r) => [
-    D('Trades, open', r('multiselect', {
+    ];
+  },
+  multiselect: (r, _vm, live) => {
+    const options = [
+      { value: 'ev', label: 'EV charging' },
+      { value: 'panel', label: 'Panel upgrade' },
+      { value: 'lighting', label: 'Lighting' },
+    ];
+    // Composes closed, one chip already chosen. specimens.js drives
+    // the popup and the chip set from this live spec.
+    live?.({ kind: 'multiselect', id: 'demo-trades', label: 'Trades', options, selected: ['ev'] });
+    return [
+    D('Trades', r('multiselect', {
       id: 'demo-trades', label: 'Trades',
       inputHtml: r('input', { id: 'demo-trades', type: 'search', value: '', ariaLabel: 'Trades' }),
       selected: [{ value: 'ev', label: 'EV charging', dismissHtml: r('button', { label: 'Remove', variant: 'ghost' }) }],
-      open: true,
-      options: [
-        { value: 'ev', label: 'EV charging' },
-        { value: 'panel', label: 'Panel upgrade' },
-        { value: 'lighting', label: 'Lighting' },
-      ],
+      options,
     })),
-  ],
+    ];
+  },
   'search-field': (r) => [
     D('Search leads', r('search-field', {
       label: 'Search leads', controlId: 'demo-lead-q', name: 'lead-search', value: 'panel',
@@ -326,12 +346,21 @@ export const trinityDemos = {
       ],
     })),
   ],
-  virtualizer: (r) => [
+  virtualizer: (r, _vm, live) => {
+    // The label is a template so the live spec can rebuild any row the
+    // window scrolls to — one source for the server render and the boot.
+    const labelTemplate = 'Lead {n} — Orange County';
+    live?.({
+      kind: 'virtualizer', id: 'demo-leads', total: 100, rowHeight: 44,
+      viewportRows: 8, overscan: 2, labelTemplate,
+    });
+    return [
     D('One hundred leads, eight in the DOM', r('virtualizer', {
       id: 'demo-leads', total: 100, scrollTop: 0, rowHeight: 44, viewportRows: 8, overscan: 2,
-      labelFor: (i) => `Lead ${i + 1} — Orange County`,
+      labelFor: (i) => labelTemplate.replace('{n}', String(i + 1)),
     })),
-  ],
+    ];
+  },
   calendar: (r, vm) => {
     const month = vm('calendar', { year: 2026, month: 10, today: '2026-10-24', selected: '2026-10-26' });
     const table = r('table', {
@@ -389,12 +418,14 @@ export const trinityDemos = {
     })),
   ],
   toolbar: (r) => [
+    // The overflow composes as the component renders it — no string
+    // surgery on the output. specimens.js owns the More toggle.
     D('Lead actions, with overflow', r('toolbar', {
       label: 'Lead actions',
       actionsHtml: r('button', { label: 'New lead', variant: 'primary' }) + r('button', { label: 'Import', variant: 'ghost' }),
       overflowHtml: r('dropdown-menu', { label: 'More lead actions', items: [{ label: 'Export leads' }, { label: 'Archive delivered' }] }),
       overflowOpen: true,
-    }).replace('<menu ', '<menu hidden ')),
+    })),
   ],
   'theme-toggle': (r) => [
     D('Appearance', r('theme-toggle', {}), 'Live — it stamps this document and the token sheet answers.'),

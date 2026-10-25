@@ -265,6 +265,10 @@ export function getShowcaseContext() {
   // props (trinity-catalog.js), no user input — the same raw() trust
   // assertion the component pages make.
   const entries = trinityCatalog(trinityComponentInfo());
+  // Live specs the demos record as they render (popovers, the
+  // virtualizer) — page.js ships them to the specimen boot as JSON.
+  const liveSpecimens = [];
+  const collectLive = (spec) => liveSpecimens.push(spec);
   const sections = trinityCategoriesWith(entries)
     .map((cat) => ({
       id: `showcase-${cat.id}`,
@@ -274,7 +278,7 @@ export function getShowcaseContext() {
       demos: cat.components
         .filter((entry) => !NOT_SECTIONED.has(entry.slug))
         .flatMap((entry) =>
-          (trinityDemos[entry.slug] ?? (() => []))(renderTrinity, renderTrinityVm).map((demo) => ({
+          (trinityDemos[entry.slug] ?? (() => []))(renderTrinity, renderTrinityVm, collectLive).map((demo) => ({
             caption: `${entry.title} — ${demo.title}`,
             layout: SHOWCASE_LAYOUTS[entry.slug] ?? 'stack',
             html: raw(demo.html),
@@ -284,6 +288,7 @@ export function getShowcaseContext() {
     .filter((section) => section.demos.length > 0);
   return {
     sections,
+    liveSpecimens,
     packageCount: PACKAGES.length,
     // renderPackageCards() only assembles static, hand-authored strings
     // from PACKAGES above (no user input reaches it) — a legitimate raw().
