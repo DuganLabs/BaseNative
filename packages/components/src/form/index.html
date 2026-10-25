@@ -1,0 +1,16 @@
+<template>
+  <form :variant="variant()" @submit="submit($event)">
+    <template @if="hasHeading()">
+      <h3>{{ heading() }}</h3>
+    </template>
+    <template @if="hasSummary()">
+      {{ raw(summaryHtml()) }}
+    </template>
+    {{ raw(fieldsHtml()) }}
+    <template @if="hasActions()">
+      <footer>
+        {{ raw(actionsHtml()) }}
+      </footer>
+    </template>
+  </form>
+</template>

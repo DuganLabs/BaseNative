@@ -1,0 +1,3 @@
+<template>
+  <textarea :variant="variant()" :id="controlId()" :rows="rows()" :value="value()" :placeholder="placeholder()" :disabled="disabled()" :aria-invalid="isInvalid()" @input="update($event)">{{ value() }}</textarea>
+</template>

@@ -1,0 +1,11 @@
+<template>
+  <fieldset :variant="variant()">
+    <legend>{{ legend() }}</legend>
+    <template @for="option of options(); track option.value">
+      <label>
+        <input :type="inputType()" :name="groupName()" :value="option.value" :checked="isChecked(option)" @change="change(option, $event)">
+        {{ raw(option.contentHtml) }}
+      </label>
+    </template>
+  </fieldset>
+</template>

@@ -1,0 +1,65 @@
+:root {
+  --tree-list-style: var(--list-style-none);
+  --tree-margin: var(--space-0);
+  --tree-padding: var(--space-0);
+  --tree__item-padding-block: var(--space-1);
+  --tree__item-padding-inline: var(--space-1);
+  --tree__item-color: var(--label);
+  --tree__item-font-family: var(--text-body-family);
+  --tree__item-font-size: var(--text-body-size);
+  --tree__item-line-height: var(--text-body-leading);
+  --tree__item-letter-spacing: var(--text-body-tracking);
+  --tree__group-list-style: var(--list-style-none);
+  --tree__group-margin: var(--space-0);
+  --tree__group-margin-inline-start: var(--space-2);
+  --tree__group-padding-inline-start: var(--space-4);
+  --tree__group-padding-block: var(--space-0);
+  --tree__group-border-inline-start-width: var(--hairline);
+  --tree__group-border-inline-start-style: var(--border-style-solid);
+  --tree__group-border-inline-start-color: var(--separator);
+  --tree__leaf-padding-inline-start: var(--space-2);
+  --tree__item-border-radius: var(--radius-md);
+  --tree__item-background-color--hover: var(--fill-4);
+}
+
+ul[variant="tree"], ul[variant="treegrid"] {
+  /* Nested toggle buttons run compact in the tree's scope, and leaf
+     items indent by the same padding so every sibling's text shares
+     one edge. */
+  --button-padding-block: var(--space-1);
+  --button-padding-inline: var(--space-2);
+  --button-block-size: var(--size-max-content);
+  list-style: var(--tree-list-style);
+  margin: var(--tree-margin);
+  padding: var(--tree-padding);
+
+  & > li {
+    padding-block: var(--tree__item-padding-block);
+    padding-inline: var(--tree__item-padding-inline);
+    color: var(--tree__item-color);
+    font-family: var(--tree__item-font-family);
+    font-size: var(--tree__item-font-size);
+    line-height: var(--tree__item-line-height);
+    letter-spacing: var(--tree__item-letter-spacing);
+    border-radius: var(--tree__item-border-radius);
+
+    &:hover {
+      background-color: var(--tree__item-background-color--hover);
+    }
+  }
+
+  & > li:not(:has(> button)) {
+    padding-inline-start: var(--tree__leaf-padding-inline-start);
+  }
+
+  & > li > ul {
+    list-style: var(--tree__group-list-style);
+    margin: var(--tree__group-margin);
+    margin-inline-start: var(--tree__group-margin-inline-start);
+    padding-inline-start: var(--tree__group-padding-inline-start);
+    padding-block: var(--tree__group-padding-block);
+    border-inline-start-width: var(--tree__group-border-inline-start-width);
+    border-inline-start-style: var(--tree__group-border-inline-start-style);
+    border-inline-start-color: var(--tree__group-border-inline-start-color);
+  }
+}

@@ -1,0 +1,52 @@
+:root {
+  --search-field-display: var(--display-flex);
+  --search-field-align-items: var(--align-center);
+  --search-field-gap: var(--space-2);
+  --search-field__label-position: var(--position-absolute);
+  --search-field__label-inline-size: var(--size-1px);
+  --search-field__label-block-size: var(--size-1px);
+  --search-field__label-overflow: var(--overflow-hidden);
+  --search-field__control-flex-grow: var(--flex-grow);
+  --search-field__clear-background-color: var(--color-transparent);
+  --search-field__clear-border-width: var(--border-width-none);
+  --search-field__clear-border-radius: var(--radius-control);
+  --search-field__clear-color: var(--tint);
+  --search-field__clear-cursor: var(--cursor-pointer);
+  --search-field__clear-padding-block: var(--space-2);
+  --search-field__clear-padding-inline: var(--space-2);
+  --search-field__clear-font-family: var(--text-subheadline-family);
+  --search-field__clear-font-size: var(--text-subheadline-size);
+  --search-field__clear-line-height: var(--text-subheadline-leading);
+  --search-field__clear-letter-spacing: var(--text-subheadline-tracking);
+}
+
+search[variant="default"] {
+  display: var(--search-field-display);
+  align-items: var(--search-field-align-items);
+  gap: var(--search-field-gap);
+
+  & > label {
+    position: var(--search-field__label-position);
+    inline-size: var(--search-field__label-inline-size);
+    block-size: var(--search-field__label-block-size);
+    overflow: var(--search-field__label-overflow);
+  }
+
+  & > input {
+    flex-grow: var(--search-field__control-flex-grow);
+  }
+
+  & > button:not([variant]) {
+    background-color: var(--search-field__clear-background-color);
+    border-width: var(--search-field__clear-border-width);
+    border-radius: var(--search-field__clear-border-radius);
+    color: var(--search-field__clear-color);
+    cursor: var(--search-field__clear-cursor);
+    padding-block: var(--search-field__clear-padding-block);
+    padding-inline: var(--search-field__clear-padding-inline);
+    font-family: var(--search-field__clear-font-family);
+    font-size: var(--search-field__clear-font-size);
+    line-height: var(--search-field__clear-line-height);
+    letter-spacing: var(--search-field__clear-letter-spacing);
+  }
+}

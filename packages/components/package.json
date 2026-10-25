@@ -11,6 +11,7 @@
     "./css": "./src/index.css",
     "./layers.css": "./src/layers.css",
     "./tokens.css": "./src/tokens.css",
+    "./tokens-legacy.css": "./src/tokens-legacy.css",
     "./theme.css": "./src/theme.css",
     "./components.css": "./src/components.css",
     "./layout.css": "./src/layout.css",

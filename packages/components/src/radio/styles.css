@@ -1,0 +1,60 @@
+:root {
+  --radio-display: var(--display-grid);
+  --radio-gap: var(--space-2);
+  --radio-margin: var(--space-0);
+  --radio-padding: var(--space-0);
+  --radio-border-width: var(--border-width-none);
+  --radio__legend-color: var(--label);
+  --radio__legend-font-family: var(--text-subheadline-family);
+  --radio__legend-font-size: var(--text-subheadline-size);
+  --radio__legend-font-weight: var(--font-weight-medium);
+  --radio__legend-line-height: var(--text-subheadline-leading);
+  --radio__legend-margin-block-end: var(--space-2);
+  --radio__option-display: var(--display-flex);
+  --radio__option-align-items: var(--align-center);
+  --radio__option-gap: var(--space-2);
+  --radio__option-color: var(--label);
+  --radio__option-font-family: var(--text-subheadline-family);
+  --radio__option-font-size: var(--text-subheadline-size);
+  --radio__option-line-height: var(--text-subheadline-leading);
+  --radio__option-cursor: var(--cursor-pointer);
+  --radio__control-size: var(--space-5);
+  --radio__control-accent-color: var(--tint);
+  --radio__control-margin: var(--space-0);
+}
+
+fieldset[variant="default"] {
+  display: var(--radio-display);
+  gap: var(--radio-gap);
+  margin: var(--radio-margin);
+  padding: var(--radio-padding);
+  border-width: var(--radio-border-width);
+
+  & > legend {
+    color: var(--radio__legend-color);
+    font-family: var(--radio__legend-font-family);
+    font-size: var(--radio__legend-font-size);
+    font-weight: var(--radio__legend-font-weight);
+    line-height: var(--radio__legend-line-height);
+    margin-block-end: var(--radio__legend-margin-block-end);
+  }
+
+  & > label {
+    display: var(--radio__option-display);
+    align-items: var(--radio__option-align-items);
+    gap: var(--radio__option-gap);
+    color: var(--radio__option-color);
+    font-family: var(--radio__option-font-family);
+    font-size: var(--radio__option-font-size);
+    line-height: var(--radio__option-line-height);
+    cursor: var(--radio__option-cursor);
+
+    & > input {
+      inline-size: var(--radio__control-size);
+      block-size: var(--radio__control-size);
+      accent-color: var(--radio__control-accent-color);
+      margin: var(--radio__control-margin);
+    }
+  }
+}
+

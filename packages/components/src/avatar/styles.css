@@ -1,0 +1,85 @@
+:root {
+  --avatar-display: var(--display-inline-flex);
+  --avatar-align-items: var(--align-center);
+  --avatar-justify-content: var(--justify-center);
+  --avatar-inline-size: var(--size-target-min);
+  --avatar-block-size: var(--size-target-min);
+  --avatar-background-color: var(--fill-2);
+  --avatar-color: var(--label-2);
+  --avatar-border-radius: var(--radius-pill);
+  --avatar-overflow: var(--overflow-hidden);
+  --avatar-font-family: var(--text-subheadline-family);
+  --avatar-font-size: var(--text-subheadline-size);
+  --avatar-font-weight: var(--font-weight-semibold);
+  --avatar-line-height: var(--text-subheadline-leading);
+  --avatar-letter-spacing: var(--text-subheadline-tracking);
+  --avatar__image-inline-size: var(--size-full);
+  --avatar__image-block-size: var(--size-full);
+  --avatar__image-object-fit: var(--object-fit-cover);
+  --avatar__image-display: var(--display-block);
+}
+
+figure[variant="default"], figure[variant="tone-0"], figure[variant="tone-1"], figure[variant="tone-2"], figure[variant="tone-3"], figure[variant="tone-4"], figure[variant="tone-5"], figure[variant="tone-6"], figure[variant="tone-7"] {
+  display: var(--avatar-display);
+  align-items: var(--avatar-align-items);
+  justify-content: var(--avatar-justify-content);
+  inline-size: var(--avatar-inline-size);
+  block-size: var(--avatar-block-size);
+  background-color: var(--avatar-background-color);
+  color: var(--avatar-color);
+  border-radius: var(--avatar-border-radius);
+  overflow: var(--avatar-overflow);
+  font-family: var(--avatar-font-family);
+  font-size: var(--avatar-font-size);
+  font-weight: var(--avatar-font-weight);
+  line-height: var(--avatar-line-height);
+  letter-spacing: var(--avatar-letter-spacing);
+  margin: var(--space-0);
+
+  & > img {
+    inline-size: var(--avatar__image-inline-size);
+    block-size: var(--avatar__image-block-size);
+    object-fit: var(--avatar__image-object-fit);
+    display: var(--avatar__image-display);
+  }
+}
+
+figure[variant="tone-0"] {
+  --avatar-background-color: var(--system-blue);
+  --avatar-color: var(--on-tint);
+}
+
+figure[variant="tone-1"] {
+  --avatar-background-color: var(--system-green);
+  --avatar-color: var(--on-tint);
+}
+
+figure[variant="tone-2"] {
+  --avatar-background-color: var(--system-orange);
+  --avatar-color: var(--on-tint);
+}
+
+figure[variant="tone-3"] {
+  --avatar-background-color: var(--system-purple);
+  --avatar-color: var(--on-tint);
+}
+
+figure[variant="tone-4"] {
+  --avatar-background-color: var(--system-teal);
+  --avatar-color: var(--on-tint);
+}
+
+figure[variant="tone-5"] {
+  --avatar-background-color: var(--system-pink);
+  --avatar-color: var(--on-tint);
+}
+
+figure[variant="tone-6"] {
+  --avatar-background-color: var(--system-indigo);
+  --avatar-color: var(--on-tint);
+}
+
+figure[variant="tone-7"] {
+  --avatar-background-color: var(--system-red);
+  --avatar-color: var(--on-tint);
+}

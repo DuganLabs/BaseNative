@@ -1,0 +1,16 @@
+<template>
+  <nav :variant="variant()" :aria-label="label()">
+    <ol>
+      <template @for="item of items()">
+        <li>
+          <template @if="item.href">
+            <a :href="item.href">{{ item.label }}</a>
+          </template>
+          <template @else>
+            <a aria-current="page">{{ item.label }}</a>
+          </template>
+        </li>
+      </template>
+    </ol>
+  </nav>
+</template>

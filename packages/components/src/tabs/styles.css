@@ -1,0 +1,73 @@
+:root {
+  --tabs-display: var(--display-grid);
+  --tabs-gap: var(--space-4);
+  --tabs__list-display: var(--display-flex);
+  --tabs__list-flex-direction: var(--flex-direction-row);
+  --tabs__list-gap: var(--space-1);
+  --tabs__list-list-style: var(--list-style-none);
+  --tabs__list-margin: var(--space-0);
+  --tabs__list-padding: var(--space-0);
+  --tabs__list-border-block-end-width: var(--hairline);
+  --tabs__list-border-block-end-style: var(--border-style-solid);
+  --tabs__list-border-block-end-color: var(--separator);
+  --tabs__tab-background-color: var(--color-transparent);
+  --tabs__tab-border-width: var(--border-width-none);
+  --tabs__tab-border-block-end-width: var(--border-width-thick);
+  --tabs__tab-border-block-end-style: var(--border-style-solid);
+  --tabs__tab-border-block-end-color: var(--color-transparent);
+  --tabs__tab-border-radius: var(--radius-none);
+  --tabs__tab-color: var(--label-2);
+  --tabs__tab-cursor: var(--cursor-pointer);
+  --tabs__tab-padding-block: var(--space-2);
+  --tabs__tab-padding-inline: var(--space-3);
+  --tabs__tab-font-family: var(--text-subheadline-family);
+  --tabs__tab-font-size: var(--text-subheadline-size);
+  --tabs__tab-font-weight: var(--font-weight-medium);
+  --tabs__tab-line-height: var(--text-subheadline-leading);
+  --tabs__tab-letter-spacing: var(--text-subheadline-tracking);
+  --tabs__tab-color--selected: var(--label);
+  --tabs__tab-font-weight--selected: var(--font-weight-semibold);
+  --tabs__tab-border-block-end-color--selected: var(--tint);
+}
+
+section[variant="tabs"] {
+  display: var(--tabs-display);
+  gap: var(--tabs-gap);
+
+  & > ul {
+    display: var(--tabs__list-display);
+    flex-direction: var(--tabs__list-flex-direction);
+    gap: var(--tabs__list-gap);
+    list-style: var(--tabs__list-list-style);
+    margin: var(--tabs__list-margin);
+    padding: var(--tabs__list-padding);
+    border-block-end-width: var(--tabs__list-border-block-end-width);
+    border-block-end-style: var(--tabs__list-border-block-end-style);
+    border-block-end-color: var(--tabs__list-border-block-end-color);
+  }
+
+  & > ul > li > button {
+    background-color: var(--tabs__tab-background-color);
+    border-width: var(--tabs__tab-border-width);
+    border-block-end-width: var(--tabs__tab-border-block-end-width);
+    border-block-end-style: var(--tabs__tab-border-block-end-style);
+    border-block-end-color: var(--tabs__tab-border-block-end-color);
+    border-radius: var(--tabs__tab-border-radius);
+    color: var(--tabs__tab-color);
+    cursor: var(--tabs__tab-cursor);
+    padding-block: var(--tabs__tab-padding-block);
+    padding-inline: var(--tabs__tab-padding-inline);
+    font-family: var(--tabs__tab-font-family);
+    font-size: var(--tabs__tab-font-size);
+    font-weight: var(--tabs__tab-font-weight);
+    line-height: var(--tabs__tab-line-height);
+    letter-spacing: var(--tabs__tab-letter-spacing);
+  }
+
+  /* The selected tab declares itself through re-pointed tokens. */
+  & > ul > li > button[aria-selected="true"] {
+    --tabs__tab-color: var(--tabs__tab-color--selected);
+    --tabs__tab-font-weight: var(--tabs__tab-font-weight--selected);
+    --tabs__tab-border-block-end-color: var(--tabs__tab-border-block-end-color--selected);
+  }
+}

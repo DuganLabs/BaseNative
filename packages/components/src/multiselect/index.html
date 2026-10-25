@@ -1,0 +1,19 @@
+<template>
+  <section :variant="variant()" :aria-label="label()">
+    <template @if="hasSelected()">
+      <ul>
+        <template @for="item of selected()">
+          <li>{{ item.label }} {{ raw(item.dismissHtml) }}</li>
+        </template>
+      </ul>
+    </template>
+    {{ raw(inputHtml()) }}
+    <template @if="open()">
+      <ul role="listbox" aria-multiselectable="true" :id="listboxId()" :aria-label="label()">
+        <template @for="option of options()">
+          <li role="option" :id="optionId(option)" :aria-selected="isSelected(option)">{{ option.label }}</li>
+        </template>
+      </ul>
+    </template>
+  </section>
+</template>

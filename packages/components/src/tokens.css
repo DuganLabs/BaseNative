@@ -1,374 +1,514 @@
-@layer tokens {
+/* The token system — Holy Trinity taxonomy, no prefixes.
+   Leveraged from Apple's platform system (values via @basenative/ios:
+   documented system colors, label/background/fill/separator roles,
+   Dynamic Type styles; estimated glass, radii, springs) and extended
+   where the web catalog needs roles Apple does not name (danger/success
+   state roles, scrim, elevation shadows, control sizing).
+
+   Layer 0 only. Two kinds of definitions live here:
+   - primitives: the system palette, scales, and keyword values.
+   - roles: the names components actually consume (label, fill, tint…).
+   Every role that has an appearance pair is defined for light here and
+   redefined for dark in the media block at the end — components never
+   branch on appearance; the role resolves.
+   Component tokens are NOT declared here: each component declares its
+   own in a :root block at the top of its styles.css, as var() references
+   to these roles and primitives. */
+
+:root {
+  /* System palette (Apple documented pairs; dark values in the media block) */
+  --system-blue: #007aff;
+  --system-green: #34c759;
+  --system-indigo: #5856d6;
+  --system-orange: #ff9500;
+  --system-pink: #ff2d55;
+  --system-purple: #af52de;
+  --system-red: #ff3b30;
+  --system-teal: #5ac8fa;
+  --system-yellow: #ffcc00;
+  --system-mint: #00c7be;
+  --system-cyan: #32ade6;
+  --system-brown: #a2845e;
+  --system-gray: #8e8e93;
+  --system-gray-2: #aeaeb2;
+  --system-gray-3: #c7c7cc;
+  --system-gray-4: #d1d1d6;
+  --system-gray-5: #e5e5ea;
+  --system-gray-6: #f2f2f7;
+
+  /* Roles — text */
+  --label: #000000;
+  --label-2: rgb(60 60 67 / 0.6);
+  --label-3: rgb(60 60 67 / 0.3);
+  --label-4: rgb(60 60 67 / 0.18);
+  --label-placeholder: rgb(60 60 67 / 0.3);
+
+  /* Roles — backgrounds (base / elevated steps / grouped steps) */
+  --background: #ffffff;
+  --background-2: #f2f2f7;
+  --background-3: #ffffff;
+  --background-grouped: #f2f2f7;
+  --background-grouped-2: #ffffff;
+  --background-grouped-3: #f2f2f7;
+
+  /* Roles — fills (translucent, strongest first) */
+  --fill: rgb(120 120 128 / 0.2);
+  --fill-2: rgb(120 120 128 / 0.16);
+  --fill-3: rgb(118 118 128 / 0.12);
+  --fill-4: rgb(116 116 128 / 0.08);
+
+  /* Roles — separators */
+  --separator: rgb(60 60 67 / 0.29);
+  --separator-opaque: #c6c6c8;
+
+  /* Roles — interaction and state (one accent; state colors mean, never decorate) */
+  --tint: var(--system-blue);
+  --tint-strong: #0062cc;
+  --on-tint: #ffffff;
+  --danger: var(--system-red);
+  --danger-strong: #d70015;
+  --on-danger: #ffffff;
+  --success: var(--system-green);
+  --warning: var(--system-orange);
+  --scrim: rgb(0 0 0 / 0.4);
+
+  /* Roles — status fills and strong text (badge/alert tones) */
+  --tint-fill: rgb(0 122 255 / 0.12);
+  --danger-fill: rgb(255 59 48 / 0.12);
+  --success-fill: rgb(52 199 89 / 0.14);
+  --success-strong: #1f7a33;
+  --warning-fill: rgb(255 149 0 / 0.16);
+  --warning-strong: #9a5700;
+
+  /* Elevation — shadows belong to floating layers only */
+  --shadow-none: none;
+  --shadow-float: 0 12px 32px rgb(0 0 0 / 0.12);
+  --shadow-raised: 0 8px 24px rgb(0 0 0 / 0.08);
+  --focus-ring: 0 0 0 2px var(--background), 0 0 0 4px var(--tint);
+
+  /* Materials — Liquid Glass ladder, weakest first (estimated values).
+     Channels are separate tokens because components mix them. */
+  --material-ultra-thin-blur: 8px;
+  --material-ultra-thin-saturate: 160%;
+  --material-ultra-thin-tint: rgb(255 255 255 / 0.35);
+  --material-ultra-thin-highlight: inset 0 1px 0 rgb(255 255 255 / 0.4);
+  --material-ultra-thin-shadow: 0 8px 24px rgb(0 0 0 / 0.08);
+  --material-thin-blur: 12px;
+  --material-thin-saturate: 170%;
+  --material-thin-tint: rgb(255 255 255 / 0.45);
+  --material-thin-highlight: inset 0 1px 0 rgb(255 255 255 / 0.45);
+  --material-thin-shadow: 0 10px 28px rgb(0 0 0 / 0.1);
+  --material-regular-blur: 20px;
+  --material-regular-saturate: 180%;
+  --material-regular-tint: rgb(255 255 255 / 0.55);
+  --material-regular-highlight: inset 0 1px 0 rgb(255 255 255 / 0.5);
+  --material-regular-shadow: 0 12px 32px rgb(0 0 0 / 0.12);
+  --material-thick-blur: 30px;
+  --material-thick-saturate: 190%;
+  --material-thick-tint: rgb(249 249 249 / 0.78);
+  --material-thick-highlight: inset 0 1px 0 rgb(255 255 255 / 0.55);
+  --material-thick-shadow: 0 16px 40px rgb(0 0 0 / 0.16);
+
+  /* Type — families */
+  --font-text: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', system-ui, sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Type — the eleven text styles, each a recipe of
+     size / leading / weight / tracking / family tokens */
+  --text-large-title-size: 2.125rem;
+  --text-large-title-leading: 2.5625rem;
+  --text-large-title-weight: var(--font-weight-regular);
+  --text-large-title-tracking: -0.015em;
+  --text-large-title-family: var(--font-display);
+  --text-title-1-size: 1.75rem;
+  --text-title-1-leading: 2.125rem;
+  --text-title-1-weight: var(--font-weight-regular);
+  --text-title-1-tracking: -0.012em;
+  --text-title-1-family: var(--font-display);
+  --text-title-2-size: 1.375rem;
+  --text-title-2-leading: 1.75rem;
+  --text-title-2-weight: var(--font-weight-regular);
+  --text-title-2-tracking: -0.008em;
+  --text-title-2-family: var(--font-display);
+  --text-title-3-size: 1.25rem;
+  --text-title-3-leading: 1.5625rem;
+  --text-title-3-weight: var(--font-weight-regular);
+  --text-title-3-tracking: -0.006em;
+  --text-title-3-family: var(--font-display);
+  --text-headline-size: 1.0625rem;
+  --text-headline-leading: 1.375rem;
+  --text-headline-weight: var(--font-weight-semibold);
+  --text-headline-tracking: -0.002em;
+  --text-headline-family: var(--font-text);
+  --text-body-size: 1.0625rem;
+  --text-body-leading: 1.375rem;
+  --text-body-weight: var(--font-weight-regular);
+  --text-body-tracking: -0.002em;
+  --text-body-family: var(--font-text);
+  --text-callout-size: 1rem;
+  --text-callout-leading: 1.3125rem;
+  --text-callout-weight: var(--font-weight-regular);
+  --text-callout-tracking: -0.001em;
+  --text-callout-family: var(--font-text);
+  --text-subheadline-size: 0.9375rem;
+  --text-subheadline-leading: 1.25rem;
+  --text-subheadline-weight: var(--font-weight-regular);
+  --text-subheadline-tracking: 0em;
+  --text-subheadline-family: var(--font-text);
+  --text-footnote-size: 0.8125rem;
+  --text-footnote-leading: 1.125rem;
+  --text-footnote-weight: var(--font-weight-regular);
+  --text-footnote-tracking: 0.004em;
+  --text-footnote-family: var(--font-text);
+  --text-caption-1-size: 0.75rem;
+  --text-caption-1-leading: 1rem;
+  --text-caption-1-weight: var(--font-weight-regular);
+  --text-caption-1-tracking: 0.008em;
+  --text-caption-1-family: var(--font-text);
+  --text-caption-2-size: 0.6875rem;
+  --text-caption-2-leading: 0.8125rem;
+  --text-caption-2-weight: var(--font-weight-regular);
+  --text-caption-2-tracking: 0.011em;
+  --text-caption-2-family: var(--font-text);
+
+  /* Geometry — radii run to sheet scale; nested radii derive by calc
+     in the component's own token block (outer minus its padding) */
+  --radius-none: 0;
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 1.75rem;
+  --radius-pill: 9999px;
+  --radius-control: var(--radius-md);
+  --radius-container: var(--radius-xl);
+  --radius-sheet: var(--radius-2xl);
+
+  /* Spacing — the 8pt grid and its 4pt half step */
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 2rem;
+  --space-8: 2.5rem;
+  --margin: 1rem;
+  --margin-wide: 1.25rem;
+
+  /* Hairline and borders */
+  --hairline: 0.5px;
+  --border-width-none: 0;
+  --border-width: 1px;
+  --border-width-thick: 2px;
+
+  /* Sizing */
+  --size-full: 100%;
+  --size-control: 2.75rem;
+  --size-max-content: max-content;
+  --size-target-min: 2.75rem;
+  --size-sheet-max: 32rem;
+  --size-drawer-max: 24rem;
+  --size-palette-max: 36rem;
+  --size-menu-min: 12rem;
+  --size-switch-inline: 3.25rem;
+  --size-switch-block: 2rem;
+
+  /* Safe area — supplied by the device at runtime */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+
+  /* Motion — UIKit spring family (estimated curves) and the plain fade */
+  --motion-spring-duration: 550ms;
+  --motion-spring-curve: cubic-bezier(0.32, 0.72, 0, 1);
+  --motion-spring-bouncy-duration: 700ms;
+  --motion-spring-bouncy-curve: cubic-bezier(0.34, 1.3, 0.32, 1);
+  --motion-spring-stiff-duration: 380ms;
+  --motion-spring-stiff-curve: cubic-bezier(0.36, 0.9, 0.24, 1);
+  --motion-fade-duration: 250ms;
+  --motion-fade-curve: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  /* Keyword primitives */
+  --display-block: block;
+  --display-flex: flex;
+  --display-inline-flex: inline-flex;
+  --display-grid: grid;
+  --display-none: none;
+  --display-table-row: table-row;
+  --display-table-cell: table-cell;
+  --appearance-none: none;
+  --cursor-pointer: pointer;
+  --cursor-not-allowed: not-allowed;
+  --cursor-text: text;
+  --border-style-solid: solid;
+  --box-sizing-border: border-box;
+  --align-center: center;
+  --align-baseline: baseline;
+  --align-start: start;
+  --align-stretch: stretch;
+  --position-relative: relative;
+  --position-absolute: absolute;
+  --position-fixed: fixed;
+  --position-static: static;
+  --position-sticky: sticky;
+  --resize-vertical: vertical;
+  --justify-center: center;
+  --justify-end: flex-end;
+  --justify-space-between: space-between;
+  --margin-auto: auto;
+  --color-transparent: transparent;
+  --color-white: #ffffff;
+  --overflow-hidden: hidden;
+  --overflow-auto: auto;
+  --visibility-hidden: hidden;
+  --visibility-visible: visible;
+  --opacity-none: 0;
+  --opacity-half: 0.5;
+  --opacity-full: 1;
+  --list-style-none: none;
+  --text-decoration-none: none;
+  --text-decoration-underline: underline;
+  --flex-direction-row: row;
+  --flex-direction-column: column;
+  --flex-wrap-wrap: wrap;
+  --flex-grow: 1;
+  --flex-none: none;
+  --white-space-nowrap: nowrap;
+  --text-align-start: start;
+  --text-align-center: center;
+  --text-align-end: end;
+  --vertical-align-middle: middle;
+  --object-fit-cover: cover;
+  --pointer-events-none: none;
+  --user-select-none: none;
+
+  /* Layering — z-index steps for floating surfaces */
+  --layer-raised: 1;
+  --layer-overlay: 20;
+  --layer-modal: 40;
+  --layer-toast: 60;
+
+  /* A single CSS pixel, for visually-hidden techniques */
+  --size-1px: 1px;
+}
+
+/* Dark appearance — every paired role and palette step resolves here.
+   Values are Apple's documented dark values (glass tints estimated). */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --system-blue: #0a84ff;
+    --system-green: #30d158;
+    --system-indigo: #5e5ce6;
+    --system-orange: #ff9f0a;
+    --system-pink: #ff375f;
+    --system-purple: #bf5af2;
+    --system-red: #ff453a;
+    --system-teal: #64d2ff;
+    --system-yellow: #ffd60a;
+    --system-mint: #66d4cf;
+    --system-cyan: #64d2ff;
+    --system-brown: #ac8e68;
+    --system-gray-2: #636366;
+    --system-gray-3: #48484a;
+    --system-gray-4: #3a3a3c;
+    --system-gray-5: #2c2c2e;
+    --system-gray-6: #1c1c1e;
+
+    --label: #ffffff;
+    --label-2: rgb(235 235 245 / 0.6);
+    --label-3: rgb(235 235 245 / 0.3);
+    --label-4: rgb(235 235 245 / 0.16);
+    --label-placeholder: rgb(235 235 245 / 0.3);
+
+    --background: #000000;
+    --background-2: #1c1c1e;
+    --background-3: #2c2c2e;
+    --background-grouped: #000000;
+    --background-grouped-2: #1c1c1e;
+    --background-grouped-3: #2c2c2e;
+
+    --fill: rgb(120 120 128 / 0.36);
+    --fill-2: rgb(120 120 128 / 0.32);
+    --fill-3: rgb(118 118 128 / 0.24);
+    --fill-4: rgb(118 118 128 / 0.18);
+
+    --separator: rgb(84 84 88 / 0.6);
+    --separator-opaque: #38383a;
+
+    --danger-strong: #ff6961;
+    --tint-fill: rgb(10 132 255 / 0.16);
+    --danger-fill: rgb(255 69 58 / 0.16);
+    --success-fill: rgb(48 209 88 / 0.18);
+    --success-strong: #30d158;
+    --warning-fill: rgb(255 159 10 / 0.18);
+    --warning-strong: #ff9f0a;
+    --tint-strong: #409cff;
+    --scrim: rgb(0 0 0 / 0.55);
+
+    --shadow-float: 0 12px 32px rgb(0 0 0 / 0.45);
+    --shadow-raised: 0 8px 24px rgb(0 0 0 / 0.35);
+
+    --material-ultra-thin-tint: rgb(28 28 30 / 0.35);
+    --material-ultra-thin-highlight: inset 0 1px 0 rgb(255 255 255 / 0.12);
+    --material-ultra-thin-shadow: 0 8px 24px rgb(0 0 0 / 0.35);
+    --material-thin-tint: rgb(28 28 30 / 0.45);
+    --material-thin-highlight: inset 0 1px 0 rgb(255 255 255 / 0.15);
+    --material-thin-shadow: 0 10px 28px rgb(0 0 0 / 0.4);
+    --material-regular-tint: rgb(30 30 32 / 0.55);
+    --material-regular-highlight: inset 0 1px 0 rgb(255 255 255 / 0.18);
+    --material-regular-shadow: 0 12px 32px rgb(0 0 0 / 0.45);
+    --material-thick-tint: rgb(28 28 30 / 0.78);
+    --material-thick-highlight: inset 0 1px 0 rgb(255 255 255 / 0.22);
+    --material-thick-shadow: 0 16px 40px rgb(0 0 0 / 0.5);
+  }
+}
+
+/* Reduced motion — the spring family collapses; nothing animates long. */
+@media (prefers-reduced-motion: reduce) {
   :root {
-    /* Colors — Neutral */
-    --bn-color-white: #ffffff;
-    --bn-color-black: #09090b;
-    --bn-color-gray-50: #fafafa;
-    --bn-color-gray-100: #f4f4f5;
-    --bn-color-gray-200: #e4e4e7;
-    --bn-color-gray-300: #d4d4d8;
-    --bn-color-gray-400: #a1a1aa;
-    --bn-color-gray-500: #71717a;
-    --bn-color-gray-600: #52525b;
-    --bn-color-gray-700: #3f3f46;
-    --bn-color-gray-800: #27272a;
-    --bn-color-gray-900: #18181b;
-    --bn-color-gray-950: #09090b;
-
-    /* Colors — Primary */
-    --bn-color-primary-50: #eff6ff;
-    --bn-color-primary-100: #dbeafe;
-    --bn-color-primary-200: #bfdbfe;
-    --bn-color-primary-300: #93c5fd;
-    --bn-color-primary-400: #60a5fa;
-    --bn-color-primary-500: #3b82f6;
-    --bn-color-primary-600: #2563eb;
-    --bn-color-primary-700: #1d4ed8;
-    --bn-color-primary-800: #1e40af;
-    --bn-color-primary-900: #1e3a8a;
-
-    /* Colors — Accent (themeable identity color) */
-    --bn-color-accent-50: var(--bn-color-primary-50);
-    --bn-color-accent-100: var(--bn-color-primary-100);
-    --bn-color-accent-200: var(--bn-color-primary-200);
-    --bn-color-accent-300: var(--bn-color-primary-300);
-    --bn-color-accent-400: var(--bn-color-primary-400);
-    --bn-color-accent-500: var(--bn-color-primary-500);
-    --bn-color-accent-600: var(--bn-color-primary-600);
-    --bn-color-accent-700: var(--bn-color-primary-700);
-    --bn-color-accent-800: var(--bn-color-primary-800);
-    --bn-color-accent-900: var(--bn-color-primary-900);
-
-    /* Colors — Semantic Status */
-    --bn-color-success-500: #22c55e;
-    --bn-color-success-600: #16a34a;
-    --bn-color-warning-500: #f59e0b;
-    --bn-color-warning-600: #d97706;
-    --bn-color-error-500: #ef4444;
-    --bn-color-error-600: #dc2626;
-    --bn-color-info-500: #3b82f6;
-    --bn-color-info-600: #2563eb;
-
-    /* Colors — Semantic Status Tint (scale step, paired with the -bg tokens below) */
-    --bn-color-success-50: #f0fdf4;
-    --bn-color-warning-50: #fffbeb;
-
-    /* Colors — Semantic Error Foreground (text-safe; see --bn-color-error-600 for fills/borders).
-       Light 4.83:1 on white, dark 10.48:1 on gray-950 — both pass WCAG 4.5:1 at any size. */
-    --bn-color-error-fg: var(--bn-color-error-600);
-
-    /* Colors — Semantic Alert/Badge Backgrounds */
-    --bn-color-info-bg: var(--bn-color-primary-50);
-    --bn-color-info-border: var(--bn-color-primary-200);
-    --bn-color-info-text: var(--bn-color-primary-800);
-    --bn-color-success-bg: #f0fdf4;
-    --bn-color-success-border: #bbf7d0;
-    --bn-color-success-text: #166534;
-    --bn-color-warning-bg: #fffbeb;
-    --bn-color-warning-border: #fde68a;
-    --bn-color-warning-text: #92400e;
-    --bn-color-error-bg: #fef2f2;
-    --bn-color-error-border: #fecaca;
-    --bn-color-error-text: #991b1b;
-
-    /* Colors — Selection state (tree, and any future selected-row/item state) */
-    --bn-color-selected-bg: var(--bn-color-primary-50);
-    --bn-color-selected-text: var(--bn-color-primary-700);
-
-    /* Colors — Table zebra stripe (theme-safe; do not hardcode rgb(255 255 255/x) or rgb(0 0 0/x) per component) */
-    --bn-color-zebra: rgb(0 0 0 / 0.02);
-
-    /* Calendar — instance knobs with sane defaults. Consumers normally set
-       --bn-calendar-cols/-hours inline per instance; these exist so the
-       tokens declared-vs-referenced check has a real definition to find,
-       matching the var(--bn-calendar-cols, 7) fallback already in use. */
-    --bn-calendar-cols: 7;
-    --bn-calendar-hours: 12;
-    /* Calendar event accent — set per data-status variant; these are the
-       "no status" defaults, matching the fallback already in use. */
-    --bn-calendar-event-color: var(--bn-color-primary-600);
-    --bn-calendar-event-bg: var(--bn-color-info-bg);
-    /* Calendar today marker (data-today) — the selection tint, so it stays
-       theme-safe. The column tint is halved so a hovered drop slot (info-bg)
-       still reads against it. */
-    --bn-calendar-today-header-bg: var(--bn-color-selected-bg);
-    --bn-calendar-today-text: var(--bn-color-selected-text);
-    --bn-calendar-today-bg: color-mix(in srgb, var(--bn-color-selected-bg) 50%, transparent);
-    /* Pipeline card / block status accent (data-status) — the "unknown
-       status" default; components.css maps known statuses onto the
-       semantic -600 tokens the badges and alerts use. */
-    --bn-pipeline-status-color: var(--bn-color-border-strong);
-
-    /* Colors — Toggle track (off state).
-       The whole selection family reads "outlined when off, filled when on": an
-       unchecked checkbox and an unchecked radio are the surface color inside a
-       --bn-color-border-control stroke. The toggle used to be the exception —
-       a solid gray-500 pill with no border, which is why it looked like a
-       foreign object in a row of outlined controls. It now takes the same
-       treatment, so the boundary is the stroke (3:1 via -border-control) and
-       the knob is what carries the state inside it. */
-    --bn-color-toggle-track-off: var(--bn-color-surface-control);
-
-    /* Colors — Semantic Badge Backgrounds (lighter variant) */
-    --bn-color-success-badge-bg: #dcfce7;
-    --bn-color-success-badge-text: #166534;
-    --bn-color-warning-badge-bg: #fef3c7;
-    --bn-color-warning-badge-text: #92400e;
-    --bn-color-error-badge-bg: #fee2e2;
-    --bn-color-error-badge-text: #991b1b;
-
-    /* Semantic Surface
-       --bn-color-surface-control / -card both default to --bn-color-surface,
-       so nothing moves. They exist because "the page" and "a filled control or
-       card sitting on the page" are the same colour only on a light theme. Every
-       dark-themed consumer re-points --bn-color-surface at its page background,
-       and then its inputs, selects, secondary buttons and cards dissolve into
-       that page with nothing but a 1px border left — with no token to fix it,
-       because --bn-color-surface is also what the page itself reads. T4BS hit
-       this on its secondary button and its modal card, PendingBusiness on every
-       input and select; both worked around it with local overrides. */
-    --bn-color-surface: var(--bn-color-white);
-    --bn-color-surface-subtle: var(--bn-color-gray-50);
-    --bn-color-surface-muted: var(--bn-color-gray-100);
-    --bn-color-surface-raised: var(--bn-color-white);
-    --bn-color-surface-inset: var(--bn-color-gray-50);
-    --bn-color-surface-inverse: var(--bn-color-gray-900);
-    --bn-color-surface-control: var(--bn-color-surface);
-    --bn-color-surface-card: var(--bn-color-surface);
-
-    /* Foreground on filled brand surfaces.
-       These name the text/glyph color that sits ON a filled --bn-color-primary-* /
-       -accent-* / -error-* box (primary + destructive buttons, the current page in
-       pagination, the checkbox tick, the radio dot, the toggle knob). They exist
-       because those foregrounds used to be hardcoded to --bn-color-white, which is
-       only readable when the brand color is dark. A consumer whose brand is a light
-       hue (amber, mint, sand) had no token to reach for: overriding
-       --bn-color-white would repaint every other white surface in the sheet, so the
-       only escape was to fork the component CSS or hand-roll the control — which is
-       exactly what T4BS and Greenput both did. Defaults are unchanged (white), so
-       re-pointing them is opt-in. */
-    --bn-color-on-primary: var(--bn-color-white);
-    --bn-color-on-accent: var(--bn-color-on-primary);
-    --bn-color-on-error: var(--bn-color-white);
-    /* Selection indicator fill — the checkbox tick box, the radio dot and the
-       toggle track in their ON state. One token for all three: they previously
-       disagreed (checkbox/radio painted --bn-color-accent-600, the toggle painted
-       --bn-color-primary-600), which is invisible only because -accent-600 aliases
-       -primary-600 by default. The moment a consumer gave accent its own hue — the
-       reason the token exists — a form showed two different "selected" colors
-       side by side. Re-point this one token to move all three together. */
-    --bn-color-control-selected: var(--bn-color-accent-600);
-    --bn-color-on-control-selected: var(--bn-color-on-accent);
-    /* Toggle knob in the OFF position. The track is now the surface color (see
-       -toggle-track-off above), so the knob is what has to be visible against it:
-       the same 3:1-safe neutral the stroke uses, which is also the color the
-       radio dot would be if a radio could be "off". The ON position uses
-       --bn-color-on-control-selected, since the track is then filled with the
-       selection color. */
-    --bn-color-toggle-knob: var(--bn-color-border-control);
-
-    /* Semantic Text */
-    --bn-color-text: var(--bn-color-gray-900);
-    --bn-color-text-muted: var(--bn-color-gray-500);
-    /* --bn-color-text-subtle: real text only (e.g. placeholders, shortcuts) — 4.83:1 on white.
-       For aria-hidden decoration, gray-400 remains available directly. */
-    --bn-color-text-subtle: var(--bn-color-gray-500);
-    --bn-color-text-inverse: var(--bn-color-white);
-    --bn-color-text-link: var(--bn-color-primary-600);
-
-    /* Semantic Border
-       --bn-color-border / -strong are decorative dividers ONLY (table rules, card edges) —
-       WCAG 1.4.11 does not apply to non-essential decoration. They are intentionally NOT
-       boosted to 3:1; use --bn-color-border-control for any interactive control boundary. */
-    --bn-color-border: var(--bn-color-gray-300);
-    --bn-color-border-strong: var(--bn-color-gray-400);
-    /* --bn-color-border-control: the sole boundary of input/textarea/select/combobox/
-       checkbox/radio/spinner-track/skeleton — must clear 3:1 (WCAG 1.4.11) on light AND
-       dark surfaces. gray-500 clears both: 4.83:1 on white, 4.12:1 on gray-950, 3.67:1 on
-       gray-900 (dialog/card surface-raised) — no theme override needed. */
-    --bn-color-border-control: var(--bn-color-gray-500);
-    /* Hover boundary for every interactive control. Expressed as a mix toward the
-       text color rather than a fixed gray so it needs no dark-theme override: on a
-       light theme --bn-color-text is near-black and the border darkens, on a dark
-       theme it is near-white and the border lightens. Both directions read as
-       "this responds to the pointer" without dropping below the 3:1 the base
-       value already clears. */
-    --bn-color-border-control-hover: color-mix(
-      in srgb,
-      var(--bn-color-border-control) 55%,
-      var(--bn-color-text)
-    );
-    --bn-color-border-focus: var(--bn-color-primary-500);
-    --bn-color-border-light: var(--bn-color-gray-100);
-    --bn-focus-ring-color: var(--bn-color-border-focus);
-
-    /* Typography */
-    --bn-font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    --bn-font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
-    --bn-font-size-xs: 0.75rem;
-    --bn-font-size-sm: 0.875rem;
-    --bn-font-size-base: 1rem;
-    --bn-font-size-lg: 1.125rem;
-    --bn-font-size-xl: 1.25rem;
-    --bn-font-size-2xl: 1.5rem;
-    --bn-font-size-3xl: 1.875rem;
-    --bn-font-size-4xl: 2.25rem;
-    --bn-font-weight-normal: 400;
-    --bn-font-weight-medium: 500;
-    --bn-font-weight-semibold: 600;
-    --bn-font-weight-bold: 700;
-    --bn-line-height-tight: 1.25;
-    --bn-line-height-snug: 1.35;
-    --bn-line-height-normal: 1.5;
-    --bn-line-height-relaxed: 1.75;
-    --bn-letter-spacing-tight: -0.025em;
-    --bn-letter-spacing-normal: 0;
-    --bn-letter-spacing-wide: 0.025em;
-
-    /* Spacing */
-    --bn-space-0: 0;
-    --bn-space-1: 0.25rem;
-    --bn-space-2: 0.5rem;
-    --bn-space-3: 0.75rem;
-    --bn-space-4: 1rem;
-    --bn-space-5: 1.25rem;
-    --bn-space-6: 1.5rem;
-    --bn-space-8: 2rem;
-    --bn-space-10: 2.5rem;
-    --bn-space-12: 3rem;
-    --bn-space-16: 4rem;
-    --bn-space-half: 0.125rem;
-
-    /* Sizing */
-    --bn-size-content-max: 64rem;
-    --bn-size-text-max: 65ch;
-    /* Minimum interactive target size — WCAG 2.5.8 (24×24 CSS px). Applied as a hit-area
-       floor via min-inline-size/min-block-size; never changes a control's visible glyph. */
-    --bn-target-size-min: 1.5rem;
-    /* App nav footprints: the bottom bar's height at phone class and the side rail's
-       width at the unfolded class. The clearance rules in components.css read the
-       same tokens, so the bar and the space a page reserves for it cannot drift. */
-    --bn-size-app-nav-bar: 3.5rem;
-    --bn-size-nav-rail: 15rem;
-    /* The on-screen keyboard's bite out of the layout viewport. A fixed
-       bottom bar positioned with `bottom: 0` resolves against the LAYOUT
-       viewport, but the keyboard shrinks the VISUAL viewport — so on a
-       phone the bar lands mid-screen, clipped by the keyboard (seen on a
-       real phone, 2026-10-20: filter input focused, tab bar floating with
-       its labels sliced). initAppNav measures the gap through
-       window.visualViewport and writes it here; the bar and its sheet
-       read it as their bottom offset, so the bar rides on top of the
-       keyboard, whole. 0 whenever no keyboard is up (and for every
-       consumer that never runs initAppNav). */
-    --bn-app-nav-visual-inset: 0px;
-
-    /* Material — the surface treatment a platform layer can restyle without
-       touching component CSS: a background, a backdrop filter and a composed
-       shadow (edge highlight first, drop shadow second). The defaults are
-       "no material" — the plain surface colour, no backdrop, no shadow —
-       so a consumer that never sets them renders exactly as before. A
-       platform token layer (e.g. @basenative/ios's glass ladder) or app
-       CSS points them at real material values; the theme bridge leaves
-       them alone for the same reason it leaves the type scale alone. */
-    --bn-material-bg: var(--bn-color-surface);
-    --bn-material-backdrop: none;
-    --bn-material-shadow: none;
-
-    /* Border */
-    --bn-border-width: 1px;
-    --bn-border-width-thick: 2px;
-    --bn-radius-sm: 0.25rem;
-    --bn-radius-md: 0.375rem;
-    --bn-radius-lg: 0.5rem;
-    --bn-radius-xl: 0.75rem;
-    --bn-radius-full: 9999px;
-
-    /* Radius ladder — apply by surface class: inline controls get -control,
-       containers get -container, modal surfaces get -modal. */
-    --bn-radius-control: var(--bn-radius-md);
-    --bn-radius-container: var(--bn-radius-lg);
-    --bn-radius-modal: var(--bn-radius-xl);
-
-    /* Control height ladder — shared by button/input/select/combobox-input/
-       dropdown-trigger/pagination-item/tab so every inline control reads as one height. */
-    --bn-control-height-sm: 2rem;
-    --bn-control-height: 2.5rem;
-    --bn-control-height-lg: 3rem;
-
-    /* Selection-control geometry — the second half of the control ladder above.
-       Checkbox/radio/toggle are the only controls that do NOT take -control-height
-       (they are glyphs, not boxes you type in), so without their own tokens they
-       were three hardcoded sizes: 1.125rem, 1.125rem and 1.375rem, which is why a
-       checkbox, a radio and a switch never lined up in the same row.
-       The toggle track is deliberately a little taller than the square indicator:
-       a pill reads optically smaller than a square of the same height. */
-    --bn-control-indicator-size: 1.125rem;
-    /* Never rounder than the square indicator can take without reading as a radio,
-       but square the moment a theme squares its controls. */
-    --bn-radius-indicator: min(var(--bn-radius-control), 0.25rem);
-    /* Derived from the indicator size, not stated independently: a theme that
-       asks for chunkier controls must get a chunkier switch too, or the switch
-       is the one control left at the old scale. */
-    --bn-toggle-track-inline-size: calc(var(--bn-control-indicator-size) * 2);
-    --bn-toggle-track-block-size: calc(var(--bn-control-indicator-size) + 0.125rem);
-    --bn-toggle-knob-size: calc(var(--bn-control-indicator-size) - 0.25rem);
-    --bn-toggle-knob-inset: 0.1875rem;
-
-    /* Shadows */
-    --bn-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --bn-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --bn-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    /* Elevation ladder — modal surfaces (dialog, drawer, command-palette) use -modal. */
-    --bn-shadow-modal: var(--bn-shadow-lg);
-
-    /* Transitions */
-    --bn-transition-fast: 150ms ease;
-    --bn-transition-normal: 200ms ease;
-    --bn-transition-slow: 300ms ease;
-
-    /* Motion ladder — canonical names going forward; alias the existing durations above
-       so nothing that already references --bn-transition-* needs to change. */
-    --bn-motion-fast: var(--bn-transition-fast);
-    --bn-motion-base: var(--bn-transition-normal);
-    --bn-motion-slow: var(--bn-transition-slow);
-
-    /* Easing */
-    --bn-ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-    --bn-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-    --bn-ease-out-back: cubic-bezier(0.34, 1.3, 0.64, 1);
-
-    /* Focus Ring */
-    --bn-focus-ring: 0 0 0 2px var(--bn-color-surface), 0 0 0 4px var(--bn-color-border-focus);
-
-    /* Scrim — one shared token for every modal/overlay backdrop (dialog, command-palette,
-       drawer-overlay) instead of each component hardcoding rgb(0 0 0 / 0.4). */
-    --bn-scrim: rgb(0 0 0 / 0.4);
-
-    /* Z-index */
-    --bn-z-nav: 900;
-    --bn-z-dropdown: 1000;
-    --bn-z-modal: 1100;
-    --bn-z-toast: 1200;
+    --motion-spring-duration: 0.01ms;
+    --motion-spring-bouncy-duration: 0.01ms;
+    --motion-spring-stiff-duration: 0.01ms;
+    --motion-fade-duration: 0.01ms;
   }
+}
 
-  /* Density: Compact */
-  [data-density="compact"] {
-    --bn-space-component-x: var(--bn-space-2);
-    --bn-space-component-y: var(--bn-space-1);
-    --bn-font-size-component: var(--bn-font-size-sm);
-  }
+/* Forced appearances. The app shell owns the document element and
+   stamps data-theme there (the theme-toggle composite is the
+   control). Forced dark restates the dark values without the media
+   query. Forced light restates the light values inside it. System
+   is the absence of the attribute. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --system-blue: #0a84ff;
+  --system-green: #30d158;
+  --system-indigo: #5e5ce6;
+  --system-orange: #ff9f0a;
+  --system-pink: #ff375f;
+  --system-purple: #bf5af2;
+  --system-red: #ff453a;
+  --system-teal: #64d2ff;
+  --system-yellow: #ffd60a;
+  --system-mint: #66d4cf;
+  --system-cyan: #64d2ff;
+  --system-brown: #ac8e68;
+  --system-gray-2: #636366;
+  --system-gray-3: #48484a;
+  --system-gray-4: #3a3a3c;
+  --system-gray-5: #2c2c2e;
+  --system-gray-6: #1c1c1e;
+  --label: #ffffff;
+  --label-2: rgb(235 235 245 / 0.6);
+  --label-3: rgb(235 235 245 / 0.3);
+  --label-4: rgb(235 235 245 / 0.16);
+  --label-placeholder: rgb(235 235 245 / 0.3);
+  --background: #000000;
+  --background-2: #1c1c1e;
+  --background-3: #2c2c2e;
+  --background-grouped: #000000;
+  --background-grouped-2: #1c1c1e;
+  --background-grouped-3: #2c2c2e;
+  --fill: rgb(120 120 128 / 0.36);
+  --fill-2: rgb(120 120 128 / 0.32);
+  --fill-3: rgb(118 118 128 / 0.24);
+  --fill-4: rgb(118 118 128 / 0.18);
+  --separator: rgb(84 84 88 / 0.6);
+  --separator-opaque: #38383a;
+  --danger-strong: #ff6961;
+  --tint-fill: rgb(10 132 255 / 0.16);
+  --danger-fill: rgb(255 69 58 / 0.16);
+  --success-fill: rgb(48 209 88 / 0.18);
+  --success-strong: #30d158;
+  --warning-fill: rgb(255 159 10 / 0.18);
+  --warning-strong: #ff9f0a;
+  --tint-strong: #409cff;
+  --scrim: rgb(0 0 0 / 0.55);
+  --shadow-float: 0 12px 32px rgb(0 0 0 / 0.45);
+  --shadow-raised: 0 8px 24px rgb(0 0 0 / 0.35);
+  --material-ultra-thin-tint: rgb(28 28 30 / 0.35);
+  --material-ultra-thin-highlight: inset 0 1px 0 rgb(255 255 255 / 0.12);
+  --material-ultra-thin-shadow: 0 8px 24px rgb(0 0 0 / 0.35);
+  --material-thin-tint: rgb(28 28 30 / 0.45);
+  --material-thin-highlight: inset 0 1px 0 rgb(255 255 255 / 0.15);
+  --material-thin-shadow: 0 10px 28px rgb(0 0 0 / 0.4);
+  --material-regular-tint: rgb(30 30 32 / 0.55);
+  --material-regular-highlight: inset 0 1px 0 rgb(255 255 255 / 0.18);
+  --material-regular-shadow: 0 12px 32px rgb(0 0 0 / 0.45);
+  --material-thick-tint: rgb(28 28 30 / 0.78);
+  --material-thick-highlight: inset 0 1px 0 rgb(255 255 255 / 0.22);
+  --material-thick-shadow: 0 16px 40px rgb(0 0 0 / 0.5);
+}
 
-  /* Density: Default */
-  :root, [data-density="default"] {
-    --bn-space-component-x: var(--bn-space-3);
-    --bn-space-component-y: var(--bn-space-2);
-    --bn-font-size-component: var(--bn-font-size-base);
-  }
-
-  /* Density: Spacious */
-  [data-density="spacious"] {
-    --bn-space-component-x: var(--bn-space-4);
-    --bn-space-component-y: var(--bn-space-3);
-    --bn-font-size-component: var(--bn-font-size-base);
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --system-blue: #007aff;
+    --system-green: #34c759;
+    --system-indigo: #5856d6;
+    --system-orange: #ff9500;
+    --system-pink: #ff2d55;
+    --system-purple: #af52de;
+    --system-red: #ff3b30;
+    --system-teal: #5ac8fa;
+    --system-yellow: #ffcc00;
+    --system-mint: #00c7be;
+    --system-cyan: #32ade6;
+    --system-brown: #a2845e;
+    --system-gray-2: #aeaeb2;
+    --system-gray-3: #c7c7cc;
+    --system-gray-4: #d1d1d6;
+    --system-gray-5: #e5e5ea;
+    --system-gray-6: #f2f2f7;
+    --label: #000000;
+    --label-2: rgb(60 60 67 / 0.6);
+    --label-3: rgb(60 60 67 / 0.3);
+    --label-4: rgb(60 60 67 / 0.18);
+    --label-placeholder: rgb(60 60 67 / 0.3);
+    --background: #ffffff;
+    --background-2: #f2f2f7;
+    --background-3: #ffffff;
+    --background-grouped: #f2f2f7;
+    --background-grouped-2: #ffffff;
+    --background-grouped-3: #f2f2f7;
+    --fill: rgb(120 120 128 / 0.2);
+    --fill-2: rgb(120 120 128 / 0.16);
+    --fill-3: rgb(118 118 128 / 0.12);
+    --fill-4: rgb(116 116 128 / 0.08);
+    --separator: rgb(60 60 67 / 0.29);
+    --separator-opaque: #c6c6c8;
+    --danger-strong: #d70015;
+    --tint-fill: rgb(0 122 255 / 0.12);
+    --danger-fill: rgb(255 59 48 / 0.12);
+    --success-fill: rgb(52 199 89 / 0.14);
+    --success-strong: #1f7a33;
+    --warning-fill: rgb(255 149 0 / 0.16);
+    --warning-strong: #9a5700;
+    --tint-strong: #0062cc;
+    --scrim: rgb(0 0 0 / 0.4);
+    --shadow-float: 0 12px 32px rgb(0 0 0 / 0.12);
+    --shadow-raised: 0 8px 24px rgb(0 0 0 / 0.08);
+    --material-ultra-thin-tint: rgb(255 255 255 / 0.35);
+    --material-ultra-thin-highlight: inset 0 1px 0 rgb(255 255 255 / 0.4);
+    --material-ultra-thin-shadow: 0 8px 24px rgb(0 0 0 / 0.08);
+    --material-thin-tint: rgb(255 255 255 / 0.45);
+    --material-thin-highlight: inset 0 1px 0 rgb(255 255 255 / 0.45);
+    --material-thin-shadow: 0 10px 28px rgb(0 0 0 / 0.1);
+    --material-regular-tint: rgb(255 255 255 / 0.55);
+    --material-regular-highlight: inset 0 1px 0 rgb(255 255 255 / 0.5);
+    --material-regular-shadow: 0 12px 32px rgb(0 0 0 / 0.12);
+    --material-thick-tint: rgb(249 249 249 / 0.78);
+    --material-thick-highlight: inset 0 1px 0 rgb(255 255 255 / 0.55);
+    --material-thick-shadow: 0 16px 40px rgb(0 0 0 / 0.16);
   }
 }

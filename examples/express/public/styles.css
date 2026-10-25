@@ -169,6 +169,7 @@
     --syntax-comment: #7a98a5;
     --syntax-tag: #f07178;
     --syntax-attr: #ffcb6b;
+    --syntax-variable: #89ddff;
 
     /* Stat grid */
     --stat-grid-columns: 4;
@@ -1107,6 +1108,9 @@
   }
   .attr {
     color: var(--syntax-attr);
+  }
+  .var {
+    color: var(--syntax-variable);
   }
 
   /* -- Labels -- */

@@ -1,6 +1,6 @@
 @import './layers.css';
 @import './reset.css';
-@import './tokens.css';
+@import './tokens-legacy.css';
 @import './theme.css';
 @import './layout.css';
 @import './components.css';

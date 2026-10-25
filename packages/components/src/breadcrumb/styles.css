@@ -1,0 +1,71 @@
+:root {
+  --breadcrumb-display: var(--display-block);
+  --breadcrumb__list-display: var(--display-flex);
+  --breadcrumb__list-flex-direction: var(--flex-direction-row);
+  --breadcrumb__list-flex-wrap: var(--flex-wrap-wrap);
+  --breadcrumb__list-align-items: var(--align-center);
+  --breadcrumb__list-gap: var(--space-2);
+  --breadcrumb__list-list-style: var(--list-style-none);
+  --breadcrumb__list-margin: var(--space-0);
+  --breadcrumb__list-padding: var(--space-0);
+  --breadcrumb__item-display: var(--display-inline-flex);
+  --breadcrumb__item-align-items: var(--align-center);
+  --breadcrumb__item-gap: var(--space-2);
+  --breadcrumb__separator-content: "/";
+  --breadcrumb__separator-color: var(--label-4);
+  --breadcrumb__link-color: var(--tint);
+  --breadcrumb__link-color--hover: var(--tint-strong);
+  --breadcrumb__link-text-decoration: var(--text-decoration-none);
+  --breadcrumb__link-text-decoration--hover: var(--text-decoration-underline);
+  --breadcrumb__link-font-family: var(--text-subheadline-family);
+  --breadcrumb__link-font-size: var(--text-subheadline-size);
+  --breadcrumb__link-line-height: var(--text-subheadline-leading);
+  --breadcrumb__link-letter-spacing: var(--text-subheadline-tracking);
+  --breadcrumb__current-color: var(--label);
+  --breadcrumb__current-font-weight: var(--font-weight-semibold);
+}
+
+nav[variant="breadcrumb"] {
+  display: var(--breadcrumb-display);
+
+  & > ol {
+    display: var(--breadcrumb__list-display);
+    flex-direction: var(--breadcrumb__list-flex-direction);
+    flex-wrap: var(--breadcrumb__list-flex-wrap);
+    align-items: var(--breadcrumb__list-align-items);
+    gap: var(--breadcrumb__list-gap);
+    list-style: var(--breadcrumb__list-list-style);
+    margin: var(--breadcrumb__list-margin);
+    padding: var(--breadcrumb__list-padding);
+  }
+
+  & > ol > li {
+    display: var(--breadcrumb__item-display);
+    align-items: var(--breadcrumb__item-align-items);
+    gap: var(--breadcrumb__item-gap);
+  }
+
+  & > ol > li + li::before {
+    content: var(--breadcrumb__separator-content);
+    color: var(--breadcrumb__separator-color);
+  }
+
+  & > ol > li > a {
+    color: var(--breadcrumb__link-color);
+    text-decoration: var(--breadcrumb__link-text-decoration);
+    font-family: var(--breadcrumb__link-font-family);
+    font-size: var(--breadcrumb__link-font-size);
+    line-height: var(--breadcrumb__link-line-height);
+    letter-spacing: var(--breadcrumb__link-letter-spacing);
+
+    &:hover {
+      color: var(--breadcrumb__link-color--hover);
+      text-decoration: var(--breadcrumb__link-text-decoration--hover);
+    }
+  }
+
+  & > ol > li > a[aria-current] {
+    color: var(--breadcrumb__current-color);
+    font-weight: var(--breadcrumb__current-font-weight);
+  }
+}
