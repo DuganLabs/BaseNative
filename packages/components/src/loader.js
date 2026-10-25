@@ -17,6 +17,7 @@ const COMPONENTS = [
   'alert', 'progress', 'card', 'choice-group',
   'avatar', 'accordion', 'breadcrumb', 'pagination', 'list-group',
   'combobox', 'multiselect',
+  'drawer', 'dropdown-menu', 'command-palette', 'tooltip', 'toast',
 ];
 
 /** @param {string} html */

@@ -112,3 +112,77 @@ test('multiselect renders chips with dismiss buttons and reports the set on togg
   viewModel.toggle({ value: 'ev', label: 'EV charging', dismissHtml: dismiss });
   assert.deepEqual(reported, { values: ['solar'] });
 });
+
+test('drawer is an edge-anchored dialog with the dialog skeleton', async () => {
+  const registry = await loadRegistry();
+  const close = renderComponent(registry, render, 'button', { label: 'Close', variant: 'ghost' }).html;
+  const { html } = renderComponent(registry, render, 'drawer', {
+    title: 'Lead details', body: 'Panel upgrade, quoted.', closeHtml: close,
+  });
+  assert.match(html, /<dialog variant="drawer" aria-label="Lead details">/);
+  assert.match(html, /<h2>Lead details<\/h2>/);
+  assert.match(html, /<p>Panel upgrade, quoted\.<\/p>/);
+});
+
+test('dropdown-menu renders actions, links, and separators', async () => {
+  const registry = await loadRegistry();
+  const { html } = renderComponent(registry, render, 'dropdown-menu', {
+    label: 'Lead actions',
+    items: [
+      { label: 'Open', href: '/leads/1' },
+      { label: 'Call' },
+      { separator: true },
+      { label: 'Archive' },
+    ],
+  });
+  assert.match(html, /<menu variant="default" aria-label="Lead actions">/);
+  assert.match(html, /<a href="\/leads\/1">Open<\/a>/);
+  assert.match(html, /<button type="button">Call<\/button>/);
+  assert.match(html, /<li><hr><\/li>/);
+});
+
+test('command-palette groups its options under headings in a dialog listbox', async () => {
+  const registry = await loadRegistry();
+  const field = renderComponent(registry, render, 'field', {
+    label: 'Search commands', controlId: 'palette-search', controlHtml: renderComponent(registry, render, 'input', {
+      id: 'palette-search', type: 'text', value: '', ariaLabel: 'Search commands',
+    }).html,
+  }).html;
+  const { html } = renderComponent(registry, render, 'command-palette', {
+    id: 'palette', label: 'Command palette', searchHtml: field, activeValue: 'new-lead',
+    groups: [{ heading: 'Leads', options: [{ value: 'new-lead', label: 'New lead' }, { value: 'import', label: 'Import leads' }] }],
+  });
+  assert.match(html, /<dialog variant="command-palette" aria-label="Command palette">/);
+  assert.match(html, /<li role="group" aria-label="Leads">/);
+  assert.match(html, /<h3>Leads<\/h3>/);
+  assert.match(html, /<li role="option" id="palette-option-new-lead" aria-selected="true">New lead<\/li>/);
+});
+
+test('tooltip pairs a rendered invoker with its note', async () => {
+  const registry = await loadRegistry();
+  const invoker = renderComponent(registry, render, 'button', { label: 'More info', variant: 'ghost' }).html;
+  const { html } = renderComponent(registry, render, 'tooltip', { text: 'Delivered into the schedule', invokerHtml: invoker });
+  assert.match(html, /<aside variant="default">/);
+  assert.match(html, /<p role="tooltip">Delivered into the schedule<\/p>/);
+});
+
+test('toast lists toned items in a live region and the toaster queues them', async () => {
+  const registry = await loadRegistry();
+  const dismiss = renderComponent(registry, render, 'button', { label: 'Dismiss', variant: 'ghost' }).html;
+  const { html } = renderComponent(registry, render, 'toast', {
+    items: [
+      { message: 'Lead delivered', tone: 'success', dismissHtml: dismiss },
+      { message: 'Payment failed', tone: 'danger', dismissHtml: dismiss },
+    ],
+  });
+  assert.match(html, /<ol variant="default" aria-live="polite">/);
+  assert.match(html, /<li variant="success">Lead delivered/);
+  assert.match(html, /<li variant="danger">Payment failed/);
+  const { createToaster } = await import('./toast/index.js');
+  const toaster = createToaster();
+  toaster.push({ message: 'One' });
+  toaster.push({ message: 'Two' });
+  assert.equal(toaster.items().length, 2);
+  toaster.dismiss(0);
+  assert.deepEqual(toaster.items().map((item) => item.message), ['Two']);
+});
