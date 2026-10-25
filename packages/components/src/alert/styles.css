@@ -18,7 +18,7 @@
   --alert__body-margin: var(--space-0);
 }
 
-aside[variant] {
+aside[variant="info"], aside[variant="success"], aside[variant="warning"], aside[variant="danger"] {
   display: var(--alert-display);
   gap: var(--alert-gap);
   padding-block: var(--alert-padding-block);

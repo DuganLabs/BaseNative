@@ -29,7 +29,7 @@
   --input-motion-curve: var(--motion-fade-curve);
 }
 
-input[variant] {
+input[variant="default"] {
   box-sizing: var(--input-box-sizing);
   display: var(--input-display);
   inline-size: var(--input-inline-size);

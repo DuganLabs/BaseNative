@@ -8,9 +8,12 @@
   --toggle-line-height: var(--text-subheadline-leading);
   --toggle-cursor: var(--cursor-pointer);
   --toggle-appearance: var(--appearance-none);
+  --toggle-box-sizing: var(--box-sizing-border);
   --toggle-display: var(--display-block);
   --toggle-position: var(--position-relative);
   --toggle-margin: var(--space-0);
+  --toggle-padding: var(--space-0);
+  --toggle-border-width: var(--border-width-none);
   --toggle-inline-size: var(--size-switch-inline);
   --toggle-block-size: var(--size-switch-block);
   --toggle-border-radius: var(--radius-pill);
@@ -52,9 +55,12 @@ label:has(> input[variant="switch"]) {
 
 input[variant="switch"] {
   appearance: var(--toggle-appearance);
+  box-sizing: var(--toggle-box-sizing);
   display: var(--toggle-display);
   position: var(--toggle-position);
   margin: var(--toggle-margin);
+  padding: var(--toggle-padding);
+  border-width: var(--toggle-border-width);
   inline-size: var(--toggle-inline-size);
   block-size: var(--toggle-block-size);
   border-radius: var(--toggle-border-radius);

@@ -38,7 +38,7 @@
   --button-margin-inline-start--adjacent: var(--space-2);
 }
 
-button[variant] {
+button[variant="default"], button[variant="primary"], button[variant="ghost"], button[variant="destructive"] {
   box-sizing: var(--button-box-sizing);
   appearance: var(--button-appearance);
   display: var(--button-display);

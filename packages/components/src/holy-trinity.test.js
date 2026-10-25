@@ -146,6 +146,18 @@ test('variant blocks inside each styles.css are current with the registry (no dr
   }
 });
 
+test('component selectors name their registered variants exactly — never bare [variant] presence', async () => {
+  const registry = await loadRegistry();
+  for (const name of PILOT) {
+    const { root } = registry.getComponent(name);
+    const styles = await readFile(new URL(`${name}/styles.css`, import.meta.url), 'utf8');
+    assert.doesNotMatch(styles, new RegExp(`${root}\\[variant\\]`), `${name}: bare [variant] presence selector would claim every component sharing the <${root}> element`);
+    for (const variant of registry.listVariants(name)) {
+      assert.match(styles, new RegExp(`${root}\\[variant="${variant}"\\]`), `${name}: styles must cover registered variant "${variant}"`);
+    }
+  }
+});
+
 test('the registry refuses a (root element, variant) collision across components', () => {
   const registry = createRegistry();
   registry.registerComponent({ name: 'one', root: 'aside', create: () => ({}) });

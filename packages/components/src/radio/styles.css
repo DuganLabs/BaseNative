@@ -23,7 +23,7 @@
   --radio__control-margin: var(--space-0);
 }
 
-fieldset[variant] {
+fieldset[variant="default"] {
   display: var(--radio-display);
   gap: var(--radio-gap);
   margin: var(--radio-margin);

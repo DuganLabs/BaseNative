@@ -10,7 +10,7 @@
   --progress__bar-border-radius: var(--radius-pill);
 }
 
-progress[variant] {
+progress[variant="default"] {
   appearance: var(--progress-appearance);
   display: var(--progress-display);
   inline-size: var(--progress-inline-size);

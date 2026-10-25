@@ -8,7 +8,8 @@
   --dialog-border-radius: var(--radius-sheet);
   --dialog-box-shadow: var(--shadow-float);
   --dialog-padding: var(--space-6);
-  --dialog-inline-size: var(--size-sheet-max);
+  --dialog-inline-size: var(--size-full);
+  --dialog-max-inline-size: var(--size-sheet-max);
   --dialog-margin: var(--margin-auto);
   --dialog-gap: var(--space-4);
   --dialog-display: var(--display-grid);
@@ -33,7 +34,7 @@
   --dialog__footer-gap: var(--space-2);
 }
 
-dialog[variant] {
+dialog[variant="default"], dialog[variant="destructive"] {
   box-sizing: var(--dialog-box-sizing);
   background-color: var(--dialog-background-color);
   color: var(--dialog-color);
@@ -44,6 +45,7 @@ dialog[variant] {
   box-shadow: var(--dialog-box-shadow);
   padding: var(--dialog-padding);
   inline-size: var(--dialog-inline-size);
+  max-inline-size: var(--dialog-max-inline-size);
   margin: var(--dialog-margin);
 
   &[open] {

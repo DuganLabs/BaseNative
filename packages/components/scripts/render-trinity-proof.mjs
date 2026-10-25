@@ -111,7 +111,13 @@ ${css}
   /* Proof-page chrome only — not component CSS. */
   body { font-family: system-ui, sans-serif; margin: 0; padding: 2rem 1rem 4rem; background: var(--background-grouped); color: var(--label); }
   main { max-width: 44rem; margin: 0 auto; display: grid; gap: 2.5rem; }
-  section { display: grid; gap: 1rem; }
+  section { display: grid; gap: 1rem; min-width: 0; }
+  article { min-width: 0; }
+  @media (max-width: 40rem) {
+    body { padding: 1.25rem .75rem 3rem; }
+    article { padding: 1rem; }
+    h1 { font-size: 1.25rem; }
+  }
   h1 { font-size: 1.5rem; margin: 0; }
   h2 { font-size: 1.05rem; margin: 0; }
   p.note { color: var(--label-2); font-size: .875rem; margin: 0; }

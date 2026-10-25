@@ -30,7 +30,7 @@
   --textarea-motion-curve: var(--motion-fade-curve);
 }
 
-textarea[variant] {
+textarea[variant="default"] {
   box-sizing: var(--textarea-box-sizing);
   display: var(--textarea-display);
   inline-size: var(--textarea-inline-size);

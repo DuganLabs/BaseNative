@@ -15,7 +15,7 @@
   --field__error-line-height: var(--text-footnote-leading);
 }
 
-p[variant] {
+p[variant="default"] {
   display: var(--field-display);
   gap: var(--field-gap);
   margin: var(--field-margin);

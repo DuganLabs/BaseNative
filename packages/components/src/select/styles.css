@@ -26,7 +26,7 @@
   --select-motion-curve: var(--motion-fade-curve);
 }
 
-select[variant] {
+select[variant="default"] {
   box-sizing: var(--select-box-sizing);
   display: var(--select-display);
   inline-size: var(--select-inline-size);

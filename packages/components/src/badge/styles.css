@@ -13,7 +13,7 @@
   --badge-letter-spacing: var(--text-caption-1-tracking);
 }
 
-small[variant] {
+small[variant="default"], small[variant="info"], small[variant="success"], small[variant="warning"], small[variant="danger"] {
   display: var(--badge-display);
   align-items: var(--badge-align-items);
   background-color: var(--badge-background-color);

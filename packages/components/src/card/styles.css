@@ -24,7 +24,7 @@
   --card__footer-gap: var(--space-2);
 }
 
-article[variant] {
+article[variant="default"], article[variant="floating"] {
   display: var(--card-display);
   gap: var(--card-gap);
   background-color: var(--card-background-color);
