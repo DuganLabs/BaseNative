@@ -404,6 +404,7 @@ ${css}
   main > section > article { background: var(--background-grouped-2); border: 1px solid var(--separator); border-radius: .75rem; padding: 1.25rem; display: grid; gap: 1rem; }
   dialog { position: static; }
   main [hidden] { display: none !important; }
+  article:has(> details[variant="default"]) { row-gap: var(--space-0); }
   pre { background: #111827; color: #f3f4f6; padding: 1rem; border-radius: .5rem; overflow-x: auto; font-size: .78rem; line-height: 1.5;
     --syntax-keyword: #c792ea; --syntax-string: #c3e88d; --syntax-function: #82aaff; --syntax-number: #f78c6c; --syntax-comment: #7a98a5; --syntax-tag: #f07178; --syntax-attr: #ffcb6b; --syntax-variable: #89ddff; }
   .kw { color: var(--syntax-keyword); }
@@ -716,6 +717,14 @@ ${css}
       const parts = value.split('@');
       return parts.length === 2 && parts[0] !== '' && parts[1].includes('.') && !value.includes(' ');
     };
+    const showFieldError = () => {
+      emailInput.setAttribute('aria-invalid', 'true');
+      if (errorNote) errorNote.hidden = false;
+    };
+    const clearFieldError = () => {
+      emailInput.removeAttribute('aria-invalid');
+      if (errorNote) errorNote.hidden = true;
+    };
     const showError = () => {
       emailInput.setAttribute('aria-invalid', 'true');
       if (errorNote) errorNote.hidden = false;
@@ -727,9 +736,12 @@ ${css}
       if (summary) summary.hidden = true;
     };
     clearError();
-    emailInput.addEventListener('input', () => {
-      if (validEmail(emailInput.value)) clearError();
-    });
+    const validateLive = () => {
+      if (validEmail(emailInput.value)) { clearError(); return; }
+      if (emailInput.value !== '') showFieldError(); else clearFieldError();
+    };
+    emailInput.addEventListener('input', validateLive);
+    emailInput.addEventListener('blur', validateLive);
     const attemptSubmit = () => {
       if (!validEmail(emailInput.value)) {
         showError();
@@ -824,50 +836,104 @@ ${css}
     });
   }
 
-  // ---- Combobox: typing filters the listbox, clicking an option
-  // chooses it.
+  // ---- Combobox: closed until the field is used; typing filters,
+  // choosing closes, Escape and an outside click close.
   const county = document.querySelector('#county');
   if (county) {
     const combo = county.closest('section');
+    const comboList = combo.querySelector('ul[role="listbox"]');
     const options = [...combo.querySelectorAll('li[role="option"]')];
-    county.addEventListener('input', () => {
+    const setComboOpen = (openState) => {
+      comboList.hidden = !openState;
+      county.setAttribute('aria-expanded', openState ? 'true' : 'false');
+    };
+    const filterCombo = () => {
       const query = county.value.trim().toLowerCase();
       options.forEach((option) => {
         option.hidden = !option.textContent.toLowerCase().includes(query);
       });
+    };
+    let comboEscaped = false;
+    setComboOpen(false);
+    county.addEventListener('focus', () => setComboOpen(true));
+    county.addEventListener('click', () => setComboOpen(true));
+    county.addEventListener('input', () => {
+      if (comboEscaped) { comboEscaped = false; return; }
+      setComboOpen(true); filterCombo();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !comboList.hidden) { comboEscaped = true; setComboOpen(false); }
+    });
+    document.addEventListener('click', (event) => {
+      if (!combo.contains(event.target)) setComboOpen(false);
     });
     options.forEach((option) => {
       option.addEventListener('click', () => {
         county.value = option.textContent.trim();
-        options.forEach((other) => other.removeAttribute('aria-selected'));
+        options.forEach((other) => other.setAttribute('aria-selected', 'false'));
         option.setAttribute('aria-selected', 'true');
         options.forEach((other) => { other.hidden = false; });
+        setComboOpen(false);
       });
     });
   }
 
-  // ---- Multiselect: clicking an option adds its chip, a chip's
-  // Remove takes it back out.
+  // ---- Multiselect: closed until the field is used; typing
+  // filters, clicking an option toggles its chip and the list stays
+  // open, Escape and an outside click close.
   const multi = document.querySelector('section[variant="multiselect"]');
   if (multi) {
+    const multiInput = multi.querySelector('input');
+    const multiList = multi.querySelector('ul[role="listbox"]');
+    const multiOptions = [...multi.querySelectorAll('li[role="option"]')];
     const chips = multi.querySelector('ul:not([role])');
+    const setMultiOpen = (openState) => {
+      multiList.hidden = !openState;
+      multiInput.setAttribute('aria-expanded', openState ? 'true' : 'false');
+    };
+    const chipLabel = (li) => li.textContent.replace('Remove', '').trim();
     const wireChip = (li) => {
       const button = li.querySelector('button');
       if (button) button.addEventListener('click', () => {
-        const label = li.textContent.replace('Remove', '').trim();
+        const label = chipLabel(li);
         li.remove();
-        multi.querySelectorAll('li[role="option"]').forEach((option) => {
-          if (option.textContent.trim() === label) option.removeAttribute('aria-selected');
+        multiOptions.forEach((option) => {
+          if (option.textContent.trim() === label) option.setAttribute('aria-selected', 'false');
         });
       });
     };
     chips.querySelectorAll('li').forEach(wireChip);
-    multi.querySelectorAll('li[role="option"]').forEach((option) => {
+    let multiEscaped = false;
+    setMultiOpen(false);
+    multiInput.addEventListener('focus', () => setMultiOpen(true));
+    multiInput.addEventListener('click', () => setMultiOpen(true));
+    multiInput.addEventListener('input', () => {
+      if (multiEscaped) { multiEscaped = false; return; }
+      setMultiOpen(true);
+      const query = multiInput.value.trim().toLowerCase();
+      multiOptions.forEach((option) => {
+        option.hidden = !option.textContent.toLowerCase().includes(query);
+      });
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !multiList.hidden) { multiEscaped = true; setMultiOpen(false); }
+    });
+    document.addEventListener('click', (event) => {
+      if (!multi.contains(event.target)) setMultiOpen(false);
+    });
+    multiOptions.forEach((option) => {
       option.addEventListener('click', () => {
-        if (option.getAttribute('aria-selected') === 'true') return;
+        const label = option.textContent.trim();
+        if (option.getAttribute('aria-selected') === 'true') {
+          option.setAttribute('aria-selected', 'false');
+          [...chips.querySelectorAll('li')].forEach((li) => {
+            if (chipLabel(li) === label) li.remove();
+          });
+          return;
+        }
         option.setAttribute('aria-selected', 'true');
         const li = document.createElement('li');
-        li.append(option.textContent.trim() + ' ');
+        li.append(label + ' ');
         const button = document.createElement('button');
         button.setAttribute('variant', 'ghost');
         button.setAttribute('type', 'button');
