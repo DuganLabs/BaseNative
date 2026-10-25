@@ -388,6 +388,27 @@
     margin-block-end: var(--bn-section-space, 12px);
   }
 
+  /* -- Page flow: the section rhythm belongs to the stack, not to the
+     <section> element. It used to ride on the section rule alone, so
+     it held only where both neighbours were sections, or where a
+     margin happened to collapse through from inside a non-section
+     wrapper (the /docs <aside> borrowed its gap that way). Every
+     other surface stacked in <main> now carries the same margin
+     outright, so the rhythm no longer depends on the element. -- */
+  main > :is(article, aside, form, nav, search) {
+    margin-block-end: var(--bn-section-space, 12px);
+  }
+
+  /* The hero's margin is the component's own token (--hero-margin,
+     0 by default), so the page stack sets it here the same way the
+     component pages and the showcase set theirs. Articles that carry
+     their own hero margin are excluded; theirs wins. Without this,
+     every page's hero sat flush on the surface below it. -- */
+  main > figure[variant],
+  main > article:not([data-bn-component-page], [data-bn-showcase]) > figure[variant] {
+    --hero-margin: 0 0 var(--bn-section-space, 12px);
+  }
+
   section > h2 {
     font-family: var(--font-family);
     font-stretch: var(--font-serif);
@@ -2364,8 +2385,7 @@
     }
   }
 
-  /* -- /components category TOC + /docs contents nav -- */
-  [data-bn-component-toc],
+  /* -- /docs contents nav -- */
   [data-bn-docs-toc] {
     display: flex;
     flex-wrap: wrap;
@@ -4146,7 +4166,6 @@
       flex: none;
     }
 
-    [data-bn-component-toc],
     [data-bn-docs-toc],
     [data-bn-showcase-toc] {
       position: static;
