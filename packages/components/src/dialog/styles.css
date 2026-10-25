@@ -1,96 +1,60 @@
-:root {
-  --dialog-box-sizing: var(--box-sizing-border);
-  --dialog-background-color: var(--background-2);
-  --dialog-color: var(--label);
-  --dialog-border-width: var(--border-width);
-  --dialog-border-style: var(--border-style-solid);
-  --dialog-border-color: var(--separator);
-  --dialog-border-radius: var(--radius-sheet);
-  --dialog-box-shadow: var(--shadow-float);
-  --dialog-padding: var(--space-6);
-  --dialog-inline-size: var(--size-full);
-  --dialog-max-inline-size: var(--size-sheet-max);
-  --dialog-margin: var(--margin-auto);
-  --dialog-gap: var(--space-4);
-  --dialog-display: var(--display-grid);
-  --dialog__backdrop-background-color: var(--scrim);
-  --dialog__header-display: var(--display-flex);
-  --dialog__header-align-items: var(--align-stretch);
-  --dialog__header-justify-content: var(--justify-space-between);
-  --dialog__header-gap: var(--space-4);
-  --dialog__title-font-family: var(--text-title-2-family);
-  --dialog__title-font-size: var(--text-title-2-size);
-  --dialog__title-font-weight: var(--font-weight-semibold);
-  --dialog__title-line-height: var(--text-title-2-leading);
-  --dialog__title-letter-spacing: var(--text-title-2-tracking);
-  --dialog__title-margin: var(--space-0);
-  --dialog__body-color: var(--label);
-  --dialog__body-font-family: var(--text-body-family);
-  --dialog__body-font-size: var(--text-body-size);
-  --dialog__body-line-height: var(--text-body-leading);
-  --dialog__body-margin: var(--space-0);
-  --dialog__footer-display: var(--display-flex);
-  --dialog__footer-justify-content: var(--justify-end);
-  --dialog__footer-gap: var(--space-2);
-}
-
 dialog[variant="default"], dialog[variant="destructive"] {
-  box-sizing: var(--dialog-box-sizing);
-  background-color: var(--dialog-background-color);
-  color: var(--dialog-color);
-  border-width: var(--dialog-border-width);
-  border-style: var(--dialog-border-style);
-  border-color: var(--dialog-border-color);
-  border-radius: var(--dialog-border-radius);
-  box-shadow: var(--dialog-box-shadow);
-  padding: var(--dialog-padding);
-  inline-size: var(--dialog-inline-size);
-  max-inline-size: var(--dialog-max-inline-size);
-  margin: var(--dialog-margin);
+  box-sizing: var(--box-sizing-dialog);
+  background-color: var(--color-bkg-dialog);
+  color: var(--color-text-dialog);
+  border-width: var(--size-border-dialog);
+  border-style: var(--border-style-dialog);
+  border-color: var(--color-border-dialog);
+  border-radius: var(--size-radius-dialog);
+  box-shadow: var(--shadow-dialog);
+  padding: var(--spacing-dialog-padding);
+  inline-size: var(--size-dialog-inline);
+  max-inline-size: var(--size-dialog-max-inline);
+  margin: var(--spacing-dialog-margin);
 
   &[open] {
-    display: var(--dialog-display);
-    gap: var(--dialog-gap);
+    display: var(--display-dialog);
+    gap: var(--spacing-dialog-gap);
   }
 
   &::backdrop {
-    background-color: var(--dialog__backdrop-background-color);
+    background-color: var(--color-bkg-dialog-backdrop);
   }
 
   & > header {
-    display: var(--dialog__header-display);
-    align-items: var(--dialog__header-align-items);
-    justify-content: var(--dialog__header-justify-content);
-    gap: var(--dialog__header-gap);
+    display: var(--display-dialog-header);
+    align-items: var(--align-dialog-header);
+    justify-content: var(--justify-dialog-header);
+    gap: var(--spacing-dialog-header-gap);
 
     & > h2 {
-      font-family: var(--dialog__title-font-family);
-      font-size: var(--dialog__title-font-size);
-      font-weight: var(--dialog__title-font-weight);
-      line-height: var(--dialog__title-line-height);
-      letter-spacing: var(--dialog__title-letter-spacing);
-      margin: var(--dialog__title-margin);
+      font-family: var(--font-dialog-title-family);
+      font-size: var(--font-dialog-title-size);
+      font-weight: var(--font-dialog-title-weight);
+      line-height: var(--font-dialog-title-leading);
+      letter-spacing: var(--font-dialog-title-tracking);
+      margin: var(--spacing-dialog-title-margin);
     }
   }
 
   & > p {
-    color: var(--dialog__body-color);
-    font-family: var(--dialog__body-font-family);
-    font-size: var(--dialog__body-font-size);
-    line-height: var(--dialog__body-line-height);
-    margin: var(--dialog__body-margin);
+    color: var(--color-text-dialog-body);
+    font-family: var(--font-dialog-body-family);
+    font-size: var(--font-dialog-body-size);
+    line-height: var(--font-dialog-body-leading);
+    margin: var(--spacing-dialog-body-margin);
   }
 
   & > footer {
-    display: var(--dialog__footer-display);
-    justify-content: var(--dialog__footer-justify-content);
-    gap: var(--dialog__footer-gap);
+    display: var(--display-dialog-footer);
+    justify-content: var(--justify-dialog-footer);
+    gap: var(--spacing-dialog-footer-gap);
   }
 }
 
 dialog[variant="destructive"] {
-  --button-background-color: var(--danger);
-  --button-background-color--hover: var(--danger-strong);
-  --button-border-color: var(--danger);
-  --button-color: var(--on-danger);
+  --color-bkg-button: var(--color-danger);
+  --color-bkg-button-hover: var(--color-danger-strong);
+  --color-border-button: var(--color-danger);
+  --color-text-button: var(--color-text-on-danger);
 }

@@ -55,13 +55,13 @@ export function layoutGridStyles() {
 [data-bn="layout-grid"] {
   min-height: 8rem;
   border: 1px dashed var(--border, hsl(220 15% 22%));
-  border-radius: var(--radius-lg, 0.75rem);
+  border-radius: var(--size-radius-lg, 0.75rem);
   padding: 0.5rem;
 }
 [data-bn="layout-cell"] {
   background: var(--surface-2, hsl(220 15% 14%));
   border: 1px solid var(--border, hsl(220 15% 22%));
-  border-radius: var(--radius-md, 0.5rem);
+  border-radius: var(--size-radius-md, 0.5rem);
   padding: 0.75rem;
   display: flex;
   align-items: center;

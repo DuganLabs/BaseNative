@@ -1,107 +1,64 @@
-:root {
-  --datagrid-inline-size: var(--size-full);
-  --datagrid-border-collapse: separate;
-  --datagrid-border-spacing: var(--space-0);
-  --datagrid__caption-text-align: var(--text-align-start);
-  --datagrid__caption-padding-block-end: var(--space-2);
-  --datagrid__caption-color: var(--label-2);
-  --datagrid__caption-font-family: var(--text-subheadline-family);
-  --datagrid__caption-font-size: var(--text-subheadline-size);
-  --datagrid__caption-line-height: var(--text-subheadline-leading);
-  --datagrid__caption-letter-spacing: var(--text-subheadline-tracking);
-  --datagrid__head-background-color: var(--fill-3);
-  --datagrid__head-color: var(--label-2);
-  --datagrid__head-font-family: var(--text-subheadline-family);
-  --datagrid__head-font-size: var(--text-subheadline-size);
-  --datagrid__head-font-weight: var(--font-weight-semibold);
-  --datagrid__head-line-height: var(--text-subheadline-leading);
-  --datagrid__head-letter-spacing: var(--text-subheadline-tracking);
-  --datagrid__cell-padding-block: var(--space-2);
-  --datagrid__cell-padding-inline: var(--space-3);
-  --datagrid__cell-border-block-end-width: var(--hairline);
-  --datagrid__cell-border-block-end-style: var(--border-style-solid);
-  --datagrid__cell-border-block-end-color: var(--separator);
-  --datagrid__cell-font-family: var(--text-body-family);
-  --datagrid__cell-font-size: var(--text-body-size);
-  --datagrid__cell-line-height: var(--text-body-leading);
-  --datagrid__cell-letter-spacing: var(--text-body-tracking);
-  --datagrid__cell-color: var(--label);
-  --datagrid__cell-text-align: var(--text-align-start);
-  --datagrid__cell-vertical-align: var(--vertical-align-middle);
-  --datagrid__row-header-font-weight: var(--font-weight-semibold);
-  --datagrid__sorted-background-color: var(--fill-2);
-  --datagrid__sort-icon-inline-size: var(--space-3);
-  --datagrid__sort-icon-block-size: var(--space-3);
-  --datagrid__sort-icon-color: var(--label-3);
-  --datagrid__sort-icon-margin-inline-start: var(--space-1);
-  --datagrid__sort-icon-vertical-align: var(--vertical-align-middle);
-  --datagrid__sort-icon-pointer-events: var(--pointer-events-none);
-  --datagrid__sort-icon-transform--ascending: rotate(180deg);
-  --datagrid-motion-duration: var(--motion-fade-duration);
-  --datagrid-motion-curve: var(--motion-fade-curve);
-}
-
 table[variant="datagrid"] {
-  inline-size: var(--datagrid-inline-size);
-  border-collapse: var(--datagrid-border-collapse);
-  border-spacing: var(--datagrid-border-spacing);
+  inline-size: var(--size-datagrid-inline);
+  border-collapse: var(--border-collapse-datagrid);
+  border-spacing: var(--spacing-datagrid-border-spacing);
 
   & > caption {
-    text-align: var(--datagrid__caption-text-align);
-    padding-block-end: var(--datagrid__caption-padding-block-end);
-    color: var(--datagrid__caption-color);
-    font-family: var(--datagrid__caption-font-family);
-    font-size: var(--datagrid__caption-font-size);
-    line-height: var(--datagrid__caption-line-height);
-    letter-spacing: var(--datagrid__caption-letter-spacing);
+    text-align: var(--text-align-datagrid-caption);
+    padding-block-end: var(--spacing-datagrid-caption-padding-block-end);
+    color: var(--color-text-datagrid-caption);
+    font-family: var(--font-datagrid-caption-family);
+    font-size: var(--font-datagrid-caption-size);
+    line-height: var(--font-datagrid-caption-leading);
+    letter-spacing: var(--font-datagrid-caption-tracking);
   }
 
   & th, & td {
-    padding-block: var(--datagrid__cell-padding-block);
-    padding-inline: var(--datagrid__cell-padding-inline);
-    border-block-end-width: var(--datagrid__cell-border-block-end-width);
-    border-block-end-style: var(--datagrid__cell-border-block-end-style);
-    border-block-end-color: var(--datagrid__cell-border-block-end-color);
-    font-family: var(--datagrid__cell-font-family);
-    font-size: var(--datagrid__cell-font-size);
-    line-height: var(--datagrid__cell-line-height);
-    letter-spacing: var(--datagrid__cell-letter-spacing);
-    color: var(--datagrid__cell-color);
-    text-align: var(--datagrid__cell-text-align);
-    vertical-align: var(--datagrid__cell-vertical-align);
+    padding-block: var(--spacing-datagrid-cell-padding-block);
+    padding-inline: var(--spacing-datagrid-cell-padding-inline);
+    border-block-end-width: var(--size-border-datagrid-cell-block-end);
+    border-block-end-style: var(--border-style-datagrid-cell-block-end);
+    border-block-end-color: var(--color-border-datagrid-cell-block-end);
+    font-family: var(--font-datagrid-cell-family);
+    font-size: var(--font-datagrid-cell-size);
+    line-height: var(--font-datagrid-cell-leading);
+    letter-spacing: var(--font-datagrid-cell-tracking);
+    color: var(--color-text-datagrid-cell);
+    text-align: var(--text-align-datagrid-cell);
+    vertical-align: var(--vertical-align-datagrid-cell);
   }
 
   & > thead th {
-    background-color: var(--datagrid__head-background-color);
-    color: var(--datagrid__head-color);
-    font-family: var(--datagrid__head-font-family);
-    font-size: var(--datagrid__head-font-size);
-    font-weight: var(--datagrid__head-font-weight);
-    line-height: var(--datagrid__head-line-height);
-    letter-spacing: var(--datagrid__head-letter-spacing);
+    background-color: var(--color-bkg-datagrid-head);
+    color: var(--color-text-datagrid-head);
+    font-family: var(--font-datagrid-head-family);
+    font-size: var(--font-datagrid-head-size);
+    font-weight: var(--font-datagrid-head-weight);
+    line-height: var(--font-datagrid-head-leading);
+    letter-spacing: var(--font-datagrid-head-tracking);
   }
 
   & > tbody th {
-    font-weight: var(--datagrid__row-header-font-weight);
+    font-weight: var(--font-datagrid-row-header-weight);
   }
 }
 
 table[variant="datagrid"] > thead th[aria-sort] {
-  background-color: var(--datagrid__sorted-background-color);
+  background-color: var(--color-bkg-datagrid-sorted);
 
   & > svg {
-    inline-size: var(--datagrid__sort-icon-inline-size);
-    block-size: var(--datagrid__sort-icon-block-size);
-    color: var(--datagrid__sort-icon-color);
-    margin-inline-start: var(--datagrid__sort-icon-margin-inline-start);
-    vertical-align: var(--datagrid__sort-icon-vertical-align);
-    pointer-events: var(--datagrid__sort-icon-pointer-events);
-    transition: transform var(--datagrid-motion-duration) var(--datagrid-motion-curve);
+    inline-size: var(--size-datagrid-sort-icon-inline);
+    block-size: var(--size-datagrid-sort-icon-block);
+    color: var(--color-text-datagrid-sort-icon);
+    margin-inline-start: var(--spacing-datagrid-sort-icon-margin-inline-start);
+    vertical-align: var(--vertical-align-datagrid-sort-icon);
+    pointer-events: var(--pointer-events-datagrid-sort-icon);
+    transition: transform var(--motion-datagrid-duration) var(--motion-datagrid-curve);
   }
 }
 
 table[variant="datagrid"] > thead th[aria-sort="ascending"] > svg {
-  transform: var(--datagrid__sort-icon-transform--ascending);
+  transform: var(--transform-datagrid-sort-icon-ascending);
 }
 
 /* A header hosting a sort button lets the button's label sit on the
@@ -110,12 +67,12 @@ table[variant="datagrid"] > thead th[aria-sort="ascending"] > svg {
    so its hover and active fills stay transparent and never stack
    over the header's fills. */
 table[variant="datagrid"] > thead th:has(> button) {
-  --button-padding-block: var(--space-0);
-  --button-padding-inline: var(--space-0);
-  --button-block-size: var(--size-max-content);
+  --spacing-button-padding-block: var(--spacing-0);
+  --spacing-button-padding-inline: var(--spacing-0);
+  --size-button-block: var(--size-max-content);
 }
 
 table[variant="datagrid"] > thead th > button {
-  --button-background-color--hover: var(--color-transparent);
-  --button-background-color--active: var(--color-transparent);
+  --color-bkg-button-hover: var(--palette-transparent);
+  --color-bkg-button-active: var(--palette-transparent);
 }

@@ -1,37 +1,25 @@
-:root {
-  --progress-display: var(--display-block);
-  --progress-inline-size: var(--size-full);
-  --progress-block-size: var(--space-2);
-  --progress-appearance: var(--appearance-none);
-  --progress-border-width: var(--border-width-none);
-  --progress-background-color: var(--fill-3);
-  --progress-border-radius: var(--radius-pill);
-  --progress__bar-background-color: var(--tint);
-  --progress__bar-border-radius: var(--radius-pill);
-}
-
 progress[variant="default"] {
-  appearance: var(--progress-appearance);
-  display: var(--progress-display);
-  inline-size: var(--progress-inline-size);
-  block-size: var(--progress-block-size);
-  border-width: var(--progress-border-width);
-  border-radius: var(--progress-border-radius);
-  background-color: var(--progress-background-color);
+  appearance: var(--appearance-progress);
+  display: var(--display-progress);
+  inline-size: var(--size-progress-inline);
+  block-size: var(--size-progress-block);
+  border-width: var(--size-border-progress);
+  border-radius: var(--size-radius-progress);
+  background-color: var(--color-bkg-progress);
 
   &::-webkit-progress-bar {
-    background-color: var(--progress-background-color);
-    border-radius: var(--progress-border-radius);
+    background-color: var(--color-bkg-progress);
+    border-radius: var(--size-radius-progress);
   }
 
   &::-webkit-progress-value {
-    background-color: var(--progress__bar-background-color);
-    border-radius: var(--progress__bar-border-radius);
+    background-color: var(--color-bkg-progress-bar);
+    border-radius: var(--size-radius-progress-bar);
   }
 
   &::-moz-progress-bar {
-    background-color: var(--progress__bar-background-color);
-    border-radius: var(--progress__bar-border-radius);
+    background-color: var(--color-bkg-progress-bar);
+    border-radius: var(--size-radius-progress-bar);
   }
 }
 

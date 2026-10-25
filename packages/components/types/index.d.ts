@@ -937,7 +937,7 @@ export interface CalendarEvent {
   /** ISO datetime. */
   end: string;
   status?: string;
-  /** CSS color override (`--bn-calendar-event-color`). */
+  /** CSS color override (`--color-text-calendar-event`). */
   color?: string;
   assignee?: string;
   [extra: string]: unknown;

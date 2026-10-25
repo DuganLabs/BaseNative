@@ -19,6 +19,7 @@ const PILOT = [
   'theme-toggle',
   'form', 'search-field', 'segmented-control', 'stepper',
   'tabs', 'empty-state', 'toolbar', 'rating',
+  'code-block',
 ];
 
 test('each pilot component directory holds exactly the three files', async () => {
@@ -73,7 +74,7 @@ test('component styles never select a bare element — vanilla elements stay unt
     assert.doesNotMatch(styles, new RegExp(`(^|\\n)${root} \\{`), name);
   }
   const css = await assembleStyles(registry, PILOT);
-  assert.match(css, /--button-background-color: var\(--fill-2\);/);
+  assert.match(css, /--color-bkg-button: var\(--color-fill-2\);/);
   assert.match(css, /button\[variant="ghost"\]/);
 });
 
@@ -108,32 +109,68 @@ test('dialog composes nested buttons and its destructive variant re-points them'
   assert.match(html, /<h2>Delete this lead\?<\/h2>/);
   assert.match(html, /<button variant="default" type="button">Delete lead<\/button>/);
   const dialogStyles = await readFile(new URL('./dialog/styles.css', import.meta.url), 'utf8');
-  assert.match(dialogStyles, /dialog\[variant="destructive"\] \{\n {2}--button-background-color: var\(--danger\);/);
+  assert.match(dialogStyles, /dialog\[variant="destructive"\] \{\n {2}--color-bkg-button: var\(--color-danger\);/);
 });
 
 test('the token system carries the Apple foundation, extended for the catalog', async () => {
   const tokensCss = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
   for (const marker of [
-    '--label-2:', '--background-grouped:', '--fill-2:', '--separator:', '--tint:',
-    '--text-large-title-size:', '--text-body-tracking:', '--text-caption-2-leading:',
-    '--radius-sheet:', '--material-regular-blur:', '--material-thick-saturate:',
-    '--motion-spring-curve:', '--motion-spring-bouncy-duration:', '--safe-top:',
+    '--color-text-label-2:', '--color-background-grouped:', '--color-fill-2:', '--color-border-separator:', '--color-tint:',
+    '--font-large-title-size:', '--font-body-tracking:', '--font-caption-2-leading:',
+    '--size-radius-sheet:', '--material-regular-blur:', '--material-thick-saturate:',
+    '--motion-spring-curve:', '--motion-spring-bouncy-duration:', '--spacing-safe-top:',
     '@media (prefers-color-scheme: dark)', '@media (prefers-reduced-motion: reduce)',
   ]) {
     assert.ok(tokensCss.includes(marker), `tokens.css is missing ${marker}`);
   }
 });
 
-test('each component declares its own tokens in a :root block atop its styles.css', async () => {
+test('component tokens live in the DTCG source and the generated token sheet — never in styles.css', async () => {
   const tokensCss = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
-  assert.doesNotMatch(tokensCss, /--(button|input|field|dialog)-[a-z-]+:/, 'tokens.css holds only layer-0 primitives');
   const registry = await loadRegistry();
   for (const name of PILOT) {
     const { styles } = registry.getComponent(name);
-    assert.match(styles, new RegExp(`^:root \\{\\n {2}--${name}-`), name);
+    assert.doesNotMatch(styles, /^:root \{/m, `${name}: styles.css defines no tokens; they live in tokens/components/${name}.json`);
+    const source = JSON.parse(await readFile(new URL(`../tokens/components/${name}.json`, import.meta.url), 'utf8'));
+    const names = Object.keys(source);
+    assert.ok(names.length > 0, `${name}: the DTCG source declares no tokens for it`);
+    for (const tokenName of names) {
+      assert.ok(tokensCss.includes(`--${tokenName}:`), `generated tokens.css is missing --${tokenName}`);
+    }
   }
-  assert.match(registry.getComponent('field').styles, /\n {2}--field__label-color:/);
-  assert.match(registry.getComponent('dialog').styles, /\n {2}--dialog__backdrop-background-color:/);
+  assert.match(tokensCss, /\n {2}--color-text-field-label:/);
+  assert.match(tokensCss, /\n {2}--color-bkg-dialog-backdrop:/);
+});
+
+test('every token name follows the CTI+ grammar — category first, no prefixes, no underscores', async () => {
+  const tokensCss = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
+  const leaves = new Map();
+  const collect = async (dir) => {
+    for (const entry of await readdir(dir, { withFileTypes: true })) {
+      const url = new URL(`${entry.name}${entry.isDirectory() ? '/' : ''}`, dir);
+      if (entry.isDirectory()) await collect(url);
+      else if (entry.name.endsWith('.json')) {
+        const tree = JSON.parse(await readFile(url, 'utf8'));
+        for (const [name, leaf] of Object.entries(tree)) leaves.set(name, leaf.$extensions['com.basenative'].taxonomy);
+      }
+    }
+  };
+  await collect(new URL('../tokens/', import.meta.url));
+  assert.ok(leaves.size > 1000, 'the DTCG source should carry the whole token system');
+  for (const [name, taxonomy] of leaves) {
+    assert.ok(!name.includes('_'), `--${name}: underscores are not part of the taxonomy`);
+    assert.ok(!name.startsWith('bn-'), `--${name}: no domain prefix`);
+    // The recorded taxonomy must rebuild the name exactly, segment by
+    // segment, in CTI+ order: Category–Type–Item–Variant–Subitem–State.
+    const rebuilt = [taxonomy.category, taxonomy.type, taxonomy.item, taxonomy.variant, taxonomy.subitem, taxonomy.state, taxonomy.context]
+      .filter(Boolean).join('-');
+    assert.equal(name, rebuilt, `--${name}: taxonomy metadata does not reconstruct the name`);
+    assert.ok(tokensCss.includes(`--${name}:`), `generated tokens.css is missing --${name}`);
+  }
+  // And the generated sheet defines nothing the source does not carry.
+  for (const match of tokensCss.matchAll(/^\s*(--[\w-]+)\s*:/gm)) {
+    assert.ok(leaves.has(match[1].slice(2)), `tokens.css defines ${match[1]} with no DTCG source`);
+  }
 });
 
 test('component selectors name their registered variants exactly — never bare [variant] presence', async () => {
@@ -163,7 +200,7 @@ test('badge renders a small carrying its tone variant', async () => {
   const { html } = renderComponent(registry, render, 'badge', { label: 'Paid', variant: 'success' });
   assert.match(html, /<small variant="success">Paid<\/small>/);
   const badgeCss = await readFile(new URL('badge/styles.css', import.meta.url), 'utf8');
-  assert.match(badgeCss, /small\[variant="danger"\] \{\n {2}--badge-background-color: var\(--danger-fill\);/);
+  assert.match(badgeCss, /small\[variant="danger"\] \{\n {2}--color-bkg-badge: var\(--color-danger-fill\);/);
 });
 
 test('checkbox and toggle register distinct tags on the shared input element', async () => {
@@ -286,14 +323,14 @@ test('choice-group runs choose-one over the card substrate', async () => {
   assert.match(html, /<input type="radio" name="plan" value="schedule" checked="true">/);
   // The substrate owns its selected look: the rule lives in card's sheet, not the group's.
   const cardStyles = await readFile(new URL('card/styles.css', import.meta.url), 'utf8');
-  assert.match(cardStyles, /label:has\(> input:checked\) > article\[variant="default"\][^{]*\{\s+--card-border-color: var\(--tint\);/);
+  assert.match(cardStyles, /label:has\(> input:checked\) > article\[variant="default"\][^{]*\{\s+--color-border-card: var\(--color-tint\);/);
   const groupStyles = await readFile(new URL('choice-group/styles.css', import.meta.url), 'utf8');
   assert.doesNotMatch(groupStyles, /--card-/);
   // The notch: the group positions the control inside the substrate's corner…
-  assert.match(groupStyles, /position: var\(--choice-group__control-position\);/);
-  assert.match(groupStyles, /inset-inline-start: var\(--choice-group__control-inset-inline-start\);/);
+  assert.match(groupStyles, /position: var\(--position-choice-group-control\);/);
+  assert.match(groupStyles, /inset-inline-start: var\(--spacing-choice-group-control-inset-inline-start\);/);
   // …and the substrate reserves it, in the substrate's own sheet.
-  assert.match(cardStyles, /label:has\(> input\) > article\[variant="default"\][^{]*\{\s+--card-padding-inline-start:/);
+  assert.match(cardStyles, /label:has\(> input\) > article\[variant="default"\][^{]*\{\s+--spacing-card-padding-inline-start:/);
 });
 
 test('choice-group in checkbox mode reports one telemetry event shape', async () => {

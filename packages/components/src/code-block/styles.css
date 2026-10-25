@@ -1,0 +1,44 @@
+figure[variant="code"] {
+  display: var(--display-code-block);
+  margin: var(--spacing-code-block-margin);
+  background-color: var(--color-bkg-code-block);
+  border-width: var(--size-border-code-block);
+  border-style: var(--border-style-code-block);
+  border-color: var(--color-border-code-block);
+  border-radius: var(--size-radius-code-block);
+  overflow: var(--overflow-code-block);
+
+  & > figcaption {
+    display: var(--display-code-block-caption);
+    align-items: var(--align-code-block-caption);
+    gap: var(--spacing-code-block-caption-gap);
+    padding-block: var(--spacing-code-block-caption-padding-block);
+    padding-inline: var(--spacing-code-block-caption-padding-inline);
+    background-color: var(--color-bkg-code-block-caption);
+    color: var(--color-text-code-block-caption);
+    font-family: var(--font-code-block-caption-family);
+    font-size: var(--font-code-block-caption-size);
+    font-weight: var(--font-code-block-caption-weight);
+    line-height: var(--font-code-block-caption-leading);
+    letter-spacing: var(--font-code-block-caption-tracking);
+    border-block-end-width: var(--size-border-code-block-caption-block-end);
+    border-block-end-style: var(--border-style-code-block-caption-block-end);
+    border-block-end-color: var(--color-border-code-block-caption-block-end);
+  }
+
+  & > pre {
+    margin: var(--spacing-code-block-pre-margin);
+    padding-block: var(--spacing-code-block-pre-padding-block);
+    padding-inline: var(--spacing-code-block-pre-padding-inline);
+    overflow: var(--overflow-code-block-pre);
+    color: var(--color-text-code-block-pre);
+    font-family: var(--font-code-block-pre-family);
+    font-size: var(--font-code-block-pre-size);
+    font-weight: var(--font-code-block-pre-weight);
+    line-height: var(--font-code-block-pre-leading);
+
+    & > code {
+      font-family: var(--font-code-block-code-family);
+    }
+  }
+}

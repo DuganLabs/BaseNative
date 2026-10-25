@@ -61,8 +61,7 @@ Each layer is also exported individually. **`@basenative/components/layers.css` 
 | `@basenative/components/css` | `index.css` — imports everything below, in order |
 | `@basenative/components/layers.css` | Layer order declaration — load first |
 | `@basenative/components/reset.css` | `reset` layer |
-| `@basenative/components/tokens.css` | `tokens` layer: design tokens and density scales |
-| `@basenative/components/theme.css` | `tokens` layer: light/dark palettes (`prefers-color-scheme`, `data-theme`) |
+| `@basenative/components/tokens.css` | Generated from the DTCG token source in `tokens/` (CTI+ taxonomy): design tokens, light/dark modes (`prefers-color-scheme`, `data-theme`) and density scales |
 | `@basenative/components/layout.css` | `layout` layer |
 | `@basenative/components/components.css` | `components` layer: every `[data-bn]` component |
 | `@basenative/components/states.css` | `states` layer: hover/focus/disabled/loading |
@@ -70,7 +69,6 @@ Each layer is also exported individually. **`@basenative/components/layers.css` 
 ```js
 import '@basenative/components/layers.css'; // first
 import '@basenative/components/tokens.css';
-import '@basenative/components/theme.css';
 import '@basenative/components/components.css';
 ```
 
@@ -78,29 +76,29 @@ Dark mode: `prefers-color-scheme: dark` or `data-theme="dark"` on any ancestor. 
 
 ### Brand foregrounds
 
-Re-pointing `--bn-color-primary-*` at your brand is only half the job: something has
+Re-pointing `--palette-primary-*` at your brand is only half the job: something has
 to be readable *on top of* those filled boxes. Four tokens name that foreground, so a
 brand built on a light hue (amber, mint, sand) stays legible without forking any CSS:
 
 | Token | Default | Applies to |
 |-------|---------|------------|
-| `--bn-color-on-primary` | `--bn-color-white` | primary button label, `[aria-current="page"]` in pagination, toggle knob when on |
-| `--bn-color-on-accent` | `--bn-color-on-primary` | checkbox tick, radio dot, data-grid checkbox tick (these sit on `--bn-color-accent-600`) |
-| `--bn-color-on-error` | `--bn-color-white` | destructive button label |
-| `--bn-color-toggle-knob` | `--bn-color-white` | toggle knob when off (rides the neutral track, not the brand) |
+| `--color-text-on-primary` | `--palette-white` | primary button label, `[aria-current="page"]` in pagination, toggle knob when on |
+| `--color-text-on-accent` | `--color-text-on-primary` | checkbox tick, radio dot, data-grid checkbox tick (these sit on `--palette-accent-600`) |
+| `--color-text-on-error` | `--palette-white` | destructive button label |
+| `--color-bkg-toggle-knob-legacy` | `--palette-white` | toggle knob when off (rides the neutral track, not the brand) |
 
 Two more tokens split "the page" from "a thing sitting on the page", which are the
 same colour only on a light theme:
 
 | Token | Default | Applies to |
 |-------|---------|------------|
-| `--bn-color-surface-control` | `--bn-color-surface` | input, textarea, select, combobox input, checkbox, radio, secondary button |
-| `--bn-color-surface-card` | `--bn-color-surface` | card |
+| `--color-surface-control` | `--color-surface` | input, textarea, select, combobox input, checkbox, radio, secondary button |
+| `--color-surface-card` | `--color-surface` | card |
 
 ```css
 :root {
-  --bn-color-primary-600: #e8920a;   /* amber brand */
-  --bn-color-on-primary: #1a0a00;    /* 7.86:1 — white would be 2.46:1 */
+  --palette-primary-600: #e8920a;   /* amber brand */
+  --color-text-on-primary: #1a0a00;    /* 7.86:1 — white would be 2.46:1 */
 }
 ```
 

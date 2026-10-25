@@ -1,75 +1,43 @@
-:root {
-  --textarea-box-sizing: var(--box-sizing-border);
-  --textarea-display: var(--display-block);
-  --textarea-inline-size: var(--size-full);
-  --textarea-min-block-size: calc(var(--size-control) * 2);
-  --textarea-resize: var(--resize-vertical);
-  --textarea-padding-block: var(--space-2);
-  --textarea-padding-inline: var(--space-3);
-  --textarea-background-color: var(--background);
-  --textarea-color: var(--label);
-  --textarea-color--placeholder: var(--label-placeholder);
-  --textarea-border-width: var(--border-width);
-  --textarea-border-style: var(--border-style-solid);
-  --textarea-border-color: var(--separator-opaque);
-  --textarea-border-color--hover: var(--label-3);
-  --textarea-border-color--invalid: var(--danger);
-  --textarea-border-radius: var(--radius-control);
-  --textarea-font-family: var(--text-body-family);
-  --textarea-font-size: var(--text-body-size);
-  --textarea-font-weight: var(--text-body-weight);
-  --textarea-line-height: var(--text-body-leading);
-  --textarea-letter-spacing: var(--text-body-tracking);
-  --textarea-cursor: var(--cursor-text);
-  --textarea-outline-width--focus: var(--border-width-thick);
-  --textarea-outline-style--focus: var(--border-style-solid);
-  --textarea-outline-color--focus: var(--tint);
-  --textarea-outline-offset--focus: var(--space-1);
-  --textarea-box-shadow--focus: var(--focus-ring);
-  --textarea-motion-duration: var(--motion-fade-duration);
-  --textarea-motion-curve: var(--motion-fade-curve);
-}
-
 textarea[variant="default"] {
-  box-sizing: var(--textarea-box-sizing);
-  display: var(--textarea-display);
-  inline-size: var(--textarea-inline-size);
-  min-block-size: var(--textarea-min-block-size);
-  resize: var(--textarea-resize);
-  padding-block: var(--textarea-padding-block);
-  padding-inline: var(--textarea-padding-inline);
-  background-color: var(--textarea-background-color);
-  color: var(--textarea-color);
-  border-width: var(--textarea-border-width);
-  border-style: var(--textarea-border-style);
-  border-color: var(--textarea-border-color);
-  border-radius: var(--textarea-border-radius);
-  font-family: var(--textarea-font-family);
-  font-size: var(--textarea-font-size);
-  font-weight: var(--textarea-font-weight);
-  line-height: var(--textarea-line-height);
-  letter-spacing: var(--textarea-letter-spacing);
-  cursor: var(--textarea-cursor);
-  transition: border-color var(--textarea-motion-duration) var(--textarea-motion-curve), box-shadow var(--textarea-motion-duration) var(--textarea-motion-curve);
+  box-sizing: var(--box-sizing-textarea);
+  display: var(--display-textarea);
+  inline-size: var(--size-textarea-inline);
+  min-block-size: var(--size-textarea-min-block);
+  resize: var(--resize-textarea);
+  padding-block: var(--spacing-textarea-padding-block);
+  padding-inline: var(--spacing-textarea-padding-inline);
+  background-color: var(--color-bkg-textarea);
+  color: var(--color-text-textarea);
+  border-width: var(--size-border-textarea);
+  border-style: var(--border-style-textarea);
+  border-color: var(--color-border-textarea);
+  border-radius: var(--size-radius-textarea);
+  font-family: var(--font-textarea-family);
+  font-size: var(--font-textarea-size);
+  font-weight: var(--font-textarea-weight);
+  line-height: var(--font-textarea-leading);
+  letter-spacing: var(--font-textarea-tracking);
+  cursor: var(--cursor-textarea);
+  transition: border-color var(--motion-textarea-duration) var(--motion-textarea-curve), box-shadow var(--motion-textarea-duration) var(--motion-textarea-curve);
 
   &:hover {
-    border-color: var(--textarea-border-color--hover);
+    border-color: var(--color-border-textarea-hover);
   }
 
   &:focus-visible {
-    outline-width: var(--textarea-outline-width--focus);
-    outline-style: var(--textarea-outline-style--focus);
-    outline-color: var(--textarea-outline-color--focus);
-    outline-offset: var(--textarea-outline-offset--focus);
-    box-shadow: var(--textarea-box-shadow--focus);
+    outline-width: var(--size-border-textarea-outline-focus);
+    outline-style: var(--border-style-textarea-outline-focus);
+    outline-color: var(--color-border-textarea-outline-focus);
+    outline-offset: var(--spacing-textarea-outline-offset-focus);
+    box-shadow: var(--shadow-textarea-focus);
   }
 
   &[aria-invalid="true"] {
-    border-color: var(--textarea-border-color--invalid);
+    border-color: var(--color-border-textarea-invalid);
   }
 
   &::placeholder {
-    color: var(--textarea-color--placeholder);
+    color: var(--color-text-textarea-placeholder);
   }
 }
 
