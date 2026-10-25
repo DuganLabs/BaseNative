@@ -3,7 +3,12 @@
     <template @for="item of items()">
       <template @if="item.childrenHtml">
         <li role="treeitem" :aria-expanded="expandedState(item)">
-          {{ raw(item.toggleHtml) }} {{ item.label }}
+          <template @if="item.toggleHtml">
+            {{ raw(item.toggleHtml) }}
+          </template>
+          <template @else>
+            {{ item.label }}
+          </template>
           <ul role="group">{{ raw(item.childrenHtml) }}</ul>
         </li>
       </template>

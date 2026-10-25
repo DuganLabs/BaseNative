@@ -224,7 +224,7 @@ test('datagrid nests sort buttons and selection checkboxes in the table skeleton
 
 test('tree nests a rendered child tree inside branch items', async () => {
   const registry = await loadRegistry();
-  const toggle = renderComponent(registry, render, 'button', { label: 'Toggle', variant: 'ghost' }).html;
+  const toggle = renderComponent(registry, render, 'button', { label: 'Services', variant: 'ghost' }).html;
   const children = renderComponent(registry, render, 'tree', {
     items: [{ label: 'Panel upgrade' }, { label: 'EV charger' }],
   }).html;
@@ -235,7 +235,8 @@ test('tree nests a rendered child tree inside branch items', async () => {
     ],
   });
   assert.match(html, /<ul variant="tree" role="tree">/);
-  assert.match(html, /<li role="treeitem" aria-expanded="true">/);
+  assert.match(html, /<li role="treeitem" aria-expanded="true">\s*<button variant="ghost" type="button">Services<\/button>/);
+  assert.doesNotMatch(html, /<li role="treeitem">Settings<\/li>[\s\S]*Services\s*<ul/);
   assert.match(html, /<ul role="group">\s*<ul variant="tree" role="tree">/);
   assert.match(html, /<li role="treeitem">Settings<\/li>/);
 });
@@ -342,4 +343,14 @@ test('alert renders an optional dismiss and the toggle hugs its content', async 
   const toggleCss = await readFile(new URL('./theme-toggle/styles.css', import.meta.url), 'utf8');
   assert.match(toggleCss, /--theme-toggle-inline-size: var\(--size-max-content\)/);
   assert.match(toggleCss, /inline-size: var\(--theme-toggle-inline-size\)/);
+});
+
+test('table cells carry aria-current and de-emphasis for the calendar composition', async () => {
+  const registry = await loadRegistry();
+  const { html } = renderComponent(registry, render, 'table', {
+    columns: ['Sun', 'Mon'],
+    rows: [[{ text: '27', small: true }, { text: '28', current: 'date' }]],
+  });
+  assert.match(html, /<td><small>27<\/small><\/td>/);
+  assert.match(html, /<td aria-current="date">28<\/td>/);
 });

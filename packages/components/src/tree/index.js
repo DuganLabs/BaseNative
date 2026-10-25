@@ -16,7 +16,9 @@ export const root = 'ul';
  * @typedef {object} TreeItem
  * @property {string} label
  * @property {boolean} [expanded]
- * @property {string} [toggleHtml] The rendered expand/collapse button.
+ * @property {string} [toggleHtml] The rendered expand/collapse button. It
+ *   carries the branch's name — when present it replaces the label text,
+ *   so the branch reads as one control, not a button plus a duplicate label.
  * @property {string} [childrenHtml] A rendered child tree (branch items only).
  *
  * @typedef {object} TreeProps

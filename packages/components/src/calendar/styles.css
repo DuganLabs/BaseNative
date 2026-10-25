@@ -40,6 +40,10 @@
   --calendar__event-time-font-size: var(--text-subheadline-size);
   --calendar__event-time-line-height: var(--text-subheadline-leading);
   --calendar__event-time-letter-spacing: var(--text-subheadline-tracking);
+  --calendar__event-display: var(--display-flex);
+  --calendar__event-align-items: var(--align-baseline);
+  --calendar__event-gap: var(--space-3);
+  --calendar__event-time-margin-inline-start: var(--margin-auto);
 }
 
 section[variant="month"], section[variant="schedule"] {
@@ -89,6 +93,9 @@ section[variant="month"], section[variant="schedule"] {
         padding: var(--calendar__events-padding);
 
         & article {
+          display: var(--calendar__event-display);
+          align-items: var(--calendar__event-align-items);
+          gap: var(--calendar__event-gap);
           padding-block-start: var(--calendar__event-padding-block-start);
 
           & > h3 {
@@ -101,6 +108,7 @@ section[variant="month"], section[variant="schedule"] {
           }
 
           & > time {
+            margin-inline-start: var(--calendar__event-time-margin-inline-start);
             color: var(--calendar__event-time-color);
             font-family: var(--calendar__event-time-font-family);
             font-size: var(--calendar__event-time-font-size);
@@ -111,4 +119,23 @@ section[variant="month"], section[variant="schedule"] {
       }
     }
   }
+}
+
+/* In month mode the composed table becomes a calendar grid — the
+   composition channel: the calendar re-points the table's tokens in
+   its own scope (centered cells, taller rows, a full grid) and the
+   table's own aria-current rules mark today and the selection. */
+section[variant="month"] {
+  --table__cell-text-align: var(--text-align-center);
+  --table__cell-padding-block: var(--space-3);
+  --table__cell-border-inline-end-width: var(--hairline);
+  /* A month grid is not a data table — it keeps its rows at every
+     width, so the calendar opts the composed table out of the
+     narrow restack through the table's own tokens. */
+  --table__head-position--restack: var(--position-static);
+  --table__head-inline-size--restack: var(--size-full);
+  --table__head-block-size--restack: var(--size-max-content);
+  --table__row-display--restack: var(--display-table-row);
+  --table__cell-display--restack: var(--display-table-cell);
+  --table__cell-border-block-end-width--restack: var(--hairline);
 }

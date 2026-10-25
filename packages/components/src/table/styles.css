@@ -29,6 +29,19 @@
   --table__cell-text-align: var(--text-align-start);
   --table__cell-vertical-align: var(--vertical-align-middle);
   --table__row-header-font-weight: var(--font-weight-semibold);
+  --table__cell-border-inline-end-width: var(--border-width-none);
+  --table__cell-border-inline-end-style: var(--border-style-solid);
+  --table__cell-border-inline-end-color: var(--separator);
+  --table__cell-background-color--today: var(--tint-fill);
+  --table__cell-font-weight--current: var(--font-weight-semibold);
+  --table__cell-box-shadow--selected: var(--focus-ring);
+  --table__cell-color--small: var(--label-3);
+  --table__head-position--restack: var(--position-absolute);
+  --table__head-inline-size--restack: var(--size-1px);
+  --table__head-block-size--restack: var(--size-1px);
+  --table__row-display--restack: var(--display-block);
+  --table__cell-display--restack: var(--display-block);
+  --table__cell-border-block-end-width--restack: var(--border-width-none);
   --table__row-background-color--striped: var(--fill-4);
 }
 
@@ -51,6 +64,9 @@ table[variant="default"], table[variant="striped"] {
     padding-block: var(--table__cell-padding-block);
     padding-inline: var(--table__cell-padding-inline);
     border-block-end-width: var(--table__cell-border-block-end-width);
+    border-inline-end-width: var(--table__cell-border-inline-end-width);
+    border-inline-end-style: var(--table__cell-border-inline-end-style);
+    border-inline-end-color: var(--table__cell-border-inline-end-color);
     border-block-end-style: var(--table__cell-border-block-end-style);
     border-block-end-color: var(--table__cell-border-block-end-color);
     font-family: var(--table__cell-font-family);
@@ -75,6 +91,21 @@ table[variant="default"], table[variant="striped"] {
   & > tbody th {
     font-weight: var(--table__row-header-font-weight);
   }
+
+  & td[aria-current="date"], & th[aria-current="date"] {
+    background-color: var(--table__cell-background-color--today);
+    font-weight: var(--table__cell-font-weight--current);
+  }
+
+  & td[aria-current="true"], & th[aria-current="true"] {
+    box-shadow: var(--table__cell-box-shadow--selected);
+    font-weight: var(--table__cell-font-weight--current);
+  }
+
+  & td > small, & th > small {
+    color: var(--table__cell-color--small);
+    font-size: var(--table__cell-font-size);
+  }
 }
 
 table[variant="striped"] > tbody > tr:nth-child(even) {
@@ -87,20 +118,20 @@ table[variant="striped"] > tbody > tr:nth-child(even) {
 @media (max-width: 40rem) {
   table[variant="default"], table[variant="striped"] {
     & > thead {
-      position: var(--position-absolute);
-      inline-size: var(--size-1px);
-      block-size: var(--size-1px);
+      position: var(--table__head-position--restack);
+      inline-size: var(--table__head-inline-size--restack);
+      block-size: var(--table__head-block-size--restack);
       overflow: var(--overflow-hidden);
     }
 
     & > tbody > tr {
-      display: var(--display-block);
+      display: var(--table__row-display--restack);
       padding-block: var(--space-2);
     }
 
     & > tbody th, & > tbody td {
-      display: var(--display-block);
-      border-block-end-width: var(--border-width-none);
+      display: var(--table__cell-display--restack);
+      border-block-end-width: var(--table__cell-border-block-end-width--restack);
       padding-block: var(--space-1);
     }
   }

@@ -241,6 +241,8 @@
   --display-inline-flex: inline-flex;
   --display-grid: grid;
   --display-none: none;
+  --display-table-row: table-row;
+  --display-table-cell: table-cell;
   --appearance-none: none;
   --cursor-pointer: pointer;
   --cursor-not-allowed: not-allowed;
@@ -248,11 +250,13 @@
   --border-style-solid: solid;
   --box-sizing-border: border-box;
   --align-center: center;
+  --align-baseline: baseline;
   --align-start: start;
   --align-stretch: stretch;
   --position-relative: relative;
   --position-absolute: absolute;
   --position-fixed: fixed;
+  --position-static: static;
   --position-sticky: sticky;
   --resize-vertical: vertical;
   --justify-center: center;

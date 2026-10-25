@@ -15,10 +15,20 @@
         <tr>
           <template @for="cell of row">
             <template @if="cell.header">
-              <th scope="row">{{ cell.text }}</th>
+              <template @if="cell.current">
+                <th scope="row" :aria-current="cell.current"><template @if="cell.small"><small>{{ cell.text }}</small></template><template @else>{{ cell.text }}</template></th>
+              </template>
+              <template @else>
+                <th scope="row"><template @if="cell.small"><small>{{ cell.text }}</small></template><template @else>{{ cell.text }}</template></th>
+              </template>
             </template>
             <template @else>
-              <td>{{ cell.text }}</td>
+              <template @if="cell.current">
+                <td :aria-current="cell.current"><template @if="cell.small"><small>{{ cell.text }}</small></template><template @else>{{ cell.text }}</template></td>
+              </template>
+              <template @else>
+                <td><template @if="cell.small"><small>{{ cell.text }}</small></template><template @else>{{ cell.text }}</template></td>
+              </template>
             </template>
           </template>
         </tr>

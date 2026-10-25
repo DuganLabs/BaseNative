@@ -80,3 +80,11 @@ table[variant="datagrid"] {
 table[variant="datagrid"] > thead th[aria-sort] {
   background-color: var(--datagrid__sorted-background-color);
 }
+
+/* A header hosting a sort button lets the button's label sit on the
+   cell's own padding edge, like every other header's text. */
+table[variant="datagrid"] > thead th:has(> button) {
+  --button-padding-block: var(--space-0);
+  --button-padding-inline: var(--space-0);
+  --button-block-size: var(--size-max-content);
+}
