@@ -1,43 +1,29 @@
-:root {
-  --virtualizer-display: var(--display-block);
-  --virtualizer-list-style: var(--list-style-none);
-  --virtualizer-margin: var(--space-0);
-  --virtualizer-padding: var(--space-0);
-  --virtualizer-overflow: var(--overflow-auto);
-  --virtualizer__item-block-size: var(--size-control);
-  --virtualizer__item-display: var(--display-flex);
-  --virtualizer__item-align-items: var(--align-center);
-  --virtualizer__viewport-rows: 8;
-  --virtualizer__spacer-start-count: 0;
-  --virtualizer__spacer-end-count: 0;
-}
-
 ol[variant="virtualizer"] {
   /* The size derivations live on the element rather than the root
      block. A custom property resolves its calc where it is declared,
      so a host re-pointing the count tokens on this element feeds the
      calc from here. */
-  --virtualizer-block-size: calc(var(--virtualizer__item-block-size) * var(--virtualizer__viewport-rows));
-  --virtualizer__spacer-start-block-size: calc(var(--virtualizer__item-block-size) * var(--virtualizer__spacer-start-count));
-  --virtualizer__spacer-end-block-size: calc(var(--virtualizer__item-block-size) * var(--virtualizer__spacer-end-count));
-  display: var(--virtualizer-display);
-  list-style: var(--virtualizer-list-style);
-  margin: var(--virtualizer-margin);
-  padding: var(--virtualizer-padding);
-  overflow: var(--virtualizer-overflow);
-  block-size: var(--virtualizer-block-size);
+  --size-virtualizer-block: calc(var(--size-virtualizer-item-block) * var(--number-virtualizer-viewport-rows));
+  --size-virtualizer-spacer-start-block: calc(var(--size-virtualizer-item-block) * var(--number-virtualizer-spacer-start-count));
+  --size-virtualizer-spacer-end-block: calc(var(--size-virtualizer-item-block) * var(--number-virtualizer-spacer-end-count));
+  display: var(--display-virtualizer);
+  list-style: var(--list-style-virtualizer);
+  margin: var(--spacing-virtualizer-margin);
+  padding: var(--spacing-virtualizer-padding);
+  overflow: var(--overflow-virtualizer);
+  block-size: var(--size-virtualizer-block);
 
   & > li {
-    display: var(--virtualizer__item-display);
-    align-items: var(--virtualizer__item-align-items);
-    block-size: var(--virtualizer__item-block-size);
+    display: var(--display-virtualizer-item);
+    align-items: var(--align-virtualizer-item);
+    block-size: var(--size-virtualizer-item-block);
   }
 
   & > li:first-child {
-    block-size: var(--virtualizer__spacer-start-block-size);
+    block-size: var(--size-virtualizer-spacer-start-block);
   }
 
   & > li:last-child {
-    block-size: var(--virtualizer__spacer-end-block-size);
+    block-size: var(--size-virtualizer-spacer-end-block);
   }
 }

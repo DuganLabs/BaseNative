@@ -67,15 +67,15 @@
 
     /* Accent */
     --accent: #e8920a;
-    --accent-dim: color-mix(in oklab, var(--tint) 72%, black);
-    --accent-glow: color-mix(in srgb, var(--tint) 20%, transparent);
-    --accent-glow-strong: color-mix(in srgb, var(--tint) 33%, transparent);
+    --accent-dim: #b06f08;
+    --accent-glow: #e8920a33;
+    --accent-glow-strong: #e8920a55;
 
     /* Status */
     --danger: #f07178;
-    --danger-glow: color-mix(in srgb, var(--danger) 20%, transparent);
+    --danger-glow: #f0717833;
     --success: #c3e88d;
-    --success-glow: color-mix(in srgb, var(--success) 20%, transparent);
+    --success-glow: #c3e88d33;
     --info: #82aaff;
 
     /* Fonts — single family, style-switch via font-stretch */
@@ -162,14 +162,14 @@
     --z-noise: 9999;
 
     /* Syntax highlighting */
-    --syntax-keyword: #c792ea;
-    --syntax-string: #c3e88d;
-    --syntax-function: #82aaff;
-    --syntax-number: #f78c6c;
-    --syntax-comment: #7a98a5;
-    --syntax-tag: #f07178;
-    --syntax-attr: #ffcb6b;
-    --syntax-variable: #89ddff;
+    --color-syntax-keyword: #c792ea;
+    --color-syntax-string: #c3e88d;
+    --color-syntax-function: #82aaff;
+    --color-syntax-number: #f78c6c;
+    --color-syntax-comment: #7a98a5;
+    --color-syntax-tag: #f07178;
+    --color-syntax-attr: #ffcb6b;
+    --color-syntax-variable: #89ddff;
 
     /* Stat grid */
     --stat-grid-columns: 4;
@@ -1088,29 +1088,29 @@
 
   /* Syntax highlighting */
   .kw {
-    color: var(--syntax-keyword);
+    color: var(--color-syntax-keyword);
   }
   .str {
-    color: var(--syntax-string);
+    color: var(--color-syntax-string);
   }
   .fn {
-    color: var(--syntax-function);
+    color: var(--color-syntax-function);
   }
   .num {
-    color: var(--syntax-number);
+    color: var(--color-syntax-number);
   }
   .cmt {
-    color: var(--syntax-comment);
+    color: var(--color-syntax-comment);
     font-style: italic;
   }
   .tag {
-    color: var(--syntax-tag);
+    color: var(--color-syntax-tag);
   }
   .attr {
-    color: var(--syntax-attr);
+    color: var(--color-syntax-attr);
   }
   .var {
-    color: var(--syntax-variable);
+    color: var(--color-syntax-variable);
   }
 
   /* -- Labels -- */

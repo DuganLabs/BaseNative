@@ -1,219 +1,129 @@
-:root {
-  --select-position: var(--position-relative);
-  --select-display: var(--display-block);
-  --select__native-box-sizing: var(--box-sizing-border);
-  --select__native-display: var(--display-block);
-  --select__native-inline-size: var(--size-full);
-  --select__native-block-size: var(--size-control);
-  --select__native-padding-block: var(--space-2);
-  --select__native-padding-inline: var(--space-3);
-  --select__native-background-color: var(--background);
-  --select__native-color: var(--label);
-  --select__native-border-width: var(--border-width);
-  --select__native-border-style: var(--border-style-solid);
-  --select__native-border-color: var(--separator-opaque);
-  --select__native-border-color--hover: var(--label-3);
-  --select__native-border-radius: var(--radius-control);
-  --select__native-font-family: var(--text-body-family);
-  --select__native-font-size: var(--text-body-size);
-  --select__native-font-weight: var(--text-body-weight);
-  --select__native-line-height: var(--text-body-leading);
-  --select__native-cursor: var(--cursor-pointer);
-  --select__native-outline-width--focus: var(--border-width-thick);
-  --select__native-outline-style--focus: var(--border-style-solid);
-  --select__native-outline-color--focus: var(--tint);
-  --select__native-outline-offset--focus: var(--space-1);
-  --select__native-box-shadow--focus: var(--focus-ring);
-  --select__trigger-box-sizing: var(--box-sizing-border);
-  --select__trigger-display: var(--display-flex);
-  --select__trigger-align-items: var(--align-center);
-  --select__trigger-justify-content: var(--justify-space-between);
-  --select__trigger-gap: var(--space-2);
-  --select__trigger-inline-size: var(--size-full);
-  --select__trigger-block-size: var(--size-control);
-  --select__trigger-padding-block: var(--space-2);
-  --select__trigger-padding-inline: var(--space-3);
-  --select__trigger-background-color: var(--background);
-  --select__trigger-color: var(--label);
-  --select__trigger-color--disabled: var(--label-3);
-  --select__trigger-border-width: var(--border-width);
-  --select__trigger-border-style: var(--border-style-solid);
-  --select__trigger-border-color: var(--separator-opaque);
-  --select__trigger-border-color--hover: var(--label-3);
-  --select__trigger-border-radius: var(--radius-control);
-  --select__trigger-font-family: var(--text-body-family);
-  --select__trigger-font-size: var(--text-body-size);
-  --select__trigger-font-weight: var(--text-body-weight);
-  --select__trigger-line-height: var(--text-body-leading);
-  --select__trigger-letter-spacing: var(--text-body-tracking);
-  --select__trigger-cursor: var(--cursor-pointer);
-  --select__trigger-cursor--disabled: var(--cursor-not-allowed);
-  --select__trigger-outline-width--focus: var(--border-width-thick);
-  --select__trigger-outline-style--focus: var(--border-style-solid);
-  --select__trigger-outline-color--focus: var(--tint);
-  --select__trigger-outline-offset--focus: var(--space-1);
-  --select__trigger-box-shadow--focus: var(--focus-ring);
-  --select__chevron-inline-size: var(--space-5);
-  --select__chevron-block-size: var(--space-5);
-  --select__chevron-color: var(--label-3);
-  --select__chevron-margin-inline-start: var(--margin-auto);
-  --select__chevron-transform--open: rotate(180deg);
-  --select__listbox-position: var(--position-absolute);
-  --select__listbox-inset-block-start: var(--size-full);
-  --select__listbox-inset-inline: var(--space-0);
-  --select__listbox-margin: var(--space-0);
-  --select__listbox-margin-block-start: var(--space-1);
-  --select__listbox-z-index: var(--layer-overlay);
-  --select__listbox-list-style: var(--list-style-none);
-  --select__listbox-padding: var(--space-1);
-  --select__listbox-background-color: var(--background-3);
-  --select__listbox-border-width: var(--hairline);
-  --select__listbox-border-style: var(--border-style-solid);
-  --select__listbox-border-color: var(--separator);
-  --select__listbox-border-radius: var(--radius-container);
-  --select__listbox-box-shadow: var(--shadow-float);
-  --select__listbox-max-block-size: calc(var(--size-control) * 6);
-  --select__listbox-overflow: var(--overflow-auto);
-  --select__option-padding-block: var(--space-2);
-  --select__option-padding-inline: var(--space-3);
-  --select__option-border-radius: var(--radius-md);
-  --select__option-color: var(--label);
-  --select__option-font-family: var(--text-body-family);
-  --select__option-font-size: var(--text-body-size);
-  --select__option-line-height: var(--text-body-leading);
-  --select__option-letter-spacing: var(--text-body-tracking);
-  --select__option-cursor: var(--cursor-pointer);
-  --select__option-background-color--selected: var(--fill-2);
-  --select-motion-duration: var(--motion-fade-duration);
-  --select-motion-curve: var(--motion-fade-curve);
-}
-
 section[variant="select"] {
-  position: var(--select-position);
-  display: var(--select-display);
+  position: var(--position-select);
+  display: var(--display-select);
 
   & > button {
-    box-sizing: var(--select__trigger-box-sizing);
-    display: var(--select__trigger-display);
-    align-items: var(--select__trigger-align-items);
-    justify-content: var(--select__trigger-justify-content);
-    gap: var(--select__trigger-gap);
-    inline-size: var(--select__trigger-inline-size);
-    block-size: var(--select__trigger-block-size);
-    padding-block: var(--select__trigger-padding-block);
-    padding-inline: var(--select__trigger-padding-inline);
-    background-color: var(--select__trigger-background-color);
-    color: var(--select__trigger-color);
-    border-width: var(--select__trigger-border-width);
-    border-style: var(--select__trigger-border-style);
-    border-color: var(--select__trigger-border-color);
-    border-radius: var(--select__trigger-border-radius);
-    font-family: var(--select__trigger-font-family);
-    font-size: var(--select__trigger-font-size);
-    font-weight: var(--select__trigger-font-weight);
-    line-height: var(--select__trigger-line-height);
-    letter-spacing: var(--select__trigger-letter-spacing);
-    cursor: var(--select__trigger-cursor);
-    transition: border-color var(--select-motion-duration) var(--select-motion-curve), box-shadow var(--select-motion-duration) var(--select-motion-curve);
+    box-sizing: var(--box-sizing-select-trigger);
+    display: var(--display-select-trigger);
+    align-items: var(--align-select-trigger);
+    justify-content: var(--justify-select-trigger);
+    gap: var(--spacing-select-trigger-gap);
+    inline-size: var(--size-select-trigger-inline);
+    block-size: var(--size-select-trigger-block);
+    padding-block: var(--spacing-select-trigger-padding-block);
+    padding-inline: var(--spacing-select-trigger-padding-inline);
+    background-color: var(--color-bkg-select-trigger);
+    color: var(--color-text-select-trigger);
+    border-width: var(--size-border-select-trigger);
+    border-style: var(--border-style-select-trigger);
+    border-color: var(--color-border-select-trigger);
+    border-radius: var(--size-radius-select-trigger);
+    font-family: var(--font-select-trigger-family);
+    font-size: var(--font-select-trigger-size);
+    font-weight: var(--font-select-trigger-weight);
+    line-height: var(--font-select-trigger-leading);
+    letter-spacing: var(--font-select-trigger-tracking);
+    cursor: var(--cursor-select-trigger);
+    transition: border-color var(--motion-select-duration) var(--motion-select-curve), box-shadow var(--motion-select-duration) var(--motion-select-curve);
   }
 
   & > button > svg {
-    inline-size: var(--select__chevron-inline-size);
-    block-size: var(--select__chevron-block-size);
-    color: var(--select__chevron-color);
-    margin-inline-start: var(--select__chevron-margin-inline-start);
-    transition: transform var(--select-motion-duration) var(--select-motion-curve);
+    inline-size: var(--size-select-chevron-inline);
+    block-size: var(--size-select-chevron-block);
+    color: var(--color-text-select-chevron);
+    margin-inline-start: var(--spacing-select-chevron-margin-inline-start);
+    transition: transform var(--motion-select-duration) var(--motion-select-curve);
   }
 
   & > button[aria-expanded="true"] > svg {
-    transform: var(--select__chevron-transform--open);
+    transform: var(--transform-select-chevron-open);
   }
 
   & > button:hover {
-    border-color: var(--select__trigger-border-color--hover);
+    border-color: var(--color-border-select-trigger-hover);
   }
 
   & > button:focus-visible {
-    outline-width: var(--select__trigger-outline-width--focus);
-    outline-style: var(--select__trigger-outline-style--focus);
-    outline-color: var(--select__trigger-outline-color--focus);
-    outline-offset: var(--select__trigger-outline-offset--focus);
-    box-shadow: var(--select__trigger-box-shadow--focus);
+    outline-width: var(--size-border-select-trigger-outline-focus);
+    outline-style: var(--border-style-select-trigger-outline-focus);
+    outline-color: var(--color-border-select-trigger-outline-focus);
+    outline-offset: var(--spacing-select-trigger-outline-offset-focus);
+    box-shadow: var(--shadow-select-trigger-focus);
   }
 
   & > button:disabled {
-    color: var(--select__trigger-color--disabled);
-    cursor: var(--select__trigger-cursor--disabled);
+    color: var(--color-text-select-trigger-disabled);
+    cursor: var(--cursor-select-trigger-disabled);
   }
 
   & > ul {
-    position: var(--select__listbox-position);
-    inset-block-start: var(--select__listbox-inset-block-start);
-    inset-inline: var(--select__listbox-inset-inline);
-    margin: var(--select__listbox-margin);
-    margin-block-start: var(--select__listbox-margin-block-start);
-    z-index: var(--select__listbox-z-index);
-    list-style: var(--select__listbox-list-style);
-    padding: var(--select__listbox-padding);
-    background-color: var(--select__listbox-background-color);
-    border-width: var(--select__listbox-border-width);
-    border-style: var(--select__listbox-border-style);
-    border-color: var(--select__listbox-border-color);
-    border-radius: var(--select__listbox-border-radius);
-    box-shadow: var(--select__listbox-box-shadow);
-    max-block-size: var(--select__listbox-max-block-size);
-    overflow: var(--select__listbox-overflow);
+    position: var(--position-select-listbox);
+    inset-block-start: var(--spacing-select-listbox-inset-block-start);
+    inset-inline: var(--spacing-select-listbox-inset-inline);
+    margin: var(--spacing-select-listbox-margin);
+    margin-block-start: var(--spacing-select-listbox-margin-block-start);
+    z-index: var(--layer-select-listbox);
+    list-style: var(--list-style-select-listbox);
+    padding: var(--spacing-select-listbox-padding);
+    background-color: var(--color-bkg-select-listbox);
+    border-width: var(--size-border-select-listbox);
+    border-style: var(--border-style-select-listbox);
+    border-color: var(--color-border-select-listbox);
+    border-radius: var(--size-radius-select-listbox);
+    box-shadow: var(--shadow-select-listbox);
+    max-block-size: var(--size-select-listbox-max-block);
+    overflow: var(--overflow-select-listbox);
   }
 
   & > ul > li {
-    padding-block: var(--select__option-padding-block);
-    padding-inline: var(--select__option-padding-inline);
-    border-radius: var(--select__option-border-radius);
-    color: var(--select__option-color);
-    font-family: var(--select__option-font-family);
-    font-size: var(--select__option-font-size);
-    line-height: var(--select__option-line-height);
-    letter-spacing: var(--select__option-letter-spacing);
-    cursor: var(--select__option-cursor);
+    padding-block: var(--spacing-select-option-padding-block);
+    padding-inline: var(--spacing-select-option-padding-inline);
+    border-radius: var(--size-radius-select-option);
+    color: var(--color-text-select-option);
+    font-family: var(--font-select-option-family);
+    font-size: var(--font-select-option-size);
+    line-height: var(--font-select-option-leading);
+    letter-spacing: var(--font-select-option-tracking);
+    cursor: var(--cursor-select-option);
   }
 
   & > ul > li[aria-selected="true"] {
-    background-color: var(--select__option-background-color--selected);
+    background-color: var(--color-bkg-select-option-selected);
   }
 }
 
 section[variant="native"] {
 
   & > select {
-    box-sizing: var(--select__native-box-sizing);
-    display: var(--select__native-display);
-    inline-size: var(--select__native-inline-size);
-    block-size: var(--select__native-block-size);
-    padding-block: var(--select__native-padding-block);
-    padding-inline: var(--select__native-padding-inline);
-    background-color: var(--select__native-background-color);
-    color: var(--select__native-color);
-    border-width: var(--select__native-border-width);
-    border-style: var(--select__native-border-style);
-    border-color: var(--select__native-border-color);
-    border-radius: var(--select__native-border-radius);
-    font-family: var(--select__native-font-family);
-    font-size: var(--select__native-font-size);
-    font-weight: var(--select__native-font-weight);
-    line-height: var(--select__native-line-height);
-    cursor: var(--select__native-cursor);
-    transition: border-color var(--select-motion-duration) var(--select-motion-curve), box-shadow var(--select-motion-duration) var(--select-motion-curve);
+    box-sizing: var(--box-sizing-select-native);
+    display: var(--display-select-native);
+    inline-size: var(--size-select-native-inline);
+    block-size: var(--size-select-native-block);
+    padding-block: var(--spacing-select-native-padding-block);
+    padding-inline: var(--spacing-select-native-padding-inline);
+    background-color: var(--color-bkg-select-native);
+    color: var(--color-text-select-native);
+    border-width: var(--size-border-select-native);
+    border-style: var(--border-style-select-native);
+    border-color: var(--color-border-select-native);
+    border-radius: var(--size-radius-select-native);
+    font-family: var(--font-select-native-family);
+    font-size: var(--font-select-native-size);
+    font-weight: var(--font-select-native-weight);
+    line-height: var(--font-select-native-leading);
+    cursor: var(--cursor-select-native);
+    transition: border-color var(--motion-select-duration) var(--motion-select-curve), box-shadow var(--motion-select-duration) var(--motion-select-curve);
   }
 
   & > select:hover {
-    border-color: var(--select__native-border-color--hover);
+    border-color: var(--color-border-select-native-hover);
   }
 
   & > select:focus-visible {
-    outline-width: var(--select__native-outline-width--focus);
-    outline-style: var(--select__native-outline-style--focus);
-    outline-color: var(--select__native-outline-color--focus);
-    outline-offset: var(--select__native-outline-offset--focus);
-    box-shadow: var(--select__native-box-shadow--focus);
+    outline-width: var(--size-border-select-native-outline-focus);
+    outline-style: var(--border-style-select-native-outline-focus);
+    outline-color: var(--color-border-select-native-outline-focus);
+    outline-offset: var(--spacing-select-native-outline-offset-focus);
+    box-shadow: var(--shadow-select-native-focus);
   }
 }

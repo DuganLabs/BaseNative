@@ -1,78 +1,52 @@
-:root {
-  --alert-display: var(--display-grid);
-  --alert-gap: var(--space-1);
-  --alert-padding-block: var(--space-3);
-  --alert-padding-inline: var(--space-4);
-  --alert-padding-inline-end: var(--space-4);
-  --alert-padding-inline-end--dismissible: calc(var(--space-4) + var(--size-target-min));
-  --alert-position: var(--position-relative);
-  --alert__dismiss-position: var(--position-absolute);
-  --alert__dismiss-inset-block-start: var(--space-2);
-  --alert__dismiss-inset-inline-end: var(--space-2);
-  --alert-background-color: var(--tint-fill);
-  --alert-border-radius: var(--radius-container);
-  --alert__title-color: var(--tint);
-  --alert__title-font-family: var(--text-headline-family);
-  --alert__title-font-size: var(--text-headline-size);
-  --alert__title-font-weight: var(--text-headline-weight);
-  --alert__title-line-height: var(--text-headline-leading);
-  --alert__title-margin: var(--space-0);
-  --alert__body-color: var(--label);
-  --alert__body-font-family: var(--text-callout-family);
-  --alert__body-font-size: var(--text-callout-size);
-  --alert__body-line-height: var(--text-callout-leading);
-  --alert__body-margin: var(--space-0);
-}
-
 aside[variant="info"], aside[variant="success"], aside[variant="warning"], aside[variant="danger"] {
-  display: var(--alert-display);
-  gap: var(--alert-gap);
-  position: var(--alert-position);
-  padding-block: var(--alert-padding-block);
-  padding-inline-start: var(--alert-padding-inline);
-  padding-inline-end: var(--alert-padding-inline-end);
-  background-color: var(--alert-background-color);
-  border-radius: var(--alert-border-radius);
+  display: var(--display-alert);
+  gap: var(--spacing-alert-gap);
+  position: var(--position-alert);
+  padding-block: var(--spacing-alert-padding-block);
+  padding-inline-start: var(--spacing-alert-padding-inline);
+  padding-inline-end: var(--spacing-alert-padding-inline-end);
+  background-color: var(--color-bkg-alert);
+  border-radius: var(--size-radius-alert);
 
   & > h3 {
-    color: var(--alert__title-color);
-    font-family: var(--alert__title-font-family);
-    font-size: var(--alert__title-font-size);
-    font-weight: var(--alert__title-font-weight);
-    line-height: var(--alert__title-line-height);
-    margin: var(--alert__title-margin);
+    color: var(--color-text-alert-title);
+    font-family: var(--font-alert-title-family);
+    font-size: var(--font-alert-title-size);
+    font-weight: var(--font-alert-title-weight);
+    line-height: var(--font-alert-title-leading);
+    margin: var(--spacing-alert-title-margin);
   }
 
   & > p {
-    color: var(--alert__body-color);
-    font-family: var(--alert__body-font-family);
-    font-size: var(--alert__body-font-size);
-    line-height: var(--alert__body-line-height);
-    margin: var(--alert__body-margin);
+    color: var(--color-text-alert-body);
+    font-family: var(--font-alert-body-family);
+    font-size: var(--font-alert-body-size);
+    line-height: var(--font-alert-body-leading);
+    margin: var(--spacing-alert-body-margin);
   }
 }
 
 aside[variant="danger"] {
-  --alert-background-color: var(--danger-fill);
-  --alert__title-color: var(--danger-strong);
+  --color-bkg-alert: var(--color-danger-fill);
+  --color-text-alert-title: var(--color-danger-strong);
 }
 
 aside[variant="success"] {
-  --alert-background-color: var(--success-fill);
-  --alert__title-color: var(--success-strong);
+  --color-bkg-alert: var(--color-success-fill);
+  --color-text-alert-title: var(--color-success-strong);
 }
 
 aside[variant="warning"] {
-  --alert-background-color: var(--warning-fill);
-  --alert__title-color: var(--warning-strong);
+  --color-bkg-alert: var(--color-warning-fill);
+  --color-text-alert-title: var(--color-warning-strong);
 }
 
 aside[variant="info"]:has(> button), aside[variant="success"]:has(> button), aside[variant="warning"]:has(> button), aside[variant="danger"]:has(> button) {
-  --alert-padding-inline-end: var(--alert-padding-inline-end--dismissible);
+  --spacing-alert-padding-inline-end: var(--spacing-alert-padding-inline-end-dismissible);
 }
 
 aside[variant="info"] > button, aside[variant="success"] > button, aside[variant="warning"] > button, aside[variant="danger"] > button {
-  position: var(--alert__dismiss-position);
-  inset-block-start: var(--alert__dismiss-inset-block-start);
-  inset-inline-end: var(--alert__dismiss-inset-inline-end);
+  position: var(--position-alert-dismiss);
+  inset-block-start: var(--spacing-alert-dismiss-inset-block-start);
+  inset-inline-end: var(--spacing-alert-dismiss-inset-inline-end);
 }

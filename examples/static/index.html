@@ -27,10 +27,10 @@
     --accent-dim: #b07a30;
     --accent-glow: #e8a44a33;
     --accent-glow-strong: #e8a44a55;
-    --syntax-keyword: #c792ea;
-    --syntax-tag: #89ddff;
-    --syntax-string: #c3e88d;
-    --syntax-punct: #676e95;
+    --color-syntax-keyword: #c792ea;
+    --color-syntax-tag: #89ddff;
+    --color-syntax-string: #c3e88d;
+    --color-syntax-punct: #676e95;
     --danger: #f07178;
     --danger-glow: #f0717833;
     --success: #c3e88d;
@@ -226,7 +226,7 @@
   }
 
   main > header p code {
-    color: var(--syntax-tag);
+    color: var(--color-syntax-tag);
     font-size: var(--font-size-xl);
     padding: var(--space-xs) 0.35em;
     background: var(--surface-2);
@@ -338,14 +338,14 @@
 
   pre, code { font-family: var(--font-family); font-stretch: var(--font-mono); }
   pre { font-size: var(--font-size-sm); line-height: var(--line-height-code); color: var(--text-1); white-space: pre; tab-size: var(--tab-size); }
-  code .kw { color: var(--syntax-keyword); font-weight: var(--font-weight-semibold); transition: text-shadow var(--duration-med); }
-  code .tag { color: var(--syntax-tag); transition: text-shadow var(--duration-med); }
-  code .str { color: var(--syntax-string); transition: text-shadow var(--duration-med); }
-  code .p { color: var(--syntax-punct); }
+  code .kw { color: var(--color-syntax-keyword); font-weight: var(--font-weight-semibold); transition: text-shadow var(--duration-med); }
+  code .tag { color: var(--color-syntax-tag); transition: text-shadow var(--duration-med); }
+  code .str { color: var(--color-syntax-string); transition: text-shadow var(--duration-med); }
+  code .p { color: var(--color-syntax-punct); }
   code .cm { color: var(--text-2); font-style: italic; }
-  [data-role="source"]:hover code .kw { text-shadow: 0 0 10px color-mix(in srgb, var(--syntax-keyword) 40%, transparent); }
-  [data-role="source"]:hover code .tag { text-shadow: 0 0 10px color-mix(in srgb, var(--syntax-tag) 30%, transparent); }
-  [data-role="source"]:hover code .str { text-shadow: 0 0 10px color-mix(in srgb, var(--syntax-string) 30%, transparent); }
+  [data-role="source"]:hover code .kw { text-shadow: 0 0 10px color-mix(in srgb, var(--color-syntax-keyword) 40%, transparent); }
+  [data-role="source"]:hover code .tag { text-shadow: 0 0 10px color-mix(in srgb, var(--color-syntax-tag) 30%, transparent); }
+  [data-role="source"]:hover code .str { text-shadow: 0 0 10px color-mix(in srgb, var(--color-syntax-string) 30%, transparent); }
 
   button {
     font-family: var(--font-family);
@@ -450,7 +450,7 @@
   nav[aria-label="Core principles"] > aside:hover { border-color: var(--border-accent); box-shadow: var(--shadow-hover); translate: 0 var(--translate-hover-up) !important; }
   nav[aria-label="Core principles"] > aside > strong { display: block; font-family: var(--font-family); font-stretch: var(--font-mono); font-size: var(--font-size-xs); color: var(--accent); letter-spacing: var(--letter-spacing-wider); margin-block-end: var(--space-md); }
   nav[aria-label="Core principles"] > aside > p { font-size: var(--font-size-lg); color: var(--text-1); line-height: var(--line-height-tight); }
-  nav[aria-label="Core principles"] > aside > p code { color: var(--syntax-tag); font-size: var(--font-size-base); padding: 0.05em 0.3em; background: var(--surface-2); border-radius: var(--radius-sm); transition: color var(--duration-med), background var(--duration-med); }
+  nav[aria-label="Core principles"] > aside > p code { color: var(--color-syntax-tag); font-size: var(--font-size-base); padding: 0.05em 0.3em; background: var(--surface-2); border-radius: var(--radius-sm); transition: color var(--duration-med), background var(--duration-med); }
   nav[aria-label="Core principles"] > aside:hover > p code { color: var(--accent); background: var(--surface-3); }
 
   figure { padding: var(--space-2xl); background: var(--surface-1); border: var(--border-width) solid var(--border); border-radius: var(--radius-lg); overflow-x: auto; opacity: 0; translate: 0 var(--translate-principle-in); transition: opacity var(--anim-duration-reveal) var(--ease-out-expo), translate var(--anim-duration-reveal) var(--ease-out-expo), border-color var(--duration-med), box-shadow var(--duration-med); }

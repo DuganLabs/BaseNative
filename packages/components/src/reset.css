@@ -1,7 +1,7 @@
 @layer reset {
   *, *::before, *::after { box-sizing: border-box; margin: 0; }
   html { hanging-punctuation: first last; -webkit-text-size-adjust: 100%; }
-  body { min-height: 100dvh; line-height: var(--bn-line-height-normal); font-family: var(--bn-font-family); color: var(--bn-color-text); background: var(--bn-color-surface); -webkit-font-smoothing: antialiased; }
+  body { min-height: 100dvh; line-height: var(--font-leading-normal); font-family: var(--font-family-sans); color: var(--color-text); background: var(--color-surface); -webkit-font-smoothing: antialiased; }
   img, picture, video, canvas, svg { display: block; max-width: 100%; }
   input, button, textarea, select { font: inherit; }
   p, h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; }
@@ -21,20 +21,20 @@
   .skip-link {
     position: absolute;
     top: -100%;
-    left: var(--bn-space-4);
+    left: var(--spacing-4);
     z-index: 9999;
-    padding: var(--bn-space-2) var(--bn-space-4);
-    background: var(--bn-color-surface);
-    color: var(--bn-color-text);
-    border: var(--bn-border-width) solid var(--bn-color-border);
-    border-radius: var(--bn-radius-md);
-    font-size: var(--bn-font-size-sm);
-    font-weight: var(--bn-font-weight-medium);
+    padding: var(--spacing-2) var(--spacing-4);
+    background: var(--color-surface);
+    color: var(--color-text);
+    border: var(--size-border) solid var(--color-border);
+    border-radius: var(--size-radius-legacy-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
     text-decoration: none;
   }
   .skip-link:focus {
-    top: var(--bn-space-4);
+    top: var(--spacing-4);
     outline: none;
-    box-shadow: var(--bn-focus-ring);
+    box-shadow: var(--shadow-focus);
   }
 }

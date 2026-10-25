@@ -1,63 +1,37 @@
-:root {
-  --list-group-display: var(--display-block);
-  --list-group-list-style: var(--list-style-none);
-  --list-group-margin: var(--space-0);
-  --list-group-padding: var(--space-0);
-  --list-group-background-color: var(--background-grouped);
-  --list-group-border-radius: var(--radius-container);
-  --list-group-overflow: var(--overflow-hidden);
-  --list-group__item-display: var(--display-flex);
-  --list-group__item-align-items: var(--align-center);
-  --list-group__item-justify-content: var(--justify-space-between);
-  --list-group__item-gap: var(--space-3);
-  --list-group__item-padding-block: var(--space-3);
-  --list-group__item-padding-inline: var(--space-4);
-  --list-group__item-color: var(--label);
-  --list-group__item-font-family: var(--text-body-family);
-  --list-group__item-font-size: var(--text-body-size);
-  --list-group__item-line-height: var(--text-body-leading);
-  --list-group__item-letter-spacing: var(--text-body-tracking);
-  --list-group__item-border-block-start-width: var(--hairline);
-  --list-group__item-border-block-start-style: var(--border-style-solid);
-  --list-group__item-border-block-start-color: var(--separator);
-  --list-group__item-padding-block--rich: var(--space-0);
-  --list-group__item-padding-inline--rich: var(--space-0);
-}
-
 ul[variant="default"] {
-  display: var(--list-group-display);
-  list-style: var(--list-group-list-style);
-  margin: var(--list-group-margin);
-  padding: var(--list-group-padding);
-  background-color: var(--list-group-background-color);
-  border-radius: var(--list-group-border-radius);
-  overflow: var(--list-group-overflow);
+  display: var(--display-list-group);
+  list-style: var(--list-style-list-group);
+  margin: var(--spacing-list-group-margin);
+  padding: var(--spacing-list-group-padding);
+  background-color: var(--color-bkg-list-group);
+  border-radius: var(--size-radius-list-group);
+  overflow: var(--overflow-list-group);
 
   & > li {
-    display: var(--list-group__item-display);
-    align-items: var(--list-group__item-align-items);
-    justify-content: var(--list-group__item-justify-content);
-    gap: var(--list-group__item-gap);
-    padding-block: var(--list-group__item-padding-block);
-    padding-inline: var(--list-group__item-padding-inline);
-    color: var(--list-group__item-color);
-    font-family: var(--list-group__item-font-family);
-    font-size: var(--list-group__item-font-size);
-    line-height: var(--list-group__item-line-height);
-    letter-spacing: var(--list-group__item-letter-spacing);
+    display: var(--display-list-group-item);
+    align-items: var(--align-list-group-item);
+    justify-content: var(--justify-list-group-item);
+    gap: var(--spacing-list-group-item-gap);
+    padding-block: var(--spacing-list-group-item-padding-block);
+    padding-inline: var(--spacing-list-group-item-padding-inline);
+    color: var(--color-text-list-group-item);
+    font-family: var(--font-list-group-item-family);
+    font-size: var(--font-list-group-item-size);
+    line-height: var(--font-list-group-item-leading);
+    letter-spacing: var(--font-list-group-item-tracking);
   }
 
   & > li + li {
-    border-block-start-width: var(--list-group__item-border-block-start-width);
-    border-block-start-style: var(--list-group__item-border-block-start-style);
-    border-block-start-color: var(--list-group__item-border-block-start-color);
+    border-block-start-width: var(--size-border-list-group-item-block-start);
+    border-block-start-style: var(--border-style-list-group-item-block-start);
+    border-block-start-color: var(--color-border-list-group-item-block-start);
   }
 
   /* A rich item (a nested component, e.g. a card) owns its own padding;
      the row steps aside — the composition counterpart to the choice
      notch, where the card reserves room for the group's control. */
   & > li:has(> article) {
-    padding-block: var(--list-group__item-padding-block--rich);
-    padding-inline: var(--list-group__item-padding-inline--rich);
+    padding-block: var(--spacing-list-group-item-padding-block-rich);
+    padding-inline: var(--spacing-list-group-item-padding-inline-rich);
   }
 }

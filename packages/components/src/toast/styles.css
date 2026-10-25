@@ -1,93 +1,56 @@
-:root {
-  --toast-position: var(--position-fixed);
-  --toast-inset-block-end: calc(var(--space-4) + var(--safe-bottom));
-  --toast-inset-inline-end: calc(var(--space-4) + var(--safe-right));
-  --toast-z-index: var(--layer-toast);
-  --toast-display: var(--display-flex);
-  --toast-flex-direction: var(--flex-direction-column);
-  --toast-gap: var(--space-2);
-  --toast-list-style: var(--list-style-none);
-  --toast-margin: var(--space-0);
-  --toast-padding: var(--space-0);
-  --toast__item-display: var(--display-flex);
-  --toast__item-align-items: var(--align-center);
-  --toast__item-gap: var(--space-3);
-  --toast__item-padding-block: var(--space-3);
-  --toast__item-padding-inline: var(--space-4);
-  --toast__item-background-color: var(--background-3);
-  --toast__item-color: var(--label);
-  --toast__item-border-width: var(--hairline);
-  --toast__item-border-style: var(--border-style-solid);
-  --toast__item-border-color: var(--separator);
-  --toast__item-accent-color: var(--label-3);
-  --toast__item-accent-color--info: var(--tint);
-  --toast__item-accent-color--success: var(--success);
-  --toast__item-accent-color--warning: var(--warning);
-  --toast__item-accent-color--danger: var(--danger);
-  --toast__item-border-radius: var(--radius-container);
-  --toast__item-box-shadow: var(--shadow-float);
-  --toast__item-icon-inline-size: var(--space-5);
-  --toast__item-icon-block-size: var(--space-5);
-  --toast__item-icon-flex: var(--flex-none);
-  --toast__item-font-family: var(--text-body-family);
-  --toast__item-font-size: var(--text-body-size);
-  --toast__item-line-height: var(--text-body-leading);
-  --toast__item-letter-spacing: var(--text-body-tracking);
-}
-
 ol[variant="default"] {
-  position: var(--toast-position);
-  inset-block-end: var(--toast-inset-block-end);
-  inset-inline-end: var(--toast-inset-inline-end);
-  z-index: var(--toast-z-index);
-  display: var(--toast-display);
-  flex-direction: var(--toast-flex-direction);
-  gap: var(--toast-gap);
-  list-style: var(--toast-list-style);
-  margin: var(--toast-margin);
-  padding: var(--toast-padding);
+  position: var(--position-toast);
+  inset-block-end: var(--spacing-toast-inset-block-end);
+  inset-inline-end: var(--spacing-toast-inset-inline-end);
+  z-index: var(--layer-toast);
+  display: var(--display-toast);
+  flex-direction: var(--flex-direction-toast);
+  gap: var(--spacing-toast-gap);
+  list-style: var(--list-style-toast);
+  margin: var(--spacing-toast-margin);
+  padding: var(--spacing-toast-padding);
 
   & > li {
-    display: var(--toast__item-display);
-    align-items: var(--toast__item-align-items);
-    gap: var(--toast__item-gap);
-    padding-block: var(--toast__item-padding-block);
-    padding-inline: var(--toast__item-padding-inline);
-    background-color: var(--toast__item-background-color);
-    color: var(--toast__item-color);
-    border-width: var(--toast__item-border-width);
-    border-style: var(--toast__item-border-style);
-    border-color: var(--toast__item-border-color);
-    border-radius: var(--toast__item-border-radius);
-    box-shadow: var(--toast__item-box-shadow);
-    font-family: var(--toast__item-font-family);
-    font-size: var(--toast__item-font-size);
-    line-height: var(--toast__item-line-height);
-    letter-spacing: var(--toast__item-letter-spacing);
+    display: var(--display-toast-item);
+    align-items: var(--align-toast-item);
+    gap: var(--spacing-toast-item-gap);
+    padding-block: var(--spacing-toast-item-padding-block);
+    padding-inline: var(--spacing-toast-item-padding-inline);
+    background-color: var(--color-bkg-toast-item);
+    color: var(--color-text-toast-item);
+    border-width: var(--size-border-toast-item);
+    border-style: var(--border-style-toast-item);
+    border-color: var(--color-border-toast-item);
+    border-radius: var(--size-radius-toast-item);
+    box-shadow: var(--shadow-toast-item);
+    font-family: var(--font-toast-item-family);
+    font-size: var(--font-toast-item-size);
+    line-height: var(--font-toast-item-leading);
+    letter-spacing: var(--font-toast-item-tracking);
   }
 
   & > li > svg {
-    inline-size: var(--toast__item-icon-inline-size);
-    block-size: var(--toast__item-icon-block-size);
-    flex: var(--toast__item-icon-flex);
-    color: var(--toast__item-accent-color);
+    inline-size: var(--size-toast-item-icon-inline);
+    block-size: var(--size-toast-item-icon-block);
+    flex: var(--flex-toast-item-icon);
+    color: var(--color-accent-toast-item);
   }
 
   /* Item tones are element-level registrations: the item element is
      addressed exactly (li[variant="success"]), never by presence. */
   & > li[variant="info"] {
-    --toast__item-accent-color: var(--toast__item-accent-color--info);
+    --color-accent-toast-item: var(--color-accent-toast-item-info);
   }
 
   & > li[variant="success"] {
-    --toast__item-accent-color: var(--toast__item-accent-color--success);
+    --color-accent-toast-item: var(--color-accent-toast-item-success);
   }
 
   & > li[variant="warning"] {
-    --toast__item-accent-color: var(--toast__item-accent-color--warning);
+    --color-accent-toast-item: var(--color-accent-toast-item-warning);
   }
 
   & > li[variant="danger"] {
-    --toast__item-accent-color: var(--toast__item-accent-color--danger);
+    --color-accent-toast-item: var(--color-accent-toast-item-danger);
   }
 }

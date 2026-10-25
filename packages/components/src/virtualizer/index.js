@@ -11,7 +11,7 @@ export const root = 'ol';
  * scrollTop and the row/viewport sizes in, the visible index range
  * and the two spacer counts out. Rendering only the window keeps the
  * DOM bounded; the first and last <li> are spacers whose block sizes
- * come from the --virtualizer__spacer-*-count tokens — the HOST
+ * come from the --number-virtualizer-spacer-*-count tokens — the HOST
  * re-points those two tokens in its own scope from the view model's
  * spacer counts (the token channel, as everywhere: JS never writes
  * style attributes). Items render as caller HTML (itemHtmlFor) or as

@@ -11,8 +11,8 @@
  * highlighted because it is a code block, on every page, the same way.
  *
  * The classes are the ones styles.css already defines from the
- * --syntax-* tokens (.kw .str .fn .num .cmt .tag .attr) and the spans
- * match the hand-written ones they replace.
+ * --color-syntax-* tokens (.kw .str .fn .num .cmt .tag .attr .var) and
+ * the spans match the hand-written ones they replace.
  *
  * Safety and determinism: the pass is a pure function of the rendered
  * HTML. It decodes the (already escaped) text inside <pre><code>,
@@ -24,6 +24,45 @@
  * preserved byte for byte, so copy-code and text-based checks see the
  * same code as before.
  */
+
+/**
+ * The CTI+ role vocabularies, derived from the migrated token set
+ * itself: the DTCG source in @basenative/components/tokens is the
+ * authority, so the segmenter learns its categories, types and states
+ * from the tokens' recorded taxonomy instead of keeping a second,
+ * hand-maintained copy here. If the token source is not beside this
+ * module, segmentation falls back to name shape alone.
+ */
+import { readFileSync, readdirSync } from 'node:fs';
+
+function loadTokenVocabulary() {
+  const categories = new Set();
+  const types = new Set();
+  const states = new Set();
+  const walk = (dir) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      if (entry.isDirectory()) walk(new URL(`${entry.name}/`, dir));
+      else if (entry.name.endsWith('.json')) {
+        const tree = JSON.parse(readFileSync(new URL(entry.name, dir), 'utf8'));
+        for (const leaf of Object.values(tree)) {
+          const taxonomy = leaf?.$extensions?.['com.basenative']?.taxonomy;
+          if (!taxonomy) continue;
+          if (taxonomy.category) categories.add(taxonomy.category);
+          if (taxonomy.type) types.add(taxonomy.type);
+          if (taxonomy.state) states.add(taxonomy.state);
+        }
+      }
+    }
+  };
+  try {
+    walk(new URL('../../packages/components/tokens/', import.meta.url));
+  } catch {
+    // No token source available: roles degrade to category + middle.
+  }
+  return { categories, types, states };
+}
+
+const TOKEN_VOCAB = loadTokenVocabulary();
 
 const KEYWORDS = new Set([
   'import', 'from', 'export', 'default', 'const', 'let', 'var', 'function',
@@ -84,11 +123,15 @@ export function looksLikeCss(code) {
  * Class mapping: elements/classes/pseudos' hosts → tag, property names
  * → attr, pseudo-classes and at-rules → kw, functions → fn, numbers
  * with units and hex colours → num. Custom properties get their own
- * class (var) and BEM-aware segmentation, in definitions, in var()
- * references, and in class selectors alike: the block segment takes
- * the base class, a __element segment takes fn, and a trailing --state
- * segment takes kw — so --button__icon-color--disabled reads as its
- * grammar, not as one long name.
+ * class (var) and CTI+ segmentation, in definitions, in var()
+ * references, and in class selectors alike: the name is split on its
+ * hyphens and each dynamic role takes its own class — the category
+ * takes the base class, a type takes attr, the item/variant middle
+ * takes fn, a state/context tail takes kw, and a numeric tail (a
+ * palette weight, a scale step) takes num — so
+ * --color-bkg-button-primary-hover and --palette-primary-400 read as
+ * their taxonomy, not as one long name. The role vocabularies come
+ * from the DTCG token source (see TOKEN_VOCAB above).
  */
 export function tokenizeCss(code) {
   const tokens = [];
@@ -124,30 +167,52 @@ export function tokenizeCss(code) {
     while (j < n && /[-\w]/.test(code[j])) j += 1;
     return j;
   };
-  // Push a BEM-grammar name in segments: the block part in baseCls, a
-  // __element part in fn, a trailing --state part in kw. `name` excludes
-  // its prefix ('--' or '.'); the caller pushes the first segment with
-  // the prefix attached.
-  const splitState = (seg) => {
-    const at = seg.lastIndexOf('--');
-    return at > 0 ? [seg.slice(0, at), seg.slice(at + 2)] : [seg, ''];
+  // Split a name into its CTI+ dynamics: category, an optional type,
+  // the item/variant middle, and an optional state/context tail (a
+  // numeric tail is its own role). Segments are matched against the
+  // vocabularies derived from the token source; an unknown head still
+  // takes the category role, so unfamiliar names segment gracefully.
+  // The parts' texts, joined by the hyphens the caller re-adds, always
+  // reproduce the name byte for byte.
+  const segmentName = (name) => {
+    const segs = name.split('-');
+    const parts = [];
+    let i = 0;
+    let catLen = 1;
+    for (let len = Math.min(segs.length, 4); len > 1; len -= 1) {
+      if (TOKEN_VOCAB.categories.has(segs.slice(0, len).join('-'))) {
+        catLen = len;
+        break;
+      }
+    }
+    parts.push({ text: segs.slice(0, catLen).join('-'), role: 'category' });
+    i = catLen;
+    if (i < segs.length && TOKEN_VOCAB.types.has(segs[i])) {
+      parts.push({ text: segs[i], role: 'type' });
+      i += 1;
+    }
+    let tail = null;
+    const remaining = segs.length - i;
+    if (remaining >= 1) {
+      const last = segs[segs.length - 1];
+      if (/^\d+$/.test(last)) tail = { text: last, role: 'number' };
+      else if (remaining >= 2 && TOKEN_VOCAB.states.has(last)) tail = { text: last, role: 'state' };
+    }
+    const midEnd = tail ? segs.length - 1 : segs.length;
+    if (midEnd > i) parts.push({ text: segs.slice(i, midEnd).join('-'), role: 'middle' });
+    if (tail) parts.push(tail);
+    return parts;
   };
+  const ROLE_CLASS = { type: 'attr', middle: 'fn', state: 'kw', number: 'num' };
+  // Push a name in role segments: the category in baseCls, each later
+  // segment hyphen-prefixed in its role's class. `name` excludes its
+  // prefix ('--' or '.'); the caller pushes the first segment with the
+  // prefix attached.
   const pushSegmented = (name, prefix, baseCls) => {
-    let rest = name;
-    let element = '';
-    const elAt = rest.indexOf('__');
-    if (elAt !== -1) {
-      element = rest.slice(elAt + 2);
-      rest = rest.slice(0, elAt);
-    }
-    const [base, baseState] = splitState(rest);
-    push(baseCls, prefix + base);
-    if (element) {
-      const [el, elState] = splitState(element);
-      push('fn', `__${el}`);
-      if (elState) push('kw', `--${elState}`);
-    }
-    if (baseState) push('kw', `--${baseState}`);
+    segmentName(name).forEach((part, index) => {
+      const cls = part.role === 'category' ? baseCls : ROLE_CLASS[part.role];
+      push(cls, (index === 0 ? prefix : '-') + part.text);
+    });
   };
   const pushCustomProperty = (name) => pushSegmented(name.slice(2), '--', 'var');
   const readNumber = (from) => {

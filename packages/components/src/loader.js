@@ -22,6 +22,7 @@ const COMPONENTS = [
   'theme-toggle',
   'form', 'search-field', 'segmented-control', 'stepper',
   'tabs', 'empty-state', 'toolbar', 'rating',
+  'code-block',
 ];
 
 /** @param {string} html */

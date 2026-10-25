@@ -1033,9 +1033,9 @@ describe('Calendar', () => {
     const style = html.match(/data-event-id="h"[^>]*style="([^"]*)"/)[1];
     assert.match(style, /grid-row: 3 \/ span 2/);
     assert.ok(!/grid-row: \d+\.\d/.test(style), 'grid-row start must be an integer');
-    assert.match(style, /--bn-calendar-event-rows: 2;/);
-    assert.match(style, /--bn-calendar-event-lead: 0\.5;/);
-    assert.match(style, /--bn-calendar-event-trail: 0\.5;/);
+    assert.match(style, /--number-calendar-event-rows: 2;/);
+    assert.match(style, /--number-calendar-event-lead: 0\.5;/);
+    assert.match(style, /--number-calendar-event-trail: 0\.5;/);
   });
 
   it('emits no offset properties for an on-the-hour event', () => {
@@ -1055,7 +1055,7 @@ describe('Calendar', () => {
       events: [{ id: 'q', title: 'Quarter past', start: '2025-06-02T10:15', end: '2025-06-02T11:00' }],
     });
     const style = html.match(/data-event-id="q"[^>]*style="([^"]*)"/)[1];
-    assert.equal(style, 'grid-row: 4 / span 1; --bn-calendar-event-rows: 1; --bn-calendar-event-lead: 0.25; --bn-calendar-event-trail: 0;');
+    assert.equal(style, 'grid-row: 4 / span 1; --number-calendar-event-rows: 1; --number-calendar-event-lead: 0.25; --number-calendar-event-trail: 0;');
   });
 });
 
@@ -2539,7 +2539,7 @@ describe('Calendar — hardening', () => {
     });
     const monday = html.slice(html.indexOf('data-bn="calendar-day-column" data-date="2025-06-02"'), html.indexOf('data-bn="calendar-day-column" data-date="2025-06-03"'));
     assert.ok(monday.includes('data-event-id="late"'));
-    assert.ok(monday.includes('grid-row: 24 / span 1; --bn-calendar-event-rows: 1; --bn-calendar-event-lead: 0.5; --bn-calendar-event-trail: 0;'));
+    assert.ok(monday.includes('grid-row: 24 / span 1; --number-calendar-event-rows: 1; --number-calendar-event-lead: 0.5; --number-calendar-event-trail: 0;'));
   });
 
   it('renders with all options', () => {
@@ -2548,8 +2548,8 @@ describe('Calendar — hardening', () => {
       events: [{ id: 'e', title: 'T', start: '2025-06-02T08:00', end: '2025-06-02T09:00', status: 'done', color: 'red', assignee: 'Ann' }],
     });
     assert.ok(html.includes('<div data-bn="calendar" id="cal" data-x="1">'));
-    assert.ok(html.includes('--bn-calendar-hours: 2;'));
-    assert.ok(html.includes('data-status="done" title="T" style="grid-row: 1 / span 1; --bn-calendar-event-color: red;"'));
+    assert.ok(html.includes('--number-calendar-hours: 2;'));
+    assert.ok(html.includes('data-status="done" title="T" style="grid-row: 1 / span 1; --color-text-calendar-event: red;"'));
     assert.ok(html.includes('<span data-bn="calendar-event-assignee">Ann</span>'));
     assert.ok(!html.includes('calendar-empty'));
   });
@@ -3127,12 +3127,12 @@ describe('Calendar — local-date bucketing', () => {
     const events = [{ id: 'z', title: 'Zoned', start: '2025-06-03T03:00:00Z', end: '2025-06-03T04:30:00Z' }];
     const la = renderCalendar({ startDate: '2025-06-01', hours: ALL_DAY, now: null, timeZone: 'America/Los_Angeles', events });
     assert.ok(column(la, '2025-06-02').includes('data-event-id="z"'));
-    assert.ok(column(la, '2025-06-02').includes('grid-row: 21 / span 2; --bn-calendar-event-rows: 2; --bn-calendar-event-lead: 0; --bn-calendar-event-trail: 0.5;'));
+    assert.ok(column(la, '2025-06-02').includes('grid-row: 21 / span 2; --number-calendar-event-rows: 2; --number-calendar-event-lead: 0; --number-calendar-event-trail: 0.5;'));
     assert.ok(!column(la, '2025-06-03').includes('data-event-id="z"'));
     assert.ok(la.includes('8:00'), 'time label is formatted in the zone');
 
     const tokyo = renderCalendar({ startDate: '2025-06-01', hours: ALL_DAY, now: null, timeZone: 'Asia/Tokyo', events });
-    assert.ok(column(tokyo, '2025-06-03').includes('grid-row: 13 / span 2; --bn-calendar-event-rows: 2; --bn-calendar-event-lead: 0; --bn-calendar-event-trail: 0.5;'));
+    assert.ok(column(tokyo, '2025-06-03').includes('grid-row: 13 / span 2; --number-calendar-event-rows: 2; --number-calendar-event-lead: 0; --number-calendar-event-trail: 0.5;'));
     assert.ok(!column(tokyo, '2025-06-02').includes('data-event-id="z"'));
   });
 
@@ -3203,7 +3203,7 @@ describe('Calendar — today marker', () => {
 describe('Calendar — automatic hour range', () => {
   it('keeps 7–19 when nothing is given and no event falls outside', () => {
     const html = renderCalendar({ startDate: '2025-06-02', now: null, events: [{ id: 'e', title: 'T', start: '2025-06-02T09:00', end: '2025-06-02T10:00' }] });
-    assert.ok(html.includes('--bn-calendar-hours: 12;'));
+    assert.ok(html.includes('--number-calendar-hours: 12;'));
     assert.ok(html.includes('data-hour="7"'));
     assert.ok(!html.includes('data-hour="6"'));
   });
@@ -3216,14 +3216,14 @@ describe('Calendar — automatic hour range', () => {
         { id: 'late', title: 'Late', start: '2025-06-03T20:00', end: '2025-06-03T21:15' },
       ],
     });
-    assert.ok(html.includes('--bn-calendar-hours: 17;'), 'start 5, end 22');
+    assert.ok(html.includes('--number-calendar-hours: 17;'), 'start 5, end 22');
     assert.ok(html.includes('data-bn="calendar-time-label" data-hour="5"'));
     assert.ok(html.includes('data-bn="calendar-time-label" data-hour="21"'));
     assert.ok(!html.includes('data-hour="22"'));
-    assert.ok(html.includes('data-event-id="early"') && html.includes('grid-row: 1 / span 2; --bn-calendar-event-rows: 2; --bn-calendar-event-lead: 0.5; --bn-calendar-event-trail: 0.75;'));
+    assert.ok(html.includes('data-event-id="early"') && html.includes('grid-row: 1 / span 2; --number-calendar-event-rows: 2; --number-calendar-event-lead: 0.5; --number-calendar-event-trail: 0.75;'));
 
     const overnight = renderCalendar({ startDate: '2025-06-02', now: null, events: [{ id: 'n', title: 'N', start: '2025-06-02T23:30', end: '2025-06-03T00:30' }] });
-    assert.ok(overnight.includes('--bn-calendar-hours: 24;'), 'covers the 23:30–24:00 and 0:00–0:30 segments: start 0, end 24');
+    assert.ok(overnight.includes('--number-calendar-hours: 24;'), 'covers the 23:30–24:00 and 0:00–0:30 segments: start 0, end 24');
     assert.ok(overnight.includes('data-event-id="n" data-continues="after"') && overnight.includes('data-event-id="n" data-continues="before"'));
   });
 
@@ -3232,15 +3232,15 @@ describe('Calendar — automatic hour range', () => {
       startDate: '2025-06-02', now: null, hours: { start: 9 },
       events: [{ id: 'e', title: 'T', start: '2025-06-02T06:00', end: '2025-06-02T21:15' }],
     });
-    assert.ok(html.includes('--bn-calendar-hours: 13;'), 'start stays 9, end becomes 22');
+    assert.ok(html.includes('--number-calendar-hours: 13;'), 'start stays 9, end becomes 22');
     assert.ok(!html.includes('data-hour="6"'));
   });
 
   it('explicit hours are honoured verbatim and an inverted range still renders one row', () => {
     const html = renderCalendar({ startDate: '2025-06-02', now: null, hours: { start: 9, end: 12 }, events: [{ id: 'e', title: 'T', start: '2025-06-02T06:00', end: '2025-06-02T21:00' }] });
-    assert.ok(html.includes('--bn-calendar-hours: 3;'));
+    assert.ok(html.includes('--number-calendar-hours: 3;'));
     assert.ok(html.includes('grid-row: 1 / span 3;"'), 'span is capped at the grid');
-    assert.ok(renderCalendar({ startDate: '2025-06-02', now: null, hours: { start: 12, end: 12 } }).includes('--bn-calendar-hours: 1;'));
+    assert.ok(renderCalendar({ startDate: '2025-06-02', now: null, hours: { start: 12, end: 12 } }).includes('--number-calendar-hours: 1;'));
   });
 });
 
@@ -3523,18 +3523,18 @@ describe('components.css contracts', () => {
     const ownFloor = {
       'dialog-close': (rule) => /width:\s*2rem;\s*height:\s*2rem/.test(rule),
       'drawer-close': (rule) => /width:\s*2rem;\s*height:\s*2rem/.test(rule),
-      'command-item': (rule) => /padding:\s*var\(--bn-space-2\)\s+var\(--bn-space-3\)/.test(rule),
-      'dropdown-item': (rule) => /padding:\s*var\(--bn-space-2\)\s+var\(--bn-space-3\)/.test(rule),
+      'command-item': (rule) => /padding:\s*var\(--spacing-2\)\s+var\(--spacing-3\)/.test(rule),
+      'dropdown-item': (rule) => /padding:\s*var\(--spacing-2\)\s+var\(--spacing-3\)/.test(rule),
     };
 
     it('alert-dismiss and breadcrumb links resolve the floor from the shared token', () => {
       for (const token of ['alert-dismiss"]', 'breadcrumb-item"] a']) {
         assert.ok(targetBlock.includes(`[data-bn="${token}`), `${token} is not in the target-size block`);
       }
-      assert.match(targetBlock, /min-inline-size:\s*var\(--bn-target-size-min\)/);
-      assert.match(targetBlock, /min-block-size:\s*var\(--bn-target-size-min\)/);
+      assert.match(targetBlock, /min-inline-size:\s*var\(--size-target-floor\)/);
+      assert.match(targetBlock, /min-block-size:\s*var\(--size-target-floor\)/);
       assert.match(ruleFor('[data-bn="alert-dismiss"]'), /display:\s*inline-flex/);
-      assert.match(ruleFor('[data-bn="breadcrumb-item"] a'), /padding-inline:\s*var\(--bn-space-1\)/);
+      assert.match(ruleFor('[data-bn="breadcrumb-item"] a'), /padding-inline:\s*var\(--spacing-1\)/);
     });
 
     it('every member of the button-reset group has a target-size floor', () => {
@@ -4579,24 +4579,24 @@ describe('AppNav', () => {
       'the unfolded class triggers on spanning a vertical fold or at 939px (58.6875rem, the Duo inner class)'
     );
     const rail = section.slice(section.indexOf('@media (spanning: single-fold-vertical)'));
-    assert.ok(rail.includes('inline-size: var(--bn-size-nav-rail)'), 'the rail is the token width');
+    assert.ok(rail.includes('inline-size: var(--size-nav-rail)'), 'the rail is the token width');
     assert.ok(
-      rail.includes('padding-inline-start: var(--bn-size-nav-rail)'),
+      rail.includes('padding-inline-start: var(--size-nav-rail)'),
       'the clearance reserves exactly the rail width'
     );
     const flat = section.replace(/\s+/g, ' ');
     assert.ok(
       flat.includes(
-        'padding-block-end: calc( var(--bn-size-app-nav-bar) + env(safe-area-inset-bottom, 0px) + var(--bn-border-width) )'
+        'padding-block-end: calc( var(--size-app-nav-bar) + env(safe-area-inset-bottom, 0px) + var(--size-border) )'
       ),
       'the phone-class clearance reserves the bar height, the safe area and the bar border'
     );
     assert.ok(
-      flat.includes('scroll-padding-block-end: calc( var(--bn-size-app-nav-bar)'),
+      flat.includes('scroll-padding-block-end: calc( var(--size-app-nav-bar)'),
       'fragment jumps land the same distance clear of the bar as the page end does'
     );
     assert.ok(
-      rail.includes('scroll-padding-inline-start: var(--bn-size-nav-rail)'),
+      rail.includes('scroll-padding-inline-start: var(--size-nav-rail)'),
       'at the rail, fragment targets clear the rail width instead'
     );
   });
@@ -4604,13 +4604,13 @@ describe('AppNav', () => {
   it('surfaces are material tokens, so a platform layer can glass the bar', () => {
     const css = readFileSync(new URL('./components.css', import.meta.url), 'utf8');
     const section = css.slice(css.indexOf('=== App Nav ==='));
-    assert.ok(section.includes('background: var(--bn-material-bg)'), 'the bar background is the material token');
+    assert.ok(section.includes('background: var(--color-bkg-material)'), 'the bar background is the material token');
     assert.ok(
-      section.includes('backdrop-filter: var(--bn-material-backdrop)'),
+      section.includes('backdrop-filter: var(--material-backdrop)'),
       'the bar backdrop is the material token'
     );
     assert.ok(
-      section.includes('box-shadow: var(--bn-material-shadow)'),
+      section.includes('box-shadow: var(--shadow-material)'),
       'the bar shadow is the material token'
     );
   });
@@ -4856,24 +4856,24 @@ describe('initAppNav', () => {
       removeProperty(name) { props.delete(name); },
     };
     const handle = initAppNav(nav);
-    assert.equal(props.get('--bn-app-nav-visual-inset'), '0px', 'no keyboard: no inset');
+    assert.equal(props.get('--size-app-nav-visual-inset'), '0px', 'no keyboard: no inset');
     vv.height = 508; // the keyboard covers the layout viewport's lower 336px
     vv.dispatch('resize');
     assert.equal(
-      props.get('--bn-app-nav-visual-inset'),
+      props.get('--size-app-nav-visual-inset'),
       '336px',
       'the covered strip becomes the bar offset'
     );
     vv.scale = 1.6; // pinch-zoom also shrinks the visual viewport, covering nothing
     vv.dispatch('scroll');
-    assert.equal(props.get('--bn-app-nav-visual-inset'), '0px', 'pinch-zoom reports no inset');
+    assert.equal(props.get('--size-app-nav-visual-inset'), '0px', 'pinch-zoom reports no inset');
     vv.scale = 1;
     vv.height = 844;
     vv.dispatch('resize');
-    assert.equal(props.get('--bn-app-nav-visual-inset'), '0px', 'keyboard dismissed: inset clears');
+    assert.equal(props.get('--size-app-nav-visual-inset'), '0px', 'keyboard dismissed: inset clears');
     handle.destroy();
     assert.equal(vvListeners.size, 0, 'destroy unbinds the visual viewport');
-    assert.ok(!props.has('--bn-app-nav-visual-inset'), 'destroy removes the inset');
+    assert.ok(!props.has('--size-app-nav-visual-inset'), 'destroy removes the inset');
   });
 
   it('holds the largest inset while a text field is focused, against a late under-report', () => {
@@ -4900,17 +4900,17 @@ describe('initAppNav', () => {
     field.focus();
     vv.height = 508; // keyboard fully open: 336px covered
     vv.dispatch('resize');
-    assert.equal(props.get('--bn-app-nav-visual-inset'), '336px');
+    assert.equal(props.get('--size-app-nav-visual-inset'), '336px');
     vv.height = 560; // a later stage under-reports (assistant bar not yet counted)
     vv.dispatch('scroll');
     assert.equal(
-      props.get('--bn-app-nav-visual-inset'),
+      props.get('--size-app-nav-visual-inset'),
       '336px',
       'while typing, the inset may only grow — the bar cannot sink back into the keyboard'
     );
     vv.height = 844; // keyboard dismissed
     vv.dispatch('resize');
-    assert.equal(props.get('--bn-app-nav-visual-inset'), '0px', 'a measured zero always clears the hold');
+    assert.equal(props.get('--size-app-nav-visual-inset'), '0px', 'a measured zero always clears the hold');
   });
 
   it('re-syncs on focusin, before any visual-viewport event fires', () => {
@@ -4930,11 +4930,11 @@ describe('initAppNav', () => {
       removeProperty(name) { props.delete(name); },
     };
     initAppNav(nav);
-    assert.equal(props.get('--bn-app-nav-visual-inset'), '0px');
+    assert.equal(props.get('--size-app-nav-visual-inset'), '0px');
     vv.height = 508; // the keyboard opened without a vv event reaching the page
     doc.dispatch('focusin');
     assert.equal(
-      props.get('--bn-app-nav-visual-inset'),
+      props.get('--size-app-nav-visual-inset'),
       '336px',
       'focus is the earliest keyboard signal — the bar moves with it'
     );
@@ -4997,9 +4997,9 @@ describe('ListGroup', () => {
   it('ships the grouped surface in components.css: raised rows, inset separators', () => {
     const css = readFileSync(new URL('./components.css', import.meta.url), 'utf8');
     const section = css.slice(css.indexOf('=== List Group ==='), css.indexOf('=== Combobox ==='));
-    assert.ok(section.includes('background: var(--bn-color-surface-card)'), 'rows sit on the raised surface');
+    assert.ok(section.includes('background: var(--color-surface-card)'), 'rows sit on the raised surface');
     assert.ok(section.includes('[data-bn="list-group-rows"]'), 'the rows surface is styled');
-    assert.ok(section.includes('margin-inline-start: var(--bn-space-4)'), 'separators inset to the label edge');
+    assert.ok(section.includes('margin-inline-start: var(--spacing-4)'), 'separators inset to the label edge');
   });
 });
 

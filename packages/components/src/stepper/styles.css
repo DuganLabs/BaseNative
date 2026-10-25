@@ -1,99 +1,62 @@
-:root {
-  --stepper-display: var(--display-flex);
-  --stepper-flex-direction: var(--flex-direction-row);
-  --stepper-gap: var(--space-4);
-  --stepper-list-style: var(--list-style-none);
-  --stepper-margin: var(--space-0);
-  --stepper-padding: var(--space-0);
-  --stepper__item-display: var(--display-flex);
-  --stepper__item-flex-direction: var(--flex-direction-column);
-  --stepper__item-flex-grow: var(--flex-grow);
-  --stepper__item-gap: var(--space-1);
-  --stepper__item-padding-block-start: var(--space-3);
-  --stepper__item-border-block-start-width: var(--border-width-thick);
-  --stepper__item-border-block-start-style: var(--border-style-solid);
-  --stepper__item-border-block-start-color: var(--separator);
-  --stepper__item-color: var(--label-2);
-  --stepper__item-font-family: var(--text-subheadline-family);
-  --stepper__item-font-size: var(--text-subheadline-size);
-  --stepper__item-font-weight: var(--font-weight-regular);
-  --stepper__item-line-height: var(--text-subheadline-leading);
-  --stepper__item-letter-spacing: var(--text-subheadline-tracking);
-  --stepper__disc-display: var(--display-inline-flex);
-  --stepper__disc-align-items: var(--align-center);
-  --stepper__disc-justify-content: var(--justify-center);
-  --stepper__disc-inline-size: var(--space-6);
-  --stepper__disc-block-size: var(--space-6);
-  --stepper__disc-border-radius: var(--radius-pill);
-  --stepper__disc-background-color: var(--fill-2);
-  --stepper__disc-color: var(--label-2);
-  --stepper__disc-font-weight: var(--font-weight-semibold);
-  --stepper__detail-color: var(--label-3);
-  --stepper__detail-font-family: var(--text-caption-1-family);
-  --stepper__detail-font-size: var(--text-caption-1-size);
-  --stepper__detail-line-height: var(--text-caption-1-leading);
-  --stepper__detail-letter-spacing: var(--text-caption-1-tracking);
-}
-
 ol[variant="stepper"] {
-  display: var(--stepper-display);
-  flex-direction: var(--stepper-flex-direction);
-  gap: var(--stepper-gap);
-  list-style: var(--stepper-list-style);
-  margin: var(--stepper-margin);
-  padding: var(--stepper-padding);
+  display: var(--display-stepper);
+  flex-direction: var(--flex-direction-stepper);
+  gap: var(--spacing-stepper-gap);
+  list-style: var(--list-style-stepper);
+  margin: var(--spacing-stepper-margin);
+  padding: var(--spacing-stepper-padding);
 
   & > li {
-    display: var(--stepper__item-display);
-    flex-direction: var(--stepper__item-flex-direction);
-    flex-grow: var(--stepper__item-flex-grow);
-    gap: var(--stepper__item-gap);
-    padding-block-start: var(--stepper__item-padding-block-start);
-    border-block-start-width: var(--stepper__item-border-block-start-width);
-    border-block-start-style: var(--stepper__item-border-block-start-style);
-    border-block-start-color: var(--stepper__item-border-block-start-color);
-    color: var(--stepper__item-color);
-    font-family: var(--stepper__item-font-family);
-    font-size: var(--stepper__item-font-size);
-    font-weight: var(--stepper__item-font-weight);
-    line-height: var(--stepper__item-line-height);
-    letter-spacing: var(--stepper__item-letter-spacing);
+    display: var(--display-stepper-item);
+    flex-direction: var(--flex-direction-stepper-item);
+    flex-grow: var(--flex-grow-stepper-item);
+    gap: var(--spacing-stepper-item-gap);
+    padding-block-start: var(--spacing-stepper-item-padding-block-start);
+    border-block-start-width: var(--size-border-stepper-item-block-start);
+    border-block-start-style: var(--border-style-stepper-item-block-start);
+    border-block-start-color: var(--color-border-stepper-item-block-start);
+    color: var(--color-text-stepper-item);
+    font-family: var(--font-stepper-item-family);
+    font-size: var(--font-stepper-item-size);
+    font-weight: var(--font-stepper-item-weight);
+    line-height: var(--font-stepper-item-leading);
+    letter-spacing: var(--font-stepper-item-tracking);
   }
 
   & > li > strong {
-    display: var(--stepper__disc-display);
-    align-items: var(--stepper__disc-align-items);
-    justify-content: var(--stepper__disc-justify-content);
-    inline-size: var(--stepper__disc-inline-size);
-    block-size: var(--stepper__disc-block-size);
-    border-radius: var(--stepper__disc-border-radius);
-    background-color: var(--stepper__disc-background-color);
-    color: var(--stepper__disc-color);
-    font-weight: var(--stepper__disc-font-weight);
+    display: var(--display-stepper-disc);
+    align-items: var(--align-stepper-disc);
+    justify-content: var(--justify-stepper-disc);
+    inline-size: var(--size-stepper-disc-inline);
+    block-size: var(--size-stepper-disc-block);
+    border-radius: var(--size-radius-stepper-disc);
+    background-color: var(--color-bkg-stepper-disc);
+    color: var(--color-text-stepper-disc);
+    font-weight: var(--font-stepper-disc-weight);
   }
 
   & > li > small {
-    color: var(--stepper__detail-color);
-    font-family: var(--stepper__detail-font-family);
-    font-size: var(--stepper__detail-font-size);
-    line-height: var(--stepper__detail-line-height);
-    letter-spacing: var(--stepper__detail-letter-spacing);
+    color: var(--color-text-stepper-detail);
+    font-family: var(--font-stepper-detail-family);
+    font-size: var(--font-stepper-detail-size);
+    line-height: var(--font-stepper-detail-leading);
+    letter-spacing: var(--font-stepper-detail-tracking);
   }
 }
 
 /* Step states are item-level variants — the item re-points its own
    rail, disc, and label tokens per state. */
 ol[variant="stepper"] > li[variant="complete"] {
-  --stepper__item-border-block-start-color: var(--tint);
-  --stepper__item-color: var(--label);
-  --stepper__disc-background-color: var(--tint);
-  --stepper__disc-color: var(--background);
+  --color-border-stepper-item-block-start: var(--color-tint);
+  --color-text-stepper-item: var(--color-text-label);
+  --color-bkg-stepper-disc: var(--color-tint);
+  --color-text-stepper-disc: var(--color-background);
 }
 
 ol[variant="stepper"] > li[variant="current"] {
-  --stepper__item-border-block-start-color: var(--tint);
-  --stepper__item-color: var(--label);
-  --stepper__item-font-weight: var(--font-weight-semibold);
-  --stepper__disc-background-color: var(--tint-fill);
-  --stepper__disc-color: var(--tint-strong);
+  --color-border-stepper-item-block-start: var(--color-tint);
+  --color-text-stepper-item: var(--color-text-label);
+  --font-stepper-item-weight: var(--font-weight-semibold);
+  --color-bkg-stepper-disc: var(--color-tint-fill);
+  --color-text-stepper-disc: var(--color-tint-strong);
 }

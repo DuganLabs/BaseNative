@@ -394,7 +394,7 @@ ${css}
 <style>
   /* Proof-page chrome only — not component CSS. */
   html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-  body { font-family: system-ui, sans-serif; margin: 0; padding: 2rem 1rem 4rem; background: var(--background-grouped); color: var(--label); }
+  body { font-family: system-ui, sans-serif; margin: 0; padding: 2rem 1rem 4rem; background: var(--color-background-grouped); color: var(--color-text-label); }
   main { max-width: 44rem; margin: 0 auto; display: grid; gap: 2.5rem; }
   section { display: grid; gap: 1rem; min-width: 0; }
   article { min-width: 0; }
@@ -405,27 +405,27 @@ ${css}
   }
   h1 { font-size: 1.5rem; margin: 0; }
   h2 { font-size: 1.05rem; margin: 0; }
-  p.note { color: var(--label-2); font-size: .875rem; margin: 0; }
-  main > section > article { background: var(--background-grouped-2); border: 1px solid var(--separator); border-radius: .75rem; padding: 1.25rem; display: grid; gap: 1rem; }
+  p.note { color: var(--color-text-label-2); font-size: .875rem; margin: 0; }
+  main > section > article { background: var(--color-background-grouped-2); border: 1px solid var(--color-border-separator); border-radius: .75rem; padding: 1.25rem; display: grid; gap: 1rem; }
   dialog { position: static; }
   main [hidden] { display: none !important; }
-  article:has(> details[variant="default"]) { row-gap: var(--space-0); }
+  article:has(> details[variant="default"]) { row-gap: var(--spacing-0); }
   pre { background: #111827; color: #f3f4f6; padding: 1rem; border-radius: .5rem; overflow-x: auto; font-size: .78rem; line-height: 1.5;
-    --syntax-keyword: #c792ea; --syntax-string: #c3e88d; --syntax-function: #82aaff; --syntax-number: #f78c6c; --syntax-comment: #7a98a5; --syntax-tag: #f07178; --syntax-attr: #ffcb6b; --syntax-variable: #89ddff; }
-  .kw { color: var(--syntax-keyword); }
-  .str { color: var(--syntax-string); }
-  .fn { color: var(--syntax-function); }
-  .num { color: var(--syntax-number); }
-  .cmt { color: var(--syntax-comment); font-style: italic; }
-  .tag { color: var(--syntax-tag); }
-  .attr { color: var(--syntax-attr); }
-  .var { color: var(--syntax-variable); }
+    --color-syntax-keyword: #c792ea; --color-syntax-string: #c3e88d; --color-syntax-function: #82aaff; --color-syntax-number: #f78c6c; --color-syntax-comment: #7a98a5; --color-syntax-tag: #f07178; --color-syntax-attr: #ffcb6b; --color-syntax-variable: #89ddff; }
+  .kw { color: var(--color-syntax-keyword); }
+  .str { color: var(--color-syntax-string); }
+  .fn { color: var(--color-syntax-function); }
+  .num { color: var(--color-syntax-number); }
+  .cmt { color: var(--color-syntax-comment); font-style: italic; }
+  .tag { color: var(--color-syntax-tag); }
+  .attr { color: var(--color-syntax-attr); }
+  .var { color: var(--color-syntax-variable); }
   article > p { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: 0; }
-  #leads { --virtualizer__spacer-start-count: 0; --virtualizer__spacer-end-count: 88; }
-  section.toast-stage { transform: translateZ(0); min-block-size: 26rem; border: var(--hairline) solid var(--separator); border-radius: var(--radius-container); }
+  #leads { --number-virtualizer-spacer-start-count: 0; --number-virtualizer-spacer-end-count: 88; }
+  section.toast-stage { transform: translateZ(0); min-block-size: 26rem; border: var(--size-hairline) solid var(--color-border-separator); border-radius: var(--size-radius-container); }
   p.toast-triggers { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0; }
-  section:has(#email) article, section:has(#trade) article { --input-background-color: var(--fill-3); --textarea-background-color: var(--fill-3); --select__native-background-color: var(--fill-3); --select__trigger-background-color: var(--fill-3); }
-  article.drawer-stage { position: relative; block-size: 26rem; border: var(--hairline) solid var(--separator); border-radius: var(--radius-container); overflow: hidden; }
+  section:has(#email) article, section:has(#trade) article { --color-bkg-input: var(--color-fill-3); --color-bkg-textarea: var(--color-fill-3); --color-bkg-select-native: var(--color-fill-3); --color-bkg-select-trigger: var(--color-fill-3); }
+  article.drawer-stage { position: relative; block-size: 26rem; border: var(--size-hairline) solid var(--color-border-separator); border-radius: var(--size-radius-container); overflow: hidden; }
   article.drawer-stage > dialog[variant="drawer"] { position: absolute; inset-block: 0; inset-inline-end: 0; }
 </style>
 </head>
