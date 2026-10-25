@@ -22,23 +22,11 @@ export function create(props) {
 
 /** @param {import('../registry.js').Registry} registry */
 export function registerVariants(registry) {
-  registry.registerVariant('badge', 'default', {});
-  registry.registerVariant('badge', 'info', {
-    '--badge-background-color': 'var(--tint-fill)',
-    '--badge-color': 'var(--tint)',
-  });
-  registry.registerVariant('badge', 'success', {
-    '--badge-background-color': 'var(--success-fill)',
-    '--badge-color': 'var(--success-strong)',
-  });
-  registry.registerVariant('badge', 'warning', {
-    '--badge-background-color': 'var(--warning-fill)',
-    '--badge-color': 'var(--warning-strong)',
-  });
-  registry.registerVariant('badge', 'danger', {
-    '--badge-background-color': 'var(--danger-fill)',
-    '--badge-color': 'var(--danger-strong)',
-  });
+  registry.registerVariant('badge', 'default');
+  registry.registerVariant('badge', 'info');
+  registry.registerVariant('badge', 'success');
+  registry.registerVariant('badge', 'warning');
+  registry.registerVariant('badge', 'danger');
 }
 
 export const template = new URL('./index.html', import.meta.url);

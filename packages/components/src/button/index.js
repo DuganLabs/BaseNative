@@ -35,28 +35,10 @@ export function create(props) {
 
 /** @param {import('../registry.js').Registry} registry */
 export function registerVariants(registry) {
-  registry.registerVariant('button', 'default', {});
-  registry.registerVariant('button', 'primary', {
-    '--button-background-color': 'var(--tint)',
-    '--button-background-color--hover': 'var(--tint-strong)',
-    '--button-background-color--active': 'var(--tint-strong)',
-    '--button-border-color': 'var(--tint)',
-    '--button-color': 'var(--on-tint)',
-  });
-  registry.registerVariant('button', 'ghost', {
-    '--button-background-color': 'var(--color-transparent)',
-    '--button-background-color--hover': 'var(--fill-3)',
-    '--button-background-color--active': 'var(--fill-2)',
-    '--button-border-color': 'var(--color-transparent)',
-    '--button-color': 'var(--tint)',
-  });
-  registry.registerVariant('button', 'destructive', {
-    '--button-background-color': 'var(--danger)',
-    '--button-background-color--hover': 'var(--danger-strong)',
-    '--button-background-color--active': 'var(--danger-strong)',
-    '--button-border-color': 'var(--danger)',
-    '--button-color': 'var(--on-danger)',
-  });
+  registry.registerVariant('button', 'default');
+  registry.registerVariant('button', 'primary');
+  registry.registerVariant('button', 'ghost');
+  registry.registerVariant('button', 'destructive');
 }
 
 export const template = new URL('./index.html', import.meta.url);

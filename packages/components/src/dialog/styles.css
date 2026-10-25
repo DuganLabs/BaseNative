@@ -88,11 +88,9 @@ dialog[variant="default"], dialog[variant="destructive"] {
   }
 }
 
-/* @variants — generated from the registry, do not edit by hand */
 dialog[variant="destructive"] {
   --button-background-color: var(--danger);
   --button-background-color--hover: var(--danger-strong);
   --button-border-color: var(--danger);
   --button-color: var(--on-danger);
 }
-/* @endvariants */

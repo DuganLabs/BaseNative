@@ -10,15 +10,16 @@
   --choice-group__legend-font-weight: var(--font-weight-medium);
   --choice-group__legend-line-height: var(--text-subheadline-leading);
   --choice-group__legend-margin-block-end: var(--space-2);
-  --choice-group__option-display: var(--display-flex);
-  --choice-group__option-align-items: var(--align-start);
-  --choice-group__option-gap: var(--space-3);
+  --choice-group__option-display: var(--display-block);
+  --choice-group__option-position: var(--position-relative);
   --choice-group__option-cursor: var(--cursor-pointer);
+  --choice-group__control-position: var(--position-absolute);
   --choice-group__control-size: var(--space-5);
   --choice-group__control-accent-color: var(--tint);
   --choice-group__control-margin: var(--space-0);
-  --choice-group__control-margin-block-start: var(--space-1);
-  --choice-group__content-flex: 1;
+  --choice-group__control-inset-inline-start: var(--space-5);
+  --choice-group__control-inset-block-start: calc(var(--space-5) + var(--space-1));
+  --choice-group__control-z-index: 1;
 }
 
 fieldset[variant="choice-group"] {
@@ -39,26 +40,20 @@ fieldset[variant="choice-group"] {
 
   & > label {
     display: var(--choice-group__option-display);
-    align-items: var(--choice-group__option-align-items);
-    gap: var(--choice-group__option-gap);
+    position: var(--choice-group__option-position);
     cursor: var(--choice-group__option-cursor);
 
     & > input {
+      position: var(--choice-group__control-position);
       inline-size: var(--choice-group__control-size);
       block-size: var(--choice-group__control-size);
+      inset-inline-start: var(--choice-group__control-inset-inline-start);
+      inset-block-start: var(--choice-group__control-inset-block-start);
+      z-index: var(--choice-group__control-z-index);
       accent-color: var(--choice-group__control-accent-color);
       margin: var(--choice-group__control-margin);
-      margin-block-start: var(--choice-group__control-margin-block-start);
     }
-
-    & > article {
-      flex: var(--choice-group__content-flex);
-    }
-
-
 
   }
 }
 
-/* @variants — generated from the registry, do not edit by hand */
-/* @endvariants */

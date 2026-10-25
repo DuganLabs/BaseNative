@@ -28,12 +28,8 @@ export function create(props) {
 
 /** @param {import('../registry.js').Registry} registry */
 export function registerVariants(registry) {
-  registry.registerVariant('card', 'default', {});
-  registry.registerVariant('card', 'floating', {
-    '--card-background-color': 'var(--background-3)',
-    '--card-border-color': 'var(--color-transparent)',
-    '--card-box-shadow': 'var(--shadow-float)',
-  });
+  registry.registerVariant('card', 'default');
+  registry.registerVariant('card', 'floating');
 }
 
 export const template = new URL('./index.html', import.meta.url);

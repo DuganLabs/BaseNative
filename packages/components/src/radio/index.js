@@ -48,7 +48,7 @@ export function create(props) {
 
 /** @param {import('../registry.js').Registry} registry */
 export function registerVariants(registry) {
-  registry.registerVariant('radio', 'default', {});
+  registry.registerVariant('radio', 'default');
 }
 
 export const template = new URL('./index.html', import.meta.url);

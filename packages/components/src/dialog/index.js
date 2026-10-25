@@ -29,13 +29,8 @@ export function create(props) {
 
 /** @param {import('../registry.js').Registry} registry */
 export function registerVariants(registry) {
-  registry.registerVariant('dialog', 'default', {});
-  registry.registerVariant('dialog', 'destructive', {
-    '--button-background-color': 'var(--danger)',
-    '--button-background-color--hover': 'var(--danger-strong)',
-    '--button-border-color': 'var(--danger)',
-    '--button-color': 'var(--on-danger)',
-  });
+  registry.registerVariant('dialog', 'default');
+  registry.registerVariant('dialog', 'destructive');
 }
 
 export const template = new URL('./index.html', import.meta.url);

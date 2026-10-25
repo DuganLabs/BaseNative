@@ -98,7 +98,6 @@ form:has(:invalid) > button[type="submit"] {
   color: var(--button-color--disabled);
 }
 
-/* @variants — generated from the registry, do not edit by hand */
 button[variant="destructive"] {
   --button-background-color: var(--danger);
   --button-background-color--hover: var(--danger-strong);
@@ -122,4 +121,3 @@ button[variant="primary"] {
   --button-border-color: var(--tint);
   --button-color: var(--on-tint);
 }
-/* @endvariants */

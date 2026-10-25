@@ -8,6 +8,7 @@
   --card-border-radius: var(--radius-container);
   --card-box-shadow: var(--shadow-none);
   --card-padding: var(--space-5);
+  --card-padding-inline-start: var(--card-padding);
   --card__title-color: var(--label);
   --card__title-font-family: var(--text-title-3-family);
   --card__title-font-size: var(--text-title-3-size);
@@ -34,6 +35,7 @@ article[variant="default"], article[variant="floating"] {
   border-radius: var(--card-border-radius);
   box-shadow: var(--card-box-shadow);
   padding: var(--card-padding);
+  padding-inline-start: var(--card-padding-inline-start);
 
   & > header > h3 {
     color: var(--card__title-color);
@@ -61,7 +63,14 @@ article[variant="default"], article[variant="floating"] {
 
 /* Choice-substrate contract: a card inside a choice label shows selection
    by re-pointing its own tokens — the group supplies the checked input,
-   the substrate owns how selection looks. */
+   the substrate owns how selection looks. It also reserves the notch:
+   the group's control sits inside the card's top-inline corner, so a
+   choice card widens its inline-start padding by the paradigm's notch
+   geometry (control space-5 + gap space-3) and the title clears it. */
+label:has(> input) > article[variant="default"], label:has(> input) > article[variant="floating"] {
+  --card-padding-inline-start: calc(var(--card-padding) + var(--space-5) + var(--space-3));
+}
+
 label:hover > article[variant="default"], label:hover > article[variant="floating"] {
   --card-border-color: var(--label-3);
 }
@@ -76,10 +85,8 @@ label:has(> input:focus-visible) > article[variant="default"], label:has(> input
   --card-box-shadow: var(--focus-ring);
 }
 
-/* @variants — generated from the registry, do not edit by hand */
 article[variant="floating"] {
   --card-background-color: var(--background-3);
   --card-border-color: var(--color-transparent);
   --card-box-shadow: var(--shadow-float);
 }
-/* @endvariants */

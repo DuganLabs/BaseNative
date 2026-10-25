@@ -27,19 +27,10 @@ export function create(props) {
 
 /** @param {import('../registry.js').Registry} registry */
 export function registerVariants(registry) {
-  registry.registerVariant('alert', 'info', {});
-  registry.registerVariant('alert', 'success', {
-    '--alert-background-color': 'var(--success-fill)',
-    '--alert__title-color': 'var(--success-strong)',
-  });
-  registry.registerVariant('alert', 'warning', {
-    '--alert-background-color': 'var(--warning-fill)',
-    '--alert__title-color': 'var(--warning-strong)',
-  });
-  registry.registerVariant('alert', 'danger', {
-    '--alert-background-color': 'var(--danger-fill)',
-    '--alert__title-color': 'var(--danger-strong)',
-  });
+  registry.registerVariant('alert', 'info');
+  registry.registerVariant('alert', 'success');
+  registry.registerVariant('alert', 'warning');
+  registry.registerVariant('alert', 'danger');
 }
 
 export const template = new URL('./index.html', import.meta.url);

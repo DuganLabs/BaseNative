@@ -21,34 +21,25 @@ test('each pilot component directory holds exactly the three files', async () =>
   }
 });
 
-test('registration rejects rule-breaking components and variants', () => {
+test('registration rejects rule-breaking components', () => {
   const registry = createRegistry();
   assert.throws(
     () => registry.registerComponent({ name: 'box', root: 'div', create: () => ({}) }),
     /not a semantic root/,
   );
   registry.registerComponent({ name: 'button', root: 'button', create: () => ({}) });
-  assert.throws(
-    () => registry.registerVariant('button', 'brand', { '--button-color': '#ff0000' }),
-    /only re-point a token/,
-  );
-  assert.throws(
-    () => registry.registerVariant('button', 'brand', { color: 'var(--danger)' }),
-    /does not match the token taxonomy/,
-  );
   assert.throws(() => registry.resolveVariant('button', 'nope'), /is not registered/);
   assert.throws(() => validateTemplate('<p>literal</p>'), /literal text/);
   assert.throws(() => validateTemplate('<p class="x">{{ a() }}</p>'), /class attributes/);
   assert.throws(() => validateCss('button { color: red; }'), /not token-only/);
 });
 
-test('a consumer variant registers and generates a scoped rule', async () => {
+test('a consumer variant registers by name — JS carries no style values', async () => {
   const registry = await loadRegistry();
-  registry.registerVariant('button', 'brand', { '--button-background-color': 'var(--danger)' });
-  assert.deepEqual(registry.resolveVariant('button', 'brand'), {
-    '--button-background-color': 'var(--danger)',
-  });
-  assert.match(registry.variantsCssFor('button'), /button\[variant="brand"\] \{\n {2}--button-background-color: var\(--danger\);\n\}/);
+  registry.registerVariant('button', 'brand');
+  assert.equal(registry.resolveVariant('button', 'brand'), 'brand');
+  assert.ok(registry.listVariants('button').includes('brand'));
+  // The rule itself is CSS, authored in a sheet — the registry never sees it.
 });
 
 test('the registry loads the whole pilot', async () => {
@@ -138,14 +129,6 @@ test('each component declares its own tokens in a :root block atop its styles.cs
   assert.match(registry.getComponent('dialog').styles, /\n {2}--dialog__backdrop-background-color:/);
 });
 
-test('variant blocks inside each styles.css are current with the registry (no drift)', async () => {
-  const registry = await loadRegistry();
-  for (const name of PILOT) {
-    const css = await readFile(new URL(`./${name}/styles.css`, import.meta.url), 'utf8');
-    assert.equal(registry.spliceVariants(css, name), css, `${name}/styles.css variant block is stale — run scripts/generate-variants.mjs`);
-  }
-});
-
 test('component selectors name their registered variants exactly — never bare [variant] presence', async () => {
   const registry = await loadRegistry();
   for (const name of PILOT) {
@@ -161,10 +144,10 @@ test('component selectors name their registered variants exactly — never bare 
 test('the registry refuses a (root element, variant) collision across components', () => {
   const registry = createRegistry();
   registry.registerComponent({ name: 'one', root: 'aside', create: () => ({}) });
-  registry.registerVariant('one', 'info', {});
+  registry.registerVariant('one', 'info');
   registry.registerComponent({ name: 'two', root: 'aside', create: () => ({}) });
-  assert.throws(() => registry.registerVariant('two', 'info', {}), /already registered by "one"/);
-  registry.registerVariant('two', 'notice', {});
+  assert.throws(() => registry.registerVariant('two', 'info'), /already registered by "one"/);
+  registry.registerVariant('two', 'notice');
   assert.deepEqual(registry.listVariants('two'), ['notice']);
 });
 
@@ -172,7 +155,8 @@ test('badge renders a small carrying its tone variant', async () => {
   const registry = await loadRegistry();
   const { html } = renderComponent(registry, render, 'badge', { label: 'Paid', variant: 'success' });
   assert.match(html, /<small variant="success">Paid<\/small>/);
-  assert.match(registry.variantsCssFor('badge'), /small\[variant="danger"\] \{\n {2}--badge-background-color: var\(--danger-fill\);/);
+  const badgeCss = await readFile(new URL('badge/styles.css', import.meta.url), 'utf8');
+  assert.match(badgeCss, /small\[variant="danger"\] \{\n {2}--badge-background-color: var\(--danger-fill\);/);
 });
 
 test('checkbox and toggle register distinct tags on the shared input element', async () => {
@@ -268,6 +252,11 @@ test('choice-group runs choose-one over the card substrate', async () => {
   assert.match(cardStyles, /label:has\(> input:checked\) > article\[variant="default"\][^{]*\{\s+--card-border-color: var\(--tint\);/);
   const groupStyles = await readFile(new URL('choice-group/styles.css', import.meta.url), 'utf8');
   assert.doesNotMatch(groupStyles, /--card-/);
+  // The notch: the group positions the control inside the substrate's corner…
+  assert.match(groupStyles, /position: var\(--choice-group__control-position\);/);
+  assert.match(groupStyles, /inset-inline-start: var\(--choice-group__control-inset-inline-start\);/);
+  // …and the substrate reserves it, in the substrate's own sheet.
+  assert.match(cardStyles, /label:has\(> input\) > article\[variant="default"\][^{]*\{\s+--card-padding-inline-start:/);
 });
 
 test('choice-group in checkbox mode reports one telemetry event shape', async () => {

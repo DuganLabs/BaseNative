@@ -44,7 +44,6 @@ aside[variant="info"], aside[variant="success"], aside[variant="warning"], aside
   }
 }
 
-/* @variants — generated from the registry, do not edit by hand */
 aside[variant="danger"] {
   --alert-background-color: var(--danger-fill);
   --alert__title-color: var(--danger-strong);
@@ -59,4 +58,3 @@ aside[variant="warning"] {
   --alert-background-color: var(--warning-fill);
   --alert__title-color: var(--warning-strong);
 }
-/* @endvariants */

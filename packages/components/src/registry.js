@@ -1,13 +1,14 @@
 // @ts-check
 /* The Holy Trinity registry.
    Components register themselves (name, root element, view-model factory,
-   template, styles) and register their variants (name -> token re-points).
-   Registration validates the rules mechanically: a component that breaks
-   them cannot register. Consumers may register additional variants at
-   startup; a registration may only re-point tokens to other global tokens. */
+   template, styles) and register their variant NAMES. Registration
+   validates the rules mechanically: a component that breaks them cannot
+   register. A variant's styles are authored CSS in the component's own
+   styles.css — JS never carries style values; registration reserves the
+   (element, variant) address and lets the loader refuse unregistered
+   tags. Consumers may register additional variant names at startup and
+   style them from their own sheets. */
 
-const TOKEN_KEY = /^--[a-z][a-z0-9-]*(__[a-z][a-z0-9-]*)?(--[a-z][a-z0-9-]*)?$/;
-const TOKEN_VALUE = /^var\(--[a-z][a-z0-9-_]*\)$/;
 const LITERAL = /[0-9#]|rgb\(|hsl\(|url\(/;
 
 /**
@@ -82,11 +83,11 @@ export function createRegistry() {
       throw new TypeError(`registerComponent: "${def.name}" is already registered with a different definition`);
     }
     components.set(def.name, def);
-    if (!variants.has(def.name)) variants.set(def.name, new Map());
+    if (!variants.has(def.name)) variants.set(def.name, new Set());
     return def;
   }
 
-  function registerVariant(component, name, tokens) {
+  function registerVariant(component, name) {
     if (!components.has(component)) {
       throw new TypeError(`registerVariant: component "${component}" is not registered — register it before its variants`);
     }
@@ -98,33 +99,20 @@ export function createRegistry() {
         throw new TypeError(`registerVariant: "${root}[variant=\\"${name}\\"]" is already registered by "${otherName}" — the registration tag must identify one component`);
       }
     }
-    for (const [key, value] of Object.entries(tokens ?? {})) {
-      if (!TOKEN_KEY.test(key)) {
-        throw new TypeError(`registerVariant: "${key}" does not match the token taxonomy --<block>-<property>(__<element>)(--<state>)`);
-      }
-      if (!TOKEN_VALUE.test(String(value).trim())) {
-        throw new TypeError(`registerVariant: "${key}: ${value}" — a variant may only re-point a token to another global token`);
-      }
-    }
-    const forComponent = variants.get(component);
-    const existing = forComponent.get(name);
-    if (existing && JSON.stringify(existing) !== JSON.stringify(tokens)) {
-      throw new TypeError(`registerVariant: "${component}/${name}" is already registered with different tokens`);
-    }
-    forComponent.set(name, { ...tokens });
+    variants.get(component).add(name);
   }
 
   function resolveVariant(component, name) {
     const forComponent = variants.get(component);
     if (!forComponent?.has(name)) {
-      const known = forComponent ? [...forComponent.keys()].join(', ') : 'none';
+      const known = forComponent ? [...forComponent].join(', ') : 'none';
       throw new TypeError(`resolveVariant: "${component}/${name}" is not registered (registered: ${known})`);
     }
-    return forComponent.get(name);
+    return name;
   }
 
   function listVariants(component) {
-    return [...(variants.get(component)?.keys() ?? [])];
+    return [...(variants.get(component) ?? [])];
   }
 
   function listComponents() {
@@ -139,38 +127,7 @@ export function createRegistry() {
     return def;
   }
 
-  function variantsCssFor(component) {
-    const def = components.get(component);
-    if (!def) {
-      throw new TypeError(`variantsCssFor: component "${component}" is not registered`);
-    }
-    const rules = [];
-    for (const variantName of listVariants(component).sort()) {
-      const tokens = variants.get(component).get(variantName);
-      const entries = Object.entries(tokens);
-      if (entries.length === 0) continue;
-      const body = entries.map(([key, value]) => `  ${key}: ${value};`).join('\n');
-      rules.push(`${def.root}[variant="${variantName}"] {\n${body}\n}`);
-    }
-    return rules.join('\n\n');
-  }
-
-  /* The generated block that lives at the end of a component's styles.css:
-     variant styles belong to the component, so the registry's rules for a
-     component are spliced into its own sheet between these markers. */
-  function variantsBlockFor(component) {
-    const rules = variantsCssFor(component);
-    return `/* @variants — generated from the registry, do not edit by hand */\n${rules ? `${rules}\n` : ''}/* @endvariants */`;
-  }
-
-  function spliceVariants(css, component) {
-    const block = variantsBlockFor(component);
-    const marked = /\/\* @variants[\s\S]*?\/\* @endvariants \*\//;
-    if (marked.test(css)) return css.replace(marked, block);
-    return `${css.replace(/\s+$/, '')}\n\n${block}\n`;
-  }
-
-  return { registerComponent, registerVariant, resolveVariant, listVariants, listComponents, getComponent, variantsCssFor, variantsBlockFor, spliceVariants };
+  return { registerComponent, registerVariant, resolveVariant, listVariants, listComponents, getComponent };
 }
 
 /** The default registry instance, for apps that do not need isolation. */

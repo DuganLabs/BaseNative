@@ -28,7 +28,6 @@ small[variant="default"], small[variant="info"], small[variant="success"], small
   letter-spacing: var(--badge-letter-spacing);
 }
 
-/* @variants — generated from the registry, do not edit by hand */
 small[variant="danger"] {
   --badge-background-color: var(--danger-fill);
   --badge-color: var(--danger-strong);
@@ -48,4 +47,3 @@ small[variant="warning"] {
   --badge-background-color: var(--warning-fill);
   --badge-color: var(--warning-strong);
 }
-/* @endvariants */

@@ -36,7 +36,7 @@ export function create(props) {
 
 /** @param {import('../registry.js').Registry} registry */
 export function registerVariants(registry) {
-  registry.registerVariant('toggle', 'switch', {});
+  registry.registerVariant('toggle', 'switch');
 }
 
 export const template = new URL('./index.html', import.meta.url);

@@ -23,7 +23,7 @@ export function create(props = {}) {
 
 /** @param {import('../registry.js').Registry} registry */
 export function registerVariants(registry) {
-  registry.registerVariant('progress', 'default', {});
+  registry.registerVariant('progress', 'default');
 }
 
 export const template = new URL('./index.html', import.meta.url);

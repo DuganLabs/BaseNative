@@ -16,6 +16,13 @@ export const root = 'fieldset';
  * styles inside it; a substrate that wants a selected appearance declares
  * it in its own sheet, relationally (see card's label:has(…) rules).
  *
+ * Layout: the control is NOTCHED into the substrate, not parked beside
+ * it — the group positions the input absolutely at the substrate's
+ * top-inline corner (space-5 in, aligned to the first line), and the
+ * substrate reserves that notch in its own contract rules (card widens
+ * its inline-start padding by control + gap). A substrate that reserves
+ * no notch simply gets the control overlaid at its corner.
+ *
  * Telemetry: every change, either mode, reaches the app as ONE event
  * shape through onChange — { name, mode, values, changed, selected } —
  * so instrumentation is written once, against the group, and never cares
@@ -96,7 +103,7 @@ export function create(props) {
 
 /** @param {import('../registry.js').Registry} registry */
 export function registerVariants(registry) {
-  registry.registerVariant('choice-group', 'choice-group', {});
+  registry.registerVariant('choice-group', 'choice-group');
 }
 
 export const template = new URL('./index.html', import.meta.url);
