@@ -295,9 +295,29 @@ export function getHomePageContext() {
   };
 }
 
+// Status → badge variant for the /tasks list, following the page's own
+// status language (the mark[data-status] rules group active with done).
+const TASK_STATUS_VARIANT = { done: 'success', active: 'success', pending: 'default' };
+
 export function getTasksPageContext(tasks, hasApi = true) {
+  // The server-rendered list is the catalog list-group: the title in a
+  // paragraph, the status as the catalog badge pinned to the row's end.
+  // The client script in tasks.html keeps this list in sync in the same
+  // shape as the signals move.
+  const taskList = renderTrinity('list-group', {
+    items: tasks.length
+      ? tasks.map((task) => ({
+          contentHtml: `<p><strong>${escapeText(task.title)}</strong></p>`,
+          trailingHtml: renderTrinity('badge', {
+            label: task.status,
+            variant: TASK_STATUS_VARIANT[task.status] || 'default',
+          }),
+        }))
+      : [{ contentHtml: '<p>No tasks yet — add one below</p>' }],
+  });
   return {
     tasks,
+    taskList: raw(taskList),
     tasksJson: JSON.stringify(tasks),
     hasApi,
   };
