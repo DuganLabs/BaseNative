@@ -951,7 +951,10 @@ describe('the contents navs have a working scrollspy', () => {
 
   it('the current TOC link takes the app nav current treatment', () => {
     const css = readFileSync(repo('examples/express/public/styles.css'), 'utf8');
-    const tocBlock = css.slice(css.indexOf('[data-bn-component-toc],'));
+    // The /components category TOC strip is retired (the sticky filter
+    // bar is the surviving nav, asserted below); the contents-nav block
+    // that remains is the /docs one.
+    const tocBlock = css.slice(css.indexOf('[data-bn-docs-toc]'));
     const at = tocBlock.indexOf("&[aria-current='true']");
     assert.ok(at > -1, 'the TOC block should carry an aria-current rule');
     const rule = tocBlock.slice(at, at + 300);
