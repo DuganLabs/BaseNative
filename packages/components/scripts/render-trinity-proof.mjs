@@ -112,7 +112,166 @@ const addOns = R('choice-group', {
   ],
 });
 
-const css = await assembleStyles(registry, ['button', 'input', 'field', 'dialog', 'badge', 'checkbox', 'toggle', 'radio', 'textarea', 'select', 'alert', 'progress', 'card', 'choice-group']);
+
+const themeToggle = R('theme-toggle', {});
+
+const avatarRow = [
+  R('avatar', { initials: 'WD', variant: 'tone-0' }),
+  R('avatar', { initials: 'OS', variant: 'tone-1' }),
+  R('avatar', { initials: 'KC', variant: 'tone-3' }),
+  R('avatar', { initials: 'GP', variant: 'default' }),
+].join('\n');
+
+const faq = R('accordion', {
+  summary: 'What does a delivered lead cost?',
+  bodyHtml: '<p>One flat price per service, the same whatever source the lead came from.</p>',
+  open: true,
+}) + R('accordion', {
+  summary: 'When is the fee charged?',
+  bodyHtml: '<p>When the lead is delivered into your schedule — never for a search or a click.</p>',
+});
+
+const crumbs = R('breadcrumb', {
+  items: [
+    { label: 'Home', href: '#' },
+    { label: 'Components', href: '#' },
+    { label: 'Catalog' },
+  ],
+});
+
+const pager = R('pagination', { page: 3, pages: 8 });
+
+const settingsList = R('list-group', {
+  items: [
+    { label: 'Email notifications', trailingHtml: R('badge', { label: 'On', variant: 'success' }) },
+    { label: 'Plan', trailingHtml: R('badge', { label: 'Beta', variant: 'info' }) },
+    { label: 'Jobs this month', trailingHtml: R('badge', { label: '12 delivered', variant: 'success' }) },
+  ],
+});
+
+const countyCombo = R('combobox', {
+  id: 'county', label: 'County',
+  inputHtml: R('input', { id: 'county', type: 'text', value: 'Orange', ariaLabel: 'County' }),
+  open: true, activeValue: 'orange',
+  options: [
+    { value: 'orange', label: 'Orange County' },
+    { value: 'la', label: 'Los Angeles' },
+    { value: 'riverside', label: 'Riverside' },
+  ],
+});
+
+const tradesMulti = R('multiselect', {
+  id: 'trades', label: 'Trades',
+  inputHtml: R('input', { id: 'trades', type: 'text', value: '', ariaLabel: 'Trades' }),
+  selected: [{ value: 'ev', label: 'EV charging', dismissHtml: R('button', { label: 'Remove', variant: 'ghost' }) }],
+  options: [],
+});
+
+const leadDrawer = R('drawer', {
+  title: 'Garcia — panel upgrade',
+  body: 'Quoted $2,400. Site survey done, permit pulled, awaiting the bilateral confirmation.',
+  closeHtml: R('button', { label: 'Close', variant: 'ghost' }),
+  footerHtml: R('button', { label: 'Open job', variant: 'primary' }),
+});
+
+const actionsMenu = R('dropdown-menu', {
+  label: 'Lead actions',
+  items: [
+    { label: 'Open lead', href: '#' },
+    { label: 'Call customer' },
+    { separator: true },
+    { label: 'Archive' },
+  ],
+});
+
+const palette = R('command-palette', {
+  id: 'palette', label: 'Command palette', activeValue: 'new-lead',
+  searchHtml: R('field', {
+    label: 'Search commands', controlId: 'palette-search',
+    controlHtml: R('input', { id: 'palette-search', type: 'text', value: '', ariaLabel: 'Search commands' }),
+  }),
+  groups: [
+    { heading: 'Leads', options: [{ value: 'new-lead', label: 'New lead' }, { value: 'import', label: 'Import leads' }] },
+    { heading: 'Jobs', options: [{ value: 'schedule', label: "Today's schedule" }] },
+  ],
+});
+
+const tip = R('tooltip', {
+  text: 'Delivered into the schedule',
+  invokerHtml: R('button', { label: 'What counts as delivered?', variant: 'ghost' }),
+});
+
+const toasts = R('toast', {
+  items: [
+    { message: 'Lead delivered — Garcia, panel upgrade', tone: 'success', dismissHtml: R('button', { label: 'Dismiss', variant: 'ghost' }) },
+    { message: 'Payment failed — retry scheduled', tone: 'danger', dismissHtml: R('button', { label: 'Dismiss', variant: 'ghost' }) },
+  ],
+});
+
+const leadsTable = R('table', {
+  variant: 'striped', caption: 'Delivered leads this week',
+  columns: ['Lead', 'Service', 'Fee'],
+  rows: [
+    [{ text: 'Garcia', header: true }, 'Panel upgrade', '$85'],
+    [{ text: 'Nguyen', header: true }, 'EV charger install', '$65'],
+    [{ text: 'Patel', header: true }, 'Service call', '$45'],
+  ],
+});
+
+const grid = R('datagrid', {
+  selectable: true,
+  selectAllHtml: R('checkbox', { label: 'Select all', name: 'all', value: 'all' }),
+  columns: [
+    { key: 'lead', label: 'Lead', sort: 'ascending', sortHtml: R('button', { label: 'Lead', variant: 'ghost' }) },
+    { key: 'fee', label: 'Fee' },
+  ],
+  rows: [
+    { cells: ['Garcia', '$85'], selectHtml: R('checkbox', { label: 'Select Garcia', name: 'sel', value: '1' }) },
+    { cells: ['Nguyen', '$65'], selectHtml: R('checkbox', { label: 'Select Nguyen', name: 'sel', value: '2' }) },
+  ],
+});
+
+const treeInner = R('tree', { items: [{ label: 'Panel upgrade' }, { label: 'EV charger' }, { label: 'Lighting' }] });
+const treeDemo = R('tree', {
+  items: [
+    { label: 'Services', expanded: true, toggleHtml: R('button', { label: 'Toggle services', variant: 'ghost' }), childrenHtml: treeInner },
+    { label: 'Settings' },
+  ],
+});
+
+const virt = R('virtualizer', {
+  id: 'leads', total: 100, scrollTop: 44 * 20, rowHeight: 44, viewportRows: 8, overscan: 2,
+  labelFor: (i) => `Lead ${i + 1} — Orange County`,
+});
+
+const calVm = renderComponent(registry, render, 'calendar', { year: 2026, month: 10, today: '2026-10-24' }).viewModel;
+const calTable = R('table', {
+  columns: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+  rows: calVm.weeks().map((week) => week.map((day) => (day.inMonth ? String(day.day) : ''))),
+});
+const calMonth = R('calendar', {
+  year: 2026, month: 10, today: '2026-10-24', bodyHtml: calTable,
+  prevHtml: R('button', { label: 'Previous', variant: 'ghost' }),
+  nextHtml: R('button', { label: 'Next', variant: 'ghost' }),
+});
+const calSchedule = R('calendar', {
+  year: 2026, month: 10, today: '2026-10-24', variant: 'schedule',
+  events: [
+    { date: '2026-10-26', title: 'Garcia — panel upgrade', at: '2026-10-26T09:00', timeLabel: '9:00 AM' },
+    { date: '2026-10-26', title: 'Nguyen — site survey', at: '2026-10-26T13:00', timeLabel: '1:00 PM' },
+    { date: '2026-10-27', title: 'Patel — EV charger', at: '2026-10-27T10:30', timeLabel: '10:30 AM' },
+  ],
+});
+
+const board = R('pipeline', {
+  columns: [
+    { title: 'Quoted', cardsHtml: [R('card', { title: 'Garcia', body: 'Panel upgrade — $2,400' })] },
+    { title: 'Scheduled', cardsHtml: [R('card', { title: 'Nguyen', body: 'EV charger — Mon 9 AM' })] },
+    { title: 'Paid', cardsHtml: [R('card', { title: 'Patel', body: 'Service call — $180' })] },
+  ],
+});
+
+const css = await assembleStyles(registry, ['button', 'input', 'field', 'dialog', 'badge', 'checkbox', 'toggle', 'radio', 'textarea', 'select', 'alert', 'progress', 'card', 'choice-group', 'avatar', 'accordion', 'breadcrumb', 'pagination', 'list-group', 'combobox', 'multiselect', 'drawer', 'dropdown-menu', 'command-palette', 'tooltip', 'toast', 'table', 'datagrid', 'tree', 'virtualizer', 'calendar', 'pipeline', 'theme-toggle']);
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const buttonHtml = await readFile(new URL('../src/button/index.html', import.meta.url), 'utf8');
 const buttonCss = await readFile(new URL('../src/button/styles.css', import.meta.url), 'utf8');
@@ -141,7 +300,7 @@ ${css}
   h1 { font-size: 1.5rem; margin: 0; }
   h2 { font-size: 1.05rem; margin: 0; }
   p.note { color: var(--label-2); font-size: .875rem; margin: 0; }
-  article { background: var(--background-grouped-2); border: 1px solid var(--separator); border-radius: .75rem; padding: 1.25rem; display: grid; gap: 1rem; }
+  main > section > article { background: var(--background-grouped-2); border: 1px solid var(--separator); border-radius: .75rem; padding: 1.25rem; display: grid; gap: 1rem; }
   dialog { position: static; }
   pre { background: #111827; color: #f3f4f6; padding: 1rem; border-radius: .5rem; overflow-x: auto; font-size: .78rem; line-height: 1.5;
     --syntax-keyword: #c792ea; --syntax-string: #c3e88d; --syntax-function: #82aaff; --syntax-number: #f78c6c; --syntax-comment: #7a98a5; --syntax-tag: #f07178; --syntax-attr: #ffcb6b; --syntax-variable: #89ddff; }
@@ -154,13 +313,15 @@ ${css}
   .attr { color: var(--syntax-attr); }
   .var { color: var(--syntax-variable); }
   article > p { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: 0; }
+  #leads { --virtualizer__spacer-start-count: 18; --virtualizer__spacer-end-count: 70; }
 </style>
 </head>
 <body>
 <main>
   <section>
     <h1>Holy Trinity pilot — rendered proof</h1>
-    <p class="note">Thirteen catalog components plus one composite — button, field+input, dialog, badge, checkbox, toggle, radio, textarea, select, alert, progress, card, and the choice-group — each a directory of index.html / styles.css / index.js, rendered server-side through @basenative/server. Every style below comes from global tokens — the component sheets declare no values of their own.</p>
+    <p class="note">The full catalog — thirty-one components and two composites (choice-group, theme-toggle) — each a directory of index.html / styles.css / index.js, rendered server-side through @basenative/server. Every style below comes from global tokens — the component sheets declare no values of their own. The theme toggle at the top of this page is live: it stamps the document and the token sheet answers in system, light, or dark.</p>
+    ${themeToggle}
   </section>
 
   <section>
@@ -221,6 +382,108 @@ ${css}
     ${deleteDialog}
   </section>
 
+
+  <section>
+    <h2>Theme toggle — system, light, or dark (live, above)</h2>
+    <p class="note">A composite on the choice paradigm: one radio group over button substrates, one event per change. System leaves the document unstamped and the media query decides; light and dark stamp it and the token sheet's forced scopes answer.</p>
+  </section>
+
+  <section>
+    <h2>Avatars — initials on registered tones</h2>
+    <article>
+      <p>${avatarRow}</p>
+    </article>
+  </section>
+
+  <section>
+    <h2>Accordion — native details, bound summary</h2>
+    <article>
+      ${faq}
+    </article>
+  </section>
+
+  <section>
+    <h2>Breadcrumb and pagination — one nav shape, two addresses</h2>
+    <article>
+      ${crumbs}
+      ${pager}
+    </article>
+  </section>
+
+  <section>
+    <h2>List group — text rows, trailing components, rich rows</h2>
+    ${settingsList}
+  </section>
+
+  <section>
+    <h2>Combobox — an input and its listbox</h2>
+    <article style="padding-block-end: 10rem">
+      ${countyCombo}
+    </article>
+    <h2>Multiselect — the same popup, a set of chips</h2>
+    <article>
+      ${tradesMulti}
+    </article>
+  </section>
+
+  <section>
+    <h2>Drawer — the dialog skeleton at the edge</h2>
+    ${leadDrawer}
+  </section>
+
+  <section>
+    <h2>Dropdown menu and command palette</h2>
+    <article>
+      ${actionsMenu}
+    </article>
+    ${palette}
+  </section>
+
+  <section>
+    <h2>Tooltip — hover or focus the invoker</h2>
+    <article>
+      <p>${tip}</p>
+    </article>
+  </section>
+
+  <section>
+    <h2>Table — real semantics, striped variant</h2>
+    <article>
+      ${leadsTable}
+    </article>
+    <h2>Datagrid — sort buttons and selection composed into the skeleton</h2>
+    <article>
+      ${grid}
+    </article>
+  </section>
+
+  <section>
+    <h2>Tree — recursion by composition</h2>
+    <article>
+      ${treeDemo}
+    </article>
+  </section>
+
+  <section>
+    <h2>Virtualizer — rows 19–30 of 100, spacers sized by tokens</h2>
+    <article>
+      ${virt}
+    </article>
+  </section>
+
+  <section>
+    <h2>Calendar — month (composed with the table) and schedule</h2>
+    ${calMonth}
+    ${calSchedule}
+  </section>
+
+  <section>
+    <h2>Pipeline — stage columns of cards</h2>
+    ${board}
+  </section>
+
+  ${toasts}
+
   <section>
     <h2>The work — button/ in full</h2>
     <pre><code>${esc(buttonHtml)}</code></pre>
@@ -228,6 +491,20 @@ ${css}
     <pre><code>${esc(buttonJs)}</code></pre>
   </section>
 </main>
+<script>
+  document.querySelectorAll('input[name="theme"]').forEach((input) => {
+    input.addEventListener('change', () => {
+      const root = document.documentElement;
+      if (input.value === 'system') {
+        root.removeAttribute('data-theme');
+        root.style.colorScheme = '';
+      } else {
+        root.dataset.theme = input.value;
+        root.style.colorScheme = input.value;
+      }
+    });
+  });
+</script>
 </body>
 </html>
 `;

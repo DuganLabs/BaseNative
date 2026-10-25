@@ -5,16 +5,19 @@
   --virtualizer-padding: var(--space-0);
   --virtualizer-overflow: var(--overflow-auto);
   --virtualizer__item-block-size: var(--size-control);
-  --virtualizer__viewport-block-size: calc(var(--virtualizer__item-block-size) * var(--virtualizer__viewport-rows));
   --virtualizer__viewport-rows: 8;
-  --virtualizer-block-size: var(--virtualizer__viewport-block-size);
   --virtualizer__spacer-start-count: 0;
   --virtualizer__spacer-end-count: 0;
-  --virtualizer__spacer-start-block-size: calc(var(--virtualizer__item-block-size) * var(--virtualizer__spacer-start-count));
-  --virtualizer__spacer-end-block-size: calc(var(--virtualizer__item-block-size) * var(--virtualizer__spacer-end-count));
 }
 
 ol[variant="virtualizer"] {
+  /* The size derivations live on the element rather than the root
+     block. A custom property resolves its calc where it is declared,
+     so a host re-pointing the count tokens on this element feeds the
+     calc from here. */
+  --virtualizer-block-size: calc(var(--virtualizer__item-block-size) * var(--virtualizer__viewport-rows));
+  --virtualizer__spacer-start-block-size: calc(var(--virtualizer__item-block-size) * var(--virtualizer__spacer-start-count));
+  --virtualizer__spacer-end-block-size: calc(var(--virtualizer__item-block-size) * var(--virtualizer__spacer-end-count));
   display: var(--virtualizer-display);
   list-style: var(--virtualizer-list-style);
   margin: var(--virtualizer-margin);

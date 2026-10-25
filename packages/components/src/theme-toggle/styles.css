@@ -57,7 +57,18 @@ fieldset[variant="theme-toggle"] {
   }
 
   & > label {
-    display: var(--theme-toggle-display);
+    display: var(--theme-toggle__option-display);
+    align-items: var(--theme-toggle__option-align-items);
+    padding-block: var(--theme-toggle__option-padding-block);
+    padding-inline: var(--theme-toggle__option-padding-inline);
+    background-color: var(--theme-toggle__option-background-color);
+    border-radius: var(--theme-toggle__option-border-radius);
+    color: var(--theme-toggle__option-color);
+    font-family: var(--theme-toggle__option-font-family);
+    font-size: var(--theme-toggle__option-font-size);
+    font-weight: var(--theme-toggle__option-font-weight);
+    line-height: var(--theme-toggle__option-line-height);
+    letter-spacing: var(--theme-toggle__option-letter-spacing);
     cursor: var(--theme-toggle__option-cursor);
 
     & > input {
@@ -66,36 +77,20 @@ fieldset[variant="theme-toggle"] {
       inline-size: var(--theme-toggle__control-inline-size);
       block-size: var(--theme-toggle__control-block-size);
     }
-
-    & > button {
-      display: var(--theme-toggle__option-display);
-      align-items: var(--theme-toggle__option-align-items);
-      padding-block: var(--theme-toggle__option-padding-block);
-      padding-inline: var(--theme-toggle__option-padding-inline);
-      background-color: var(--theme-toggle__option-background-color);
-      border-width: var(--theme-toggle__option-border-width);
-      border-radius: var(--theme-toggle__option-border-radius);
-      color: var(--theme-toggle__option-color);
-      font-family: var(--theme-toggle__option-font-family);
-      font-size: var(--theme-toggle__option-font-size);
-      font-weight: var(--theme-toggle__option-font-weight);
-      line-height: var(--theme-toggle__option-line-height);
-      letter-spacing: var(--theme-toggle__option-letter-spacing);
-      cursor: var(--theme-toggle__option-cursor);
-    }
   }
 
-  /* The substrate declares its own selected appearance, the choice
-     contract — here the substrate is internal, so its sheet is this
-     one and the re-point happens through the option tokens. */
-  & > label:has(> input:checked) > button {
+  /* The label is the segment (a button inside it would swallow the
+     label's activation and strand the radio), and it declares its
+     own selected appearance through the option tokens — the choice
+     contract, with the substrate internal to this composite. */
+  & > label:has(> input:checked) {
     background-color: var(--theme-toggle__option-background-color--checked);
     box-shadow: var(--theme-toggle__option-box-shadow--checked);
     color: var(--theme-toggle__option-color--checked);
     font-weight: var(--theme-toggle__option-font-weight--checked);
   }
 
-  & > label:has(> input:focus-visible) > button {
+  & > label:has(> input:focus-visible) {
     outline-width: var(--theme-toggle__option-outline-width--focus);
     outline-style: var(--theme-toggle__option-outline-style--focus);
     outline-color: var(--theme-toggle__option-outline-color--focus);

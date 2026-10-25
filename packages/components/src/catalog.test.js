@@ -301,10 +301,12 @@ test('theme-toggle renders the three appearances as a radio choice over buttons'
   });
   assert.match(html, /<fieldset variant="theme-toggle">/);
   assert.match(html, /<legend>Theme<\/legend>/);
-  assert.match(html, /<input variant="default" type="radio" name="theme" value="system" checked="true">/);
-  assert.match(html, /<button type="button">System<\/button>/);
-  assert.match(html, /<button type="button">Light<\/button>/);
-  assert.match(html, /<button type="button">Dark<\/button>/);
+  assert.match(html, /<input variant="default" type="radio" name="theme" value="system" checked="true">\s*System/);
+  assert.match(html, /value="light">\s*Light/);
+  assert.match(html, /value="dark">\s*Dark/);
+  
+  
+  
   viewModel.change({ value: 'dark' });
   assert.deepEqual(event, { name: 'theme', mode: 'dark', previousMode: 'system' });
   assert.equal(viewModel.isChecked({ value: 'dark' }), true);
