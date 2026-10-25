@@ -230,7 +230,7 @@ exact opposite of the point. So there isn't one. The starter above is a
 **document**, not an import: forking it is an act of authorship. It is kept
 honest by `starter-guide.test.js`, which parses this file, runs `defineTheme` on the
 block, and asserts its `neutral` and `primary` ramps are byte-identical to
-`@basenative/components/src/tokens.css`. The docs cannot drift from the code and
+`@basenative/components/src/tokens-legacy.css`. The docs cannot drift from the code and
 the starter cannot quietly become a brand.
 
 Colour is never defaulted. Geometry is — a radius ladder is ergonomics, not
@@ -295,8 +295,9 @@ whose family list differs from the light one.
 
 ### Why the bridge lives here
 
-`components` owns components. Its `tokens.css` is already a complete neutral
-default and it should stay ignorant that themes exist. The cost — this package's
+`components` owns components. Its `--bn-*` ladder (`tokens-legacy.css`) is
+already a complete neutral default and it should stay ignorant that themes
+exist. The cost — this package's
 name list can fall behind a components release — is **measured, not assumed**:
 
 - `BN_BRIDGED` is the list the bridge emits (92 names today).

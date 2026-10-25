@@ -3683,7 +3683,7 @@ Tier 2a. `base` is the page; `sunk` is a well; `raised` is a card or a control.
 packages/theme/src/theme.js · `import { SURFACE_KEYS } from '@basenative/theme';`
 
 #### `GEOMETRY_DEFAULTS` (const)
-Non-colour groups. Defaulted, because a radius ladder is ergonomics and not identity. `theme.test.js` asserts each default is byte-identical to the value `@basenative/components/src/tokens.css` declares, so a change upstream fails this pac…
+Non-colour groups. Defaulted, because a radius ladder is ergonomics and not identity. `theme.test.js` asserts each default is byte-identical to the value `@basenative/components/src/tokens-legacy.css` declares, so a change upstream fails t…
 packages/theme/src/theme.js · `import { GEOMETRY_DEFAULTS } from '@basenative/theme';`
 
 #### `RAW_DEFAULTS` (const)

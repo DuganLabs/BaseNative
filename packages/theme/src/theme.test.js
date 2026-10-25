@@ -15,8 +15,12 @@ import {
 import { parseCustomProperties, resolveColor } from './contrast.js';
 import { darkOnlyTheme, dualTheme, minimalTheme } from './test-fixtures.js';
 
+// The --bn-* defaults this package tracks live in the components package's
+// legacy ladder sheet. Since the Holy Trinity restructure, components'
+// tokens.css is the trinity foundation (layer-0 roles) and declares none of
+// the --bn-* names; tokens-legacy.css declares all of them.
 const COMPONENTS_TOKENS = fileURLToPath(
-  new URL('../../components/src/tokens.css', import.meta.url),
+  new URL('../../components/src/tokens-legacy.css', import.meta.url),
 );
 
 /** The first error mentioning `needle`, for readable assertions. */
