@@ -707,3 +707,9 @@ test('the datagrid shows its sort direction with a chevron that flips', async ()
   assert.match(css, /--datagrid__sort-icon-transform--ascending: rotate\(180deg\)/);
   assert.match(css, /th\[aria-sort="ascending"\] > svg \{\s*transform: var\(--datagrid__sort-icon-transform--ascending\)/);
 });
+
+test('a grid header button paints no pill: the cell owns the surface', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const css = await readFile(new URL('./datagrid/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /thead th > button \{\s*--button-background-color--hover: var\(--color-transparent\);\s*--button-background-color--active: var\(--color-transparent\);/);
+});

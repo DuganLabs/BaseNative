@@ -105,9 +105,17 @@ table[variant="datagrid"] > thead th[aria-sort="ascending"] > svg {
 }
 
 /* A header hosting a sort button lets the button's label sit on the
-   cell's own padding edge, like every other header's text. */
+   cell's own padding edge, like every other header's text, and the
+   cell owns the surface — the button paints no pill of its own here,
+   so its hover and active fills stay transparent and never stack
+   over the header's fills. */
 table[variant="datagrid"] > thead th:has(> button) {
   --button-padding-block: var(--space-0);
   --button-padding-inline: var(--space-0);
   --button-block-size: var(--size-max-content);
+}
+
+table[variant="datagrid"] > thead th > button {
+  --button-background-color--hover: var(--color-transparent);
+  --button-background-color--active: var(--color-transparent);
 }
