@@ -44,17 +44,17 @@ export function validateCss(css) {
   if (/(^|[\s,{>+~])\.[a-z]/i.test(css)) {
     throw new TypeError('styles: class selectors are not used; the element is the selector');
   }
-  const declarations = css.matchAll(/([a-z-]+)\s*:\s*([^;{}]+);/g);
+  const withoutCustomProps = css.replace(/--[a-z0-9-_]+\s*:\s*[^;{}]+;/g, '');
+  const declarations = withoutCustomProps.matchAll(/([a-z-]+)\s*:\s*([^;{}]+);/g);
   for (const [, property, rawValue] of declarations) {
-    if (property.startsWith('--')) continue;
     const value = rawValue.trim();
     if (!/var\(--/.test(value)) {
       throw new TypeError(`styles: "${property}: ${value}" is not token-only — every value comes from a global custom property`);
     }
     const rest = value.replace(/var\(--[a-z0-9-_]+\)/g, '').replace(/[,\s]+/g, ' ').trim();
     const restTokens = rest === '' ? [] : rest.split(' ');
-    const bad = restTokens.find((token) => !/^[a-z-]+$/.test(token) || LITERAL.test(value));
-    if (LITERAL.test(value) || bad) {
+    const bad = restTokens.find((token) => !/^[a-z-]+$/.test(token));
+    if (LITERAL.test(rest) || bad) {
       throw new TypeError(`styles: "${property}: ${value}" is not token-only — every value comes from a global custom property`);
     }
   }

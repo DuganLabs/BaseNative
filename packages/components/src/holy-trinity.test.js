@@ -110,6 +110,18 @@ test('dialog composes nested buttons and its destructive variant re-points them'
   assert.match(dialogStyles, /dialog\[variant="destructive"\] \{\n {2}--button-background-color: var\(--color-danger\);/);
 });
 
+test('each component declares its own tokens in a :root block atop its styles.css', async () => {
+  const tokensCss = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
+  assert.doesNotMatch(tokensCss, /--(button|input|field|dialog)-[a-z-]+:/, 'tokens.css holds only layer-0 primitives');
+  const registry = await loadRegistry();
+  for (const name of PILOT) {
+    const { styles } = registry.getComponent(name);
+    assert.match(styles, new RegExp(`^:root \\{\\n {2}--${name}-`), name);
+  }
+  assert.match(registry.getComponent('field').styles, /\n {2}--field__label-color:/);
+  assert.match(registry.getComponent('dialog').styles, /\n {2}--dialog__backdrop-background-color:/);
+});
+
 test('variant blocks inside each styles.css are current with the registry (no drift)', async () => {
   const registry = await loadRegistry();
   for (const name of PILOT) {

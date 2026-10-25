@@ -1,3 +1,20 @@
+:root {
+  --field-display: var(--display-grid);
+  --field-gap: var(--space-2);
+  --field-margin: var(--space-0);
+  --field-align-items: var(--align-stretch);
+  --field__label-color: var(--color-text);
+  --field__label-font-size: var(--font-size-small);
+  --field__label-font-weight: var(--font-weight-medium);
+  --field__label-line-height: var(--line-height-tight);
+  --field__hint-color: var(--color-text-muted);
+  --field__hint-font-size: var(--font-size-small);
+  --field__hint-line-height: var(--line-height-normal);
+  --field__error-color: var(--color-error-text);
+  --field__error-font-size: var(--font-size-small);
+  --field__error-line-height: var(--line-height-normal);
+}
+
 p[variant] {
   display: var(--field-display);
   gap: var(--field-gap);

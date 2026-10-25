@@ -1,3 +1,37 @@
+:root {
+  --dialog-box-sizing: var(--box-sizing-border);
+  --dialog-background-color: var(--color-surface);
+  --dialog-color: var(--color-text);
+  --dialog-border-width: var(--border-width);
+  --dialog-border-style: var(--border-style-solid);
+  --dialog-border-color: var(--color-border);
+  --dialog-border-radius: var(--radius-modal);
+  --dialog-box-shadow: var(--shadow-dialog);
+  --dialog-padding: var(--space-6);
+  --dialog-inline-size: var(--size-dialog-max);
+  --dialog-margin: var(--margin-auto);
+  --dialog-gap: var(--space-4);
+  --dialog-display: var(--display-grid);
+  --dialog__backdrop-background-color: var(--scrim);
+  --dialog__header-display: var(--display-flex);
+  --dialog__header-align-items: var(--align-stretch);
+  --dialog__header-justify-content: var(--justify-space-between);
+  --dialog__header-gap: var(--space-4);
+  --dialog__title-font-family: var(--font-family);
+  --dialog__title-font-size: var(--font-size-title);
+  --dialog__title-font-weight: var(--font-weight-semibold);
+  --dialog__title-line-height: var(--line-height-tight);
+  --dialog__title-margin: var(--space-0);
+  --dialog__body-color: var(--color-text);
+  --dialog__body-font-family: var(--font-family);
+  --dialog__body-font-size: var(--font-size-base);
+  --dialog__body-line-height: var(--line-height-normal);
+  --dialog__body-margin: var(--space-0);
+  --dialog__footer-display: var(--display-flex);
+  --dialog__footer-justify-content: var(--justify-end);
+  --dialog__footer-gap: var(--space-2);
+}
+
 dialog[variant] {
   box-sizing: var(--dialog-box-sizing);
   background-color: var(--dialog-background-color);
