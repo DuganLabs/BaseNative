@@ -1,3 +1,8 @@
 <template>
-  <button :variant="variant()" :type="type()" :disabled="isDisabled()" :aria-busy="isBusy()" @click="activate($event)">{{ label() }}</button>
+  <template @if="hasHref()">
+    <a :variant="variant()" :href="hrefAttr()" :aria-disabled="disabledAttr()">{{ label() }}</a>
+  </template>
+  <template @else>
+    <button :variant="variant()" :type="type()" :disabled="isDisabled()" :aria-busy="isBusy()" @click="activate($event)">{{ label() }}</button>
+  </template>
 </template>

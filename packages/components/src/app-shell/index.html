@@ -1,6 +1,6 @@
 <template>
   {{ raw(sidebarHtml()) }}
-  <main :variant="variant()">
+  <main :variant="variant()" :id="mainId()">
     {{ raw(contentHtml()) }}
   </main>
   {{ raw(appBarHtml()) }}

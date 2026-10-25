@@ -9,6 +9,7 @@
   --app-shell__rail-inset-inline-start: var(--space-0);
   --app-shell__rail-block-size: var(--size-full);
   --app-shell__chrome-display--hidden: var(--display-none);
+  --app-shell__footer-padding-block-end: calc(var(--space-8) * 3);
 }
 
 main[variant="default"] {
@@ -20,6 +21,10 @@ main[variant="default"] {
 @media (max-width: 47.9375rem) {
   body > aside[variant="sidebar"] {
     display: var(--app-shell__chrome-display--hidden);
+  }
+
+  body > footer[variant="default"] {
+    padding-block-end: var(--app-shell__footer-padding-block-end);
   }
 }
 
