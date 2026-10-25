@@ -37,7 +37,7 @@ p[variant="default"] {
   &:has(> input[aria-invalid="true"]) {
     --input-border-color: var(--input-border-color--invalid);
 
-    & > small {
+    & > small:first-of-type {
       color: var(--field__error-color);
       font-size: var(--field__error-font-size);
       line-height: var(--field__error-line-height);

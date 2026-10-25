@@ -34,9 +34,9 @@ form[variant="default"] {
     opacity: var(--form__actions-opacity);
   }
 
-  /* Readiness is relational — while a control inside is invalid the
-     actions row dims, with no state kept anywhere. */
-  &:has(:invalid) > footer {
+  /* Readiness is relational — while a control inside is declared
+     invalid the actions row dims, with no state kept anywhere. */
+  &:has([aria-invalid="true"]) > footer {
     opacity: var(--form__actions-opacity--invalid);
   }
 }

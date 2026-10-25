@@ -685,3 +685,16 @@ test('the accordion trims body edge margins so open spacing matches closed', asy
   assert.match(css, /& > :first-child \{\s*margin-block-start: var\(--accordion__content-margin-block-start\)/);
   assert.match(css, /& > :last-child \{\s*margin-block-end: var\(--accordion__content-margin-block-end\)/);
 });
+
+test('an invalid field colors only its error note; the hint keeps its own color', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const css = await readFile(new URL('./field/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /&:has\(> input\[aria-invalid="true"\]\) \{\s*--input-border-color: var\(--input-border-color--invalid\);\s*& > small:first-of-type \{/);
+});
+
+test('the form takes its invalid cue from declared state, never native validity', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const css = await readFile(new URL('./form/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /&:has\(\[aria-invalid="true"\]\) > footer/);
+  assert.ok(!css.includes(':invalid'), 'native :invalid must not drive the form');
+});
