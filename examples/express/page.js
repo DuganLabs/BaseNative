@@ -10,9 +10,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { render } from '@basenative/server';
 import { escapeText, raw } from '@basenative/runtime/shared/escape';
-import { catalogBody } from '../../packages/platform/src/catalog.js';
-import { renderTrinity, trinityChromeCss } from './trinity.js';
-import { renderBreadcrumb } from '../../packages/components/src/index.js';
+import { renderTrinity, renderTrinityVm, trinityChromeCss, trinityComponentInfo } from './trinity.js';
 import { renderSiteChrome, renderSiteFooter } from './shell.js';
 import { highlightCodeBlocks } from './highlight.js';
 import {
@@ -24,12 +22,19 @@ import {
   getTasksPageContext,
 } from './site-data.js';
 import { getAiPageContext } from './ai-scorecard.js';
-import { componentCategories, flatComponents, findComponent } from './component-catalog.js';
-import { getDemo } from './component-demos.js';
-import { getDemoScripts } from './component-demo-scripts.js';
+import { trinityCatalog, trinityCategoriesWith, trinityDemos } from './trinity-catalog.js';
+import { getDesignSystemContext } from './design-system-data.js';
 import { getShowcaseContext } from './showcase-data.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+/**
+ * The catalog the whole site presents: the registry's facts (names,
+ * roots, variants, the three files) joined with the copy and demos in
+ * trinity-catalog.js. Built once — the registry loads synchronously.
+ */
+const catalogEntries = trinityCatalog(trinityComponentInfo());
+const catalogBySlug = new Map(catalogEntries.map((entry) => [entry.slug, entry]));
 const read = (file) => readFileSync(join(__dirname, file), 'utf-8');
 
 /**
@@ -210,14 +215,14 @@ export const siteRoutes = [
     path: '/components',
     view: 'components.html',
     title: 'Components',
-    description: `${flatComponents.length} semantic, server-rendered components built on native HTML primitives. No virtual DOM.`,
+    description: `${catalogEntries.length} semantic, server-rendered components built on native HTML primitives. No virtual DOM.`,
     ogTitle: 'BaseNative Components — Semantic by Construction',
     activePage: 'components',
     ctx: () => getComponentsPageContext(),
     hero: (site, ctx) => ({
       eyebrow: 'Component library',
       titleHtml: 'Semantic <em>by construction</em>',
-      ledeHtml: `<p>${ctx.totalCount} components across ${ctx.categoryCount} categories. Every one is built on a real HTML element — <code>&lt;button&gt;</code>, <code>&lt;dialog&gt;</code>, <code>&lt;details&gt;</code>, <code>&lt;table&gt;</code> — with <code>data-bn-*</code> attributes for variants and zero CSS classes.</p>`,
+      ledeHtml: `<p>${ctx.totalCount} components across ${ctx.categoryCount} categories. Every one is built on a real HTML element — <code>&lt;button&gt;</code>, <code>&lt;dialog&gt;</code>, <code>&lt;details&gt;</code>, <code>&lt;table&gt;</code> — addressed by element and <code>variant</code> attribute, with zero CSS classes. Each component is three files: a template, a token sheet, and its logic.</p>`,
       actions: [
         { label: 'Read the API docs', href: '/docs' },
         { label: 'View live showcase', href: '/showcase' },
@@ -295,16 +300,15 @@ export const siteRoutes = [
     path: '/showcase',
     view: 'showcase.html',
     title: 'Showcase',
-    description: `Live gallery of all ${flatComponents.length} BaseNative components — every section is a real server render, not a mockup.`,
+    description: `Live gallery of all ${catalogEntries.length} BaseNative components — every section is a real server render, not a mockup.`,
     ogTitle: 'BaseNative Showcase — Live Component Gallery',
     activePage: 'showcase',
-    ctx: () => ({ ...getShowcaseContext(), categories: componentCategories }),
+    ctx: () => ({ ...getShowcaseContext(), categories: trinityCategoriesWith(catalogEntries) }),
     hero: {
-      attrs: 'data-bn-showcase-header',
       eyebrow: 'Live gallery',
       titleHtml: 'Component <em>showcase</em>',
       ledeHtml:
-        '<p>Every component, server-rendered and interactive. Each demo is a real <code>render*()</code> call from <code>@basenative/components</code> — no mockups, no screenshots, no virtual DOM.</p>',
+        '<p>Every component, server-rendered live. Each demo is a real render from <code>@basenative/components</code> — the catalog itself, not a mockup or a screenshot.</p>',
       actions: [
         { label: 'Browse the catalog', href: '/components' },
         { label: 'Open the playground', href: '/playground' },
@@ -347,14 +351,14 @@ export const siteRoutes = [
     view: 'design-system.html',
     title: 'Design system',
     description:
-      'Every platform control in the states the catalog renders, on the material tokens, light and dark.',
+      'The tokens every catalog component is built from — color roles, materials, type, space, and shape, in light and dark.',
     ogTitle: 'BaseNative design system',
     activePage: 'design-system',
-    ctx: ({ measure } = {}) => ({ catalog: raw(catalogBody({ measure, omitTitle: true })) }),
+    ctx: () => getDesignSystemContext(),
     hero: {
       eyebrow: 'Design system',
-      titleHtml: 'Platform <em>catalog</em>',
-      lede: 'Every control the catalog renders, on Liquid Glass, in light and in dark.',
+      titleHtml: 'Tokens, <em>all the way down</em>',
+      lede: 'One token sheet holds the primitives and the roles. Every component sheet opens by mapping those roles onto its own tokens — no component hard-codes a color, a size, or a radius.',
     },
   },
   {
@@ -420,15 +424,14 @@ function renderHero(spec) {
 
 /** Render /components/<slug>; returns null for a slug the catalog does not list. */
 export function renderComponentPage(slug) {
-  const component = findComponent(slug);
+  const component = catalogBySlug.get(slug);
   if (!component) return null;
 
-  const demo = getDemo(component.slug);
-  const idx = flatComponents.findIndex((c) => c.slug === component.slug);
-  const prev = idx > 0 ? flatComponents[idx - 1] : null;
-  const next = idx < flatComponents.length - 1 ? flatComponents[idx + 1] : null;
-  const related = flatComponents
-    .filter((c) => c.categoryId === component.categoryId && c.slug !== component.slug)
+  const idx = catalogEntries.findIndex((c) => c.slug === slug);
+  const prev = idx > 0 ? catalogEntries[idx - 1] : null;
+  const next = idx < catalogEntries.length - 1 ? catalogEntries[idx + 1] : null;
+  const related = catalogEntries
+    .filter((c) => c.categoryId === component.categoryId && c.slug !== slug)
     .slice(0, 6);
 
   const titleWords = String(component.title || '')
@@ -441,6 +444,7 @@ export function renderComponentPage(slug) {
   // the grouping element the HTML spec defines inside <dl> — built by
   // this one helper so the pattern lives in exactly one place.
   const metaPair = (term, value) => `<div><dt>${term}</dt><dd><code>${value}</code></dd></div>`;
+  const demos = (trinityDemos[slug] ?? (() => []))(renderTrinity, renderTrinityVm);
   const ctx = {
     component,
     titleLead,
@@ -454,26 +458,36 @@ export function renderComponentPage(slug) {
           `<dl>` +
           metaPair('Element', `&lt;${escapeText(component.tag)}&gt;`) +
           metaPair('Module', '@basenative/components') +
-          metaPair('Function', escapeText(component.fn)) +
+          metaPair('Variants', escapeText(component.variants.join(', '))) +
           `</dl>`,
       }),
     ),
-    quickstart: demo?.quickstart ?? '',
-    // Every example's `html` is component markup assembled by the
-    // @basenative/components render* functions over hand-authored data — no
-    // user input reaches it — so this is a legitimate raw() trust assertion,
-    // the same one getShowcaseContext() makes for the showcase demos.
-    // Without it, {{ }} escapes the markup and the "Live render" pane on every
-    // /components/:slug page shows the source as text instead of the component.
-    examples: (demo?.examples ?? []).map((example) => ({ ...example, html: raw(example.html) })),
+    quickstart: component.usage,
+    // Every demo's html is a real catalog render over hand-authored
+    // props (trinity-catalog.js) — no user input reaches it — so this
+    // raw() is the same trust assertion the other assembled contexts make.
+    examples: demos.map((demo) => ({
+      title: demo.title,
+      description: demo.note ?? '',
+      html: raw(demo.html),
+    })),
+    // The component is its three files; the pages show all three.
+    files: [
+      { name: 'index.html — the template', code: component.template },
+      { name: 'styles.css — the token sheet', code: component.styles },
+      { name: 'index.js — the logic', code: component.source },
+    ],
+    facts: [
+      { term: 'Element', value: `<${component.tag}>` },
+      { term: 'Variants', value: component.variants.join(', ') },
+      { term: 'Files', value: 'index.html · styles.css · index.js' },
+      { term: 'Registry name', value: component.slug },
+    ],
     prev,
     next,
     related,
-    // Same raw() assertion as `examples` above — renderBreadcrumb() emits markup
-    // from three hand-authored labels. Without it the breadcrumb printed as a
-    // wall of escaped tags across the top of every /components/:slug page.
     breadcrumb: raw(
-      renderBreadcrumb({
+      renderTrinity('breadcrumb', {
         items: [
           { label: 'Home', href: '/' },
           { label: 'Components', href: '/components' },
@@ -489,7 +503,7 @@ export function renderComponentPage(slug) {
     ogTitle: `${component.title} — BaseNative`,
     path: `/components/${component.slug}`,
     activePage: 'components',
-    scripts: getDemoScripts(component.slug),
+    scripts: '',
   });
 }
 
