@@ -30,6 +30,15 @@
   --datagrid__cell-vertical-align: var(--vertical-align-middle);
   --datagrid__row-header-font-weight: var(--font-weight-semibold);
   --datagrid__sorted-background-color: var(--fill-2);
+  --datagrid__sort-icon-inline-size: var(--space-3);
+  --datagrid__sort-icon-block-size: var(--space-3);
+  --datagrid__sort-icon-color: var(--label-3);
+  --datagrid__sort-icon-margin-inline-start: var(--space-1);
+  --datagrid__sort-icon-vertical-align: var(--vertical-align-middle);
+  --datagrid__sort-icon-pointer-events: var(--pointer-events-none);
+  --datagrid__sort-icon-transform--ascending: rotate(180deg);
+  --datagrid-motion-duration: var(--motion-fade-duration);
+  --datagrid-motion-curve: var(--motion-fade-curve);
 }
 
 table[variant="datagrid"] {
@@ -79,6 +88,20 @@ table[variant="datagrid"] {
 
 table[variant="datagrid"] > thead th[aria-sort] {
   background-color: var(--datagrid__sorted-background-color);
+
+  & > svg {
+    inline-size: var(--datagrid__sort-icon-inline-size);
+    block-size: var(--datagrid__sort-icon-block-size);
+    color: var(--datagrid__sort-icon-color);
+    margin-inline-start: var(--datagrid__sort-icon-margin-inline-start);
+    vertical-align: var(--datagrid__sort-icon-vertical-align);
+    pointer-events: var(--datagrid__sort-icon-pointer-events);
+    transition: transform var(--datagrid-motion-duration) var(--datagrid-motion-curve);
+  }
+}
+
+table[variant="datagrid"] > thead th[aria-sort="ascending"] > svg {
+  transform: var(--datagrid__sort-icon-transform--ascending);
 }
 
 /* A header hosting a sort button lets the button's label sit on the

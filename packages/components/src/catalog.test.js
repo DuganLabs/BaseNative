@@ -218,7 +218,7 @@ test('datagrid nests sort buttons and selection checkboxes in the table skeleton
     rows: [{ cells: ['Garcia', '$85'], selectHtml: box }],
   });
   assert.match(html, /<table variant="datagrid">/);
-  assert.match(html, /<th scope="col" aria-sort="ascending">\s*<button variant="ghost" type="button">Lead<\/button>\s*<\/th>/);
+  assert.match(html, /<th scope="col" aria-sort="ascending">\s*<button variant="ghost" type="button">Lead<\/button><svg/);
   assert.match(html, /<td>\s*<label>\s*<input variant="checkbox" type="checkbox">\s*Select Garcia\s*<\/label>\s*<\/td>/);
 });
 
@@ -697,4 +697,13 @@ test('the form takes its invalid cue from declared state, never native validity'
   const css = await readFile(new URL('./form/styles.css', import.meta.url), 'utf8');
   assert.match(css, /&:has\(\[aria-invalid="true"\]\) > footer/);
   assert.ok(!css.includes(':invalid'), 'native :invalid must not drive the form');
+});
+
+test('the datagrid shows its sort direction with a chevron that flips', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const html = await readFile(new URL('./datagrid/index.html', import.meta.url), 'utf8');
+  const css = await readFile(new URL('./datagrid/styles.css', import.meta.url), 'utf8');
+  assert.match(html, /:aria-sort="column\.sort">\{\{ raw\(column\.sortHtml\) \}\}<svg/);
+  assert.match(css, /--datagrid__sort-icon-transform--ascending: rotate\(180deg\)/);
+  assert.match(css, /th\[aria-sort="ascending"\] > svg \{\s*transform: var\(--datagrid__sort-icon-transform--ascending\)/);
 });

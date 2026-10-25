@@ -10,7 +10,7 @@
         </template>
         <template @for="column of columns()">
           <template @if="column.sort">
-            <th scope="col" :aria-sort="column.sort">{{ raw(column.sortHtml) }}</th>
+            <th scope="col" :aria-sort="column.sort">{{ raw(column.sortHtml) }}<svg aria-hidden="true" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></th>
           </template>
           <template @else>
             <th scope="col">{{ column.label }}</th>
