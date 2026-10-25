@@ -67,15 +67,15 @@
 
     /* Accent */
     --accent: #e8920a;
-    --accent-dim: #b06f08;
-    --accent-glow: #e8920a33;
-    --accent-glow-strong: #e8920a55;
+    --accent-dim: color-mix(in oklab, var(--tint) 72%, black);
+    --accent-glow: color-mix(in srgb, var(--tint) 20%, transparent);
+    --accent-glow-strong: color-mix(in srgb, var(--tint) 33%, transparent);
 
     /* Status */
     --danger: #f07178;
-    --danger-glow: #f0717833;
+    --danger-glow: color-mix(in srgb, var(--danger) 20%, transparent);
     --success: #c3e88d;
-    --success-glow: #c3e88d33;
+    --success-glow: color-mix(in srgb, var(--success) 20%, transparent);
     --info: #82aaff;
 
     /* Fonts — single family, style-switch via font-stretch */

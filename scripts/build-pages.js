@@ -200,10 +200,6 @@ for (const file of componentCssFiles) {
   }
 }
 
-// Copy the iOS platform tokens (served as /bn-ios/ in Express, must exist in dist)
-const bnIosDir = join(dist, 'bn-ios');
-mkdirSync(bnIosDir, { recursive: true });
-cpSync(join(root, 'packages', 'ios', 'src', 'tokens.css'), join(bnIosDir, 'tokens.css'));
 
 const bnPlatformDir = join(dist, 'bn-platform');
 mkdirSync(bnPlatformDir, { recursive: true });
