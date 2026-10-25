@@ -1,7 +1,9 @@
 <!--
-  Every BaseNative figure below is bound to scripts/compare-stats.js, which
-  measures it from source on each build. Do not type a number into this file —
-  `node scripts/compare-stats.js --check` fails the build if you do.
+  Every BaseNative figure on this page is bound to scripts/compare-stats.js,
+  which measures it from source on each build — the prose below binds
+  `{{ stats.… }}`, and the tables are composed from the same stats object in
+  examples/express/compare-tables.js. Do not type a number into either file:
+  scripts/check-compare-page.js fails the build if you do.
 -->
 {{ hero }}
 
@@ -41,71 +43,9 @@
     runs. The runtime is one package you can read end to end.
   </p>
 
-  <article>
+  <article data-compare-table>
     <header><h3>Runtime weight and dependencies</h3></header>
-    <div data-bn="table-container">
-      <table data-bn="table" data-compare-table>
-        <thead>
-          <tr>
-            <th scope="col">Measure</th>
-            <th scope="col">BaseNative</th>
-            <th scope="col">{{ stats.reactLabel }}</th>
-            <th scope="col">{{ stats.angularLabel }}</th>
-            <th scope="col">{{ stats.svelteLabel }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th data-label="Measure" scope="row">Runtime size (min+gz)</th>
-            <td data-label="BaseNative" data-tone="win" data-claim>{{ stats.runtimeGzipKb }} KB</td>
-            <td data-label="{{ stats.reactLabel }}" data-tone="cost" data-claim>
-              ~{{ stats.reactGzipKb }} KB
-            </td>
-            <td data-label="{{ stats.angularLabel }}" data-tone="cost" data-claim>
-              ~{{ stats.angularGzipKb }} KB
-            </td>
-            <td data-label="{{ stats.svelteLabel }}" data-tone="even" data-claim>
-              ~{{ stats.svelteGzipKb }} KB
-            </td>
-          </tr>
-          <tr>
-            <th data-label="Measure" scope="row">Core production deps</th>
-            <td data-label="BaseNative" data-tone="win" data-claim>{{ stats.runtimeProdDeps }}</td>
-            <td data-label="{{ stats.reactLabel }}" data-tone="even" data-claim>
-              {{ stats.reactDeps }}
-            </td>
-            <td data-label="{{ stats.angularLabel }}" data-tone="cost" data-claim>
-              {{ stats.angularDeps }}
-            </td>
-            <td data-label="{{ stats.svelteLabel }}" data-tone="win" data-claim>
-              {{ stats.svelteDeps }}
-            </td>
-          </tr>
-          <tr>
-            <th data-label="Measure" scope="row">Build step</th>
-            <td data-label="BaseNative" data-tone="win">None</td>
-            <td data-label="{{ stats.reactLabel }}" data-tone="cost">Required (JSX)</td>
-            <td data-label="{{ stats.angularLabel }}" data-tone="cost">Required (TS + AOT)</td>
-            <td data-label="{{ stats.svelteLabel }}" data-tone="cost">Required (compiler)</td>
-          </tr>
-          <tr>
-            <th data-label="Measure" scope="row">Runtime source you can read</th>
-            <td data-label="BaseNative" data-tone="win" data-claim>
-              {{ stats.runtimeSourceLines }} lines
-            </td>
-            <td data-label="{{ stats.reactLabel }}" data-tone="even" data-claim>
-              ~{{ stats.reactSourceLines }} lines
-            </td>
-            <td data-label="{{ stats.angularLabel }}" data-tone="even" data-claim>
-              ~{{ stats.angularSourceLines }} lines
-            </td>
-            <td data-label="{{ stats.svelteLabel }}" data-tone="even" data-claim>
-              ~{{ stats.svelteSourceLines }} lines
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    {{ bundleTable }}
     <p data-compare-note data-claim>
       BaseNative's runtime is measured by <code>scripts/bundle-size.js</code> — the same gzipped
       build CI holds to a {{ stats.runtimeBudgetKb }} KB budget — so this row is the number the
@@ -147,66 +87,9 @@
     go through the build before it can run at all.
   </p>
 
-  <article>
+  <article data-compare-table>
     <header><h3>What that posture costs and buys</h3></header>
-    <div data-bn="table-container">
-      <table data-bn="table" data-compare-table>
-        <thead>
-          <tr>
-            <th scope="col">Measure</th>
-            <th scope="col">BaseNative</th>
-            <th scope="col">{{ stats.reactLabel }}</th>
-            <th scope="col">{{ stats.angularLabel }}</th>
-            <th scope="col">{{ stats.svelteLabel }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th data-label="Measure" scope="row">eval / Function constructor in shipped code</th>
-            <td data-label="BaseNative" data-tone="win" data-claim>{{ stats.unsafeEvalUses }}</td>
-            <td data-label="{{ stats.reactLabel }}" data-tone="even">
-              0 — after its compiler runs
-            </td>
-            <td data-label="{{ stats.angularLabel }}" data-tone="even">
-              0 — after AOT compilation
-            </td>
-            <td data-label="{{ stats.svelteLabel }}" data-tone="even">
-              0 — after its compiler runs
-            </td>
-          </tr>
-          <tr>
-            <th data-label="Measure" scope="row">Template stays data at runtime</th>
-            <td data-label="BaseNative" data-tone="win">Yes — parsed, never compiled to code</td>
-            <td data-label="{{ stats.reactLabel }}" data-tone="cost">
-              No — JSX compiles to JavaScript
-            </td>
-            <td data-label="{{ stats.angularLabel }}" data-tone="cost">
-              No — templates compile at build time
-            </td>
-            <td data-label="{{ stats.svelteLabel }}" data-tone="cost">
-              No — .svelte compiles to JavaScript
-            </td>
-          </tr>
-          <tr>
-            <th data-label="Measure" scope="row">
-              A stored template (CMS, database, model output) renders as-is
-            </th>
-            <td data-label="BaseNative" data-tone="win">
-              Yes — interpreted against a scope, prototype access blocklisted
-            </td>
-            <td data-label="{{ stats.reactLabel }}" data-tone="cost">
-              No — it must go through the build first
-            </td>
-            <td data-label="{{ stats.angularLabel }}" data-tone="cost">
-              No — it must go through the build first
-            </td>
-            <td data-label="{{ stats.svelteLabel }}" data-tone="cost">
-              No — it must go through the build first
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    {{ postureTable }}
   </article>
 
   <p>
@@ -218,50 +101,9 @@
     path, and the code-size hypothesis failed in public:
   </p>
 
-  <article>
+  <article data-compare-table>
     <header><h3>An LLM wrote the same two apps in both</h3></header>
-    <div data-bn="table-container">
-      <table data-bn="table" data-compare-table>
-        <thead>
-          <tr>
-            <th scope="col">Measure</th>
-            <th scope="col">BaseNative</th>
-            <th scope="col">React</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th data-label="Measure" scope="row">Build and tooling fixes before tests passed</th>
-            <td data-label="BaseNative" data-tone="win" data-claim>
-              {{ stats.benchBnToolingFixes }}
-            </td>
-            <td data-label="React" data-tone="cost" data-claim>
-              {{ stats.benchReactToolingFixes }}
-            </td>
-          </tr>
-          <tr>
-            <th data-label="Measure" scope="row">App-code fixes</th>
-            <td data-label="BaseNative" data-tone="even" data-claim>{{ stats.benchBnAppFixes }}</td>
-            <td data-label="React" data-tone="even" data-claim>{{ stats.benchReactAppFixes }}</td>
-          </tr>
-          <tr>
-            <th data-label="Measure" scope="row">Production dependencies (interactive task)</th>
-            <td data-label="BaseNative" data-tone="win" data-claim>{{ stats.benchBnDeps }}</td>
-            <td data-label="React" data-tone="even" data-claim>{{ stats.benchReactDeps }}</td>
-          </tr>
-          <tr>
-            <th data-label="Measure" scope="row">Hand-written lines (both tasks)</th>
-            <td data-label="BaseNative" data-tone="even" data-claim>{{ stats.benchBnLines }}</td>
-            <td data-label="React" data-tone="even" data-claim>{{ stats.benchReactLines }}</td>
-          </tr>
-          <tr>
-            <th data-label="Measure" scope="row">Approx. code tokens (both tasks)</th>
-            <td data-label="BaseNative" data-tone="cost" data-claim>{{ stats.benchBnTokens }}</td>
-            <td data-label="React" data-tone="win" data-claim>{{ stats.benchReactTokens }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    {{ benchTable }}
     <p data-compare-note data-claim>
       The code-size hypothesis failed again: the line count is a tie, and BaseNative still
       uses more tokens, because HTML templates carry closing tags. The {{ stats.benchDocsTokens }}-token docs bundle
@@ -295,51 +137,9 @@
     fits on a whiteboard.
   </p>
 
-  <article>
+  <article data-compare-table>
     <header><h3>Concepts and model</h3></header>
-    <div data-bn="table-container">
-      <table data-bn="table" data-compare-table>
-        <thead>
-          <tr>
-            <th scope="col">Measure</th>
-            <th scope="col">BaseNative</th>
-            <th scope="col">{{ stats.reactLabel }}</th>
-            <th scope="col">{{ stats.angularLabel }}</th>
-            <th scope="col">{{ stats.svelteLabel }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th data-label="Measure" scope="row">Core concepts to learn</th>
-            <td data-label="BaseNative" data-tone="win" data-claim>{{ stats.corePrimitives }}</td>
-            <td data-label="{{ stats.reactLabel }}" data-tone="cost">15+ hooks</td>
-            <td data-label="{{ stats.angularLabel }}" data-tone="cost">30+ concepts</td>
-            <td data-label="{{ stats.svelteLabel }}" data-tone="win">~8 runes</td>
-          </tr>
-          <tr>
-            <th data-label="Measure" scope="row">Reactivity model</th>
-            <td data-label="BaseNative" data-tone="even">Signals (push)</td>
-            <td data-label="{{ stats.reactLabel }}" data-tone="even">Virtual DOM (pull)</td>
-            <td data-label="{{ stats.angularLabel }}" data-tone="even">Signals (push)</td>
-            <td data-label="{{ stats.svelteLabel }}" data-tone="even">Runes/compiler (push)</td>
-          </tr>
-          <tr>
-            <th data-label="Measure" scope="row">Template syntax</th>
-            <td data-label="BaseNative" data-tone="win">Valid HTML</td>
-            <td data-label="{{ stats.reactLabel }}" data-tone="cost">JSX (not HTML)</td>
-            <td data-label="{{ stats.angularLabel }}" data-tone="even">Extended HTML</td>
-            <td data-label="{{ stats.svelteLabel }}" data-tone="even">Custom (.svelte)</td>
-          </tr>
-          <tr>
-            <th data-label="Measure" scope="row">TypeScript</th>
-            <td data-label="BaseNative" data-tone="even">Optional</td>
-            <td data-label="{{ stats.reactLabel }}" data-tone="even">Optional</td>
-            <td data-label="{{ stats.angularLabel }}" data-tone="cost">Required</td>
-            <td data-label="{{ stats.svelteLabel }}" data-tone="even">Optional</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    {{ apiTable }}
     <p data-compare-note data-claim>
       The {{ stats.corePrimitives }} primitives are {{ stats.corePrimitiveNames }} — counted from
       the modules that export them.
@@ -366,55 +166,9 @@
     template dialect to drift.
   </p>
 
-  <article>
+  <article data-compare-table>
     <header><h3>Rendering and hydration</h3></header>
-    <div data-bn="table-container">
-      <table data-bn="table" data-compare-table>
-        <thead>
-          <tr>
-            <th scope="col">Measure</th>
-            <th scope="col">BaseNative</th>
-            <th scope="col">{{ stats.reactLabel }}</th>
-            <th scope="col">{{ stats.angularLabel }}</th>
-            <th scope="col">{{ stats.svelteLabel }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th data-label="Measure" scope="row">SSR built-in</th>
-            <td data-label="BaseNative" data-tone="win">Yes</td>
-            <td data-label="{{ stats.reactLabel }}" data-tone="cost">Via Next.js / manual</td>
-            <td data-label="{{ stats.angularLabel }}" data-tone="win">Yes (built-in SSR)</td>
-            <td data-label="{{ stats.svelteLabel }}" data-tone="cost">Via SvelteKit</td>
-          </tr>
-          <tr>
-            <th data-label="Measure" scope="row">Lazy hydration</th>
-            <td data-label="BaseNative" data-tone="win" data-claim>
-              {{ stats.hydrationStrategies }} strategies built-in
-            </td>
-            <td data-label="{{ stats.reactLabel }}" data-tone="cost">Manual / React.lazy</td>
-            <td data-label="{{ stats.angularLabel }}" data-tone="even">@defer (partial)</td>
-            <td data-label="{{ stats.svelteLabel }}" data-tone="cost">Manual</td>
-          </tr>
-          <tr>
-            <th data-label="Measure" scope="row">Hydration strategies</th>
-            <td data-label="BaseNative" data-tone="win" data-claim>
-              {{ stats.hydrationStrategyNames }}
-            </td>
-            <td data-label="{{ stats.reactLabel }}" data-tone="even">N/A</td>
-            <td data-label="{{ stats.angularLabel }}" data-tone="even">@defer on viewport</td>
-            <td data-label="{{ stats.svelteLabel }}" data-tone="even">N/A</td>
-          </tr>
-          <tr>
-            <th data-label="Measure" scope="row">CSP-safe expressions</th>
-            <td data-label="BaseNative" data-tone="win">Yes (no eval/Function)</td>
-            <td data-label="{{ stats.reactLabel }}" data-tone="win">Yes (JSX compiled)</td>
-            <td data-label="{{ stats.angularLabel }}" data-tone="win">Yes (AOT compiled)</td>
-            <td data-label="{{ stats.svelteLabel }}" data-tone="win">Yes (compiled)</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    {{ ssrTable }}
   </article>
 </section>
 
@@ -425,60 +179,9 @@
     waste your afternoon.
   </p>
 
-  <article>
+  <article data-compare-table>
     <header><h3>Day-to-day workflow</h3></header>
-    <div data-bn="table-container">
-      <table data-bn="table" data-compare-table>
-        <thead>
-          <tr>
-            <th scope="col">Measure</th>
-            <th scope="col">BaseNative</th>
-            <th scope="col">{{ stats.reactLabel }}</th>
-            <th scope="col">{{ stats.angularLabel }}</th>
-            <th scope="col">{{ stats.svelteLabel }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th data-label="Measure" scope="row">Time to first render</th>
-            <td data-label="BaseNative" data-tone="win">Open HTML file</td>
-            <td data-label="{{ stats.reactLabel }}" data-tone="cost">npm create vite@latest</td>
-            <td data-label="{{ stats.angularLabel }}" data-tone="cost">ng new + ng serve</td>
-            <td data-label="{{ stats.svelteLabel }}" data-tone="cost">npx sv create</td>
-          </tr>
-          <tr>
-            <th data-label="Measure" scope="row">Hot reload</th>
-            <td data-label="BaseNative" data-tone="win">HMR (@basenative/hmr)</td>
-            <td data-label="{{ stats.reactLabel }}" data-tone="win">Fast Refresh</td>
-            <td data-label="{{ stats.angularLabel }}" data-tone="win">HMR</td>
-            <td data-label="{{ stats.svelteLabel }}" data-tone="win">HMR</td>
-          </tr>
-          <tr>
-            <th data-label="Measure" scope="row">Ecosystem packages</th>
-            <td data-label="BaseNative" data-tone="cost">Growing</td>
-            <td data-label="{{ stats.reactLabel }}" data-tone="win">Massive</td>
-            <td data-label="{{ stats.angularLabel }}" data-tone="win">Large</td>
-            <td data-label="{{ stats.svelteLabel }}" data-tone="even">Moderate</td>
-          </tr>
-          <tr>
-            <th data-label="Measure" scope="row">Component model</th>
-            <td data-label="BaseNative" data-tone="even">
-              Semantic HTML — W3C primitives are the component model
-            </td>
-            <td data-label="{{ stats.reactLabel }}" data-tone="win">Components + hooks</td>
-            <td data-label="{{ stats.angularLabel }}" data-tone="win">Components + DI</td>
-            <td data-label="{{ stats.svelteLabel }}" data-tone="win">Components</td>
-          </tr>
-          <tr>
-            <th data-label="Measure" scope="row">Community size</th>
-            <td data-label="BaseNative" data-tone="cost">Solo project</td>
-            <td data-label="{{ stats.reactLabel }}" data-tone="win">Millions</td>
-            <td data-label="{{ stats.angularLabel }}" data-tone="win">Millions</td>
-            <td data-label="{{ stats.svelteLabel }}" data-tone="even">Hundreds of thousands</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    {{ dxTable }}
   </article>
 </section>
 
