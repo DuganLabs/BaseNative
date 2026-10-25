@@ -1674,7 +1674,7 @@
   }
 
   /* -- Tasks page -- */
-  [data-tasks] > [data-bn='bn-list'] > output,
+  [data-tasks] > output,
   [data-hydrate] [data-bn='bn-list'] > output {
     margin: 0;
     padding: var(--space-md) var(--space-lg);
