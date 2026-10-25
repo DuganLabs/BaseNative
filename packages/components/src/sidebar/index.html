@@ -4,7 +4,7 @@
       <template @for="section of sections()">
         <section>
           <template @if="section.label">
-            <h2>{{ section.label }}</h2>
+            <p>{{ section.label }}</p>
           </template>
           <ul>
             <template @for="item of section.items">

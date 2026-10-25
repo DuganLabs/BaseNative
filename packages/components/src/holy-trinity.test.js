@@ -421,7 +421,8 @@ test('sidebar renders grouped destinations with the current one marked', async (
   });
   assert.match(html, /<aside variant="sidebar">/);
   assert.match(html, /<nav aria-label="Site">/);
-  assert.match(html, /<h2>Start<\/h2>/);
+  assert.match(html, /<p>Start<\/p>/);
+  assert.doesNotMatch(html, /<h[1-6]>/);
   assert.match(html, /<a href="\/compare" aria-current="page">\s*Compare\s*<\/a>/);
   assert.doesNotMatch(html, /<a href="\/" aria-current/);
   assert.doesNotMatch(html, /class=|data-/);

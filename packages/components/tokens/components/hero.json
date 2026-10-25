@@ -432,7 +432,7 @@
     }
   },
   "font-hero-title-leading": {
-    "$value": "{font-title-1-leading}",
+    "$value": "{font-large-title-leading}",
     "$type": "string",
     "$extensions": {
       "com.basenative": {
@@ -450,7 +450,7 @@
     }
   },
   "font-hero-title-size": {
-    "$value": "{font-title-1-size}",
+    "$value": "{font-large-title-size}",
     "$type": "string",
     "$extensions": {
       "com.basenative": {
@@ -468,7 +468,7 @@
     }
   },
   "font-hero-title-tracking": {
-    "$value": "{font-title-1-tracking}",
+    "$value": "{font-large-title-tracking}",
     "$type": "string",
     "$extensions": {
       "com.basenative": {
