@@ -1,0 +1,64 @@
+:root {
+  --choice-group-display: var(--display-grid);
+  --choice-group-gap: var(--space-3);
+  --choice-group-margin: var(--space-0);
+  --choice-group-padding: var(--space-0);
+  --choice-group-border-width: var(--border-width-none);
+  --choice-group__legend-color: var(--label);
+  --choice-group__legend-font-family: var(--text-subheadline-family);
+  --choice-group__legend-font-size: var(--text-subheadline-size);
+  --choice-group__legend-font-weight: var(--font-weight-medium);
+  --choice-group__legend-line-height: var(--text-subheadline-leading);
+  --choice-group__legend-margin-block-end: var(--space-2);
+  --choice-group__option-display: var(--display-flex);
+  --choice-group__option-align-items: var(--align-start);
+  --choice-group__option-gap: var(--space-3);
+  --choice-group__option-cursor: var(--cursor-pointer);
+  --choice-group__control-size: var(--space-5);
+  --choice-group__control-accent-color: var(--tint);
+  --choice-group__control-margin: var(--space-0);
+  --choice-group__control-margin-block-start: var(--space-1);
+  --choice-group__content-flex: 1;
+}
+
+fieldset[variant="choice-group"] {
+  display: var(--choice-group-display);
+  gap: var(--choice-group-gap);
+  margin: var(--choice-group-margin);
+  padding: var(--choice-group-padding);
+  border-width: var(--choice-group-border-width);
+
+  & > legend {
+    color: var(--choice-group__legend-color);
+    font-family: var(--choice-group__legend-font-family);
+    font-size: var(--choice-group__legend-font-size);
+    font-weight: var(--choice-group__legend-font-weight);
+    line-height: var(--choice-group__legend-line-height);
+    margin-block-end: var(--choice-group__legend-margin-block-end);
+  }
+
+  & > label {
+    display: var(--choice-group__option-display);
+    align-items: var(--choice-group__option-align-items);
+    gap: var(--choice-group__option-gap);
+    cursor: var(--choice-group__option-cursor);
+
+    & > input {
+      inline-size: var(--choice-group__control-size);
+      block-size: var(--choice-group__control-size);
+      accent-color: var(--choice-group__control-accent-color);
+      margin: var(--choice-group__control-margin);
+      margin-block-start: var(--choice-group__control-margin-block-start);
+    }
+
+    & > article {
+      flex: var(--choice-group__content-flex);
+    }
+
+
+
+  }
+}
+
+/* @variants — generated from the registry, do not edit by hand */
+/* @endvariants */

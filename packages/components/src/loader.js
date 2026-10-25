@@ -14,7 +14,7 @@ import { createRegistry } from './registry.js';
 const COMPONENTS = [
   'button', 'input', 'field', 'dialog',
   'badge', 'checkbox', 'toggle', 'radio', 'textarea', 'select',
-  'alert', 'progress', 'card', 'radio-card',
+  'alert', 'progress', 'card', 'choice-group',
 ];
 
 /** @param {string} html */

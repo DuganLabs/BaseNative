@@ -59,6 +59,23 @@ article[variant="default"], article[variant="floating"] {
   }
 }
 
+/* Choice-substrate contract: a card inside a choice label shows selection
+   by re-pointing its own tokens — the group supplies the checked input,
+   the substrate owns how selection looks. */
+label:hover > article[variant="default"], label:hover > article[variant="floating"] {
+  --card-border-color: var(--label-3);
+}
+
+label:has(> input:checked) > article[variant="default"], label:has(> input:checked) > article[variant="floating"] {
+  --card-border-color: var(--tint);
+  --card-background-color: var(--tint-fill);
+  --card-box-shadow: var(--focus-ring);
+}
+
+label:has(> input:focus-visible) > article[variant="default"], label:has(> input:focus-visible) > article[variant="floating"] {
+  --card-box-shadow: var(--focus-ring);
+}
+
 /* @variants — generated from the registry, do not edit by hand */
 article[variant="floating"] {
   --card-background-color: var(--background-3);

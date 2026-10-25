@@ -94,16 +94,25 @@ const jobCard = R('card', {
 const uploadBar = R('progress', { value: 60 });
 
 
-const planCards = R('radio-card', {
+const planCards = R('choice-group', {
   legend: 'Pick a plan', name: 'plan', value: 'schedule',
   options: [
-    { value: 'leads', cardHtml: R('card', { title: 'Pay per delivered lead', body: 'One flat price per lead delivered into your schedule. No subscription, no tiers.' }) },
-    { value: 'schedule', cardHtml: R('card', { title: 'Leads + schedule management', body: 'Auto-booking inside your availability windows, with instant notification and undo.' }) },
-    { value: 'platform', cardHtml: R('card', { title: 'Full platform', body: 'Every job from first click to payment — Tesla work and everything else the shop runs.' }) },
+    { value: 'leads', contentHtml: R('card', { title: 'Pay per delivered lead', body: 'One flat price per lead delivered into your schedule. No subscription, no tiers.' }) },
+    { value: 'schedule', contentHtml: R('card', { title: 'Leads + schedule management', body: 'Auto-booking inside your availability windows, with instant notification and undo.' }) },
+    { value: 'platform', contentHtml: R('card', { title: 'Full platform', body: 'Every job from first click to payment — Tesla work and everything else the shop runs.' }) },
   ],
 });
 
-const css = await assembleStyles(registry, ['button', 'input', 'field', 'dialog', 'badge', 'checkbox', 'toggle', 'radio', 'textarea', 'select', 'alert', 'progress', 'card', 'radio-card']);
+const addOns = R('choice-group', {
+  legend: 'Job add-ons', name: 'addons', type: 'checkbox', values: ['permit', 'surge'],
+  options: [
+    { value: 'permit', contentHtml: R('card', { title: 'Permit handling', body: 'We pull the permit and schedule the inspection.' }) },
+    { value: 'surge', contentHtml: R('card', { title: 'Surge protection', body: 'Whole-panel surge device fitted during the same visit.' }) },
+    { value: 'labeling', contentHtml: R('card', { title: 'Panel labeling', body: 'Every breaker identified and the directory reprinted.' }) },
+  ],
+});
+
+const css = await assembleStyles(registry, ['button', 'input', 'field', 'dialog', 'badge', 'checkbox', 'toggle', 'radio', 'textarea', 'select', 'alert', 'progress', 'card', 'choice-group']);
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const buttonHtml = await readFile(new URL('../src/button/index.html', import.meta.url), 'utf8');
 const buttonCss = await readFile(new URL('../src/button/styles.css', import.meta.url), 'utf8');
@@ -150,7 +159,7 @@ ${css}
 <main>
   <section>
     <h1>Holy Trinity pilot — rendered proof</h1>
-    <p class="note">Thirteen catalog components plus one composite — button, field+input, dialog, badge, checkbox, toggle, radio, textarea, select, alert, progress, card, and radio-card (radio + card) — each a directory of index.html / styles.css / index.js, rendered server-side through @basenative/server. Every style below comes from global tokens — the component sheets declare no values of their own.</p>
+    <p class="note">Thirteen catalog components plus one composite — button, field+input, dialog, badge, checkbox, toggle, radio, textarea, select, alert, progress, card, and the choice-group — each a directory of index.html / styles.css / index.js, rendered server-side through @basenative/server. Every style below comes from global tokens — the component sheets declare no values of their own.</p>
   </section>
 
   <section>
@@ -198,8 +207,11 @@ ${css}
   </section>
 
   <section>
-    <h2>Radio cards — a composite: the radio group, the card component, token re-pointing</h2>
+    <h2>Choice group — choose one (radio) over the card substrate</h2>
     ${planCards}
+    <h2>Same group, choose many (checkbox) — a different mode, the same substrate</h2>
+    ${addOns}
+    <p class="note">Every change in either group reaches the app as one event — group, mode, values, and what changed — whatever the options are made of. The selected look lives in the card's own sheet; the group never styles inside its options.</p>
   </section>
 
   <section>

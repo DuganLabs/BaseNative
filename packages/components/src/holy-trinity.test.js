@@ -11,7 +11,7 @@ import { render } from '../../server/src/render.js';
 const PILOT = [
   'button', 'input', 'field', 'dialog',
   'badge', 'checkbox', 'toggle', 'radio', 'textarea', 'select',
-  'alert', 'progress', 'card', 'radio-card',
+  'alert', 'progress', 'card', 'choice-group',
 ];
 
 test('each pilot component directory holds exactly the three files', async () => {
@@ -249,22 +249,47 @@ test('card composes a footer of buttons', async () => {
   assert.match(html, /<button variant="primary" type="button">Open job<\/button>/);
 });
 
-test('radio-card composes cards into a radio group and re-points the chosen card', async () => {
+test('choice-group runs choose-one over the card substrate', async () => {
   const registry = await loadRegistry();
   const cardFor = (title, body) => renderComponent(registry, render, 'card', { title, body }).html;
-  const { html } = renderComponent(registry, render, 'radio-card', {
+  const { html } = renderComponent(registry, render, 'choice-group', {
     legend: 'Pick a plan', name: 'plan', value: 'schedule',
     options: [
-      { value: 'leads', cardHtml: cardFor('Pay per lead', 'Flat price per delivered lead.') },
-      { value: 'schedule', cardHtml: cardFor('Leads + scheduling', 'Auto-booking in your windows.') },
+      { value: 'leads', contentHtml: cardFor('Pay per lead', 'Flat price per delivered lead.') },
+      { value: 'schedule', contentHtml: cardFor('Leads + scheduling', 'Auto-booking in your windows.') },
     ],
   });
-  assert.match(html, /<fieldset variant="radio-card">/);
+  assert.match(html, /<fieldset variant="choice-group">/);
   assert.match(html, /<legend>Pick a plan<\/legend>/);
   assert.equal((html.match(/<article variant="default">/g) ?? []).length, 2);
   assert.match(html, /<input type="radio" name="plan" value="schedule" checked="true">/);
-  const styles = await readFile(new URL('radio-card/styles.css', import.meta.url), 'utf8');
-  assert.match(styles, /&:has\(> input:checked\) \{\s+--card-border-color: var\(--tint\);/);
+  // The substrate owns its selected look: the rule lives in card's sheet, not the group's.
+  const cardStyles = await readFile(new URL('card/styles.css', import.meta.url), 'utf8');
+  assert.match(cardStyles, /label:has\(> input:checked\) > article\[variant="default"\][^{]*\{\s+--card-border-color: var\(--tint\);/);
+  const groupStyles = await readFile(new URL('choice-group/styles.css', import.meta.url), 'utf8');
+  assert.doesNotMatch(groupStyles, /--card-/);
+});
+
+test('choice-group in checkbox mode reports one telemetry event shape', async () => {
+  const registry = await loadRegistry();
+  const events = [];
+  const vm = registry.getComponent('choice-group').create({
+    legend: 'Add-ons', name: 'addons', type: 'checkbox',
+    options: [
+      { value: 'permit', contentHtml: '<article></article>' },
+      { value: 'surge', contentHtml: '<article></article>' },
+    ],
+    values: ['permit'],
+    onChange: (change) => events.push(change),
+  });
+  assert.equal(vm.isChecked(vm.options()[0]), true);
+  assert.equal(vm.isChecked(vm.options()[1]), false);
+  vm.change(vm.options()[1], { target: { checked: true } });
+  vm.change(vm.options()[0], { target: { checked: false } });
+  assert.deepEqual(events, [
+    { name: 'addons', mode: 'checkbox', values: ['permit', 'surge'], changed: 'surge', selected: true },
+    { name: 'addons', mode: 'checkbox', values: ['surge'], changed: 'permit', selected: false },
+  ]);
 });
 
 test('card renders its footer only when footer HTML is given', async () => {
