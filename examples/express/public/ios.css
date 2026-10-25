@@ -372,7 +372,7 @@ article > header h3 {
 }
 
 /* ── Tables: grouped rows under a caption-style header ────────────── */
-table:not([data-bn]) th {
+table:not([data-bn]):not([variant]) th {
   font-family: var(--text-caption-1-family);
   font-size: var(--text-caption-1-size);
   line-height: var(--text-caption-1-leading);
@@ -382,8 +382,8 @@ table:not([data-bn]) th {
   text-transform: uppercase;
   color: var(--label-2);
 }
-table:not([data-bn]) th,
-table:not([data-bn]) td {
+table:not([data-bn]):not([variant]) th,
+table:not([data-bn]):not([variant]) td {
   border-color: var(--separator);
   padding: var(--space-3);
 }
@@ -398,7 +398,7 @@ table:not([data-bn]) td {
    an input in a controls row. Plain content buttons sit in the
    neutral fill; toggles fill when pressed; destructive actions take
    the red tint. */
-button:not([data-bn]) {
+button:not([data-bn]):not([variant]) {
   font-family: var(--text-headline-family);
   font-size: var(--text-headline-size);
   line-height: var(--text-headline-leading);
@@ -410,12 +410,12 @@ button:not([data-bn]) {
   border-radius: var(--radius-pill);
   padding: var(--space-3) var(--space-5);
 }
-button:not([data-bn]):hover {
+button:not([data-bn]):not([variant]):hover {
   background: var(--fill-2);
   color: var(--label);
 }
 a[role='button'],
-nav[data-controls]:has(> input) > button:not([data-bn]) {
+nav[data-controls]:has(> input) > button:not([data-bn]):not([variant]) {
   font-family: var(--text-headline-family);
   font-size: var(--text-headline-size);
   line-height: var(--text-headline-leading);
@@ -428,36 +428,36 @@ nav[data-controls]:has(> input) > button:not([data-bn]) {
   padding: var(--space-3) var(--space-5);
 }
 a[role='button']:hover,
-nav[data-controls]:has(> input) > button:not([data-bn]):hover {
+nav[data-controls]:has(> input) > button:not([data-bn]):not([variant]):hover {
   background: var(--tint);
   color: #000;
   opacity: 0.85;
 }
-button[aria-pressed='true']:not([data-bn]) {
+button[aria-pressed='true']:not([data-bn]):not([variant]) {
   background: var(--tint);
   color: #000;
 }
-button[data-variant='danger']:not([data-bn]) {
+button[data-variant='danger']:not([data-bn]):not([variant]) {
   background: rgb(255 69 58 / 0.16);
   color: var(--bn-danger-label, #9d1c1c);
 }
-button[data-variant='danger']:not([data-bn]):hover {
+button[data-variant='danger']:not([data-bn]):not([variant]):hover {
   background: rgb(255 69 58 / 0.24);
   color: var(--bn-danger-label, #9d1c1c);
 }
 /* Kit red on the 16% wash is 4.1:1 over a dark card. This lighter red clears 4.5. */
-[data-theme='dark'] button[data-variant='danger']:not([data-bn]),
-[data-theme='dark'] button[data-variant='danger']:not([data-bn]):hover {
+[data-theme='dark'] button[data-variant='danger']:not([data-bn]):not([variant]),
+[data-theme='dark'] button[data-variant='danger']:not([data-bn]):not([variant]):hover {
   color: #ff6b6d;
 }
 a[role='button'][data-variant='outline'],
-button:not([data-bn])[data-variant='outline'] {
+button:not([data-bn]):not([variant])[data-variant='outline'] {
   background: rgb(255 159 10 / 0.16);
   color: var(--tint);
   border: none;
 }
 a[role='button'][data-variant='outline']:hover,
-button:not([data-bn])[data-variant='outline']:hover {
+button:not([data-bn]):not([variant])[data-variant='outline']:hover {
   background: rgb(255 159 10 / 0.24);
   color: var(--tint);
   opacity: 1;
@@ -495,7 +495,7 @@ button:not([data-bn])[data-variant='outline']:hover {
 /* Plain content links take the tint, as iOS links do. Scoped to <main>
    so the app nav and footer keep their own treatments; catalog
    components carry data-bn and are excluded. */
-main a:where(:not([data-bn]):not([role='button']):not([data-bn-cta])) {
+main a:where(:not([data-bn]):not([variant]):not([role='button']):not([data-bn-cta])) {
   color: var(--tint);
 }
 
@@ -546,9 +546,9 @@ button[data-bn-component-reset] {
 }
 
 /* Text controls sit in the tertiary grouped surface, borderless. */
-input:not([data-bn]),
-textarea:not([data-bn]),
-select:not([data-bn]) {
+input:not([data-bn]):not([variant]),
+textarea:not([data-bn]):not([variant]),
+select:not([data-bn]):not([variant]) {
   background: var(--background-grouped-3);
   color: var(--label);
   border: 1px solid transparent;

@@ -628,7 +628,7 @@
   }
 
   /* -- Buttons -- */
-  button:not([data-bn]),
+  button:not([data-bn]):not([variant]),
   a[role='button'] {
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
@@ -650,23 +650,23 @@
       color var(--duration-fast),
       box-shadow var(--duration-med);
   }
-  button:not([data-bn]):hover,
+  button:not([data-bn]):not([variant]):hover,
   a[role='button']:hover {
     background: var(--accent-dim);
     border-color: var(--accent);
     color: var(--surface-0);
     box-shadow: var(--shadow-btn);
   }
-  button:not([data-bn]):focus-visible,
+  button:not([data-bn]):not([variant]):focus-visible,
   a[role='button']:focus-visible {
     outline: var(--border-inline-width) solid var(--accent);
     outline-offset: var(--border-inline-width);
   }
-  button:not([data-bn])[data-variant='danger'] {
+  button:not([data-bn]):not([variant])[data-variant='danger'] {
     border-color: var(--bn-danger-label, #9d1c1c);
     color: var(--bn-danger-label, #9d1c1c);
   }
-  button:not([data-bn])[data-variant='danger']:hover {
+  button:not([data-bn]):not([variant])[data-variant='danger']:hover {
     background: var(--danger);
     color: var(--surface-0);
   }
@@ -683,24 +683,24 @@
   }
 
   /* -- Icons in buttons -- */
-  button:not([data-bn]) > img[src*='/icons/'] {
+  button:not([data-bn]):not([variant]) > img[src*='/icons/'] {
     inline-size: 1em;
     block-size: 1em;
     vertical-align: middle;
     filter: brightness(0);
   }
-  [data-theme='dark'] button:not([data-bn]) > img[src*='/icons/'] {
+  [data-theme='dark'] button:not([data-bn]):not([variant]) > img[src*='/icons/'] {
     filter: brightness(0) invert(1);
   }
-  button:not([data-bn]):hover > img[src*='/icons/'] {
+  button:not([data-bn]):not([variant]):hover > img[src*='/icons/'] {
     filter: brightness(0) invert(1);
   }
-  [data-theme='dark'] button:not([data-bn]):hover > img[src*='/icons/'] {
+  [data-theme='dark'] button:not([data-bn]):not([variant]):hover > img[src*='/icons/'] {
     filter: brightness(0);
   }
 
   /* -- Inputs -- */
-  input[type='text']:not([data-bn]) {
+  input[type='text']:not([data-bn]):not([variant]) {
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
     font-size: var(--font-size-base);
@@ -714,16 +714,16 @@
       border-color var(--duration-med),
       box-shadow var(--duration-med);
   }
-  input[type='text']:not([data-bn]):focus {
+  input[type='text']:not([data-bn]):not([variant]):focus {
     border-color: var(--accent);
     box-shadow: var(--shadow-input), var(--shadow-btn);
   }
-  input[type='text']:not([data-bn])::placeholder {
+  input[type='text']:not([data-bn]):not([variant])::placeholder {
     color: var(--text-2);
   }
 
   /* -- Textarea -- */
-  textarea:not([data-bn]) {
+  textarea:not([data-bn]):not([variant]) {
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
     font-size: var(--font-size-base);
@@ -741,16 +741,16 @@
       border-color var(--duration-med),
       box-shadow var(--duration-med);
   }
-  textarea:not([data-bn]):focus {
+  textarea:not([data-bn]):not([variant]):focus {
     border-color: var(--accent);
     box-shadow: var(--shadow-input), var(--shadow-btn);
   }
-  textarea:not([data-bn])::placeholder {
+  textarea:not([data-bn]):not([variant])::placeholder {
     color: var(--text-2);
   }
 
   /* -- Checkbox -- */
-  input[type='checkbox']:not([data-bn]) {
+  input[type='checkbox']:not([data-bn]):not([variant]) {
     appearance: none;
     inline-size: var(--control-size);
     block-size: var(--control-size);
@@ -767,11 +767,11 @@
       border-color var(--duration-fast),
       box-shadow var(--duration-fast);
   }
-  input[type='checkbox']:not([data-bn]):checked {
+  input[type='checkbox']:not([data-bn]):not([variant]):checked {
     background: var(--control-checked-bg);
     border-color: var(--control-checked-border);
   }
-  input[type='checkbox']:not([data-bn]):checked::after {
+  input[type='checkbox']:not([data-bn]):not([variant]):checked::after {
     content: '';
     position: absolute;
     inset-block-start: 0.125rem;
@@ -782,13 +782,13 @@
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
   }
-  input[type='checkbox']:not([data-bn]):focus-visible {
+  input[type='checkbox']:not([data-bn]):not([variant]):focus-visible {
     outline: var(--border-inline-width) solid var(--accent);
     outline-offset: var(--border-inline-width);
   }
 
   /* -- Radio -- */
-  input[type='radio']:not([data-bn]) {
+  input[type='radio']:not([data-bn]):not([variant]) {
     appearance: none;
     inline-size: var(--control-size);
     block-size: var(--control-size);
@@ -804,10 +804,10 @@
       background var(--duration-fast),
       border-color var(--duration-fast);
   }
-  input[type='radio']:not([data-bn]):checked {
+  input[type='radio']:not([data-bn]):not([variant]):checked {
     border-color: var(--control-checked-border);
   }
-  input[type='radio']:not([data-bn]):checked::after {
+  input[type='radio']:not([data-bn]):not([variant]):checked::after {
     content: '';
     position: absolute;
     inset-block-start: 50%;
@@ -818,7 +818,7 @@
     border-radius: 50%;
     transform: translate(-50%, -50%);
   }
-  input[type='radio']:not([data-bn]):focus-visible {
+  input[type='radio']:not([data-bn]):not([variant]):focus-visible {
     outline: var(--border-inline-width) solid var(--accent);
     outline-offset: var(--border-inline-width);
   }
@@ -884,7 +884,7 @@
   }
 
   /* -- Select (base-select) -- */
-  select:not([data-bn]) {
+  select:not([data-bn]):not([variant]) {
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
     font-size: var(--font-size-base);
@@ -905,18 +905,18 @@
       border-color var(--duration-med),
       box-shadow var(--duration-med);
   }
-  select:not([data-bn]):focus {
+  select:not([data-bn]):not([variant]):focus {
     border-color: var(--accent);
     box-shadow: var(--shadow-input), var(--shadow-btn);
   }
 
   @supports (appearance: base-select) {
-    select:not([data-bn]),
-    select:not([data-bn])::picker(select) {
+    select:not([data-bn]):not([variant]),
+    select:not([data-bn]):not([variant])::picker(select) {
       appearance: base-select;
     }
 
-    select:not([data-bn]) {
+    select:not([data-bn]):not([variant]) {
       padding-inline-end: var(--space-md);
       background-image: none;
       display: flex;
@@ -924,16 +924,16 @@
       justify-content: space-between;
     }
 
-    select:not([data-bn])::picker-icon {
+    select:not([data-bn]):not([variant])::picker-icon {
       content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' width='10' height='7'%3E%3Cpath d='M1.5 1.5l4.5 4.5 4.5-4.5' stroke='%23e8a44a' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
       margin-inline-start: auto;
       transition: rotate var(--duration-fast);
     }
-    select:not([data-bn]):open::picker-icon {
+    select:not([data-bn]):not([variant]):open::picker-icon {
       rotate: 180deg;
     }
 
-    select:not([data-bn])::picker(select) {
+    select:not([data-bn]):not([variant])::picker(select) {
       background: var(--popover-bg);
       border: var(--border-width) solid var(--popover-border);
       border-radius: var(--popover-radius);
@@ -948,13 +948,13 @@
     }
 
     @starting-style {
-      select:not([data-bn])::picker(select) {
+      select:not([data-bn]):not([variant])::picker(select) {
         opacity: 0;
         scale: 0.96;
       }
     }
 
-    select:not([data-bn]) option {
+    select:not([data-bn]):not([variant]) option {
       font-family: var(--font-family);
       font-stretch: var(--font-mono);
       font-size: var(--font-size-base);
@@ -963,20 +963,20 @@
       color: var(--text-0);
       transition: background var(--duration-fast);
     }
-    select:not([data-bn]) option:hover {
+    select:not([data-bn]):not([variant]) option:hover {
       background: var(--select-option-hover);
     }
-    select:not([data-bn]) option:checked {
+    select:not([data-bn]):not([variant]) option:checked {
       color: var(--accent);
       font-weight: var(--font-weight-semibold);
     }
 
-    select:not([data-bn]) option::checkmark {
+    select:not([data-bn]):not([variant]) option::checkmark {
       color: var(--accent);
       margin-inline-end: var(--space-sm);
     }
 
-    select:not([data-bn]) optgroup {
+    select:not([data-bn]):not([variant]) optgroup {
       font-family: var(--font-family);
       font-stretch: var(--font-mono);
       font-size: var(--font-size-xs);
@@ -988,7 +988,7 @@
   }
 
   /* -- Progress -- */
-  progress:not([data-bn]) {
+  progress:not([data-bn]):not([variant]) {
     appearance: none;
     inline-size: 100%;
     block-size: var(--track-height);
@@ -997,16 +997,16 @@
     overflow: hidden;
     background: var(--track-bg);
   }
-  progress:not([data-bn])::-webkit-progress-bar {
+  progress:not([data-bn]):not([variant])::-webkit-progress-bar {
     background: var(--track-bg);
     border-radius: var(--radius-pill);
   }
-  progress:not([data-bn])::-webkit-progress-value {
+  progress:not([data-bn]):not([variant])::-webkit-progress-value {
     background: var(--track-fill);
     border-radius: var(--radius-pill);
     transition: inline-size var(--duration-med);
   }
-  progress:not([data-bn])::-moz-progress-bar {
+  progress:not([data-bn]):not([variant])::-moz-progress-bar {
     background: var(--track-fill);
     border-radius: var(--radius-pill);
   }
@@ -1114,7 +1114,7 @@
   }
 
   /* -- Labels -- */
-  label:not([data-bn]) {
+  label:not([data-bn]):not([variant]) {
     display: flex;
     flex-direction: column;
     gap: var(--space-xs);
@@ -1205,8 +1205,8 @@
   }
 
   /* -- Inline label (for checkbox/radio rows) -- */
-  label:not([data-bn]):has(input[type='checkbox']),
-  label:not([data-bn]):has(input[type='radio']) {
+  label:not([data-bn]):not([variant]):has(input[type='checkbox']),
+  label:not([data-bn]):not([variant]):has(input[type='radio']) {
     flex-direction: row;
     align-items: center;
     gap: var(--space-sm);
@@ -1228,19 +1228,19 @@
   }
 
   /* -- Table (express pages only, not data-bn components) -- */
-  table:not([data-bn]) {
+  table:not([data-bn]):not([variant]) {
     inline-size: 100%;
     border-collapse: collapse;
     font-size: var(--font-size-base);
   }
 
-  table:not([data-bn]) thead {
+  table:not([data-bn]):not([variant]) thead {
     position: sticky;
     inset-block-start: 0;
     z-index: 1;
   }
 
-  table:not([data-bn]) th {
+  table:not([data-bn]):not([variant]) th {
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
     font-size: var(--font-size-xs);
@@ -1254,19 +1254,19 @@
     border-block-end: var(--border-width) solid var(--border-accent);
   }
 
-  table:not([data-bn]) td {
+  table:not([data-bn]):not([variant]) td {
     padding: var(--space-sm) var(--space-md);
     border-block-end: var(--border-width) solid var(--border);
     color: var(--text-1);
   }
 
-  table:not([data-bn]) tbody tr:nth-child(even) {
+  table:not([data-bn]):not([variant]) tbody tr:nth-child(even) {
     background: var(--table-stripe);
   }
-  table:not([data-bn]) tbody tr {
+  table:not([data-bn]):not([variant]) tbody tr {
     transition: background var(--duration-fast);
   }
-  table:not([data-bn]) tbody tr:hover {
+  table:not([data-bn]):not([variant]) tbody tr:hover {
     background: var(--surface-2);
   }
 
@@ -1324,14 +1324,14 @@
   }
 
   /* -- Details / Summary -- */
-  details:not([data-bn]) {
+  details:not([data-bn]):not([variant]):not([variant]) {
     border: var(--border-width) solid var(--border);
     border-radius: var(--radius-md);
     margin-block-end: var(--space-sm);
     interpolate-size: allow-keywords;
   }
 
-  details:not([data-bn]) > summary {
+  details:not([data-bn]):not([variant]):not([variant]) > summary {
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
     font-size: var(--font-size-sm);
@@ -1348,35 +1348,35 @@
       color var(--duration-fast);
     border-radius: var(--radius-md);
   }
-  details:not([data-bn]) > summary:hover {
+  details:not([data-bn]):not([variant]):not([variant]) > summary:hover {
     background: var(--surface-2);
     color: var(--accent);
   }
-  details:not([data-bn]) > summary::-webkit-details-marker {
+  details:not([data-bn]):not([variant]):not([variant]) > summary::-webkit-details-marker {
     display: none;
   }
 
-  details:not([data-bn]) > summary::before {
+  details:not([data-bn]):not([variant]):not([variant]) > summary::before {
     content: '▸';
     color: var(--details-marker);
     font-size: 0.85em;
     transition: rotate var(--duration-fast);
   }
-  details:not([data-bn])[open] > summary::before {
+  details:not([data-bn]):not([variant]):not([variant])[open] > summary::before {
     rotate: 90deg;
   }
-  details:not([data-bn])[open] > summary {
+  details:not([data-bn]):not([variant]):not([variant])[open] > summary {
     margin-block-end: 0;
   }
 
-  details:not([data-bn]) > :not(summary) {
+  details:not([data-bn]):not([variant]):not([variant]) > :not(summary) {
     padding: var(--space-sm) var(--space-md) var(--space-md);
     color: var(--text-1);
     font-size: var(--font-size-base);
   }
 
   /* -- Dialog -- */
-  dialog:not([data-bn]) {
+  dialog:not([data-bn]):not([variant]) {
     margin: auto;
     background: var(--dialog-bg);
     color: var(--text-0);
@@ -1393,7 +1393,7 @@
     transition-behavior: allow-discrete;
   }
 
-  dialog:not([data-bn])::backdrop {
+  dialog:not([data-bn]):not([variant])::backdrop {
     background: var(--dialog-backdrop);
     transition:
       opacity var(--duration-med),
@@ -1402,35 +1402,35 @@
     transition-behavior: allow-discrete;
   }
 
-  dialog:not([data-bn])[open] {
+  dialog:not([data-bn]):not([variant])[open] {
     opacity: 1;
     scale: 1;
   }
 
   @starting-style {
-    dialog:not([data-bn])[open] {
+    dialog:not([data-bn]):not([variant])[open] {
       opacity: 0;
       scale: 0.95;
     }
-    dialog:not([data-bn])[open]::backdrop {
+    dialog:not([data-bn]):not([variant])[open]::backdrop {
       opacity: 0;
     }
   }
 
-  dialog:not([data-bn]) > header {
+  dialog:not([data-bn]):not([variant]) > header {
     margin-block-end: var(--space-md);
     padding-block-end: var(--space-md);
     border-block-end: var(--border-width) solid var(--border);
   }
 
-  dialog:not([data-bn]) > header h3 {
+  dialog:not([data-bn]):not([variant]) > header h3 {
     font-family: var(--font-family);
     font-stretch: var(--font-serif);
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-normal);
   }
 
-  dialog:not([data-bn]) > footer {
+  dialog:not([data-bn]):not([variant]) > footer {
     margin-block-start: var(--space-lg);
     display: flex;
     justify-content: flex-end;
@@ -1441,7 +1441,7 @@
   }
 
   /* -- Popover -- */
-  [popover]:not([data-bn]) {
+  [popover]:not([data-bn]):not([variant]) {
     margin: 0;
     padding: var(--space-md);
     background: var(--popover-bg);
@@ -1460,12 +1460,12 @@
     scale: 1;
   }
 
-  [popover]:not([data-bn])::backdrop {
+  [popover]:not([data-bn]):not([variant])::backdrop {
     background: transparent;
   }
 
   @starting-style {
-    [popover]:not([data-bn]):popover-open {
+    [popover]:not([data-bn]):not([variant]):popover-open {
       opacity: 0;
       scale: 0.96;
     }
@@ -3749,7 +3749,7 @@
     }
 
     /* The site-wide disclosure rules a thousand lines above match this block
-       too — `details:not([data-bn])` is true of data-bn-showcase-source, which
+       too — `details:not([data-bn]):not([variant]):not([variant])` is true of data-bn-showcase-source, which
        is a different attribute — so the summary was rendering the generic "▸"
        marker AND this block's own chevron, and the code block was picking up
        the generic body padding on top of its own. Suppress both here rather
