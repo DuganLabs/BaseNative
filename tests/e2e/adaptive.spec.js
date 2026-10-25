@@ -270,7 +270,7 @@ test.describe('App nav — bar geometry', () => {
 /*
  * The contract on the real pages. The fixtures above prove the component;
  * these prove the consumers that were actually broken — the site's content
- * tables (compare, roadmap) are hand-written markup in the same contract,
+ * tables (compare) are hand-written markup in the same contract,
  * so the shipped stylesheet stacks them too, and the catalog's own demos
  * must not collapse the way a size container does inside a shrink-wrapped
  * ancestor. Served by the dev server in playwright.config.
@@ -299,7 +299,6 @@ test.describe('Site tables — the contract on real pages', () => {
 
   for (const [path, count] of [
     ['/compare', 6],
-    ['/roadmap', 7],
   ]) {
     test(`${path} at 390px: every table stacked, labelled, nothing clipped`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });

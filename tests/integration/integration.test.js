@@ -15,7 +15,7 @@ import { createI18n } from '../../packages/i18n/src/index.js';
 import { createFlagManager, createMemoryProvider } from '../../packages/flags/src/index.js';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { checkComparePage, capabilityProblems, roadmapProblems } from '../../scripts/check-compare-page.js';
+import { checkComparePage, capabilityProblems } from '../../scripts/check-compare-page.js';
 import { computeCompareStats } from '../../scripts/compare-stats.js';
 import { renderRoute, renderComponentPage, siteRoutes } from '../../examples/express/page.js';
 import { highlightCode, highlightCodeBlocks } from '../../examples/express/highlight.js';
@@ -23,7 +23,7 @@ import { HIGHLIGHTERS } from '../../examples/express/public/highlight-engine.js'
 import { AI_SCORECARD } from '../../examples/express/ai-scorecard.js';
 import { trinityDemos } from '../../examples/express/trinity-catalog.js';
 import { renderTrinity, renderTrinityVm, trinityComponentInfo } from '../../examples/express/trinity.js';
-import { getRoadmapPageContext, getAppNavItems } from '../../examples/express/site-data.js';
+import { getAppNavItems } from '../../examples/express/site-data.js';
 import * as components from '../../packages/components/src/index.js';
 
 
@@ -386,42 +386,6 @@ describe('the capability guard reads prose, not just numbers', () => {
     const html = renderRoute(route, { tasks: [], hasApi: false });
     assert.doesNotMatch(html, /\bNo HMR\b/i);
     assert.match(html, /HMR \(@basenative\/hmr\)/);
-  });
-});
-
-describe('/roadmap derives its readiness tiles', () => {
-  // Recomputed here rather than imported from the helper the page uses: an
-  // expectation produced by the code under test proves nothing.
-  const expected = readdirSync(repo('packages')).filter((d) => {
-    try {
-      return !JSON.parse(readFileSync(repo(`packages/${d}/package.json`), 'utf8')).private;
-    } catch {
-      return false;
-    }
-  }).length;
-
-  it('the Public Packages tile is the number of non-private workspace packages', () => {
-    const tile = getRoadmapPageContext().readinessStats.find((s) => s.label === 'Public Packages');
-    assert.equal(Number(tile.value), expected);
-  });
-
-  it('the milestone tile is the last release stage, not a retyped label', () => {
-    const ctx = getRoadmapPageContext();
-    const tile = ctx.readinessStats.find((s) => s.label === 'Current Milestone');
-    assert.equal(tile.value, ctx.releaseStages.at(-1).milestone);
-  });
-
-  it('no readiness tile is a typed number in site-data.js', () => {
-    const source = readFileSync(repo('examples/express/site-data.js'), 'utf8');
-    const tiles = source.match(/readinessStats:\s*\[([\s\S]*?)\]/)[1];
-    assert.doesNotMatch(tiles, /value:\s*'\d/);
-  });
-
-  it('the guard would catch a page that stopped rendering the count', () => {
-    const problems = roadmapProblems({ publicPackages: expected + 1000 });
-    assert.equal(problems.length, 1);
-    assert.match(problems[0], /roadmap renders without/);
-    assert.deepEqual(roadmapProblems({ publicPackages: expected }), []);
   });
 });
 
@@ -790,7 +754,7 @@ describe('/docs names real packages and links onward', () => {
   });
 });
 
-// ─── 16. /components/* and /showcase run the package's initialisers ──────────
+// ─── 16. /components/* run the package's initialisers ──────────
 // The catalogue promised filtering, sorting, expand/collapse, chip editing,
 // arrow keys and windowing while the site bundle shipped no `init*` at all
 // (`grep -o 'init[A-Za-z]*' basenative.js` returned only "initial") and the
@@ -829,22 +793,6 @@ describe('the site bundle ships every client initialiser the package exports', (
     for (const name of ['signal', 'computed', 'effect', 'hydrate']) {
       assert.ok(exported.includes(name), `the bundle lost the runtime's ${name}`);
     }
-  });
-});
-
-
-
-describe('/showcase client script wires only the page furniture', () => {
-  const showcase = readFileSync(repo('examples/express/public/showcase.js'), 'utf8');
-
-  it('wires the section filter and the TOC tracking', () => {
-    assert.match(showcase, /wireShowcaseFilter\(\);/);
-    assert.match(showcase, /wireShowcaseToc\(\);/);
-  });
-
-  it('carries no wiring for markup the trinity showcase no longer renders', () => {
-    assert.doesNotMatch(showcase, /init(Tabs|Drawer|DropdownMenu|CommandPalette|VirtualList)/);
-    assert.doesNotMatch(showcase, /data-bn="(tabs|dialog|drawer|dropdown|command-palette|virtualizer)"/);
   });
 });
 

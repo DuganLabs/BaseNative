@@ -79,7 +79,7 @@
     "div-span": 2,
     "control-flow": 0
   },
-  "examples/express/views/design-system.html": {
+  "examples/express/views/docs.html": {
     "custom-element": 0,
     "inline-style": 1,
     "style-write": 0,

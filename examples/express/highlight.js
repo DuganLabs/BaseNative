@@ -3,8 +3,8 @@
  *
  * Before this module, highlighting existed only where an author had
  * hand-typed highlight spans into a template — two views out of the
- * whole site, so /compare's side-by-side code, every component
- * Quick-start and Source pane, and the showcase rendered as plain
+ * whole site, so /compare's side-by-side code and every component
+ * Quick-start and Source pane rendered as plain
  * monochrome while /docs was coloured. The fix belongs in the render
  * pipeline, not in more hand-typed spans: page.js runs every view's
  * rendered HTML through highlightCodeBlocks(), so a code block is

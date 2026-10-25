@@ -395,11 +395,11 @@
 
   /* The hero's margin is the component's own token (--hero-margin,
      0 by default), so the page stack sets it here the same way the
-     component pages and the showcase set theirs. Articles that carry
+     component pages set theirs. Articles that carry
      their own hero margin are excluded; theirs wins. Without this,
      every page's hero sat flush on the surface below it. -- */
   main > figure[variant],
-  main > article:not([data-bn-component-page], [data-bn-showcase]) > figure[variant] {
+  main > article:not([data-bn-component-page]) > figure[variant] {
     --spacing-hero-margin: 0 0 var(--bn-section-space, 12px);
   }
 
@@ -1999,84 +1999,6 @@
     }
   }
 
-  /* -- Showcase layout helpers -- */
-  [data-showcase-row] {
-    display: flex;
-    gap: var(--space-md);
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  [data-showcase-form] {
-    display: grid;
-    gap: var(--space-lg);
-    max-inline-size: 32rem;
-  }
-  [data-showcase-stack] {
-    display: grid;
-    gap: var(--space-sm);
-  }
-  [data-showcase-card] {
-    max-inline-size: 24rem;
-  }
-  [data-showcase-hero] {
-    display: grid;
-    gap: var(--space-sm);
-    padding-block-end: var(--space-md);
-  }
-  [data-showcase-toc] {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xs);
-    padding: var(--space-sm);
-    margin-block-start: var(--space-md);
-    background: var(--surface-1);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-  }
-  [data-showcase-toc] a {
-    padding: var(--space-xs) var(--space-sm);
-    border-radius: var(--radius-sm);
-    color: var(--text-1);
-    text-decoration: none;
-    font-size: 0.875rem;
-  }
-  [data-showcase-toc] a:hover {
-    background: var(--surface-2);
-    color: var(--text-0);
-  }
-  [data-showcase-toc] a:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-
-  [data-showcase-counter] {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-md);
-    padding: var(--space-md) var(--space-lg);
-    background: var(--surface-1);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    font-variant-numeric: tabular-nums;
-  }
-  [data-showcase-counter] [data-bn-counter-value] {
-    font-size: 1.75rem;
-    font-weight: 600;
-    min-inline-size: 3ch;
-    text-align: center;
-    color: var(--accent);
-  }
-  [data-showcase-counter] [data-bn-counter-doubled],
-  [data-showcase-counter] [data-bn-counter-parity] {
-    color: var(--text-1);
-    font-size: 0.875rem;
-  }
-  [data-showcase-counter] [data-bn-counter-parity][data-parity='odd'] {
-    color: var(--info);
-  }
-  [data-showcase-counter] [data-bn-counter-parity][data-parity='even'] {
-    color: var(--success);
-  }
 
   [data-bn-clock] {
     display: inline-block;
@@ -2087,61 +2009,6 @@
     font-variant-numeric: tabular-nums;
     font-size: 1.25rem;
     color: var(--accent);
-  }
-
-  [data-showcase-package-grid] {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    gap: var(--space-xl);
-  }
-  [data-bn-package-group] {
-    display: grid;
-    gap: var(--space-md);
-  }
-  [data-bn-package-group] > h3 {
-    margin: 0;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-2);
-  }
-  [data-bn-package-list] {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    gap: var(--space-md);
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
-  }
-  [data-bn-package-card] {
-    display: grid;
-    gap: var(--space-xs);
-    padding: var(--space-md);
-    background: var(--surface-1);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    transition:
-      border-color var(--duration-fast) var(--ease-out-expo),
-      box-shadow var(--duration-fast) var(--ease-out-expo);
-  }
-  [data-bn-package-card]:hover {
-    border-color: var(--border-accent);
-    box-shadow: 0 0 0 1px var(--accent-glow);
-  }
-  [data-bn-package-card] code {
-    font-size: 0.85rem;
-    color: var(--accent);
-    font-weight: 500;
-    background: transparent;
-    padding: 0;
-  }
-  [data-bn-package-card] p {
-    margin: 0;
-    color: var(--text-1);
-    font-size: 0.875rem;
   }
 
   [data-bn='virtualizer'] {
@@ -2195,7 +2062,7 @@
     }
   }
 
-  /* -- New showcase + components page primitives (data-bn-*) -- */
+  /* -- New components page primitives (data-bn-*) -- */
   [data-bn-visually-hidden] {
     position: absolute;
     inline-size: 1px;
@@ -2279,13 +2146,12 @@
   }
 
   /* ==========================================================================
-   * Components index (/components) + Showcase (/showcase) + per-component pages.
+   * Components index (/components) + per-component pages.
    * Uses native CSS nesting, :has(), and container queries. No classes.
    * ========================================================================== */
 
-  /* -- Hero shared by /components and /showcase -- */
-  [data-bn-page-hero],
-  [data-bn-showcase] > figure[variant="stacked"] {
+  /* -- Hero on /components -- */
+  [data-bn-page-hero] {
     --spacing-hero-margin: 0 0 var(--bn-section-space, 12px);
     --font-hero-title-family: var(--font-family);
     --font-hero-title-size: var(--font-size-hero);
@@ -2330,8 +2196,7 @@
     }
   }
 
-  [data-bn-page-hero-actions],
-  [data-bn-showcase-actions] {
+  [data-bn-page-hero-actions] {
     display: flex;
     gap: var(--space-sm);
     flex-wrap: wrap;
@@ -2856,13 +2721,12 @@
   }
 
   /* Specimen staging: an open dialog, drawer, palette, or listbox is
-     staged in flow inside a preview (and on the showcase stage) instead
+     staged in flow inside a preview instead
      of escaping over the page. The listbox positions are the components'
      own tokens, overridden here per the token contract; the dialog
      position is the UA stylesheet's, which author CSS outranks — no
      catalog sheet declares it. */
-  [data-bn-component-preview],
-  [data-bn-showcase-stage] {
+  [data-bn-component-preview] {
     --position-select-listbox: static;
     --position-combobox-listbox: static;
     --position-multiselect-listbox: static;
@@ -3157,199 +3021,6 @@
     display: none;
   }
 
-  /* -- Showcase page (/showcase) layout -- */
-  [data-bn-showcase] {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--bn-section-space, 12px);
-    background: none;
-    border: none;
-    padding: 0;
-    container-type: normal;
-
-    &:hover {
-      border-color: transparent;
-      box-shadow: none;
-    }
-  }
-
-  [data-bn-showcase-toc] {
-    background: var(--surface-1);
-    border: var(--border-width) solid var(--border);
-    border-radius: var(--radius-md);
-    padding: var(--space-md) var(--space-lg);
-    position: sticky;
-    /* The search bar above is also sticky at the same inset-block-start —
-       offset the TOC by its rendered height (~73px at any viewport; it
-       never wraps) plus a margin, so the two never share a stuck position
-       and the TOC is not covered once both are pinned. */
-    inset-block-start: calc(var(--space-sm) + 5.25rem);
-    z-index: 5;
-    backdrop-filter: blur(8px);
-    background: color-mix(in srgb, var(--surface-1) 92%, transparent);
-
-    & h3 {
-      font-family: var(--font-family);
-      font-stretch: var(--font-mono);
-      font-size: var(--font-size-xs);
-      color: var(--text-2);
-      text-transform: uppercase;
-      letter-spacing: var(--letter-spacing-wider);
-      margin-block-end: var(--space-sm);
-    }
-
-    & ol {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-xs);
-    }
-
-    & ol li {
-      background: none;
-      border: none;
-      padding: 0;
-    }
-
-    & a {
-      font-family: var(--font-family);
-      font-stretch: var(--font-mono);
-      font-size: var(--font-size-xs);
-      color: var(--text-1);
-      text-decoration: none;
-      padding: var(--space-xs) var(--space-sm);
-      border-radius: var(--radius-sm);
-      transition:
-        background var(--duration-fast),
-        color var(--duration-fast);
-
-      &:hover {
-        background: var(--surface-3);
-        color: var(--accent);
-      }
-
-      &[aria-current='true'] {
-        background: color-mix(in srgb, var(--accent) 15%, transparent);
-        color: var(--accent);
-      }
-    }
-  }
-
-  [data-bn-showcase-section] {
-    scroll-margin-block-start: 6rem;
-    margin: 0;
-    padding-block: 0;
-    border-block-start: var(--border-width) solid var(--border);
-    background: none;
-
-    &:first-of-type {
-      border-block-start: none;
-      padding-block-start: 0;
-    }
-
-    & > header {
-      margin: 0 0 var(--space-lg) 0;
-      padding: 0;
-      background: none;
-      border: none;
-      display: block;
-
-      & h2 {
-        font-family: var(--font-family);
-        font-stretch: var(--font-serif);
-        font-size: var(--font-size-2xl);
-        font-weight: var(--font-weight-normal);
-        letter-spacing: var(--letter-spacing-tight);
-        margin-block-end: var(--space-xs);
-      }
-
-      & p {
-        color: var(--text-1);
-        font-size: var(--font-size-base);
-        max-inline-size: var(--size-text-max);
-        margin: 0;
-      }
-
-      & code {
-        color: var(--accent);
-        font-family: var(--font-family);
-        font-stretch: var(--font-mono);
-      }
-    }
-  }
-
-  [data-bn-showcase-demo] {
-    margin: 0 0 var(--space-md) 0;
-    padding: 0;
-    background: var(--surface-1);
-    border: var(--border-width) solid var(--border);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-
-    & figcaption {
-      font-family: var(--font-family);
-      font-stretch: var(--font-mono);
-      font-size: var(--font-size-xs);
-      color: var(--text-2);
-      text-transform: uppercase;
-      letter-spacing: var(--letter-spacing-wider);
-      padding: var(--space-sm) var(--space-md);
-      background: var(--surface-2);
-      border-block-end: var(--border-width) solid var(--border);
-    }
-
-    & > output {
-      display: block;
-      padding: var(--space-xl);
-      background: var(--surface-inset);
-    }
-  }
-
-  [data-bn-showcase-row] {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-md);
-    align-items: center;
-  }
-
-  [data-bn-showcase-form] {
-    display: grid;
-    gap: var(--space-lg);
-    max-inline-size: 32rem;
-  }
-
-  [data-bn-showcase-stack] {
-    display: grid;
-    gap: var(--space-sm);
-  }
-
-  [data-bn-showcase-card] {
-    max-inline-size: 24rem;
-  }
-
-  /* Two-column showcase layout once there is room for a sidebar. */
-  @container page (min-width: 56rem) {
-    [data-bn-showcase] {
-      grid-template-columns: 14rem 1fr;
-      align-items: start;
-    }
-
-    [data-bn-showcase] > figure[variant="stacked"],
-    [data-bn-showcase] > [data-bn-showcase-search] {
-      grid-column: 1 / -1;
-    }
-
-    [data-bn-showcase-toc] {
-      align-self: start;
-
-      & ol {
-        flex-direction: column;
-        gap: var(--space-xs);
-      }
-    }
-  }
   /* -- Component overrides for express theme -- */
   [data-bn='button'] {
     min-block-size: 2.75rem;
@@ -3370,7 +3041,7 @@
     background: var(--accent);
   }
 
-  /* -- Overlay overrides (showcase + per-component pages) -- */
+  /* -- Overlay overrides (per-component pages) -- */
 
   /* Dialog: native showModal() requires margin: auto + inset: 0 to center */
   dialog[data-bn='dialog'] {
@@ -3615,181 +3286,11 @@
 }
 
 /* ============================================================================
- * Showcase + components — modern CSS layer
+ * Components — modern CSS layer
  * Uses @scope, :has(), container queries, color-mix(), nesting
  * ============================================================================ */
 
 @layer states {
-  /* -- Showcase: search bar + empty state ----------------------------------- */
-  [data-bn-showcase-search] {
-    display: grid;
-    gap: var(--space-sm);
-    margin-block-end: var(--space-lg);
-    padding: var(--space-md);
-    background: color-mix(in srgb, var(--surface-1) 92%, transparent);
-    border: var(--border-width) solid var(--border);
-    border-radius: var(--radius-md);
-    backdrop-filter: blur(8px);
-    position: sticky;
-    inset-block-start: var(--space-sm);
-    z-index: 6;
-
-    & input[type='search'] {
-      inline-size: 100%;
-      padding: var(--space-sm) var(--space-md);
-      background: var(--surface-0);
-      color: var(--text-0);
-      border: var(--border-width) solid var(--border);
-      border-radius: var(--radius-sm);
-      font-family: var(--font-family);
-      font-size: var(--font-size-sm);
-      transition:
-        border-color var(--duration-fast),
-        box-shadow var(--duration-fast);
-
-      &::placeholder {
-        color: var(--text-2);
-      }
-
-      &:focus-visible {
-        outline: none;
-        border-color: var(--accent);
-        box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
-      }
-    }
-
-    & [data-bn-showcase-empty] {
-      display: none;
-      color: var(--text-1);
-      font-size: var(--font-size-sm);
-      margin: 0;
-
-      & button {
-        background: none;
-        border: none;
-        color: var(--accent);
-        font-family: inherit;
-        font-size: inherit;
-        cursor: pointer;
-        text-decoration: underline;
-        padding: 0;
-      }
-    }
-  }
-  [data-bn-showcase-search][data-bn-showcase-empty] [data-bn-showcase-empty] {
-    display: block;
-  }
-
-  /* Dim TOC link for hidden sections via :has() — pure CSS */
-  [data-bn-showcase-toc] a[hidden] {
-    display: none;
-  }
-
-  /* -- Showcase: section + figure -------------------------------------------- */
-  [data-bn-showcase-section][hidden] {
-    display: none;
-  }
-
-  [data-bn-showcase-demo] {
-    container-type: inline-size;
-
-    & > [data-bn-showcase-stage] {
-      display: block;
-      padding: var(--space-xl);
-      background: var(--surface-inset);
-      min-block-size: 6rem;
-    }
-
-    &[data-bn-layout='row'] > [data-bn-showcase-stage] {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-md);
-      align-items: center;
-    }
-
-    &[data-bn-layout='stack'] > [data-bn-showcase-stage] {
-      display: grid;
-      gap: var(--space-md);
-    }
-
-    &[data-bn-layout='form'] > [data-bn-showcase-stage] {
-      display: grid;
-      gap: var(--space-lg);
-      max-inline-size: 36rem;
-    }
-
-    &[data-bn-layout='card'] > [data-bn-showcase-stage] {
-      max-inline-size: 28rem;
-    }
-  }
-
-  /* Source viewer: a native <details> disclosure.
-     [data-bn-component-source] is deliberately NOT in this selector list any
-     more. It is a <figure> with no <summary>, so every summary rule here was
-     dead on it — but its `> pre` rule was not, and being later in the file it
-     silently overrode the padding and font-size the component-split rule sets
-     a thousand lines above. The two are different things: one discloses, one
-     is always open. */
-  [data-bn-showcase-source] {
-    border-block-start: var(--border-width) solid var(--border);
-    background: var(--surface-2);
-    margin: 0;
-    padding: 0;
-
-    & > summary {
-      list-style: none;
-      cursor: pointer;
-      padding: var(--space-sm) var(--space-md);
-      font-family: var(--font-family);
-      font-stretch: var(--font-mono);
-      font-size: var(--font-size-xs);
-      color: var(--text-2);
-      letter-spacing: var(--letter-spacing-wider);
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: var(--space-xs);
-      user-select: none;
-      transition:
-        background var(--duration-fast),
-        color var(--duration-fast);
-
-      &::-webkit-details-marker {
-        display: none;
-      }
-
-      /* It is a button in everything but name; it should behave like one. */
-      &:hover {
-        background: var(--surface-3, var(--surface-1));
-        color: var(--text-1);
-      }
-
-      &:focus-visible {
-        outline: var(--border-inline-width) solid var(--accent);
-        outline-offset: calc(-1 * var(--border-inline-width));
-        color: var(--text-1);
-      }
-    }
-
-    /* The site-wide disclosure rules a thousand lines above match this block
-       too — `details:not([data-bn]):not([variant]):not([variant])` is true of data-bn-showcase-source, which
-       is a different attribute — so the summary was rendering the generic "▸"
-       marker AND this block's own chevron, and the code block was picking up
-       the generic body padding on top of its own. Suppress both here rather
-       than narrowing the generic rule, which is correct for every other
-       <details> on the site. */
-    & > summary::before {
-      content: none;
-    }
-
-    & > :not(summary) {
-      padding: 0;
-    }
-
-    &[open] > summary {
-      border-block-end: var(--border-width) solid var(--border);
-    }
-  }
 
   /* Disclosure chevron. Was the text character "⌄" rotated 180deg — a glyph
      whose ink sits low in its em box, so the rotation visibly threw it off the
@@ -4134,16 +3635,14 @@
   /* Phone: one compact sticky search. Chips scroll in a row. Section indexes
      stay in the scroll, so they do not stack under the search as a second bar. */
   @media (max-width: 767px) {
-    [data-bn-component-search],
-    [data-bn-showcase-search] {
+    [data-bn-component-search] {
       gap: var(--space-xs);
       margin-block-end: var(--bn-section-space, 12px);
       padding: var(--space-xs);
       inset-block-start: 0;
     }
 
-    [data-bn-component-search] input[type='search'],
-    [data-bn-showcase-search] input[type='search'] {
+    [data-bn-component-search] input[type='search'] {
       min-block-size: 2.25rem;
       padding: var(--space-xs) var(--space-sm);
     }
@@ -4160,31 +3659,14 @@
       flex: none;
     }
 
-    [data-bn-docs-toc],
-    [data-bn-showcase-toc] {
+    [data-bn-docs-toc] {
       position: static;
       inset-block-start: auto;
-    }
-  }
-
-  /* -- Container queries: showcase grid adaptation -------------------------- */
-  @container (min-width: 36rem) {
-    [data-bn-showcase-demo][data-bn-layout='form'] > [data-bn-showcase-stage] {
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-xl);
     }
   }
 }
 
 @layer states {
-  /* -- @scope: keep showcase TOC styles from leaking ------------------------ */
-  @scope ([data-bn-showcase-toc]) {
-    :scope a:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
-  }
-
   /* -- @scope: per-section card host styling -------------------------------- */
   @scope ([data-bn-component-grid]) {
     :scope > li:has(a:focus-visible) {

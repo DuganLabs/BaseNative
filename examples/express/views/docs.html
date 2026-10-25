@@ -8,6 +8,7 @@
       <li><a href="#template-directives">Template Directives</a></li>
       <li><a href="#server-rendering">Server Rendering</a></li>
       <li><a href="#full-api-reference">Full API reference</a></li>
+      <li><a href="#design-tokens">Design Tokens</a></li>
     </ul>
   </nav>
 </aside>
@@ -281,4 +282,78 @@ const html = render(`
     in the repository; the ones you will reach for first:
   </p>
   {{ apiRefs }}
+</section>
+
+<section id="design-tokens">
+  <h2>Design <em>tokens</em></h2>
+  <p>
+    One sheet, {{ tokenCount }} tokens. Everything in this section is parsed from
+    <code>packages/components/src/tokens.css</code> — the sheet every page links and every
+    component maps from — so it cannot drift from the sheet it shows. Primitives first, then the
+    roles the components actually consume; each role carries its light and dark values side by
+    side. One token sheet holds the primitives and the roles: every component sheet opens by
+    mapping those roles onto its own tokens — no component hard-codes a color, a size, or a
+    radius.
+  </p>
+
+  <article data-bn-design-system>
+    <section>
+      <h3>Roles</h3>
+      <p>
+        {{ roleCount }} semantic roles — labels, backgrounds, fills, separators, and the status
+        colors. A component never names a primitive; it maps a role onto its own token and styles
+        with that.
+      </p>
+      {{ rolesTable }}
+    </section>
+
+    <section>
+      <h3>System colors</h3>
+      <p>The primitive palette the roles are built from.</p>
+      <ul role="list" data-bn-ds-swatches>
+        <template @for="c of systemColors; track c.name">
+          <li>
+            <!-- A colour swatch: a plain span, filled with the token it names. -->
+            <span style="background: {{ c.value }}" aria-hidden="true"></span>
+            <code>{{ c.name }}</code>
+            <!-- The token's value as a text run beside its name. -->
+            <span>{{ c.value }}</span>
+          </li>
+        </template>
+      </ul>
+    </section>
+
+    <section>
+      <h3>Materials</h3>
+      <p>
+        Four glass grades, each the same five facets — blur, saturation, tint, highlight, and
+        shadow — so a surface can change grade without changing recipe.
+      </p>
+      {{ materialsTable }}
+    </section>
+
+    <section>
+      <h3>Type</h3>
+      <p>
+        Recipes, not sizes: each name fixes its size, leading, weight, and tracking together. The
+        families and weights they draw from follow the table.
+      </p>
+      {{ typeTable }}
+      <ul role="list" data-bn-ds-fonts>
+        <template @for="f of fonts; track f.name">
+          <!-- The family name and its stack as a text run. -->
+          <li><code>{{ f.name }}</code> <span>{{ f.value }}</span></li>
+        </template>
+      </ul>
+    </section>
+
+    <section>
+      <h3>Scales</h3>
+      <p>The ladders components step along — space, radius, size, motion, and layer.</p>
+      <template @for="group of scaleTables; track group.title">
+        <h4>{{ group.title }}</h4>
+        {{ group.table }}
+      </template>
+    </section>
+  </article>
 </section>

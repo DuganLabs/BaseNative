@@ -8,8 +8,7 @@
  * survives is the sticky filter bar — so there the mark lands on the
  * filter button for the category section in view. The buttons are
  * registered after the link pass, so a button wins over a strip link
- * for the same section while both navs exist. The /showcase TOC wires
- * its own because its links are filter-aware.
+ * for the same section while both navs exist.
  *
  * Attributes only: the sheet owns every visual. No-ops on pages
  * without a contents nav, and where IntersectionObserver is missing

@@ -18,14 +18,12 @@ import {
   getComponentsPageContext,
   getDocsPageContext,
   getHomePageContext,
-  getRoadmapPageContext,
   getTasksPageContext,
 } from './site-data.js';
 import { getAiPageContext } from './ai-scorecard.js';
-import { trinityCatalog, trinityCategoriesWith, trinityDemos } from './trinity-catalog.js';
+import { trinityCatalog, trinityDemos } from './trinity-catalog.js';
 import { getDesignSystemContext } from './design-system-data.js';
 import { getPlaygroundPageContext } from './playground-data.js';
-import { getShowcaseContext } from './showcase-data.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -229,10 +227,7 @@ export const siteRoutes = [
       eyebrow: 'Component library',
       titleHtml: 'Semantic <em>by construction</em>',
       ledeHtml: `<p>${ctx.totalCount} components across ${ctx.categoryCount} categories. Every one is built on a real HTML element — <code>&lt;button&gt;</code>, <code>&lt;dialog&gt;</code>, <code>&lt;details&gt;</code>, <code>&lt;table&gt;</code> — addressed by element and <code>variant</code> attribute, with zero CSS classes. Each component is three files: a template, a token sheet, and its logic.</p>`,
-      actions: [
-        { label: 'Read the API docs', href: '/docs' },
-        { label: 'View live showcase', href: '/showcase' },
-      ],
+      actions: [{ label: 'Read the API docs', href: '/docs' }],
       label: 'Quick links',
     }),
   },
@@ -243,7 +238,9 @@ export const siteRoutes = [
     description:
       'API reference for the @basenative/runtime primitives (signal, computed, effect, hydrate), the template directives and @basenative/server render(), with links to the generated docs/api reference for router, forms, components and every other package.',
     activePage: 'docs',
-    ctx: () => getDocsPageContext(),
+    // The design system's token reference renders as this page's Design
+    // tokens section — same parser (design-system-data.js), same tables.
+    ctx: () => ({ ...getDocsPageContext(), ...getDesignSystemContext() }),
     hero: (site, ctx) => ({
       eyebrow: 'Docs',
       titleHtml: 'API <em>Reference</em>',
@@ -302,40 +299,6 @@ export const siteRoutes = [
     },
   },
   {
-    path: '/showcase',
-    view: 'showcase.html',
-    title: 'Showcase',
-    description: `Live gallery of all ${catalogEntries.length} BaseNative components — every section is a real server render, not a mockup.`,
-    ogTitle: 'BaseNative Showcase — Live Component Gallery',
-    activePage: 'showcase',
-    ctx: () => ({ ...getShowcaseContext(), categories: trinityCategoriesWith(catalogEntries) }),
-    hero: {
-      eyebrow: 'Live gallery',
-      titleHtml: 'Component <em>showcase</em>',
-      ledeHtml:
-        '<p>Every component, server-rendered live. Each demo is a real render from <code>@basenative/components</code> — the catalog itself, not a mockup or a screenshot.</p>',
-      actions: [
-        { label: 'Browse the catalog', href: '/components' },
-        { label: 'Open the playground', href: '/playground' },
-      ],
-      label: 'Quick links',
-    },
-  },
-  {
-    path: '/roadmap',
-    view: 'roadmap.html',
-    title: 'Roadmap',
-    description:
-      'BaseNative release plan, trust blockers, browser policy, and workflow parity tracking.',
-    activePage: 'roadmap',
-    ctx: () => getRoadmapPageContext(),
-    hero: {
-      eyebrow: 'Roadmap',
-      titleHtml: 'Enterprise <em>Readiness</em>',
-      lede: 'BaseNative is a semantic SSR application foundation for evergreen browsers. Every milestone from trust blockers through workflow breadth is now implemented, with all packages, components, and advanced widgets shipped.',
-    },
-  },
-  {
     path: '/tasks',
     view: 'tasks.html',
     title: 'Tasks',
@@ -350,21 +313,6 @@ export const siteRoutes = [
         ? ''
         : '<p data-tasks-static-notice>This is the static demo — tasks you add are kept in your browser and are not saved to a server.</p>',
     }),
-  },
-  {
-    path: '/design-system',
-    view: 'design-system.html',
-    title: 'Design system',
-    description:
-      'The tokens every catalog component is built from — color roles, materials, type, space, and shape, in light and dark.',
-    ogTitle: 'BaseNative design system',
-    activePage: 'design-system',
-    ctx: () => getDesignSystemContext(),
-    hero: {
-      eyebrow: 'Design system',
-      titleHtml: 'Tokens, <em>all the way down</em>',
-      lede: 'One token sheet holds the primitives and the roles. Every component sheet opens by mapping those roles onto its own tokens — no component hard-codes a color, a size, or a radius.',
-    },
   },
   {
     // A verification harness for the dev server. `internal` keeps it out of

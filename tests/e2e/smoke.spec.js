@@ -45,8 +45,7 @@ test.describe('Enterprise Example', () => {
 });
 
 // Demo behaviour that only a browser can prove: the dialog's × on
-// /components/dialog had no listener, and /showcase's pager was eight real
-// links to ?page=N that reloaded the page and lost the scroll position.
+// /components/dialog had no listener.
 test.describe('Component demos', () => {
   test('the dialog × closes the dialog on /components/dialog', async ({ page }) => {
     await page.goto('/components/dialog');
@@ -55,22 +54,6 @@ test.describe('Component demos', () => {
     await expect(dialog).toHaveJSProperty('open', true);
     await dialog.locator('[data-bn="dialog-close"]').click();
     await expect(dialog).toHaveJSProperty('open', false);
-  });
-
-  test('the /showcase pager moves the current page in place', async ({ page }) => {
-    await page.goto('/showcase');
-    const nav = page.locator('[data-bn="pagination"]').first();
-    await nav.scrollIntoViewIfNeeded();
-    const before = await page.evaluate(() => window.scrollY);
-    expect(before).toBeGreaterThan(0);
-    await nav.getByRole('link', { name: '2', exact: true }).click();
-    await expect(nav.locator('[aria-current="page"]')).toHaveText('2');
-    const after = await page.evaluate(() => window.scrollY);
-    // Page 2 can be shorter than page 1, so the browser clamps scrollY.
-    // The failure mode this guards is a reload that jumps back to the top.
-    expect(after).toBeGreaterThan(0);
-    await expect(nav).toBeInViewport();
-    expect(new URL(page.url()).pathname).toBe('/showcase');
   });
 });
 
