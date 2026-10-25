@@ -1,0 +1,42 @@
+:root {
+  --form-display: var(--display-grid);
+  --form-gap: var(--space-4);
+  --form__heading-color: var(--label);
+  --form__heading-font-family: var(--text-headline-family);
+  --form__heading-font-size: var(--text-headline-size);
+  --form__heading-font-weight: var(--text-headline-weight);
+  --form__heading-line-height: var(--text-headline-leading);
+  --form__heading-margin: var(--space-0);
+  --form__actions-display: var(--display-flex);
+  --form__actions-gap: var(--space-2);
+  --form__actions-justify-content: var(--justify-end);
+  --form__actions-opacity: var(--opacity-full);
+  --form__actions-opacity--invalid: var(--opacity-half);
+}
+
+form[variant="default"] {
+  display: var(--form-display);
+  gap: var(--form-gap);
+
+  & > h3 {
+    color: var(--form__heading-color);
+    font-family: var(--form__heading-font-family);
+    font-size: var(--form__heading-font-size);
+    font-weight: var(--form__heading-font-weight);
+    line-height: var(--form__heading-line-height);
+    margin: var(--form__heading-margin);
+  }
+
+  & > footer {
+    display: var(--form__actions-display);
+    gap: var(--form__actions-gap);
+    justify-content: var(--form__actions-justify-content);
+    opacity: var(--form__actions-opacity);
+  }
+
+  /* Readiness is relational — while a control inside is invalid the
+     actions row dims, with no state kept anywhere. */
+  &:has(:invalid) > footer {
+    opacity: var(--form__actions-opacity--invalid);
+  }
+}

@@ -1,0 +1,24 @@
+<template>
+  <ol :variant="variant()">
+    <template @for="step of steps()">
+      <template @if="isCurrent(step)">
+        <li :variant="stateFor(step)" aria-current="step">
+          <strong>{{ stepNumber(step) }}</strong>
+          {{ step.label }}
+          <template @if="step.detail">
+            <small>{{ step.detail }}</small>
+          </template>
+        </li>
+      </template>
+      <template @else>
+        <li :variant="stateFor(step)">
+          <strong>{{ stepNumber(step) }}</strong>
+          {{ step.label }}
+          <template @if="step.detail">
+            <small>{{ step.detail }}</small>
+          </template>
+        </li>
+      </template>
+    </template>
+  </ol>
+</template>

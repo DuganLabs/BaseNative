@@ -354,3 +354,243 @@ test('table cells carry aria-current and de-emphasis for the calendar compositio
   assert.match(html, /<td><small>27<\/small><\/td>/);
   assert.match(html, /<td aria-current="date">28<\/td>/);
 });
+
+test('form composes heading, summary, fields, and actions, and owns the submit moment', async () => {
+  const registry = await loadRegistry();
+  const field = renderComponent(registry, render, 'field', {
+    label: 'Email', controlId: 'quote-email',
+    controlHtml: renderComponent(registry, render, 'input', { id: 'quote-email', value: '' }).html,
+    hint: 'We only email about your jobs.',
+  }).html;
+  const summary = renderComponent(registry, render, 'alert', {
+    title: 'Check the form', body: 'One field needs attention.', variant: 'danger',
+  }).html;
+  const actions = renderComponent(registry, render, 'button', { label: 'Request quote', variant: 'primary' }).html;
+  const { html, viewModel } = renderComponent(registry, render, 'form', {
+    name: 'quote', heading: 'Request a quote', fieldsHtml: field, summaryHtml: summary, actionsHtml: actions,
+  });
+  assert.match(html, /<form variant="default">/);
+  assert.match(html, /<h3>Request a quote<\/h3>/);
+  assert.match(html, /<aside variant="danger" role="alert">/);
+  assert.match(html, /<label for="quote-email">Email<\/label>/);
+  assert.match(html, /<footer>\s*<button variant="primary" type="button">Request quote<\/button>/);
+  assert.equal(viewModel.submitted(), false);
+  let prevented = false;
+  const events = [];
+  const vm = registry.getComponent('form').create({
+    name: 'quote', fieldsHtml: field, onSubmit: (event) => events.push(event),
+  });
+  vm.submit({ preventDefault: () => { prevented = true; } });
+  assert.equal(prevented, true);
+  assert.equal(vm.submitted(), true);
+  assert.deepEqual(events, [{ name: 'quote' }]);
+  const bare = renderComponent(registry, render, 'form', { fieldsHtml: field }).html;
+  assert.doesNotMatch(bare, /<h3>|<footer>/);
+});
+
+test('search-field standardizes the search control and reports its query', async () => {
+  const registry = await loadRegistry();
+  const searches = [];
+  const clears = [];
+  const vm = registry.getComponent('search-field').create({
+    label: 'Search leads', controlId: 'q', name: 'lead-search', value: 'panel',
+    onSearch: (event) => searches.push(event),
+    onClear: (event) => clears.push(event),
+  });
+  assert.equal(vm.hasValue(), true);
+  vm.update({ target: { value: 'garage' } });
+  vm.keydown({ key: 'a' });
+  assert.deepEqual(searches, []);
+  vm.keydown({ key: 'Enter' });
+  assert.deepEqual(searches, [{ name: 'lead-search', value: 'garage' }]);
+  vm.clear();
+  assert.equal(vm.value(), '');
+  assert.equal(vm.hasValue(), false);
+  assert.deepEqual(clears, [{ name: 'lead-search' }]);
+  const { html } = renderComponent(registry, render, 'search-field', {
+    label: 'Search leads', controlId: 'q', name: 'lead-search', value: 'panel',
+    submitHtml: renderComponent(registry, render, 'button', { label: 'Search', variant: 'primary' }).html,
+  });
+  assert.match(html, /<search variant="default">/);
+  assert.match(html, /<label for="q">Search leads<\/label>/);
+  assert.match(html, /<input variant="default" id="q" type="search" name="lead-search" value="panel">/);
+  assert.match(html, /<button type="button">Clear<\/button>/);
+  assert.match(html, /<button variant="primary" type="button">Search<\/button>/);
+  const empty = renderComponent(registry, render, 'search-field', { label: 'Search leads', controlId: 'q2' }).html;
+  assert.doesNotMatch(empty, />Clear<\/button>/);
+});
+
+test('segmented-control runs the choice paradigm over its own segments', async () => {
+  const registry = await loadRegistry();
+  const events = [];
+  const vm = registry.getComponent('segmented-control').create({
+    legend: 'Calendar view', name: 'cal-view', value: 'month',
+    options: [
+      { value: 'month', label: 'Month' },
+      { value: 'schedule', label: 'Schedule' },
+    ],
+    onChange: (change) => events.push(change),
+  });
+  assert.equal(vm.isChecked(vm.options()[0]), true);
+  vm.change(vm.options()[1]);
+  vm.change(vm.options()[1]);
+  assert.deepEqual(events, [
+    { name: 'cal-view', mode: 'segmented', values: ['schedule'], changed: 'schedule', selected: true },
+  ]);
+  const { html } = renderComponent(registry, render, 'segmented-control', {
+    legend: 'Calendar view', name: 'cal-view', value: 'schedule',
+    options: [
+      { value: 'month', label: 'Month' },
+      { value: 'schedule', label: 'Schedule' },
+    ],
+  });
+  assert.match(html, /<fieldset variant="segmented-control">/);
+  assert.match(html, /<input variant="default" type="radio" name="cal-view" value="schedule" checked="true">/);
+  assert.doesNotMatch(html, /value="month" checked/);
+});
+
+test('stepper marks complete, current, and upcoming steps and moves on request', async () => {
+  const registry = await loadRegistry();
+  const steps = [
+    { value: 'quote', label: 'Quote', detail: 'Exact price up front' },
+    { value: 'confirm', label: 'Confirm', detail: 'Both ends confirm' },
+    { value: 'schedule', label: 'Schedule' },
+    { value: 'pay', label: 'Pay' },
+  ];
+  const events = [];
+  const vm = registry.getComponent('stepper').create({
+    name: 'job-flow', steps, current: 'confirm', onStep: (event) => events.push(event),
+  });
+  assert.equal(vm.stateFor(steps[0]), 'complete');
+  assert.equal(vm.stateFor(steps[1]), 'current');
+  assert.equal(vm.stateFor(steps[2]), 'upcoming');
+  assert.equal(vm.stepNumber(steps[2]), '3');
+  vm.next();
+  vm.previous();
+  vm.previous();
+  vm.previous();
+  assert.equal(vm.currentValue(), 'quote');
+  assert.deepEqual(events, [
+    { name: 'job-flow', index: 2, value: 'schedule', label: 'Schedule' },
+    { name: 'job-flow', index: 1, value: 'confirm', label: 'Confirm' },
+    { name: 'job-flow', index: 0, value: 'quote', label: 'Quote' },
+  ]);
+  const { html } = renderComponent(registry, render, 'stepper', { steps, current: 'confirm' });
+  assert.match(html, /<ol variant="stepper">/);
+  assert.match(html, /<li variant="complete">/);
+  assert.match(html, /<li variant="current" aria-current="step">/);
+  assert.match(html, /<li variant="upcoming">/);
+  assert.match(html, /<small>Both ends confirm<\/small>/);
+});
+
+test('tabs pairs every tab with its panel and reports selection', async () => {
+  const registry = await loadRegistry();
+  const events = [];
+  const vm = registry.getComponent('tabs').create({
+    id: 'job', label: 'Job views', name: 'job-tabs', value: 'details',
+    tabs: [
+      { value: 'details', label: 'Details', panelHtml: '<p>Scope and price.</p>' },
+      { value: 'activity', label: 'Activity', panelHtml: '<p>Every event.</p>' },
+    ],
+    onSelect: (change) => events.push(change),
+  });
+  vm.select(vm.tabs()[1]);
+  vm.select(vm.tabs()[1]);
+  assert.deepEqual(events, [
+    { name: 'job-tabs', mode: 'tabs', values: ['activity'], changed: 'activity', selected: true },
+  ]);
+  const { html } = renderComponent(registry, render, 'tabs', {
+    id: 'job', label: 'Job views', value: 'details',
+    tabs: [
+      { value: 'details', label: 'Details', panelHtml: '<p>Scope and price.</p>' },
+      { value: 'activity', label: 'Activity', panelHtml: '<p>Every event.</p>' },
+    ],
+  });
+  assert.match(html, /<section variant="tabs">/);
+  assert.match(html, /<ul role="tablist" aria-label="Job views">/);
+  assert.match(html, /<button type="button" role="tab" id="job-tab-details" aria-selected="true" aria-controls="job-panel-details">Details<\/button>/);
+  assert.match(html, /<button type="button" role="tab" id="job-tab-activity" aria-selected="false" aria-controls="job-panel-activity">Activity<\/button>/);
+  assert.match(html, /<article role="tabpanel" id="job-panel-details" aria-labelledby="job-tab-details">/);
+  assert.match(html, /<article role="tabpanel" id="job-panel-activity" aria-labelledby="job-tab-activity" hidden>/);
+});
+
+test('empty-state composes a mark, a message, and the action that fills the surface', async () => {
+  const registry = await loadRegistry();
+  const { html } = renderComponent(registry, render, 'empty-state', {
+    title: 'No leads yet',
+    body: 'Delivered leads land here, priced and outcome-tracked.',
+    mediaHtml: renderComponent(registry, render, 'avatar', { initials: 'GP' }).html,
+    actionHtml: renderComponent(registry, render, 'button', { label: 'Open the quote form', variant: 'primary' }).html,
+  });
+  assert.match(html, /<article variant="empty-state">/);
+  assert.match(html, /<figure variant="default">/);
+  assert.match(html, /<h3>No leads yet<\/h3>/);
+  assert.match(html, /<p>Delivered leads land here, priced and outcome-tracked\.<\/p>/);
+  assert.match(html, /<button variant="primary" type="button">Open the quote form<\/button>/);
+  const bare = renderComponent(registry, render, 'empty-state', { title: 'Nothing here' }).html;
+  assert.doesNotMatch(bare, /<p>/);
+});
+
+test('toolbar owns its overflow state and places the menu', async () => {
+  const registry = await loadRegistry();
+  const events = [];
+  const vm = registry.getComponent('toolbar').create({
+    label: 'Lead actions',
+    actionsHtml: '<button variant="primary" type="button">New lead</button>',
+    overflowHtml: '<menu variant="default"></menu>',
+    onOverflow: (event) => events.push(event),
+  });
+  assert.equal(vm.overflowOpen(), false);
+  vm.toggleOverflow();
+  assert.equal(vm.overflowOpen(), true);
+  vm.toggleOverflow();
+  assert.deepEqual(events, [{ open: true }, { open: false }]);
+  const menu = renderComponent(registry, render, 'dropdown-menu', {
+    label: 'More actions', items: [{ label: 'Import leads' }, { label: 'Export' }],
+  }).html;
+  const closed = renderComponent(registry, render, 'toolbar', {
+    label: 'Lead actions',
+    actionsHtml: renderComponent(registry, render, 'button', { label: 'New lead', variant: 'primary' }).html,
+    overflowHtml: menu,
+  }).html;
+  assert.match(closed, /<section variant="toolbar" role="toolbar" aria-label="Lead actions">/);
+  assert.match(closed, /aria-expanded="false"/);
+  assert.doesNotMatch(closed, /<menu/);
+  const open = renderComponent(registry, render, 'toolbar', {
+    label: 'Lead actions',
+    actionsHtml: renderComponent(registry, render, 'button', { label: 'New lead', variant: 'primary' }).html,
+    overflowHtml: menu, overflowOpen: true,
+  }).html;
+  assert.match(open, /aria-expanded="true"/);
+  assert.match(open, /<menu variant="default"/);
+});
+
+test('rating runs the choice paradigm over a star substrate and lights its range in CSS', async () => {
+  const registry = await loadRegistry();
+  const star = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z"/></svg>';
+  const events = [];
+  const vm = registry.getComponent('rating').create({
+    legend: 'Rate this job', name: 'job-rating', starHtml: star, value: 3,
+    onChange: (change) => events.push(change),
+  });
+  assert.equal(vm.options().length, 5);
+  assert.equal(vm.isChecked(vm.options()[2]), true);
+  vm.change(vm.options()[4]);
+  assert.deepEqual(events, [
+    { name: 'job-rating', mode: 'rating', values: [5], changed: 5, selected: true },
+  ]);
+  assert.throws(
+    () => registry.getComponent('rating').create({ legend: 'x', name: 'x', starHtml: star, max: 10 }),
+    /one to five/,
+  );
+  const { html } = renderComponent(registry, render, 'rating', {
+    legend: 'Rate this job', name: 'job-rating', starHtml: star, value: 4,
+  });
+  assert.match(html, /<fieldset variant="rating">/);
+  assert.equal((html.match(/type="radio"/g) ?? []).length, 5);
+  assert.match(html, /<label aria-label="4 stars">/);
+  assert.match(html, /name="job-rating" value="4" checked="true"/);
+  const { readFile } = await import('node:fs/promises');
+  const ratingCss = await readFile(new URL('./rating/styles.css', import.meta.url), 'utf8');
+  assert.match(ratingCss, /fieldset\[variant="rating"\]:has\(> label:nth-of-type\(4\) > input:checked\) > label:nth-of-type\(-n\+4\)/);
+});

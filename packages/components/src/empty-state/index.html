@@ -1,0 +1,14 @@
+<template>
+  <article :variant="variant()">
+    <template @if="hasMedia()">
+      {{ raw(mediaHtml()) }}
+    </template>
+    <h3>{{ title() }}</h3>
+    <template @if="hasBody()">
+      <p>{{ body() }}</p>
+    </template>
+    <template @if="hasAction()">
+      {{ raw(actionHtml()) }}
+    </template>
+  </article>
+</template>

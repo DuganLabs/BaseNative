@@ -1,0 +1,11 @@
+<template>
+  <section :variant="variant()" role="toolbar" :aria-label="label()">
+    {{ raw(actionsHtml()) }}
+    <template @if="hasOverflow()">
+      <button type="button" :aria-expanded="expandedAttr()" @click="toggleOverflow()">{{ overflowLabel() }}</button>
+      <template @if="overflowOpen()">
+        {{ raw(overflowHtml()) }}
+      </template>
+    </template>
+  </section>
+</template>

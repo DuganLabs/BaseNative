@@ -20,6 +20,8 @@ const COMPONENTS = [
   'drawer', 'dropdown-menu', 'command-palette', 'tooltip', 'toast',
   'table', 'datagrid', 'tree', 'virtualizer', 'calendar', 'pipeline',
   'theme-toggle',
+  'form', 'search-field', 'segmented-control', 'stepper',
+  'tabs', 'empty-state', 'toolbar', 'rating',
 ];
 
 /** @param {string} html */

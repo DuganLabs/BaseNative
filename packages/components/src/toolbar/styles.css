@@ -1,0 +1,71 @@
+:root {
+  --toolbar-display: var(--display-flex);
+  --toolbar-flex-direction: var(--flex-direction-row);
+  --toolbar-align-items: var(--align-center);
+  --toolbar-gap: var(--space-2);
+  --toolbar-position: var(--position-relative);
+  --toolbar-padding-block: var(--space-2);
+  --toolbar-padding-inline: var(--space-2);
+  --toolbar-background-color: var(--background-grouped-2);
+  --toolbar-border-width: var(--hairline);
+  --toolbar-border-style: var(--border-style-solid);
+  --toolbar-border-color: var(--separator);
+  --toolbar-border-radius: var(--radius-container);
+  --toolbar__more-background-color: var(--color-transparent);
+  --toolbar__more-border-width: var(--border-width-none);
+  --toolbar__more-border-radius: var(--radius-control);
+  --toolbar__more-color: var(--tint);
+  --toolbar__more-cursor: var(--cursor-pointer);
+  --toolbar__more-margin-inline-start: var(--margin-auto);
+  --toolbar__more-padding-block: var(--space-2);
+  --toolbar__more-padding-inline: var(--space-3);
+  --toolbar__more-font-family: var(--text-subheadline-family);
+  --toolbar__more-font-size: var(--text-subheadline-size);
+  --toolbar__more-font-weight: var(--font-weight-medium);
+  --toolbar__more-line-height: var(--text-subheadline-leading);
+  --toolbar__more-letter-spacing: var(--text-subheadline-tracking);
+  --toolbar__menu-position: var(--position-absolute);
+  --toolbar__menu-inset-block-start: calc(var(--size-control) + var(--space-3));
+  --toolbar__menu-inset-inline-end: var(--space-2);
+  --toolbar__menu-z-index: var(--layer-overlay);
+}
+
+section[variant="toolbar"] {
+  display: var(--toolbar-display);
+  flex-direction: var(--toolbar-flex-direction);
+  align-items: var(--toolbar-align-items);
+  gap: var(--toolbar-gap);
+  position: var(--toolbar-position);
+  padding-block: var(--toolbar-padding-block);
+  padding-inline: var(--toolbar-padding-inline);
+  background-color: var(--toolbar-background-color);
+  border-width: var(--toolbar-border-width);
+  border-style: var(--toolbar-border-style);
+  border-color: var(--toolbar-border-color);
+  border-radius: var(--toolbar-border-radius);
+
+  & > button {
+    background-color: var(--toolbar__more-background-color);
+    border-width: var(--toolbar__more-border-width);
+    border-radius: var(--toolbar__more-border-radius);
+    color: var(--toolbar__more-color);
+    cursor: var(--toolbar__more-cursor);
+    margin-inline-start: var(--toolbar__more-margin-inline-start);
+    padding-block: var(--toolbar__more-padding-block);
+    padding-inline: var(--toolbar__more-padding-inline);
+    font-family: var(--toolbar__more-font-family);
+    font-size: var(--toolbar__more-font-size);
+    font-weight: var(--toolbar__more-font-weight);
+    line-height: var(--toolbar__more-line-height);
+    letter-spacing: var(--toolbar__more-letter-spacing);
+  }
+
+  /* The overflow menu is a child the bar only places — its own
+     sheet dresses it. */
+  & > menu {
+    position: var(--toolbar__menu-position);
+    inset-block-start: var(--toolbar__menu-inset-block-start);
+    inset-inline-end: var(--toolbar__menu-inset-inline-end);
+    z-index: var(--toolbar__menu-z-index);
+  }
+}

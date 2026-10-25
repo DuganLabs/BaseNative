@@ -1,0 +1,101 @@
+:root {
+  --segmented-control-display: var(--display-inline-flex);
+  --segmented-control-inline-size: var(--size-max-content);
+  --segmented-control-flex-direction: var(--flex-direction-row);
+  --segmented-control-gap: var(--space-1);
+  --segmented-control-margin: var(--space-0);
+  --segmented-control-padding: var(--space-1);
+  --segmented-control-border-width: var(--border-width-none);
+  --segmented-control-background-color: var(--fill-2);
+  --segmented-control-border-radius: var(--radius-pill);
+  --segmented-control__legend-position: var(--position-absolute);
+  --segmented-control__legend-inline-size: var(--size-1px);
+  --segmented-control__legend-block-size: var(--size-1px);
+  --segmented-control__legend-overflow: var(--overflow-hidden);
+  --segmented-control__control-position: var(--position-absolute);
+  --segmented-control__control-opacity: var(--opacity-none);
+  --segmented-control__control-inline-size: var(--size-1px);
+  --segmented-control__control-block-size: var(--size-1px);
+  --segmented-control__option-display: var(--display-inline-flex);
+  --segmented-control__option-align-items: var(--align-center);
+  --segmented-control__option-padding-block: var(--space-1);
+  --segmented-control__option-padding-inline: var(--space-3);
+  --segmented-control__option-background-color: var(--color-transparent);
+  --segmented-control__option-background-color--checked: var(--background);
+  --segmented-control__option-border-width: var(--border-width-none);
+  --segmented-control__option-border-radius: var(--radius-pill);
+  --segmented-control__option-box-shadow--checked: var(--shadow-raised);
+  --segmented-control__option-color: var(--label-2);
+  --segmented-control__option-color--checked: var(--label);
+  --segmented-control__option-cursor: var(--cursor-pointer);
+  --segmented-control__option-font-family: var(--text-subheadline-family);
+  --segmented-control__option-font-size: var(--text-subheadline-size);
+  --segmented-control__option-font-weight: var(--font-weight-medium);
+  --segmented-control__option-font-weight--checked: var(--font-weight-semibold);
+  --segmented-control__option-line-height: var(--text-subheadline-leading);
+  --segmented-control__option-letter-spacing: var(--text-subheadline-tracking);
+  --segmented-control__option-outline-width--focus: var(--border-width-thick);
+  --segmented-control__option-outline-style--focus: var(--border-style-solid);
+  --segmented-control__option-outline-color--focus: var(--tint);
+  --segmented-control__option-outline-offset--focus: var(--space-1);
+}
+
+fieldset[variant="segmented-control"] {
+  display: var(--segmented-control-display);
+  inline-size: var(--segmented-control-inline-size);
+  flex-direction: var(--segmented-control-flex-direction);
+  gap: var(--segmented-control-gap);
+  margin: var(--segmented-control-margin);
+  padding: var(--segmented-control-padding);
+  border-width: var(--segmented-control-border-width);
+  background-color: var(--segmented-control-background-color);
+  border-radius: var(--segmented-control-border-radius);
+
+  & > legend {
+    position: var(--segmented-control__legend-position);
+    inline-size: var(--segmented-control__legend-inline-size);
+    block-size: var(--segmented-control__legend-block-size);
+    overflow: var(--segmented-control__legend-overflow);
+  }
+
+  & > label {
+    display: var(--segmented-control__option-display);
+    align-items: var(--segmented-control__option-align-items);
+    padding-block: var(--segmented-control__option-padding-block);
+    padding-inline: var(--segmented-control__option-padding-inline);
+    background-color: var(--segmented-control__option-background-color);
+    border-radius: var(--segmented-control__option-border-radius);
+    color: var(--segmented-control__option-color);
+    font-family: var(--segmented-control__option-font-family);
+    font-size: var(--segmented-control__option-font-size);
+    font-weight: var(--segmented-control__option-font-weight);
+    line-height: var(--segmented-control__option-line-height);
+    letter-spacing: var(--segmented-control__option-letter-spacing);
+    cursor: var(--segmented-control__option-cursor);
+
+    & > input {
+      position: var(--segmented-control__control-position);
+      opacity: var(--segmented-control__control-opacity);
+      inline-size: var(--segmented-control__control-inline-size);
+      block-size: var(--segmented-control__control-block-size);
+    }
+  }
+
+  /* The label is the segment (a button inside it would swallow the
+     label's activation and strand the radio), and it declares its
+     own selected appearance through the option tokens — the choice
+     contract, with the substrate internal to this composite. */
+  & > label:has(> input:checked) {
+    background-color: var(--segmented-control__option-background-color--checked);
+    box-shadow: var(--segmented-control__option-box-shadow--checked);
+    color: var(--segmented-control__option-color--checked);
+    font-weight: var(--segmented-control__option-font-weight--checked);
+  }
+
+  & > label:has(> input:focus-visible) {
+    outline-width: var(--segmented-control__option-outline-width--focus);
+    outline-style: var(--segmented-control__option-outline-style--focus);
+    outline-color: var(--segmented-control__option-outline-color--focus);
+    outline-offset: var(--segmented-control__option-outline-offset--focus);
+  }
+}
