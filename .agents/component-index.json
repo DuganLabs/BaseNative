@@ -148,6 +148,12 @@
     "badge": [
       "@basenative/components#renderBadge"
     ],
+    "bn-inspector-action": [
+      "@basenative/builder#renderInspector"
+    ],
+    "bn-palette-item": [
+      "@basenative/builder#renderPaletteHTML"
+    ],
     "breadcrumb": [
       "@basenative/components#renderBreadcrumb"
     ],
@@ -895,15 +901,17 @@
       "purpose": "",
       "deprecated": false,
       "emits": {
-        "rootTag": "header",
-        "primaryContract": null,
-        "contracts": [],
+        "rootTag": "button",
+        "primaryContract": "bn-inspector-action",
+        "contracts": [
+          "bn-inspector-action"
+        ],
         "dataAttributes": []
       },
       "variants": {},
       "inertAxes": [],
       "styled": false,
-      "useInsteadOf": "a bare <header> with your own classes"
+      "useInsteadOf": "a bare <button> with your own classes, or literal <button data-bn=\"bn-inspector-action\"> markup"
     },
     {
       "id": "@basenative/builder#renderNodeToElement",
@@ -935,15 +943,17 @@
       "purpose": "",
       "deprecated": false,
       "emits": {
-        "rootTag": "li",
-        "primaryContract": null,
-        "contracts": [],
+        "rootTag": "button",
+        "primaryContract": "bn-palette-item",
+        "contracts": [
+          "bn-palette-item"
+        ],
         "dataAttributes": []
       },
       "variants": {},
       "inertAxes": [],
       "styled": false,
-      "useInsteadOf": "a bare <li> with your own classes"
+      "useInsteadOf": "a bare <button> with your own classes, or literal <button data-bn=\"bn-palette-item\"> markup"
     },
     {
       "id": "@basenative/builder#renderTreeView",
@@ -951,7 +961,7 @@
       "kind": "render-function",
       "package": "@basenative/builder",
       "file": "packages/builder/src/tree-view.js",
-      "signature": "renderTreeView(state)",
+      "signature": "renderTreeView(state, options)",
       "purpose": "",
       "deprecated": false,
       "emits": {
