@@ -22,8 +22,11 @@ import { parseCustomProperties } from './contrast.js';
 
 const README = fileURLToPath(new URL('../README.md', import.meta.url));
 const INDEX = fileURLToPath(new URL('./index.js', import.meta.url));
+// The --bn-* ramps this starter translates live in the components package's
+// legacy ladder sheet (tokens-legacy.css); components' tokens.css is the
+// trinity foundation and declares none of the --bn-* names.
 const COMPONENTS_TOKENS = fileURLToPath(
-  new URL('../../components/src/tokens.css', import.meta.url),
+  new URL('../../components/src/tokens-legacy.css', import.meta.url),
 );
 
 /** The fenced ```js block that defines the starter. */
