@@ -82,8 +82,8 @@ const controls = [
 ].join('\n      ');
 
 const alerts = [
-  R('alert', { title: 'Schedule updated', body: 'Two crews are out today; afternoon windows shifted by an hour.' }),
-  R('alert', { title: 'Payment failed', body: 'The card on file was declined. Ask the customer for another method.', variant: 'danger' }),
+  R('alert', { title: 'Schedule updated', body: 'Two crews are out today; afternoon windows shifted by an hour.', dismissHtml: R('button', { label: 'Dismiss', variant: 'ghost' }) }),
+  R('alert', { title: 'Payment failed', body: 'The card on file was declined. Ask the customer for another method.', variant: 'danger', dismissHtml: R('button', { label: 'Dismiss', variant: 'ghost' }) }),
 ].join('\n      ');
 
 const jobCard = R('card', {
@@ -234,7 +234,7 @@ const grid = R('datagrid', {
 const treeInner = R('tree', { items: [{ label: 'Panel upgrade' }, { label: 'EV charger' }, { label: 'Lighting' }] });
 const treeDemo = R('tree', {
   items: [
-    { label: 'Services', expanded: true, toggleHtml: R('button', { label: 'Toggle services', variant: 'ghost' }), childrenHtml: treeInner },
+    { label: 'Services', expanded: true, toggleHtml: R('button', { label: 'Services', variant: 'ghost' }), childrenHtml: treeInner },
     { label: 'Settings' },
   ],
 });
@@ -244,13 +244,17 @@ const virt = R('virtualizer', {
   labelFor: (i) => `Lead ${i + 1} — Orange County`,
 });
 
-const calVm = renderComponent(registry, render, 'calendar', { year: 2026, month: 10, today: '2026-10-24' }).viewModel;
+const calVm = renderComponent(registry, render, 'calendar', { year: 2026, month: 10, today: '2026-10-24', selected: '2026-10-26' }).viewModel;
 const calTable = R('table', {
   columns: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-  rows: calVm.weeks().map((week) => week.map((day) => (day.inMonth ? String(day.day) : ''))),
+  rows: calVm.weeks().map((week) => week.map((day) => ({
+    text: String(day.day),
+    current: day.isToday ? 'date' : day.isSelected ? 'true' : undefined,
+    small: !day.inMonth,
+  }))),
 });
 const calMonth = R('calendar', {
-  year: 2026, month: 10, today: '2026-10-24', bodyHtml: calTable,
+  year: 2026, month: 10, today: '2026-10-24', selected: '2026-10-26', bodyHtml: calTable,
   prevHtml: R('button', { label: 'Previous', variant: 'ghost' }),
   nextHtml: R('button', { label: 'Next', variant: 'ghost' }),
 });
@@ -314,6 +318,7 @@ ${css}
   .var { color: var(--syntax-variable); }
   article > p { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: 0; }
   #leads { --virtualizer__spacer-start-count: 18; --virtualizer__spacer-end-count: 70; }
+  section.toast-stage { transform: translateZ(0); min-block-size: 19rem; align-content: start; }
 </style>
 </head>
 <body>
@@ -482,7 +487,11 @@ ${css}
     ${board}
   </section>
 
-  ${toasts}
+  <section class="toast-stage">
+    <h2>Toasts — staged in a frame</h2>
+    <p class="note">In an app the region pins to the viewport corner and the toasts expire; here they are staged inside a frame so they do not cover the page while you read it. Their Dismiss buttons work, and the pair auto-expires after nine seconds, as a real region's would.</p>
+    ${toasts}
+  </section>
 
   <section>
     <h2>The work — button/ in full</h2>
@@ -504,6 +513,37 @@ ${css}
       }
     });
   });
+
+  // Alert dismissals: the button removes its alert.
+  document.querySelectorAll('aside[variant="info"] > button, aside[variant="success"] > button, aside[variant="warning"] > button, aside[variant="danger"] > button').forEach((button) => {
+    button.addEventListener('click', () => button.closest('aside').remove());
+  });
+
+  // Toast dismissals, plus the auto-expire a live region runs.
+  document.querySelectorAll('ol[aria-live] > li > button, ol[aria-live] > li > label').forEach((button) => {
+    button.addEventListener('click', () => button.closest('li').remove());
+  });
+  setTimeout(() => {
+    document.querySelectorAll('section.toast-stage ol[aria-live] > li').forEach((li) => li.remove());
+  }, 9000);
+
+  // Email revalidation: the error clears as soon as the value parses,
+  // and returns when it stops parsing.
+  const email = document.querySelector('#email2');
+  if (email) {
+    const field = email.closest('p');
+    const errorNote = field ? field.querySelector('small') : null;
+    email.addEventListener('input', () => {
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value);
+      if (valid) {
+        email.removeAttribute('aria-invalid');
+        if (errorNote) errorNote.hidden = true;
+      } else {
+        email.setAttribute('aria-invalid', 'true');
+        if (errorNote) errorNote.hidden = false;
+      }
+    });
+  }
 </script>
 </body>
 </html>
