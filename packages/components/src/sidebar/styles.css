@@ -1,123 +1,74 @@
-:root {
-  --sidebar-inline-size: calc(var(--spacing-8) * 6);
-  --sidebar-background-color: var(--color-background);
-  --sidebar-border-inline-end-width: var(--size-hairline);
-  --sidebar-border-inline-end-style: var(--border-style-solid);
-  --sidebar-border-inline-end-color: var(--color-border-separator);
-  --sidebar-padding-block: var(--spacing-5);
-  --sidebar-padding-inline: var(--spacing-3);
-  --sidebar-overflow-y: var(--overflow-auto);
-  --sidebar__nav-display: var(--display-grid);
-  --sidebar__nav-gap: var(--spacing-6);
-  --sidebar__section-display: var(--display-grid);
-  --sidebar__section-gap: var(--spacing-2);
-  --sidebar__heading-color: var(--color-text-label-2);
-  --sidebar__heading-font-family: var(--font-caption-1-family);
-  --sidebar__heading-font-size: var(--font-caption-1-size);
-  --sidebar__heading-font-weight: var(--font-weight-semibold);
-  --sidebar__heading-line-height: var(--font-caption-1-leading);
-  --sidebar__heading-letter-spacing: var(--font-caption-1-tracking);
-  --sidebar__heading-margin: var(--spacing-0);
-  --sidebar__heading-padding-inline: var(--spacing-3);
-  --sidebar__list-display: var(--display-grid);
-  --sidebar__list-gap: var(--spacing-1);
-  --sidebar__list-list-style: var(--list-style-none);
-  --sidebar__list-margin: var(--spacing-0);
-  --sidebar__list-padding: var(--spacing-0);
-  --sidebar__link-display: var(--display-flex);
-  --sidebar__link-align-items: var(--align-center);
-  --sidebar__link-gap: var(--spacing-2);
-  --sidebar__link-padding-block: var(--spacing-2);
-  --sidebar__link-padding-inline: var(--spacing-3);
-  --sidebar__link-border-radius: var(--size-radius-control);
-  --sidebar__link-color: var(--color-text-label-2);
-  --sidebar__link-font-family: var(--font-subheadline-family);
-  --sidebar__link-font-size: var(--font-subheadline-size);
-  --sidebar__link-font-weight: var(--font-subheadline-weight);
-  --sidebar__link-line-height: var(--font-subheadline-leading);
-  --sidebar__link-letter-spacing: var(--font-subheadline-tracking);
-  --sidebar__link-text-decoration: var(--text-decoration-none);
-  --sidebar__link-background-color--hover: var(--color-fill-3);
-  --sidebar__link-color--hover: var(--color-text-label);
-  --sidebar__link-background-color--current: var(--color-tint);
-  --sidebar__link-color--current: var(--color-text-on-tint);
-  --sidebar__link-font-weight--current: var(--font-weight-semibold);
-  --sidebar__icon-inline-size: var(--spacing-5);
-  --sidebar__icon-block-size: var(--spacing-5);
-  --sidebar__icon-flex: var(--flex-none);
-}
-
 aside[variant="sidebar"] {
-  inline-size: var(--sidebar-inline-size);
-  background-color: var(--sidebar-background-color);
-  border-inline-end-width: var(--sidebar-border-inline-end-width);
-  border-inline-end-style: var(--sidebar-border-inline-end-style);
-  border-inline-end-color: var(--sidebar-border-inline-end-color);
-  padding-block: var(--sidebar-padding-block);
-  padding-inline: var(--sidebar-padding-inline);
-  overflow-y: var(--sidebar-overflow-y);
+  inline-size: var(--size-sidebar-inline);
+  background-color: var(--color-bkg-sidebar);
+  border-inline-end-width: var(--size-border-sidebar-inline-end);
+  border-inline-end-style: var(--border-style-sidebar-inline-end);
+  border-inline-end-color: var(--color-border-sidebar-inline-end);
+  padding-block: var(--spacing-sidebar-padding-block);
+  padding-inline: var(--spacing-sidebar-padding-inline);
+  overflow-y: var(--overflow-sidebar-y);
 
   & > nav {
-    display: var(--sidebar__nav-display);
-    gap: var(--sidebar__nav-gap);
+    display: var(--display-sidebar-nav);
+    gap: var(--spacing-sidebar-nav-gap);
 
     & > section {
-      display: var(--sidebar__section-display);
-      gap: var(--sidebar__section-gap);
+      display: var(--display-sidebar-section);
+      gap: var(--spacing-sidebar-section-gap);
 
       & > h2 {
-        color: var(--sidebar__heading-color);
-        font-family: var(--sidebar__heading-font-family);
-        font-size: var(--sidebar__heading-font-size);
-        font-weight: var(--sidebar__heading-font-weight);
-        line-height: var(--sidebar__heading-line-height);
-        letter-spacing: var(--sidebar__heading-letter-spacing);
-        margin: var(--sidebar__heading-margin);
-        padding-inline: var(--sidebar__heading-padding-inline);
+        color: var(--color-text-sidebar-heading);
+        font-family: var(--font-sidebar-heading-family);
+        font-size: var(--font-sidebar-heading-size);
+        font-weight: var(--font-sidebar-heading-weight);
+        line-height: var(--font-sidebar-heading-leading);
+        letter-spacing: var(--font-sidebar-heading-tracking);
+        margin: var(--spacing-sidebar-heading-margin);
+        padding-inline: var(--spacing-sidebar-heading-padding-inline);
       }
 
       & > ul {
-        display: var(--sidebar__list-display);
-        gap: var(--sidebar__list-gap);
-        list-style: var(--sidebar__list-list-style);
-        margin: var(--sidebar__list-margin);
-        padding: var(--sidebar__list-padding);
+        display: var(--display-sidebar-list);
+        gap: var(--spacing-sidebar-list-gap);
+        list-style: var(--list-style-sidebar-list);
+        margin: var(--spacing-sidebar-list-margin);
+        padding: var(--spacing-sidebar-list-padding);
 
         & > li > a {
-          display: var(--sidebar__link-display);
-          align-items: var(--sidebar__link-align-items);
-          gap: var(--sidebar__link-gap);
-          padding-block: var(--sidebar__link-padding-block);
-          padding-inline: var(--sidebar__link-padding-inline);
-          border-radius: var(--sidebar__link-border-radius);
-          color: var(--sidebar__link-color);
-          font-family: var(--sidebar__link-font-family);
-          font-size: var(--sidebar__link-font-size);
-          font-weight: var(--sidebar__link-font-weight);
-          line-height: var(--sidebar__link-line-height);
-          letter-spacing: var(--sidebar__link-letter-spacing);
-          text-decoration: var(--sidebar__link-text-decoration);
+          display: var(--display-sidebar-link);
+          align-items: var(--align-sidebar-link);
+          gap: var(--spacing-sidebar-link-gap);
+          padding-block: var(--spacing-sidebar-link-padding-block);
+          padding-inline: var(--spacing-sidebar-link-padding-inline);
+          border-radius: var(--size-radius-sidebar-link);
+          color: var(--color-text-sidebar-link);
+          font-family: var(--font-sidebar-link-family);
+          font-size: var(--font-sidebar-link-size);
+          font-weight: var(--font-sidebar-link-weight);
+          line-height: var(--font-sidebar-link-leading);
+          letter-spacing: var(--font-sidebar-link-tracking);
+          text-decoration: var(--text-decoration-sidebar-link);
 
           &:hover {
-            background-color: var(--sidebar__link-background-color--hover);
-            color: var(--sidebar__link-color--hover);
+            background-color: var(--color-bkg-sidebar-link-hover);
+            color: var(--color-text-sidebar-link-hover);
           }
 
           &[aria-current="page"] {
-            background-color: var(--sidebar__link-background-color--current);
-            color: var(--sidebar__link-color--current);
-            font-weight: var(--sidebar__link-font-weight--current);
+            background-color: var(--color-bkg-sidebar-link-current);
+            color: var(--color-text-sidebar-link-current);
+            font-weight: var(--font-sidebar-link-weight-current);
           }
 
           &[aria-current="page"]:hover {
-            background-color: var(--sidebar__link-background-color--current);
-            color: var(--sidebar__link-color--current);
+            background-color: var(--color-bkg-sidebar-link-current);
+            color: var(--color-text-sidebar-link-current);
           }
 
           & > svg {
-            inline-size: var(--sidebar__icon-inline-size);
-            block-size: var(--sidebar__icon-block-size);
-            flex: var(--sidebar__icon-flex);
+            inline-size: var(--size-sidebar-icon-inline);
+            block-size: var(--size-sidebar-icon-block);
+            flex: var(--flex-sidebar-icon);
           }
         }
       }

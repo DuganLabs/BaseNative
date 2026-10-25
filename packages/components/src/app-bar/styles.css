@@ -1,170 +1,99 @@
-:root {
-  --app-bar-position: var(--position-fixed);
-  --app-bar-inset-block-end: var(--spacing-0);
-  --app-bar-inset-inline: var(--spacing-0);
-  --app-bar-background-color: var(--material-regular-tint);
-  --app-bar-backdrop-filter: blur(var(--material-regular-blur)) saturate(var(--material-regular-saturate));
-  --app-bar-border-block-start-width: var(--size-hairline);
-  --app-bar-border-block-start-style: var(--border-style-solid);
-  --app-bar-border-block-start-color: var(--color-border-separator);
-  --app-bar-padding-block-start: var(--spacing-2);
-  --app-bar-padding-block-end: calc(var(--spacing-2) + var(--spacing-safe-bottom));
-  --app-bar-padding-inline: var(--spacing-2);
-  --app-bar__list-display: var(--display-flex);
-  --app-bar__list-gap: var(--spacing-1);
-  --app-bar__list-list-style: var(--list-style-none);
-  --app-bar__list-margin: var(--spacing-0);
-  --app-bar__list-padding: var(--spacing-0);
-  --app-bar__item-flex-grow: var(--flex-grow);
-  --app-bar__tab-display: var(--display-flex);
-  --app-bar__tab-flex-direction: var(--flex-direction-column);
-  --app-bar__tab-align-items: var(--align-center);
-  --app-bar__tab-gap: var(--spacing-1);
-  --app-bar__tab-inline-size: var(--size-full);
-  --app-bar__tab-padding-block: var(--spacing-1);
-  --app-bar__tab-padding-inline: var(--spacing-1);
-  --app-bar__tab-border-width: var(--size-border-none);
-  --app-bar__tab-border-radius: var(--size-radius-control);
-  --app-bar__tab-background-color: var(--palette-transparent);
-  --app-bar__tab-color: var(--color-text-label-2);
-  --app-bar__tab-font-family: var(--font-caption-2-family);
-  --app-bar__tab-font-size: var(--font-caption-2-size);
-  --app-bar__tab-font-weight: var(--font-caption-2-weight);
-  --app-bar__tab-line-height: var(--font-caption-2-leading);
-  --app-bar__tab-letter-spacing: var(--font-caption-2-tracking);
-  --app-bar__tab-text-decoration: var(--text-decoration-none);
-  --app-bar__tab-color--current: var(--color-tint);
-  --app-bar__tab-font-weight--current: var(--font-weight-semibold);
-  --app-bar__icon-inline-size: var(--spacing-5);
-  --app-bar__icon-block-size: var(--spacing-5);
-  --app-bar__menu-position: var(--position-fixed);
-  --app-bar__menu-inset-block-start: auto;
-  --app-bar__menu-inset-inline-start: auto;
-  --app-bar__menu-inset-block-end: calc(var(--spacing-8) * 2 + var(--spacing-6));
-  --app-bar__menu-inset-inline-end: var(--spacing-3);
-  --app-bar__menu-margin: var(--spacing-0);
-  --app-bar__menu-min-inline-size: var(--size-menu-min);
-  --app-bar__menu-display: var(--display-grid);
-  --app-bar__menu-gap: var(--spacing-1);
-  --app-bar__menu-list-style: var(--list-style-none);
-  --app-bar__menu-background-color: var(--color-background-3);
-  --app-bar__menu-border-width: var(--border-width);
-  --app-bar__menu-border-style: var(--border-style-solid);
-  --app-bar__menu-border-color: var(--color-border-separator);
-  --app-bar__menu-border-radius: var(--size-radius-container);
-  --app-bar__menu-padding: var(--spacing-2);
-  --app-bar__menu-box-shadow: var(--shadow-float);
-  --app-bar__menu-link-display: var(--display-block);
-  --app-bar__menu-link-padding-block: var(--spacing-2);
-  --app-bar__menu-link-padding-inline: var(--spacing-3);
-  --app-bar__menu-link-border-radius: var(--size-radius-control);
-  --app-bar__menu-link-color: var(--color-text-label);
-  --app-bar__menu-link-font-family: var(--font-subheadline-family);
-  --app-bar__menu-link-font-size: var(--font-subheadline-size);
-  --app-bar__menu-link-font-weight: var(--font-subheadline-weight);
-  --app-bar__menu-link-line-height: var(--font-subheadline-leading);
-  --app-bar__menu-link-letter-spacing: var(--font-subheadline-tracking);
-  --app-bar__menu-link-text-decoration: var(--text-decoration-none);
-  --app-bar__menu-link-background-color--hover: var(--color-fill-3);
-  --app-bar__menu-link-color--current: var(--color-tint);
-}
-
 nav[variant="app-bar"] {
-  position: var(--app-bar-position);
-  inset-block-end: var(--app-bar-inset-block-end);
-  inset-inline: var(--app-bar-inset-inline);
-  background-color: var(--app-bar-background-color);
-  backdrop-filter: var(--app-bar-backdrop-filter);
-  border-block-start-width: var(--app-bar-border-block-start-width);
-  border-block-start-style: var(--app-bar-border-block-start-style);
-  border-block-start-color: var(--app-bar-border-block-start-color);
-  padding-block-start: var(--app-bar-padding-block-start);
-  padding-block-end: var(--app-bar-padding-block-end);
-  padding-inline: var(--app-bar-padding-inline);
+  position: var(--position-app-bar);
+  inset-block-end: var(--inset-app-bar-block-end);
+  inset-inline: var(--inset-app-bar-inline);
+  background-color: var(--color-bkg-app-bar);
+  backdrop-filter: var(--backdrop-filter-app-bar);
+  border-block-start-width: var(--size-border-app-bar-block-start);
+  border-block-start-style: var(--border-style-app-bar-block-start);
+  border-block-start-color: var(--color-border-app-bar-block-start);
+  padding-block-start: var(--spacing-app-bar-padding-block-start);
+  padding-block-end: var(--spacing-app-bar-padding-block-end);
+  padding-inline: var(--spacing-app-bar-padding-inline);
 
   & > ul {
-    display: var(--app-bar__list-display);
-    gap: var(--app-bar__list-gap);
-    list-style: var(--app-bar__list-list-style);
-    margin: var(--app-bar__list-margin);
-    padding: var(--app-bar__list-padding);
+    display: var(--display-app-bar-list);
+    gap: var(--spacing-app-bar-list-gap);
+    list-style: var(--list-style-app-bar-list);
+    margin: var(--spacing-app-bar-list-margin);
+    padding: var(--spacing-app-bar-list-padding);
 
     & > li {
-      flex-grow: var(--app-bar__item-flex-grow);
+      flex-grow: var(--flex-grow-app-bar-item);
 
       & > a, & > button {
-        display: var(--app-bar__tab-display);
-        flex-direction: var(--app-bar__tab-flex-direction);
-        align-items: var(--app-bar__tab-align-items);
-        gap: var(--app-bar__tab-gap);
-        inline-size: var(--app-bar__tab-inline-size);
-        padding-block: var(--app-bar__tab-padding-block);
-        padding-inline: var(--app-bar__tab-padding-inline);
-        border-width: var(--app-bar__tab-border-width);
-        border-radius: var(--app-bar__tab-border-radius);
-        background-color: var(--app-bar__tab-background-color);
-        color: var(--app-bar__tab-color);
-        font-family: var(--app-bar__tab-font-family);
-        font-size: var(--app-bar__tab-font-size);
-        font-weight: var(--app-bar__tab-font-weight);
-        line-height: var(--app-bar__tab-line-height);
-        letter-spacing: var(--app-bar__tab-letter-spacing);
-        text-decoration: var(--app-bar__tab-text-decoration);
+        display: var(--display-app-bar-tab);
+        flex-direction: var(--flex-direction-app-bar-tab);
+        align-items: var(--align-app-bar-tab);
+        gap: var(--spacing-app-bar-tab-gap);
+        inline-size: var(--size-app-bar-tab-inline);
+        padding-block: var(--spacing-app-bar-tab-padding-block);
+        padding-inline: var(--spacing-app-bar-tab-padding-inline);
+        border-width: var(--size-border-app-bar-tab);
+        border-radius: var(--size-radius-app-bar-tab);
+        background-color: var(--color-bkg-app-bar-tab);
+        color: var(--color-text-app-bar-tab);
+        font-family: var(--font-app-bar-tab-family);
+        font-size: var(--font-app-bar-tab-size);
+        font-weight: var(--font-app-bar-tab-weight);
+        line-height: var(--font-app-bar-tab-leading);
+        letter-spacing: var(--font-app-bar-tab-tracking);
+        text-decoration: var(--text-decoration-app-bar-tab);
 
         &[aria-current="page"] {
-          color: var(--app-bar__tab-color--current);
-          font-weight: var(--app-bar__tab-font-weight--current);
+          color: var(--color-text-app-bar-tab-current);
+          font-weight: var(--font-app-bar-tab-weight-current);
         }
 
         & > svg {
-          inline-size: var(--app-bar__icon-inline-size);
-          block-size: var(--app-bar__icon-block-size);
+          inline-size: var(--size-app-bar-icon-inline);
+          block-size: var(--size-app-bar-icon-block);
         }
       }
     }
   }
 
   & > menu {
-    position: var(--app-bar__menu-position);
-    inset-block-start: var(--app-bar__menu-inset-block-start);
-    inset-inline-start: var(--app-bar__menu-inset-inline-start);
-    inset-block-end: var(--app-bar__menu-inset-block-end);
-    inset-inline-end: var(--app-bar__menu-inset-inline-end);
-    margin: var(--app-bar__menu-margin);
-    min-inline-size: var(--app-bar__menu-min-inline-size);
-    gap: var(--app-bar__menu-gap);
-    list-style: var(--app-bar__menu-list-style);
-    background-color: var(--app-bar__menu-background-color);
-    border-width: var(--app-bar__menu-border-width);
-    border-style: var(--app-bar__menu-border-style);
-    border-color: var(--app-bar__menu-border-color);
-    border-radius: var(--app-bar__menu-border-radius);
-    padding: var(--app-bar__menu-padding);
-    box-shadow: var(--app-bar__menu-box-shadow);
+    position: var(--position-app-bar-menu);
+    inset-block-start: var(--inset-app-bar-menu-block-start);
+    inset-inline-start: var(--inset-app-bar-menu-inline-start);
+    inset-block-end: var(--inset-app-bar-menu-block-end);
+    inset-inline-end: var(--inset-app-bar-menu-inline-end);
+    margin: var(--spacing-app-bar-menu-margin);
+    min-inline-size: var(--size-app-bar-menu-min-inline);
+    gap: var(--spacing-app-bar-menu-gap);
+    list-style: var(--list-style-app-bar-menu);
+    background-color: var(--color-bkg-app-bar-menu);
+    border-width: var(--size-border-app-bar-menu);
+    border-style: var(--border-style-app-bar-menu);
+    border-color: var(--color-border-app-bar-menu);
+    border-radius: var(--size-radius-app-bar-menu);
+    padding: var(--spacing-app-bar-menu-padding);
+    box-shadow: var(--shadow-app-bar-menu);
 
     &:popover-open {
-      display: var(--app-bar__menu-display);
+      display: var(--display-app-bar-menu);
     }
 
     & > li > a {
-      display: var(--app-bar__menu-link-display);
-      padding-block: var(--app-bar__menu-link-padding-block);
-      padding-inline: var(--app-bar__menu-link-padding-inline);
-      border-radius: var(--app-bar__menu-link-border-radius);
-      color: var(--app-bar__menu-link-color);
-      font-family: var(--app-bar__menu-link-font-family);
-      font-size: var(--app-bar__menu-link-font-size);
-      font-weight: var(--app-bar__menu-link-font-weight);
-      line-height: var(--app-bar__menu-link-line-height);
-      letter-spacing: var(--app-bar__menu-link-letter-spacing);
-      text-decoration: var(--app-bar__menu-link-text-decoration);
+      display: var(--display-app-bar-menu-link);
+      padding-block: var(--spacing-app-bar-menu-link-padding-block);
+      padding-inline: var(--spacing-app-bar-menu-link-padding-inline);
+      border-radius: var(--size-radius-app-bar-menu-link);
+      color: var(--color-text-app-bar-menu-link);
+      font-family: var(--font-app-bar-menu-link-family);
+      font-size: var(--font-app-bar-menu-link-size);
+      font-weight: var(--font-app-bar-menu-link-weight);
+      line-height: var(--font-app-bar-menu-link-leading);
+      letter-spacing: var(--font-app-bar-menu-link-tracking);
+      text-decoration: var(--text-decoration-app-bar-menu-link);
 
       &:hover {
-        background-color: var(--app-bar__menu-link-background-color--hover);
+        background-color: var(--color-bkg-app-bar-menu-link-hover);
       }
 
       &[aria-current="page"] {
-        color: var(--app-bar__menu-link-color--current);
+        color: var(--color-text-app-bar-menu-link-current);
       }
     }
   }

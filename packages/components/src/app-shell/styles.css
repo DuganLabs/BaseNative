@@ -1,47 +1,33 @@
-:root {
-  --app-shell-rail-inline-size: calc(var(--spacing-8) * 6);
-  --app-shell__main-padding-block-start: var(--spacing-6);
-  --app-shell__main-padding-block-end: calc(var(--spacing-8) * 3);
-  --app-shell__main-padding-inline: var(--spacing-6);
-  --app-shell__main-padding-block-end--rail: var(--spacing-6);
-  --app-shell__rail-position: var(--position-fixed);
-  --app-shell__rail-inset-block-start: var(--spacing-0);
-  --app-shell__rail-inset-inline-start: var(--spacing-0);
-  --app-shell__rail-block-size: var(--size-full);
-  --app-shell__chrome-display--hidden: var(--display-none);
-  --app-shell__footer-padding-block-end: calc(var(--spacing-8) * 3);
-}
-
 main[variant="default"] {
-  padding-block-start: var(--app-shell__main-padding-block-start);
-  padding-block-end: var(--app-shell__main-padding-block-end);
-  padding-inline: var(--app-shell__main-padding-inline);
+  padding-block-start: var(--spacing-app-shell-main-padding-block-start);
+  padding-block-end: var(--spacing-app-shell-main-padding-block-end);
+  padding-inline: var(--spacing-app-shell-main-padding-inline);
 }
 
 @media (max-width: 47.9375rem) {
   body > aside[variant="sidebar"] {
-    display: var(--app-shell__chrome-display--hidden);
+    display: var(--display-app-shell-chrome-hidden);
   }
 
   body > footer[variant="default"] {
-    padding-block-end: var(--app-shell__footer-padding-block-end);
+    padding-block-end: var(--spacing-app-shell-footer-padding-block-end);
   }
 }
 
 @media (min-width: 48rem) {
   body > aside[variant="sidebar"] {
-    position: var(--app-shell__rail-position);
-    inset-block-start: var(--app-shell__rail-inset-block-start);
-    inset-inline-start: var(--app-shell__rail-inset-inline-start);
-    block-size: var(--app-shell__rail-block-size);
+    position: var(--position-app-shell-rail);
+    inset-block-start: var(--inset-app-shell-rail-block-start);
+    inset-inline-start: var(--inset-app-shell-rail-inline-start);
+    block-size: var(--size-app-shell-rail-block);
   }
 
   body > main[variant="default"] {
-    margin-inline-start: var(--app-shell-rail-inline-size);
-    padding-block-end: var(--app-shell__main-padding-block-end--rail);
+    margin-inline-start: var(--size-app-shell-rail-inline);
+    padding-block-end: var(--spacing-app-shell-main-padding-block-end-rail);
   }
 
   body > nav[variant="app-bar"] {
-    display: var(--app-shell__chrome-display--hidden);
+    display: var(--display-app-shell-chrome-hidden);
   }
 }

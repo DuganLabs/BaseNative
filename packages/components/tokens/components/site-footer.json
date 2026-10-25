@@ -1,15 +1,33 @@
 {
-  "bn-brand": {
-    "$value": "#e8920a",
+  "border-style-site-footer-block-start": {
+    "$value": "{border-style-solid}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "border-style",
+          "type": null,
+          "item": "site-footer",
+          "variant": null,
+          "subitem": "block-start",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-border-site-footer-block-start": {
+    "$value": "{color-border-separator}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
         "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "brand",
+          "category": "color",
+          "type": "border",
+          "item": "site-footer",
           "variant": null,
-          "subitem": null,
+          "subitem": "block-start",
           "state": null,
           "context": null
         },
@@ -17,15 +35,15 @@
       }
     }
   },
-  "bn-brand-ink": {
-    "$value": "#0c0b09",
+  "color-text-site-footer-heading": {
+    "$value": "{color-text-label}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
         "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "brand-ink",
+          "category": "color",
+          "type": "text",
+          "item": "site-footer-heading",
           "variant": null,
           "subitem": null,
           "state": null,
@@ -35,15 +53,15 @@
       }
     }
   },
-  "bn-brand-text": {
-    "$value": "#9a5f05",
+  "color-text-site-footer-link": {
+    "$value": "{color-text-label-2}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
         "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "brand-text",
+          "category": "color",
+          "type": "text",
+          "item": "site-footer-link",
           "variant": null,
           "subitem": null,
           "state": null,
@@ -53,375 +71,33 @@
       }
     }
   },
-  "bn-content-leading": {
-    "$value": "22px",
-    "$type": "dimension",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "content-leading",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-content-secondary": {
-    "$value": "CanvasText",
-    "$type": "string",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "content-secondary",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-content-size": {
-    "$value": "15px",
-    "$type": "dimension",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "content-size",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-elev-2": {
-    "$value": "0 8px 24px rgba(0, 0, 0, 0.16)",
-    "$type": "string",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "elev-2",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-glass-blur": {
-    "$value": "30px",
-    "$type": "dimension",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "glass-blur",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-glass-rim": {
-    "$value": "Canvas",
-    "$type": "string",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "glass-rim",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-glass-saturate": {
-    "$value": "180%",
-    "$type": "string",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "glass-saturate",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-glass-sheen": {
-    "$value": "none",
-    "$type": "string",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "glass-sheen",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-len-1": {
-    "$value": "1px",
-    "$type": "dimension",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "len-1",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-len-2": {
-    "$value": "2px",
-    "$type": "dimension",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "len-2",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-len-4": {
-    "$value": "4px",
-    "$type": "dimension",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "len-4",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-len-6": {
-    "$value": "6px",
-    "$type": "dimension",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "len-6",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-len-8": {
-    "$value": "8px",
-    "$type": "dimension",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "len-8",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-len-12": {
-    "$value": "12px",
-    "$type": "dimension",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "len-12",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-len-16": {
-    "$value": "16px",
-    "$type": "dimension",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "len-16",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-len-32": {
-    "$value": "32px",
-    "$type": "dimension",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "len-32",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-len-36": {
-    "$value": "36px",
-    "$type": "dimension",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "len-36",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-len-44": {
-    "$value": "44px",
-    "$type": "dimension",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "len-44",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-list-surface": {
-    "$value": "Canvas",
-    "$type": "string",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "list-surface",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-plat-color-accents-green": {
-    "$value": "#28c840",
+  "color-text-site-footer-link-hover": {
+    "$value": "{color-text-label}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
         "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "plat-color-accents-green",
+          "category": "color",
+          "type": "text",
+          "item": "site-footer-link",
           "variant": null,
           "subitem": null,
-          "state": null,
+          "state": "hover",
           "context": null
         },
         "system": "trinity"
       }
     }
   },
-  "bn-plat-color-accents-orange": {
-    "$value": "#febc2e",
+  "color-text-site-footer-note": {
+    "$value": "{color-text-label-3}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
         "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "plat-color-accents-orange",
+          "category": "color",
+          "type": "text",
+          "item": "site-footer-note",
           "variant": null,
           "subitem": null,
           "state": null,
@@ -431,33 +107,15 @@
       }
     }
   },
-  "bn-plat-color-accents-red": {
-    "$value": "#ff5f57",
-    "$type": "color",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "plat-color-accents-red",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-plat-color-fills-tertiary": {
-    "$value": "transparent",
+  "display-site-footer": {
+    "$value": "{display-flex}",
     "$type": "string",
     "$extensions": {
       "com.basenative": {
         "taxonomy": {
-          "category": "bn",
+          "category": "display",
           "type": null,
-          "item": "plat-color-fills-tertiary",
+          "item": "site-footer",
           "variant": null,
           "subitem": null,
           "state": null,
@@ -467,15 +125,15 @@
       }
     }
   },
-  "bn-plat-color-labels-primary": {
-    "$value": "CanvasText",
+  "display-site-footer-column": {
+    "$value": "{display-grid}",
     "$type": "string",
     "$extensions": {
       "com.basenative": {
         "taxonomy": {
-          "category": "bn",
+          "category": "display",
           "type": null,
-          "item": "plat-color-labels-primary",
+          "item": "site-footer-column",
           "variant": null,
           "subitem": null,
           "state": null,
@@ -485,15 +143,15 @@
       }
     }
   },
-  "bn-plat-color-separator": {
-    "$value": "GrayText",
+  "display-site-footer-list": {
+    "$value": "{display-grid}",
     "$type": "string",
     "$extensions": {
       "com.basenative": {
         "taxonomy": {
-          "category": "bn",
+          "category": "display",
           "type": null,
-          "item": "plat-color-separator",
+          "item": "site-footer-list",
           "variant": null,
           "subitem": null,
           "state": null,
@@ -503,15 +161,15 @@
       }
     }
   },
-  "bn-plat-material-thick": {
-    "$value": "transparent",
+  "flex-basis-site-footer-note": {
+    "$value": "{size-full}",
     "$type": "string",
     "$extensions": {
       "com.basenative": {
         "taxonomy": {
-          "category": "bn",
+          "category": "flex-basis",
           "type": null,
-          "item": "plat-material-thick",
+          "item": "site-footer-note",
           "variant": null,
           "subitem": null,
           "state": null,
@@ -521,17 +179,305 @@
       }
     }
   },
-  "bn-plat-radius-8": {
-    "$value": "8px",
+  "flex-wrap-site-footer": {
+    "$value": "{flex-wrap-wrap}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "flex-wrap",
+          "type": null,
+          "item": "site-footer",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-site-footer-heading-family": {
+    "$value": "{font-subheadline-family}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "site-footer-heading",
+          "variant": null,
+          "subitem": "family",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-site-footer-heading-leading": {
+    "$value": "{font-subheadline-leading}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "site-footer-heading",
+          "variant": null,
+          "subitem": "leading",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-site-footer-heading-size": {
+    "$value": "{font-subheadline-size}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "site-footer-heading",
+          "variant": null,
+          "subitem": "size",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-site-footer-heading-tracking": {
+    "$value": "{font-subheadline-tracking}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "site-footer-heading",
+          "variant": null,
+          "subitem": "tracking",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-site-footer-heading-weight": {
+    "$value": "{font-weight-semibold}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "site-footer-heading",
+          "variant": null,
+          "subitem": "weight",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-site-footer-link-family": {
+    "$value": "{font-callout-family}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "site-footer-link",
+          "variant": null,
+          "subitem": "family",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-site-footer-link-leading": {
+    "$value": "{font-callout-leading}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "site-footer-link",
+          "variant": null,
+          "subitem": "leading",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-site-footer-link-size": {
+    "$value": "{font-callout-size}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "site-footer-link",
+          "variant": null,
+          "subitem": "size",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-site-footer-link-tracking": {
+    "$value": "{font-callout-tracking}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "site-footer-link",
+          "variant": null,
+          "subitem": "tracking",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-site-footer-link-weight": {
+    "$value": "{font-callout-weight}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "site-footer-link",
+          "variant": null,
+          "subitem": "weight",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-site-footer-note-family": {
+    "$value": "{font-footnote-family}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "site-footer-note",
+          "variant": null,
+          "subitem": "family",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-site-footer-note-leading": {
+    "$value": "{font-footnote-leading}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "site-footer-note",
+          "variant": null,
+          "subitem": "leading",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-site-footer-note-size": {
+    "$value": "{font-footnote-size}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "site-footer-note",
+          "variant": null,
+          "subitem": "size",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-site-footer-note-tracking": {
+    "$value": "{font-footnote-tracking}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "site-footer-note",
+          "variant": null,
+          "subitem": "tracking",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "list-style-site-footer-list": {
+    "$value": "{list-style-none}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "list-style",
+          "type": null,
+          "item": "site-footer-list",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-border-site-footer-block-start": {
+    "$value": "{size-hairline}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
         "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "plat-radius-8",
+          "category": "size",
+          "type": "border",
+          "item": "site-footer",
           "variant": null,
-          "subitem": null,
+          "subitem": "block-start",
           "state": null,
           "context": null
         },
@@ -539,17 +485,17 @@
       }
     }
   },
-  "bn-plat-radius-10": {
-    "$value": "10px",
+  "spacing-site-footer-column-gap": {
+    "$value": "{spacing-3}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
         "taxonomy": {
-          "category": "bn",
+          "category": "spacing",
           "type": null,
-          "item": "plat-radius-10",
+          "item": "site-footer-column",
           "variant": null,
-          "subitem": null,
+          "subitem": "gap",
           "state": null,
           "context": null
         },
@@ -557,17 +503,17 @@
       }
     }
   },
-  "bn-plat-radius-12": {
-    "$value": "12px",
+  "spacing-site-footer-gap": {
+    "$value": "{spacing-8}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
         "taxonomy": {
-          "category": "bn",
+          "category": "spacing",
           "type": null,
-          "item": "plat-radius-12",
+          "item": "site-footer",
           "variant": null,
-          "subitem": null,
+          "subitem": "gap",
           "state": null,
           "context": null
         },
@@ -575,17 +521,17 @@
       }
     }
   },
-  "bn-plat-radius-1000": {
-    "$value": "999px",
+  "spacing-site-footer-heading-margin": {
+    "$value": "{spacing-0}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
         "taxonomy": {
-          "category": "bn",
+          "category": "spacing",
           "type": null,
-          "item": "plat-radius-1000",
+          "item": "site-footer-heading",
           "variant": null,
-          "subitem": null,
+          "subitem": "margin",
           "state": null,
           "context": null
         },
@@ -593,15 +539,105 @@
       }
     }
   },
-  "bn-stage-glow": {
-    "$value": "none",
+  "spacing-site-footer-list-gap": {
+    "$value": "{spacing-2}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "site-footer-list",
+          "variant": null,
+          "subitem": "gap",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-site-footer-list-margin": {
+    "$value": "{spacing-0}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "site-footer-list",
+          "variant": null,
+          "subitem": "margin",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-site-footer-list-padding": {
+    "$value": "{spacing-0}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "site-footer-list",
+          "variant": null,
+          "subitem": "padding",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-site-footer-padding-block": {
+    "$value": "{spacing-8}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "site-footer",
+          "variant": null,
+          "subitem": "padding-block",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-site-footer-padding-inline": {
+    "$value": "{spacing-6}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "site-footer",
+          "variant": null,
+          "subitem": "padding-inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "text-align-site-footer": {
+    "$value": "{text-align-start}",
     "$type": "string",
     "$extensions": {
       "com.basenative": {
         "taxonomy": {
-          "category": "bn",
+          "category": "text-align",
           "type": null,
-          "item": "stage-glow",
+          "item": "site-footer",
           "variant": null,
           "subitem": null,
           "state": null,
@@ -611,33 +647,15 @@
       }
     }
   },
-  "bn-stage-paper": {
-    "$value": "canvas",
+  "text-decoration-site-footer-link": {
+    "$value": "{text-decoration-none}",
     "$type": "string",
     "$extensions": {
       "com.basenative": {
         "taxonomy": {
-          "category": "bn",
+          "category": "text-decoration",
           "type": null,
-          "item": "stage-paper",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
-  "bn-type-13": {
-    "$value": "13px",
-    "$type": "dimension",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "bn",
-          "type": null,
-          "item": "type-13",
+          "item": "site-footer-link",
           "variant": null,
           "subitem": null,
           "state": null,
