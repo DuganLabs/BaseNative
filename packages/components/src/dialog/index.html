@@ -1,0 +1,10 @@
+<template>
+  <dialog :variant="variant()" :aria-label="title()">
+    <header>
+      <h2>{{ title() }}</h2>
+      {{ raw(closeHtml()) }}
+    </header>
+    <p>{{ body() }}</p>
+    <footer>{{ raw(footerHtml()) }}</footer>
+  </dialog>
+</template>

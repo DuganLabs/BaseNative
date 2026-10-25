@@ -1,0 +1,49 @@
+:root {
+  --badge-display: var(--display-inline-flex);
+  --badge-align-items: var(--align-center);
+  --badge-background-color: var(--fill-2);
+  --badge-color: var(--label-2);
+  --badge-padding-block: var(--space-1);
+  --badge-padding-inline: var(--space-2);
+  --badge-border-radius: var(--radius-pill);
+  --badge-font-family: var(--text-caption-1-family);
+  --badge-font-size: var(--text-caption-1-size);
+  --badge-font-weight: var(--font-weight-semibold);
+  --badge-line-height: var(--text-caption-1-leading);
+  --badge-letter-spacing: var(--text-caption-1-tracking);
+}
+
+small[variant="default"], small[variant="info"], small[variant="success"], small[variant="warning"], small[variant="danger"] {
+  display: var(--badge-display);
+  align-items: var(--badge-align-items);
+  background-color: var(--badge-background-color);
+  color: var(--badge-color);
+  padding-block: var(--badge-padding-block);
+  padding-inline: var(--badge-padding-inline);
+  border-radius: var(--badge-border-radius);
+  font-family: var(--badge-font-family);
+  font-size: var(--badge-font-size);
+  font-weight: var(--badge-font-weight);
+  line-height: var(--badge-line-height);
+  letter-spacing: var(--badge-letter-spacing);
+}
+
+small[variant="danger"] {
+  --badge-background-color: var(--danger-fill);
+  --badge-color: var(--danger-strong);
+}
+
+small[variant="info"] {
+  --badge-background-color: var(--tint-fill);
+  --badge-color: var(--tint);
+}
+
+small[variant="success"] {
+  --badge-background-color: var(--success-fill);
+  --badge-color: var(--success-strong);
+}
+
+small[variant="warning"] {
+  --badge-background-color: var(--warning-fill);
+  --badge-color: var(--warning-strong);
+}

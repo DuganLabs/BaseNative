@@ -1,0 +1,19 @@
+<template>
+  <menu :variant="variant()" :aria-label="label()">
+    <template @for="item of items()">
+      <template @if="item.separator">
+        <li><hr></li>
+      </template>
+      <template @else>
+        <li>
+          <template @if="item.href">
+            <a :href="item.href">{{ item.label }}</a>
+          </template>
+          <template @else>
+            <button type="button">{{ item.label }}</button>
+          </template>
+        </li>
+      </template>
+    </template>
+  </menu>
+</template>

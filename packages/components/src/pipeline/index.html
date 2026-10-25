@@ -1,0 +1,14 @@
+<template>
+  <ol :variant="variant()">
+    <template @for="column of columns()">
+      <li>
+        <h3>{{ column.title }}</h3>
+        <ol>
+          <template @for="cardHtml of column.cardsHtml">
+            <li>{{ raw(cardHtml) }}</li>
+          </template>
+        </ol>
+      </li>
+    </template>
+  </ol>
+</template>

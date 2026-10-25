@@ -1,0 +1,3 @@
+<template>
+  <button :variant="variant()" :type="type()" :disabled="isDisabled()" :aria-busy="isBusy()" @click="activate($event)">{{ label() }}</button>
+</template>

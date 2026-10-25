@@ -1,0 +1,6 @@
+<template>
+  <details :variant="variant()" :open="open()">
+    <summary>{{ summary() }}</summary>
+    <section>{{ raw(bodyHtml()) }}</section>
+  </details>
+</template>

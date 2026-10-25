@@ -1,0 +1,59 @@
+:root {
+  --choice-group-display: var(--display-grid);
+  --choice-group-gap: var(--space-3);
+  --choice-group-margin: var(--space-0);
+  --choice-group-padding: var(--space-0);
+  --choice-group-border-width: var(--border-width-none);
+  --choice-group__legend-color: var(--label);
+  --choice-group__legend-font-family: var(--text-subheadline-family);
+  --choice-group__legend-font-size: var(--text-subheadline-size);
+  --choice-group__legend-font-weight: var(--font-weight-medium);
+  --choice-group__legend-line-height: var(--text-subheadline-leading);
+  --choice-group__legend-margin-block-end: var(--space-2);
+  --choice-group__option-display: var(--display-block);
+  --choice-group__option-position: var(--position-relative);
+  --choice-group__option-cursor: var(--cursor-pointer);
+  --choice-group__control-position: var(--position-absolute);
+  --choice-group__control-size: var(--space-5);
+  --choice-group__control-accent-color: var(--tint);
+  --choice-group__control-margin: var(--space-0);
+  --choice-group__control-inset-inline-start: var(--space-5);
+  --choice-group__control-inset-block-start: calc(var(--space-5) + var(--space-1));
+  --choice-group__control-z-index: 1;
+}
+
+fieldset[variant="choice-group"] {
+  display: var(--choice-group-display);
+  gap: var(--choice-group-gap);
+  margin: var(--choice-group-margin);
+  padding: var(--choice-group-padding);
+  border-width: var(--choice-group-border-width);
+
+  & > legend {
+    color: var(--choice-group__legend-color);
+    font-family: var(--choice-group__legend-font-family);
+    font-size: var(--choice-group__legend-font-size);
+    font-weight: var(--choice-group__legend-font-weight);
+    line-height: var(--choice-group__legend-line-height);
+    margin-block-end: var(--choice-group__legend-margin-block-end);
+  }
+
+  & > label {
+    display: var(--choice-group__option-display);
+    position: var(--choice-group__option-position);
+    cursor: var(--choice-group__option-cursor);
+
+    & > input {
+      position: var(--choice-group__control-position);
+      inline-size: var(--choice-group__control-size);
+      block-size: var(--choice-group__control-size);
+      inset-inline-start: var(--choice-group__control-inset-inline-start);
+      inset-block-start: var(--choice-group__control-inset-block-start);
+      z-index: var(--choice-group__control-z-index);
+      accent-color: var(--choice-group__control-accent-color);
+      margin: var(--choice-group__control-margin);
+    }
+
+  }
+}
+

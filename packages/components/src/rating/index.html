@@ -1,0 +1,11 @@
+<template>
+  <fieldset :variant="variant()">
+    <legend>{{ legend() }}</legend>
+    <template @for="option of options()">
+      <label :aria-label="option.label">
+        <input :variant="inputVariant()" type="radio" :name="groupName()" :value="option.value" :checked="isChecked(option)" @change="change(option)">
+        {{ raw(starHtml()) }}
+      </label>
+    </template>
+  </fieldset>
+</template>

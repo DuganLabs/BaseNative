@@ -1,0 +1,11 @@
+<template>
+  <article :variant="variant()">
+    <header>
+      <h3>{{ title() }}</h3>
+    </header>
+    <p>{{ body() }}</p>
+    <template @if="hasFooter()">
+      <footer>{{ raw(footerHtml()) }}</footer>
+    </template>
+  </article>
+</template>

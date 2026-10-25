@@ -1,0 +1,47 @@
+:root {
+  --field-display: var(--display-grid);
+  --field-gap: var(--space-2);
+  --field-margin: var(--space-0);
+  --field-align-items: var(--align-stretch);
+  --field__label-color: var(--label);
+  --field__label-font-size: var(--text-subheadline-size);
+  --field__label-font-weight: var(--font-weight-medium);
+  --field__label-line-height: var(--text-subheadline-leading);
+  --field__hint-color: var(--label-2);
+  --field__hint-font-size: var(--text-footnote-size);
+  --field__hint-line-height: var(--text-footnote-leading);
+  --field__error-color: var(--danger-strong);
+  --field__error-font-size: var(--text-footnote-size);
+  --field__error-line-height: var(--text-footnote-leading);
+}
+
+p[variant="default"] {
+  display: var(--field-display);
+  gap: var(--field-gap);
+  margin: var(--field-margin);
+  align-items: var(--field-align-items);
+
+  & > label {
+    color: var(--field__label-color);
+    font-size: var(--field__label-font-size);
+    font-weight: var(--field__label-font-weight);
+    line-height: var(--field__label-line-height);
+  }
+
+  & > small {
+    color: var(--field__hint-color);
+    font-size: var(--field__hint-font-size);
+    line-height: var(--field__hint-line-height);
+  }
+
+  &:has(> input[aria-invalid="true"]) {
+    --input-border-color: var(--input-border-color--invalid);
+
+    & > small:first-of-type {
+      color: var(--field__error-color);
+      font-size: var(--field__error-font-size);
+      line-height: var(--field__error-line-height);
+    }
+  }
+}
+

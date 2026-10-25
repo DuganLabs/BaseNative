@@ -1,0 +1,12 @@
+<template>
+  <section :variant="variant()" :aria-label="label()">
+    {{ raw(inputHtml()) }}
+    <template @if="open()">
+      <ul role="listbox" :id="listboxId()" :aria-label="label()">
+        <template @for="option of options()">
+          <li role="option" :id="optionId(option)" :aria-selected="isActive(option)">{{ option.label }}</li>
+        </template>
+      </ul>
+    </template>
+  </section>
+</template>

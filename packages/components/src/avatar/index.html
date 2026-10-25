@@ -1,0 +1,10 @@
+<template>
+  <figure :variant="variant()">
+    <template @if="hasImage()">
+      <img :src="src()" :alt="alt()" />
+    </template>
+    <template @else>
+      {{ initials() }}
+    </template>
+  </figure>
+</template>

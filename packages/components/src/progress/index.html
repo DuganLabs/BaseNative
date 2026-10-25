@@ -1,0 +1,8 @@
+<template>
+  <template @if="isIndeterminate()">
+    <progress :variant="variant()" :max="max()"></progress>
+  </template>
+  <template @else>
+    <progress :variant="variant()" :value="value()" :max="max()"></progress>
+  </template>
+</template>

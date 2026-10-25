@@ -1,0 +1,12 @@
+<template>
+  <search :variant="variant()">
+    <label :for="controlId()">{{ label() }}</label>
+    <input :variant="inputVariant()" :id="controlId()" type="search" :name="groupName()" :value="value()" @input="update($event)" @keydown="keydown($event)">
+    <template @if="hasValue()">
+      <button type="button" @click="clear()">{{ clearLabel() }}</button>
+    </template>
+    <template @if="hasSubmit()">
+      {{ raw(submitHtml()) }}
+    </template>
+  </search>
+</template>

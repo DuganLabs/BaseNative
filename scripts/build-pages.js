@@ -2,7 +2,7 @@
  * Pre-renders all Express routes to static HTML for Cloudflare Pages deployment.
  * Run after `nx bundle basenative-example-express` so basenative.js exists.
  */
-import { existsSync, mkdirSync, writeFileSync, cpSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync, cpSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -169,17 +169,35 @@ cpSync(join(express, 'public', 'avatar-eve.svg'), join(dist, 'avatar-eve.svg'));
 const bnCssDir = join(dist, 'bn-css');
 mkdirSync(bnCssDir, { recursive: true });
 const componentSrc = join(root, 'packages', 'components', 'src');
-for (const file of [
+const componentCssFiles = [
   'index.css',
   'layers.css',
   'reset.css',
   'tokens.css',
+  'tokens-legacy.css',
   'theme.css',
   'layout.css',
   'components.css',
   'states.css',
-]) {
+];
+for (const file of componentCssFiles) {
   cpSync(join(componentSrc, file), join(bnCssDir, file));
+}
+
+// A copied sheet that @imports a file this list did not copy ships a
+// 404 to production and silently unstyless everything downstream of
+// it (the tokens-legacy rename did exactly that). Fail the build
+// instead: every relative @import in a copied sheet must name a file
+// the list copied. The copied set is the reference, not the dist
+// directory, so a stale file from an earlier build cannot satisfy it.
+const copiedCss = new Set(componentCssFiles);
+for (const file of componentCssFiles) {
+  const css = readFileSync(join(bnCssDir, file), 'utf8');
+  for (const match of css.matchAll(/@import\s+['"]\.\/([^'"]+)['"]/g)) {
+    if (!copiedCss.has(match[1])) {
+      throw new Error(`build-pages: ${file} imports ./${match[1]}, which was not copied into dist/bn-css`);
+    }
+  }
 }
 
 // Copy the iOS platform tokens (served as /bn-ios/ in Express, must exist in dist)
