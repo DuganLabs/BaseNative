@@ -66,7 +66,7 @@ const controls = [
   R('field', {
     label: 'Trade', controlId: 'trade',
     controlHtml: R('select', {
-      id: 'trade', value: 'hvac',
+      id: 'trade', value: 'hvac', label: 'Trade', open: true,
       options: [
         { value: 'electrical', label: 'Electrical' },
         { value: 'plumbing', label: 'Plumbing' },
@@ -74,6 +74,18 @@ const controls = [
       ],
     }),
     hint: 'The trade decides which pricing engine runs.',
+  }),
+  R('field', {
+    label: 'Trade (native variant)', controlId: 'trade-native',
+    controlHtml: R('select', {
+      id: 'trade-native', value: 'hvac', variant: 'native',
+      options: [
+        { value: 'electrical', label: 'Electrical' },
+        { value: 'plumbing', label: 'Plumbing' },
+        { value: 'hvac', label: 'HVAC' },
+      ],
+    }),
+    hint: 'The native variant keeps the platform element, its menu, and native form submission.',
   }),
   R('field', {
     label: 'Job notes', controlId: 'notes',
@@ -376,6 +388,7 @@ ${css}
 </style>
 <style>
   /* Proof-page chrome only — not component CSS. */
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   body { font-family: system-ui, sans-serif; margin: 0; padding: 2rem 1rem 4rem; background: var(--background-grouped); color: var(--label); }
   main { max-width: 44rem; margin: 0 auto; display: grid; gap: 2.5rem; }
   section { display: grid; gap: 1rem; min-width: 0; }
@@ -404,7 +417,7 @@ ${css}
   article > p { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: 0; }
   #leads { --virtualizer__spacer-start-count: 0; --virtualizer__spacer-end-count: 88; }
   section.toast-stage { transform: translateZ(0); min-block-size: 19rem; align-content: start; }
-  section:has(#county), section:has(#trades) { padding-block-end: 8.5rem; }
+  section:has(#email) article, section:has(#trade) article { --input-background-color: var(--fill-3); --textarea-background-color: var(--fill-3); --select__native-background-color: var(--fill-3); --select__trigger-background-color: var(--fill-3); }
   article.drawer-stage { position: relative; block-size: 26rem; border: var(--hairline) solid var(--separator); border-radius: var(--radius-container); overflow: hidden; }
   article.drawer-stage > dialog[variant="drawer"] { position: absolute; inset-block: 0; inset-inline-end: 0; }
 </style>
@@ -643,6 +656,25 @@ ${css}
   </section>
 </main>
 <script>
+  const email = document.querySelector('#email2');
+  if (email) {
+    const field = email.closest('p');
+    const errorNote = field ? field.querySelector('small') : null;
+    email.addEventListener('input', () => {
+      const text = email.value.trim();
+      const at = text.indexOf('@');
+      const dot = text.lastIndexOf('.');
+      const valid = at > 0 && dot > at + 1 && dot < text.length - 1 && !text.includes(' ');
+      if (valid) {
+        email.removeAttribute('aria-invalid');
+        if (errorNote) errorNote.hidden = true;
+      } else {
+        email.setAttribute('aria-invalid', 'true');
+        if (errorNote) errorNote.hidden = false;
+      }
+    });
+  }
+
   document.querySelectorAll('input[name="theme"]').forEach((input) => {
     input.addEventListener('change', () => {
       const root = document.documentElement;
@@ -968,20 +1000,27 @@ ${css}
     });
   }
 
-  const email = document.querySelector('#email2');
-  if (email) {
-    const field = email.closest('p');
-    const errorNote = field ? field.querySelector('small') : null;
-    email.addEventListener('input', () => {
-      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value);
-      if (valid) {
-        email.removeAttribute('aria-invalid');
-        if (errorNote) errorNote.hidden = true;
-      } else {
-        email.setAttribute('aria-invalid', 'true');
-        if (errorNote) errorNote.hidden = false;
-      }
+  // ---- Select popover: the trigger toggles its listbox, an option
+  // click chooses it, Escape closes it.
+  const tradeButton = document.querySelector('#trade');
+  if (tradeButton) {
+    const tradeSection = tradeButton.closest('section');
+    const tradeList = tradeSection.querySelector('ul');
+    const setTradeOpen = (isOpen) => {
+      tradeList.hidden = !isOpen;
+      tradeButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    };
+    setTradeOpen(false);
+    tradeButton.addEventListener('click', () => setTradeOpen(tradeList.hidden));
+    tradeList.querySelectorAll('li').forEach((li) => {
+      li.addEventListener('click', () => {
+        tradeList.querySelectorAll('li').forEach((o) => o.setAttribute('aria-selected', o === li ? 'true' : 'false'));
+        const labelNode = [...tradeButton.childNodes].find((n) => n.nodeType === 3 && n.textContent.trim() !== '');
+        if (labelNode) labelNode.textContent = li.textContent;
+        setTradeOpen(false);
+      });
     });
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') setTradeOpen(false); });
   }
 </script>
 </body>
