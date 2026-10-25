@@ -1,6 +1,6 @@
 {
   "name": "@basenative/cli",
-  "version": "2.3.2",
+  "version": "2.4.0",
   "description": "bn CLI: create, deploy, doctor, and from-jsx (React drafts to BaseNative templates)",
   "type": "module",
   "bin": {
@@ -16,7 +16,7 @@
   },
   "types": "./types/index.d.ts",
   "dependencies": {
-    "@basenative/hmr": "workspace:^2.3.2"
+    "@basenative/hmr": "workspace:^2.4.0"
   },
   "files": [
     "src",
