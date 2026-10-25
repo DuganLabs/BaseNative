@@ -37,25 +37,25 @@ export function create(props) {
 export function registerVariants(registry) {
   registry.registerVariant('button', 'default', {});
   registry.registerVariant('button', 'primary', {
-    '--button-background-color': 'var(--color-action)',
-    '--button-background-color--hover': 'var(--color-action-hover)',
-    '--button-background-color--active': 'var(--color-action-active)',
-    '--button-border-color': 'var(--color-action)',
-    '--button-color': 'var(--color-on-action)',
+    '--button-background-color': 'var(--tint)',
+    '--button-background-color--hover': 'var(--tint-strong)',
+    '--button-background-color--active': 'var(--tint-strong)',
+    '--button-border-color': 'var(--tint)',
+    '--button-color': 'var(--on-tint)',
   });
   registry.registerVariant('button', 'ghost', {
     '--button-background-color': 'var(--color-transparent)',
-    '--button-background-color--hover': 'var(--color-surface-muted)',
-    '--button-background-color--active': 'var(--color-surface-muted)',
+    '--button-background-color--hover': 'var(--fill-3)',
+    '--button-background-color--active': 'var(--fill-2)',
     '--button-border-color': 'var(--color-transparent)',
-    '--button-color': 'var(--color-action)',
+    '--button-color': 'var(--tint)',
   });
   registry.registerVariant('button', 'destructive', {
-    '--button-background-color': 'var(--color-danger)',
-    '--button-background-color--hover': 'var(--color-danger-hover)',
-    '--button-background-color--active': 'var(--color-danger-hover)',
-    '--button-border-color': 'var(--color-danger)',
-    '--button-color': 'var(--color-on-danger)',
+    '--button-background-color': 'var(--danger)',
+    '--button-background-color--hover': 'var(--danger-strong)',
+    '--button-background-color--active': 'var(--danger-strong)',
+    '--button-border-color': 'var(--danger)',
+    '--button-color': 'var(--on-danger)',
   });
 }
 

@@ -31,10 +31,10 @@ export function create(props) {
 export function registerVariants(registry) {
   registry.registerVariant('dialog', 'default', {});
   registry.registerVariant('dialog', 'destructive', {
-    '--button-background-color': 'var(--color-danger)',
-    '--button-background-color--hover': 'var(--color-danger-hover)',
-    '--button-border-color': 'var(--color-danger)',
-    '--button-color': 'var(--color-on-danger)',
+    '--button-background-color': 'var(--danger)',
+    '--button-background-color--hover': 'var(--danger-strong)',
+    '--button-border-color': 'var(--danger)',
+    '--button-color': 'var(--on-danger)',
   });
 }
 

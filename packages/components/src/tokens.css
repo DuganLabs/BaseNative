@@ -1,81 +1,228 @@
-/* Global tokens — Holy Trinity taxonomy, no prefixes.
-   Layer 0: primitives (the only literals in the system, values carried over
-   from the old --bn- sheet so nothing visually moves).
+/* The token system — Holy Trinity taxonomy, no prefixes.
+   Leveraged from Apple's platform system (values via @basenative/ios:
+   documented system colors, label/background/fill/separator roles,
+   Dynamic Type styles; estimated glass, radii, springs) and extended
+   where the web catalog needs roles Apple does not name (danger/success
+   state roles, scrim, elevation shadows, control sizing).
+
+   Layer 0 only. Two kinds of definitions live here:
+   - primitives: the system palette, scales, and keyword values.
+   - roles: the names components actually consume (label, fill, tint…).
+   Every role that has an appearance pair is defined for light here and
+   redefined for dark in the media block at the end — components never
+   branch on appearance; the role resolves.
    Component tokens are NOT declared here: each component declares its
-   own tokens in a :root block at the top of its styles.css, with values
-   that are var() references to these primitives. */
+   own in a :root block at the top of its styles.css, as var() references
+   to these roles and primitives. */
 
 :root {
-  /* Layer 0 — color */
-  --color-white: #fff;
-  --color-gray-50: #f9fafb;
-  --color-gray-100: #f3f4f6;
-  --color-gray-300: #d1d5db;
-  --color-gray-400: #9ca3af;
-  --color-gray-500: #6b7280;
-  --color-gray-600: #4b5563;
-  --color-gray-900: #111827;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
-  --color-primary-800: #1e40af;
-  --color-error-500: #ef4444;
-  --color-error-600: #dc2626;
-  --color-error-700: #b91c1c;
-  --color-error-border: #fecaca;
-  --color-error-text: #991b1b;
-  --color-error-background: #fef2f2;
-  --color-transparent: transparent;
-  --color-action: var(--color-primary-600);
-  --color-action-hover: var(--color-primary-700);
-  --color-action-active: var(--color-primary-800);
-  --color-on-action: var(--color-white);
-  --color-danger: var(--color-error-600);
-  --color-danger-hover: var(--color-error-700);
-  --color-on-danger: var(--color-white);
-  --color-surface: var(--color-white);
-  --color-surface-subtle: var(--color-gray-50);
-  --color-surface-muted: var(--color-gray-100);
-  --color-text: var(--color-gray-900);
-  --color-text-muted: var(--color-gray-500);
-  --color-border: var(--color-gray-300);
-  --color-border-control: var(--color-gray-500);
-  --color-border-control-hover: var(--color-gray-600);
-  --color-border-focus: var(--color-primary-600);
-  --scrim: rgb(17 24 39 / 0.5);
+  /* System palette (Apple documented pairs; dark values in the media block) */
+  --system-blue: #007aff;
+  --system-green: #34c759;
+  --system-indigo: #5856d6;
+  --system-orange: #ff9500;
+  --system-pink: #ff2d55;
+  --system-purple: #af52de;
+  --system-red: #ff3b30;
+  --system-teal: #5ac8fa;
+  --system-yellow: #ffcc00;
+  --system-mint: #00c7be;
+  --system-cyan: #32ade6;
+  --system-brown: #a2845e;
+  --system-gray: #8e8e93;
+  --system-gray-2: #aeaeb2;
+  --system-gray-3: #c7c7cc;
+  --system-gray-4: #d1d1d6;
+  --system-gray-5: #e5e5ea;
+  --system-gray-6: #f2f2f7;
 
-  /* Layer 0 — space, size, font, shape, motion */
+  /* Roles — text */
+  --label: #000000;
+  --label-2: rgb(60 60 67 / 0.6);
+  --label-3: rgb(60 60 67 / 0.3);
+  --label-4: rgb(60 60 67 / 0.18);
+  --label-placeholder: rgb(60 60 67 / 0.3);
+
+  /* Roles — backgrounds (base / elevated steps / grouped steps) */
+  --background: #ffffff;
+  --background-2: #f2f2f7;
+  --background-3: #ffffff;
+  --background-grouped: #f2f2f7;
+  --background-grouped-2: #ffffff;
+  --background-grouped-3: #f2f2f7;
+
+  /* Roles — fills (translucent, strongest first) */
+  --fill: rgb(120 120 128 / 0.2);
+  --fill-2: rgb(120 120 128 / 0.16);
+  --fill-3: rgb(118 118 128 / 0.12);
+  --fill-4: rgb(116 116 128 / 0.08);
+
+  /* Roles — separators */
+  --separator: rgb(60 60 67 / 0.29);
+  --separator-opaque: #c6c6c8;
+
+  /* Roles — interaction and state (one accent; state colors mean, never decorate) */
+  --tint: var(--system-blue);
+  --tint-strong: #0062cc;
+  --on-tint: #ffffff;
+  --danger: var(--system-red);
+  --danger-strong: #d70015;
+  --on-danger: #ffffff;
+  --success: var(--system-green);
+  --warning: var(--system-orange);
+  --scrim: rgb(0 0 0 / 0.4);
+
+  /* Elevation — shadows belong to floating layers only */
+  --shadow-float: 0 12px 32px rgb(0 0 0 / 0.12);
+  --shadow-raised: 0 8px 24px rgb(0 0 0 / 0.08);
+  --focus-ring: 0 0 0 2px var(--background), 0 0 0 4px var(--tint);
+
+  /* Materials — Liquid Glass ladder, weakest first (estimated values).
+     Channels are separate tokens because components mix them. */
+  --material-ultra-thin-blur: 8px;
+  --material-ultra-thin-saturate: 160%;
+  --material-ultra-thin-tint: rgb(255 255 255 / 0.35);
+  --material-ultra-thin-highlight: inset 0 1px 0 rgb(255 255 255 / 0.4);
+  --material-ultra-thin-shadow: 0 8px 24px rgb(0 0 0 / 0.08);
+  --material-thin-blur: 12px;
+  --material-thin-saturate: 170%;
+  --material-thin-tint: rgb(255 255 255 / 0.45);
+  --material-thin-highlight: inset 0 1px 0 rgb(255 255 255 / 0.45);
+  --material-thin-shadow: 0 10px 28px rgb(0 0 0 / 0.1);
+  --material-regular-blur: 20px;
+  --material-regular-saturate: 180%;
+  --material-regular-tint: rgb(255 255 255 / 0.55);
+  --material-regular-highlight: inset 0 1px 0 rgb(255 255 255 / 0.5);
+  --material-regular-shadow: 0 12px 32px rgb(0 0 0 / 0.12);
+  --material-thick-blur: 30px;
+  --material-thick-saturate: 190%;
+  --material-thick-tint: rgb(249 249 249 / 0.78);
+  --material-thick-highlight: inset 0 1px 0 rgb(255 255 255 / 0.55);
+  --material-thick-shadow: 0 16px 40px rgb(0 0 0 / 0.16);
+
+  /* Type — families */
+  --font-text: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', system-ui, sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Type — the eleven text styles, each a recipe of
+     size / leading / weight / tracking / family tokens */
+  --text-large-title-size: 2.125rem;
+  --text-large-title-leading: 2.5625rem;
+  --text-large-title-weight: var(--font-weight-regular);
+  --text-large-title-tracking: -0.015em;
+  --text-large-title-family: var(--font-display);
+  --text-title-1-size: 1.75rem;
+  --text-title-1-leading: 2.125rem;
+  --text-title-1-weight: var(--font-weight-regular);
+  --text-title-1-tracking: -0.012em;
+  --text-title-1-family: var(--font-display);
+  --text-title-2-size: 1.375rem;
+  --text-title-2-leading: 1.75rem;
+  --text-title-2-weight: var(--font-weight-regular);
+  --text-title-2-tracking: -0.008em;
+  --text-title-2-family: var(--font-display);
+  --text-title-3-size: 1.25rem;
+  --text-title-3-leading: 1.5625rem;
+  --text-title-3-weight: var(--font-weight-regular);
+  --text-title-3-tracking: -0.006em;
+  --text-title-3-family: var(--font-display);
+  --text-headline-size: 1.0625rem;
+  --text-headline-leading: 1.375rem;
+  --text-headline-weight: var(--font-weight-semibold);
+  --text-headline-tracking: -0.002em;
+  --text-headline-family: var(--font-text);
+  --text-body-size: 1.0625rem;
+  --text-body-leading: 1.375rem;
+  --text-body-weight: var(--font-weight-regular);
+  --text-body-tracking: -0.002em;
+  --text-body-family: var(--font-text);
+  --text-callout-size: 1rem;
+  --text-callout-leading: 1.3125rem;
+  --text-callout-weight: var(--font-weight-regular);
+  --text-callout-tracking: -0.001em;
+  --text-callout-family: var(--font-text);
+  --text-subheadline-size: 0.9375rem;
+  --text-subheadline-leading: 1.25rem;
+  --text-subheadline-weight: var(--font-weight-regular);
+  --text-subheadline-tracking: 0em;
+  --text-subheadline-family: var(--font-text);
+  --text-footnote-size: 0.8125rem;
+  --text-footnote-leading: 1.125rem;
+  --text-footnote-weight: var(--font-weight-regular);
+  --text-footnote-tracking: 0.004em;
+  --text-footnote-family: var(--font-text);
+  --text-caption-1-size: 0.75rem;
+  --text-caption-1-leading: 1rem;
+  --text-caption-1-weight: var(--font-weight-regular);
+  --text-caption-1-tracking: 0.008em;
+  --text-caption-1-family: var(--font-text);
+  --text-caption-2-size: 0.6875rem;
+  --text-caption-2-leading: 0.8125rem;
+  --text-caption-2-weight: var(--font-weight-regular);
+  --text-caption-2-tracking: 0.011em;
+  --text-caption-2-family: var(--font-text);
+
+  /* Geometry — radii run to sheet scale; nested radii derive by calc
+     in the component's own token block (outer minus its padding) */
+  --radius-none: 0;
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 1.75rem;
+  --radius-pill: 9999px;
+  --radius-control: var(--radius-md);
+  --radius-container: var(--radius-xl);
+  --radius-sheet: var(--radius-2xl);
+
+  /* Spacing — the 8pt grid and its 4pt half step */
   --space-0: 0;
-  --space-half: 0.125rem;
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
+  --space-5: 1.25rem;
   --space-6: 1.5rem;
-  --size-full: 100%;
-  --size-control: 2.5rem;
-  --size-target-min: 1.5rem;
-  --size-dialog-max: 32rem;
-  --font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-size-small: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-title: 1.25rem;
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --line-height-tight: 1.25;
-  --line-height-normal: 1.5;
-  --letter-spacing-normal: 0;
-  --radius-control: 0.375rem;
-  --radius-container: 0.5rem;
-  --radius-modal: 0.75rem;
+  --space-7: 2rem;
+  --space-8: 2.5rem;
+  --margin: 1rem;
+  --margin-wide: 1.25rem;
+
+  /* Hairline and borders */
+  --hairline: 0.5px;
   --border-width: 1px;
   --border-width-thick: 2px;
-  --shadow-focus: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-border-focus);
-  --shadow-dialog: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --motion-duration-fast: 150ms;
-  --motion-duration-normal: 200ms;
 
-  /* Layer 0 — keyword primitives */
+  /* Sizing */
+  --size-full: 100%;
+  --size-control: 2.75rem;
+  --size-target-min: 2.75rem;
+  --size-sheet-max: 32rem;
+
+  /* Safe area — supplied by the device at runtime */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+
+  /* Motion — UIKit spring family (estimated curves) and the plain fade */
+  --motion-spring-duration: 550ms;
+  --motion-spring-curve: cubic-bezier(0.32, 0.72, 0, 1);
+  --motion-spring-bouncy-duration: 700ms;
+  --motion-spring-bouncy-curve: cubic-bezier(0.34, 1.3, 0.32, 1);
+  --motion-spring-stiff-duration: 380ms;
+  --motion-spring-stiff-curve: cubic-bezier(0.36, 0.9, 0.24, 1);
+  --motion-fade-duration: 250ms;
+  --motion-fade-curve: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  /* Keyword primitives */
   --display-block: block;
   --display-flex: flex;
   --display-inline-flex: inline-flex;
@@ -92,4 +239,80 @@
   --justify-end: flex-end;
   --justify-space-between: space-between;
   --margin-auto: auto;
+  --color-transparent: transparent;
+}
+
+/* Dark appearance — every paired role and palette step resolves here.
+   Values are Apple's documented dark values (glass tints estimated). */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --system-blue: #0a84ff;
+    --system-green: #30d158;
+    --system-indigo: #5e5ce6;
+    --system-orange: #ff9f0a;
+    --system-pink: #ff375f;
+    --system-purple: #bf5af2;
+    --system-red: #ff453a;
+    --system-teal: #64d2ff;
+    --system-yellow: #ffd60a;
+    --system-mint: #66d4cf;
+    --system-cyan: #64d2ff;
+    --system-brown: #ac8e68;
+    --system-gray-2: #636366;
+    --system-gray-3: #48484a;
+    --system-gray-4: #3a3a3c;
+    --system-gray-5: #2c2c2e;
+    --system-gray-6: #1c1c1e;
+
+    --label: #ffffff;
+    --label-2: rgb(235 235 245 / 0.6);
+    --label-3: rgb(235 235 245 / 0.3);
+    --label-4: rgb(235 235 245 / 0.16);
+    --label-placeholder: rgb(235 235 245 / 0.3);
+
+    --background: #000000;
+    --background-2: #1c1c1e;
+    --background-3: #2c2c2e;
+    --background-grouped: #000000;
+    --background-grouped-2: #1c1c1e;
+    --background-grouped-3: #2c2c2e;
+
+    --fill: rgb(120 120 128 / 0.36);
+    --fill-2: rgb(120 120 128 / 0.32);
+    --fill-3: rgb(118 118 128 / 0.24);
+    --fill-4: rgb(118 118 128 / 0.18);
+
+    --separator: rgb(84 84 88 / 0.6);
+    --separator-opaque: #38383a;
+
+    --danger-strong: #ff6961;
+    --tint-strong: #409cff;
+    --scrim: rgb(0 0 0 / 0.55);
+
+    --shadow-float: 0 12px 32px rgb(0 0 0 / 0.45);
+    --shadow-raised: 0 8px 24px rgb(0 0 0 / 0.35);
+
+    --material-ultra-thin-tint: rgb(28 28 30 / 0.35);
+    --material-ultra-thin-highlight: inset 0 1px 0 rgb(255 255 255 / 0.12);
+    --material-ultra-thin-shadow: 0 8px 24px rgb(0 0 0 / 0.35);
+    --material-thin-tint: rgb(28 28 30 / 0.45);
+    --material-thin-highlight: inset 0 1px 0 rgb(255 255 255 / 0.15);
+    --material-thin-shadow: 0 10px 28px rgb(0 0 0 / 0.4);
+    --material-regular-tint: rgb(30 30 32 / 0.55);
+    --material-regular-highlight: inset 0 1px 0 rgb(255 255 255 / 0.18);
+    --material-regular-shadow: 0 12px 32px rgb(0 0 0 / 0.45);
+    --material-thick-tint: rgb(28 28 30 / 0.78);
+    --material-thick-highlight: inset 0 1px 0 rgb(255 255 255 / 0.22);
+    --material-thick-shadow: 0 16px 40px rgb(0 0 0 / 0.5);
+  }
+}
+
+/* Reduced motion — the spring family collapses; nothing animates long. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-spring-duration: 0.01ms;
+    --motion-spring-bouncy-duration: 0.01ms;
+    --motion-spring-stiff-duration: 0.01ms;
+    --motion-fade-duration: 0.01ms;
+  }
 }

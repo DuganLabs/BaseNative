@@ -5,26 +5,28 @@
   --input-block-size: var(--size-control);
   --input-padding-block: var(--space-2);
   --input-padding-inline: var(--space-3);
-  --input-background-color: var(--color-surface);
-  --input-color: var(--color-text);
-  --input-color--placeholder: var(--color-text-muted);
+  --input-background-color: var(--background);
+  --input-color: var(--label);
+  --input-color--placeholder: var(--label-placeholder);
   --input-border-width: var(--border-width);
   --input-border-style: var(--border-style-solid);
-  --input-border-color: var(--color-border-control);
-  --input-border-color--hover: var(--color-border-control-hover);
-  --input-border-color--invalid: var(--color-error-600);
+  --input-border-color: var(--separator-opaque);
+  --input-border-color--hover: var(--label-3);
+  --input-border-color--invalid: var(--danger);
   --input-border-radius: var(--radius-control);
-  --input-font-family: var(--font-family);
-  --input-font-size: var(--font-size-base);
-  --input-font-weight: var(--font-weight-normal);
-  --input-line-height: var(--line-height-tight);
+  --input-font-family: var(--text-body-family);
+  --input-font-size: var(--text-body-size);
+  --input-font-weight: var(--text-body-weight);
+  --input-line-height: var(--text-body-leading);
+  --input-letter-spacing: var(--text-body-tracking);
   --input-cursor: var(--cursor-text);
   --input-outline-width--focus: var(--border-width-thick);
   --input-outline-style--focus: var(--border-style-solid);
-  --input-outline-color--focus: var(--color-border-focus);
-  --input-outline-offset--focus: var(--space-half);
-  --input-box-shadow--focus: var(--shadow-focus);
-  --input-motion-duration: var(--motion-duration-fast);
+  --input-outline-color--focus: var(--tint);
+  --input-outline-offset--focus: var(--space-1);
+  --input-box-shadow--focus: var(--focus-ring);
+  --input-motion-duration: var(--motion-fade-duration);
+  --input-motion-curve: var(--motion-fade-curve);
 }
 
 input[variant] {
@@ -44,8 +46,9 @@ input[variant] {
   font-size: var(--input-font-size);
   font-weight: var(--input-font-weight);
   line-height: var(--input-line-height);
+  letter-spacing: var(--input-letter-spacing);
   cursor: var(--input-cursor);
-  transition: border-color var(--input-motion-duration), box-shadow var(--input-motion-duration);
+  transition: border-color var(--input-motion-duration) var(--input-motion-curve), box-shadow var(--input-motion-duration) var(--input-motion-curve);
 
   &:hover {
     border-color: var(--input-border-color--hover);

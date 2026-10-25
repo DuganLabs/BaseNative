@@ -1,14 +1,14 @@
 :root {
   --dialog-box-sizing: var(--box-sizing-border);
-  --dialog-background-color: var(--color-surface);
-  --dialog-color: var(--color-text);
+  --dialog-background-color: var(--background-2);
+  --dialog-color: var(--label);
   --dialog-border-width: var(--border-width);
   --dialog-border-style: var(--border-style-solid);
-  --dialog-border-color: var(--color-border);
-  --dialog-border-radius: var(--radius-modal);
-  --dialog-box-shadow: var(--shadow-dialog);
+  --dialog-border-color: var(--separator);
+  --dialog-border-radius: var(--radius-sheet);
+  --dialog-box-shadow: var(--shadow-float);
   --dialog-padding: var(--space-6);
-  --dialog-inline-size: var(--size-dialog-max);
+  --dialog-inline-size: var(--size-sheet-max);
   --dialog-margin: var(--margin-auto);
   --dialog-gap: var(--space-4);
   --dialog-display: var(--display-grid);
@@ -17,15 +17,16 @@
   --dialog__header-align-items: var(--align-stretch);
   --dialog__header-justify-content: var(--justify-space-between);
   --dialog__header-gap: var(--space-4);
-  --dialog__title-font-family: var(--font-family);
-  --dialog__title-font-size: var(--font-size-title);
+  --dialog__title-font-family: var(--text-title-2-family);
+  --dialog__title-font-size: var(--text-title-2-size);
   --dialog__title-font-weight: var(--font-weight-semibold);
-  --dialog__title-line-height: var(--line-height-tight);
+  --dialog__title-line-height: var(--text-title-2-leading);
+  --dialog__title-letter-spacing: var(--text-title-2-tracking);
   --dialog__title-margin: var(--space-0);
-  --dialog__body-color: var(--color-text);
-  --dialog__body-font-family: var(--font-family);
-  --dialog__body-font-size: var(--font-size-base);
-  --dialog__body-line-height: var(--line-height-normal);
+  --dialog__body-color: var(--label);
+  --dialog__body-font-family: var(--text-body-family);
+  --dialog__body-font-size: var(--text-body-size);
+  --dialog__body-line-height: var(--text-body-leading);
   --dialog__body-margin: var(--space-0);
   --dialog__footer-display: var(--display-flex);
   --dialog__footer-justify-content: var(--justify-end);
@@ -65,6 +66,7 @@ dialog[variant] {
       font-size: var(--dialog__title-font-size);
       font-weight: var(--dialog__title-font-weight);
       line-height: var(--dialog__title-line-height);
+      letter-spacing: var(--dialog__title-letter-spacing);
       margin: var(--dialog__title-margin);
     }
   }
@@ -86,9 +88,9 @@ dialog[variant] {
 
 /* @variants — generated from the registry, do not edit by hand */
 dialog[variant="destructive"] {
-  --button-background-color: var(--color-danger);
-  --button-background-color--hover: var(--color-danger-hover);
-  --button-border-color: var(--color-danger);
-  --button-color: var(--color-on-danger);
+  --button-background-color: var(--danger);
+  --button-background-color--hover: var(--danger-strong);
+  --button-border-color: var(--danger);
+  --button-color: var(--on-danger);
 }
 /* @endvariants */

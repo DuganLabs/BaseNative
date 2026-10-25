@@ -29,7 +29,7 @@ test('registration rejects rule-breaking components and variants', () => {
     /only re-point a token/,
   );
   assert.throws(
-    () => registry.registerVariant('button', 'brand', { color: 'var(--color-danger)' }),
+    () => registry.registerVariant('button', 'brand', { color: 'var(--danger)' }),
     /does not match the token taxonomy/,
   );
   assert.throws(() => registry.resolveVariant('button', 'nope'), /is not registered/);
@@ -40,11 +40,11 @@ test('registration rejects rule-breaking components and variants', () => {
 
 test('a consumer variant registers and generates a scoped rule', async () => {
   const registry = await loadRegistry();
-  registry.registerVariant('button', 'brand', { '--button-background-color': 'var(--color-danger)' });
+  registry.registerVariant('button', 'brand', { '--button-background-color': 'var(--danger)' });
   assert.deepEqual(registry.resolveVariant('button', 'brand'), {
-    '--button-background-color': 'var(--color-danger)',
+    '--button-background-color': 'var(--danger)',
   });
-  assert.match(registry.variantsCssFor('button'), /button\[variant="brand"\] \{\n {2}--button-background-color: var\(--color-danger\);\n\}/);
+  assert.match(registry.variantsCssFor('button'), /button\[variant="brand"\] \{\n {2}--button-background-color: var\(--danger\);\n\}/);
 });
 
 test('the registry loads the whole pilot', async () => {
@@ -71,7 +71,7 @@ test('component styles never select a bare element — vanilla elements stay unt
     assert.doesNotMatch(styles, new RegExp(`(^|\\n)${root} \\{`), name);
   }
   const css = await assembleStyles(registry, PILOT);
-  assert.match(css, /--button-background-color: var\(--color-surface\);/);
+  assert.match(css, /--button-background-color: var\(--fill-2\);/);
   assert.match(css, /button\[variant="ghost"\]/);
 });
 
@@ -107,7 +107,20 @@ test('dialog composes nested buttons and its destructive variant re-points them'
   assert.match(html, /<h2>Delete this lead\?<\/h2>/);
   assert.match(html, /<button variant="default" type="button">Delete lead<\/button>/);
   const dialogStyles = await readFile(new URL('./dialog/styles.css', import.meta.url), 'utf8');
-  assert.match(dialogStyles, /dialog\[variant="destructive"\] \{\n {2}--button-background-color: var\(--color-danger\);/);
+  assert.match(dialogStyles, /dialog\[variant="destructive"\] \{\n {2}--button-background-color: var\(--danger\);/);
+});
+
+test('the token system carries the Apple foundation, extended for the catalog', async () => {
+  const tokensCss = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
+  for (const marker of [
+    '--label-2:', '--background-grouped:', '--fill-2:', '--separator:', '--tint:',
+    '--text-large-title-size:', '--text-body-tracking:', '--text-caption-2-leading:',
+    '--radius-sheet:', '--material-regular-blur:', '--material-thick-saturate:',
+    '--motion-spring-curve:', '--motion-spring-bouncy-duration:', '--safe-top:',
+    '@media (prefers-color-scheme: dark)', '@media (prefers-reduced-motion: reduce)',
+  ]) {
+    assert.ok(tokensCss.includes(marker), `tokens.css is missing ${marker}`);
+  }
 });
 
 test('each component declares its own tokens in a :root block atop its styles.css', async () => {

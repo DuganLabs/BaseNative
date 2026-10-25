@@ -57,13 +57,13 @@ ${css}
 </style>
 <style>
   /* Proof-page chrome only — not component CSS. */
-  body { font-family: system-ui, sans-serif; margin: 0; padding: 2rem 1rem 4rem; background: #f9fafb; color: #111827; }
+  body { font-family: system-ui, sans-serif; margin: 0; padding: 2rem 1rem 4rem; background: var(--background-grouped); color: var(--label); }
   main { max-width: 44rem; margin: 0 auto; display: grid; gap: 2.5rem; }
   section { display: grid; gap: 1rem; }
   h1 { font-size: 1.5rem; margin: 0; }
   h2 { font-size: 1.05rem; margin: 0; }
-  p.note { color: #6b7280; font-size: .875rem; margin: 0; }
-  article { background: #fff; border: 1px solid #d1d5db; border-radius: .75rem; padding: 1.25rem; display: grid; gap: 1rem; }
+  p.note { color: var(--label-2); font-size: .875rem; margin: 0; }
+  article { background: var(--background-grouped-2); border: 1px solid var(--separator); border-radius: .75rem; padding: 1.25rem; display: grid; gap: 1rem; }
   dialog { position: static; }
   pre { background: #111827; color: #f3f4f6; padding: 1rem; border-radius: .5rem; overflow-x: auto; font-size: .78rem; line-height: 1.5; }
 </style>
