@@ -863,6 +863,24 @@
       }
     }
   },
+  "overflow-wrap-anywhere": {
+    "$value": "anywhere",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "overflow-wrap-anywhere",
+          "type": null,
+          "item": null,
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "visibility-hidden": {
     "$value": "hidden",
     "$type": "string",

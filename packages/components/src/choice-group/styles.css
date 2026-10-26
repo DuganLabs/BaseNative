@@ -1,3 +1,8 @@
+/* The control's size is its token, full stop — the input rule below
+   pins the min sizes to the same token because a host sheet's generic
+   bare-input rules carry a 44px touch minimum that would otherwise
+   clamp this 20px control up and over the substrate's reserved
+   notch. */
 fieldset[variant="choice-group"] {
   display: var(--display-choice-group);
   gap: var(--spacing-choice-group-gap);
@@ -23,6 +28,8 @@ fieldset[variant="choice-group"] {
       position: var(--position-choice-group-control);
       inline-size: var(--size-choice-group-control);
       block-size: var(--size-choice-group-control);
+      min-inline-size: var(--size-choice-group-control);
+      min-block-size: var(--size-choice-group-control);
       inset-inline-start: var(--spacing-choice-group-control-inset-inline-start);
       inset-block-start: var(--spacing-choice-group-control-inset-block-start);
       z-index: var(--layer-choice-group-control);
