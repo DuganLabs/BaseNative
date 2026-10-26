@@ -62,6 +62,9 @@ nav[variant="app-bar"] {
     margin: var(--spacing-app-bar-menu-margin);
     min-inline-size: var(--size-app-bar-menu-min-inline);
     gap: var(--spacing-app-bar-menu-gap);
+    /* Rows pack at the start of the box — the menu sizes to its
+       content and its items never distribute across a taller box. */
+    align-content: var(--align-app-bar-menu-content);
     list-style: var(--list-style-app-bar-menu);
     background-color: var(--color-bkg-app-bar-menu);
     border-width: var(--size-border-app-bar-menu);

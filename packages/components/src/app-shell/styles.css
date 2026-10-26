@@ -9,6 +9,14 @@ main[variant="default"] {
     display: var(--display-app-shell-chrome-hidden);
   }
 
+  /* The designed phone gutter (Warren, 2026-10-20) — the desktop 24px
+     page gutter stacked on card padding leaves a mostly-void column on
+     a phone, so the inline padding steps down to 16px at phone widths.
+     The desktop rhythm is untouched. */
+  body > main[variant="default"] {
+    padding-inline: var(--spacing-app-shell-main-padding-inline-phone);
+  }
+
   body > footer[variant="default"] {
     padding-block-end: var(--spacing-app-shell-footer-padding-block-end);
   }

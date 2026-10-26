@@ -196,5 +196,23 @@
         "system": "trinity"
       }
     }
+  },
+  "spacing-app-shell-main-padding-inline-phone": {
+    "$value": "{spacing-4}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "app-shell-main",
+          "variant": null,
+          "subitem": "padding-inline",
+          "state": null,
+          "context": "phone"
+        },
+        "system": "trinity"
+      }
+    }
   }
 }
