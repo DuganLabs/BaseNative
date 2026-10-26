@@ -2327,7 +2327,8 @@
   }
 
   /* -- /components category section -- */
-  [data-bn-component-category] {
+  [data-bn-component-category],
+  [data-bn-component-app-demo] {
     margin-block-end: var(--bn-section-space, 12px);
     scroll-margin-block-start: var(--bn-section-space, 12px);
   }
@@ -2556,6 +2557,21 @@
     & > figcaption > :is(h1, h2) {
       font-stretch: var(--font-serif);
     }
+  }
+
+  /* A hero that heads a page article heads a stack, not a card inside
+     a card: ios.css dresses every article as a padded grouped
+     surface, so a route hero rendered inside one stacked the page
+     gutter, the article's padding and its own padding inline (text
+     at 57px on a 16px gutter — home and the old tasks page). The
+     hero stands down the same way the meta-strip hero above does:
+     transparent, borderless, no inline padding of its own, so its
+     text takes the article's text line. Direct children only —
+     heroes staged inside component previews keep their card. */
+  main > article > figure[variant] {
+    --color-bkg-hero: transparent;
+    --size-border-hero: 0;
+    --spacing-hero-padding-inline: 0;
   }
 
   /* The meta block is a spec strip, not a section: three short facts.
