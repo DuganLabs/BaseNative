@@ -1,7 +1,7 @@
 /**
  * The Holy Trinity catalog as the site presents it: categories and copy
  * for every component registered in @basenative/components, plus the
- * live specimens each component page and the showcase render. The facts
+ * live specimens each component page renders. The facts
  * (names, roots, variants, the three files) come from the registry via
  * trinity.js — this file carries only what the registry does not: the
  * words, the grouping, and the demos.

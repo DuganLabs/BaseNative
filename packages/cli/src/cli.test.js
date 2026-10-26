@@ -12,7 +12,6 @@ import {
 } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { fileURLToPath } from 'node:url';
 
 // We test the create command's template generation logic directly
 import { run as createRun } from './commands/create.js';
@@ -859,18 +858,6 @@ describe('site build command', () => {
     const dir = tmp();
     await assert.rejects(buildSite(writeFixture(dir, ['/internal'])), /never published/);
     await assert.rejects(buildSite(writeFixture(dir, ['/nope'])), /no route/);
-  });
-
-  it('the pilot input generates the real /roadmap exactly as the site renderer does', async () => {
-    const inputPath = fileURLToPath(new URL('../../../examples/express/site.json', import.meta.url));
-    const out = tmp();
-    const result = await buildSite(inputPath, { outdir: out });
-    assert.deepEqual(result.written, ['/roadmap/']);
-    const generated = readFileSync(join(out, 'roadmap', 'index.html'), 'utf-8');
-    const page = await import(new URL('../../../examples/express/page.js', import.meta.url));
-    const route = page.siteRoutes.find((r) => r.path === '/roadmap');
-    const direct = page.renderRoute(route, { tasks: [], hasApi: false });
-    assert.equal(generated, direct);
   });
 });
 

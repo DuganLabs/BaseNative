@@ -15,7 +15,7 @@ function slug(path) {
  * Rule ids axe-core 4.10.3 already reports, measured 2026-10-22 at 320/768/1280
  * in light and dark. The gate fails when a route reports an id that is not
  * listed. Node counts are not frozen: unrebuilt pages still fail color-contrast
- * and several routes have no h1. /design-system keeps color-contrast. The
+ * and several routes have no h1. The
  * catalog names its landmarks and dialogs; contrast on the glass surfaces
  * is still open.
  */
@@ -33,10 +33,7 @@ const AXE_DEBT = {
     'landmark-complementary-is-top-level',
     'page-has-heading-one',
   ],
-  '/showcase': ['color-contrast'],
-  '/roadmap': ['color-contrast', 'page-has-heading-one'],
   '/tasks': ['color-contrast', 'page-has-heading-one'],
-  '/design-system': ['color-contrast'],
 };
 
 function knownAxe(path) {
@@ -137,9 +134,7 @@ async function themeSurfaces(page, theme) {
     }
     const selector = [
       '[data-bn-component-search]',
-      '[data-bn-showcase-search]',
       '[data-bn-component-card]',
-      '[data-bn-showcase-toc]',
       '[data-bn="bn-search"]',
       'input[type="search"]',
       '[data-bn="bn-list"][data-grouped="true"]',
@@ -168,7 +163,7 @@ async function themeSurfaces(page, theme) {
   }, theme);
 }
 
-const CARD_ROUTES = new Set(['/playground', '/compare', '/components', '/roadmap']);
+const CARD_ROUTES = new Set(['/playground', '/compare', '/components']);
 
 async function cardStack(page) {
   return page.evaluate(() => {
@@ -193,7 +188,7 @@ async function cardStack(page) {
       const heroBox = hero.getBoundingClientRect();
       const next = [
         ...document.querySelectorAll(
-          'main article, main [data-bn="bn-list"], main [data-bn="bn-metric"], main [data-bn-component-card], main [data-bn-component-search], main [data-bn-showcase-search]',
+          'main article, main [data-bn="bn-list"], main [data-bn="bn-metric"], main [data-bn-component-card], main [data-bn-component-search]',
         ),
       ]
         .filter((el) => paints(el) && el.getBoundingClientRect().top >= heroBox.bottom - 1)
@@ -579,7 +574,7 @@ async function sectionRhythm(page) {
       ) || 12;
     const problems = [];
     const nodes = document.querySelectorAll(
-      'main > section, [data-bn-showcase-section], [data-bn-docs-toc], [data-bn-component-category]',
+      'main > section, [data-bn-docs-toc], [data-bn-component-category]',
     );
     for (const el of nodes) {
       const style = getComputedStyle(el);
@@ -588,10 +583,6 @@ async function sectionRhythm(page) {
       if (bottom > token + 1) {
         const name = el.getAttribute('data-bn') || el.id || el.tagName;
         problems.push(`margin ${bottom} on ${name}`);
-      }
-      if (el.hasAttribute('data-bn-showcase-section')) {
-        const pad = (parseFloat(style.paddingTop) || 0) + (parseFloat(style.paddingBottom) || 0);
-        if (pad > token + 1) problems.push(`showcase pad ${pad}`);
       }
     }
     return problems.slice(0, 6);

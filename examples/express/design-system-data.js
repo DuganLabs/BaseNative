@@ -1,6 +1,7 @@
 /**
- * The /design-system page's data, parsed from the catalog's one token
- * sheet (packages/components/src/tokens.css) — the page documents the
+ * The Design tokens section of /docs (formerly the /design-system page):
+ * the data is parsed from the catalog's one token sheet
+ * (packages/components/src/tokens.css) — the section documents the
  * tokens by reading them, so it cannot drift from the sheet it shows.
  * The sheet's structure: a bare :root block carries the light values;
  * :root[data-theme="dark"] carries the dark ones; every token is a
