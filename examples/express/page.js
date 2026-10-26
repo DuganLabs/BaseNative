@@ -71,6 +71,7 @@ function getAssetVersion() {
     'public/playground.css',
     'public/playground.js',
     'public/playground-preview.js',
+    'public/specimens.js',
   ]) {
     try {
       hash.update(read(file));
@@ -390,7 +391,27 @@ export function renderRoute(route, site = {}) {
   // route's hero spec (data, or a function of the site state and the
   // route's own context) — no view hand-writes a <header> any more.
   const hero = typeof route.hero === 'function' ? route.hero(site, ctx) : route.hero;
-  return renderPage(route.view, hero ? { ...ctx, hero: raw(renderHero(hero)) } : ctx, route);
+  // A context carrying live specimens (the showcase) gets the specimen
+  // boot and its JSON specs appended to the route's scripts.
+  const effectiveRoute = ctx.liveSpecimens?.length
+    ? { ...route, scripts: (route.scripts ?? '') + liveSpecimenScripts(ctx.liveSpecimens) }
+    : route;
+  return renderPage(route.view, hero ? { ...ctx, hero: raw(renderHero(hero)) } : ctx, effectiveRoute);
+}
+
+/**
+ * The specimen boot for a page: the live specs a page's demos recorded
+ * (see trinity-catalog.js) as one JSON script, then the boot itself.
+ * public/specimens.js wires every catalog specimen on the page — the
+ * popovers, the theme toggle, tabs, dialogs, and the rest — from the
+ * components' own rendered markup plus these props.
+ */
+export function liveSpecimenScripts(specs) {
+  const json = JSON.stringify(specs).replaceAll('<', '\\u003c');
+  return (
+    `<script type="application/json" data-bn-live-specimens>${json}</script>` +
+    '<script type="module" src="/specimens.js"></script>'
+  );
 }
 
 /**
@@ -448,7 +469,15 @@ export function renderComponentPage(slug) {
   // the grouping element the HTML spec defines inside <dl> — built by
   // this one helper so the pattern lives in exactly one place.
   const metaPair = (term, value) => `<div><dt>${term}</dt><dd><code>${value}</code></dd></div>`;
-  const demos = (trinityDemos[slug] ?? (() => []))(renderTrinity, renderTrinityVm);
+  const demos = (() => {
+    const liveSpecimens = [];
+    const list = (trinityDemos[slug] ?? (() => []))(
+      renderTrinity,
+      renderTrinityVm,
+      (spec) => liveSpecimens.push(spec),
+    );
+    return { list, liveSpecimens };
+  })();
   const ctx = {
     component,
     titleLead,
@@ -470,7 +499,7 @@ export function renderComponentPage(slug) {
     // Every demo's html is a real catalog render over hand-authored
     // props (trinity-catalog.js) — no user input reaches it — so this
     // raw() is the same trust assertion the other assembled contexts make.
-    examples: demos.map((demo) => ({
+    examples: demos.list.map((demo) => ({
       title: demo.title,
       description: demo.note ?? '',
       html: raw(demo.html),
@@ -507,7 +536,13 @@ export function renderComponentPage(slug) {
     ogTitle: `${component.title} — BaseNative`,
     path: `/components/${component.slug}`,
     activePage: 'components',
-    scripts: '',
+    // The specimen boot runs on every component page: it wires the
+    // specimens' behaviour (theme toggle, tabs, dialogs, dismissals,
+    // and — from the recorded live specs — the popovers and the
+    // virtualizer) against the components' own server-rendered markup.
+    scripts: demos.liveSpecimens.length
+      ? liveSpecimenScripts(demos.liveSpecimens)
+      : '<script type="module" src="/specimens.js"></script>',
   });
 }
 

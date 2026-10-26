@@ -31,6 +31,14 @@
     "div-span": 0,
     "control-flow": 0
   },
+  "examples/express/public/specimens.js": {
+    "custom-element": 0,
+    "inline-style": 0,
+    "style-write": 4,
+    "css-outside-layer": 0,
+    "div-span": 0,
+    "control-flow": 0
+  },
   "examples/express/public/theme.css": {
     "custom-element": 0,
     "inline-style": 0,
