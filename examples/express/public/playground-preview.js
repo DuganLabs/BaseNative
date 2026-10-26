@@ -86,12 +86,20 @@ document.head.appendChild(userStyle);
 
 const BASE_CSS = [
   ':root { color-scheme: light dark; }',
+  ':root[data-theme="light"] { color-scheme: light; }',
+  ':root[data-theme="dark"] { color-scheme: dark; }',
   '* { box-sizing: border-box; }',
   'body { margin: 0; padding: 18px; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: #ffffff; color: #17191c; }',
-  '@media (prefers-color-scheme: dark) { body { background: #131518; color: #eceff1; } }',
+  '@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) body { background: #131518; color: #eceff1; } }',
+  ':root[data-theme="dark"] body { background: #131518; color: #eceff1; }',
   'button { font: inherit; cursor: pointer; }',
   'input { font: inherit; }',
 ].join('\n');
+
+/* The base sheet applies on load, not only on the first run: before
+   any run the frame is an empty document, and unstyled it renders as
+   a plain white block inside the page whatever the theme. */
+userStyle.textContent = BASE_CSS;
 
 Object.assign(window, {
   signal,
@@ -108,7 +116,17 @@ Object.assign(window, {
 window.addEventListener('message', (e) => {
   if (e.origin !== window.location.origin) return;
   const d = e.data;
-  if (!d || d.source !== 'bn-playground-host' || d.type !== 'run') return;
+  if (!d || d.source !== 'bn-playground-host') return;
+  /* The host posts its theme (boot.js's data-theme, which the toggle
+     can set against the OS scheme): the frame follows the page, and
+     the base sheet's [data-theme] rules do the rest. */
+  if (d.type === 'theme') {
+    const theme = d.payload && d.payload.theme;
+    if (theme === 'light' || theme === 'dark')
+      document.documentElement.setAttribute('data-theme', theme);
+    return;
+  }
+  if (d.type !== 'run') return;
   const { html, css, js } = d.payload || {};
   runHadError = false;
   userStyle.textContent = BASE_CSS + '\n' + (css || '');

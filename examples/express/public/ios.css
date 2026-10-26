@@ -536,6 +536,24 @@ main a:where(:not([data-bn]):not([variant]):not([role='button']):not([data-bn-ct
   color: var(--color-text-on-primary);
 }
 
+/* The docs contents nav owns its link ink, like pagination: the
+   styles.css treatment is quiet label colour with the brand fill
+   only under the current section, so the prose tint above must not
+   reach these links either. */
+[data-bn-docs-toc] a {
+  color: var(--text-2);
+}
+[data-bn-docs-toc] a[aria-current='true'] {
+  color: var(--bn-brand-ink);
+}
+
+/* The tasks demo's delete buttons are the app demo's own: styles.css
+   sizes them compact, so the generic button padding above must not
+   inflate them back into lozenges that starve the row's title. */
+[data-task-item] button[data-variant='danger'] {
+  padding-inline: var(--space-xs);
+}
+
 /* Filter chips are a segmented choice, not primary actions: neutral
    fill until pressed, the filled tint when pressed. */
 button[data-bn-component-filter] {
