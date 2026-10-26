@@ -16,7 +16,7 @@ aside[variant="sidebar"] {
       display: var(--display-sidebar-section);
       gap: var(--spacing-sidebar-section-gap);
 
-      & > h2 {
+      & > p {
         color: var(--color-text-sidebar-heading);
         font-family: var(--font-sidebar-heading-family);
         font-size: var(--font-sidebar-heading-size);

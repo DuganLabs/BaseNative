@@ -817,9 +817,9 @@
   --font-hero-lede-leading: var(--font-body-leading);
   --font-hero-lede-size: var(--font-body-size);
   --font-hero-lede-tracking: var(--font-body-tracking);
-  --font-hero-title-leading: var(--font-title-1-leading);
-  --font-hero-title-size: var(--font-title-1-size);
-  --font-hero-title-tracking: var(--font-title-1-tracking);
+  --font-hero-title-leading: var(--font-large-title-leading);
+  --font-hero-title-size: var(--font-large-title-size);
+  --font-hero-title-tracking: var(--font-large-title-tracking);
   --font-hero-title-weight: var(--font-weight-bold);
   --inset-hero-overlay-caption-block-end: var(--spacing-4);
   --inset-hero-overlay-caption-inline: var(--spacing-4);

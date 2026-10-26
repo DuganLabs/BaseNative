@@ -371,7 +371,7 @@ export function liveSpecimenScripts(specs) {
  * spec's `after` rides the hero's closing slot.
  */
 function renderHero(spec) {
-  const { actions, label, heading, after, attrs, force, ...rest } = spec;
+  const { actions, label, heading, after, attrs: _attrs, force: _force, ...rest } = spec;
   const actionsHtml = (actions ?? [])
     .map((action, index) =>
       renderTrinity('button', {

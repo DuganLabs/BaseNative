@@ -53,5 +53,5 @@
     },
     { rootMargin: '-30% 0px -60% 0px' },
   );
-  for (var target of controlsByTarget.keys()) observer.observe(target);
+  for (var observed of controlsByTarget.keys()) observer.observe(observed);
 })();

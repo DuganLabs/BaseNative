@@ -484,6 +484,7 @@ export const trinityDemos = {
   ],
   hero: (r) => [
     D('Stacked', r('hero', {
+      headingLevel: 'h2',
       eyebrow: 'GreenPut',
       title: 'The operating system for trade contractors',
       lede: 'Lead to job to payment in one pipeline — priced flat per delivered lead.',
