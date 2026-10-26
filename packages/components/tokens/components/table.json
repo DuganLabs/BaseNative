@@ -755,6 +755,24 @@
       }
     }
   },
+  "overflow-wrap-table-cell-restack": {
+    "$value": "{overflow-wrap-anywhere}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "overflow-wrap",
+          "type": null,
+          "item": "table-cell",
+          "variant": null,
+          "subitem": "restack",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "size-border-table-cell-block-end-restack": {
     "$value": "{size-border-none}",
     "$type": "dimension",

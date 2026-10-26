@@ -67,7 +67,10 @@ table[variant="striped"] > tbody > tr:nth-child(even) {
 
 /* Narrow restack without stamped data-labels. The row header becomes
    the row's label line and the header row steps out of the visual
-   flow while staying in the accessibility tree. */
+   flow while staying in the accessibility tree. A restacked cell is
+   prose, not a column, so its text wraps anywhere: a long
+   unbreakable word (a global's name, a package spec) must not size
+   the whole table past its container. */
 @media (max-width: 40rem) {
   table[variant="default"], table[variant="striped"] {
     & > thead {
@@ -89,6 +92,7 @@ table[variant="striped"] > tbody > tr:nth-child(even) {
       display: var(--display-table-cell-restack);
       border-block-end-width: var(--size-border-table-cell-block-end-restack);
       padding-block: var(--spacing-table-cell-padding-block-restack);
+      overflow-wrap: var(--overflow-wrap-table-cell-restack);
     }
   }
 }

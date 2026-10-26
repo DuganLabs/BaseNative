@@ -423,20 +423,20 @@ describe('the trinity specimens stay inside the page', () => {
   });
 });
 
-describe('/components/tasks tells the static visitor where their tasks go', () => {
-  const tasksRoute = siteRoutes.find((r) => r.path === '/components/tasks');
+describe('the /components app demo tells the static visitor where their tasks go', () => {
+  const componentsRoute = siteRoutes.find((r) => r.path === '/components');
 
   it('discloses that the static build does not persist, and only there', () => {
-    const staticHtml = renderRoute(tasksRoute, { tasks: [], hasApi: false });
+    const staticHtml = renderRoute(componentsRoute, { tasks: [], hasApi: false });
     assert.match(staticHtml, /not saved to a server/i,
-      '/components/tasks must disclose that the static build does not persist');
-    const apiHtml = renderRoute(tasksRoute, { tasks: [], hasApi: true });
+      'the /components app demo must disclose that the static build does not persist');
+    const apiHtml = renderRoute(componentsRoute, { tasks: [], hasApi: true });
     assert.doesNotMatch(apiHtml, /not saved to a server/i,
       'the disclosure must not appear when the API is live');
   });
 
   it('persists to localStorage in the same file as the signals', () => {
-    const view = readFileSync(repo('examples/express/views/tasks.html'), 'utf8');
+    const view = readFileSync(repo('examples/express/views/components.html'), 'utf8');
     assert.match(view, /localStorage\.getItem/);
     assert.match(view, /localStorage\.setItem/);
   });

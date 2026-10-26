@@ -223,7 +223,10 @@ export const siteRoutes = [
     description: `${catalogEntries.length} semantic, server-rendered components built on native HTML primitives. No virtual DOM.`,
     ogTitle: 'BaseNative Components — Semantic by Construction',
     activePage: 'components',
-    ctx: () => getComponentsPageContext(),
+    ctx: ({ tasks, hasApi }) => ({
+      ...getComponentsPageContext(),
+      ...getTasksPageContext(tasks, hasApi),
+    }),
     hero: (site, ctx) => ({
       eyebrow: 'Component library',
       titleHtml: 'Semantic <em>by construction</em>',
@@ -298,38 +301,6 @@ export const siteRoutes = [
       titleHtml: 'Visual <em>Builder</em>',
       lede: 'A macOS window: organism palette, canvas, layers, and inspector. Pick an organism, drop it on the canvas, edit it, and export BaseNative.',
     },
-  },
-  {
-    // The tasks app lives under the catalog: it is the one end-to-end
-    // demo (signals + hydration + the site's only API), presented as a
-    // component page rather than a stray top-level todo page. The old
-    // /tasks path 301s here (scripts/build-pages.js, _redirects).
-    path: '/components/tasks',
-    view: 'tasks.html',
-    title: 'Tasks',
-    description:
-      'A working task manager built with BaseNative: server-rendered, hydrated with signals, and composed from the component catalog.',
-    activePage: 'components',
-    ctx: ({ tasks, hasApi }) => ({
-      ...getTasksPageContext(tasks, hasApi),
-      breadcrumb: raw(
-        renderTrinity('breadcrumb', {
-          items: [
-            { label: 'Home', href: '/' },
-            { label: 'Components', href: '/components' },
-            { label: 'Tasks' },
-          ],
-        }),
-      ),
-    }),
-    hero: (site) => ({
-      eyebrow: 'App demo',
-      titleHtml: 'Task <em>Manager</em>',
-      lede: 'A complete app on one page: server-rendered initial state, client-side hydration with signals, composed from the catalog. This is the live app, not a mockup — add, filter, and delete tasks.',
-      after: site.hasApi
-        ? ''
-        : '<p data-tasks-static-notice>This is the static demo — tasks you add are kept in your browser and are not saved to a server.</p>',
-    }),
   },
   {
     // A verification harness for the dev server. `internal` keeps it out of

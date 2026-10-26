@@ -4,6 +4,37 @@
     <meta charset="utf-8" />
     <meta name="color-scheme" content="light dark" />
     <title>BaseNative playground preview</title>
+    <style>
+      /* The canvas is painted from first paint — before the preview
+         script loads and before the first run — so the frame never
+         sits on the page as an unstyled white document. The values
+         are the playground sheet's preview surface in each scheme;
+         a data-theme stamped by the host page (the site's theme,
+         which can differ from the OS scheme) wins over the media
+         query. playground-preview.js takes over on load with the
+         same values. */
+      :root {
+        color-scheme: light dark;
+      }
+      :root[data-theme='light'] {
+        color-scheme: light;
+      }
+      :root[data-theme='dark'] {
+        color-scheme: dark;
+      }
+      body {
+        margin: 0;
+        background: #ffffff;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) body {
+          background: #131518;
+        }
+      }
+      :root[data-theme='dark'] body {
+        background: #131518;
+      }
+    </style>
   </head>
   <body>
     <main id="app"></main>

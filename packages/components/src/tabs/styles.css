@@ -5,6 +5,7 @@ section[variant="tabs"] {
   & > ul {
     display: var(--display-tabs-list);
     flex-direction: var(--flex-direction-tabs-list);
+    flex-wrap: var(--flex-wrap-tabs-list);
     gap: var(--spacing-tabs-list-gap);
     list-style: var(--list-style-tabs-list);
     margin: var(--spacing-tabs-list-margin);

@@ -38,10 +38,13 @@ article[variant="default"], article[variant="floating"] {
    by re-pointing its own tokens — the group supplies the checked input,
    the substrate owns how selection looks. It also reserves the notch:
    the group's control sits inside the card's top-inline corner, so a
-   choice card widens its inline-start padding by the paradigm's notch
-   geometry (control space-5 + gap space-3) and the title clears it. */
+   choice card widens its inline-start padding by the notch geometry —
+   the control's own size token plus a space-3 gap — and the title
+   clears it. The reservation names the control token itself rather
+   than the spacing step it currently equals, so it follows the
+   token if the control is ever resized. */
 label:has(> input) > article[variant="default"], label:has(> input) > article[variant="floating"] {
-  --spacing-card-padding-inline-start: calc(var(--spacing-card-padding) + var(--spacing-5) + var(--spacing-3));
+  --spacing-card-padding-inline-start: calc(var(--spacing-card-padding) + var(--size-choice-group-control) + var(--spacing-3));
 }
 
 label:hover > article[variant="default"], label:hover > article[variant="floating"] {

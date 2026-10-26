@@ -181,6 +181,7 @@
   --justify-space-between: space-between;
   --overflow-hidden: hidden;
   --overflow-auto: auto;
+  --overflow-wrap-anywhere: anywhere;
   --visibility-hidden: hidden;
   --visibility-visible: visible;
   --opacity-none: 0;
@@ -1300,6 +1301,7 @@
   --size-table-head-block-restack: var(--size-1px);
   --display-table-row-restack: var(--display-block);
   --display-table-cell-restack: var(--display-block);
+  --overflow-wrap-table-cell-restack: var(--overflow-wrap-anywhere);
   --size-border-table-cell-block-end-restack: var(--size-border-none);
   --spacing-table-row-padding-block-restack: var(--spacing-1);
   --spacing-table-cell-padding-block-restack: var(--spacing-0);
@@ -1311,6 +1313,7 @@
   --spacing-tabs-gap: var(--spacing-4);
   --display-tabs-list: var(--display-flex);
   --flex-direction-tabs-list: var(--flex-direction-row);
+  --flex-wrap-tabs-list: var(--flex-wrap-wrap);
   --spacing-tabs-list-gap: var(--spacing-1);
   --list-style-tabs-list: var(--list-style-none);
   --spacing-tabs-list-margin: var(--spacing-0);

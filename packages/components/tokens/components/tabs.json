@@ -71,6 +71,24 @@
       }
     }
   },
+  "flex-wrap-tabs-list": {
+    "$value": "{flex-wrap-wrap}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "flex-wrap",
+          "type": null,
+          "item": "tabs-list",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "spacing-tabs-list-gap": {
     "$value": "{spacing-1}",
     "$type": "dimension",

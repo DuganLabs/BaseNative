@@ -80,6 +80,13 @@ section[variant="month"], section[variant="schedule"] {
 section[variant="month"] {
   --text-align-table-cell: var(--text-align-center);
   --spacing-table-cell-padding-block: var(--spacing-3);
+  /* Seven columns must fit the calendar's own width at any embed:
+     at the table's default inline padding the grid's min-content
+     outgrows narrow frames (a 308px specimen frame clipped the
+     Saturday column), so the month grid takes the padding down to
+     the first step — the day numbers and weekday names carry the
+     columns from there. */
+  --spacing-table-cell-padding-inline: var(--spacing-1);
   --size-border-table-cell-inline-end: var(--size-hairline);
   /* A month grid is not a data table — it keeps its rows at every
      width, so the calendar opts the composed table out of the

@@ -344,6 +344,25 @@ const runStatus = document.getElementById('runStatus');
 let previewReady = false;
 let runHadError = false;
 
+/* The frame follows the page's theme, not the OS's: boot.js stamps
+   data-theme on <html> and the theme toggle can set it against the
+   OS scheme. Post it on ready and whenever it changes. */
+function sendTheme() {
+  if (!previewReady || !preview.contentWindow) return;
+  preview.contentWindow.postMessage(
+    {
+      source: 'bn-playground-host',
+      type: 'theme',
+      payload: { theme: document.documentElement.getAttribute('data-theme') },
+    },
+    window.location.origin,
+  );
+}
+new MutationObserver(sendTheme).observe(document.documentElement, {
+  attributes: true,
+  attributeFilter: ['data-theme'],
+});
+
 function run() {
   if (!previewReady || !preview.contentWindow) return;
   runHadError = false;
@@ -367,6 +386,7 @@ window.addEventListener('message', (e) => {
   const p = d.payload || {};
   if (d.type === 'ready') {
     previewReady = true;
+    sendTheme();
     run();
   } else if (d.type === 'console') {
     const tag = p.level === 'log' ? 'LOG' : p.level.toUpperCase();

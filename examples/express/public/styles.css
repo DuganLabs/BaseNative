@@ -1740,6 +1740,13 @@
   [data-task-item] {
     align-items: center;
   }
+  /* The app column is narrow inside its frame: the row keeps the
+     list's block padding but takes the inline padding down a step,
+     and the actions group compacts, so the title keeps the share
+     the layout promises it instead of stacking a word per line. */
+  [data-hydrate] ul[role='list'] li[data-task-item] {
+    padding-inline: var(--space-md);
+  }
   [data-task-title] {
     min-inline-size: 0;
     flex: 1 1 auto;
@@ -1748,12 +1755,12 @@
     margin-inline-start: auto;
     display: inline-flex;
     align-items: center;
-    gap: var(--space-md);
+    gap: var(--space-sm);
     flex: 0 0 auto;
   }
   [data-task-item] button[data-variant='danger'] {
-    min-inline-size: 3rem;
-    padding-inline: var(--space-sm);
+    min-inline-size: 2.25rem;
+    padding-inline: var(--space-xs);
     box-shadow: none;
   }
   [data-task-empty] {
@@ -2266,6 +2273,15 @@
     backdrop-filter: blur(8px);
     background: color-mix(in srgb, var(--surface-1) 92%, transparent);
 
+    /* The list steps aside: the label and the links are the nav's
+       flex items, so the pills lay out as one wrapping row. (With
+       the list in the flow the bar rendered as a bulleted column
+       beside a vertically-centred label.) */
+    & > ul,
+    & > ul > li {
+      display: contents;
+    }
+
     & a {
       font-family: var(--font-family);
       font-stretch: var(--font-mono);
@@ -2311,7 +2327,8 @@
   }
 
   /* -- /components category section -- */
-  [data-bn-component-category] {
+  [data-bn-component-category],
+  [data-bn-component-app-demo] {
     margin-block-end: var(--bn-section-space, 12px);
     scroll-margin-block-start: var(--bn-section-space, 12px);
   }
@@ -2540,6 +2557,21 @@
     & > figcaption > :is(h1, h2) {
       font-stretch: var(--font-serif);
     }
+  }
+
+  /* A hero that heads a page article heads a stack, not a card inside
+     a card: ios.css dresses every article as a padded grouped
+     surface, so a route hero rendered inside one stacked the page
+     gutter, the article's padding and its own padding inline (text
+     at 57px on a 16px gutter — home and the old tasks page). The
+     hero stands down the same way the meta-strip hero above does:
+     transparent, borderless, no inline padding of its own, so its
+     text takes the article's text line. Direct children only —
+     heroes staged inside component previews keep their card. */
+  main > article > figure[variant] {
+    --color-bkg-hero: transparent;
+    --size-border-hero: 0;
+    --spacing-hero-padding-inline: 0;
   }
 
   /* The meta block is a spec strip, not a section: three short facts.
@@ -2827,7 +2859,23 @@
         [data-bn='layout-grid'],
         [data-bn='progress'],
         [data-bn='skeleton'],
-        section[data-demo-display]
+        section[data-demo-display],
+        /* The trinity specimens carry no data-bn name — element and
+           variant are the address now. These roots are the same
+           block-level demos under their trinity identities; without
+           them the card, the empty state and the choice group still
+           shrink-wrapped to their longest word (a 42px card, a 32px
+           empty state) while their legacy-named siblings filled. */
+        article[variant='default'],
+        article[variant='floating'],
+        article[variant='empty-state'],
+        fieldset[variant='choice-group'],
+        section[variant='month'],
+        section[variant='schedule'],
+        section[variant='tabs'],
+        ul[variant='default'],
+        nav[variant='breadcrumb'],
+        nav[variant='pagination']
       ) {
       flex: 1 1 100%;
       min-inline-size: 0;
@@ -2921,7 +2969,10 @@
   /* Pager between sibling component pages. */
   [data-bn-component-pager] {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    /* minmax(0, …) lets the side columns shrink below a long link's
+       min-content; plain 1fr columns grow instead, and the next link
+       pokes past the pager's right edge. */
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
     gap: var(--space-md);
     padding-block: var(--space-xl);
@@ -3650,11 +3701,14 @@
     }
   }
 
-  /* Phone: one compact sticky search. Chips scroll in a row. Section indexes
-     stay in the scroll, so they do not stack under the search as a second bar.
-     The bar keeps the surface treatment it has at desktop — its padding
-     and its offset from the top edge are the design, not a desktop extra:
-     squeezed to 4px and flush to the top it read as a broken strip. */
+  /* Phone: one compact sticky search. Section indexes stay in the
+     scroll, so they do not stack under the search as a second bar.
+     The bar keeps the surface treatment it has at desktop — its
+     padding and its offset from the top edge are the design, not a
+     desktop extra: squeezed to 4px and flush to the top it read as
+     a broken strip. The chips wrap inside it (the base rule) — a
+     single scrolling row cut the end chips mid-word at the box edge,
+     which read as overflow. */
   @media (max-width: 767px) {
     [data-bn-component-search] {
       gap: var(--space-xs);
@@ -3664,18 +3718,6 @@
     [data-bn-component-search] input[type='search'] {
       min-block-size: 2.25rem;
       padding: var(--space-xs) var(--space-sm);
-    }
-
-    [data-bn-component-filters] {
-      flex-wrap: nowrap;
-      min-inline-size: 0;
-      max-inline-size: 100%;
-      overflow-x: auto;
-      overscroll-behavior-x: contain;
-    }
-
-    [data-bn-component-filters] button {
-      flex: none;
     }
 
     [data-bn-docs-toc] {
