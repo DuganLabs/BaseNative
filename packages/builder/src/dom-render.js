@@ -41,13 +41,21 @@ export function renderNodeToElement(doc, node, palette) {
   }
 
   // Same attribute contract as codegen.js, so the canvas preview is styled by
-  // the same [data-bn] rules as the exported markup.
+  // the same rules as the exported markup. Catalog components address their
+  // root by variant, never data-bn; the legacy kit defs still stamp data-bn.
+  if (def?.catalog && def?.variant) {
+    el.setAttribute('variant', def.variant);
+  }
   if (def?.bn && node.props['data-bn'] == null) {
     el.setAttribute('data-bn', def.bn);
   }
 
+  const skipAttrs = new Set(
+    (def?.props || []).filter((p) => p.attr === false).map((p) => p.name),
+  );
   for (const key of Object.keys(node.props)) {
     if (key === 'text' || key === 'level') continue;
+    if (skipAttrs.has(key)) continue;
     const value = node.props[key];
     if (value === false || value == null) continue;
     const name = def?.dataProps?.includes(key) ? `data-${attrName(key)}` : key;
@@ -70,10 +78,19 @@ export function renderNodeToElement(doc, node, palette) {
   return el;
 }
 
+const EMPTY_ICON =
+  '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" ' +
+  'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
+  '<rect x="7" y="7" width="34" height="34" rx="8" stroke-dasharray="5 5"/>' +
+  '<path d="M24 15v11"/><path d="m19 21 5 5 5-5"/><path d="M16 33h16"/></svg>';
+
 export function renderEmptyPlaceholder(doc, message) {
   const el = doc.createElement('div');
   el.className = 'bn-builder__empty';
   el.setAttribute('role', 'note');
-  el.innerHTML = `<p>${escapeHtml(message)}</p>`;
+  el.innerHTML =
+    EMPTY_ICON +
+    `<p class="bn-builder__empty-title">${escapeHtml(message)}</p>` +
+    '<p class="bn-builder__empty-hint">or click a component in the palette to add it here</p>';
   return el;
 }

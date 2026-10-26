@@ -25,10 +25,10 @@ function renderPaletteHTML(palette, query) {
         .map((def) => {
           return (
             `<li class="bn-palette__item">` +
-            `<div role="button" tabindex="0" draggable="true" data-bn-palette-type="${escapeHtml(def.type)}" class="bn-palette__btn" aria-label="Add ${escapeHtml(def.label)}">` +
+            `<button type="button" draggable="true" data-bn="bn-palette-item" data-bn-palette-type="${escapeHtml(def.type)}" class="bn-palette__btn" aria-label="Add ${escapeHtml(def.label)}">` +
             `<span class="bn-palette__label">${escapeHtml(def.label)}</span>` +
             `<span class="bn-palette__type">${escapeHtml(def.type)}</span>` +
-            `</div>` +
+            `</button>` +
             `</li>`
           );
         })
@@ -99,17 +99,11 @@ export class BnBuilderPalette extends HTMLElement {
       e.dataTransfer.effectAllowed = 'copy';
     });
 
+    // Palette items are real buttons: Enter/Space activation arrives as
+    // a click, so no keydown shim is needed (or wanted — it double-adds).
     this.addEventListener('click', (e) => {
       const btn = e.target.closest('[data-bn-palette-type]');
       if (!btn) return;
-      this._dispatchAdd(btn.dataset.bnPaletteType);
-    });
-
-    this.addEventListener('keydown', (e) => {
-      if (e.key !== 'Enter' && e.key !== ' ') return;
-      const btn = e.target.closest('[data-bn-palette-type]');
-      if (!btn) return;
-      e.preventDefault();
       this._dispatchAdd(btn.dataset.bnPaletteType);
     });
   }

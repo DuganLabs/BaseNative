@@ -136,63 +136,93 @@ describe('generateBaseNative', () => {
   });
 });
 
-describe('exported markup carries the @basenative/components attribute contract', () => {
-  // components.css is keyed on data-bn="<token>" and data-<prop>; a bare
-  // `variant="primary"` matches no rule in the project, so this is what
-  // decides whether the export is styled at all.
-  test('a button built from the palette defaults exports data-bn and data-variant', () => {
+describe('exported markup carries the catalog attribute contract', () => {
+  // The trinity sheet is keyed on element + variant; a `data-bn="button"`
+  // matches no rule in it, so this is what decides whether an export of a
+  // catalog component is styled at all. The pins below compare against the
+  // real catalog renders (the loader + the server renderer), so a catalog
+  // change that alters a component's output breaks this suite instead of
+  // silently drifting the builder away from the design system.
+  const normalize = (html) =>
+    html.replace(/\s+/g, ' ').replace(/>\s+/g, '>').replace(/\s+</g, '<').trim();
+
+  async function renderCatalog(name, props) {
+    const { loadRegistry, renderComponent } = await import('../../components/src/loader.js');
+    const { render } = await import('../../server/src/render.js');
+    const registry = await loadRegistry();
+    return renderComponent(registry, render, name, props).html;
+  }
+
+  test('a button built from the palette defaults exports the catalog addressing', () => {
     const s = createBuilderState();
     const palette = defaultPalette();
     s.addNode(null, { type: 'button', props: { ...palette.get('button').defaults } });
     const html = generateBaseNative(s, { palette });
-    assert.match(html, /data-bn="button"/);
-    assert.match(html, /data-variant="primary"/);
-    assert.match(html, /data-size="default"/);
-    assert.doesNotMatch(html, /<button[^>]*\svariant=/);
-    assert.doesNotMatch(html, /<button[^>]*\ssize=/);
+    assert.match(html, /<button variant="primary" type="button">Click me<\/button>/);
+    assert.doesNotMatch(html, /data-bn=/);
+    assert.doesNotMatch(html, /data-variant=/);
+    assert.doesNotMatch(html, /size=/);
   });
 
-  test('the exported button carries every data-* attribute the real renderButton emits', async () => {
-    const { renderButton } = await import('../../components/src/button.js');
+  test('the exported button is the real catalog button render', async () => {
     const s = createBuilderState();
     const palette = defaultPalette();
     s.addNode(null, { type: 'button', props: { ...palette.get('button').defaults } });
     const html = generateBaseNative(s, { palette });
-    const real = renderButton('Click me', { variant: 'primary' });
-    const dataAttrs = real.match(/data-[a-z-]+="[^"]*"/g);
-    assert.ok(dataAttrs.length >= 3, `renderButton should emit data-* attributes, got ${real}`);
-    for (const attr of dataAttrs) {
-      assert.ok(html.includes(attr), `export is missing ${attr} that renderButton emits:\n${html}`);
-    }
+    const real = await renderCatalog('button', { label: 'Click me', variant: 'primary' });
+    assert.equal(normalize(html), normalize(real));
   });
 
-  test('a user-supplied data-bn prop wins over the palette token', () => {
+  test('the exported hero is the real catalog hero render', async () => {
     const s = createBuilderState();
     const palette = defaultPalette();
-    s.addNode(null, { type: 'button', props: { text: 'Go', 'data-bn': 'custom' } });
+    s.addNode(null, { type: 'hero', props: { ...palette.get('hero').defaults } });
     const html = generateBaseNative(s, { palette });
-    assert.match(html, /data-bn="custom"/);
-    assert.equal((html.match(/data-bn=/g) || []).length, 1);
+    const real = await renderCatalog('hero', {
+      eyebrow: 'Organism',
+      title: 'Title',
+      lede: 'Glass header. Actions sit under the copy.',
+    });
+    assert.equal(normalize(html), normalize(real));
   });
 
-  test('input, textarea and checkbox export their data-bn token', () => {
+  test('a user-supplied data-bn prop wins over the palette token, on a legacy def', () => {
+    const s = createBuilderState();
+    const palette = defaultPalette();
+    s.addNode(null, { type: 'window', props: { text: 'Go', 'data-bn': 'custom' } });
+    const html = generateBaseNative(s, { palette });
+    assert.match(html, /<section data-bn="custom">/);
+    assert.doesNotMatch(html, /data-bn="bn-window"/);
+  });
+
+  test('input and textarea export their root variant; checkbox its label composition', () => {
     const s = createBuilderState();
     const palette = defaultPalette();
     for (const type of ['input', 'textarea', 'checkbox']) {
-      s.addNode(null, { type, props: { ...palette.get(type).defaults, name: type } });
+      s.addNode(null, { type, props: { ...palette.get(type).defaults } });
     }
     const html = generateBaseNative(s, { palette });
-    assert.match(html, /<input data-bn="input"/);
-    assert.match(html, /<textarea data-bn="textarea"/);
-    assert.match(html, /<input data-bn="checkbox"/);
+    assert.match(html, /<input variant="default"/);
+    assert.match(html, /<textarea variant="default"/);
+    assert.match(html, /<label><input variant="checkbox" type="checkbox"> Label<\/label>/);
+    assert.doesNotMatch(html, /data-bn=/);
   });
 
-  test('elements with no component counterpart get no data-bn', () => {
+  test('elements with no component counterpart get no data-bn and no variant', () => {
     const s = createBuilderState();
     const palette = defaultPalette();
     s.addNode(null, { type: 'heading', props: { level: 'h1', text: 'Hi' } });
-    s.addNode(null, { type: 'link', props: { href: '/', text: 'Home' } });
+    s.addNode(null, { type: 'text', props: { text: 'Body' } });
     const html = generateBaseNative(s, { palette });
     assert.doesNotMatch(html, /data-bn=/);
+    assert.doesNotMatch(html, /variant=/);
+  });
+
+  test('a legacy organism still exports its data-bn token', () => {
+    const s = createBuilderState();
+    const palette = defaultPalette();
+    s.addNode(null, { type: 'window', props: { ...palette.get('window').defaults } });
+    const html = generateBaseNative(s, { palette });
+    assert.match(html, /data-bn="bn-window"/);
   });
 });

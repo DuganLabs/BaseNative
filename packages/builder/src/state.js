@@ -102,6 +102,13 @@ export function createBuilderState(options = {}) {
     const draft = clone(before);
     const result = mutator(draft);
     if (result === false) return false;
+    // A mutation that leaves the tree unchanged (the inspector's change
+    // event re-committing the value its input event already set, a
+    // same-value update) must not record a history step: undo would
+    // land on an identical snapshot and look broken.
+    if (JSON.stringify(draft) === JSON.stringify(before)) {
+      return result == null ? true : result;
+    }
     batch(() => {
       past.set((p) => {
         const next = [...p, before];

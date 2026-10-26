@@ -56,9 +56,10 @@ Render the admin user-management list with search and per-row role controls.
 - use instead of: a hand-rolled <div> reimplementation of <bn-builder-tree>
 
 ### `renderInspector(state, palette)`
-`packages/builder/src/inspector.js` · emits `<header>`
+`packages/builder/src/inspector.js` · emits `<button data-bn="bn-inspector-action">`
 - variants: none declared
-- use instead of: a bare <header> with your own classes
+- **unstyled**: no stylesheet declares `data-bn="bn-inspector-action"`
+- use instead of: a bare <button> with your own classes, or literal <button data-bn="bn-inspector-action"> markup
 
 ### `renderNodeToElement(doc, node, palette)`
 `packages/builder/src/dom-render.js`
@@ -66,11 +67,12 @@ Render the admin user-management list with search and per-row role controls.
 - use instead of: hand-written markup for this element
 
 ### `renderPaletteHTML(palette, query)`
-`packages/builder/src/palette-element.js` · emits `<li>`
+`packages/builder/src/palette-element.js` · emits `<button data-bn="bn-palette-item">`
 - variants: none declared
-- use instead of: a bare <li> with your own classes
+- **unstyled**: no stylesheet declares `data-bn="bn-palette-item"`
+- use instead of: a bare <button> with your own classes, or literal <button data-bn="bn-palette-item"> markup
 
-### `renderTreeView(state)`
+### `renderTreeView(state, options)`
 `packages/builder/src/tree-view.js` · emits `<ul>`
 - variants: none declared
 - use instead of: a bare <ul> with your own classes

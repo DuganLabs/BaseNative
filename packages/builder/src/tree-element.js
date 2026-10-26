@@ -8,6 +8,8 @@ export class BnBuilderTree extends HTMLElement {
     super();
     this.state = null;
     this._effect = null;
+    this._collapsed = new Set();
+    this._lastSelection = undefined;
   }
 
   connectedCallback() {
@@ -49,11 +51,44 @@ export class BnBuilderTree extends HTMLElement {
       this.innerHTML = '';
       return;
     }
-    this.innerHTML = renderTreeView(this.state);
+    this.innerHTML = renderTreeView(this.state, { collapsed: this._collapsed });
+    // When the selection changes anywhere else (canvas click, undo,
+    // inspector), keep the selected row visible in the Layers pane:
+    // reveal it through any collapsed ancestors, then scroll it in.
+    const selectedId = this.state.selection.peek
+      ? this.state.selection.peek()
+      : this.state.selection();
+    if (selectedId !== this._lastSelection) {
+      this._lastSelection = selectedId;
+      if (selectedId) {
+        let row = this.querySelector(`[data-bn-tree-id="${selectedId}"]`);
+        if (!row && typeof this.state.getPath === 'function') {
+          let revealed = false;
+          for (const ancestorId of this.state.getPath(selectedId).slice(0, -1)) {
+            if (this._collapsed.delete(ancestorId)) revealed = true;
+          }
+          if (revealed) {
+            this.innerHTML = renderTreeView(this.state, { collapsed: this._collapsed });
+            row = this.querySelector(`[data-bn-tree-id="${selectedId}"]`);
+          }
+        }
+        if (row && typeof row.scrollIntoView === 'function') {
+          row.scrollIntoView({ block: 'nearest' });
+        }
+      }
+    }
   }
 
   _wire() {
     this.addEventListener('click', (e) => {
+      const toggle = e.target.closest('[data-bn-tree-toggle]');
+      if (toggle && this.state) {
+        const id = toggle.dataset.bnTreeToggle;
+        if (this._collapsed.has(id)) this._collapsed.delete(id);
+        else this._collapsed.add(id);
+        this._render();
+        return;
+      }
       const btn = e.target.closest('[data-bn-tree-select]');
       if (!btn || !this.state) return;
       this.state.select(btn.dataset.bnTreeSelect);

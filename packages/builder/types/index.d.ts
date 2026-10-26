@@ -28,6 +28,12 @@ export interface ComponentPropSchema {
   default?: unknown;
   options?: string[];
   description?: string;
+  /**
+   * When false, the prop is consumed by the preview composition and never
+   * serialised as an attribute on the rendered root (checkbox: `checked`
+   * belongs to the inner input the preview composes). Defaults to true.
+   */
+  attr?: boolean;
 }
 
 export interface ComponentDefinition {
@@ -47,17 +53,37 @@ export interface ComponentDefinition {
   /** Optional ARIA role assigned to the rendered element. */
   role?: string;
   /**
-   * The `data-bn` token the matching @basenative/components render function
-   * emits (`'button'`, `'input'`, …). Both the canvas and the code generator
-   * add `data-bn="<bn>"` to the element, which is what the library's CSS
-   * selects on. Omit for plain HTML elements with no component.
+   * The `data-bn` token the matching legacy @basenative/components render
+   * function emits (`'button'`, `'input'`, …). Both the canvas and the code
+   * generator add `data-bn="<bn>"` to the element, which is what the legacy
+   * library's CSS selects on. Omit for plain HTML elements with no component,
+   * and for catalog components (see `catalog`).
    */
   bn?: string;
   /**
    * Prop names the component serialises as `data-<name>` rather than as bare
-   * attributes (button: `['variant', 'size']`). Defaults to `[]`.
+   * attributes (legacy kit). Defaults to `[]`.
    */
   dataProps?: string[];
+  /**
+   * The Holy Trinity catalog component this definition emits
+   * (`'hero'`, `'button'`, …). Catalog defs never stamp `data-bn`: the
+   * trinity sheet selects on element + variant. Omit for plain HTML
+   * elements and for legacy kit defs (see `bn`).
+   */
+  catalog?: string;
+  /**
+   * The variant stamped on the rendered root for a catalog def whose
+   * variant is fixed (hero: `'stacked'`, input: `'default'`). For defs
+   * whose variant is a prop, see `variantProps`.
+   */
+  variant?: string;
+  /**
+   * Prop names a catalog component serialises as the bare `variant`
+   * attribute (button: `['variant']`). Each must be a declared prop with a
+   * default. Defaults to `[]`.
+   */
+  variantProps?: string[];
 }
 
 export interface ComponentPalette {

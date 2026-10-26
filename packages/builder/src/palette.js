@@ -18,6 +18,9 @@ export function createPalette() {
       defaultContent: spec.defaultContent,
       role: spec.role,
       bn: spec.bn,
+      catalog: spec.catalog,
+      variant: spec.variant,
+      variantProps: Array.isArray(spec.variantProps) ? spec.variantProps.slice() : [],
       dataProps: Array.isArray(spec.dataProps) ? spec.dataProps.slice() : [],
       preview: typeof spec.preview === 'function' ? spec.preview : null,
     };
@@ -66,17 +69,23 @@ export function createPalette() {
 function registerOrganisms(palette) {
   const text = (props, fallback) => escapeHtml(props?.text || fallback);
 
+  // Catalog organisms are specimens of the Holy Trinity component they name:
+  // the catalog composes them from props, not from dropped-in children, so
+  // they are not containers. The preview is the component's rendered inner
+  // markup (element + variant addressing, no classes, no data-*), and the
+  // emitters stamp the component's root variant from the def.
   palette.register({
     type: 'hero',
     label: 'Hero',
     category: 'organisms',
-    tag: 'header',
-    bn: 'bn-hero',
-    container: true,
+    tag: 'figure',
+    catalog: 'hero',
+    variant: 'stacked',
+    container: false,
     props: [{ name: 'text', kind: 'string', label: 'Title' }],
     defaults: { text: 'Title' },
     preview(props) {
-      return `<p data-bn="bn-hero-eyebrow">Organism</p><h2>${text(props, 'Title')}</h2><p data-bn="bn-hero-lede">Glass header. Actions sit under the copy.</p>`;
+      return `<figcaption><p>Organism</p><h1>${text(props, 'Title')}</h1><p>Glass header. Actions sit under the copy.</p></figcaption>`;
     },
   });
 
@@ -85,21 +94,13 @@ function registerOrganisms(palette) {
     label: 'List',
     category: 'organisms',
     tag: 'ul',
-    bn: 'bn-list',
-    container: true,
-    props: [
-      { name: 'text', kind: 'string', label: 'First row' },
-      {
-        name: 'data-grouped',
-        kind: 'enum',
-        options: ['true', 'false'],
-        default: 'true',
-        label: 'Grouped',
-      },
-    ],
-    defaults: { text: 'Inbox', 'data-grouped': 'true' },
+    catalog: 'list-group',
+    variant: 'default',
+    container: false,
+    props: [{ name: 'text', kind: 'string', label: 'First row' }],
+    defaults: { text: 'Inbox' },
     preview(props) {
-      return `<li data-bn="bn-list-row"><p data-bn="bn-list-title">${text(props, 'Inbox')}</p><p data-bn="bn-list-detail">Grouped row</p></li><li data-bn="bn-list-row"><p data-bn="bn-list-title">Drafts</p><p data-bn="bn-list-detail">Second row</p></li>`;
+      return `<li>${text(props, 'Inbox')}</li><li>Drafts</li>`;
     },
   });
 
@@ -136,12 +137,13 @@ function registerOrganisms(palette) {
     label: 'Sidebar',
     category: 'organisms',
     tag: 'aside',
-    bn: 'bn-sidebar',
-    container: true,
+    catalog: 'sidebar',
+    variant: 'sidebar',
+    container: false,
     props: [{ name: 'text', kind: 'string', label: 'Section' }],
     defaults: { text: 'Library' },
     preview(props) {
-      return `<nav aria-label="Sidebar"><h2>${text(props, 'Library')}</h2><ul><li><a href="#" aria-current="page">Recents</a></li><li><a href="#">Shared</a></li></ul></nav>`;
+      return `<nav aria-label="Sidebar"><section><h2>${text(props, 'Library')}</h2><ul><li><a href="#" aria-current="page">Recents</a></li><li><a href="#">Shared</a></li></ul></section></nav>`;
     },
   });
 
@@ -163,13 +165,18 @@ function registerOrganisms(palette) {
     type: 'toolbar',
     label: 'Toolbar',
     category: 'organisms',
-    tag: 'header',
-    bn: 'bn-toolbar',
+    tag: 'section',
+    catalog: 'toolbar',
+    variant: 'toolbar',
+    role: 'toolbar',
     container: false,
-    props: [{ name: 'text', kind: 'string', label: 'Label' }],
-    defaults: { text: 'Edit' },
+    props: [
+      { name: 'text', kind: 'string', label: 'First action' },
+      { name: 'aria-label', kind: 'string', label: 'Label' },
+    ],
+    defaults: { text: 'Edit', 'aria-label': 'Toolbar' },
     preview(props) {
-      return `<button type="button">${text(props, 'Edit')}</button><button type="button">Share</button>`;
+      return `<button variant="default" type="button">${text(props, 'Edit')}</button><button variant="ghost" type="button">Share</button>`;
     },
   });
 
@@ -219,13 +226,15 @@ function registerOrganisms(palette) {
     type: 'alert',
     label: 'Alert',
     category: 'organisms',
-    tag: 'section',
-    bn: 'bn-alert',
+    tag: 'aside',
+    catalog: 'alert',
+    variant: 'info',
+    role: 'status',
     container: false,
     props: [{ name: 'text', kind: 'string', label: 'Title' }],
     defaults: { text: 'Save changes?' },
     preview(props) {
-      return `<h2>${text(props, 'Save changes?')}</h2><p>Your edits stay on this page.</p>`;
+      return `<h3>${text(props, 'Save changes?')}</h3><p>Your edits stay on this page.</p>`;
     },
   });
 
@@ -233,13 +242,14 @@ function registerOrganisms(palette) {
     type: 'empty-state',
     label: 'Empty state',
     category: 'organisms',
-    tag: 'section',
-    bn: 'bn-empty-state',
+    tag: 'article',
+    catalog: 'empty-state',
+    variant: 'empty-state',
     container: false,
     props: [{ name: 'text', kind: 'string', label: 'Title' }],
     defaults: { text: 'Nothing here' },
     preview(props) {
-      return `<h2 data-bn="bn-empty-title">${text(props, 'Nothing here')}</h2><p data-bn="bn-empty-description">Add an organism from the palette.</p>`;
+      return `<h3>${text(props, 'Nothing here')}</h3><p>Add an organism from the palette.</p>`;
     },
   });
 
@@ -248,12 +258,13 @@ function registerOrganisms(palette) {
     label: 'Form',
     category: 'organisms',
     tag: 'form',
-    bn: 'bn-form',
-    container: true,
+    catalog: 'form',
+    variant: 'default',
+    container: false,
     props: [{ name: 'text', kind: 'string', label: 'Submit' }],
     defaults: { text: 'Save' },
     preview(props) {
-      return `<label data-bn="bn-field">Name<input data-bn="bn-field-control" type="text" placeholder="Title"></label><button data-bn="bn-button" data-variant="prominent" data-size="large" type="submit">${text(props, 'Save')}</button>`;
+      return `<p variant="default"><label for="builder-form-name">Name</label><input variant="default" id="builder-form-name" type="text" value=""></p><footer><button variant="primary" type="submit">${text(props, 'Save')}</button></footer>`;
     },
   });
 
@@ -262,10 +273,14 @@ function registerOrganisms(palette) {
     label: 'Menu',
     category: 'organisms',
     tag: 'menu',
-    bn: 'bn-menu',
+    catalog: 'dropdown-menu',
+    variant: 'default',
     container: false,
-    props: [{ name: 'text', kind: 'string', label: 'First item' }],
-    defaults: { text: 'New' },
+    props: [
+      { name: 'text', kind: 'string', label: 'First item' },
+      { name: 'aria-label', kind: 'string', label: 'Label' },
+    ],
+    defaults: { text: 'New', 'aria-label': 'Menu' },
     preview(props) {
       return `<li><button type="button">${text(props, 'New')}</button></li><li><button type="button">Open</button></li>`;
     },
@@ -276,12 +291,13 @@ function registerOrganisms(palette) {
     label: 'Search',
     category: 'organisms',
     tag: 'search',
-    bn: 'bn-search',
+    catalog: 'search-field',
+    variant: 'default',
     container: false,
-    props: [{ name: 'text', kind: 'string', label: 'Placeholder' }],
+    props: [{ name: 'text', kind: 'string', label: 'Label' }],
     defaults: { text: 'Search' },
     preview(props) {
-      return `<label>Search</label><input type="search" placeholder="${text(props, 'Search')}">`;
+      return `<label for="builder-search">${text(props, 'Search')}</label><input variant="default" id="builder-search" type="search" name="builder-search" value="">`;
     },
   });
 
@@ -398,23 +414,16 @@ export function defaultPalette() {
     category: 'inputs',
     tag: 'button',
     container: false,
-    bn: 'button',
-    dataProps: ['variant', 'size'],
+    catalog: 'button',
+    variantProps: ['variant'],
     props: [
       { name: 'text', kind: 'string', label: 'Label' },
       {
         name: 'variant',
         kind: 'enum',
-        options: ['primary', 'secondary', 'ghost', 'destructive'],
+        options: ['default', 'primary', 'ghost', 'destructive'],
         default: 'primary',
         label: 'Variant',
-      },
-      {
-        name: 'size',
-        kind: 'enum',
-        options: ['sm', 'default', 'lg'],
-        default: 'default',
-        label: 'Size',
       },
       {
         name: 'type',
@@ -425,7 +434,7 @@ export function defaultPalette() {
       },
       { name: 'disabled', kind: 'boolean', default: false, label: 'Disabled' },
     ],
-    defaults: { text: 'Click me', variant: 'primary', size: 'default', type: 'button' },
+    defaults: { text: 'Click me', variant: 'primary', type: 'button' },
   });
 
   palette.register({
@@ -434,7 +443,8 @@ export function defaultPalette() {
     category: 'inputs',
     tag: 'input',
     container: false,
-    bn: 'input',
+    catalog: 'input',
+    variant: 'default',
     props: [
       {
         name: 'type',
@@ -457,7 +467,8 @@ export function defaultPalette() {
     category: 'inputs',
     tag: 'textarea',
     container: false,
-    bn: 'textarea',
+    catalog: 'textarea',
+    variant: 'default',
     props: [
       { name: 'name', kind: 'string', label: 'Name' },
       { name: 'placeholder', kind: 'string', label: 'Placeholder' },
@@ -471,15 +482,19 @@ export function defaultPalette() {
     type: 'checkbox',
     label: 'Checkbox',
     category: 'inputs',
-    tag: 'input',
+    tag: 'label',
     container: false,
-    bn: 'checkbox',
+    catalog: 'checkbox',
     props: [
-      { name: 'name', kind: 'string', label: 'Name' },
-      { name: 'label', kind: 'string', label: 'Label' },
-      { name: 'checked', kind: 'signal', label: 'Bound state' },
+      { name: 'text', kind: 'string', label: 'Label' },
+      // The catalog checkbox renders its state on the inner input, which the
+      // preview composes — the prop never serialises onto the label root.
+      { name: 'checked', kind: 'boolean', default: false, label: 'Checked', attr: false },
     ],
-    defaults: { type: 'checkbox' },
+    defaults: { text: 'Label' },
+    preview(props) {
+      return `<input variant="checkbox" type="checkbox"${props?.checked ? ' checked="true"' : ''}> ${escapeHtml(props?.text || 'Label')}`;
+    },
   });
 
   palette.register({
@@ -514,9 +529,18 @@ export function defaultPalette() {
     category: 'navigation',
     tag: 'a',
     container: false,
+    catalog: 'button',
+    variantProps: ['variant'],
     props: [
       { name: 'href', kind: 'string', label: 'URL' },
       { name: 'text', kind: 'string', label: 'Text' },
+      {
+        name: 'variant',
+        kind: 'enum',
+        options: ['default', 'primary', 'ghost', 'destructive'],
+        default: 'primary',
+        label: 'Variant',
+      },
       {
         name: 'target',
         kind: 'enum',
@@ -525,7 +549,7 @@ export function defaultPalette() {
         label: 'Target',
       },
     ],
-    defaults: { href: '#', text: 'Link' },
+    defaults: { href: '#', text: 'Link', variant: 'primary' },
   });
 
   palette.register({
