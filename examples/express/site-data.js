@@ -97,14 +97,6 @@ const appNavSpec = [
       '<path d="M5 7h14M5 12h14M5 17h14"/><circle cx="10" cy="7" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="8" cy="17" r="2"/>',
     ),
   },
-  {
-    page: 'tasks',
-    label: 'Tasks',
-    href: '/components/tasks',
-    icon: glyph(
-      '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 5-5.5"/>',
-    ),
-  },
 ];
 
 /** renderAppNav items for the shell, with `current` set from the active page. */
@@ -279,8 +271,8 @@ const TASK_STATUS_VARIANT = { done: 'success', active: 'success', pending: 'defa
 export function getTasksPageContext(tasks, hasApi = true) {
   // The server-rendered list is the catalog list-group: the title in a
   // paragraph, the status as the catalog badge pinned to the row's end.
-  // The client script in tasks.html keeps this list in sync in the same
-  // shape as the signals move.
+  // The client script in components.html (the app demo section) keeps
+  // this list in sync in the same shape as the signals move.
   const taskList = renderTrinity('list-group', {
     items: tasks.length
       ? tasks.map((task) => ({
@@ -297,6 +289,14 @@ export function getTasksPageContext(tasks, hasApi = true) {
     taskList: raw(taskList),
     tasksJson: JSON.stringify(tasks),
     hasApi,
+    // The static build has no API: the demo keeps tasks in the browser
+    // there, and the section says so up front (the dev server, with a
+    // live API, shows no notice).
+    tasksNotice: hasApi
+      ? ''
+      : raw(
+          '<p data-tasks-static-notice>This is the static demo — tasks you add are kept in your browser and are not saved to a server.</p>',
+        ),
   };
 }
 

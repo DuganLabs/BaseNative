@@ -44,7 +44,7 @@ export function renderSiteChrome(activePage = '') {
 
 const FOOTER_GROUPS = [
   { label: 'Product', hrefs: ['/compare', '/components', '/playground', '/builder'] },
-  { label: 'Reference', hrefs: ['/docs', '/ai', '/components/tasks'] },
+  { label: 'Reference', hrefs: ['/docs', '/ai'] },
 ];
 
 /**

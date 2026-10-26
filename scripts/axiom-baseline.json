@@ -15,11 +15,19 @@
     "div-span": 1,
     "control-flow": 0
   },
+  "examples/express/public/playground-preview.html": {
+    "custom-element": 0,
+    "inline-style": 0,
+    "style-write": 0,
+    "css-outside-layer": 7,
+    "div-span": 0,
+    "control-flow": 0
+  },
   "examples/express/public/playground.css": {
     "custom-element": 0,
     "inline-style": 0,
     "style-write": 0,
-    "css-outside-layer": 75,
+    "css-outside-layer": 77,
     "div-span": 0,
     "control-flow": 0
   },
@@ -76,7 +84,7 @@
     "inline-style": 1,
     "style-write": 0,
     "css-outside-layer": 0,
-    "div-span": 2,
+    "div-span": 4,
     "control-flow": 0
   },
   "examples/express/views/docs.html": {
@@ -85,14 +93,6 @@
     "style-write": 0,
     "css-outside-layer": 0,
     "div-span": 0,
-    "control-flow": 0
-  },
-  "examples/express/views/tasks.html": {
-    "custom-element": 0,
-    "inline-style": 0,
-    "style-write": 0,
-    "css-outside-layer": 0,
-    "div-span": 2,
     "control-flow": 0
   }
 }
