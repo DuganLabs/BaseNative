@@ -35,7 +35,8 @@ const glyph = (paths) =>
  * wins), Components (the proof), Docs (how to use it / reference) —
  * then the ones the More sheet carries, also in travel order:
  * AI (the scorecard for models), Playground (try it), Builder (build
- * with it), Tasks (the demo app). The rail reads the same list top to
+ * with it), Tasks (the demo app, living under Components). The rail
+ * reads the same list top to
  * bottom. `page` is the route's activePage key. The phone bar keeps
  * the first four items; AI is the first overflow item so that bar
  * does not change.
@@ -99,7 +100,7 @@ const appNavSpec = [
   {
     page: 'tasks',
     label: 'Tasks',
-    href: '/tasks',
+    href: '/components/tasks',
     icon: glyph(
       '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 5-5.5"/>',
     ),
@@ -271,7 +272,7 @@ export function getHomePageContext() {
   };
 }
 
-// Status → badge variant for the /tasks list, following the page's own
+// Status → badge variant for the tasks app's list, following the page's own
 // status language (the mark[data-status] rules group active with done).
 const TASK_STATUS_VARIANT = { done: 'success', active: 'success', pending: 'default' };
 

@@ -55,6 +55,42 @@
   </section>
 </template>
 
+<section data-bn-component-category id="cat-app-demo" data-bn-category="app-demo">
+  <header data-bn-component-category-head>
+    <h2>App demo</h2>
+    <p>
+      One whole app, composed from the catalog and hydrated with signals — the components
+      working together, live.
+    </p>
+  </header>
+
+  <ul role="list" data-bn-component-grid>
+    <li
+      data-bn-component-card-host
+      data-bn-slug="tasks"
+      data-bn-search="tasks task manager app demo signals hydration api list"
+    >
+      <a href="/components/tasks" data-bn-component-card>
+        <header>
+          <h3>Tasks</h3>
+          <code data-bn-component-tag>app</code>
+        </header>
+        <p>
+          A working task manager: server-rendered, hydrated with signals, talking to a real
+          API on the dev server.
+        </p>
+        <footer>
+          <code data-bn-component-variants>signals · hydration · api</code>
+          <!-- decorative arrow, the same one every catalog card carries -->
+          <span aria-hidden="true">→</span>
+          <!-- the card link's accessible name -->
+          <span data-bn-visually-hidden>Open the Tasks app</span>
+        </footer>
+      </a>
+    </li>
+  </ul>
+</section>
+
 <section data-bn-component-philosophy>
   <h2>Design <em>axioms</em></h2>
   <ol role="list" data-bn-axioms>
