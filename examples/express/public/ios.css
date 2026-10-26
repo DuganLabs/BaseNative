@@ -35,10 +35,20 @@
   --font-size-xl: var(--font-title-2-size);
   --font-size-hero: var(--font-large-title-size);
 
-  /* Radii — the site ladder re-pointed at the iOS ladder. */
-  --radius-sm: var(--radius-sm);
-  --radius-md: var(--radius-lg);
-  --radius-lg: var(--radius-xl);
+  /* Radii — the site ladder re-pointed at the foundation's radius
+     roles: small surfaces take the control radius, cards, bars and
+     panels the container radius, the grouped-card step the 2xl step
+     of the same name, pills the pill step. The lines this replaces
+     pointed the ladder at its own names (a self-reference, and two
+     names the foundation does not define), so every site radius
+     computed to zero and surfaces shipped square. */
+  --radius-xs: var(--size-radius-control);
+  --radius-sm: var(--size-radius-control);
+  --radius-md: var(--size-radius-container);
+  --radius-lg: var(--size-radius-container);
+  --radius-xl: var(--size-radius-container);
+  --radius-2xl: var(--size-radius-2xl);
+  --radius-pill: var(--size-radius-pill);
 
   /* Surfaces & ink — the site tokens, from the iOS semantic colors.
      The site is dark-only (data-theme="dark"), so these resolve to the
@@ -78,8 +88,8 @@
   --bn-color-border-focus: var(--color-tint);
   --bn-color-text-link: var(--color-tint);
   --bn-color-primary-600: var(--color-tint);
-  --bn-radius-container: var(--radius-container);
-  --bn-radius-modal: var(--radius-sheet);
+  --bn-radius-container: var(--size-radius-container);
+  --bn-radius-modal: var(--size-radius-sheet);
 
   /* Liquid Glass for the app nav (bar, rail and More sheet): the
      catalog's material tokens pointed at the package's regular glass —

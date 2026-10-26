@@ -282,7 +282,7 @@ export const siteRoutes = [
     hero: {
       eyebrow: 'Playground',
       titleHtml: 'Signals <em>Playground</em>',
-      lede: 'Experiment with reactive signals, computed values, and live DOM updates — all running client-side with zero build tools.',
+      lede: 'A CodePen for BaseNative: edit the template, the CSS and the view model, and watch the real runtime hydrate it — no build step, nothing saved, reload resets.',
     },
   },
   {

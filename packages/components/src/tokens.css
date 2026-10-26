@@ -309,6 +309,7 @@
   --font-alert-body-size: var(--font-callout-size);
   --font-alert-body-leading: var(--font-callout-leading);
   --spacing-alert-body-margin: var(--spacing-0);
+  --align-app-bar-menu-content: var(--align-start);
   --align-app-bar-tab: var(--align-center);
   --border-style-app-bar-block-start: var(--border-style-solid);
   --border-style-app-bar-menu: var(--border-style-solid);
@@ -371,6 +372,7 @@
   --spacing-app-shell-main-padding-block-end-rail: var(--spacing-6);
   --spacing-app-shell-main-padding-block-start: var(--spacing-6);
   --spacing-app-shell-main-padding-inline: var(--spacing-6);
+  --spacing-app-shell-main-padding-inline-phone: var(--spacing-4);
   --display-avatar: var(--display-inline-flex);
   --align-avatar: var(--align-center);
   --justify-avatar: var(--justify-center);

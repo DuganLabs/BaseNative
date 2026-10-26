@@ -1,4 +1,22 @@
 {
+  "align-app-bar-menu-content": {
+    "$value": "{align-start}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "align",
+          "type": null,
+          "item": "app-bar-menu",
+          "variant": null,
+          "subitem": "content",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "align-app-bar-tab": {
     "$value": "{align-center}",
     "$type": "string",

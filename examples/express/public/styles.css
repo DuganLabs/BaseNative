@@ -150,6 +150,16 @@
     --shadow-btn: 0 0 16px -4px var(--accent-glow-strong);
     --shadow-input: 0 0 0 3px var(--accent-glow);
 
+    /* Popovers — the floating-surface tokens the legacy popover rules
+       read. Restored: the definitions were dropped in a pilot-era
+       cleanup while the rules that consume them stayed, so every
+       legacy popover surface rendered without its background, border,
+       radius, or shadow. The radius rides the site ladder. */
+    --popover-bg: var(--surface-2);
+    --popover-border: var(--border-accent);
+    --popover-shadow: 0 8px 32px -8px #000a;
+    --popover-radius: var(--radius-md);
+
     /* Status backgrounds */
     --status-active-bg: #c3e88d18;
     --status-idle-bg: #e8920a18;
@@ -3641,13 +3651,14 @@
   }
 
   /* Phone: one compact sticky search. Chips scroll in a row. Section indexes
-     stay in the scroll, so they do not stack under the search as a second bar. */
+     stay in the scroll, so they do not stack under the search as a second bar.
+     The bar keeps the surface treatment it has at desktop — its padding
+     and its offset from the top edge are the design, not a desktop extra:
+     squeezed to 4px and flush to the top it read as a broken strip. */
   @media (max-width: 767px) {
     [data-bn-component-search] {
       gap: var(--space-xs);
       margin-block-end: var(--bn-section-space, 12px);
-      padding: var(--space-xs);
-      inset-block-start: 0;
     }
 
     [data-bn-component-search] input[type='search'] {
