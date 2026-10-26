@@ -1,3 +1,101 @@
+// ../../packages/runtime/src/devtools.js
+var devtoolsState = {
+  signals: /* @__PURE__ */ new Map(),
+  effects: /* @__PURE__ */ new Map(),
+  hydrations: [],
+  enabled: false
+};
+var nextSignalId = 1;
+var nextEffectId = 1;
+var signalIds = /* @__PURE__ */ new WeakMap();
+var effectIds = /* @__PURE__ */ new WeakMap();
+function enableDevtools() {
+  devtoolsState.enabled = true;
+  if (typeof globalThis !== "undefined") {
+    globalThis.__BASENATIVE_DEVTOOLS__ = {
+      getSignals: () => [...devtoolsState.signals.entries()].map(([id, info]) => ({
+        id,
+        label: info.label,
+        value: info.accessor(),
+        subscriberCount: info.subscriberCount?.() ?? 0
+      })),
+      getEffects: () => [...devtoolsState.effects.entries()].map(([id, info]) => ({
+        id,
+        label: info.label,
+        disposed: info.disposed?.() ?? false
+      })),
+      getHydrations: () => [...devtoolsState.hydrations],
+      getState: () => ({ ...devtoolsState, signalCount: devtoolsState.signals.size, effectCount: devtoolsState.effects.size })
+    };
+  }
+}
+function registerTracked(registry2, ids, key, label, prefix, extra, mintId) {
+  const existing = ids.get(key);
+  if (existing !== void 0) {
+    const info = registry2.get(existing);
+    if (info) {
+      if (label) info.label = label;
+      if (extra) {
+        for (const k of Object.keys(extra)) {
+          if (extra[k] !== void 0) info[k] = extra[k];
+        }
+      }
+    }
+    return existing;
+  }
+  const id = mintId();
+  ids.set(key, id);
+  registry2.set(id, { label: label || `${prefix}_${id}`, ...extra });
+  return id;
+}
+function trackSignal(accessor, label, subscriberCount) {
+  if (!devtoolsState.enabled) return;
+  return registerTracked(
+    devtoolsState.signals,
+    signalIds,
+    accessor,
+    label,
+    "signal",
+    { accessor, subscriberCount },
+    () => nextSignalId++
+  );
+}
+function trackEffect(handle, label, disposed) {
+  if (!devtoolsState.enabled) return;
+  return registerTracked(
+    devtoolsState.effects,
+    effectIds,
+    handle,
+    label,
+    "effect",
+    { disposed },
+    () => nextEffectId++
+  );
+}
+function recordHydration(root, details = {}) {
+  if (!devtoolsState.enabled) return;
+  devtoolsState.hydrations.push({
+    timestamp: Date.now(),
+    root: root?.tagName || "unknown",
+    directivesProcessed: details.directivesProcessed || 0,
+    duration: details.duration || 0
+  });
+}
+function disableDevtools() {
+  devtoolsState.enabled = false;
+  devtoolsState.signals.clear();
+  devtoolsState.effects.clear();
+  devtoolsState.hydrations = [];
+  signalIds = /* @__PURE__ */ new WeakMap();
+  effectIds = /* @__PURE__ */ new WeakMap();
+  if (typeof globalThis !== "undefined") {
+    delete globalThis.__BASENATIVE_DEVTOOLS__;
+  }
+}
+function isDevtoolsEnabled() {
+  return devtoolsState.enabled;
+}
+
 // ../../packages/runtime/src/signals.js
 var currentEffect = null;
 var batchDepth = 0;
@@ -84,6 +182,7 @@ function signal(initial) {
     }
   };
   accessor.peek = () => value;
+  trackSignal(accessor, void 0, () => subs.size);
   return accessor;
 }
 function createEffect(fn, computed2) {
@@ -113,6 +212,7 @@ function createEffect(fn, computed2) {
     effectRef.disposed = true;
     cleanupEffect(effectRef);
   };
+  trackEffect(execute, void 0, () => effectRef.disposed);
   execute();
   return execute;
 }
@@ -1474,7 +1574,9 @@ function hydrateDeferred(root, ctx, options) {
 }
 function hydrate(root, ctx, options = {}) {
   const runtimeOptions = createRuntimeOptions(options);
+  const startedAt = Date.now();
   const processed = hydrateChildren(root, ctx, runtimeOptions);
+  recordHydration(root, { directivesProcessed: processed, duration: Date.now() - startedAt });
   const cleanupDeferred = hydrateDeferred(root, ctx, runtimeOptions);
   if (processed === 0) {
     const markerMessage = hasHydrationMarkers(root) ? "hydrate() found server render markers but no template source; this build can diagnose SSR boundaries, but it still recovers by client-side template hydration only" : "hydrate() found no BaseNative template directives in the target root";
@@ -1506,75 +1608,6 @@ function supportsFeature(name, target = globalThis) {
   return Boolean(detectBrowserFeatures(target)[name]);
 }
 var browserFeatures = /* @__PURE__ */ detectBrowserFeatures();
-
-// ../../packages/runtime/src/devtools.js
-var devtoolsState = {
-  signals: /* @__PURE__ */ new Map(),
-  effects: /* @__PURE__ */ new Map(),
-  hydrations: [],
-  enabled: false
-};
-var nextSignalId = 1;
-var nextEffectId = 1;
-function enableDevtools() {
-  devtoolsState.enabled = true;
-  if (typeof globalThis !== "undefined") {
-    globalThis.__BASENATIVE_DEVTOOLS__ = {
-      getSignals: () => [...devtoolsState.signals.entries()].map(([id, info]) => ({
-        id,
-        label: info.label,
-        value: info.accessor(),
-        subscriberCount: info.subscriberCount?.() ?? 0
-      })),
-      getEffects: () => [...devtoolsState.effects.entries()].map(([id, info]) => ({
-        id,
-        label: info.label,
-        disposed: info.disposed?.() ?? false
-      })),
-      getHydrations: () => [...devtoolsState.hydrations],
-      getState: () => ({ ...devtoolsState, signalCount: devtoolsState.signals.size, effectCount: devtoolsState.effects.size })
-    };
-  }
-}
-function trackSignal(accessor, label) {
-  if (!devtoolsState.enabled) return;
-  const id = nextSignalId++;
-  devtoolsState.signals.set(id, {
-    label: label || `signal_${id}`,
-    accessor
-  });
-  return id;
-}
-function trackEffect(handle, label) {
-  if (!devtoolsState.enabled) return;
-  const id = nextEffectId++;
-  devtoolsState.effects.set(id, {
-    label: label || `effect_${id}`,
-    disposed: () => false
-  });
-  return id;
-}
-function recordHydration(root, details = {}) {
-  if (!devtoolsState.enabled) return;
-  devtoolsState.hydrations.push({
-    timestamp: Date.now(),
-    root: root?.tagName || "unknown",
-    directivesProcessed: details.directivesProcessed || 0,
-    duration: details.duration || 0
-  });
-}
-function disableDevtools() {
-  devtoolsState.enabled = false;
-  devtoolsState.signals.clear();
-  devtoolsState.effects.clear();
-  devtoolsState.hydrations = [];
-  if (typeof globalThis !== "undefined") {
-    delete globalThis.__BASENATIVE_DEVTOOLS__;
-  }
-}
-function isDevtoolsEnabled() {
-  return devtoolsState.enabled;
-}
 
 // ../../packages/runtime/src/error-boundary.js
 function createErrorBoundary(options = {}) {
@@ -3404,7 +3437,7 @@ function initAppNav(root, options = {}) {
       if (measured === 0) heldInset = 0;
       else if (textEntryFocused()) heldInset = Math.max(heldInset, measured);
       else heldInset = measured;
-      root.style.setProperty("--bn-app-nav-visual-inset", `${heldInset}px`);
+      root.style.setProperty("--size-app-nav-visual-inset", `${heldInset}px`);
     };
     vv.addEventListener("resize", syncViewportInset);
     vv.addEventListener("scroll", syncViewportInset);
@@ -3487,7 +3520,7 @@ function initAppNav(root, options = {}) {
         vv.removeEventListener("resize", syncViewportInset);
         vv.removeEventListener("scroll", syncViewportInset);
         if (typeof root.style.removeProperty === "function") {
-          root.style.removeProperty("--bn-app-nav-visual-inset");
+          root.style.removeProperty("--size-app-nav-visual-inset");
         }
       }
       if (syncViewportInset) {

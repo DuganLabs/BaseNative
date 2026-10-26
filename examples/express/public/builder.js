@@ -1,3 +1,58 @@
+// ../../packages/runtime/src/devtools.js
+var devtoolsState = {
+  signals: /* @__PURE__ */ new Map(),
+  effects: /* @__PURE__ */ new Map(),
+  hydrations: [],
+  enabled: false
+};
+var nextSignalId = 1;
+var nextEffectId = 1;
+var signalIds = /* @__PURE__ */ new WeakMap();
+var effectIds = /* @__PURE__ */ new WeakMap();
+function registerTracked(registry, ids, key, label, prefix, extra, mintId) {
+  const existing = ids.get(key);
+  if (existing !== void 0) {
+    const info = registry.get(existing);
+    if (info) {
+      if (label) info.label = label;
+      if (extra) {
+        for (const k of Object.keys(extra)) {
+          if (extra[k] !== void 0) info[k] = extra[k];
+        }
+      }
+    }
+    return existing;
+  }
+  const id = mintId();
+  ids.set(key, id);
+  registry.set(id, { label: label || `${prefix}_${id}`, ...extra });
+  return id;
+}
+function trackSignal(accessor, label, subscriberCount) {
+  if (!devtoolsState.enabled) return;
+  return registerTracked(
+    devtoolsState.signals,
+    signalIds,
+    accessor,
+    label,
+    "signal",
+    { accessor, subscriberCount },
+    () => nextSignalId++
+  );
+}
+function trackEffect(handle, label, disposed) {
+  if (!devtoolsState.enabled) return;
+  return registerTracked(
+    devtoolsState.effects,
+    effectIds,
+    handle,
+    label,
+    "effect",
+    { disposed },
+    () => nextEffectId++
+  );
+}
+
 // ../../packages/runtime/src/signals.js
 var currentEffect = null;
 var batchDepth = 0;
@@ -84,6 +139,7 @@ function signal(initial) {
     }
   };
   accessor.peek = () => value;
+  trackSignal(accessor, void 0, () => subs.size);
   return accessor;
 }
 function createEffect(fn, computed2) {
@@ -113,6 +169,7 @@ function createEffect(fn, computed2) {
     effectRef.disposed = true;
     cleanupEffect(effectRef);
   };
+  trackEffect(execute, void 0, () => effectRef.disposed);
   execute();
   return execute;
 }
@@ -214,6 +271,9 @@ function createBuilderState(options = {}) {
     const draft = clone(before);
     const result = mutator(draft);
     if (result === false) return false;
+    if (JSON.stringify(draft) === JSON.stringify(before)) {
+      return result == null ? true : result;
+    }
     batch(() => {
       past.set((p) => {
         const next = [...p, before];
@@ -465,6 +525,9 @@ function createPalette() {
       defaultContent: spec.defaultContent,
       role: spec.role,
       bn: spec.bn,
+      catalog: spec.catalog,
+      variant: spec.variant,
+      variantProps: Array.isArray(spec.variantProps) ? spec.variantProps.slice() : [],
       dataProps: Array.isArray(spec.dataProps) ? spec.dataProps.slice() : [],
       preview: typeof spec.preview === "function" ? spec.preview : null
     };
@@ -503,13 +566,14 @@ function registerOrganisms(palette) {
     type: "hero",
     label: "Hero",
     category: "organisms",
-    tag: "header",
-    bn: "bn-hero",
-    container: true,
+    tag: "figure",
+    catalog: "hero",
+    variant: "stacked",
+    container: false,
     props: [{ name: "text", kind: "string", label: "Title" }],
     defaults: { text: "Title" },
     preview(props) {
-      return `<p data-bn="bn-hero-eyebrow">Organism</p><h2>${text(props, "Title")}</h2><p data-bn="bn-hero-lede">Glass header. Actions sit under the copy.</p>`;
+      return `<figcaption><p>Organism</p><h1>${text(props, "Title")}</h1><p>Glass header. Actions sit under the copy.</p></figcaption>`;
     }
   });
   palette.register({
@@ -517,21 +581,13 @@ function registerOrganisms(palette) {
     label: "List",
     category: "organisms",
     tag: "ul",
-    bn: "bn-list",
-    container: true,
-    props: [
-      { name: "text", kind: "string", label: "First row" },
-      {
-        name: "data-grouped",
-        kind: "enum",
-        options: ["true", "false"],
-        default: "true",
-        label: "Grouped"
-      }
-    ],
-    defaults: { text: "Inbox", "data-grouped": "true" },
+    catalog: "list-group",
+    variant: "default",
+    container: false,
+    props: [{ name: "text", kind: "string", label: "First row" }],
+    defaults: { text: "Inbox" },
     preview(props) {
-      return `<li data-bn="bn-list-row"><p data-bn="bn-list-title">${text(props, "Inbox")}</p><p data-bn="bn-list-detail">Grouped row</p></li><li data-bn="bn-list-row"><p data-bn="bn-list-title">Drafts</p><p data-bn="bn-list-detail">Second row</p></li>`;
+      return `<li>${text(props, "Inbox")}</li><li>Drafts</li>`;
     }
   });
   palette.register({
@@ -565,12 +621,13 @@ function registerOrganisms(palette) {
     label: "Sidebar",
     category: "organisms",
     tag: "aside",
-    bn: "bn-sidebar",
-    container: true,
+    catalog: "sidebar",
+    variant: "sidebar",
+    container: false,
     props: [{ name: "text", kind: "string", label: "Section" }],
     defaults: { text: "Library" },
     preview(props) {
-      return `<nav aria-label="Sidebar"><h2>${text(props, "Library")}</h2><ul><li><a href="#" aria-current="page">Recents</a></li><li><a href="#">Shared</a></li></ul></nav>`;
+      return `<nav aria-label="Sidebar"><section><h2>${text(props, "Library")}</h2><ul><li><a href="#" aria-current="page">Recents</a></li><li><a href="#">Shared</a></li></ul></section></nav>`;
     }
   });
   palette.register({
@@ -590,13 +647,18 @@ function registerOrganisms(palette) {
     type: "toolbar",
     label: "Toolbar",
     category: "organisms",
-    tag: "header",
-    bn: "bn-toolbar",
+    tag: "section",
+    catalog: "toolbar",
+    variant: "toolbar",
+    role: "toolbar",
     container: false,
-    props: [{ name: "text", kind: "string", label: "Label" }],
-    defaults: { text: "Edit" },
+    props: [
+      { name: "text", kind: "string", label: "First action" },
+      { name: "aria-label", kind: "string", label: "Label" }
+    ],
+    defaults: { text: "Edit", "aria-label": "Toolbar" },
     preview(props) {
-      return `<button type="button">${text(props, "Edit")}</button><button type="button">Share</button>`;
+      return `<button variant="default" type="button">${text(props, "Edit")}</button><button variant="ghost" type="button">Share</button>`;
     }
   });
   palette.register({
@@ -642,26 +704,29 @@ function registerOrganisms(palette) {
     type: "alert",
     label: "Alert",
     category: "organisms",
-    tag: "section",
-    bn: "bn-alert",
+    tag: "aside",
+    catalog: "alert",
+    variant: "info",
+    role: "status",
     container: false,
     props: [{ name: "text", kind: "string", label: "Title" }],
     defaults: { text: "Save changes?" },
     preview(props) {
-      return `<h2>${text(props, "Save changes?")}</h2><p>Your edits stay on this page.</p>`;
+      return `<h3>${text(props, "Save changes?")}</h3><p>Your edits stay on this page.</p>`;
     }
   });
   palette.register({
     type: "empty-state",
     label: "Empty state",
     category: "organisms",
-    tag: "section",
-    bn: "bn-empty-state",
+    tag: "article",
+    catalog: "empty-state",
+    variant: "empty-state",
     container: false,
     props: [{ name: "text", kind: "string", label: "Title" }],
     defaults: { text: "Nothing here" },
     preview(props) {
-      return `<h2 data-bn="bn-empty-title">${text(props, "Nothing here")}</h2><p data-bn="bn-empty-description">Add an organism from the palette.</p>`;
+      return `<h3>${text(props, "Nothing here")}</h3><p>Add an organism from the palette.</p>`;
     }
   });
   palette.register({
@@ -669,12 +734,13 @@ function registerOrganisms(palette) {
     label: "Form",
     category: "organisms",
     tag: "form",
-    bn: "bn-form",
-    container: true,
+    catalog: "form",
+    variant: "default",
+    container: false,
     props: [{ name: "text", kind: "string", label: "Submit" }],
     defaults: { text: "Save" },
     preview(props) {
-      return `<label data-bn="bn-field">Name<input data-bn="bn-field-control" type="text" placeholder="Title"></label><button data-bn="bn-button" data-variant="prominent" data-size="large" type="submit">${text(props, "Save")}</button>`;
+      return `<p variant="default"><label for="builder-form-name">Name</label><input variant="default" id="builder-form-name" type="text" value=""></p><footer><button variant="primary" type="submit">${text(props, "Save")}</button></footer>`;
     }
   });
   palette.register({
@@ -682,10 +748,14 @@ function registerOrganisms(palette) {
     label: "Menu",
     category: "organisms",
     tag: "menu",
-    bn: "bn-menu",
+    catalog: "dropdown-menu",
+    variant: "default",
     container: false,
-    props: [{ name: "text", kind: "string", label: "First item" }],
-    defaults: { text: "New" },
+    props: [
+      { name: "text", kind: "string", label: "First item" },
+      { name: "aria-label", kind: "string", label: "Label" }
+    ],
+    defaults: { text: "New", "aria-label": "Menu" },
     preview(props) {
       return `<li><button type="button">${text(props, "New")}</button></li><li><button type="button">Open</button></li>`;
     }
@@ -695,12 +765,13 @@ function registerOrganisms(palette) {
     label: "Search",
     category: "organisms",
     tag: "search",
-    bn: "bn-search",
+    catalog: "search-field",
+    variant: "default",
     container: false,
-    props: [{ name: "text", kind: "string", label: "Placeholder" }],
+    props: [{ name: "text", kind: "string", label: "Label" }],
     defaults: { text: "Search" },
     preview(props) {
-      return `<label>Search</label><input type="search" placeholder="${text(props, "Search")}">`;
+      return `<label for="builder-search">${text(props, "Search")}</label><input variant="default" id="builder-search" type="search" name="builder-search" value="">`;
     }
   });
   palette.register({
@@ -808,23 +879,16 @@ function defaultPalette() {
     category: "inputs",
     tag: "button",
     container: false,
-    bn: "button",
-    dataProps: ["variant", "size"],
+    catalog: "button",
+    variantProps: ["variant"],
     props: [
       { name: "text", kind: "string", label: "Label" },
       {
         name: "variant",
         kind: "enum",
-        options: ["primary", "secondary", "ghost", "destructive"],
+        options: ["default", "primary", "ghost", "destructive"],
         default: "primary",
         label: "Variant"
-      },
-      {
-        name: "size",
-        kind: "enum",
-        options: ["sm", "default", "lg"],
-        default: "default",
-        label: "Size"
       },
       {
         name: "type",
@@ -835,7 +899,7 @@ function defaultPalette() {
       },
       { name: "disabled", kind: "boolean", default: false, label: "Disabled" }
     ],
-    defaults: { text: "Click me", variant: "primary", size: "default", type: "button" }
+    defaults: { text: "Click me", variant: "primary", type: "button" }
   });
   palette.register({
     type: "input",
@@ -843,7 +907,8 @@ function defaultPalette() {
     category: "inputs",
     tag: "input",
     container: false,
-    bn: "input",
+    catalog: "input",
+    variant: "default",
     props: [
       {
         name: "type",
@@ -865,7 +930,8 @@ function defaultPalette() {
     category: "inputs",
     tag: "textarea",
     container: false,
-    bn: "textarea",
+    catalog: "textarea",
+    variant: "default",
     props: [
       { name: "name", kind: "string", label: "Name" },
       { name: "placeholder", kind: "string", label: "Placeholder" },
@@ -878,15 +944,19 @@ function defaultPalette() {
     type: "checkbox",
     label: "Checkbox",
     category: "inputs",
-    tag: "input",
+    tag: "label",
     container: false,
-    bn: "checkbox",
+    catalog: "checkbox",
     props: [
-      { name: "name", kind: "string", label: "Name" },
-      { name: "label", kind: "string", label: "Label" },
-      { name: "checked", kind: "signal", label: "Bound state" }
+      { name: "text", kind: "string", label: "Label" },
+      // The catalog checkbox renders its state on the inner input, which the
+      // preview composes — the prop never serialises onto the label root.
+      { name: "checked", kind: "boolean", default: false, label: "Checked", attr: false }
     ],
-    defaults: { type: "checkbox" }
+    defaults: { text: "Label" },
+    preview(props) {
+      return `<input variant="checkbox" type="checkbox"${props?.checked ? ' checked="true"' : ""}> ${escapeHtml(props?.text || "Label")}`;
+    }
   });
   palette.register({
     type: "label",
@@ -918,9 +988,18 @@ function defaultPalette() {
     category: "navigation",
     tag: "a",
     container: false,
+    catalog: "button",
+    variantProps: ["variant"],
     props: [
       { name: "href", kind: "string", label: "URL" },
       { name: "text", kind: "string", label: "Text" },
+      {
+        name: "variant",
+        kind: "enum",
+        options: ["default", "primary", "ghost", "destructive"],
+        default: "primary",
+        label: "Variant"
+      },
       {
         name: "target",
         kind: "enum",
@@ -929,7 +1008,7 @@ function defaultPalette() {
         label: "Target"
       }
     ],
-    defaults: { href: "#", text: "Link" }
+    defaults: { href: "#", text: "Link", variant: "primary" }
   });
   palette.register({
     type: "image",
@@ -1053,11 +1132,18 @@ function renderNode(node, palette, depth, indent) {
   if (def && def.role && !node.props.role) {
     attrs += renderAttr("role", def.role);
   }
+  if (def && def.catalog && def.variant) {
+    attrs += renderAttr("variant", def.variant);
+  }
   if (def && def.bn && node.props["data-bn"] == null) {
     attrs += renderAttr("data-bn", def.bn);
   }
+  const skipAttrs = new Set(
+    (def?.props || []).filter((p) => p.attr === false).map((p) => p.name)
+  );
   for (const key of Object.keys(node.props)) {
     if (key === "text" || key === "children" || key === "level") continue;
+    if (skipAttrs.has(key)) continue;
     if (node.bindings && node.bindings[key]) continue;
     const value = node.props[key];
     if (def && def.dataProps && def.dataProps.includes(key)) {
@@ -1157,40 +1243,49 @@ function generateBaseNative(state, options = {}) {
 }
 
 // ../../packages/builder/src/tree-view.js
-function renderRow(node, depth, selectedId, hoverId) {
+var CHEVRON = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var NO_COLLAPSED = /* @__PURE__ */ new Set();
+function renderRow(node, depth, selectedId, hoverId, collapsed) {
   const selected = node.id === selectedId;
   const hovered = node.id === hoverId;
+  const hasChildren = !!(node.children && node.children.length);
+  const isCollapsed = hasChildren && collapsed.has(node.id);
   const classes = ["bn-tree__row"];
   if (selected) classes.push("bn-tree__row--selected");
   if (hovered) classes.push("bn-tree__row--hover");
+  if (isCollapsed) classes.push("bn-tree__row--collapsed");
   const indent = "  ".repeat(depth);
   const summary = node.props && typeof node.props.text === "string" ? ` \u2014 ${escapeHtml(node.props.text)}` : "";
   const ariaSelected = selected ? ' aria-selected="true"' : "";
-  const expanded = node.children && node.children.length > 0 ? ' aria-expanded="true"' : "";
-  return `${indent}<li role="treeitem"${ariaSelected}${expanded} data-bn-tree-id="${escapeHtml(node.id)}" class="${classes.join(" ")}"><button type="button" data-bn-tree-select="${escapeHtml(node.id)}" class="bn-tree__label"><span class="bn-tree__type">${escapeHtml(node.type)}</span><span class="bn-tree__summary">${summary}</span></button>`;
+  const expanded = hasChildren ? ` aria-expanded="${isCollapsed ? "false" : "true"}"` : "";
+  const toggle = hasChildren ? `<button type="button" data-bn="bn-tree-toggle" data-bn-tree-toggle="${escapeHtml(node.id)}" class="bn-tree__toggle" aria-label="${isCollapsed ? "Expand" : "Collapse"} ${escapeHtml(node.type)}">${CHEVRON}</button>` : '<span class="bn-tree__toggle" aria-hidden="true"></span>';
+  return `${indent}<li role="treeitem"${ariaSelected}${expanded} data-bn-tree-id="${escapeHtml(node.id)}" class="${classes.join(" ")}">` + toggle + `<button type="button" data-bn="bn-tree-label" data-bn-tree-select="${escapeHtml(node.id)}" class="bn-tree__label"><span class="bn-tree__type">${escapeHtml(node.type)}</span><span class="bn-tree__summary">${summary}</span></button>`;
 }
-function renderChildren(children, depth, selectedId, hoverId) {
+function renderChildren(node, depth, selectedId, hoverId, collapsed) {
+  const children = node.children;
   if (!children || children.length === 0) return "";
+  if (collapsed.has(node.id)) return "";
   const indent = "  ".repeat(depth);
-  const inner = children.map((c) => renderSubtree(c, depth + 1, selectedId, hoverId)).join("\n");
+  const inner = children.map((c) => renderSubtree(c, depth + 1, selectedId, hoverId, collapsed)).join("\n");
   return `
 ${indent}<ul role="group" class="bn-tree__children">
 ${inner}
 ${indent}</ul>`;
 }
-function renderSubtree(node, depth, selectedId, hoverId) {
+function renderSubtree(node, depth, selectedId, hoverId, collapsed) {
   const indent = "  ".repeat(depth);
-  return `${renderRow(node, depth, selectedId, hoverId)}${renderChildren(node.children, depth, selectedId, hoverId)}
+  return `${renderRow(node, depth, selectedId, hoverId, collapsed)}${renderChildren(node, depth, selectedId, hoverId, collapsed)}
 ${indent}</li>`;
 }
-function renderTreeView(state) {
+function renderTreeView(state, options = {}) {
   const tree = state.tree.peek ? state.tree.peek() : state.tree();
   const selectedId = state.selection.peek ? state.selection.peek() : state.selection();
   const hoverId = state.hover.peek ? state.hover.peek() : state.hover();
+  const collapsed = options.collapsed instanceof Set ? options.collapsed : NO_COLLAPSED;
   if (!tree.length) {
-    return '<div class="bn-tree bn-tree--empty" role="tree" aria-label="Component tree"><p class="bn-tree__empty">No components yet. Drag from the palette.</p></div>';
+    return '<div class="bn-tree bn-tree--empty" role="tree" aria-label="Component tree"><p class="bn-tree__empty">Nothing on the canvas yet. Add a component and it will show up here.</p></div>';
   }
-  const items = tree.map((root) => renderSubtree(root, 1, selectedId, hoverId)).join("\n");
+  const items = tree.map((root) => renderSubtree(root, 1, selectedId, hoverId, collapsed)).join("\n");
   return `<ul role="tree" aria-label="Component tree" class="bn-tree">
 ${items}
 </ul>`;
@@ -1200,7 +1295,7 @@ ${items}
 function renderField(nodeId, prop, value, binding) {
   const id = `bn-prop-${nodeId}-${prop.name}`;
   const label = escapeHtml(prop.label || prop.name);
-  const dataAttrs = `data-bn-prop="${escapeHtml(prop.name)}" data-bn-node="${escapeHtml(nodeId)}"`;
+  const dataAttrs = `data-bn="bn-inspector-field" data-bn-prop="${escapeHtml(prop.name)}" data-bn-node="${escapeHtml(nodeId)}"`;
   if (prop.kind === "signal") {
     const ref = binding ? binding.ref : "";
     return `<label class="bn-inspector__field" for="${id}"><span class="bn-inspector__label">${label} <small>(signal)</small></span><input id="${id}" type="text" ${dataAttrs} data-bn-binding="true" placeholder="signalName" value="${escapeHtml(ref)}" class="bn-inspector__input"></label>`;
@@ -1225,7 +1320,7 @@ function renderField(nodeId, prop, value, binding) {
 function renderInspector(state, palette) {
   const selectedId = state.selection.peek ? state.selection.peek() : state.selection();
   if (!selectedId) {
-    return '<aside class="bn-inspector" aria-label="Property inspector"><p class="bn-inspector__empty">Select a component to edit its properties.</p></aside>';
+    return '<aside class="bn-inspector" aria-label="Property inspector"><p class="bn-inspector__empty">Select a component to edit its properties.</p><p class="bn-inspector__empty">Click a component on the canvas to select it \u2014 its properties, duplicate, and remove live here.</p></aside>';
   }
   const node = state.getNode(selectedId);
   if (!node) {
@@ -1237,7 +1332,7 @@ function renderInspector(state, palette) {
     return `<aside class="bn-inspector" aria-label="Property inspector">${heading}<p class="bn-inspector__empty">No editable properties.</p></aside>`;
   }
   const fields = def.props.map((prop) => renderField(node.id, prop, node.props[prop.name], node.bindings[prop.name])).join("\n");
-  const actions = `<footer class="bn-inspector__actions"><button type="button" data-bn-action="duplicate" data-bn-node="${escapeHtml(node.id)}" class="bn-inspector__btn">Duplicate</button><button type="button" data-bn-action="remove" data-bn-node="${escapeHtml(node.id)}" class="bn-inspector__btn bn-inspector__btn--danger">Remove</button></footer>`;
+  const actions = `<footer class="bn-inspector__actions"><button type="button" data-bn="bn-inspector-action" data-bn-action="duplicate" data-bn-node="${escapeHtml(node.id)}" class="bn-inspector__btn">Duplicate</button><button type="button" data-bn="bn-inspector-action" data-bn-action="remove" data-bn-node="${escapeHtml(node.id)}" class="bn-inspector__btn bn-inspector__btn--danger">Remove</button></footer>`;
   return `<aside class="bn-inspector" aria-label="Property inspector">${heading}<form class="bn-inspector__form" data-bn-inspector-form="${escapeHtml(node.id)}">${fields}</form>` + actions + `</aside>`;
 }
 
@@ -1254,7 +1349,7 @@ function renderPaletteHTML(palette, query) {
       if (!q) return true;
       return def.label.toLowerCase().includes(q) || def.type.toLowerCase().includes(q) || def.category.toLowerCase().includes(q);
     }).map((def) => {
-      return `<li class="bn-palette__item"><div role="button" tabindex="0" draggable="true" data-bn-palette-type="${escapeHtml(def.type)}" class="bn-palette__btn" aria-label="Add ${escapeHtml(def.label)}"><span class="bn-palette__label">${escapeHtml(def.label)}</span><span class="bn-palette__type">${escapeHtml(def.type)}</span></div></li>`;
+      return `<li class="bn-palette__item"><button type="button" draggable="true" data-bn="bn-palette-item" data-bn-palette-type="${escapeHtml(def.type)}" class="bn-palette__btn" aria-label="Add ${escapeHtml(def.label)}"><span class="bn-palette__label">${escapeHtml(def.label)}</span><span class="bn-palette__type">${escapeHtml(def.type)}</span></button></li>`;
     }).join("");
     if (!items) return "";
     return `<section class="bn-palette__group" aria-label="${escapeHtml(cat)} components"><h3 class="bn-palette__heading">${escapeHtml(cat)}</h3><ul class="bn-palette__list" role="list">${items}</ul></section>`;
@@ -1304,13 +1399,6 @@ var BnBuilderPalette = class extends HTMLElement {
     this.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-bn-palette-type]");
       if (!btn) return;
-      this._dispatchAdd(btn.dataset.bnPaletteType);
-    });
-    this.addEventListener("keydown", (e) => {
-      if (e.key !== "Enter" && e.key !== " ") return;
-      const btn = e.target.closest("[data-bn-palette-type]");
-      if (!btn) return;
-      e.preventDefault();
       this._dispatchAdd(btn.dataset.bnPaletteType);
     });
   }
@@ -1365,11 +1453,18 @@ function renderNodeToElement(doc, node, palette) {
   if (def?.role && !node.props.role) {
     el.setAttribute("role", def.role);
   }
+  if (def?.catalog && def?.variant) {
+    el.setAttribute("variant", def.variant);
+  }
   if (def?.bn && node.props["data-bn"] == null) {
     el.setAttribute("data-bn", def.bn);
   }
+  const skipAttrs = new Set(
+    (def?.props || []).filter((p) => p.attr === false).map((p) => p.name)
+  );
   for (const key of Object.keys(node.props)) {
     if (key === "text" || key === "level") continue;
+    if (skipAttrs.has(key)) continue;
     const value = node.props[key];
     if (value === false || value == null) continue;
     const name = def?.dataProps?.includes(key) ? `data-${attrName2(key)}` : key;
@@ -1389,11 +1484,12 @@ function renderNodeToElement(doc, node, palette) {
   }
   return el;
 }
+var EMPTY_ICON = '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="7" y="7" width="34" height="34" rx="8" stroke-dasharray="5 5"/><path d="M24 15v11"/><path d="m19 21 5 5 5-5"/><path d="M16 33h16"/></svg>';
 function renderEmptyPlaceholder(doc, message) {
   const el = doc.createElement("div");
   el.className = "bn-builder__empty";
   el.setAttribute("role", "note");
-  el.innerHTML = `<p>${escapeHtml(message)}</p>`;
+  el.innerHTML = EMPTY_ICON + `<p class="bn-builder__empty-title">${escapeHtml(message)}</p><p class="bn-builder__empty-hint">or click a component in the palette to add it here</p>`;
   return el;
 }
 
@@ -1515,8 +1611,18 @@ var BnBuilderCanvas = class extends HTMLElement {
       }
       e.preventDefault();
       e.dataTransfer.dropEffect = isPaletteDrag ? "copy" : "move";
+      this._root.dataset.bnDropActive = "true";
+    });
+    this._root.addEventListener("dragleave", (e) => {
+      if (!this._root.contains(e.relatedTarget)) {
+        delete this._root.dataset.bnDropActive;
+      }
+    });
+    this._root.addEventListener("dragend", () => {
+      delete this._root.dataset.bnDropActive;
     });
     this._root.addEventListener("drop", (e) => {
+      delete this._root.dataset.bnDropActive;
       e.preventDefault();
       const moveId = e.dataTransfer.getData("application/x-bn-node-id");
       const newType = e.dataTransfer.getData("application/x-bn-component-type");
@@ -1582,6 +1688,8 @@ var BnBuilderTree = class extends HTMLElement {
     super();
     this.state = null;
     this._effect = null;
+    this._collapsed = /* @__PURE__ */ new Set();
+    this._lastSelection = void 0;
   }
   connectedCallback() {
     this.style.display = "contents";
@@ -1619,10 +1727,38 @@ var BnBuilderTree = class extends HTMLElement {
       this.innerHTML = "";
       return;
     }
-    this.innerHTML = renderTreeView(this.state);
+    this.innerHTML = renderTreeView(this.state, { collapsed: this._collapsed });
+    const selectedId = this.state.selection.peek ? this.state.selection.peek() : this.state.selection();
+    if (selectedId !== this._lastSelection) {
+      this._lastSelection = selectedId;
+      if (selectedId) {
+        let row = this.querySelector(`[data-bn-tree-id="${selectedId}"]`);
+        if (!row && typeof this.state.getPath === "function") {
+          let revealed = false;
+          for (const ancestorId of this.state.getPath(selectedId).slice(0, -1)) {
+            if (this._collapsed.delete(ancestorId)) revealed = true;
+          }
+          if (revealed) {
+            this.innerHTML = renderTreeView(this.state, { collapsed: this._collapsed });
+            row = this.querySelector(`[data-bn-tree-id="${selectedId}"]`);
+          }
+        }
+        if (row && typeof row.scrollIntoView === "function") {
+          row.scrollIntoView({ block: "nearest" });
+        }
+      }
+    }
   }
   _wire() {
     this.addEventListener("click", (e) => {
+      const toggle = e.target.closest("[data-bn-tree-toggle]");
+      if (toggle && this.state) {
+        const id = toggle.dataset.bnTreeToggle;
+        if (this._collapsed.has(id)) this._collapsed.delete(id);
+        else this._collapsed.add(id);
+        this._render();
+        return;
+      }
       const btn = e.target.closest("[data-bn-tree-select]");
       if (!btn || !this.state) return;
       this.state.select(btn.dataset.bnTreeSelect);
@@ -1741,26 +1877,28 @@ var LAYOUT_HTML = `
     <p class="bn-builder__traffic" aria-hidden="true"><i></i><i></i><i></i></p>
     <h2 class="bn-builder__title">Builder</h2>
     <nav aria-label="Builder actions">
-      <button type="button" data-bn-builder-action="undo" class="bn-builder__btn">Undo</button>
-      <button type="button" data-bn-builder-action="redo" class="bn-builder__btn">Redo</button>
-      <button type="button" data-bn-builder-action="clear" class="bn-builder__btn">Clear</button>
-      <button type="button" data-bn-builder-action="export" class="bn-builder__btn">Export Code</button>
+      <button type="button" data-bn="bn-builder-action" data-bn-builder-action="undo" class="bn-builder__btn" title="Undo (Ctrl+Z)">Undo</button>
+      <button type="button" data-bn="bn-builder-action" data-bn-builder-action="redo" class="bn-builder__btn" title="Redo (Ctrl+Shift+Z)">Redo</button>
+      <button type="button" data-bn="bn-builder-action" data-bn-builder-action="clear" class="bn-builder__btn" title="Remove every component from the canvas">Clear</button>
+      <button type="button" data-bn="bn-builder-action" data-bn-builder-action="export" class="bn-builder__btn" title="Render the canvas as BaseNative source">Export Code</button>
     </nav>
   </header>
   <section class="bn-builder__body" data-bn="bn-window-body">
     <div class="bn-builder__panes">
-      <aside class="bn-builder__pane bn-builder__pane--palette" data-bn="bn-sidebar" aria-label="Organism palette">
-        <h2 class="bn-builder__heading">Organisms</h2>
-        <bn-builder-palette></bn-builder-palette>
-      </aside>
+      <div class="bn-builder__sidebar">
+        <aside class="bn-builder__pane bn-builder__pane--palette" data-bn="bn-sidebar" aria-label="Component palette">
+          <h2 class="bn-builder__heading">Components</h2>
+          <bn-builder-palette></bn-builder-palette>
+        </aside>
+        <aside class="bn-builder__pane bn-builder__pane--layers" aria-label="Layers">
+          <h2 class="bn-builder__heading">Layers</h2>
+          <bn-builder-tree></bn-builder-tree>
+        </aside>
+      </div>
       <section class="bn-builder__pane bn-builder__pane--canvas" aria-label="Canvas">
         <h2 class="bn-builder__heading">Canvas</h2>
         <bn-builder-canvas></bn-builder-canvas>
       </section>
-      <aside class="bn-builder__pane bn-builder__pane--layers" aria-label="Layers">
-        <h2 class="bn-builder__heading">Layers</h2>
-        <bn-builder-tree></bn-builder-tree>
-      </aside>
       <aside class="bn-builder__pane bn-builder__pane--inspector" data-bn="bn-inspector" aria-label="Inspector">
         <h2 class="bn-builder__heading">Inspector</h2>
         <bn-builder-inspector></bn-builder-inspector>
@@ -1794,11 +1932,66 @@ var BnBuilder = class extends HTMLElement {
     if (inspector && inspector.attach) inspector.attach(this.state, this.palette);
     this._wireToolbar();
     this._wirePaletteAdd();
+    this._wireToolbarState();
+    this._centerOnViewport();
+    if (!this._onResize) {
+      this._onResize = () => this._centerOnViewport();
+      window.addEventListener("resize", this._onResize);
+    }
+  }
+  disconnectedCallback() {
+    if (this._toolbarEffect) {
+      this._toolbarEffect.dispose();
+      this._toolbarEffect = null;
+      this._toolbarEffectState = null;
+    }
+    if (this._onResize) {
+      window.removeEventListener("resize", this._onResize);
+      this._onResize = null;
+    }
+  }
+  // The window breaks out of its (narrow) host column to near-viewport
+  // width. The host column is not always viewport-centered (an app
+  // shell rail offsets it), so measure the offset and hand it to CSS:
+  // the breakout then centers on the viewport, not the column, and
+  // never clips off the left edge. The shift is set on the host so the
+  // export panel (a sibling in the host view) inherits the same value.
+  _centerOnViewport() {
+    const host = this.parentElement;
+    if (!host) return;
+    const rect = host.getBoundingClientRect();
+    if (!rect.width) return;
+    const shift = window.innerWidth / 2 - (rect.left + rect.width / 2);
+    host.style.setProperty("--bn-builder-center-shift", `${Math.round(shift)}px`);
   }
   attach({ state, palette }) {
     if (state) this.state = state;
     if (palette) this.palette = palette;
     if (this.isConnected) this.connectedCallback();
+  }
+  // Toolbar buttons tell the truth about availability: Undo/Redo dim
+  // when their stacks are empty, Clear/Export dim on an empty canvas.
+  _wireToolbarState() {
+    if (!this.state) return;
+    if (this._toolbarEffect) {
+      if (this._toolbarEffectState === this.state) return;
+      this._toolbarEffect.dispose();
+      this._toolbarEffect = null;
+    }
+    this._toolbarEffectState = this.state;
+    const undo = this.querySelector('[data-bn-builder-action="undo"]');
+    const redo = this.querySelector('[data-bn-builder-action="redo"]');
+    const clear = this.querySelector('[data-bn-builder-action="clear"]');
+    const exp = this.querySelector('[data-bn-builder-action="export"]');
+    if (!undo || !redo || !clear || !exp) return;
+    const state = this.state;
+    this._toolbarEffect = effect(() => {
+      undo.disabled = !state.canUndo();
+      redo.disabled = !state.canRedo();
+      const empty = state.tree().length === 0;
+      clear.disabled = empty;
+      exp.disabled = empty;
+    });
   }
   generateCode(options) {
     if (!this.state) return "";
@@ -1862,5 +2055,28 @@ ready(() => {
   builder.addEventListener("bn-builder-export", (event) => {
     panel.hidden = false;
     output.textContent = event.detail?.code ?? "";
+    panel.scrollIntoView({ block: "nearest", behavior: "smooth" });
   });
+  const copy = document.querySelector("[data-bn-builder-export-copy]");
+  if (copy) {
+    copy.addEventListener("click", async () => {
+      const code = output.textContent ?? "";
+      if (!code) return;
+      try {
+        await navigator.clipboard.writeText(code);
+      } catch {
+        const range = document.createRange();
+        range.selectNodeContents(output);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        return;
+      }
+      const original = copy.textContent;
+      copy.textContent = "Copied";
+      setTimeout(() => {
+        copy.textContent = original;
+      }, 1600);
+    });
+  }
 });
