@@ -218,7 +218,8 @@ console.log('  _headers (security)');
 // a removed page answers with a real 301 instead of the 404 page: /showcase
 // duplicated the /components detail pages demo-for-demo, /roadmap was a
 // finished plan whose substance lives in docs/roadmap.md, and the design
-// system's token reference moved into /docs as its Design tokens section.
+// system's token reference moved into /docs as its Design tokens section,
+// and /tasks moved under /components as the catalog's app demo.
 // Both spellings (with and without the trailing slash) are listed because
 // Pages matches the path as requested.
 const redirects = [
@@ -228,6 +229,8 @@ const redirects = [
   ['/roadmap/', '/compare/'],
   ['/design-system', '/docs/'],
   ['/design-system/', '/docs/'],
+  ['/tasks', '/components/tasks/'],
+  ['/tasks/', '/components/tasks/'],
 ]
   .map(([from, to]) => `${from} ${to} 301`)
   .join('\n');

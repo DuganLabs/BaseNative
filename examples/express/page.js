@@ -299,16 +299,32 @@ export const siteRoutes = [
     },
   },
   {
-    path: '/tasks',
+    // The tasks app lives under the catalog: it is the one end-to-end
+    // demo (signals + hydration + the site's only API), presented as a
+    // component page rather than a stray top-level todo page. The old
+    // /tasks path 301s here (scripts/build-pages.js, _redirects).
+    path: '/components/tasks',
     view: 'tasks.html',
     title: 'Tasks',
-    description: 'Live task list demonstrating signal-based hydration over server-rendered HTML.',
-    activePage: 'tasks',
-    ctx: ({ tasks, hasApi }) => getTasksPageContext(tasks, hasApi),
+    description:
+      'A working task manager built with BaseNative: server-rendered, hydrated with signals, and composed from the component catalog.',
+    activePage: 'components',
+    ctx: ({ tasks, hasApi }) => ({
+      ...getTasksPageContext(tasks, hasApi),
+      breadcrumb: raw(
+        renderTrinity('breadcrumb', {
+          items: [
+            { label: 'Home', href: '/' },
+            { label: 'Components', href: '/components' },
+            { label: 'Tasks' },
+          ],
+        }),
+      ),
+    }),
     hero: (site) => ({
-      eyebrow: 'Tasks',
+      eyebrow: 'App demo',
       titleHtml: 'Task <em>Manager</em>',
-      lede: 'Server-rendered initial state with client-side hydration for interactivity.',
+      lede: 'A complete app on one page: server-rendered initial state, client-side hydration with signals, composed from the catalog. This is the live app, not a mockup — add, filter, and delete tasks.',
       after: site.hasApi
         ? ''
         : '<p data-tasks-static-notice>This is the static demo — tasks you add are kept in your browser and are not saved to a server.</p>',

@@ -423,13 +423,13 @@ describe('the trinity specimens stay inside the page', () => {
   });
 });
 
-describe('/tasks tells the static visitor where their tasks go', () => {
-  const tasksRoute = siteRoutes.find((r) => r.path === '/tasks');
+describe('/components/tasks tells the static visitor where their tasks go', () => {
+  const tasksRoute = siteRoutes.find((r) => r.path === '/components/tasks');
 
   it('discloses that the static build does not persist, and only there', () => {
     const staticHtml = renderRoute(tasksRoute, { tasks: [], hasApi: false });
     assert.match(staticHtml, /not saved to a server/i,
-      '/tasks must disclose that the static build does not persist');
+      '/components/tasks must disclose that the static build does not persist');
     const apiHtml = renderRoute(tasksRoute, { tasks: [], hasApi: true });
     assert.doesNotMatch(apiHtml, /not saved to a server/i,
       'the disclosure must not appear when the API is live');

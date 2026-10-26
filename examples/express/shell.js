@@ -12,7 +12,6 @@ import { getAppNavItems } from './site-data.js';
 const GROUPS = [
   { label: 'Start', hrefs: ['/', '/compare', '/components', '/docs'] },
   { label: 'Build', hrefs: ['/ai', '/playground', '/builder'] },
-  { label: 'Project', hrefs: ['/tasks'] },
 ];
 
 const toItem = (item) => ({
@@ -45,7 +44,7 @@ export function renderSiteChrome(activePage = '') {
 
 const FOOTER_GROUPS = [
   { label: 'Product', hrefs: ['/compare', '/components', '/playground', '/builder'] },
-  { label: 'Reference', hrefs: ['/docs', '/ai', '/tasks'] },
+  { label: 'Reference', hrefs: ['/docs', '/ai', '/components/tasks'] },
 ];
 
 /**

@@ -1,14 +1,58 @@
-{{ hero }}
+<article data-bn-component-page>
+  {{ breadcrumb }}
 
-<section data-tasks data-has-api="{{ hasApi }}">
-  <output>{{ tasks.length }} tasks total</output>
-  {{ taskList }}
-</section>
+  {{ hero }}
 
-<section data-hydrate>
-  <h2>Interactive Controls</h2>
-  <p>Loading...</p>
-</section>
+  <section data-bn-component-examples>
+    <header>
+      <h2>The app</h2>
+      <p>
+        The catalog's one end-to-end demo: a real task manager, rendered on the server and
+        hydrated in the browser. The list above the controls is the server render; the
+        controls drive the same list through signals.
+      </p>
+    </header>
+
+    <figure data-bn-component-preview>
+      <figcaption>Live app</figcaption>
+      <output>
+        <section data-demo-display>
+          <section data-tasks data-has-api="{{ hasApi }}">
+            <output>{{ tasks.length }} tasks total</output>
+            {{ taskList }}
+          </section>
+
+          <section data-hydrate>
+            <h3>Interactive Controls</h3>
+            <p>Loading...</p>
+          </section>
+        </section>
+      </output>
+    </figure>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <p>
+      The server renders the current list into the page — the count and the rows are real
+      HTML before any script runs. The browser then hydrates that markup with
+      <code>signal</code>, <code>computed</code> and <code>effect</code> from
+      <code>@basenative/runtime</code>: the filter, the summary line and the counts are
+      derived values, and the server-rendered list stays in sync through the same signal.
+    </p>
+    <p>
+      On the dev server the app talks to <code>/api/tasks</code> — POST to add, DELETE to
+      remove — the site's one API. The static build has no API, so there the list is kept
+      in your browser's localStorage instead; the notice under the title says so when that
+      is the case.
+    </p>
+    <p>
+      The pieces are the catalog's own: the server-rendered list is the
+      <a href="/components/list-group">list group</a>, each status rides as a
+      <a href="/components/badge">badge</a>, and the actions are native buttons.
+    </p>
+  </section>
+</article>
 
 <script type="application/json" data-initial-tasks>
   {{ tasksJson }}
@@ -104,7 +148,7 @@
 
   const hydrateRoot = document.querySelector('[data-hydrate]');
   hydrateRoot.innerHTML = `
-  <h2>Interactive Controls</h2>
+  <h3>Interactive Controls</h3>
   <nav data-controls aria-label="Add task">
     <input type="text" placeholder="New task..." aria-label="New task title">
     <button type="button" data-bn="bn-button" data-variant="prominent">Add Task</button>
