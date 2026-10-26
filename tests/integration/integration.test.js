@@ -695,6 +695,18 @@ describe('site syntax highlighting is a pipeline step', () => {
     assert.equal(highlightCode('<p class="x">{{ y() }}</p>'), HIGHLIGHTERS.html('<p class="x">{{ y() }}</p>'));
   });
 
+  it('the static export ships the highlight engine the playground imports', () => {
+    // playground.js imports '/highlight-engine.js' by absolute path; the
+    // dev server serves public/ so it resolves there, but the export only
+    // ships what build-pages.js copies — when the copy was missing, the
+    // module 404'd in production and no example ever loaded.
+    const build = readFileSync(repo('scripts/build-pages.js'), 'utf8');
+    assert.ok(
+      build.includes("'highlight-engine.js'"),
+      'build-pages.js should copy highlight-engine.js into dist',
+    );
+  });
+
   it('no view hand-writes highlight spans any more', () => {
     const viewsDir = repo('examples/express/views');
     for (const name of readdirSync(viewsDir)) {

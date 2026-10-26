@@ -125,6 +125,10 @@ cpSync(join(express, 'public', 'compare.js'), join(dist, 'compare.js'));
 cpSync(join(express, 'public', 'playground.css'), join(dist, 'playground.css'));
 cpSync(join(express, 'public', 'playground.js'), join(dist, 'playground.js'));
 cpSync(join(express, 'public', 'playground-preview.js'), join(dist, 'playground-preview.js'));
+// playground.js statically imports the shared highlight engine by
+// absolute path ('/highlight-engine.js'); without this copy the module
+// 404s in the export and the whole playground script never runs.
+cpSync(join(express, 'public', 'highlight-engine.js'), join(dist, 'highlight-engine.js'));
 // The playground's preview document (the dev server's /playground/preview
 // route): a static page of its own in the export, loading the same
 // /basenative.js bundle and preview script by absolute path.

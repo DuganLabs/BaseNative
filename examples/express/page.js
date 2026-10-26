@@ -69,6 +69,7 @@ function getAssetVersion() {
     'public/playground.css',
     'public/playground.js',
     'public/playground-preview.js',
+    'public/highlight-engine.js',
     'public/specimens.js',
   ]) {
     try {
