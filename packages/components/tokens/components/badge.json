@@ -17,6 +17,24 @@
       }
     }
   },
+  "white-space-badge": {
+    "$value": "{white-space-nowrap}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "white-space",
+          "type": null,
+          "item": "badge",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "align-badge": {
     "$value": "{align-center}",
     "$type": "string",

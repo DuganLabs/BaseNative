@@ -1,9 +1,11 @@
-button[variant="default"], button[variant="primary"], button[variant="ghost"], button[variant="destructive"] {
+button[variant="default"], button[variant="primary"], button[variant="ghost"], button[variant="destructive"],
+a[variant="default"], a[variant="primary"], a[variant="ghost"], a[variant="destructive"] {
   box-sizing: var(--box-sizing-button);
   appearance: var(--appearance-button);
   display: var(--display-button);
   align-items: var(--align-button);
   justify-content: var(--justify-button);
+  text-decoration: var(--text-decoration-button);
   gap: var(--spacing-button-gap);
   block-size: var(--size-button-block);
   min-inline-size: var(--size-button-min-inline);
@@ -47,6 +49,15 @@ button[variant="default"], button[variant="primary"], button[variant="ghost"], b
     cursor: var(--cursor-button-disabled);
   }
 
+  /* An anchor button carries its disabled state as aria-disabled
+     (the renderer's contract); it takes the same paint. */
+  &[aria-disabled="true"] {
+    background-color: var(--color-bkg-button-disabled);
+    border-color: var(--color-border-button-disabled);
+    color: var(--color-text-button-disabled);
+    cursor: var(--cursor-button-disabled);
+  }
+
   & + & {
     margin-inline-start: var(--spacing-button-margin-inline-start-adjacent);
   }
@@ -58,7 +69,7 @@ form:has(:invalid) > button[type="submit"] {
   color: var(--color-text-button-disabled);
 }
 
-button[variant="destructive"] {
+button[variant="destructive"], a[variant="destructive"] {
   --color-bkg-button: var(--color-danger);
   --color-bkg-button-hover: var(--color-danger-strong);
   --color-bkg-button-active: var(--color-danger-strong);
@@ -66,7 +77,7 @@ button[variant="destructive"] {
   --color-text-button: var(--color-text-on-danger);
 }
 
-button[variant="ghost"] {
+button[variant="ghost"], a[variant="ghost"] {
   --color-bkg-button: var(--palette-transparent);
   --color-bkg-button-hover: var(--color-fill-3);
   --color-bkg-button-active: var(--color-fill-2);
@@ -74,7 +85,7 @@ button[variant="ghost"] {
   --color-text-button: var(--color-tint);
 }
 
-button[variant="primary"] {
+button[variant="primary"], a[variant="primary"] {
   --color-bkg-button: var(--color-tint);
   --color-bkg-button-hover: var(--color-tint-strong);
   --color-bkg-button-active: var(--color-tint-strong);

@@ -30,8 +30,15 @@ main[variant="default"] {
     block-size: var(--size-app-shell-rail-block);
   }
 
+  /* The rail is fixed, so the main column's inline size is what
+     remains of the viewport beside it. A host sheet's 100% inline
+     size resolves against the full viewport width and pushes the
+     column — and everything in it — past the right edge at tablet
+     widths. The shell owns the layout between its parts, so the
+     deduction lives here. A host max-inline-size still caps it. */
   body > main[variant="default"] {
     margin-inline-start: var(--size-app-shell-rail-inline);
+    inline-size: var(--size-app-shell-main-inline);
     padding-block-end: var(--spacing-app-shell-main-padding-block-end-rail);
   }
 

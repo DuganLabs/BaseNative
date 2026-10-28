@@ -210,6 +210,7 @@
   --inset-app-bar-menu-inline-start: auto;
   --spacing-app-bar-padding-block-end: calc(var(--spacing-2) + var(--spacing-safe-bottom));
   --size-app-shell-rail-inline: calc(var(--spacing-8) * 6);
+  --size-app-shell-main-inline: calc(100% - var(--size-app-shell-rail-inline));
   --spacing-app-shell-footer-padding-block-end: calc(var(--spacing-8) * 3);
   --spacing-app-shell-main-padding-block-end: calc(var(--spacing-8) * 3);
   --content-breadcrumb-separator: "/";
@@ -321,7 +322,7 @@
   --color-border-app-bar-block-start: var(--color-border-separator);
   --color-border-app-bar-menu: var(--color-border-separator);
   --color-text-app-bar-menu-link: var(--color-text-label);
-  --color-text-app-bar-tab: var(--color-text-label-2);
+  --color-text-app-bar-tab: var(--color-text-label);
   --display-app-bar-list: var(--display-flex);
   --display-app-bar-menu: var(--display-grid);
   --display-app-bar-menu-link: var(--display-block);
@@ -392,6 +393,7 @@
   --object-fit-avatar-image: var(--object-fit-cover);
   --display-avatar-image: var(--display-block);
   --display-badge: var(--display-inline-flex);
+  --white-space-badge: var(--white-space-nowrap);
   --align-badge: var(--align-center);
   --color-bkg-badge: var(--color-fill-2);
   --color-text-badge: var(--color-text-label-2);
@@ -449,6 +451,7 @@
   --font-button-leading: var(--font-callout-leading);
   --font-button-tracking: var(--font-callout-tracking);
   --cursor-button: var(--cursor-pointer);
+  --text-decoration-button: var(--text-decoration-none);
   --cursor-button-disabled: var(--cursor-not-allowed);
   --size-border-button-outline-focus: var(--size-border-thick);
   --border-style-button-outline-focus: var(--border-style-solid);
@@ -1301,6 +1304,7 @@
   --size-table-head-block-restack: var(--size-1px);
   --display-table-row-restack: var(--display-block);
   --display-table-cell-restack: var(--display-block);
+  --overflow-wrap-table-cell: var(--overflow-wrap-anywhere);
   --overflow-wrap-table-cell-restack: var(--overflow-wrap-anywhere);
   --size-border-table-cell-block-end-restack: var(--size-border-none);
   --spacing-table-row-padding-block-restack: var(--spacing-1);
@@ -1327,7 +1331,7 @@
   --border-style-tabs-tab-block-end: var(--border-style-solid);
   --color-border-tabs-tab-block-end: var(--palette-transparent);
   --size-radius-tabs-tab: var(--size-radius-none);
-  --color-text-tabs-tab: var(--color-text-label-2);
+  --color-text-tabs-tab: var(--color-text-label);
   --cursor-tabs-tab: var(--cursor-pointer);
   --spacing-tabs-tab-padding-block: var(--spacing-2);
   --spacing-tabs-tab-padding-inline: var(--spacing-3);

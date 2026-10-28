@@ -1,6 +1,10 @@
+/* A badge is a single-line status chip — its label never wraps inside
+   the pill, even when a table cell squeezes it. The cell widens or the
+   table reflows instead. */
 small[variant="default"], small[variant="info"], small[variant="success"], small[variant="warning"], small[variant="danger"] {
   display: var(--display-badge);
   align-items: var(--align-badge);
+  white-space: var(--white-space-badge);
   background-color: var(--color-bkg-badge);
   color: var(--color-text-badge);
   padding-block: var(--spacing-badge-padding-block);
