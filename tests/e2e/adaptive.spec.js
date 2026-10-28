@@ -25,6 +25,12 @@ const SRC = join(
   'components',
   'src',
 );
+// The fixture loads the package's sheets the way its own CSS entry
+// (index.css) composes them. The list once drifted from index.css and
+// named a token sheet that declared none of the tokens the component
+// sheets consume, so every var() in them silently resolved to nothing
+// (the app-nav icons rendered at 0x0 in this fixture). Mirror
+// index.css exactly; when it changes, change this list with it.
 const CSS = [
   'layers.css',
   'reset.css',
@@ -171,10 +177,18 @@ test.describe('Table — narrow-width contract', () => {
         range.selectNodeContents(c);
         return range.getBoundingClientRect().right - box.right;
       });
+      // The heading's own text, line by line: the wrap is the contract,
+      // measured directly instead of through a height calibrated to the
+      // type metrics of an earlier stylesheet.
+      const range = document.createRange();
+      range.selectNodeContents(heading);
+      const headingLines = new Set(
+        [...range.getClientRects()].map((rect) => Math.round(rect.top)),
+      ).size;
       return {
         containerClient: container.clientWidth,
         containerScroll: container.scrollWidth,
-        headingHeight: heading.getBoundingClientRect().height,
+        headingLines,
         overhangs: cells,
       };
     });
@@ -182,7 +196,7 @@ test.describe('Table — narrow-width contract', () => {
     expect(geometry.containerScroll).toBeLessThanOrEqual(geometry.containerClient + 1);
     for (const overhang of geometry.overhangs) expect(overhang).toBeLessThanOrEqual(1);
     // The long heading wrapped onto a second line rather than overflowing.
-    expect(geometry.headingHeight).toBeGreaterThan(40);
+    expect(geometry.headingLines).toBeGreaterThanOrEqual(2);
   });
 });
 
@@ -268,25 +282,35 @@ test.describe('App nav — bar geometry', () => {
 });
 
 /*
- * The contract on the real pages. The fixtures above prove the component;
- * these prove the consumers that were actually broken — the site's content
- * tables (compare) are hand-written markup in the same contract,
- * so the shipped stylesheet stacks them too, and the catalog's own demos
- * must not collapse the way a size container does inside a shrink-wrapped
- * ancestor. Served by the dev server in playwright.config.
+ * The contract on the real pages. The fixtures above prove the legacy
+ * renderer's contract; these prove the consumers that were actually
+ * broken. Since the Holy Trinity migration the site's content tables are
+ * the catalog table (examples/express composes them with renderTrinity):
+ * semantic <table variant="…"> with no container wrapper and no stamped
+ * data-labels — at narrow widths the header row steps out of the visual
+ * flow and each row's first cell becomes its label line. The gates below
+ * assert that contract: stacked, labelled by the row's own first cell,
+ * nothing clipped, no sideways scroll.
  */
 test.describe('Site tables — the contract on real pages', () => {
   async function tableGeometry(page) {
     return page.evaluate(() =>
-      [...document.querySelectorAll('[data-bn="table"]')].map((t) => {
-        const container = t.closest('[data-bn="table-container"]');
-        const cells = [...t.querySelectorAll('tbody th, tbody td')];
+      [...document.querySelectorAll('table[variant]')].map((t) => {
+        const rows = [...t.querySelectorAll('tbody tr')].map((tr) => {
+          const cells = [...tr.querySelectorAll('th, td')];
+          return {
+            header: cells.length > 0 && cells[0].tagName === 'TH' && cells[0].scope === 'row',
+            label: (cells[0]?.textContent || '').trim().length > 0,
+            lines: new Set(cells.map((c) => Math.round(c.getBoundingClientRect().y))).size,
+            cells: cells.length,
+          };
+        });
         return {
-          containerClient: container ? container.clientWidth : 0,
-          containerScroll: container ? container.scrollWidth : 0,
+          tableClient: t.clientWidth,
+          tableScroll: t.scrollWidth,
           theadHeight: t.querySelector('thead')?.getBoundingClientRect().height ?? 0,
-          unlabelled: cells.filter((c) => !c.hasAttribute('data-label')).length,
-          overhangs: cells.map((c) => {
+          rows,
+          overhangs: [...t.querySelectorAll('tbody th, tbody td')].map((c) => {
             const box = c.getBoundingClientRect();
             const range = document.createRange();
             range.selectNodeContents(c);
@@ -297,8 +321,17 @@ test.describe('Site tables — the contract on real pages', () => {
     );
   }
 
-  for (const [path, count] of [
-    ['/compare', 6],
+  for (const [path, count, rowHeaders] of [
+    ['/compare', 6, true],
+    // The /ai scorecard is one catalog table whose rows open with a
+    // grouping data cell. It joins this gate because it is where the
+    // restack's missing wrap defence actually bit: prose carrying an
+    // unbreakable identifier (globalThis.__BASENATIVE_DEVTOOLS__)
+    // forced the table 75px past a 320px viewport while the compare
+    // tables, with no such token, stacked cleanly. (/roadmap's seven
+    // tables stood here until the route consolidation retired the
+    // page; the contract coverage continues on /compare and /ai.)
+    ['/ai', 1, false],
   ]) {
     test(`${path} at 390px: every table stacked, labelled, nothing clipped`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
@@ -306,10 +339,18 @@ test.describe('Site tables — the contract on real pages', () => {
       const tables = await tableGeometry(page);
       expect(tables.length).toBe(count);
       for (const t of tables) {
-        expect(t.containerScroll).toBeLessThanOrEqual(t.containerClient + 1);
+        expect(t.tableScroll).toBeLessThanOrEqual(t.tableClient + 1);
         expect(t.theadHeight).toBeLessThanOrEqual(1);
-        expect(t.unlabelled).toBe(0);
         for (const overhang of t.overhangs) expect(overhang).toBeLessThanOrEqual(1);
+        for (const row of t.rows) {
+          // Stacked: a row's cells sit on distinct lines, and its first
+          // cell is the label line — a row header where the table's data
+          // has one (compare), the measure cell where it does not
+          // (the /ai scorecard rows are all data cells by design).
+          expect(row.lines).toBe(row.cells);
+          expect(row.label).toBe(true);
+          if (rowHeaders) expect(row.header).toBe(true);
+        }
       }
     });
   }
@@ -318,17 +359,21 @@ test.describe('Site tables — the contract on real pages', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/components/table');
     const geometry = await page.evaluate(() =>
-      [...document.querySelectorAll('[data-bn="table-container"]')].map((c) => ({
-        width: c.getBoundingClientRect().width,
-        rowHeights: [...c.querySelectorAll('tbody tr')].map(
+      [...document.querySelectorAll('table')].map((t) => ({
+        variant: t.getAttribute('variant'),
+        width: t.getBoundingClientRect().width,
+        theadHeight: t.querySelector('thead')?.getBoundingClientRect().height ?? null,
+        rowHeights: [...t.querySelectorAll('tbody tr')].map(
           (r) => r.getBoundingClientRect().height,
         ),
       })),
     );
-    expect(geometry.length).toBeGreaterThanOrEqual(3);
-    for (const c of geometry) {
-      expect(c.width).toBeGreaterThan(100);
-      for (const h of c.rowHeights) expect(h).toBeLessThan(200);
+    expect(geometry.length).toBeGreaterThanOrEqual(2);
+    for (const t of geometry) {
+      expect(t.width).toBeGreaterThan(100);
+      for (const h of t.rowHeights) expect(h).toBeLessThan(200);
+      // A catalog table demo restacks at this width like the real thing.
+      if (t.variant && t.theadHeight != null) expect(t.theadHeight).toBeLessThanOrEqual(1);
     }
   });
 });

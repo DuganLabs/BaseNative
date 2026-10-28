@@ -12,9 +12,9 @@ test.describe('Express Example', () => {
     await expect(page).toHaveTitle(/BaseNative/i);
   });
 
-  test('tasks page loads', async ({ page }) => {
-    await page.goto('/tasks');
-    await expect(page.locator('h1, h2, [data-bn]').first()).toBeVisible();
+  test('tasks demo loads on /components', async ({ page }) => {
+    await page.goto('/components#tasks');
+    await expect(page.locator('section#tasks [data-tasks]')).toBeVisible();
   });
 
   test('components page loads', async ({ page }) => {
@@ -44,24 +44,37 @@ test.describe('Enterprise Example', () => {
   });
 });
 
-// Demo behaviour that only a browser can prove: the dialog's × on
-// /components/dialog had no listener.
+// Demo behaviour that only a browser can prove: a staged dialog
+// dismissing. The pre-trinity demo this gate opened (an opener
+// button, #demo-dialog-page, a [data-bn="dialog-close"] hook) is
+// gone — the catalog specimens stage open in flow now, and
+// specimens.js dismisses a staged dialog from any action inside
+// it. The gate proves that wiring on the dialog page itself.
 test.describe('Component demos', () => {
-  test('the dialog × closes the dialog on /components/dialog', async ({ page }) => {
+  test('the staged dialog dismisses from its Close button on /components/dialog', async ({ page }) => {
     await page.goto('/components/dialog');
-    const dialog = page.locator('#demo-dialog-page');
-    await page.locator('[data-bn-demo-dialog-open]').click();
+    const dialog = page.locator('dialog[variant="default"]');
     await expect(dialog).toHaveJSProperty('open', true);
-    await dialog.locator('[data-bn="dialog-close"]').click();
+    await dialog.locator('header button').click();
     await expect(dialog).toHaveJSProperty('open', false);
   });
 });
 
-// The static build has no /api/tasks. Its /tasks must say so and keep the
-// visitor's tasks in the browser across a reload. Served from dist/ here —
-// the dev server on :3000 has the API and would pass for the wrong reason.
-test.describe('Static /tasks', () => {
-  test.skip(!existsSync(join(DIST, 'tasks', 'index.html')), 'run `pnpm build:pages` first');
+// A second behaviour gate stood here: the /showcase pager moving the
+// current page in place. /showcase was retired in the route
+// consolidation (its specimens live on the catalog pages now,
+// rendered as static state specimens), so there is no live pager
+// left to prove; the gate went with the route.
+
+// The static build has no /api/tasks. The tasks demo on its /components
+// page must say so and keep the visitor's tasks in the browser across a
+// reload. Served from dist/ here — the dev server on :3000 has the API
+// and would pass for the wrong reason.
+test.describe('Static /components tasks demo', () => {
+  test.skip(
+    !existsSync(join(DIST, 'components', 'index.html')),
+    'run `pnpm build:pages` first',
+  );
 
   let server;
   let base;
@@ -91,7 +104,7 @@ test.describe('Static /tasks', () => {
   test('discloses browser-only storage and keeps an added task across a reload', async ({
     page,
   }) => {
-    await page.goto(`${base}/tasks/`);
+    await page.goto(`${base}/components/#tasks`);
     await expect(page.locator('[data-tasks-static-notice]')).toContainText(
       /not saved to a server/i,
     );
