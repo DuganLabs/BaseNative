@@ -437,7 +437,7 @@ for (const aside of stageAll('aside[variant]')) {
 /* Toolbar overflow — the More button owns its menu's visibility      */
 /* ------------------------------------------------------------------ */
 
-for (const bar of stageAll('[role="toolbar"]')) {
+for (const bar of stageAll('section[variant="toolbar"]')) {
   const button = bar.querySelector('button[aria-expanded]');
   const menu = bar.querySelector('menu');
   if (!button || !menu) continue;
