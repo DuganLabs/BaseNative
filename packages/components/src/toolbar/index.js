@@ -6,7 +6,11 @@ export const name = 'toolbar';
 export const root = 'section';
 
 /**
- * The toolbar: a labelled bar (role "toolbar") of rendered actions,
+ * The toolbar: a labelled bar of rendered actions. The bar is a
+ * named section (a region landmark): role "toolbar" is not a valid
+ * pairing for a sectioning element, and the bar does not implement
+ * the toolbar pattern's roving-focus keyboard contract, so it does
+ * not claim the role.
  * plus the overflow pattern — when actions outgrow the bar, the extra
  * set rides in a caller-rendered menu (a dropdown-menu) behind a
  * More button whose expanded state the view model owns. The toolbar
