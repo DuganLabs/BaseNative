@@ -107,6 +107,24 @@
       }
     }
   },
+  "size-app-shell-main-inline": {
+    "$value": "calc(100% - var(--size-app-shell-rail-inline))",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "app-shell-main",
+          "variant": null,
+          "subitem": "inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "spacing-app-shell-footer-padding-block-end": {
     "$value": "calc(var(--spacing-8) * 3)",
     "$type": "string",

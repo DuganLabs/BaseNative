@@ -511,8 +511,8 @@ test('tabs pairs every tab with its panel and reports selection', async () => {
   assert.match(html, /<ul role="tablist" aria-label="Job views">/);
   assert.match(html, /<button type="button" role="tab" id="job-tab-details" aria-selected="true" aria-controls="job-panel-details">Details<\/button>/);
   assert.match(html, /<button type="button" role="tab" id="job-tab-activity" aria-selected="false" aria-controls="job-panel-activity">Activity<\/button>/);
-  assert.match(html, /<article role="tabpanel" id="job-panel-details" aria-labelledby="job-tab-details">/);
-  assert.match(html, /<article role="tabpanel" id="job-panel-activity" aria-labelledby="job-tab-activity" hidden>/);
+  assert.match(html, /<section role="tabpanel" id="job-panel-details" aria-labelledby="job-tab-details">/);
+  assert.match(html, /<section role="tabpanel" id="job-panel-activity" aria-labelledby="job-tab-activity" hidden>/);
 });
 
 test('empty-state composes a mark, a message, and the action that fills the surface', async () => {
@@ -554,7 +554,7 @@ test('toolbar owns its overflow state and places the menu', async () => {
     actionsHtml: renderComponent(registry, render, 'button', { label: 'New lead', variant: 'primary' }).html,
     overflowHtml: menu,
   }).html;
-  assert.match(closed, /<section variant="toolbar" role="toolbar" aria-label="Lead actions">/);
+  assert.match(closed, /<section variant="toolbar" aria-label="Lead actions">/);
   assert.match(closed, /aria-expanded="false"/);
   assert.doesNotMatch(closed, /<menu/);
   const open = renderComponent(registry, render, 'toolbar', {

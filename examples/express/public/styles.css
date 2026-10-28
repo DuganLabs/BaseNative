@@ -528,6 +528,16 @@
       padding: var(--space-md);
     }
   }
+  /* A tabs panel is the card container its content is written
+     against: the counter figure's layout adapts through @container
+     card queries. The panel used to be an <article>, which carried
+     this treatment from the rule above; as a <section> (the element
+     axe allows a tabpanel role on) it declares the container half
+     itself. The paint half stays the figure's own. */
+  section[variant="tabs"] > section[role="tabpanel"] {
+    container-type: inline-size;
+    container-name: card;
+  }
   article:hover {
     border-color: var(--border-accent);
     box-shadow: var(--shadow-card);

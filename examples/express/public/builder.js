@@ -1283,7 +1283,7 @@ function renderTreeView(state, options = {}) {
   const hoverId = state.hover.peek ? state.hover.peek() : state.hover();
   const collapsed = options.collapsed instanceof Set ? options.collapsed : NO_COLLAPSED;
   if (!tree.length) {
-    return '<div class="bn-tree bn-tree--empty" role="tree" aria-label="Component tree"><p class="bn-tree__empty">Nothing on the canvas yet. Add a component and it will show up here.</p></div>';
+    return '<div class="bn-tree bn-tree--empty" tabindex="0"><p class="bn-tree__empty">Nothing on the canvas yet. Add a component and it will show up here.</p></div>';
   }
   const items = tree.map((root) => renderSubtree(root, 1, selectedId, hoverId, collapsed)).join("\n");
   return `<ul role="tree" aria-label="Component tree" class="bn-tree">
@@ -1320,20 +1320,20 @@ function renderField(nodeId, prop, value, binding) {
 function renderInspector(state, palette) {
   const selectedId = state.selection.peek ? state.selection.peek() : state.selection();
   if (!selectedId) {
-    return '<aside class="bn-inspector" aria-label="Property inspector"><p class="bn-inspector__empty">Select a component to edit its properties.</p><p class="bn-inspector__empty">Click a component on the canvas to select it \u2014 its properties, duplicate, and remove live here.</p></aside>';
+    return '<div class="bn-inspector" aria-label="Property inspector"><p class="bn-inspector__empty">Select a component to edit its properties.</p><p class="bn-inspector__empty">Click a component on the canvas to select it \u2014 its properties, duplicate, and remove live here.</p></div>';
   }
   const node = state.getNode(selectedId);
   if (!node) {
-    return '<aside class="bn-inspector" aria-label="Property inspector"><p class="bn-inspector__empty">Component not found.</p></aside>';
+    return '<div class="bn-inspector" aria-label="Property inspector"><p class="bn-inspector__empty">Component not found.</p></div>';
   }
   const def = palette.get(node.type);
   const heading = `<header class="bn-inspector__header"><h3 class="bn-inspector__title">${escapeHtml(def?.label || node.type)}</h3><p class="bn-inspector__id">${escapeHtml(node.id)}</p></header>`;
   if (!def || !def.props.length) {
-    return `<aside class="bn-inspector" aria-label="Property inspector">${heading}<p class="bn-inspector__empty">No editable properties.</p></aside>`;
+    return `<div class="bn-inspector" aria-label="Property inspector">${heading}<p class="bn-inspector__empty">No editable properties.</p></div>`;
   }
   const fields = def.props.map((prop) => renderField(node.id, prop, node.props[prop.name], node.bindings[prop.name])).join("\n");
   const actions = `<footer class="bn-inspector__actions"><button type="button" data-bn="bn-inspector-action" data-bn-action="duplicate" data-bn-node="${escapeHtml(node.id)}" class="bn-inspector__btn">Duplicate</button><button type="button" data-bn="bn-inspector-action" data-bn-action="remove" data-bn-node="${escapeHtml(node.id)}" class="bn-inspector__btn bn-inspector__btn--danger">Remove</button></footer>`;
-  return `<aside class="bn-inspector" aria-label="Property inspector">${heading}<form class="bn-inspector__form" data-bn-inspector-form="${escapeHtml(node.id)}">${fields}</form>` + actions + `</aside>`;
+  return `<div class="bn-inspector" aria-label="Property inspector">${heading}<form class="bn-inspector__form" data-bn-inspector-form="${escapeHtml(node.id)}">${fields}</form>` + actions + `</div>`;
 }
 
 // ../../packages/builder/src/palette-element.js
@@ -1886,23 +1886,23 @@ var LAYOUT_HTML = `
   <section class="bn-builder__body" data-bn="bn-window-body">
     <div class="bn-builder__panes">
       <div class="bn-builder__sidebar">
-        <aside class="bn-builder__pane bn-builder__pane--palette" data-bn="bn-sidebar" aria-label="Component palette">
+        <div class="bn-builder__pane bn-builder__pane--palette" data-bn="bn-sidebar" aria-label="Component palette">
           <h2 class="bn-builder__heading">Components</h2>
           <bn-builder-palette></bn-builder-palette>
-        </aside>
-        <aside class="bn-builder__pane bn-builder__pane--layers" aria-label="Layers">
+        </div>
+        <div class="bn-builder__pane bn-builder__pane--layers" aria-label="Layers">
           <h2 class="bn-builder__heading">Layers</h2>
           <bn-builder-tree></bn-builder-tree>
-        </aside>
+        </div>
       </div>
       <section class="bn-builder__pane bn-builder__pane--canvas" aria-label="Canvas">
         <h2 class="bn-builder__heading">Canvas</h2>
         <bn-builder-canvas></bn-builder-canvas>
       </section>
-      <aside class="bn-builder__pane bn-builder__pane--inspector" data-bn="bn-inspector" aria-label="Inspector">
+      <div class="bn-builder__pane bn-builder__pane--inspector" data-bn="bn-inspector" aria-label="Inspector" tabindex="0">
         <h2 class="bn-builder__heading">Inspector</h2>
         <bn-builder-inspector></bn-builder-inspector>
-      </aside>
+      </div>
     </div>
   </section>
 </section>`;

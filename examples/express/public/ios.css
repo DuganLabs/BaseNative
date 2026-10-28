@@ -470,10 +470,11 @@ button[data-variant='danger']:not([data-bn]):not([variant]):hover {
   background: rgb(255 69 58 / 0.24);
   color: var(--bn-danger-label, #9d1c1c);
 }
-/* Kit red on the 16% wash is 4.1:1 over a dark card. This lighter red clears 4.5. */
+/* Kit red on the 16% wash is 4.1:1 over a dark card. This lighter red
+   clears 4.5 where the wash actually sits (4.75 measured in situ). */
 [data-theme='dark'] button[data-variant='danger']:not([data-bn]):not([variant]),
 [data-theme='dark'] button[data-variant='danger']:not([data-bn]):not([variant]):hover {
-  color: #ff6b6d;
+  color: #ff7d80;
 }
 a[role='button'][data-variant='outline'],
 button:not([data-bn]):not([variant])[data-variant='outline'] {

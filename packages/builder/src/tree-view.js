@@ -57,7 +57,7 @@ export function renderTreeView(state, options = {}) {
   const collapsed = options.collapsed instanceof Set ? options.collapsed : NO_COLLAPSED;
 
   if (!tree.length) {
-    return '<div class="bn-tree bn-tree--empty" role="tree" aria-label="Component tree">'
+    return '<div class="bn-tree bn-tree--empty" tabindex="0">'
       + '<p class="bn-tree__empty">Nothing on the canvas yet. Add a component and it will show up here.</p>'
       + '</div>';
   }

@@ -61,7 +61,7 @@ const consoleRegion = `<section class="console-region" aria-label="Console">
                 <h3>CONSOLE</h3>
                 ${component('button', { label: 'Clear', variant: 'ghost' })}
               </header>
-              <section class="console-body">
+              <section class="console-body" tabindex="0">
                 <p class="console-empty" id="consoleEmpty">console.log output, runtime errors, and BaseNative template diagnostics (BN_ codes) land here.</p>
                 ${component('list-group', { items: [] }).replace('<ul', '<ul id="consoleList"')}
               </section>

@@ -503,6 +503,24 @@
       }
     }
   },
+  "text-decoration-button": {
+    "$value": "{text-decoration-none}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "text-decoration",
+          "type": null,
+          "item": "button",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "cursor-button-disabled": {
     "$value": "{cursor-not-allowed}",
     "$type": "string",

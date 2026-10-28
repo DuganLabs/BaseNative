@@ -24,23 +24,23 @@ const LAYOUT_HTML = `
   <section class="bn-builder__body" data-bn="bn-window-body">
     <div class="bn-builder__panes">
       <div class="bn-builder__sidebar">
-        <aside class="bn-builder__pane bn-builder__pane--palette" data-bn="bn-sidebar" aria-label="Component palette">
+        <div class="bn-builder__pane bn-builder__pane--palette" data-bn="bn-sidebar" aria-label="Component palette">
           <h2 class="bn-builder__heading">Components</h2>
           <bn-builder-palette></bn-builder-palette>
-        </aside>
-        <aside class="bn-builder__pane bn-builder__pane--layers" aria-label="Layers">
+        </div>
+        <div class="bn-builder__pane bn-builder__pane--layers" aria-label="Layers">
           <h2 class="bn-builder__heading">Layers</h2>
           <bn-builder-tree></bn-builder-tree>
-        </aside>
+        </div>
       </div>
       <section class="bn-builder__pane bn-builder__pane--canvas" aria-label="Canvas">
         <h2 class="bn-builder__heading">Canvas</h2>
         <bn-builder-canvas></bn-builder-canvas>
       </section>
-      <aside class="bn-builder__pane bn-builder__pane--inspector" data-bn="bn-inspector" aria-label="Inspector">
+      <div class="bn-builder__pane bn-builder__pane--inspector" data-bn="bn-inspector" aria-label="Inspector" tabindex="0">
         <h2 class="bn-builder__heading">Inspector</h2>
         <bn-builder-inspector></bn-builder-inspector>
-      </aside>
+      </div>
     </div>
   </section>
 </section>`;

@@ -2,21 +2,21 @@
   <section :variant="variant()">
     <ul role="tablist" :aria-label="label()">
       <template @for="tab of tabs()">
-        <li>
+        <li role="presentation">
           <button type="button" role="tab" :id="tabId(tab)" :aria-selected="selectedAttr(tab)" :aria-controls="panelId(tab)" @click="select(tab)">{{ tab.label }}</button>
         </li>
       </template>
     </ul>
     <template @for="tab of tabs()">
       <template @if="isSelected(tab)">
-        <article role="tabpanel" :id="panelId(tab)" :aria-labelledby="tabId(tab)">
+        <section role="tabpanel" :id="panelId(tab)" :aria-labelledby="tabId(tab)">
           {{ raw(tab.panelHtml) }}
-        </article>
+        </section>
       </template>
       <template @else>
-        <article role="tabpanel" :id="panelId(tab)" :aria-labelledby="tabId(tab)" hidden>
+        <section role="tabpanel" :id="panelId(tab)" :aria-labelledby="tabId(tab)" hidden>
           {{ raw(tab.panelHtml) }}
-        </article>
+        </section>
       </template>
     </template>
   </section>

@@ -29,6 +29,10 @@ table[variant="default"], table[variant="striped"] {
     color: var(--color-text-table-cell);
     text-align: var(--text-align-table-cell);
     vertical-align: var(--vertical-align-table-cell);
+    /* A long unbreakable token (a package spec, a global's name)
+       wraps rather than sizing its column past the container — the
+       same rule the restacked cells follow below. */
+    overflow-wrap: var(--overflow-wrap-table-cell);
   }
 
   & > thead th {
@@ -70,8 +74,11 @@ table[variant="striped"] > tbody > tr:nth-child(even) {
    flow while staying in the accessibility tree. A restacked cell is
    prose, not a column, so its text wraps anywhere: a long
    unbreakable word (a global's name, a package spec) must not size
-   the whole table past its container. */
-@media (max-width: 40rem) {
+   the whole table past its container. The trigger is the CONTAINER,
+   not the viewport: inside a railed shell a wide viewport can still
+   hand the table a phone-width column, and the table adapts to the
+   space it actually gets. */
+@container (max-width: 40rem) {
   table[variant="default"], table[variant="striped"] {
     & > thead {
       position: var(--position-table-head-restack);

@@ -153,11 +153,11 @@
 /* Wide screens show every panel side by side (the tab list steps
    aside); narrow screens get the component's own tab list over one
    panel at a time. */
-.workspace section[variant='tabs'] > article:not([hidden]) {
+.workspace section[variant='tabs'] > section[role='tabpanel']:not([hidden]) {
   display: flex;
   min-width: 0;
 }
-.workspace section[variant='tabs'] > article > .pane {
+.workspace section[variant='tabs'] > section[role='tabpanel'] > .pane {
   flex: 1;
 }
 @media (min-width: 761px) {
@@ -167,7 +167,7 @@
   .workspace section[variant='tabs'] > ul[role='tablist'] {
     display: none;
   }
-  .workspace section[variant='tabs'] > article[hidden] {
+  .workspace section[variant='tabs'] > section[role='tabpanel'][hidden] {
     display: flex;
   }
   /* The combined JS + console pane is full height: the pane stretches

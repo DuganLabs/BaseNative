@@ -324,7 +324,7 @@
     }
   },
   "color-text-tabs-tab": {
-    "$value": "{color-text-label-2}",
+    "$value": "{color-text-label}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
