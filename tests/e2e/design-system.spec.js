@@ -859,6 +859,32 @@ test.describe('design system gates', () => {
           await page.goto(path, { waitUntil: 'domcontentloaded' });
           await page.evaluate(() => document.fonts.ready);
           await expect(page.locator('main')).toBeVisible();
+          // page.js stamps a content hash onto every '/basenative.js'
+          // in the final HTML — including the import line inside code
+          // samples — so any asset change anywhere rewrites visible
+          // sample text and every baseline with it rots. The hash is
+          // a cache-buster, not content: normalize sample text (and
+          // editor values) back to the unversioned URL, which imports
+          // the same bytes. Attributes are untouched; the page's own
+          // scripts keep their versioned URLs.
+          await page.evaluate(() => {
+            const unstamp = (text) =>
+              text.replace(/\/basenative\.js\?v=[0-9a-f]+/g, '/basenative.js');
+            const walker = document.createTreeWalker(
+              document.body,
+              NodeFilter.SHOW_TEXT,
+            );
+            for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+              if (n.nodeValue.includes('/basenative.js?v=')) {
+                n.nodeValue = unstamp(n.nodeValue);
+              }
+            }
+            for (const area of document.querySelectorAll('textarea')) {
+              if (area.value.includes('/basenative.js?v=')) {
+                area.value = unstamp(area.value);
+              }
+            }
+          });
           // Exactly one h1 per page — this stood behind the retired
           // /design-system branch; the invariant is every route's.
           expect(await pageIdentity(page)).toEqual([]);
@@ -879,9 +905,12 @@ test.describe('design system gates', () => {
             // /components at 768 and 1280 after the Liberation Sans pin and the
             // hidden card arrow. Run 39836500019 differed by 84–186 pixels on
             // /compare at 768 and 1280, one check mark. Both are host
-            // anti-aliasing. 320 still matches exactly.
+            // anti-aliasing. 320 still matches exactly. Run 40723362543
+            // (PR #335) differed by 109 pixels on /components dark at 768
+            // and 1280 — same noise, larger glyph — so the /components
+            // budget grows to 128.
             maxDiffPixels:
-              path === '/components' ? 80 : path === '/compare' && width >= 768 ? 250 : 0,
+              path === '/components' ? 128 : path === '/compare' && width >= 768 ? 250 : 0,
           });
           expect(await overflow(page)).toEqual([]);
           expect(await singleLine(page)).toEqual([]);
