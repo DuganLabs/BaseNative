@@ -50,17 +50,17 @@ export function renderInspector(state, palette) {
   const selectedId = state.selection.peek ? state.selection.peek() : state.selection();
 
   if (!selectedId) {
-    return '<aside class="bn-inspector" aria-label="Property inspector">'
+    return '<div class="bn-inspector" aria-label="Property inspector">'
       + '<p class="bn-inspector__empty">Select a component to edit its properties.</p>'
       + '<p class="bn-inspector__empty">Click a component on the canvas to select it — its properties, duplicate, and remove live here.</p>'
-      + '</aside>';
+      + '</div>';
   }
 
   const node = state.getNode(selectedId);
   if (!node) {
-    return '<aside class="bn-inspector" aria-label="Property inspector">'
+    return '<div class="bn-inspector" aria-label="Property inspector">'
       + '<p class="bn-inspector__empty">Component not found.</p>'
-      + '</aside>';
+      + '</div>';
   }
 
   const def = palette.get(node.type);
@@ -70,9 +70,9 @@ export function renderInspector(state, palette) {
     + `</header>`;
 
   if (!def || !def.props.length) {
-    return `<aside class="bn-inspector" aria-label="Property inspector">${heading}`
+    return `<div class="bn-inspector" aria-label="Property inspector">${heading}`
       + '<p class="bn-inspector__empty">No editable properties.</p>'
-      + '</aside>';
+      + '</div>';
   }
 
   const fields = def.props
@@ -84,8 +84,8 @@ export function renderInspector(state, palette) {
     + `<button type="button" data-bn="bn-inspector-action" data-bn-action="remove" data-bn-node="${escapeHtml(node.id)}" class="bn-inspector__btn bn-inspector__btn--danger">Remove</button>`
     + `</footer>`;
 
-  return `<aside class="bn-inspector" aria-label="Property inspector">${heading}`
+  return `<div class="bn-inspector" aria-label="Property inspector">${heading}`
     + `<form class="bn-inspector__form" data-bn-inspector-form="${escapeHtml(node.id)}">${fields}</form>`
     + actions
-    + `</aside>`;
+    + `</div>`;
 }
