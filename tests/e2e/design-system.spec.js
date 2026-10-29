@@ -738,20 +738,12 @@ async function partsChrome(page) {
     const filters = document.querySelector('[data-bn-component-filters]');
     const bar = document.querySelector('body > nav[variant="app-bar"]');
     if (!search || !filters || !bar) return ['missing parts chrome'];
-    // The document scrolls now (the pre-trinity shell scrolled <main>):
-    // bring the search to the top, where it sticks, and measure there.
-    const scroller = document.scrollingElement;
-    scroller.scrollTop = search.getBoundingClientRect().top + scroller.scrollTop;
-    const searchBox = search.getBoundingClientRect();
-    const barBox = bar.getBoundingClientRect();
     const problems = [];
-    // The chips wrap inside the sticky card (the phone rule in the
-    // site sheet: a single scrolling row cut the end chips mid-word
-    // at the box edge, which read as overflow). The pre-wrap gate
-    // capped the card and the chip row at one-row heights; the
-    // contract now is containment — every chip fully inside the
-    // card, no sideways overflow anywhere in the filters — plus the
-    // crowd-out floor below.
+    // The chips wrap inside the card (the site sheet's phone rule: a
+    // single scrolling row cut the end chips mid-word at the box
+    // edge, which read as overflow). Containment — every chip fully
+    // inside the card, no sideways overflow anywhere in the filters.
+    const searchBox = search.getBoundingClientRect();
     for (const chip of filters.querySelectorAll('button')) {
       const chipBox = chip.getBoundingClientRect();
       if (chipBox.right > searchBox.right + 1 || chipBox.left < searchBox.left - 1)
@@ -759,10 +751,38 @@ async function partsChrome(page) {
     }
     if (filters.scrollWidth > filters.clientWidth + 1)
       problems.push('filters scroll sideways');
-    const room = barBox.top - searchBox.bottom;
-    if (room < 280) problems.push(`content room ${room.toFixed(0)}px`);
+    // The in-page nav contract (Warren, 2026-10-28): the docs
+    // contents nav and this filter are one pattern, and at phone
+    // width the pattern is NOT pinned — a sticky card with large
+    // buttons holds a third of the screen for the whole scroll. It
+    // stands down (static) and scrolls away with the page; the wide
+    // layout keeps the pin.
     const stuck = getComputedStyle(search).position;
-    if (stuck !== 'sticky') problems.push(`search is ${stuck}`);
+    if (stuck !== 'static') problems.push(`search is ${stuck}`);
+    const scroller = document.scrollingElement;
+    scroller.scrollTop = 1500;
+    if (search.getBoundingClientRect().top >= 0)
+      problems.push('search still in view after scrolling');
+    scroller.scrollTop = 0;
+    return problems;
+  });
+}
+
+async function tocChrome(page) {
+  return page.evaluate(() => {
+    const toc = document.querySelector('[data-bn-docs-toc]');
+    if (!toc) return ['missing docs toc'];
+    const problems = [];
+    // The other half of the in-page nav contract above: the docs
+    // contents nav follows the same phone rule as the components
+    // filter — static, scrolling away with the page.
+    const stuck = getComputedStyle(toc).position;
+    if (stuck !== 'static') problems.push(`toc is ${stuck}`);
+    const scroller = document.scrollingElement;
+    scroller.scrollTop = 1500;
+    if (toc.getBoundingClientRect().top >= 0)
+      problems.push('toc still in view after scrolling');
+    scroller.scrollTop = 0;
     return problems;
   });
 }
@@ -893,6 +913,7 @@ test.describe('design system gates', () => {
           if (path === '/builder') expect(await canvasStage(page)).toEqual([]);
           if (path === '/components') expect(await tasksCountInsideCard(page)).toEqual([]);
           if (path === '/components' && width < 768) expect(await partsChrome(page)).toEqual([]);
+          if (path === '/docs' && width < 768) expect(await tocChrome(page)).toEqual([]);
           expect(await heroPattern(page)).toEqual([]);
           expect(await sidebarAccent(page)).toEqual([]);
           expect(await metricTiles(page)).toEqual([]);
