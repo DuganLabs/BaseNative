@@ -11,6 +11,32 @@ const pkgRoot = join(__dirname, '..', '..');
 
 const app = express();
 
+// -- Production security headers --
+// The same set the Pages deploy writes as dist/_headers
+// (scripts/build-pages.js) — the dev server sends them too, so the
+// e2e suite runs under the policy production serves. That parity is
+// what keeps a header from breaking a page only in production:
+// X-Frame-Options DENY on every path once refused the playground's
+// own preview frame on the live site while every local run passed.
+// The preview document is the one exception — the playground frames
+// it, so it is frameable by the site itself. Keep the two in sync.
+const CSP =
+  "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'";
+app.use((req, res, next) => {
+  const isPreview =
+    req.path === '/playground/preview' || req.path.startsWith('/playground/preview/');
+  res.set({
+    'X-Frame-Options': isPreview ? 'SAMEORIGIN' : 'DENY',
+    'X-Content-Type-Options': 'nosniff',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
+    'Content-Security-Policy': isPreview ? `${CSP}; frame-ancestors 'self'` : CSP,
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+    'Cross-Origin-Opener-Policy': 'same-origin',
+  });
+  next();
+});
+
 // -- Hot module replacement (dev only; inert when NODE_ENV=production) --
 // Registered first so /__bn_hmr/* wins before the static handlers. It injects
 // an external module script — no inline <script>, so the strict CSP in

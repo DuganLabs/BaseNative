@@ -2268,20 +2268,32 @@
     }
   }
 
+  /* -- In-page nav: one pattern for a page's own nav card ------------
+     The docs contents nav and the components filter are the same
+     component in two content shapes (a link list; a search + filter
+     row), so the card recipe lives here once: surface, border,
+     radius, blur, padding and the sticky contract. The contract: the
+     card may pin on wide layouts; at phone widths the phone rules
+     stand BOTH down — a pinned nav card at phone width holds the
+     screen it exists to navigate hostage (Warren, 2026-10-28). */
+  [data-bn-docs-toc],
+  [data-bn-component-search] {
+    padding: var(--space-md);
+    background: color-mix(in srgb, var(--surface-1) 92%, transparent);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-md);
+    backdrop-filter: blur(8px);
+    position: sticky;
+    inset-block-start: var(--space-sm);
+    z-index: 5;
+  }
+
   /* -- /docs contents nav -- */
   [data-bn-docs-toc] {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-xs);
-    padding: var(--space-md);
-    border: var(--border-width) solid var(--border);
-    border-radius: var(--radius-md);
     margin-block-end: var(--bn-section-space, 12px);
-    position: sticky;
-    inset-block-start: var(--space-sm);
-    z-index: 5;
-    backdrop-filter: blur(8px);
-    background: color-mix(in srgb, var(--surface-1) 92%, transparent);
 
     /* The list steps aside: the label and the links are the nav's
        flex items, so the pills lay out as one wrapping row. (With
@@ -3578,19 +3590,12 @@
     }
   }
 
-  /* -- Components page: search + tag filter --------------------------------- */
+  /* -- Components page: search + tag filter (the in-page nav pattern,
+     shared with the docs contents nav above) -- */
   [data-bn-component-search] {
     display: grid;
     gap: var(--space-sm);
     margin-block-end: var(--space-xl);
-    padding: var(--space-md);
-    background: color-mix(in srgb, var(--surface-1) 92%, transparent);
-    border: var(--border-width) solid var(--border);
-    border-radius: var(--radius-md);
-    backdrop-filter: blur(8px);
-    position: sticky;
-    inset-block-start: var(--space-sm);
-    z-index: 6;
 
     & input[type='search'] {
       inline-size: 100%;
@@ -3711,14 +3716,17 @@
     }
   }
 
-  /* Phone: one compact sticky search. Section indexes stay in the
-     scroll, so they do not stack under the search as a second bar.
-     The bar keeps the surface treatment it has at desktop — its
-     padding and its offset from the top edge are the design, not a
-     desktop extra: squeezed to 4px and flush to the top it read as
-     a broken strip. The chips wrap inside it (the base rule) — a
-     single scrolling row cut the end chips mid-word at the box edge,
-     which read as overflow. */
+  /* Phone: no pinned nav cards. The docs contents nav and the
+     components filter are one pattern (the shared rule above), and
+     at phone width a pinned card — search field and wrapping chip
+     rows — holds a third of the screen for the whole scroll. Both
+     stand down and scroll with the page they navigate. (This block
+     previously kept the search pinned as "one compact sticky
+     search"; Warren overruled that 2026-10-28: "Who would ever want
+     a sticky nav with such large buttons?") The search keeps its
+     compact phone sizing; the chips still wrap inside the card — a
+     single scrolling row cut the end chips mid-word at the box
+     edge, which read as overflow. */
   @media (max-width: 767px) {
     [data-bn-component-search] {
       gap: var(--space-xs);
@@ -3730,7 +3738,8 @@
       padding: var(--space-xs) var(--space-sm);
     }
 
-    [data-bn-docs-toc] {
+    [data-bn-docs-toc],
+    [data-bn-component-search] {
       position: static;
       inset-block-start: auto;
     }

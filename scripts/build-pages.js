@@ -205,15 +205,30 @@ cpSync(join(root, 'packages', 'fonts'), join(dist, 'fonts'), { recursive: true }
 // Copy icons
 cpSync(join(root, 'packages', 'icons', 'src'), join(dist, 'icons'), { recursive: true });
 
-// Write Cloudflare Pages _headers file for security headers
+// Write Cloudflare Pages _headers file for security headers. The
+// dev server sends the same set (examples/express/server.js), so the
+// e2e suite runs under the policy production serves — keep the two
+// in sync. The one exception is the playground's preview document:
+// the playground frames it, so it is frameable by the site itself
+// while every other path stays DENY. Without the exception the live
+// playground sat at "Not run yet" over a blank white frame — the
+// browser refused to render the preview at all, and no local run
+// could see it, because the dev server sent no such header.
+const csp = `default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'`;
 const headers = `/*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'
+  Content-Security-Policy: ${csp}
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   Cross-Origin-Opener-Policy: same-origin
+/playground/preview
+  X-Frame-Options: SAMEORIGIN
+  Content-Security-Policy: ${csp}; frame-ancestors 'self'
+/playground/preview/*
+  X-Frame-Options: SAMEORIGIN
+  Content-Security-Policy: ${csp}; frame-ancestors 'self'
 `;
 writeFileSync(join(dist, '_headers'), headers);
 console.log('  _headers (security)');
