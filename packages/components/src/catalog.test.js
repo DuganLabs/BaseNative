@@ -201,7 +201,10 @@ test('table renders semantic structure with row headers and a caption', async ()
   assert.match(html, /<table variant="striped">/);
   assert.match(html, /<caption>Delivered leads<\/caption>/);
   assert.match(html, /<th scope="col">Service<\/th>/);
-  assert.match(html, /<th scope="row">Garcia<\/th>\s*<td>Panel upgrade<\/td>\s*<td>\$85<\/td>/);
+  // Every data cell carries its column heading as a key (shown when the
+  // table restacks narrow); the row header is the row's own label line
+  // and carries none.
+  assert.match(html, /<th scope="row">Garcia<\/th>\s*<td><b>Service<\/b>Panel upgrade<\/td>\s*<td><b>Fee<\/b>\$85<\/td>/);
 });
 
 test('datagrid nests sort buttons and selection checkboxes in the table skeleton', async () => {
@@ -352,8 +355,8 @@ test('table cells carry aria-current and de-emphasis for the calendar compositio
     columns: ['Sun', 'Mon'],
     rows: [[{ text: '27', small: true }, { text: '28', current: 'date' }]],
   });
-  assert.match(html, /<td><small>27<\/small><\/td>/);
-  assert.match(html, /<td aria-current="date">28<\/td>/);
+  assert.match(html, /<td><b>Sun<\/b><small>27<\/small><\/td>/);
+  assert.match(html, /<td aria-current="date"><b>Mon<\/b>28<\/td>/);
 });
 
 test('form composes heading, summary, fields, and actions, and owns the submit moment', async () => {

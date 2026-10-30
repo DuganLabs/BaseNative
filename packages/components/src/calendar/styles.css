@@ -96,5 +96,6 @@ section[variant="month"] {
   --size-table-head-block-restack: var(--size-max-content);
   --display-table-row-restack: var(--display-table-row);
   --display-table-cell-restack: var(--display-table-cell);
+  --display-table-cell-key-restack: var(--display-none);
   --size-border-table-cell-block-end-restack: var(--size-hairline);
 }

@@ -1313,6 +1313,14 @@
   --border-style-table-row-block-end-restack: var(--border-style-solid);
   --color-border-table-row-block-end-restack: var(--color-border-separator);
   --color-bkg-table-row-striped: var(--color-fill-4);
+  --display-table-cell-key: var(--display-none);
+  --display-table-cell-key-restack: var(--display-block);
+  --color-text-table-cell-key: var(--color-text-label-3);
+  --font-table-cell-key-size: var(--font-subheadline-size);
+  --font-table-cell-key-weight: var(--font-weight-semibold);
+  --font-table-cell-key-leading: var(--font-subheadline-leading);
+  --font-table-cell-key-tracking: var(--font-subheadline-tracking);
+  --spacing-table-cell-key-padding-block-end: var(--spacing-1);
   --display-tabs: var(--display-grid);
   --spacing-tabs-gap: var(--spacing-4);
   --display-tabs-list: var(--display-flex);
@@ -1651,6 +1659,7 @@
   --font-table-caption-family: var(--font-subheadline-family);
   --font-table-head-family: var(--font-subheadline-family);
   --font-table-cell-family: var(--font-body-family);
+  --font-table-cell-key-family: var(--font-subheadline-family);
   --font-tabs-tab-family: var(--font-subheadline-family);
   --color-border-tabs-tab-block-end-selected: var(--color-tint);
   --color-border-textarea-invalid: var(--color-danger);

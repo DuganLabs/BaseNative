@@ -63,21 +63,36 @@ table[variant="default"], table[variant="striped"] {
     color: var(--color-text-table-cell-small);
     font-size: var(--font-table-cell-size);
   }
+
+  /* The cell's key: its column heading, carried in the markup and
+     shown only when the table restacks (below), where the header row
+     steps out of the visual flow. In the wide layout the heading
+     already sits at the top of the column, so the key stays hidden. */
+  & td > b {
+    display: var(--display-table-cell-key);
+    color: var(--color-text-table-cell-key);
+    font-family: var(--font-table-cell-key-family);
+    font-size: var(--font-table-cell-key-size);
+    font-weight: var(--font-table-cell-key-weight);
+    line-height: var(--font-table-cell-key-leading);
+    letter-spacing: var(--font-table-cell-key-tracking);
+    padding-block-end: var(--spacing-table-cell-key-padding-block-end);
+  }
 }
 
 table[variant="striped"] > tbody > tr:nth-child(even) {
   background-color: var(--color-bkg-table-row-striped);
 }
 
-/* Narrow restack without stamped data-labels. The row header becomes
-   the row's label line and the header row steps out of the visual
-   flow while staying in the accessibility tree. A restacked cell is
-   prose, not a column, so its text wraps anywhere: a long
-   unbreakable word (a global's name, a package spec) must not size
-   the whole table past its container. The trigger is the CONTAINER,
-   not the viewport: inside a railed shell a wide viewport can still
-   hand the table a phone-width column, and the table adapts to the
-   space it actually gets. */
+/* Narrow restack. The row header becomes the row's label line, each
+   data cell carries its column heading as a key line, and the header
+   row steps out of the visual flow while staying in the accessibility
+   tree. A restacked cell is prose, not a column, so its text wraps
+   anywhere: a long unbreakable word (a global's name, a package spec)
+   must not size the whole table past its container. The trigger is
+   the CONTAINER, not the viewport: inside a railed shell a wide
+   viewport can still hand the table a phone-width column, and the
+   table adapts to the space it actually gets. */
 @container (max-width: 40rem) {
   table[variant="default"], table[variant="striped"] {
     & > thead {
@@ -100,6 +115,10 @@ table[variant="striped"] > tbody > tr:nth-child(even) {
       border-block-end-width: var(--size-border-table-cell-block-end-restack);
       padding-block: var(--spacing-table-cell-padding-block-restack);
       overflow-wrap: var(--overflow-wrap-table-cell-restack);
+    }
+
+    & > tbody td > b {
+      display: var(--display-table-cell-key-restack);
     }
   }
 }

@@ -12,6 +12,9 @@ export const root = 'table';
  * @property {boolean} [header] Render as the row's <th scope="row">.
  * @property {boolean} [small] Render the content de-emphasised, wrapped in a <small>.
  * @property {string} [current] An aria-current value for the cell (e.g. 'date', 'true').
+ * @property {string} [label] The cell's column heading, stamped by create() from
+ *   columns — rendered as the cell's key line when the table restacks narrow.
+ *   Row-header cells carry no label: the header is the row's own label line.
  *
  * @typedef {object} TableProps
  * @property {string[]} columns Column headings.
@@ -26,9 +29,14 @@ export function create(props) {
   if (!Array.isArray(props.rows)) throw new TypeError('table: rows is required');
 
   const columns = signal(props.columns);
-  const rows = signal(props.rows.map((row) => row.map((cell) => (
-    typeof cell === 'string' ? { text: cell } : cell
-  ))));
+  const rows = signal(props.rows.map((row) => row.map((cell, i) => {
+    const normalized = typeof cell === 'string' ? { text: cell } : cell;
+    if (normalized.header) return normalized;
+    const label = props.columns[i];
+    return typeof label === 'string' && label !== ''
+      ? { ...normalized, label }
+      : normalized;
+  })));
   const caption = signal(props.caption ?? '');
   const variant = signal(props.variant ?? 'default');
   const hasCaption = computed(() => caption() !== '');
