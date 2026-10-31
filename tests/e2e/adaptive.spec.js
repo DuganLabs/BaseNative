@@ -259,6 +259,43 @@ test.describe('App nav — bar geometry', () => {
     expect(ellipsized).toEqual([]);
   });
 
+  test('at 320px the min-content floor keeps every label inside its own cell', async ({ page }) => {
+    // The other half of the bar's contract: where an equal share would
+    // be narrower than the widest label, cells are NOT equal — the
+    // long label keeps its cell and the short ones compress — so the
+    // text of every cell (icon + label, measured as one range) stays
+    // inside its cell and no two cells' text can overlap.
+    await page.setViewportSize({ width: 320, height: 844 });
+    await renderComponent(page, appBarHtml());
+
+    const labels = await page.evaluate(() =>
+      [...document.querySelectorAll('nav[variant="app-bar"] > ul > li')].map((li) => {
+        const cell = li.querySelector('a, button');
+        const range = document.createRange();
+        range.selectNodeContents(cell);
+        const text = range.getBoundingClientRect();
+        const box = li.getBoundingClientRect();
+        return {
+          label: cell.textContent.trim(),
+          left: text.left,
+          right: text.right,
+          cellLeft: box.left,
+          cellRight: box.right,
+          cellWidth: box.width,
+        };
+      }),
+    );
+
+    expect(labels.map((l) => l.label)).toEqual(['Home', 'Compare', 'Components', 'Docs', 'More']);
+    for (const label of labels) {
+      expect(label.left).toBeGreaterThanOrEqual(label.cellLeft - 1);
+      expect(label.right).toBeLessThanOrEqual(label.cellRight + 1);
+    }
+    const components = labels.find((l) => l.label === 'Components');
+    const home = labels.find((l) => l.label === 'Home');
+    expect(components.cellWidth).toBeGreaterThan(home.cellWidth);
+  });
+
   test('at 1280px the shell retires the bar and the rail carries every destination', async ({
     page,
   }) => {

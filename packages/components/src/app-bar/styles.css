@@ -19,12 +19,7 @@ nav[variant="app-bar"] {
     padding: var(--spacing-app-bar-list-padding);
 
     & > li {
-      /* A zero basis makes flex-grow distribute the bar into equal
-         cells, and a zero min-inline-size lifts the min-content floor
-         that would otherwise let a long label widen its own cell. */
       flex-grow: var(--flex-grow-app-bar-item);
-      flex-basis: var(--flex-basis-app-bar-item);
-      min-inline-size: var(--size-app-bar-item-min-inline);
 
       & > a, & > button {
         display: var(--display-app-bar-tab);
@@ -104,5 +99,19 @@ nav[variant="app-bar"] {
         color: var(--color-text-app-bar-menu-link-current);
       }
     }
+  }
+}
+
+/* Equal cells where the bar can afford them: a zero basis makes
+   flex-grow distribute the bar evenly, and a zero min-inline-size
+   lifts the min-content floor that would otherwise let a long label
+   widen its own cell. Below this width an equal share is narrower
+   than the widest standard label ("Components"), so the floor stays
+   in force — the long label keeps its cell, the short labels
+   compress, and no label's text bleeds across a cell edge. */
+@media (min-width: 23.5rem) {
+  nav[variant="app-bar"] > ul > li {
+    flex-basis: var(--flex-basis-app-bar-item);
+    min-inline-size: var(--size-app-bar-item-min-inline);
   }
 }
