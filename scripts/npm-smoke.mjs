@@ -70,8 +70,11 @@ assert.equal(field.value(), 'hello', 'forms: createField lost its initial value'
     dir: 'components',
     name: '@basenative/components',
     body: `
-import { renderBadge } from '@basenative/components';
-assert.match(renderBadge('npm'), /data-bn="badge"[^>]*>npm</, 'components: renderBadge output changed');
+import { badge, loadRegistry } from '@basenative/components';
+const registry = await loadRegistry();
+assert.ok(registry.getComponent('badge'), 'components: registry did not load badge');
+const badgeVm = badge.create({ label: 'npm' });
+assert.equal(badgeVm.label(), 'npm', 'components: badge view model lost its label');
 `,
   },
 ];
