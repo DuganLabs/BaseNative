@@ -164,6 +164,10 @@ export function renderPage(viewFile, ctx, opts) {
     })
     .replace('<!--FOOTER-->', () => renderSiteFooter())
     .replaceAll('__ACTIVE__', escapeAttr(activePage))
+    .replace(
+      '<!--EXTRA_CSS-->',
+      path === '/builder' ? '<link rel="stylesheet" href="/bn-builder-css/builder.css" />' : '',
+    )
     .replace('<!--SCRIPTS-->', scripts)
     .replace(/((?:href|src)=")(\/[^"]+\.(?:css|js))"/g, `$1$2?v=${version}"`)
     .replaceAll(`'/basenative.js'`, `'/basenative.js?v=${version}'`)

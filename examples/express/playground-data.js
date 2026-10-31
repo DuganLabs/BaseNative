@@ -6,10 +6,9 @@
  * example select and the Reset/Run buttons), the tabs composite whose
  * panels hold the three editors, and the list-group the console fills —
  * through the package's own loader and @basenative/server's render().
- * No component markup or CSS is copied into this app: the loader reads
- * the package's templates and sheets, and assembleStyles() returns the
- * token sheet plus exactly the used components' styles, served as the
- * page's own stylesheet (playgroundComponentsCss below).
+ * No component markup or CSS is copied into this app. The site already
+ * links trinity.css, which carries these components' sheets, so the
+ * page does not load a second copy.
  *
  * The registry loads once at module scope (top-level await); every
  * request then renders from the same registry, synchronously, the way
@@ -17,17 +16,11 @@
  */
 import { render } from '@basenative/server';
 import { raw } from '@basenative/runtime/shared/escape';
-import {
-  loadRegistry,
-  renderComponent,
-  assembleStyles,
-} from '../../packages/components/src/loader.js';
+import { loadRegistry, renderComponent } from '../../packages/components/src/loader.js';
 import { EXAMPLES } from './playground-examples.js';
+import { highlightCode } from './highlight.js';
 
 const registry = await loadRegistry();
-
-const CHROME_COMPONENTS = ['toolbar', 'select', 'button', 'tabs', 'list-group'];
-const componentsCss = await assembleStyles(registry, CHROME_COMPONENTS);
 
 const component = (name, props) => renderComponent(registry, render, name, props).html;
 
@@ -38,20 +31,20 @@ function paneHeader(title, note) {
             </header>`;
 }
 
-function editor(lang, label) {
+function editor(lang, label, source) {
   return `<section class="editor">
               <pre class="gutter" aria-hidden="true">1</pre>
               <section class="sheet">
-                <pre class="hl" aria-hidden="true"><code></code></pre>
+                <pre class="hl" aria-hidden="true"><code>${highlightCode(source)}</code></pre>
                 <textarea id="ed-${lang}" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="${label}"></textarea>
               </section>
             </section>`;
 }
 
-function pane(lang, title, note, extra = '') {
+function pane(lang, title, note, source, extra = '') {
   return `<article class="pane" data-pane="${lang}">
             ${paneHeader(title, note)}
-            ${editor(lang, `${title} editor`)}
+            ${editor(lang, `${title} editor`, source)}
             ${extra}
           </article>`;
 }
@@ -93,30 +86,31 @@ const editorsHtml = component('tabs', {
     {
       value: 'html',
       label: 'HTML',
-      panelHtml: pane('html', 'HTML', 'BaseNative template — {{ }}, @if, @for, @click, :attr'),
+      panelHtml: pane(
+        'html',
+        'HTML',
+        'BaseNative template — {{ }}, @if, @for, @click, :attr',
+        EXAMPLES[0].html,
+      ),
     },
     {
       value: 'css',
       label: 'CSS',
-      panelHtml: pane('css', 'CSS', 'Plain CSS, applied to the preview only'),
+      panelHtml: pane('css', 'CSS', 'Plain CSS, applied to the preview only', EXAMPLES[0].css),
     },
     {
       value: 'js',
       label: 'JS',
-      panelHtml: pane('js', 'JS', 'signal, computed, effect, batch, mount(ctx)', consoleRegion),
+      panelHtml: pane(
+        'js',
+        'JS',
+        'signal, computed, effect, batch, mount(ctx)',
+        EXAMPLES[0].js,
+        consoleRegion,
+      ),
     },
   ],
 });
-
-/**
- * The assembled component sheet (token sheet + the used components'
- * styles), served as /playground/components.css by server.js and
- * written into the static export by scripts/build-pages.js. It cannot
- * ride in the view: @basenative/server leaves {{ }} inside a <style>
- * element unprocessed, by design (raw-text element), so the sheet is a
- * file, linked like every other sheet on the site.
- */
-export const playgroundComponentsCss = componentsCss;
 
 export function getPlaygroundPageContext() {
   return {

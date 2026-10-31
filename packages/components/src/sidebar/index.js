@@ -55,10 +55,8 @@ export function create(props) {
   const label = signal(props.label ?? 'Sidebar');
   const variant = signal(props.variant ?? 'sidebar');
   // An aside inside main is not a top-level complementary landmark.
-  // In-page subnav and chips are labeled regions; the rail stays complementary.
-  const landmark = signal(
-    props.variant === 'subnav' || props.variant === 'chips' ? 'region' : 'complementary',
-  );
+  // The in-page subnav is a labeled region; the rail stays complementary.
+  const landmark = signal(props.variant === 'subnav' ? 'region' : 'complementary');
 
   return { sections, label, variant, landmark, raw };
 }
@@ -67,7 +65,6 @@ export function create(props) {
 export function registerVariants(registry) {
   registry.registerVariant('sidebar', 'sidebar');
   registry.registerVariant('sidebar', 'subnav');
-  registry.registerVariant('sidebar', 'chips');
 }
 
 export const template = new URL('./index.html', import.meta.url);

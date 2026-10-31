@@ -150,7 +150,8 @@
     color: var(--bn-plat-color-labels-primary, CanvasText);
   }
 
-  .bn-builder__btn {
+  .bn-builder__btn,
+  [data-bn-builder-export-copy] {
     appearance: none;
     min-height: var(--bn-len-32, 32px);
     padding: 0 var(--bn-len-12, 12px);

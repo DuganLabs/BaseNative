@@ -89,6 +89,10 @@ jobs:
         if: matrix.node-version == 22
         run: node scripts/axiom-check.js
 
+      - name: Site composition
+        if: matrix.node-version == 22
+        run: node scripts/site-composition.js
+
       - name: Publish gate
         if: matrix.node-version == 22
         run: node scripts/publish-check.mjs

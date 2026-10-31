@@ -14,18 +14,18 @@
 
 /* Playground colors live in the DTCG token source (playground.json). */
 
-.workspace {
+section[aria-label='Playground workspace'] {
   min-inline-size: 0;
   max-inline-size: 100%;
   overflow-x: clip;
 }
 
 /* ---------- controls row: the toolbar component ---------- */
-.workspace section[variant='toolbar'] {
+section[aria-label='Playground workspace'] section[variant='toolbar'] {
   flex-wrap: wrap;
   align-items: stretch;
 }
-.workspace section[variant='toolbar'] > label {
+section[aria-label='Playground workspace'] > section > label {
   font-size: 13px;
   color: var(--color-text-playground-muted);
   align-self: center;
@@ -33,16 +33,16 @@
 /* The select grows into whatever width the toolbar gives it — up to a
    cap on wide screens, the full row on phones — so the example name
    shows in full instead of truncating. */
-.workspace section[variant='native'] {
+section[aria-label='Playground workspace'] section[variant='native'] {
   flex: 1 1 auto;
   min-width: 0;
   max-width: 340px;
   display: flex;
 }
-.workspace section[variant='native'] > select {
+section[aria-label='Playground workspace'] section[variant='native'] > select {
   width: 100%;
 }
-.workspace section[variant='toolbar'] > kbd {
+section[aria-label='Playground workspace'] > section > kbd {
   font-family: var(--font-family-playground-mono);
   font-size: 11px;
   color: var(--color-text-playground-muted);
@@ -54,21 +54,28 @@
 /* Wide screens show every panel side by side (the tab list steps
    aside); narrow screens get the component's own tab list over one
    panel at a time. */
-.workspace section[variant='tabs'] > section[role='tabpanel']:not([hidden]) {
+section[aria-label='Playground workspace']
+  section[variant='tabs']
+  > section[role='tabpanel']:not([hidden]) {
   display: flex;
   min-width: 0;
 }
-.workspace section[variant='tabs'] > section[role='tabpanel'] > .pane {
+section[aria-label='Playground workspace']
+  section[variant='tabs']
+  > section[role='tabpanel']
+  > .pane {
   flex: 1;
 }
 @media (min-width: 761px) {
-  .workspace section[variant='tabs'] {
+  section[aria-label='Playground workspace'] section[variant='tabs'] {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-  .workspace section[variant='tabs'] > ul[role='tablist'] {
+  section[aria-label='Playground workspace'] section[variant='tabs'] > ul[role='tablist'] {
     display: none;
   }
-  .workspace section[variant='tabs'] > section[role='tabpanel'][hidden] {
+  section[aria-label='Playground workspace']
+    section[variant='tabs']
+    > section[role='tabpanel'][hidden] {
     display: flex;
   }
   /* The combined JS + console pane is full height: the pane stretches
@@ -200,63 +207,17 @@
   overflow: hidden;
   outline: none;
 }
-.editor i {
-  color: var(--color-text-syntax-comment);
-  font-style: italic;
-}
-.editor strong {
-  color: var(--color-text-syntax-tag);
-  font-weight: 600;
-}
-.editor abbr {
-  color: var(--color-text-syntax-attr);
-  text-decoration: none;
-}
-.editor dfn {
-  color: var(--color-text-syntax-directive);
-  font-weight: 600;
-  font-style: normal;
-}
-.editor samp {
-  color: var(--color-text-syntax-binding);
-  font-weight: 600;
-}
-.editor mark {
-  color: var(--color-text-syntax-string);
-  background: transparent;
-}
-.editor b {
-  color: var(--color-text-syntax-keyword);
-  font-weight: 600;
-}
-.editor em {
-  color: var(--color-text-syntax-function);
-  font-style: normal;
-}
-.editor data {
-  color: var(--color-text-syntax-number);
-}
-.editor kbd {
-  color: var(--color-text-syntax-interpolation);
-}
-.editor cite {
-  color: var(--color-text-syntax-token-item);
-  font-style: normal;
-}
-.editor small {
-  color: var(--color-text-syntax-token-state);
-  font-weight: 600;
-  font-size: inherit;
-}
+/* Highlight colours live on the code-block component (pre/code elements).
+   This sheet is the editor's geometry only. */
 
 /* ---------- stage ---------- */
-.stage {
+section[aria-label='Result'] {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
   gap: 12px;
   align-items: stretch;
 }
-.preview-card {
+section[aria-label='Result'] > article {
   display: flex;
   flex-direction: column;
   background: var(--color-bkg-playground-surface);
@@ -265,21 +226,21 @@
   overflow: hidden;
   min-width: 0;
 }
-.card-head {
+section[aria-label='Result'] > article > header {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
   border-bottom: 1px solid var(--color-border-playground);
 }
-.card-head h2 {
+section[aria-label='Result'] > article > header h2 {
   margin: 0;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--color-text-playground);
 }
-.card-head output {
+section[aria-label='Result'] > article > header output {
   font-size: 12px;
   color: var(--color-text-playground-muted);
   font-family: var(--font-family-playground-mono);
@@ -287,7 +248,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.card-head output.bad {
+section[aria-label='Result'] > article > header output.bad {
   color: var(--color-text-playground-danger);
 }
 #preview {
@@ -320,7 +281,7 @@
   letter-spacing: 0.08em;
   color: var(--color-text-playground);
 }
-.console-head button[variant='ghost'] {
+.console-head button {
   block-size: auto;
   min-inline-size: 0;
   padding-block: 3px;
@@ -335,12 +296,12 @@
   padding: 0 8px 8px;
 }
 /* The console's list-group, re-pointed to console density and type. */
-.console-body ul[variant='default'] {
+.console-body ul {
   --list-group-background-color: var(--color-bkg-playground-editor);
   font-family: var(--font-family-playground-mono);
   font-size: 12.5px;
 }
-.console-body ul[variant='default'] > li {
+.console-body ul > li {
   justify-content: flex-start;
   align-items: flex-start;
   white-space: pre-wrap;
@@ -376,18 +337,18 @@
 }
 
 /* ---------- cheat sheet ---------- */
-.cheatsheet {
+footer[aria-label='Quick syntax'] {
   border-top: 1px solid var(--color-border-playground);
   padding: 10px 0 14px;
   margin-top: 16px;
 }
-.cheatsheet p {
+footer[aria-label='Quick syntax'] p {
   margin: 0;
   font-size: 12.5px;
   color: var(--color-text-playground-muted);
   line-height: 2;
 }
-.cheatsheet code {
+footer[aria-label='Quick syntax'] code {
   font-family: var(--font-family-playground-mono);
   font-size: 11.5px;
   color: var(--color-text-playground);
@@ -395,9 +356,10 @@
   border: 1px solid var(--color-border-playground);
   border-radius: 5px;
   padding: 1px 5px;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
-.cheatsheet strong {
+footer[aria-label='Quick syntax'] strong {
   color: var(--color-text-playground);
 }
 
@@ -408,7 +370,7 @@
   }
 }
 @media (max-width: 760px) {
-  .stage {
+  section[aria-label='Result'] {
     grid-template-columns: minmax(0, 1fr);
   }
   /* Stacked, the preview keeps phone proportions instead of the
@@ -416,15 +378,15 @@
   #preview {
     min-height: 260px;
   }
-  .workspace {
+  section[aria-label='Playground workspace'] {
     gap: 8px;
   }
   /* Stacked controls: the select takes the full row instead of the
      squeezed share next to the buttons. */
-  .workspace section[variant='native'] {
+  section[aria-label='Playground workspace'] section[variant='native'] {
     max-width: none;
   }
-  .workspace section[variant='toolbar'] > kbd {
+  section[aria-label='Playground workspace'] > section > kbd {
     display: none;
   }
   .editor {
