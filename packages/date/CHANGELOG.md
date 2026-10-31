@@ -1,5 +1,11 @@
 # @basenative/date
 
+## 3.0.0
+
+### Patch Changes
+
+- @basenative/runtime@3.0.0
+
 ## 2.4.0
 
 ### Patch Changes

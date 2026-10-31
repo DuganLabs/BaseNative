@@ -1,6 +1,6 @@
 {
   "name": "@basenative/components",
-  "version": "2.4.0",
+  "version": "3.0.0",
   "description": "47 semantic HTML UI components as Holy Trinity modules (template, token-driven styles, signal view model) with a registry/loader for server assembly, design tokens and light/dark themes",
   "type": "module",
   "exports": {

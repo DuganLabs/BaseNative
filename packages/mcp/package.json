@@ -1,6 +1,6 @@
 {
   "name": "@basenative/mcp",
-  "version": "2.4.0",
+  "version": "3.0.0",
   "description": "MCP server exposing BaseNative validation, SSR preview, and directive reference to any agent",
   "type": "module",
   "exports": {
@@ -38,9 +38,9 @@
     "generative-ui"
   ],
   "dependencies": {
-    "@basenative/validate": "workspace:^2.4.0",
-    "@basenative/server": "workspace:^2.4.0",
-    "@basenative/runtime": "workspace:^2.4.0"
+    "@basenative/validate": "workspace:^3.0.0",
+    "@basenative/server": "workspace:^3.0.0",
+    "@basenative/runtime": "workspace:^3.0.0"
   },
   "publishConfig": {
     "access": "public",

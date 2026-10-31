@@ -1,5 +1,9 @@
 # @basenative/tenant
 
+## 3.0.0
+
+No changes in this release.
+
 ## 2.4.0
 
 No changes in this release.

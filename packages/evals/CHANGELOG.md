@@ -1,5 +1,13 @@
 # @basenative/evals
 
+## 3.0.0
+
+### Patch Changes
+
+- @basenative/runtime@3.0.0
+  - @basenative/server@3.0.0
+  - @basenative/validate@3.0.0
+
 ## 2.4.0
 
 ### Patch Changes
