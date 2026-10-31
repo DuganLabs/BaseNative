@@ -1,24 +1,13 @@
 /**
- * Contents scrollspy. The /docs contents list links to its sections by
- * fragment; this watches those sections and keeps aria-current="true"
- * on the link for the section in view, styled by the same current
- * treatment as the app nav (PR #302).
- *
- * /components: the category TOC strip is retired — the nav that
- * survives is the sticky filter bar — so there the mark lands on the
- * filter button for the category section in view. The buttons are
- * registered after the link pass, so a button wins over a strip link
- * for the same section while both navs exist.
- *
- * Attributes only: the sheet owns every visual. No-ops on pages
- * without a contents nav, and where IntersectionObserver is missing
- * the links stay plain anchors.
+ * Contents scrollspy. Marks the in-page sidebar link or filter chip
+ * for the section in view. The docs subnav and the component chips
+ * are both the sidebar component (variants subnav and chips).
  */
 (function () {
   if (typeof IntersectionObserver === 'undefined') return;
 
   var controlsByTarget = new Map();
-  var navs = document.querySelectorAll('[data-bn-docs-toc], [data-bn-component-toc]');
+  var navs = document.querySelectorAll('aside[variant="subnav"]');
   for (var nav of navs) {
     for (var link of nav.querySelectorAll('a[href^="#"]')) {
       var id = link.getAttribute('href').slice(1);
@@ -27,10 +16,10 @@
     }
   }
 
-  var filterBar = document.querySelector('[data-bn-component-filters]');
+  var filterBar = document.querySelector('aside[variant="chips"]');
   if (filterBar) {
-    for (var button of filterBar.querySelectorAll('[data-bn-component-filter]')) {
-      var cat = button.getAttribute('data-bn-component-filter');
+    for (var button of filterBar.querySelectorAll('button')) {
+      var cat = button.value;
       if (!cat || cat === 'all') continue;
       var section = document.getElementById('cat-' + cat);
       if (section) controlsByTarget.set(section, button);

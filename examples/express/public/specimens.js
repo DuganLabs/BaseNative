@@ -32,15 +32,42 @@
  */
 
 import {
-  hydrate, effect,
-  alert, combobox, commandPalette, datagrid, dialog, drawer, dropdownMenu,
-  form, multiselect, searchField, select, tabs, themeToggle, toast, toolbar,
-  tree, virtualizer,
+  hydrate,
+  effect,
+  alert,
+  combobox,
+  commandPalette,
+  datagrid,
+  dialog,
+  drawer,
+  dropdownMenu,
+  form,
+  multiselect,
+  searchField,
+  select,
+  tabs,
+  themeToggle,
+  toast,
+  toolbar,
+  tree,
+  virtualizer,
+  bindSpacerCounts,
 } from '/basenative.js';
 
 const AGGREGATES = {
-  alert, combobox, datagrid, dialog, drawer, form, multiselect, select,
-  tabs, toast, toolbar, tree, virtualizer,
+  alert,
+  combobox,
+  datagrid,
+  dialog,
+  drawer,
+  form,
+  multiselect,
+  select,
+  tabs,
+  toast,
+  toolbar,
+  tree,
+  virtualizer,
   'command-palette': commandPalette,
   'dropdown-menu': dropdownMenu,
   'search-field': searchField,
@@ -111,7 +138,7 @@ function applyThemeMode(mode) {
     root.removeAttribute('data-theme-lock');
     const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     root.setAttribute('data-theme', dark ? 'dark' : 'light');
-    root.style.colorScheme = '';
+    /* color-scheme follows [data-theme] from the token sheet */
     if (meta) meta.setAttribute('content', dark ? '#000000' : '#f2f2f7');
     return;
   }
@@ -122,7 +149,7 @@ function applyThemeMode(mode) {
   }
   root.setAttribute('data-theme-lock', '');
   root.dataset.theme = mode;
-  root.style.colorScheme = mode;
+  /* color-scheme follows [data-theme] from the token sheet */
   if (meta) meta.setAttribute('content', mode === 'dark' ? '#000000' : '#f2f2f7');
 }
 
@@ -136,12 +163,15 @@ const templateCache = new Map();
 
 function templateFor(name) {
   if (!templateCache.has(name)) {
-    templateCache.set(name, (async () => {
-      const response = await fetch(`/bn-css/${name}/index.html`);
-      if (!response.ok) throw new Error(`specimens: no template for ${name}`);
-      const text = await response.text();
-      return text.replace(/^\s*<template>/, '').replace(/<\/template>\s*$/, '');
-    })());
+    templateCache.set(
+      name,
+      (async () => {
+        const response = await fetch(`/bn-css/${name}/index.html`);
+        if (!response.ok) throw new Error(`specimens: no template for ${name}`);
+        const text = await response.text();
+        return text.replace(/^\s*<template>/, '').replace(/<\/template>\s*$/, '');
+      })(),
+    );
   }
   return templateCache.get(name);
 }
@@ -183,8 +213,14 @@ async function mount(spec) {
   hydrate(figure, vm);
   if (!live) return;
 
-  /* A dialog-family specimen stages open in flow, as its render did. */
+  /* A dialog-family specimen stays closed until its trigger asks. */
   if (spec.open && live instanceof HTMLDialogElement) live.open = true;
+  for (const button of figure.querySelectorAll('[data-bn-dialog-trigger]')) {
+    button.addEventListener('click', () => {
+      const dialog = document.getElementById(button.getAttribute('data-bn-dialog-trigger'));
+      if (dialog && !dialog.open) dialog.showModal();
+    });
+  }
 
   if (spec.name === 'combobox' || spec.name === 'multiselect') {
     const input = live.querySelector('input');
@@ -220,12 +256,7 @@ async function mount(spec) {
     }
   }
 
-  if (spec.name === 'virtualizer') {
-    effect(() => {
-      live.style.setProperty('--number-virtualizer-spacer-start-count', String(vm.spacerStartCount()));
-      live.style.setProperty('--number-virtualizer-spacer-end-count', String(vm.spacerEndCount()));
-    });
-  }
+  if (spec.name === 'virtualizer') bindSpacerCounts(live, vm);
 }
 
 for (const spec of specs) {

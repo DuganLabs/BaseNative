@@ -13,7 +13,7 @@ export class BnBuilderTree extends HTMLElement {
   }
 
   connectedCallback() {
-    this.style.display = 'contents';
+    /* display: contents lives in builder.css */
     this._wire();
     this._render();
     if (this.state && !this._effect) {

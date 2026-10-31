@@ -65,7 +65,10 @@ function writePage(path, html) {
   const route = path.replace(/^\/+/, '');
   const dir = route ? join(dist, route) : dist;
   mkdirSync(dir, { recursive: true });
-  writeFileSync(join(dir, 'index.html'), assertNoEscapedMarkup(assertNoDevScripts(html, route), route));
+  writeFileSync(
+    join(dir, 'index.html'),
+    assertNoEscapedMarkup(assertNoDevScripts(html, route), route),
+  );
   published.push(`/${route ? `${route}/` : ''}`);
   console.log(`  /${route ? `${route}/` : ''}`);
 }
@@ -113,11 +116,9 @@ console.log('  404.html');
 
 // Copy static assets
 cpSync(join(express, 'public', 'styles.css'), join(dist, 'styles.css'));
-cpSync(join(express, 'public', 'token-bridge.css'), join(dist, 'token-bridge.css'));
-cpSync(join(express, 'public', 'theme.css'), join(dist, 'theme.css'));
-cpSync(join(express, 'public', 'ios.css'), join(dist, 'ios.css'));
 cpSync(join(express, 'public', 'boot.js'), join(dist, 'boot.js'));
 cpSync(join(express, 'public', 'scrollspy.js'), join(dist, 'scrollspy.js'));
+cpSync(join(express, 'public', 'more-menu.js'), join(dist, 'more-menu.js'));
 cpSync(join(express, 'public', 'specimens.js'), join(dist, 'specimens.js'));
 cpSync(join(express, 'public', 'basenative.js'), join(dist, 'basenative.js'));
 cpSync(join(express, 'public', 'builder.js'), join(dist, 'builder.js'));
@@ -194,12 +195,12 @@ for (const file of componentCssFiles) {
   const css = readFileSync(join(bnCssDir, file), 'utf8');
   for (const match of css.matchAll(/@import\s+['"]\.\/([^'"]+)['"]/g)) {
     if (!copiedCss.has(match[1])) {
-      throw new Error(`build-pages: ${file} imports ./${match[1]}, which was not copied into dist/bn-css`);
+      throw new Error(
+        `build-pages: ${file} imports ./${match[1]}, which was not copied into dist/bn-css`,
+      );
     }
   }
 }
-
-
 
 // Copy builder CSS (served as /bn-builder-css/ in Express, must exist in dist)
 const bnBuilderCssDir = join(dist, 'bn-builder-css');
@@ -282,7 +283,10 @@ const sitemap =
 writeFileSync(join(dist, 'sitemap.xml'), sitemap);
 console.log(`  sitemap.xml (${published.length} urls)`);
 
-writeFileSync(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+writeFileSync(
+  join(dist, 'robots.txt'),
+  `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`,
+);
 console.log('  robots.txt');
 
 for (const file of ['llms.txt', 'llms-full.txt']) {
@@ -294,15 +298,26 @@ console.log('  llms-start.txt');
 
 // The build refuses to finish without its discovery files, and with a page it
 // was told not to publish.
-for (const file of ['sitemap.xml', 'robots.txt', 'llms.txt', 'llms-full.txt', 'llms-start.txt', '_headers', '_redirects', '404.html']) {
+for (const file of [
+  'sitemap.xml',
+  'robots.txt',
+  'llms.txt',
+  'llms-full.txt',
+  'llms-start.txt',
+  '_headers',
+  '_redirects',
+  '404.html',
+]) {
   if (!existsSync(join(dist, file))) throw new Error(`dist/${file} was not written`);
 }
 for (const route of siteRoutes) {
   if (!route.internal) continue;
   const dir = join(dist, route.path.replace(/^\/+/, ''));
   if (existsSync(dir)) {
-    throw new Error(`${route.path} is internal but dist/${route.path.replace(/^\/+/, '')} exists — ` +
-      `delete dist/ before building, or the route was written anyway`);
+    throw new Error(
+      `${route.path} is internal but dist/${route.path.replace(/^\/+/, '')} exists — ` +
+        `delete dist/ before building, or the route was written anyway`,
+    );
   }
 }
 

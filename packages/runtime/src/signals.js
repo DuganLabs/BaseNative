@@ -1,4 +1,4 @@
-import { trackSignal, trackEffect } from './devtools.js';
+import { devtoolsHooks } from './devtools-hooks.js';
 
 let currentEffect = null;
 let batchDepth = 0;
@@ -96,8 +96,8 @@ export function signal(initial) {
     }
   };
   accessor.peek = () => value;
-  // No-op unless devtools are enabled; the count reads the live set.
-  trackSignal(accessor, undefined, () => subs.size);
+  // No-op unless the devtools module has installed a recorder.
+  devtoolsHooks.trackSignal(accessor, undefined, () => subs.size);
   return accessor;
 }
 
@@ -131,8 +131,8 @@ function createEffect(fn, computed) {
     cleanupEffect(effectRef);
   };
 
-  // No-op unless devtools are enabled; disposal reads the live flag.
-  trackEffect(execute, undefined, () => effectRef.disposed);
+  // No-op unless the devtools module has installed a recorder.
+  devtoolsHooks.trackEffect(execute, undefined, () => effectRef.disposed);
 
   execute();
   return execute;

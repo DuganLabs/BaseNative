@@ -105,21 +105,21 @@
     <header><h3>An LLM wrote the same two apps in both</h3></header>
     {{ benchTable }}
     <p data-compare-note data-claim>
-      The code-size hypothesis failed again: the line count is a tie, and BaseNative still
-      uses more tokens, because HTML templates carry closing tags. The {{ stats.benchDocsTokens }}-token docs bundle
-      (<code>llms.txt</code> plus the starter guide) that teaches a model the BaseNative API has
-      no break-even through code savings at this task size; what it buys is avoided errors. This
-      run had no app-code bug on either side: the effect diamond that fired twice in the first
-      run — the original benchmark's one app-code fix — did not recur on the current runtime,
-      which settles that pattern in one run. The updated scorecard is on <a href="/ai">/ai</a>.
+      The code-size hypothesis failed again: the line count is a tie, and BaseNative still uses more
+      tokens, because HTML templates carry closing tags. The {{ stats.benchDocsTokens }}-token docs
+      bundle (<code>llms.txt</code> plus the starter guide) that teaches a model the BaseNative API
+      has no break-even through code savings at this task size; what it buys is avoided errors. This
+      run had no app-code bug on either side: the effect diamond that fired twice in the first run —
+      the original benchmark's one app-code fix — did not recur on the current runtime, which
+      settles that pattern in one run. The updated scorecard is on <a href="/ai">/ai</a>.
     </p>
     <p data-compare-note>
-      First run in October 2026, against BaseNative 0.6.4. Re-run as a fresh authoring run on
-      {{ stats.benchRunDate }} against the published {{ stats.benchBnVersion }} packages, with
-      React still at {{ stats.benchReactVersion }}: the original apps were never committed, so
-      both implementations were rewritten from the same task descriptions, with identical tests
-      and measurement — and this time the benchmark's apps and tests are committed beside the
-      results, so the next re-run reuses them. Measured values changed; the verdict did not.
+      First run in October 2026, against BaseNative 0.6.4. Re-run as a fresh authoring run on {{
+      stats.benchRunDate }} against the published {{ stats.benchBnVersion }} packages, with React
+      still at {{ stats.benchReactVersion }}: the original apps were never committed, so both
+      implementations were rewritten from the same task descriptions, with identical tests and
+      measurement — and this time the benchmark's apps and tests are committed beside the results,
+      so the next re-run reuses them. Measured values changed; the verdict did not.
     </p>
     <p data-compare-note>
       Full method, results and the fix-by-fix log:
@@ -192,7 +192,7 @@
     genuinely excels and where you should think twice.
   </p>
 
-  <div data-compare-cards>
+  <section>
     <article data-compare-card="win">
       <header><h3>Where BaseNative wins</h3></header>
       <ul role="list" data-compare-list="win">
@@ -230,13 +230,13 @@
         <li>Almost nobody has heard of it — hiring and onboarding start from zero</li>
       </ul>
     </article>
-  </div>
+  </section>
 </section>
 
 <section>
   <h2>When to <em>choose</em> BaseNative</h2>
 
-  <div data-compare-cards>
+  <section>
     <article data-compare-card="win">
       <header><h3>Good fit</h3></header>
       <ul role="list" data-compare-list="win">
@@ -259,7 +259,7 @@
         <li>Complex SPAs with hundreds of components</li>
       </ul>
     </article>
-  </div>
+  </section>
 </section>
 
 <section data-compare-cta>

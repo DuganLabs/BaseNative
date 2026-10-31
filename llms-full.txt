@@ -1699,6 +1699,10 @@ packages/components/src/virtualizer/index.js · `import { create } from '@basena
 #### `registerVariants(registry)` (function)
 packages/components/src/virtualizer/index.js · `import { registerVariants } from '@basenative/components';`
 
+#### `bindSpacerCounts(el, vm)` (function)
+Re-point the spacer-count tokens from the view model without writing a style attribute. The sheet is one rule on the list's id.
+packages/components/src/virtualizer/index.js · `import { bindSpacerCounts } from '@basenative/components';`
+
 #### `styles` (const)
 packages/components/src/virtualizer/index.js · `import { styles } from '@basenative/components';`
 
@@ -3618,7 +3622,7 @@ Reports a hydration mismatch event.
 Instrumentation hooks that expose signal/effect/hydration state to a browser extension through `globalThis.__BASENATIVE_DEVTOOLS__`.
 
 #### `enableDevtools()`
-Turns on devtools instrumentation and installs `globalThis.__BASENATIVE_DEVTOOLS__`, with `getSignals()`, `getEffects()`, `getHydrations()`, and `getState()`. Call before creating the signals/effects you want visible — anything created ear…
+Imported from `@basenative/runtime/devtools`, not the main entry. A production bundle that never imports that module does not ship the registry. Turns on devtools instrumentation and installs `globalThis.__BASENATIVE_DEVTOOLS__`, with `get…
 
 #### `disableDevtools()`
 Turns instrumentation off, clears tracked signals/effects/hydrations, and removes `globalThis.__BASENATIVE_DEVTOOLS__`.
@@ -4545,6 +4549,7 @@ Everything below is a real, mechanically-detected gap between source/package.jso
 - `@basenative/components`: `styles` is exported (packages/components/src/accordion/index.js) but not mentioned in docs/api/components.md.
 - `@basenative/components`: `applyTheme` is exported (packages/components/src/theme-toggle/index.js) but not mentioned in docs/api/components.md.
 - `@basenative/components`: `THEME_MODES` is exported (packages/components/src/theme-toggle/index.js) but not mentioned in docs/api/components.md.
+- `@basenative/components`: `bindSpacerCounts` is exported (packages/components/src/virtualizer/index.js) but not mentioned in docs/api/components.md.
 - `@basenative/evals` — no docs/api/evals.md; API below is extracted directly from source signatures/JSDoc only (15 exports).
 - `@basenative/hmr`: `isIgnored` is exported (packages/hmr/src/watcher.js) but not mentioned in docs/api/hmr.md.
 - `@basenative/hmr`: `DEFAULT_IGNORED_DIRS` is exported (packages/hmr/src/watcher.js) but not mentioned in docs/api/hmr.md.

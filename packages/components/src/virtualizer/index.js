@@ -1,5 +1,5 @@
 // @ts-check
-import { signal, computed } from '@basenative/runtime';
+import { signal, computed, effect } from '@basenative/runtime';
 import { raw } from '@basenative/runtime/shared/escape';
 
 export const name = 'virtualizer';
@@ -64,19 +64,52 @@ export function create(props) {
   const setScrollTop = (/** @type {number} */ value) => scrollTop.set(Math.max(0, value || 0));
   /** @param {Event} event */
   function onScroll(event) {
-    const scroller = (event.currentTarget ?? event.target);
+    const scroller = event.currentTarget ?? event.target;
     if (scroller && typeof scroller.scrollTop === 'number') setScrollTop(scroller.scrollTop);
   }
 
   return {
-    id, total, scrollTop, variant, startIndex, endIndex, windowIndices,
-    spacerStartCount, spacerEndCount, itemHtml, labelFor, hasItemHtml, setScrollTop, onScroll, raw,
+    id,
+    total,
+    scrollTop,
+    variant,
+    startIndex,
+    endIndex,
+    windowIndices,
+    spacerStartCount,
+    spacerEndCount,
+    itemHtml,
+    labelFor,
+    hasItemHtml,
+    setScrollTop,
+    onScroll,
+    raw,
   };
 }
 
 /** @param {import('../registry.js').Registry} registry */
 export function registerVariants(registry) {
   registry.registerVariant('virtualizer', 'virtualizer');
+}
+
+/**
+ * Re-point the spacer-count tokens from the view model without writing
+ * a style attribute. The sheet is one rule on the list's id.
+ * @param {HTMLElement} el
+ * @param {{ id: () => string, spacerStartCount: () => number, spacerEndCount: () => number }} vm
+ */
+export function bindSpacerCounts(el, vm) {
+  if (!el || typeof CSSStyleSheet === 'undefined' || typeof document === 'undefined') return;
+  const sheet = new CSSStyleSheet();
+  document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+  return effect(() => {
+    const id = CSS.escape(String(vm.id()));
+    const start = Number(vm.spacerStartCount()) || 0;
+    const end = Number(vm.spacerEndCount()) || 0;
+    sheet.replaceSync(
+      `#${id}{--number-virtualizer-spacer-start-count:${start};--number-virtualizer-spacer-end-count:${end}}`,
+    );
+  });
 }
 
 export const template = new URL('./index.html', import.meta.url);

@@ -63,10 +63,27 @@ const light = blocks.find((b) => b.selector === ':root')?.props ?? {};
 const dark = blocks.find((b) => b.selector === ':root[data-theme="dark"]')?.props ?? {};
 
 const entries = (props) => Object.entries(props).map(([name, value]) => ({ name, value }));
-const family = (props, prefix) => entries(props).filter((e) => e.name.startsWith(prefix));
+const family = (props, prefix, pred) =>
+  entries(props).filter((e) => e.name.startsWith(prefix) && (!pred || pred(e.name)));
 
-const ROLE_HEADS = ['--label', '--background', '--fill', '--separator', '--tint', '--danger', '--success', '--warning', '--on-', '--scrim', '--shadow', '--focus-ring'];
-const isRole = (name) => ROLE_HEADS.some((head) => name === head || name.startsWith(`${head}-`) || name.startsWith(head)) && !name.startsWith('--system');
+const ROLE_HEADS = [
+  '--label',
+  '--background',
+  '--fill',
+  '--separator',
+  '--tint',
+  '--danger',
+  '--success',
+  '--warning',
+  '--on-',
+  '--scrim',
+  '--shadow',
+  '--focus-ring',
+];
+const isRole = (name) =>
+  ROLE_HEADS.some(
+    (head) => name === head || name.startsWith(`${head}-`) || name.startsWith(head),
+  ) && !name.startsWith('--system');
 
 function tokenTable(caption, rows) {
   return raw(
@@ -114,16 +131,18 @@ export function getDesignSystemContext() {
       columns: ['Recipe', 'Size', 'Leading', 'Weight', 'Tracking'],
       rows: recipeNames.map((name) => [
         { text: name, header: true },
-        ...['size', 'leading', 'weight', 'tracking'].map((facet) => light[`--text-${name}-${facet}`] ?? ''),
+        ...['size', 'leading', 'weight', 'tracking'].map(
+          (facet) => light[`--text-${name}-${facet}`] ?? '',
+        ),
       ]),
     }),
   );
   const fonts = family(light, '--font-');
 
   const scaleGroups = [
-    { title: 'Space', prefix: '--space-' },
-    { title: 'Radius', prefix: '--radius-' },
-    { title: 'Size', prefix: '--size-' },
+    { title: 'Space', prefix: '--spacing-', pred: (name) => /^--spacing-\d+$/.test(name) },
+    { title: 'Radius', prefix: '--size-radius-' },
+    { title: 'Size', prefix: '--size-', pred: (name) => !name.startsWith('--size-radius') },
     { title: 'Motion', prefix: '--motion-' },
     { title: 'Layer', prefix: '--layer-' },
   ];
@@ -133,12 +152,25 @@ export function getDesignSystemContext() {
       renderTrinity('table', {
         caption: `${group.title} tokens`,
         columns: ['Token', 'Value'],
-        rows: family(light, group.prefix).map((e) => [e.name, e.value]),
+        rows: family(light, group.prefix, group.pred).map((e) => [e.name, e.value]),
       }),
     ),
   }));
 
+  const radiusSteps = family(light, '--size-radius-');
+  const ladderCss = raw(
+    [
+      ...systemColors.map((c) => `[data-bn-swatch="${c.name}"]{background:var(${c.name})}`),
+      ...radiusSteps.map(
+        (step) =>
+          `[data-bn-radius="${step.name}"]{border-radius:var(${step.name});background:var(--color-tint)}`,
+      ),
+    ].join(''),
+  );
+
   return {
+    radiusSteps,
+    ladderCss,
     rolesTable: tokenTable('Color and surface roles — the names components consume', roleRows),
     roleCount: roleRows.length,
     systemColors,

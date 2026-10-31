@@ -3,7 +3,13 @@
  *
  * Exposes signal inspection, dependency tracking, and hydration timeline
  * through a global hook for browser extension integration.
+ *
+ * Import this module (`@basenative/runtime/devtools`) only in development.
+ * The runtime core calls empty slots until `enableDevtools()` installs
+ * the recorders, so a production bundle that never imports this file
+ * does not ship the registry.
  */
+import { devtoolsHooks } from './devtools-hooks.js';
 
 const devtoolsState = {
   signals: new Map(),
@@ -25,6 +31,9 @@ let effectIds = new WeakMap();
  * Call this before creating signals or hydrating.
  */
 export function enableDevtools() {
+  devtoolsHooks.trackSignal = trackSignal;
+  devtoolsHooks.trackEffect = trackEffect;
+  devtoolsHooks.recordHydration = recordHydration;
   devtoolsState.enabled = true;
 
   if (typeof globalThis !== 'undefined') {

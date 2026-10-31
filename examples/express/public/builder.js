@@ -1,57 +1,12 @@
-// ../../packages/runtime/src/devtools.js
-var devtoolsState = {
-  signals: /* @__PURE__ */ new Map(),
-  effects: /* @__PURE__ */ new Map(),
-  hydrations: [],
-  enabled: false
-};
-var nextSignalId = 1;
-var nextEffectId = 1;
-var signalIds = /* @__PURE__ */ new WeakMap();
-var effectIds = /* @__PURE__ */ new WeakMap();
-function registerTracked(registry, ids, key, label, prefix, extra, mintId) {
-  const existing = ids.get(key);
-  if (existing !== void 0) {
-    const info = registry.get(existing);
-    if (info) {
-      if (label) info.label = label;
-      if (extra) {
-        for (const k of Object.keys(extra)) {
-          if (extra[k] !== void 0) info[k] = extra[k];
-        }
-      }
-    }
-    return existing;
+// ../../packages/runtime/src/devtools-hooks.js
+var devtoolsHooks = {
+  trackSignal() {
+  },
+  trackEffect() {
+  },
+  recordHydration() {
   }
-  const id = mintId();
-  ids.set(key, id);
-  registry.set(id, { label: label || `${prefix}_${id}`, ...extra });
-  return id;
-}
-function trackSignal(accessor, label, subscriberCount) {
-  if (!devtoolsState.enabled) return;
-  return registerTracked(
-    devtoolsState.signals,
-    signalIds,
-    accessor,
-    label,
-    "signal",
-    { accessor, subscriberCount },
-    () => nextSignalId++
-  );
-}
-function trackEffect(handle, label, disposed) {
-  if (!devtoolsState.enabled) return;
-  return registerTracked(
-    devtoolsState.effects,
-    effectIds,
-    handle,
-    label,
-    "effect",
-    { disposed },
-    () => nextEffectId++
-  );
-}
+};
 
 // ../../packages/runtime/src/signals.js
 var currentEffect = null;
@@ -139,7 +94,7 @@ function signal(initial) {
     }
   };
   accessor.peek = () => value;
-  trackSignal(accessor, void 0, () => subs.size);
+  devtoolsHooks.trackSignal(accessor, void 0, () => subs.size);
   return accessor;
 }
 function createEffect(fn, computed2) {
@@ -169,7 +124,7 @@ function createEffect(fn, computed2) {
     effectRef.disposed = true;
     cleanupEffect(effectRef);
   };
-  trackEffect(execute, void 0, () => effectRef.disposed);
+  devtoolsHooks.trackEffect(execute, void 0, () => effectRef.disposed);
   execute();
   return execute;
 }
@@ -1362,7 +1317,6 @@ var BnBuilderPalette = class extends HTMLElement {
     this.palette = null;
   }
   connectedCallback() {
-    this.style.display = "contents";
     this.setAttribute("role", "toolbar");
     this.setAttribute("aria-label", "Component palette");
     this._render();
@@ -1505,7 +1459,6 @@ var BnBuilderCanvas = class extends HTMLElement {
     this._dragOverId = null;
   }
   connectedCallback() {
-    this.style.display = "contents";
     this.setAttribute("role", "application");
     this.setAttribute("aria-label", "Builder canvas");
     if (!this._root) {
@@ -1692,7 +1645,6 @@ var BnBuilderTree = class extends HTMLElement {
     this._lastSelection = void 0;
   }
   connectedCallback() {
-    this.style.display = "contents";
     this._wire();
     this._render();
     if (this.state && !this._effect) {
@@ -1797,7 +1749,6 @@ var BnBuilderInspector = class extends HTMLElement {
     this._effect = null;
   }
   connectedCallback() {
-    this.style.display = "contents";
     this._wire();
     this._render();
     if (this.state && !this._effect) {
@@ -1913,7 +1864,6 @@ var BnBuilder = class extends HTMLElement {
     this.palette = null;
   }
   connectedCallback() {
-    this.style.display = "contents";
     this.setAttribute("role", "application");
     this.setAttribute("aria-label", "BaseNative visual builder");
     if (!this.state) this.state = createBuilderState();
@@ -1962,7 +1912,14 @@ var BnBuilder = class extends HTMLElement {
     const rect = host.getBoundingClientRect();
     if (!rect.width) return;
     const shift = window.innerWidth / 2 - (rect.left + rect.width / 2);
-    host.style.setProperty("--bn-builder-center-shift", `${Math.round(shift)}px`);
+    const px = `${Math.round(shift)}px`;
+    let sheet = this._shiftSheet;
+    if (!sheet && typeof CSSStyleSheet !== "undefined") {
+      sheet = new CSSStyleSheet();
+      document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+      this._shiftSheet = sheet;
+    }
+    if (sheet) sheet.replaceSync(`:root{--bn-builder-center-shift:${px}}`);
   }
   attach({ state, palette }) {
     if (state) this.state = state;

@@ -1,5 +1,5 @@
 <template>
-  <dialog :variant="variant()" :aria-label="label()" @keydown="onKeydown($event)">
+  <dialog :id="dialogId()" :variant="variant()" :aria-label="label()" @keydown="onKeydown($event)">
     {{ raw(searchHtml()) }}
     <ul role="listbox" :aria-label="label()">
       <template @for="group of visibleGroups()">
@@ -7,7 +7,14 @@
           <h3>{{ group.heading }}</h3>
           <ul>
             <template @for="option of group.options">
-              <li role="option" :id="optionId(option)" :aria-selected="isActive(option)" @click="choose($event, option)">{{ option.label }}</li>
+              <li
+                role="option"
+                :id="optionId(option)"
+                :aria-selected="isActive(option)"
+                @click="choose($event, option)"
+              >
+                {{ option.label }}
+              </li>
             </template>
           </ul>
         </li>

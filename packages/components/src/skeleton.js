@@ -16,7 +16,7 @@ import { escapeAttr } from '@basenative/runtime/shared/escape';
 export function renderSkeleton(options = {}) {
   const { width = '100%', height = '1rem', variant = 'text', count = 1 } = options;
 
-  const one = `<div data-bn="skeleton" data-variant="${escapeAttr(variant)}" style="width:${escapeAttr(width)};height:${escapeAttr(height)}" aria-hidden="true"></div>`;
+  const one = `<div data-bn="skeleton" data-variant="${escapeAttr(variant)}" data-inline-size="${escapeAttr(width)}" data-block-size="${escapeAttr(height)}" aria-hidden="true"></div>`;
 
   let html = '';
   for (let i = 0; i < count; i++) {

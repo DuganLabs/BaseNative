@@ -1061,6 +1061,24 @@
       }
     }
   },
+  "flex-wrap-nowrap": {
+    "$value": "nowrap",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "flex-wrap-nowrap",
+          "type": null,
+          "item": null,
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "flex-wrap-wrap": {
     "$value": "wrap",
     "$type": "string",

@@ -186,6 +186,9 @@ Instrumentation hooks that expose signal/effect/hydration state to a browser ext
 
 ### `enableDevtools()`
 
+Imported from `@basenative/runtime/devtools`, not the main entry. A production
+bundle that never imports that module does not ship the registry.
+
 Turns on devtools instrumentation and installs `globalThis.__BASENATIVE_DEVTOOLS__`, with `getSignals()`, `getEffects()`, `getHydrations()`, and `getState()`. Call before creating the signals/effects you want visible — anything created earlier is not retroactively tracked. Creation is registration: `signal()`, `computed()`, and `effect()` register as they are created, with live values, subscriber counts, and disposal state, and `hydrate()` appends each run to the timeline.
 
 ### `disableDevtools()`

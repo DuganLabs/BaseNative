@@ -16,7 +16,9 @@ async function mounted(page, path) {
 }
 
 test.describe('Specimens — combobox', () => {
-  test('focus opens, typing filters, arrows move the active option, Enter chooses', async ({ page }) => {
+  test('focus opens, typing filters, arrows move the active option, Enter chooses', async ({
+    page,
+  }) => {
     await mounted(page, '/components/combobox');
     const root = page.locator(`${PREVIEW} section`);
     const input = root.locator('input');
@@ -54,7 +56,9 @@ test.describe('Specimens — combobox', () => {
 });
 
 test.describe('Specimens — multiselect', () => {
-  test('Enter toggles the active option into the chips; a chip button removes it', async ({ page }) => {
+  test('Enter toggles the active option into the chips; a chip button removes it', async ({
+    page,
+  }) => {
     await mounted(page, '/components/multiselect');
     const root = page.locator(`${PREVIEW} section`);
     const input = root.locator('input');
@@ -81,7 +85,9 @@ test.describe('Specimens — multiselect', () => {
 });
 
 test.describe('Specimens — select', () => {
-  test('click opens and chooses; an arrow opens the closed popover; Escape closes', async ({ page }) => {
+  test('click opens and chooses; an arrow opens the closed popover; Escape closes', async ({
+    page,
+  }) => {
     await mounted(page, '/components/select');
     const root = page.locator(`${PREVIEW} section[variant="select"]`);
     const button = root.locator('button');
@@ -127,6 +133,7 @@ test.describe('Specimens — tabs', () => {
 test.describe('Specimens — dialog family', () => {
   test('Escape dismisses the staged dialog on /components/dialog', async ({ page }) => {
     await mounted(page, '/components/dialog');
+    await page.getByRole('button', { name: 'Archive this job' }).click();
     const dialog = page.locator(`${PREVIEW} dialog[variant="default"]`);
     await expect(dialog).toHaveJSProperty('open', true);
     await dialog.locator('header button').focus();
@@ -136,6 +143,7 @@ test.describe('Specimens — dialog family', () => {
 
   test('the drawer dismisses from its Close button', async ({ page }) => {
     await mounted(page, '/components/drawer');
+    await page.getByRole('button', { name: 'Open lead detail' }).click();
     const drawer = page.locator(`${PREVIEW} dialog`);
     await expect(drawer).toHaveJSProperty('open', true);
     await drawer.locator('header button').click();
@@ -144,6 +152,7 @@ test.describe('Specimens — dialog family', () => {
 
   test('the command palette filters as you type and Enter chooses and closes', async ({ page }) => {
     await mounted(page, '/components/command-palette');
+    await page.getByRole('button', { name: 'Open command palette' }).click();
     const palette = page.locator(`${PREVIEW} dialog`);
     await expect(palette).toHaveJSProperty('open', true);
     const search = palette.locator('input[type="search"]');
@@ -255,9 +264,13 @@ test.describe('Specimens — theme toggle', () => {
     const fieldset = page.locator(`${PREVIEW} fieldset`);
     await fieldset.locator('input[value="dark"]').click();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-    await expect.poll(() => page.evaluate(() => window.localStorage.getItem('bn-theme'))).toBe('dark');
+    await expect
+      .poll(() => page.evaluate(() => window.localStorage.getItem('bn-theme')))
+      .toBe('dark');
     await fieldset.locator('input[value="system"]').click();
-    await expect.poll(() => page.evaluate(() => window.localStorage.getItem('bn-theme'))).toBeNull();
+    await expect
+      .poll(() => page.evaluate(() => window.localStorage.getItem('bn-theme')))
+      .toBeNull();
   });
 });
 

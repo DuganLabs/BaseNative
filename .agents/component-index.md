@@ -95,7 +95,9 @@ Render the combobox as an HTML string — pre-paint friendly. The static markup 
 ### `renderLayoutGrid(options)`
 renderLayoutGrid - A drag-and-drop CSS grid layout component. Designed to hook into @basenative/visual-builde…
 `packages/components/src/layout-grid.js` · emits `<div data-bn="layout-grid">` + 1 more contract(s)
-- variants: none declared
+- layout-cell.col-span: `1|10|11|12|2|3|4|5|6|7|8|9`
+- layout-cell.row-span: `1|10|11|12|2|3|4|5|6|7|8|9`
+- columns: `1|10|11|12|2|3|4|5|6|7|8|9`
 - use instead of: a bare <div> with your own classes, or literal <div data-bn="layout-grid"> markup
 
 ### `renderSkeleton(options)`

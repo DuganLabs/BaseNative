@@ -48,9 +48,15 @@ function fakeContainer() {
   const listeners = new Map();
   return {
     listeners,
-    addEventListener(type, fn) { listeners.set(type, fn); },
-    removeEventListener(type, fn) { if (listeners.get(type) === fn) listeners.delete(type); },
-    querySelectorAll() { return []; },
+    addEventListener(type, fn) {
+      listeners.set(type, fn);
+    },
+    removeEventListener(type, fn) {
+      if (listeners.get(type) === fn) listeners.delete(type);
+    },
+    querySelectorAll() {
+      return [];
+    },
   };
 }
 
@@ -73,19 +79,43 @@ describe('Skeleton', () => {
 describe('LayoutGrid — hardening', () => {
   it('renders with minimal options', () => {
     const html = renderLayoutGrid();
-    assert.ok(html.startsWith('<div data-bn="layout-grid" id="layout-grid" style="display:grid;grid-template-columns:repeat(12,1fr);gap:1rem">'));
+    assert.ok(
+      html.startsWith(
+        '<div data-bn="layout-grid" id="layout-grid" data-columns="12" data-gap="1rem">',
+      ),
+    );
   });
 
   it('renders with all options', () => {
-    const html = renderLayoutGrid({ id: 'g', columns: 4, gap: '2px', minCellHeight: '1rem', editable: true, cells: [{ id: 'c1', label: 'L', colSpan: 2, rowSpan: 3 }, { content: '<b>x</b>' }, {}] });
-    assert.ok(html.includes('repeat(4,1fr);gap:2px'));
-    assert.ok(html.includes('data-cell-id="c1" style="grid-column: span 2; grid-row: span 3; min-height: 1rem" draggable="true">L</div>'));
+    const html = renderLayoutGrid({
+      id: 'g',
+      columns: 4,
+      gap: '2px',
+      minCellHeight: '1rem',
+      editable: true,
+      cells: [{ id: 'c1', label: 'L', colSpan: 2, rowSpan: 3 }, { content: '<b>x</b>' }, {}],
+    });
+    assert.ok(html.includes('data-columns="4"'));
+    assert.ok(html.includes('data-gap="2px"'));
+    assert.ok(
+      html.includes(
+        'data-cell-id="c1" data-col-span="2" data-row-span="3" data-min-block-size="1rem" draggable="true">L</div>',
+      ),
+    );
     assert.ok(html.includes('data-cell-id="cell-1"'));
     assert.ok(html.includes('>Cell 3</div>'));
   });
 
   it('escapes id, cell ids, labels and style values', () => {
-    assertEscaped(renderLayoutGrid({ id: XSS, gap: XSS, columns: XSS, minCellHeight: XSS, cells: [{ id: XSS, label: XSS }] }));
+    assertEscaped(
+      renderLayoutGrid({
+        id: XSS,
+        gap: XSS,
+        columns: XSS,
+        minCellHeight: XSS,
+        cells: [{ id: XSS, label: XSS }],
+      }),
+    );
   });
 
   it('cell content is an HTML slot', () => {
@@ -121,7 +151,11 @@ describe('internal helpers', () => {
 
   it('normalizeItem treats a string as value and label', () => {
     assert.deepEqual(normalizeItem('a'), { value: 'a', label: 'a', disabled: false });
-    assert.deepEqual(normalizeItem({ value: 'v', label: 'L', disabled: true }), { value: 'v', label: 'L', disabled: true });
+    assert.deepEqual(normalizeItem({ value: 'v', label: 'L', disabled: true }), {
+      value: 'v',
+      label: 'L',
+      disabled: true,
+    });
   });
 
   it('describedBy lists help and error ids', () => {
@@ -132,7 +166,13 @@ describe('internal helpers', () => {
   });
 
   it('renderField escapes label, help and error', () => {
-    const html = renderField({ id: 'f', label: XSS, control: '<i></i>', helpText: XSS, error: XSS });
+    const html = renderField({
+      id: 'f',
+      label: XSS,
+      control: '<i></i>',
+      helpText: XSS,
+      error: XSS,
+    });
     assertEscaped(html);
     assert.ok(html.includes('<i></i>'));
     assert.ok(html.includes('id="f-help"'));
@@ -151,13 +191,25 @@ describe('internal helpers', () => {
 describe('package surface', () => {
   it('exports every catalog component as an aggregate', () => {
     const aggregates = Object.values(api).filter(
-      (value) => value && typeof value === 'object' && typeof value.create === 'function' && typeof value.name === 'string',
+      (value) =>
+        value &&
+        typeof value === 'object' &&
+        typeof value.create === 'function' &&
+        typeof value.name === 'string',
     );
     assert.equal(aggregates.length, 47);
   });
 
   it('exports the registry, loader and toaster factories', () => {
-    for (const name of ['createRegistry', 'validateTemplate', 'validateCss', 'loadRegistry', 'renderComponent', 'assembleStyles', 'createToaster']) {
+    for (const name of [
+      'createRegistry',
+      'validateTemplate',
+      'validateCss',
+      'loadRegistry',
+      'renderComponent',
+      'assembleStyles',
+      'createToaster',
+    ]) {
       assert.equal(typeof api[name], 'function', name);
     }
     assert.equal(typeof api.registry.registerComponent, 'function', 'the shared registry instance');
@@ -208,7 +260,11 @@ describe('tabs — APG keyboard pattern', () => {
   it('manual activation moves focus without selecting until select() runs', () => {
     const reported = [];
     const vm = createTabs({
-      id: 't', label: 'L', name: 'group', activation: 'manual', tabs: tabList(),
+      id: 't',
+      label: 'L',
+      name: 'group',
+      activation: 'manual',
+      tabs: tabList(),
       onSelect: (payload) => reported.push(payload),
     });
     const [a, b] = vm.tabs();
@@ -218,7 +274,9 @@ describe('tabs — APG keyboard pattern', () => {
     assert.equal(vm.tabIndex(b), 0, 'tabindex follows focus, not selection');
     vm.select(b);
     assert.equal(vm.selected(), 'b');
-    assert.deepEqual(reported, [{ name: 'group', mode: 'tabs', values: ['b'], changed: 'b', selected: true }]);
+    assert.deepEqual(reported, [
+      { name: 'group', mode: 'tabs', values: ['b'], changed: 'b', selected: true },
+    ]);
     vm.select(vm.tabs()[2]);
     assert.equal(vm.selected(), 'b', 'a disabled tab cannot be selected');
   });
@@ -241,7 +299,10 @@ describe('dropdown-menu — activation', () => {
     vm.activate(del);
     vm.activate(separator);
     vm.activate(plain);
-    assert.deepEqual(calls, [['rename', 'Rename'], ['', 'Plain']]);
+    assert.deepEqual(calls, [
+      ['rename', 'Rename'],
+      ['', 'Plain'],
+    ]);
     assert.equal(vm.isDisabled(del), 'true');
     assert.equal(vm.isDisabled(rename), 'false');
   });
@@ -253,7 +314,13 @@ describe('dropdown-menu — activation', () => {
 
 describe('command-palette — filter, active option, choose', () => {
   const groups = () => [
-    { label: 'Pages', options: [{ value: 'home', label: 'Home' }, { value: 'docs', label: 'Docs' }] },
+    {
+      label: 'Pages',
+      options: [
+        { value: 'home', label: 'Home' },
+        { value: 'docs', label: 'Docs' },
+      ],
+    },
     { label: 'Actions', options: [{ value: 'build', label: 'Build site' }] },
   ];
 
@@ -275,7 +342,10 @@ describe('command-palette — filter, active option, choose', () => {
     const vm = createCommandPalette({ id: 'cp', searchHtml: '<input>', groups: groups() });
     vm.setQuery('doc');
     assert.equal(vm.visibleGroups().length, 1);
-    assert.deepEqual(vm.flatOptions().map((o) => o.value), ['docs']);
+    assert.deepEqual(
+      vm.flatOptions().map((o) => o.value),
+      ['docs'],
+    );
     assert.equal(vm.activeOption().value, 'docs');
     assert.equal(vm.activeDescendant(), 'cp-option-docs');
     vm.setQuery('zzz');
@@ -289,10 +359,17 @@ describe('command-palette — filter, active option, choose', () => {
   it('choose reports the option and closes the hosting dialog', () => {
     const picked = [];
     const vm = createCommandPalette({
-      id: 'cp', searchHtml: '<input>', groups: groups(),
+      id: 'cp',
+      searchHtml: '<input>',
+      groups: groups(),
       onSelect: (payload) => picked.push(payload),
     });
-    const dialog = { open: true, close() { this.open = false; } };
+    const dialog = {
+      open: true,
+      close() {
+        this.open = false;
+      },
+    };
     const event = { currentTarget: { closest: () => dialog } };
     vm.choose(event, vm.flatOptions()[1]);
     assert.deepEqual(picked, [{ value: 'docs', label: 'Docs' }]);
@@ -326,7 +403,9 @@ describe('combobox — APG listbox pattern', () => {
   it('Enter selects the active option, closes and reports; Escape closes without selecting', () => {
     const picked = [];
     const vm = createCombobox({
-      id: 'cb', inputHtml: '<input>', options: options(),
+      id: 'cb',
+      inputHtml: '<input>',
+      options: options(),
       onSelect: (payload) => picked.push(payload),
     });
     vm.onKeydown(keyEvent('ArrowDown'));
@@ -360,16 +439,24 @@ describe('multiselect — toggle model and keyboard', () => {
   it('toggle adds and removes, reporting the values each time', () => {
     const reports = [];
     const vm = createMultiselect({
-      id: 'ms', inputHtml: '<input>', options: options(),
+      id: 'ms',
+      inputHtml: '<input>',
+      options: options(),
       onChange: (payload) => reports.push(payload.values),
     });
     const [a, b] = vm.options();
     vm.toggle(a);
     vm.toggle(b);
-    assert.deepEqual(vm.selected().map((item) => item.value), ['a', 'b']);
+    assert.deepEqual(
+      vm.selected().map((item) => item.value),
+      ['a', 'b'],
+    );
     assert.equal(vm.isSelected(a), 'true');
     vm.toggle(a);
-    assert.deepEqual(vm.selected().map((item) => item.value), ['b']);
+    assert.deepEqual(
+      vm.selected().map((item) => item.value),
+      ['b'],
+    );
     assert.deepEqual(reports, [['a'], ['a', 'b'], ['b']]);
     assert.equal(vm.hasSelected(), true);
   });
@@ -381,7 +468,10 @@ describe('multiselect — toggle model and keyboard', () => {
     assert.equal(vm.addValue('nope'), false, 'unknown value');
     assert.equal(vm.addValue('c'), true);
     assert.equal(vm.removeLast(), true);
-    assert.deepEqual(vm.selected().map((item) => item.value), ['a']);
+    assert.deepEqual(
+      vm.selected().map((item) => item.value),
+      ['a'],
+    );
     assert.equal(vm.removeValue('zzz'), false);
     assert.equal(vm.removeValue('a'), true);
     assert.equal(vm.removeLast(), false, 'nothing left to remove');
@@ -395,7 +485,10 @@ describe('multiselect — toggle model and keyboard', () => {
     vm.onKeydown(keyEvent('ArrowDown'));
     assert.equal(vm.activeDescendant(), 'ms-option-b');
     vm.onKeydown(keyEvent('Enter'));
-    assert.deepEqual(vm.selected().map((item) => item.value), ['b']);
+    assert.deepEqual(
+      vm.selected().map((item) => item.value),
+      ['b'],
+    );
     vm.onKeydown(keyEvent('Escape'));
     assert.equal(vm.open(), false);
     assert.equal(vm.activeDescendant(), '');
@@ -413,12 +506,21 @@ describe('specimen behaviors — the patterns that moved in from the site boot',
     const vm = createCombobox({ id: 'cb', inputHtml: '<input>', options: comboOptions() });
     vm.onFocus();
     assert.equal(vm.open(), true);
-    assert.deepEqual(vm.visibleOptions().map((o) => o.value), ['orange', 'la', 'riverside']);
+    assert.deepEqual(
+      vm.visibleOptions().map((o) => o.value),
+      ['orange', 'la', 'riverside'],
+    );
     vm.onInput({ target: { value: 'ang' } });
-    assert.deepEqual(vm.visibleOptions().map((o) => o.value), ['orange', 'la']);
+    assert.deepEqual(
+      vm.visibleOptions().map((o) => o.value),
+      ['orange', 'la'],
+    );
     assert.equal(vm.activeDescendant(), 'cb-option-orange');
     vm.onInput({ target: { value: 'river' } });
-    assert.deepEqual(vm.visibleOptions().map((o) => o.value), ['riverside']);
+    assert.deepEqual(
+      vm.visibleOptions().map((o) => o.value),
+      ['riverside'],
+    );
     assert.equal(vm.activeOption().value, 'riverside');
   });
 
@@ -434,7 +536,12 @@ describe('specimen behaviors — the patterns that moved in from the site boot',
   });
 
   it('combobox: choosing from the popup lands the label in the composed input', () => {
-    const vm = createCombobox({ id: 'cb', inputHtml: '<input>', options: comboOptions(), open: true });
+    const vm = createCombobox({
+      id: 'cb',
+      inputHtml: '<input>',
+      options: comboOptions(),
+      open: true,
+    });
     const input = { value: '' };
     const li = { closest: () => ({ querySelector: () => input }) };
     vm.choose({ currentTarget: li, target: li }, vm.options()[1]);
@@ -445,7 +552,8 @@ describe('specimen behaviors — the patterns that moved in from the site boot',
 
   it('multiselect: typing filters; a chip button removes its value and the refocus does not reopen', () => {
     const vm = createMultiselect({
-      id: 'ms', inputHtml: '<input>',
+      id: 'ms',
+      inputHtml: '<input>',
       options: [
         { value: 'ev', label: 'EV charging' },
         { value: 'panel', label: 'Panel upgrade' },
@@ -454,11 +562,18 @@ describe('specimen behaviors — the patterns that moved in from the site boot',
       selected: [{ value: 'ev', label: 'EV charging', dismissHtml: '<button>Remove</button>' }],
     });
     vm.onInput({ target: { value: 'light' } });
-    assert.deepEqual(vm.visibleOptions().map((o) => o.value), ['lighting']);
+    assert.deepEqual(
+      vm.visibleOptions().map((o) => o.value),
+      ['lighting'],
+    );
     assert.equal(vm.open(), true);
 
     let focused = false;
-    const input = { focus() { focused = true; } };
+    const input = {
+      focus() {
+        focused = true;
+      },
+    };
     const chipLi = {};
     const section = { querySelector: () => input };
     const chipList = { children: [chipLi], closest: (sel) => (sel === 'ul' ? chipList : section) };
@@ -486,9 +601,15 @@ describe('specimen behaviors — the patterns that moved in from the site boot',
   it('dialog behavior: the header close control dismisses, a footer action does not; Escape closes an open dialog', () => {
     const dialog = {
       open: true,
-      close() { this.open = false; },
-      closest() { return this; },
-      querySelector(sel) { return sel === 'header' ? this.header : null; },
+      close() {
+        this.open = false;
+      },
+      closest() {
+        return this;
+      },
+      querySelector(sel) {
+        return sel === 'header' ? this.header : null;
+      },
       header: { contains: (el) => el === headerButton },
     };
     const headerButton = { closest: () => headerButton };
@@ -508,11 +629,20 @@ describe('specimen behaviors — the patterns that moved in from the site boot',
   it('toolbar: Escape closes the overflow and reports; closeOverflow is idempotent', () => {
     const reports = [];
     const vm = createToolbar({
-      label: 'Actions', actionsHtml: '<button>New</button>', overflowHtml: '<menu></menu>',
-      overflowOpen: true, onOverflow: (payload) => reports.push(payload.open),
+      label: 'Actions',
+      actionsHtml: '<button>New</button>',
+      overflowHtml: '<menu></menu>',
+      overflowOpen: true,
+      onOverflow: (payload) => reports.push(payload.open),
     });
     let refocused = false;
-    const bar = { querySelector: () => ({ focus() { refocused = true; } }) };
+    const bar = {
+      querySelector: () => ({
+        focus() {
+          refocused = true;
+        },
+      }),
+    };
     vm.onKeydown({ key: 'Escape', preventDefault() {}, currentTarget: { closest: () => bar } });
     assert.equal(vm.overflowOpen(), false);
     assert.equal(refocused, true, 'focus returns to the More button');
@@ -531,13 +661,24 @@ describe('specimen behaviors — the patterns that moved in from the site boot',
     vm.onItemClick({ target: { closest: () => null } }, first);
     assert.equal(vm.items().length, 2, 'a click off the button keeps the item');
     vm.onItemClick({ target: { closest: () => ({}) } }, first);
-    assert.deepEqual(vm.items().map((item) => item.message), ['Two']);
+    assert.deepEqual(
+      vm.items().map((item) => item.message),
+      ['Two'],
+    );
   });
 
   it('alert: only a button click dismisses, and it removes the aside', () => {
-    const vm = createAlert({ title: 'Heads up', body: 'Body', dismissHtml: '<button>Dismiss</button>' });
+    const vm = createAlert({
+      title: 'Heads up',
+      body: 'Body',
+      dismissHtml: '<button>Dismiss</button>',
+    });
     let removed = false;
-    const aside = { remove() { removed = true; } };
+    const aside = {
+      remove() {
+        removed = true;
+      },
+    };
     const fromAside = { closest: () => aside };
     vm.dismiss({ target: { closest: () => null }, currentTarget: fromAside });
     assert.equal(removed, false, 'a click off the button keeps the alert');
@@ -555,9 +696,17 @@ describe('specimen behaviors — the patterns that moved in from the site boot',
     });
     const column = vm.viewColumns()[0];
     vm.sortClick({ target: { closest: () => null } }, column);
-    assert.deepEqual(vm.viewRows().map((row) => row.cells[0].html), ['Garcia', 'Nguyen'], 'a cell click does not sort');
+    assert.deepEqual(
+      vm.viewRows().map((row) => row.cells[0].html),
+      ['Garcia', 'Nguyen'],
+      'a cell click does not sort',
+    );
     vm.sortClick({ target: { closest: () => ({}) } }, column);
-    assert.deepEqual(vm.viewRows().map((row) => row.cells[0].html), ['Nguyen', 'Garcia'], 'the button click flips to descending');
+    assert.deepEqual(
+      vm.viewRows().map((row) => row.cells[0].html),
+      ['Nguyen', 'Garcia'],
+      'the button click flips to descending',
+    );
     assert.equal(vm.sortState().dir, 'desc');
   });
 });
@@ -574,37 +723,73 @@ describe('datagrid — sort and selection models', () => {
 
   it('decorates rows and cells with grid coordinates, offset by the selection column', () => {
     const plain = createDatagrid({ columns: columns(), rows: rows() });
-    assert.deepEqual(plain.viewRows().map((row) => [row.r, row.cells[0].c]), [[1, 0], [2, 0]]);
+    assert.deepEqual(
+      plain.viewRows().map((row) => [row.r, row.cells[0].c]),
+      [
+        [1, 0],
+        [2, 0],
+      ],
+    );
     const selectable = createDatagrid({ columns: columns(), rows: rows(), selectable: true });
-    assert.deepEqual(selectable.viewColumns().map((col) => col.c), [1, 2]);
-    assert.deepEqual(selectable.viewRows().map((row) => row.cells[0].c), [1, 1]);
-    assert.equal(selectable.selectAllTabIndex(), 0, 'the selection header cell holds the roving stop');
+    assert.deepEqual(
+      selectable.viewColumns().map((col) => col.c),
+      [1, 2],
+    );
+    assert.deepEqual(
+      selectable.viewRows().map((row) => row.cells[0].c),
+      [1, 1],
+    );
+    assert.equal(
+      selectable.selectAllTabIndex(),
+      0,
+      'the selection header cell holds the roving stop',
+    );
   });
 
   it('sortBy sorts by stripped cell text with numeric collation and flips on repeat', () => {
     const vm = createDatagrid({ columns: columns(), rows: rows() });
     vm.sortBy(vm.columns()[0]);
-    assert.deepEqual(vm.rows().map((row) => row.id), ['r2', 'r1']);
+    assert.deepEqual(
+      vm.rows().map((row) => row.id),
+      ['r2', 'r1'],
+    );
     assert.deepEqual(vm.sortState(), { key: 'name', dir: 'asc' });
     vm.sortBy(vm.columns()[0]);
-    assert.deepEqual(vm.rows().map((row) => row.id), ['r1', 'r2']);
+    assert.deepEqual(
+      vm.rows().map((row) => row.id),
+      ['r1', 'r2'],
+    );
     assert.deepEqual(vm.sortState(), { key: 'name', dir: 'desc' });
     vm.sortBy(vm.columns()[1]);
-    assert.deepEqual(vm.rows().map((row) => row.id), ['r2', 'r1'], 'numeric collation: 2 before 10');
+    assert.deepEqual(
+      vm.rows().map((row) => row.id),
+      ['r2', 'r1'],
+      'numeric collation: 2 before 10',
+    );
   });
 
   it('an onSort host owns the ordering; the grid only reports', () => {
     const calls = [];
-    const vm = createDatagrid({ columns: columns(), rows: rows(), onSort: (payload) => calls.push(payload) });
+    const vm = createDatagrid({
+      columns: columns(),
+      rows: rows(),
+      onSort: (payload) => calls.push(payload),
+    });
     vm.sortBy(vm.columns()[1]);
     assert.deepEqual(calls, [{ key: 'size', dir: 'asc' }]);
-    assert.deepEqual(vm.rows().map((row) => row.id), ['r1', 'r2'], 'rows untouched');
+    assert.deepEqual(
+      vm.rows().map((row) => row.id),
+      ['r1', 'r2'],
+      'rows untouched',
+    );
   });
 
   it('selection toggles report, select() reflects silently, selectAllState tracks coverage', () => {
     const reports = [];
     const vm = createDatagrid({
-      columns: columns(), rows: rows(), selectable: true,
+      columns: columns(),
+      rows: rows(),
+      selectable: true,
       onSelectionChange: (ids) => reports.push(ids),
     });
     assert.equal(vm.selectAllState(), 'none');
@@ -623,7 +808,13 @@ describe('datagrid — sort and selection models', () => {
 
 describe('virtualizer — window math', () => {
   it('computes the window and spacers from scrollTop and re-slices on setScrollTop', () => {
-    const vm = createVirtualizer({ id: 'v', total: 100, rowHeight: 20, viewportRows: 5, overscan: 1 });
+    const vm = createVirtualizer({
+      id: 'v',
+      total: 100,
+      rowHeight: 20,
+      viewportRows: 5,
+      overscan: 1,
+    });
     assert.equal(vm.startIndex(), 0);
     assert.equal(vm.endIndex(), 7);
     assert.deepEqual(vm.windowIndices(), [0, 1, 2, 3, 4, 5, 6]);
@@ -645,8 +836,17 @@ describe('calendar — moveEvent', () => {
   const setup = () => {
     const drops = [];
     const vm = createCalendar({
-      year: 2026, month: 11,
-      events: [{ id: 'e1', title: 'Dentist', date: '2026-11-02', at: '2026-11-02T09:00', timeLabel: '9:00 AM' }],
+      year: 2026,
+      month: 11,
+      events: [
+        {
+          id: 'e1',
+          title: 'Dentist',
+          date: '2026-11-02',
+          at: '2026-11-02T09:00',
+          timeLabel: '9:00 AM',
+        },
+      ],
       onDrop: (payload) => drops.push(payload),
     });
     return { vm, drops };
@@ -660,20 +860,32 @@ describe('calendar — moveEvent', () => {
     assert.equal(event.date, '2026-11-03');
     assert.equal(event.at, '2026-11-03T14:30');
     assert.equal(event.timeLabel, '2:30 PM');
-    assert.deepEqual(drops, [{
-      eventId: 'e1', date: '2026-11-03', hour: 14, minute: 30,
-      datetime: '2026-11-03T14:30', sourceType: 'event',
-    }]);
+    assert.deepEqual(drops, [
+      {
+        eventId: 'e1',
+        date: '2026-11-03',
+        hour: 14,
+        minute: 30,
+        datetime: '2026-11-03T14:30',
+        sourceType: 'event',
+      },
+    ]);
     assert.equal(vm.status(), 'Moved Dentist to Tue, November 3 at 2:30 PM.');
-    assert.deepEqual(vm.days().map((day) => day.date), ['2026-11-03']);
+    assert.deepEqual(
+      vm.days().map((day) => day.date),
+      ['2026-11-03'],
+    );
   });
 
   it('finds an event by title when it has no id and refuses unknown events', () => {
     const { vm } = setup();
     assert.equal(vm.moveEvent('nope', { date: '2026-11-04', hour: 9, minute: 0 }), false);
     const vm2 = createCalendar({
-      year: 2026, month: 11,
-      events: [{ title: 'Loose', date: '2026-11-02', at: '2026-11-02T09:00', timeLabel: '9:00 AM' }],
+      year: 2026,
+      month: 11,
+      events: [
+        { title: 'Loose', date: '2026-11-02', at: '2026-11-02T09:00', timeLabel: '9:00 AM' },
+      ],
     });
     assert.equal(vm2.moveEvent('Loose', { date: '2026-11-05', hour: 8, minute: 15 }), true);
     assert.equal(vm2.events()[0].timeLabel, '8:15 AM');
@@ -717,9 +929,15 @@ describe('dialog behavior — show, backdrop, change reports', () => {
   function fakeDialog() {
     return {
       open: false,
-      showModal() { this.open = true; },
-      close() { this.open = false; },
-      closest() { return this; },
+      showModal() {
+        this.open = true;
+      },
+      close() {
+        this.open = false;
+      },
+      closest() {
+        return this;
+      },
     };
   }
 
@@ -770,7 +988,10 @@ describe('toaster — ids, dismiss, auto-dismiss', () => {
     assert.equal(toaster.push({ id: 'mine', message: 'Three' }), 'mine');
     assert.equal(toaster.items().length, 3);
     toaster.dismiss(first);
-    assert.deepEqual(toaster.items().map((item) => item.id), ['bn-toast-2', 'mine']);
+    assert.deepEqual(
+      toaster.items().map((item) => item.id),
+      ['bn-toast-2', 'mine'],
+    );
   });
 
   it('auto-dismisses after the item duration; duration 0 persists', async () => {

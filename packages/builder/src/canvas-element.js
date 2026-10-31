@@ -14,7 +14,7 @@ export class BnBuilderCanvas extends HTMLElement {
   }
 
   connectedCallback() {
-    this.style.display = 'contents';
+    /* display: contents lives in builder.css */
     this.setAttribute('role', 'application');
     this.setAttribute('aria-label', 'Builder canvas');
 
@@ -129,12 +129,14 @@ export class BnBuilderCanvas extends HTMLElement {
     this._root.addEventListener('dragover', (e) => {
       const types = e.dataTransfer.types;
       const isPaletteDrag =
-        types && (types.contains
+        types &&
+        (types.contains
           ? types.contains('application/x-bn-component-type')
           : Array.from(types).includes('application/x-bn-component-type'));
       if (!isPaletteDrag) {
         const isNodeDrag =
-          types && (types.contains
+          types &&
+          (types.contains
             ? types.contains('application/x-bn-node-id')
             : Array.from(types).includes('application/x-bn-node-id'));
         if (!isNodeDrag) return;

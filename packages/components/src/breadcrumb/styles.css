@@ -1,4 +1,4 @@
-nav[variant="breadcrumb"] {
+nav[variant='breadcrumb'] {
   display: var(--display-breadcrumb);
 
   & > ol {
@@ -24,6 +24,9 @@ nav[variant="breadcrumb"] {
   }
 
   & > ol > li > a {
+    display: var(--display-inline-flex);
+    align-items: var(--align-center);
+    min-block-size: var(--size-target-min);
     color: var(--color-text-breadcrumb-link);
     text-decoration: var(--text-decoration-breadcrumb-link);
     font-family: var(--font-breadcrumb-link-family);

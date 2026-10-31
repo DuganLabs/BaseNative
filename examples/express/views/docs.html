@@ -1,17 +1,4 @@
-{{ hero }}
-
-<aside data-bn="bn-sidebar" aria-label="On this page">
-  <nav data-bn-docs-toc aria-label="On this page">
-    <p>On this page</p>
-    <ul>
-      <li><a href="#api-reference">API Reference</a></li>
-      <li><a href="#template-directives">Template Directives</a></li>
-      <li><a href="#server-rendering">Server Rendering</a></li>
-      <li><a href="#full-api-reference">Full API reference</a></li>
-      <li><a href="#design-tokens">Design Tokens</a></li>
-    </ul>
-  </nav>
-</aside>
+{{ hero }} {{ toc }}
 
 <section id="api-reference">
   <article>
@@ -288,12 +275,11 @@ const html = render(`
   <h2>Design <em>tokens</em></h2>
   <p>
     One sheet, {{ tokenCount }} tokens. Everything in this section is parsed from
-    <code>packages/components/src/tokens.css</code> — the sheet every page links and every
-    component maps from — so it cannot drift from the sheet it shows. Primitives first, then the
-    roles the components actually consume; each role carries its light and dark values side by
-    side. One token sheet holds the primitives and the roles: every component sheet opens by
-    mapping those roles onto its own tokens — no component hard-codes a color, a size, or a
-    radius.
+    <code>packages/components/src/tokens.css</code> — the sheet every page links and every component
+    maps from — so it cannot drift from the sheet it shows. Primitives first, then the roles the
+    components actually consume; each role carries its light and dark values side by side. One token
+    sheet holds the primitives and the roles: every component sheet opens by mapping those roles
+    onto its own tokens — no component hard-codes a color, a size, or a radius.
   </p>
 
   <article data-bn-design-system>
@@ -314,7 +300,7 @@ const html = render(`
         <template @for="c of systemColors; track c.name">
           <li>
             <!-- A colour swatch: a plain span, filled with the token it names. -->
-            <span style="background: {{ c.value }}" aria-hidden="true"></span>
+            <i data-bn-swatch="{{ c.name }}" aria-hidden="true"></i>
             <code>{{ c.name }}</code>
             <!-- The token's value as a text run beside its name. -->
             <span>{{ c.value }}</span>
@@ -326,8 +312,8 @@ const html = render(`
     <section>
       <h3>Materials</h3>
       <p>
-        Four glass grades, each the same five facets — blur, saturation, tint, highlight, and
-        shadow — so a surface can change grade without changing recipe.
+        Four glass grades, each the same five facets — blur, saturation, tint, highlight, and shadow
+        — so a surface can change grade without changing recipe.
       </p>
       {{ materialsTable }}
     </section>
@@ -350,6 +336,17 @@ const html = render(`
     <section>
       <h3>Scales</h3>
       <p>The ladders components step along — space, radius, size, motion, and layer.</p>
+      <ul role="list" data-bn-radius-ladder>
+        <template @for="step of radiusSteps; track step.name">
+          <li>
+            <i data-bn-radius="{{ step.name }}" aria-hidden="true"></i>
+            <code>{{ step.name }}</code>
+          </li>
+        </template>
+      </ul>
+      <style>
+        {{ ladderCss }}
+      </style>
       <template @for="group of scaleTables; track group.title">
         <h4>{{ group.title }}</h4>
         {{ group.table }}

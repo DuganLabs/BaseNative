@@ -14,6 +14,7 @@ import * as runtime from '../src/index.js';
 import * as escape from '../src/shared/escape.js';
 import * as expression from '../src/shared/expression.js';
 import * as directives from '../src/shared/directives.js';
+import * as devtools from '../src/devtools.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -31,6 +32,7 @@ const modules = [
   { label: 'shared/escape.d.ts', dts: 'shared/escape.d.ts', moduleExports: escape },
   { label: 'shared/expression.d.ts', dts: 'shared/expression.d.ts', moduleExports: expression },
   { label: 'shared/directives.d.ts', dts: 'shared/directives.d.ts', moduleExports: directives },
+  { label: 'devtools.d.ts', dts: 'devtools.d.ts', moduleExports: devtools },
 ];
 
 for (const { label, dts, moduleExports } of modules) {

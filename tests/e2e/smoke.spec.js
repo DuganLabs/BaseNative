@@ -52,8 +52,11 @@ test.describe('Enterprise Example', () => {
 // its header close control (specimens.js only mounts it). The gate
 // proves that behavior on the dialog page itself.
 test.describe('Component demos', () => {
-  test('the staged dialog dismisses from its Close button on /components/dialog', async ({ page }) => {
+  test('the staged dialog dismisses from its Close button on /components/dialog', async ({
+    page,
+  }) => {
     await page.goto('/components/dialog');
+    await page.getByRole('button', { name: 'Archive this job' }).click();
     const dialog = page.locator('dialog[variant="default"]');
     await expect(dialog).toHaveJSProperty('open', true);
     await dialog.locator('header button').click();
@@ -72,10 +75,7 @@ test.describe('Component demos', () => {
 // reload. Served from dist/ here — the dev server on :3000 has the API
 // and would pass for the wrong reason.
 test.describe('Static /components tasks demo', () => {
-  test.skip(
-    !existsSync(join(DIST, 'components', 'index.html')),
-    'run `pnpm build:pages` first',
-  );
+  test.skip(!existsSync(join(DIST, 'components', 'index.html')), 'run `pnpm build:pages` first');
 
   let server;
   let base;

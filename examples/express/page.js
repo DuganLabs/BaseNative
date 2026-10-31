@@ -10,7 +10,12 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { render } from '@basenative/server';
 import { escapeText, raw } from '@basenative/runtime/shared/escape';
-import { renderTrinity, renderTrinityVm, trinityChromeCss, trinityComponentInfo } from './trinity.js';
+import {
+  renderTrinity,
+  renderTrinityVm,
+  trinityChromeCss,
+  trinityComponentInfo,
+} from './trinity.js';
 import { renderSiteChrome, renderSiteFooter } from './shell.js';
 import { highlightCodeBlocks } from './highlight.js';
 import {
@@ -61,11 +66,9 @@ function getAssetVersion() {
   for (const file of [
     'public/basenative.js',
     'public/styles.css',
-    'public/token-bridge.css',
-    'public/ios.css',
-    'public/theme.css',
     'public/boot.js',
     'public/scrollspy.js',
+    'public/more-menu.js',
     'public/playground.css',
     'public/playground.js',
     'public/playground-preview.js',
@@ -156,8 +159,7 @@ export function renderPage(viewFile, ctx, opts) {
         appBarHtml,
         mainId: 'main-content',
         contentHtml:
-          '<output role="status" aria-live="polite" data-bn-visually-hidden></output>' +
-          content,
+          '<output role="status" aria-live="polite" data-bn-visually-hidden></output>' + content,
       });
     })
     .replace('<!--FOOTER-->', () => renderSiteFooter())
@@ -332,7 +334,11 @@ export function renderRoute(route, site = {}) {
   const effectiveRoute = ctx.liveSpecimens?.length
     ? { ...route, scripts: (route.scripts ?? '') + liveSpecimenScripts(ctx.liveSpecimens) }
     : route;
-  return renderPage(route.view, hero ? { ...ctx, hero: raw(renderHero(hero)) } : ctx, effectiveRoute);
+  return renderPage(
+    route.view,
+    hero ? { ...ctx, hero: raw(renderHero(hero)) } : ctx,
+    effectiveRoute,
+  );
 }
 
 /**
@@ -408,10 +414,8 @@ export function renderComponentPage(slug) {
   const metaPair = (term, value) => `<div><dt>${term}</dt><dd><code>${value}</code></dd></div>`;
   const demos = (() => {
     const liveSpecimens = [];
-    const list = (trinityDemos[slug] ?? (() => []))(
-      renderTrinity,
-      renderTrinityVm,
-      (spec) => liveSpecimens.push(spec),
+    const list = (trinityDemos[slug] ?? (() => []))(renderTrinity, renderTrinityVm, (spec) =>
+      liveSpecimens.push(spec),
     );
     return { list, liveSpecimens };
   })();

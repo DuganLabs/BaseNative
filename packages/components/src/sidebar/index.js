@@ -16,7 +16,9 @@ export const root = 'aside';
  *
  * @typedef {object} SidebarItem
  * @property {string} label Destination name. Escaped.
- * @property {string} href Destination URL.
+ * @property {string} [href] Destination URL. Absent for a button item.
+ * @property {string} [value] Button value, used by filter chips.
+ * @property {boolean | string} [pressed] aria-pressed for a button item.
  * @property {boolean} [current] True for the page being viewed.
  * @property {string} [iconHtml] Rendered icon markup, placed before the label.
  *
@@ -36,23 +38,36 @@ export function create(props) {
     throw new TypeError('sidebar: sections is required');
   }
 
-  const sections = signal(props.sections.map((section) => ({
-    label: section.label ?? '',
-    items: (section.items ?? []).map((item) => ({
-      ...item,
-      iconHtml: item.iconHtml ?? '',
-      ariaCurrent: item.current ? 'page' : false,
+  const sections = signal(
+    props.sections.map((section) => ({
+      label: section.label ?? '',
+      items: (section.items ?? []).map((item) => ({
+        ...item,
+        href: item.href ?? '',
+        value: item.value ?? '',
+        iconHtml: item.iconHtml ?? '',
+        isLink: Boolean(item.href),
+        pressed: item.pressed === true || item.pressed === 'true' ? 'true' : 'false',
+        ariaCurrent: item.current ? 'page' : false,
+      })),
     })),
-  })));
+  );
   const label = signal(props.label ?? 'Sidebar');
   const variant = signal(props.variant ?? 'sidebar');
+  // An aside inside main is not a top-level complementary landmark.
+  // In-page subnav and chips are labeled regions; the rail stays complementary.
+  const landmark = signal(
+    props.variant === 'subnav' || props.variant === 'chips' ? 'region' : 'complementary',
+  );
 
-  return { sections, label, variant, raw };
+  return { sections, label, variant, landmark, raw };
 }
 
 /** @param {import('../registry.js').Registry} registry */
 export function registerVariants(registry) {
   registry.registerVariant('sidebar', 'sidebar');
+  registry.registerVariant('sidebar', 'subnav');
+  registry.registerVariant('sidebar', 'chips');
 }
 
 export const template = new URL('./index.html', import.meta.url);

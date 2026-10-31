@@ -24,9 +24,19 @@ const TOKENS_DIR = join(ROOT, 'tokens');
 export const TOKENS_CSS_PATH = join(ROOT, 'src', 'tokens.css');
 
 const BASE_FILES = [
-  'palette.json', 'color.json', 'font.json', 'size.json', 'spacing.json',
-  'shadow.json', 'motion.json', 'material.json', 'layer.json',
-  'number.json', 'keyword.json',
+  'palette.json',
+  'color.json',
+  'font.json',
+  'size.json',
+  'spacing.json',
+  'shadow.json',
+  'motion.json',
+  'material.json',
+  'layer.json',
+  'number.json',
+  'keyword.json',
+  'site.json',
+  'playground.json',
 ];
 const DENSITIES = ['compact', 'default', 'spacious'];
 
@@ -63,19 +73,24 @@ async function renderSection(tokens, pathSet) {
     platforms: {
       css: {
         transforms: ['name/kebab'],
-        files: [{
-          destination: 'tokens.css',
-          format: 'css/variables',
-          options: { outputReferences: true },
-          filter: (token) => pathSet.has(token.path.join('.')),
-        }],
+        files: [
+          {
+            destination: 'tokens.css',
+            format: 'css/variables',
+            options: { outputReferences: true },
+            filter: (token) => pathSet.has(token.path.join('.')),
+          },
+        ],
       },
     },
     log: { verbosity: 'silent' },
   });
   const [result] = await sd.formatPlatform('css');
   const body = result.output.replace(/^\/\*\*[\s\S]*?\*\//, '').trim();
-  const inner = body.replace(/^:root\s*\{\n?/, '').replace(/\}\s*$/, '').trim();
+  const inner = body
+    .replace(/^:root\s*\{\n?/, '')
+    .replace(/\}\s*$/, '')
+    .trim();
   return inner.split('\n').map((line) => line.replace(/^ {2}/, ''));
 }
 
@@ -90,7 +105,8 @@ export async function buildTokensCss() {
   const base = {};
   for (const f of BASE_FILES) mergeInto(base, await loadJson(f));
   const compFiles = (await readdir(join(TOKENS_DIR, 'components')))
-    .filter((f) => f.endsWith('.json')).sort();
+    .filter((f) => f.endsWith('.json'))
+    .sort();
   for (const f of compFiles) mergeInto(base, await loadJson(join('components', f)));
 
   const dark = await loadJson('modes/dark.json');
@@ -111,15 +127,33 @@ export async function buildTokensCss() {
   const legacyBasePaths = pathsWhere(baseLeaves, (l) => systemOf(l) === 'legacy');
   for (const p of densityPaths) legacyBasePaths.delete(p);
 
-  const trinityBase = await renderSection(base, pathsWhere(baseLeaves, (l) => systemOf(l) === 'trinity'));
+  const trinityBase = await renderSection(
+    base,
+    pathsWhere(baseLeaves, (l) => systemOf(l) === 'trinity'),
+  );
   const legacyBase = await renderSection(base, legacyBasePaths);
-  const trinityDark = await renderSection(withOverrides(dark), pathsWhere(darkLeaves, (l) => systemOf(l) === 'trinity'));
-  const legacyDark = await renderSection(withOverrides(dark), pathsWhere(darkLeaves, (l) => systemOf(l) === 'legacy'));
-  const forcedLight = await renderSection(base, pathsWhere(darkLeaves, (l) => systemOf(l) === 'trinity'));
-  const reducedLines = await renderSection(withOverrides(reduced), new Set(leafPaths(reduced).keys()));
+  const trinityDark = await renderSection(
+    withOverrides(dark),
+    pathsWhere(darkLeaves, (l) => systemOf(l) === 'trinity'),
+  );
+  const legacyDark = await renderSection(
+    withOverrides(dark),
+    pathsWhere(darkLeaves, (l) => systemOf(l) === 'legacy'),
+  );
+  const forcedLight = await renderSection(
+    base,
+    pathsWhere(darkLeaves, (l) => systemOf(l) === 'trinity'),
+  );
+  const reducedLines = await renderSection(
+    withOverrides(reduced),
+    new Set(leafPaths(reduced).keys()),
+  );
   const densityLines = {};
   for (const d of DENSITIES) {
-    densityLines[d] = await renderSection(withOverrides(densities[d]), new Set(leafPaths(densities[d]).keys()));
+    densityLines[d] = await renderSection(
+      withOverrides(densities[d]),
+      new Set(leafPaths(densities[d]).keys()),
+    );
   }
 
   const parts = [
@@ -162,7 +196,12 @@ export async function buildTokensCss() {
     block('[data-theme="dark"]', legacyDark, 1),
     '}',
   ];
-  return parts.filter((p) => p !== null).join('\n').replace(/\n{3,}/g, '\n\n') + '\n';
+  return (
+    parts
+      .filter((p) => p !== null)
+      .join('\n')
+      .replace(/\n{3,}/g, '\n\n') + '\n'
+  );
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

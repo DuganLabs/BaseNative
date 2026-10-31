@@ -126,7 +126,7 @@
     }
   },
   "shadow-card": {
-    "$value": "{shadow-none}",
+    "$value": "{shadow-raised}",
     "$type": "string",
     "$extensions": {
       "com.basenative": {

@@ -36,7 +36,7 @@
     }
   },
   "font-size-xs": {
-    "$value": "0.75rem",
+    "$value": "{font-caption-1-size}",
     "$type": "string",
     "$extensions": {
       "com.basenative": {
@@ -54,7 +54,7 @@
     }
   },
   "font-size-sm": {
-    "$value": "0.875rem",
+    "$value": "{font-footnote-size}",
     "$type": "string",
     "$extensions": {
       "com.basenative": {
@@ -72,7 +72,7 @@
     }
   },
   "font-size-base": {
-    "$value": "1rem",
+    "$value": "{font-body-size}",
     "$type": "string",
     "$extensions": {
       "com.basenative": {
@@ -90,7 +90,7 @@
     }
   },
   "font-size-lg": {
-    "$value": "1.125rem",
+    "$value": "{font-title-3-size}",
     "$type": "string",
     "$extensions": {
       "com.basenative": {
@@ -108,7 +108,7 @@
     }
   },
   "font-size-xl": {
-    "$value": "1.25rem",
+    "$value": "{font-title-2-size}",
     "$type": "string",
     "$extensions": {
       "com.basenative": {

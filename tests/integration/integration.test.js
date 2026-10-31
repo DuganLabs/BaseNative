@@ -8,7 +8,13 @@ import assert from 'node:assert/strict';
 import { render } from '../../packages/server/src/render.js';
 import { signal, computed, effect } from '../../packages/runtime/src/index.js';
 import { resolveRoute, compilePattern, matchRoute } from '../../packages/router/src/index.js';
-import { createField, createForm, required, minLength, email } from '../../packages/forms/src/index.js';
+import {
+  createField,
+  createForm,
+  required,
+  minLength,
+  email,
+} from '../../packages/forms/src/index.js';
 import { defineConfig, string, optional } from '../../packages/config/src/index.js';
 import { createLogger } from '../../packages/logger/src/index.js';
 import { createI18n } from '../../packages/i18n/src/index.js';
@@ -22,10 +28,13 @@ import { highlightCode, highlightCodeBlocks } from '../../examples/express/highl
 import { HIGHLIGHTERS } from '../../examples/express/public/highlight-engine.js';
 import { AI_SCORECARD } from '../../examples/express/ai-scorecard.js';
 import { trinityDemos } from '../../examples/express/trinity-catalog.js';
-import { renderTrinity, renderTrinityVm, trinityComponentInfo } from '../../examples/express/trinity.js';
+import {
+  renderTrinity,
+  renderTrinityVm,
+  trinityComponentInfo,
+} from '../../examples/express/trinity.js';
 import { getAppNavItems } from '../../examples/express/site-data.js';
 import * as components from '../../packages/components/src/index.js';
-
 
 // ─── 1. SSR + Runtime: Context Pipeline ──────────────────────────────────────
 
@@ -40,10 +49,13 @@ describe('SSR → Context Pipeline', () => {
   });
 
   it('@for renders list items; runtime signal holds same data', () => {
-    const items = [{ id: 1, name: 'Apple' }, { id: 2, name: 'Banana' }];
+    const items = [
+      { id: 1, name: 'Apple' },
+      { id: 2, name: 'Banana' },
+    ];
     const html = render(
       '<ul><template @for="item of items; track item.id"><li>{{ item.name }}</li></template></ul>',
-      { items }
+      { items },
     );
     assert.ok(html.includes('<li>Apple</li>'));
     assert.ok(html.includes('<li>Banana</li>'));
@@ -52,7 +64,8 @@ describe('SSR → Context Pipeline', () => {
   });
 
   it('@if/@else renders correct branch', () => {
-    const tpl = '<template @if="show"><span>yes</span></template><template @else><span>no</span></template>';
+    const tpl =
+      '<template @if="show"><span>yes</span></template><template @else><span>no</span></template>';
     assert.ok(render(tpl, { show: true }).includes('<span>yes</span>'));
     assert.ok(render(tpl, { show: false }).includes('<span>no</span>'));
   });
@@ -70,7 +83,7 @@ describe('Router + Server Integration', () => {
   it('resolveRoute + render: full route-to-page pipeline', () => {
     function renderPage(pathname) {
       const match = resolveRoute(routes, pathname);
-      const route = routes.find(r => r.name === match.name);
+      const route = routes.find((r) => r.name === match.name);
       return render(route?.template || '<h1>404</h1>', { params: match.params });
     }
     assert.ok(renderPage('/').includes('<h1>Home</h1>'));
@@ -134,7 +147,7 @@ describe('Config + Logger Integration', () => {
       transport: { write: (entry) => entries.push(entry) },
     });
     logger.info('test message');
-    assert.ok(entries.some(e => e.msg === 'test message'));
+    assert.ok(entries.some((e) => e.msg === 'test message'));
   });
 
   it('logger child context propagates to entries', () => {
@@ -145,7 +158,7 @@ describe('Config + Logger Integration', () => {
     });
     const child = logger.child({ requestId: 'req-1' });
     child.info('child log');
-    assert.ok(entries.some(e => e.requestId === 'req-1'));
+    assert.ok(entries.some((e) => e.requestId === 'req-1'));
   });
 });
 
@@ -167,7 +180,9 @@ describe('Runtime Signal Composition', () => {
   it('effect tracks signal and stops after dispose', () => {
     const count = signal(0);
     const log = [];
-    const dispose = effect(() => { log.push(count()); });
+    const dispose = effect(() => {
+      log.push(count());
+    });
     count.set(1);
     count.set(2);
     dispose.dispose();
@@ -182,14 +197,15 @@ describe('Server + Flags: Feature-Flagged SSR', () => {
   it('flag value gates SSR output via context', async () => {
     const provider = createMemoryProvider({
       'new-ui': { enabled: false, percentage: 0 },
-      'beta': { enabled: true, percentage: 100 },
+      beta: { enabled: true, percentage: 100 },
     });
     const flags = createFlagManager(provider);
 
     const newUI = await flags.isEnabled('new-ui', {});
     const beta = await flags.isEnabled('beta', {});
 
-    const tpl = '<template @if="show"><div>New</div></template><template @else><div>Old</div></template>';
+    const tpl =
+      '<template @if="show"><div>New</div></template><template @else><div>Old</div></template>';
     assert.ok(render(tpl, { show: newUI }).includes('Old'));
     assert.ok(render(tpl, { show: beta }).includes('New'));
   });
@@ -239,7 +255,7 @@ describe('Server + Logger: Request Context', () => {
 
     const html = handleRequest('req-1', '<h1>{{ title }}</h1>', { title: 'Test' });
     assert.ok(html.includes('<h1>Test</h1>'));
-    assert.ok(logs.every(l => l.requestId === 'req-1'));
+    assert.ok(logs.every((l) => l.requestId === 'req-1'));
     assert.ok(logs.length >= 2);
   });
 });
@@ -277,12 +293,10 @@ describe('Config + Logger: Validated Configuration', () => {
 
 describe('Forms + Server: Server-Side Validation Flow', () => {
   it('invalid form submission yields error context for SSR error page', async () => {
-    const form = createForm(
-      {
-        email: createField('', { validators: [required(), email()] }),
-        name: createField('', { validators: [required(), minLength(2)] }),
-      },
-    );
+    const form = createForm({
+      email: createField('', { validators: [required(), email()] }),
+      name: createField('', { validators: [required(), minLength(2)] }),
+    });
 
     // Submit with empty values
     const result = await form.submit();
@@ -389,7 +403,6 @@ describe('the capability guard reads prose, not just numbers', () => {
   });
 });
 
-
 describe('the trinity specimens stay inside the page', () => {
   const slugs = trinityComponentInfo().map((entry) => entry.name);
 
@@ -406,8 +419,11 @@ describe('the trinity specimens stay inside the page', () => {
   it('no specimen links to a real site route', () => {
     for (const slug of slugs) {
       for (const demo of trinityDemos[slug](renderTrinity, renderTrinityVm)) {
-        assert.doesNotMatch(demo.html, /href="\/(?!#)/,
-          `${slug}/${demo.title} navigates to a real route — a specimen click must stay on the page`);
+        assert.doesNotMatch(
+          demo.html,
+          /href="\/(?!#)/,
+          `${slug}/${demo.title} navigates to a real route — a specimen click must stay on the page`,
+        );
       }
     }
   });
@@ -428,11 +444,17 @@ describe('the /components app demo tells the static visitor where their tasks go
 
   it('discloses that the static build does not persist, and only there', () => {
     const staticHtml = renderRoute(componentsRoute, { tasks: [], hasApi: false });
-    assert.match(staticHtml, /not saved to a server/i,
-      'the /components app demo must disclose that the static build does not persist');
+    assert.match(
+      staticHtml,
+      /not saved to a server/i,
+      'the /components app demo must disclose that the static build does not persist',
+    );
     const apiHtml = renderRoute(componentsRoute, { tasks: [], hasApi: true });
-    assert.doesNotMatch(apiHtml, /not saved to a server/i,
-      'the disclosure must not appear when the API is live');
+    assert.doesNotMatch(
+      apiHtml,
+      /not saved to a server/i,
+      'the disclosure must not appear when the API is live',
+    );
   });
 
   it('persists to localStorage in the same file as the signals', () => {
@@ -471,12 +493,23 @@ describe('every published route is reachable from the navigation', () => {
     // cannot drop the shell grid or the phone app bar (the 2026-10-20
     // incident).
     const html = renderRoute(siteRoutes[0], { tasks: [], hasApi: false });
-    assert.ok(html.includes('<style data-bn-critical="shell">'), 'the shell-critical style block renders');
-    const style = html.slice(html.indexOf('<style data-bn-critical="shell">'), html.indexOf('</style>', html.indexOf('<style data-bn-critical="shell">')));
+    assert.ok(
+      html.includes('<style data-bn-critical="shell">'),
+      'the shell-critical style block renders',
+    );
+    const style = html.slice(
+      html.indexOf('<style data-bn-critical="shell">'),
+      html.indexOf('</style>', html.indexOf('<style data-bn-critical="shell">')),
+    );
     assert.ok(style.includes('aside[variant="sidebar"]'), 'the sidebar rules are inlined');
     assert.ok(style.includes('nav[variant="app-bar"]'), 'the app bar rules are inlined');
     assert.ok(style.includes('nav[variant="app-bar"]'), 'the bar rules are inlined');
-    assert.ok(readFileSync(repo('packages/components/src/tokens.css'), 'utf8').includes('--position-app-bar: var(--position-fixed)'), 'the bar positioning token is in the generated sheet');
+    assert.ok(
+      readFileSync(repo('packages/components/src/tokens.css'), 'utf8').includes(
+        '--position-app-bar: var(--position-fixed)',
+      ),
+      'the bar positioning token is in the generated sheet',
+    );
   });
 
   it('the inlined shell CSS is self-contained: every token it uses, it defines or falls back', () => {
@@ -485,7 +518,10 @@ describe('every published route is reachable from the navigation', () => {
     // layer-0 primitives the block maps from). A fallback is enough:
     // the shell must lay out when the stylesheet chain is stale.
     const html = renderRoute(siteRoutes[0], { tasks: [], hasApi: false });
-    const style = html.slice(html.indexOf('<style data-bn-critical="shell">'), html.indexOf('</style>', html.indexOf('<style data-bn-critical="shell">')));
+    const style = html.slice(
+      html.indexOf('<style data-bn-critical="shell">'),
+      html.indexOf('</style>', html.indexOf('<style data-bn-critical="shell">')),
+    );
     const tokensCss = readFileSync(repo('packages/components/src/tokens.css'), 'utf8');
     const defined = new Set(
       [...(style + tokensCss).matchAll(/(--[a-z0-9_-]+)\s*:/g)].map((m) => m[1]),
@@ -496,7 +532,11 @@ describe('every published route is reachable from the navigation', () => {
       const hasFallback = match[2].trimStart().startsWith(',');
       if (!hasFallback && !defined.has(name)) missing.push(name);
     }
-    assert.deepEqual([...new Set(missing)], [], `shell CSS references tokens it does not define: ${missing.join(', ')}`);
+    assert.deepEqual(
+      [...new Set(missing)],
+      [],
+      `shell CSS references tokens it does not define: ${missing.join(', ')}`,
+    );
     assert.ok(style.includes('main[variant='), 'the shell layout rules are inlined');
     assert.ok(style.includes('aside[variant='), 'the sidebar rules are inlined');
   });
@@ -515,10 +555,16 @@ describe('every published route is reachable from the navigation', () => {
 
   it('a route with no nav entry is marked internal, and an internal route has no nav entry', () => {
     for (const route of siteRoutes) {
-      assert.equal(!route.activePage, Boolean(route.internal),
-        `${route.path}: activePage "${route.activePage}" and internal ${route.internal} disagree`);
+      assert.equal(
+        !route.activePage,
+        Boolean(route.internal),
+        `${route.path}: activePage "${route.activePage}" and internal ${route.internal} disagree`,
+      );
     }
-    assert.ok(siteRoutes.some((r) => r.internal), 'the verification harness is still expected to be internal');
+    assert.ok(
+      siteRoutes.some((r) => r.internal),
+      'the verification harness is still expected to be internal',
+    );
   });
 });
 
@@ -536,22 +582,22 @@ describe('site syntax highlighting is a pipeline step', () => {
     const html = highlightCode(
       "import { signal } from '@basenative/runtime';\nconst count = signal(0); // first",
     );
-    assert.match(html, /<span class="tk-kw">const<\/span>/);
-    assert.match(html, /<span class="tk-str">'@basenative\/runtime'<\/span>/);
-    assert.match(html, /<span class="tk-dir">signal<\/span>/);
-    assert.match(html, /<span class="tk-num">0<\/span>/);
-    assert.match(html, /<span class="tk-com">\/\/ first<\/span>/);
+    assert.match(html, /<b>const<\/b>/);
+    assert.match(html, /<mark>'@basenative\/runtime'<\/mark>/);
+    assert.match(html, /<dfn>signal<\/dfn>/);
+    assert.match(html, /<data>0<\/data>/);
+    assert.match(html, /<i>\/\/ first<\/i>/);
   });
 
   it('the tokenizer colours template tags, attributes, and method calls', () => {
     const html = highlightCode('<p class="item" :class="done()">{{ count() }}</p>');
-    assert.match(html, /<span class="tk-tag">p<\/span>/);
-    assert.match(html, /<span class="tk-attr">class<\/span>/);
-    assert.match(html, /<span class="tk-bind">:class<\/span>/);
-    assert.match(html, /<span class="tk-interp">{{ count\(\) }}<\/span>/);
+    assert.match(html, /<strong>p<\/strong>/);
+    assert.match(html, /<abbr>class<\/abbr>/);
+    assert.match(html, /<samp>:class<\/samp>/);
+    assert.match(html, /<kbd>{{ count\(\) }}<\/kbd>/);
     const js = highlightCode('count.set(count() + 1);');
-    assert.match(js, /<span class="tk-fn">set<\/span>/);
-    assert.match(js, /<span class="tk-fn">count<\/span>/);
+    assert.match(js, /<em>set<\/em>/);
+    assert.match(js, /<em>count<\/em>/);
   });
 
   it('the tokenizer handles @-directives without stalling', () => {
@@ -559,8 +605,8 @@ describe('site syntax highlighting is a pipeline step', () => {
     // the tag scanner forever — its first char was a valid attribute
     // start but not a valid attribute continuation.
     const html = highlightCode('<button @click="save($event)">Save</button>');
-    assert.match(html, /<span class="tk-dir">@click<\/span>/);
-    assert.match(html, /<span class="tk-tag">button<\/span>/);
+    assert.match(html, /<dfn>@click<\/dfn>/);
+    assert.match(html, /<strong>button<\/strong>/);
   });
 
   it('highlighting preserves the code text exactly', () => {
@@ -571,8 +617,7 @@ describe('site syntax highlighting is a pipeline step', () => {
     // so a naive tag-strip would eat it — the contract is that the
     // text a reader copies is the code, byte for byte.
     const text = highlightCode(code)
-      .replace(/<span[^>]*>/g, '')
-      .replace(/<\/span>/g, '')
+      .replace(/<\/?(?:b|i|em|strong|mark|abbr|dfn|samp|data|kbd|cite|small)>/g, '')
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
       .replace(/&amp;/g, '&');
@@ -582,14 +627,14 @@ describe('site syntax highlighting is a pipeline step', () => {
   it('the pass is deterministic and leaves real markup alone', () => {
     const block = '<pre><code>const a = signal(1);</code></pre>';
     assert.equal(highlightCodeBlocks(block), highlightCodeBlocks(block));
-    assert.match(highlightCodeBlocks(block), /class="tk-kw"/);
+    assert.match(highlightCodeBlocks(block), /><b>/);
     const placeholder = '<pre><code>// Click <em>Export</em> to render.</code></pre>';
     assert.equal(highlightCodeBlocks(placeholder), placeholder);
   });
 
   it('entity-escaped code round-trips into highlighted markup', () => {
     const out = highlightCodeBlocks('<pre><code>&lt;div&gt;{{ count() }}&lt;/div&gt;</code></pre>');
-    assert.match(out, /<span class="tk-tag">div<\/span>/);
+    assert.match(out, /<strong>div<\/strong>/);
     assert.equal(out.includes('&lt;span'), false, 'spans are markup; the code stays escaped');
   });
 
@@ -608,15 +653,15 @@ describe('site syntax highlighting is a pipeline step', () => {
     // (segmented — see the next test), braces, property names, strings,
     // numbers and at-rules; selectors and pseudo-classes stay plain, in
     // the editors and here alike.
-    assert.match(html, /--<span class="tk-cp-category">color<\/span>-<span class="tk-cp-item">tint<\/span>/);
-    assert.match(html, /--<span class="tk-cp-category">palette<\/span>-<span class="tk-cp-item">system<\/span>-<span class="tk-cp-item">blue<\/span>/);
-    assert.match(html, /<span class="tk-str">"primary"<\/span>/);
-    assert.match(html, /<span class="tk-attr">background-color<\/span>/);
-    assert.match(html, /--<span class="tk-cp-category">color<\/span>-<span class="tk-cp-type">bkg<\/span>-<span class="tk-cp-item">button<\/span>-<span class="tk-cp-item">primary<\/span>/);
-    assert.match(html, /--<span class="tk-cp-category">spacing<\/span>-<span class="tk-cp-item">2<\/span>/);
-    assert.match(html, /<span class="tk-num">2.75rem<\/span>/);
-    assert.match(html, /<span class="tk-attr">outline-width<\/span>/);
-    assert.match(html, /<span class="tk-num">2px<\/span>/);
+    assert.match(html, /--<b>color<\/b>-<cite>tint<\/cite>/);
+    assert.match(html, /--<b>palette<\/b>-<cite>system<\/cite>-<cite>blue<\/cite>/);
+    assert.match(html, /<mark>"primary"<\/mark>/);
+    assert.match(html, /<abbr>background-color<\/abbr>/);
+    assert.match(html, /--<b>color<\/b>-<em>bkg<\/em>-<cite>button<\/cite>-<cite>primary<\/cite>/);
+    assert.match(html, /--<b>spacing<\/b>-<cite>2<\/cite>/);
+    assert.match(html, /<data>2.75rem<\/data>/);
+    assert.match(html, /<abbr>outline-width<\/abbr>/);
+    assert.match(html, /<data>2px<\/data>/);
     // The CSS scanner preserves the code text exactly, like the JS one.
     const text = html.replace(/<[^>]+>/g, '');
     assert.equal(text, css.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
@@ -633,12 +678,15 @@ describe('site syntax highlighting is a pipeline step', () => {
     // type, one span per item segment, and the state tail — each dynamic
     // role reads distinctly, so the taxonomy structure is visible at a
     // glance.
-    assert.match(html, /--<span class="tk-cp-category">color<\/span>-<span class="tk-cp-type">bkg<\/span>-<span class="tk-cp-item">button<\/span>-<span class="tk-cp-item">primary<\/span>-<span class="tk-cp-state">hover<\/span>/);
+    assert.match(
+      html,
+      /--<b>color<\/b>-<em>bkg<\/em>-<cite>button<\/cite>-<cite>primary<\/cite>-<small>hover<\/small>/,
+    );
     // A palette weight is a numeric tail: it takes the state class.
-    assert.match(html, /--<span class="tk-cp-category">palette<\/span>-<span class="tk-cp-item">primary<\/span>-<span class="tk-cp-state">400<\/span>/);
+    assert.match(html, /--<b>palette<\/b>-<cite>primary<\/cite>-<small>400<\/small>/);
     // A var() reference segments identically to a definition.
-    assert.match(html, /--<span class="tk-cp-category">color<\/span>-<span class="tk-cp-type">text<\/span>-<span class="tk-cp-item">label<\/span>-<span class="tk-cp-state">2<\/span>/);
-    assert.match(html, /--<span class="tk-cp-category">size<\/span>-<span class="tk-cp-item">full<\/span>/);
+    assert.match(html, /--<b>color<\/b>-<em>text<\/em>-<cite>label<\/cite>-<small>2<\/small>/);
+    assert.match(html, /--<b>size<\/b>-<cite>full<\/cite>/);
     const text = html.replace(/<[^>]+>/g, '');
     assert.equal(text, css.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
   });
@@ -646,10 +694,10 @@ describe('site syntax highlighting is a pipeline step', () => {
   it('a JS file that mentions CSS stays on the JS scanner', () => {
     const js = "const sheet = ':root { --a: 1; }';\nexport const x = { color: 'red' };";
     const html = highlightCode(js);
-    assert.match(html, /<span class="tk-kw">const<\/span>/);
+    assert.match(html, /<b>const<\/b>/);
     // The CSS-looking string is a JS string token, not CSS: the JS
     // scanner ran.
-    assert.match(html, /<span class="tk-str">':root \{ --a: 1; \}'<\/span>/);
+    assert.match(html, /<mark>':root \{ --a: 1; \}'<\/mark>/);
   });
 
   it('every rendered page highlights its code blocks', () => {
@@ -666,15 +714,13 @@ describe('site syntax highlighting is a pipeline step', () => {
         // page's own script fills as the reader types; the contract
         // below covers code a page actually renders.
         if (!inner.trim()) continue;
-        if (inner.includes('<') && !inner.includes('<span class=')) continue;
-        assert.ok(
-          inner.includes('<span class='),
-          `${route.path} renders a code block with no highlighting`,
-        );
+        const marked = /<(?:b|strong|mark|em|dfn|i|abbr|samp|data|kbd)\b/.test(inner);
+        if (inner.includes('<') && !marked) continue;
+        assert.ok(marked, `${route.path} renders a code block with no highlighting`);
       }
     }
     const componentHtml = renderComponentPage('button');
-    assert.match(componentHtml, /<span class="tk-(kw|dir|tag)">/);
+    assert.match(componentHtml, /<(?:b|dfn|strong)>/);
   });
 
   it('the site and the playground run the one shared engine', () => {
@@ -690,9 +736,18 @@ describe('site syntax highlighting is a pipeline step', () => {
     assert.equal(playground.includes('function segmentTokenName'), false);
     assert.equal(playground.includes('function hlCSS'), false);
     // Same input, same output: the pass and the pane agree byte for byte.
-    assert.equal(highlightCode('button { color: var(--color-text-label); }'), HIGHLIGHTERS.css('button { color: var(--color-text-label); }'));
-    assert.equal(highlightCode('count.set(count() + 1);'), HIGHLIGHTERS.js('count.set(count() + 1);'));
-    assert.equal(highlightCode('<p class="x">{{ y() }}</p>'), HIGHLIGHTERS.html('<p class="x">{{ y() }}</p>'));
+    assert.equal(
+      highlightCode('button { color: var(--color-text-label); }'),
+      HIGHLIGHTERS.css('button { color: var(--color-text-label); }'),
+    );
+    assert.equal(
+      highlightCode('count.set(count() + 1);'),
+      HIGHLIGHTERS.js('count.set(count() + 1);'),
+    );
+    assert.equal(
+      highlightCode('<p class="x">{{ y() }}</p>'),
+      HIGHLIGHTERS.html('<p class="x">{{ y() }}</p>'),
+    );
   });
 
   it('the static export ships the highlight engine the playground imports', () => {
@@ -720,7 +775,6 @@ describe('site syntax highlighting is a pipeline step', () => {
   });
 });
 
-
 // ─── 15. /docs: import samples name published packages, and the page leads on ─
 // Five samples imported from 'basenative' — a package that does not exist —
 // four lines below the paragraph explaining the real @basenative/* names, and
@@ -746,9 +800,18 @@ describe('/docs names real packages and links onward', () => {
 
   it('every documented primitive links to its generated reference', () => {
     assert.ok(docs.includes('<a '), '/docs has no links at all');
-    for (const [fn, doc] of [['signal', 'runtime'], ['computed', 'runtime'], ['effect', 'runtime'], ['hydrate', 'runtime'], ['render', 'server']]) {
-      assert.match(docs, new RegExp(`href="[^"]*docs/api/${doc}\\.md[^"]*"[^>]*>Full <code>${fn}\\(\\)</code>`),
-        `${fn}() on /docs does not link to docs/api/${doc}.md`);
+    for (const [fn, doc] of [
+      ['signal', 'runtime'],
+      ['computed', 'runtime'],
+      ['effect', 'runtime'],
+      ['hydrate', 'runtime'],
+      ['render', 'server'],
+    ]) {
+      assert.match(
+        docs,
+        new RegExp(`href="[^"]*docs/api/${doc}\\.md[^"]*"[^>]*>Full <code>${fn}\\(\\)</code>`),
+        `${fn}() on /docs does not link to docs/api/${doc}.md`,
+      );
     }
   });
 
@@ -758,10 +821,18 @@ describe('/docs names real packages and links onward', () => {
     assert.ok(named.length >= 2, 'the description should name the packages it covers');
     for (const pkg of new Set(named)) {
       const short = pkg.replace('@basenative/', '');
-      assert.ok(docs.includes(`docs/api/${short}.md`), `${pkg} is promised by the /docs description but not linked from docs.html`);
+      assert.ok(
+        docs.includes(`docs/api/${short}.md`),
+        `${pkg} is promised by the /docs description but not linked from docs.html`,
+      );
     }
-    for (const short of docs.match(/docs\/api\/([a-z-]+)\.md/g).map((m) => m.slice('docs/api/'.length, -'.md'.length))) {
-      assert.ok(existsSync(repo(`docs/api/${short}.md`)), `docs.html links docs/api/${short}.md, which does not exist`);
+    for (const short of docs
+      .match(/docs\/api\/([a-z-]+)\.md/g)
+      .map((m) => m.slice('docs/api/'.length, -'.md'.length))) {
+      assert.ok(
+        existsSync(repo(`docs/api/${short}.md`)),
+        `docs.html links docs/api/${short}.md, which does not exist`,
+      );
     }
   });
 });
@@ -776,7 +847,13 @@ describe('/docs names real packages and links onward', () => {
 
 describe('the site bundle ships every component aggregate the package exports', () => {
   const shipped = Object.entries(components)
-    .filter(([, value]) => value && typeof value === 'object' && typeof value.create === 'function' && typeof value.name === 'string')
+    .filter(
+      ([, value]) =>
+        value &&
+        typeof value === 'object' &&
+        typeof value.create === 'function' &&
+        typeof value.name === 'string',
+    )
     .map(([name]) => name);
   const entry = readFileSync(repo('examples/express/basenative-entry.js'), 'utf8');
   const bundle = readFileSync(repo('examples/express/public/basenative.js'), 'utf8');
@@ -785,27 +862,72 @@ describe('the site bundle ships every component aggregate the package exports', 
   const exported = bundle
     .match(/export\s*\{([^}]*)\}\s*;?\s*$/)[1]
     .split(',')
-    .map((name) => name.trim().split(/\s+as\s+/).pop())
+    .map((name) =>
+      name
+        .trim()
+        .split(/\s+as\s+/)
+        .pop(),
+    )
     .filter(Boolean);
 
   it('the package exports the whole catalog as aggregates', () => {
-    assert.deepEqual(
-      shipped.sort(),
-      [
-        'accordion', 'alert', 'appBar', 'appShell', 'avatar', 'badge', 'breadcrumb', 'button',
-        'calendar', 'card', 'checkbox', 'choiceGroup', 'codeBlock', 'combobox', 'commandPalette',
-        'datagrid', 'dialog', 'drawer', 'dropdownMenu', 'emptyState', 'field', 'form', 'hero',
-        'input', 'listGroup', 'multiselect', 'pagination', 'pipeline', 'progress', 'radio',
-        'rating', 'searchField', 'segmentedControl', 'select', 'sidebar', 'siteFooter', 'stepper',
-        'table', 'tabs', 'textarea', 'themeToggle', 'toast', 'toggle', 'toolbar', 'tooltip',
-        'tree', 'virtualizer',
-      ],
-    );
+    assert.deepEqual(shipped.sort(), [
+      'accordion',
+      'alert',
+      'appBar',
+      'appShell',
+      'avatar',
+      'badge',
+      'breadcrumb',
+      'button',
+      'calendar',
+      'card',
+      'checkbox',
+      'choiceGroup',
+      'codeBlock',
+      'combobox',
+      'commandPalette',
+      'datagrid',
+      'dialog',
+      'drawer',
+      'dropdownMenu',
+      'emptyState',
+      'field',
+      'form',
+      'hero',
+      'input',
+      'listGroup',
+      'multiselect',
+      'pagination',
+      'pipeline',
+      'progress',
+      'radio',
+      'rating',
+      'searchField',
+      'segmentedControl',
+      'select',
+      'sidebar',
+      'siteFooter',
+      'stepper',
+      'table',
+      'tabs',
+      'textarea',
+      'themeToggle',
+      'toast',
+      'toggle',
+      'toolbar',
+      'tooltip',
+      'tree',
+      'virtualizer',
+    ]);
   });
 
   it('basenative-entry.js re-exports each one and the committed bundle carries it', () => {
     for (const name of shipped) {
-      assert.ok(entry.includes(name), `${name} is missing from examples/express/basenative-entry.js`);
+      assert.ok(
+        entry.includes(name),
+        `${name} is missing from examples/express/basenative-entry.js`,
+      );
       assert.ok(
         exported.includes(name),
         `${name} is not exported by examples/express/public/basenative.js — run \`nx bundle basenative-example-express\` and commit the bundle`,
@@ -915,7 +1037,7 @@ describe('the contents navs have a working scrollspy', () => {
   it('/docs: every contents link resolves to a section on the page', () => {
     const route = siteRoutes.find((r) => r.path === '/docs');
     const html = renderRoute(route, { tasks: [], hasApi: false });
-    const ids = tocLinks(html, 'data-bn-docs-toc');
+    const ids = tocLinks(html, 'variant="subnav"');
     assert.ok(ids.length >= 4, `expected the /docs contents list, got ${ids.length} links`);
     for (const id of ids) {
       assert.ok(html.includes(`id="${id}"`), `/docs contents link #${id} has no target section`);
@@ -927,11 +1049,11 @@ describe('the contents navs have a working scrollspy', () => {
   it('/components: every category filter maps to a section on the page', () => {
     const route = siteRoutes.find((r) => r.path === '/components');
     const html = renderRoute(route, { tasks: [], hasApi: false });
-    const barAt = html.indexOf('data-bn-component-filters');
-    const bar = html.slice(barAt, html.indexOf('</nav>', barAt));
-    const cats = [...bar.matchAll(/data-bn-component-filter="([^"]+)"/g)]
+    const barAt = html.indexOf('variant="chips"');
+    const bar = html.slice(barAt, html.indexOf('</aside>', barAt));
+    const cats = [...bar.matchAll(/value="([^"]+)"/g)]
       .map((m) => m[1])
-      .filter((c) => c !== 'all');
+      .filter((c) => c && c !== 'all');
     assert.ok(cats.length >= 3, `expected the /components category filters, got ${cats.length}`);
     for (const cat of cats) {
       assert.ok(
@@ -950,37 +1072,34 @@ describe('the contents navs have a working scrollspy', () => {
   it('the scrollspy observes the TOC targets and marks the current link', () => {
     const src = readFileSync(repo('examples/express/public/scrollspy.js'), 'utf8');
     assert.ok(src.includes('IntersectionObserver'), 'scrollspy should use IntersectionObserver');
-    assert.ok(src.includes('data-bn-docs-toc'), 'scrollspy should cover the /docs contents nav');
-    assert.ok(src.includes('data-bn-component-toc'), 'scrollspy should cover the /components TOC');
+    assert.ok(src.includes('aside[variant="subnav"]'), 'scrollspy should cover the docs subnav');
+    assert.ok(src.includes('aside[variant="chips"]'), 'scrollspy should cover the component chips');
     assert.ok(
-      src.includes('data-bn-component-filter'),
-      'scrollspy should mark the /components filter bar (the surviving nav)',
+      src.includes("setAttribute('aria-current', 'true')"),
+      'scrollspy should set aria-current',
     );
-    assert.ok(src.includes("setAttribute('aria-current', 'true')"), 'scrollspy should set aria-current');
-    assert.ok(src.includes("removeAttribute('aria-current')"), 'scrollspy should clear stale marks');
+    assert.ok(
+      src.includes("removeAttribute('aria-current')"),
+      'scrollspy should clear stale marks',
+    );
   });
 
-  it('the current TOC link takes the app nav current treatment', () => {
-    const css = readFileSync(repo('examples/express/public/styles.css'), 'utf8');
-    // The /components category TOC strip is retired (the sticky filter
-    // bar is the surviving nav, asserted below); the contents-nav block
-    // that remains is the /docs one.
-    const tocBlock = css.slice(css.indexOf('[data-bn-docs-toc]'));
-    const at = tocBlock.indexOf("&[aria-current='true']");
-    assert.ok(at > -1, 'the TOC block should carry an aria-current rule');
-    const rule = tocBlock.slice(at, at + 300);
-    assert.ok(rule.includes('var(--bn-brand)'), 'current TOC link should fill with --bn-brand');
-    assert.ok(rule.includes('var(--bn-brand-ink)'), 'current TOC link should label with --bn-brand-ink');
-    const filtersBlock = css.slice(css.indexOf('[data-bn-component-filters]'));
-    const fat = filtersBlock.indexOf("&[aria-current='true']");
-    assert.ok(fat > -1, 'the filter buttons should carry an aria-current rule');
-    const frule = filtersBlock.slice(fat, fat + 300);
-    assert.ok(frule.includes('var(--bn-brand)'), 'current filter should fill with --bn-brand');
-    assert.ok(frule.includes('var(--bn-brand-ink)'), 'current filter should label with --bn-brand-ink');
+  it('the current TOC link takes the sidebar current treatment', () => {
+    const sidebar = readFileSync(repo('packages/components/src/sidebar/styles.css'), 'utf8');
+    assert.ok(sidebar.includes("aside[variant='subnav']"), 'subnav variant is styled');
+    assert.ok(sidebar.includes("aside[variant='chips']"), 'chips variant is styled');
+    assert.ok(sidebar.includes("[aria-pressed='true']"), 'pressed chips share the current fill');
+    assert.ok(
+      sidebar.includes('--color-bkg-sidebar-link-current'),
+      'the current item uses the sidebar fill token',
+    );
   });
 
   it('the static export ships the scrollspy script', () => {
     const build = readFileSync(repo('scripts/build-pages.js'), 'utf8');
-    assert.ok(build.includes("'scrollspy.js'"), 'build-pages.js should copy scrollspy.js into dist');
+    assert.ok(
+      build.includes("'scrollspy.js'"),
+      'build-pages.js should copy scrollspy.js into dist',
+    );
   });
 });

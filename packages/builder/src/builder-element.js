@@ -53,7 +53,7 @@ export class BnBuilder extends HTMLElement {
   }
 
   connectedCallback() {
-    this.style.display = 'contents';
+    /* display: contents lives in builder.css */
     this.setAttribute('role', 'application');
     this.setAttribute('aria-label', 'BaseNative visual builder');
 
@@ -109,7 +109,14 @@ export class BnBuilder extends HTMLElement {
     const rect = host.getBoundingClientRect();
     if (!rect.width) return;
     const shift = window.innerWidth / 2 - (rect.left + rect.width / 2);
-    host.style.setProperty('--bn-builder-center-shift', `${Math.round(shift)}px`);
+    const px = `${Math.round(shift)}px`;
+    let sheet = this._shiftSheet;
+    if (!sheet && typeof CSSStyleSheet !== 'undefined') {
+      sheet = new CSSStyleSheet();
+      document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+      this._shiftSheet = sheet;
+    }
+    if (sheet) sheet.replaceSync(`:root{--bn-builder-center-shift:${px}}`);
   }
 
   attach({ state, palette }) {
