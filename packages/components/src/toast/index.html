@@ -1,7 +1,7 @@
 <template>
   <ol :variant="variant()" :aria-live="live()">
     <template @for="item of items()">
-      <li :variant="item.tone">{{ raw(iconFor(item)) }}{{ item.message }} {{ raw(item.dismissHtml) }}</li>
+      <li :variant="item.tone" @click="onItemClick($event, item)">{{ raw(iconFor(item)) }}{{ item.message }} {{ raw(item.dismissHtml) }}</li>
     </template>
   </ol>
 </template>

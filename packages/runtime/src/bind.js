@@ -28,16 +28,36 @@ export function bindNode(node, ctx, options) {
   if (node.nodeType === Node.TEXT_NODE) {
     const source = node.textContent;
     if (source.includes('{{')) {
+      // The nodes a raw() result parsed into the tree, in order. The
+      // text node itself stays as their anchor: empty while raw
+      // content is mounted, holding the plain result otherwise.
+      let inserted = [];
       const runner = effect(() => {
         // textContent never parses HTML, which is why the client was already safe.
         // interpolate() returns a raw-marked value only when every substitution in
         // the text was raw(); in that case match the server and parse it, otherwise
         // keep the safe path.
         const result = interpolate(source, ctx, options);
-        if (isRaw(result)) node.innerHTML = unwrapRaw(result);
-        else node.textContent = result;
+        for (const child of inserted) child.remove();
+        inserted = [];
+        if (isRaw(result)) {
+          // A text node has no innerHTML to assign to — parsing the
+          // raw markup into real nodes after the anchor is what
+          // "match the server" takes.
+          const template = document.createElement('template');
+          template.innerHTML = unwrapRaw(result);
+          inserted = [...template.content.childNodes];
+          node.after(template.content);
+          node.textContent = '';
+        } else {
+          node.textContent = result;
+        }
       });
-      registerCleanup(node, () => runner.dispose?.());
+      registerCleanup(node, () => {
+        runner.dispose?.();
+        for (const child of inserted) child.remove();
+        inserted = [];
+      });
       processed++;
     }
     return processed;

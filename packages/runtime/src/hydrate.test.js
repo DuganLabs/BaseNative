@@ -283,6 +283,41 @@ describe('text interpolation', () => {
     name.set('Bob');
     assert.ok(root.textContent.includes('Bob'));
   });
+
+  it('parses a raw() interpolation into real nodes, matching the server', async () => {
+    const { raw } = await import('./shared/escape.js');
+    const hydrate = await loadHydrate();
+    const root = document.createElement('section');
+    root.innerHTML = '<p>{{ raw(html()) }}</p>';
+    document.body.append(root);
+
+    const html = signal('<b>bold</b>');
+    hydrate(root, { html, raw });
+
+    const bold = root.querySelector('b');
+    assert.ok(bold, 'the raw markup became an element, not literal text');
+    assert.equal(bold.textContent, 'bold');
+    assert.ok(!root.textContent.includes('{{'), 'no template text is left behind');
+
+    html.set('<i>italic</i>');
+    assert.equal(root.querySelector('b'), null, 'a re-run replaces the parsed nodes');
+    assert.equal(root.querySelector('i')?.textContent, 'italic');
+  });
+
+  it('a raw() substitution in a mixed text node escapes its plain neighbours', async () => {
+    const { raw } = await import('./shared/escape.js');
+    const hydrate = await loadHydrate();
+    const root = document.createElement('section');
+    root.innerHTML = '<p>{{ raw(html()) }} {{ note() }}</p>';
+    document.body.append(root);
+
+    const html = signal('<b>x</b>');
+    const note = signal('<script>alert(1)</script>');
+    hydrate(root, { html, note, raw });
+    assert.equal(root.querySelectorAll('b').length, 1, 'the raw value parsed');
+    assert.equal(root.querySelectorAll('script').length, 0, 'the plain value stayed text');
+    assert.ok(root.textContent.includes('<script>alert(1)</script>'), 'the plain value shows escaped, as the server writes it');
+  });
 });
 
 describe('reactive attributes', () => {

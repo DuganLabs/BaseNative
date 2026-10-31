@@ -94,9 +94,19 @@ export function create(props) {
     if (option) choose(option);
   }
 
-  /** @param {{ key: string }} event */
+  /** @param {{ key: string, preventDefault?: () => void }} event */
   function keydown(event) {
-    if (event.key === 'Escape') open.set(false);
+    if (event.key === 'Escape') {
+      open.set(false);
+      return;
+    }
+    /* The APG listbox button: an arrow key on the closed trigger
+       opens the popup (Enter and Space already reach toggle()
+       through the button's native click). */
+    if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && !open()) {
+      event.preventDefault?.();
+      open.set(true);
+    }
   }
 
   return {

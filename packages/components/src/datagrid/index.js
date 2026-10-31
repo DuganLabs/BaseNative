@@ -142,6 +142,19 @@ export function create(props) {
       .map((entry) => entry.row));
   }
 
+  /**
+   * A click on a sortable header's sort control sorts by its column.
+   * The control is caller-rendered HTML inside the header cell, so
+   * the click is delegated at the cell: only a click that lands on
+   * the button sorts — a click on the cell itself just focuses it.
+   * @param {MouseEvent} event
+   * @param {DatagridColumn} column
+   */
+  function sortClick(event, column) {
+    if (!(event.target)?.closest?.('button')) return;
+    sortBy(column);
+  }
+
   /** @returns {{ key: string, dir: 'asc' | 'desc' } | null} */
   function sortState() {
     const sorted = columns().find((column) => column.sort);
@@ -213,7 +226,7 @@ export function create(props) {
   return {
     columns, rows, caption, selectable, selectAllHtml, selectedIds, variant, hasCaption,
     viewColumns, viewRows, selectAllState, isRowSelected, toggleRow, toggleAll, select,
-    sortBy, sortState, focusPos, cellTabIndex, headerTabIndex, selectAllTabIndex, selectionTabIndex, onKeydown, raw,
+    sortBy, sortClick, sortState, focusPos, cellTabIndex, headerTabIndex, selectAllTabIndex, selectionTabIndex, onKeydown, raw,
   };
 }
 

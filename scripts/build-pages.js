@@ -173,6 +173,16 @@ for (const file of componentCssFiles) {
   cpSync(join(componentSrc, file), join(bnCssDir, file));
 }
 
+// Copy every component's template beside its sheet: the specimen
+// mount (public/specimens.js) fetches /bn-css/<name>/index.html to
+// hydrate the catalog specimens, the same path the dev server's
+// static /bn-css mount already serves.
+for (const component of trinityComponentInfo()) {
+  const dir = join(bnCssDir, component.name);
+  mkdirSync(dir, { recursive: true });
+  cpSync(join(componentSrc, component.name, 'index.html'), join(dir, 'index.html'));
+}
+
 // A copied sheet that @imports a file this list did not copy ships a
 // 404 to production and silently unstyless everything downstream of
 // it (the tokens-legacy rename did exactly that). Fail the build

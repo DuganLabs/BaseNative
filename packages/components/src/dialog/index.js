@@ -37,7 +37,7 @@ export function create(props) {
   return {
     title, body, variant, closeHtml, footerHtml, raw,
     idAttr: behavior.idAttr, show: behavior.show, close: behavior.close,
-    isOpen: behavior.isOpen, onBackdropClick: behavior.onBackdropClick,
+    isOpen: behavior.isOpen, onBackdropClick: behavior.onBackdropClick, onClick: behavior.onClick, onKeydown: behavior.onKeydown,
   };
 }
 

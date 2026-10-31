@@ -49,7 +49,24 @@ export function create(props) {
     props.onOverflow?.({ open: overflowOpen() });
   }
 
-  return { label, actionsHtml, overflowHtml, overflowLabel, variant, overflowOpen, hasOverflow, expandedAttr, toggleOverflow, raw };
+  function closeOverflow() {
+    if (!overflowOpen()) return;
+    overflowOpen.set(false);
+    props.onOverflow?.({ open: false });
+  }
+
+  /* The popup rule, at the bar's own root: Escape closes the
+     overflow menu and returns focus to its More button. */
+  /** @param {KeyboardEvent} event */
+  function onKeydown(event) {
+    if (event.key !== 'Escape' || !overflowOpen()) return;
+    event.preventDefault();
+    closeOverflow();
+    const bar = (event.currentTarget ?? event.target)?.closest?.('section');
+    bar?.querySelector?.('button[aria-expanded]')?.focus();
+  }
+
+  return { label, actionsHtml, overflowHtml, overflowLabel, variant, overflowOpen, hasOverflow, expandedAttr, toggleOverflow, closeOverflow, onKeydown, raw };
 }
 
 /** @param {import('../registry.js').Registry} registry */

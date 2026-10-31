@@ -27,7 +27,19 @@ export function create(props) {
   const dismissHtml = signal(props.dismissHtml ?? '');
   const hasDismiss = computed(() => dismissHtml() !== '');
 
-  return { title, body, variant, role, dismissHtml, hasDismiss, raw };
+  /* Dismissal: the dismiss control is caller-rendered HTML, so its
+     click is delegated at the aside — a click on the button takes
+     the alert out of the document. The element is resolved from the
+     event (the dialog behavior's pattern); on the server this
+     no-ops, as every client-only entry point does. */
+  /** @param {MouseEvent} event */
+  function dismiss(event) {
+    if (!(event.target)?.closest?.('button')) return;
+    const aside = (event.currentTarget ?? event.target)?.closest?.('aside');
+    aside?.remove();
+  }
+
+  return { title, body, variant, role, dismissHtml, hasDismiss, dismiss, raw };
 }
 
 /** @param {import('../registry.js').Registry} registry */

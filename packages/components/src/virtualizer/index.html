@@ -1,5 +1,5 @@
 <template>
-  <ol :variant="variant()" :id="id()">
+  <ol :variant="variant()" :id="id()" @scroll="onScroll($event)">
     <li aria-hidden="true"></li>
     <template @for="index of windowIndices()">
       <li>
