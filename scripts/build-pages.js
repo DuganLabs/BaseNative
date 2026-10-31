@@ -13,7 +13,6 @@ import {
   siteRoutes,
 } from '../examples/express/page.js';
 import { trinityComponentInfo, trinitySiteCss } from '../examples/express/trinity.js';
-import { playgroundComponentsCss } from '../examples/express/playground-data.js';
 import { staticTasks } from '../examples/express/site-data.js';
 import { checkComparePage } from './check-compare-page.js';
 
@@ -138,9 +137,6 @@ cpSync(
   join(express, 'public', 'playground-preview.html'),
   join(dist, 'playground', 'preview', 'index.html'),
 );
-// The playground's assembled component sheet (the dev server's
-// /playground/components.css route).
-writeFileSync(join(dist, 'playground', 'components.css'), playgroundComponentsCss);
 // Brand assets — favicon bundle (bn-favicon, preset `basenative`) + OG card
 for (const file of [
   'favicon.svg',

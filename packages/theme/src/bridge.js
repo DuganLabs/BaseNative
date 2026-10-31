@@ -194,44 +194,100 @@ export const CTI_BRIDGED = Object.freeze(
  * @type {Readonly<Record<string, string>>}
  */
 export const UPSTREAM_OWNED = Object.freeze({
-  '--color-avatar-tone': 'per-instance identity colour — set by components from a stable hash of the person\'s name; identity, not theme',
-  '--color-background': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
-  '--color-background-2': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
-  '--color-background-3': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
-  '--color-background-grouped': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
-  '--color-background-grouped-2': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
-  '--color-background-grouped-3': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-avatar-tone':
+    "per-instance identity colour — set by components from a stable hash of the person's name; identity, not theme",
+  '--color-background':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-background-2':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-background-3':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-background-grouped':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-background-grouped-2':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-background-grouped-3':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
   '--color-bkg-calendar-event': 'derived upstream from bridged colour tokens',
   '--color-bkg-calendar-today': 'derived upstream from bridged colour tokens',
   '--color-bkg-calendar-today-header': 'derived upstream from bridged colour tokens',
-  '--color-bkg-control-selected': 'rides the accent chain upstream, which follows the bridged primary ramp',
-  '--color-bkg-material': 'material — a platform-layer treatment; the app supplies it, not the theme',
-  '--color-bkg-toggle-knob-legacy': 'legacy-sheet token — the legacy toggle keeps its own knob colour while that sheet awaits retirement; not themed',
-  '--color-border-control-hover': 'composed upstream from the bridged border-control and text tokens',
-  '--color-border-separator': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
-  '--color-border-separator-opaque': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
-  '--color-danger': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
-  '--color-danger-strong': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
-  '--color-fill': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
-  '--color-fill-2': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
-  '--color-fill-3': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
-  '--color-fill-4': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-bkg-control-selected':
+    'rides the accent chain upstream, which follows the bridged primary ramp',
+  '--color-bkg-material':
+    'material — a platform-layer treatment; the app supplies it, not the theme',
+  '--color-bkg-toggle-knob-legacy':
+    'legacy-sheet token — the legacy toggle keeps its own knob colour while that sheet awaits retirement; not themed',
+  '--color-border-control-hover':
+    'composed upstream from the bridged border-control and text tokens',
+  '--color-border-separator':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
+  '--color-border-separator-opaque':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
+  '--color-danger':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
+  '--color-danger-strong':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
+  '--color-fill':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-fill-2':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-fill-3':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-fill-4':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
   '--color-pipeline-status': 'set per data-status from bridged colour tokens',
-  '--color-success': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
+  '--color-success':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
   '--color-text-calendar-event': 'derived upstream from bridged colour tokens',
   '--color-text-calendar-today': 'derived upstream from bridged colour tokens',
-  '--color-text-label': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
-  '--color-text-label-2': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
-  '--color-text-label-3': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
-  '--color-text-label-4': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
-  '--color-text-label-placeholder': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
-  '--color-text-on-control-selected': 'rides the accent chain upstream, which follows the bridged primary ramp',
-  '--color-text-on-tint': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
-  '--color-tint': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
-  '--color-tint-fill': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
-  '--color-tint-strong': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
-  '--color-warning': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
-  '--color-warning-strong': 'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
+  '--color-text-label':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-text-label-2':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-text-label-3':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-text-label-4':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-text-label-placeholder':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-text-on-control-selected':
+    'rides the accent chain upstream, which follows the bridged primary ramp',
+  '--color-text-on-tint':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-text-syntax-attr':
+    'syntax highlight colour — the code-block sheet reads it; the bridge does not re-point a vocabulary',
+  '--color-text-syntax-binding':
+    'syntax highlight colour — the code-block sheet reads it; the bridge does not re-point a vocabulary',
+  '--color-text-syntax-comment':
+    'syntax highlight colour — the code-block sheet reads it; the bridge does not re-point a vocabulary',
+  '--color-text-syntax-directive':
+    'syntax highlight colour — the code-block sheet reads it; the bridge does not re-point a vocabulary',
+  '--color-text-syntax-function':
+    'syntax highlight colour — the code-block sheet reads it; the bridge does not re-point a vocabulary',
+  '--color-text-syntax-interpolation':
+    'syntax highlight colour — the code-block sheet reads it; the bridge does not re-point a vocabulary',
+  '--color-text-syntax-keyword':
+    'syntax highlight colour — the code-block sheet reads it; the bridge does not re-point a vocabulary',
+  '--color-text-syntax-number':
+    'syntax highlight colour — the code-block sheet reads it; the bridge does not re-point a vocabulary',
+  '--color-text-syntax-string':
+    'syntax highlight colour — the code-block sheet reads it; the bridge does not re-point a vocabulary',
+  '--color-text-syntax-tag':
+    'syntax highlight colour — the code-block sheet reads it; the bridge does not re-point a vocabulary',
+  '--color-text-syntax-token-item':
+    'syntax highlight colour — the code-block sheet reads it; the bridge does not re-point a vocabulary',
+  '--color-text-syntax-token-state':
+    'syntax highlight colour — the code-block sheet reads it; the bridge does not re-point a vocabulary',
+  '--color-tint':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-tint-fill':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-tint-strong':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned; the bridge does not re-point it yet',
+  '--color-warning':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
+  '--color-warning-strong':
+    'trinity-native token with no pre-migration bridge counterpart — upstream-owned',
   '--font-body-family': 'type system — the trinity text styles and stacks stay upstream',
   '--font-body-leading': 'type system — the trinity text styles and stacks stay upstream',
   '--font-body-size': 'type system — the trinity text styles and stacks stay upstream',
@@ -308,7 +364,8 @@ export const UPSTREAM_OWNED = Object.freeze({
   '--layer-legacy-nav': 'stacking order',
   '--layer-legacy-toast': 'stacking order',
   '--layer-overlay': 'stacking order',
-  '--material-backdrop': 'material — a platform-layer treatment; the app supplies it, not the theme',
+  '--material-backdrop':
+    'material — a platform-layer treatment; the app supplies it, not the theme',
   '--motion-ease-out-expo': 'easing curve',
   '--motion-fade-curve': 'easing curve',
   '--motion-fade-duration': 'motion detail beyond the three bridged durations — upstream-owned',
@@ -317,7 +374,8 @@ export const UPSTREAM_OWNED = Object.freeze({
   '--number-calendar-cols': 'per-instance or structural number — not a theme decision',
   '--number-calendar-event-lead': 'per-instance geometry knob, set inline by the calendar renderer',
   '--number-calendar-event-rows': 'per-instance geometry knob, set inline by the calendar renderer',
-  '--number-calendar-event-trail': 'per-instance geometry knob, set inline by the calendar renderer',
+  '--number-calendar-event-trail':
+    'per-instance geometry knob, set inline by the calendar renderer',
   '--number-calendar-hours': 'per-instance or structural number — not a theme decision',
   '--palette-accent-600': 'aliases the primary ramp upstream; bridging primary carries it',
   '--palette-system-blue': 'the system palette — platform-owned upstream, carries its own modes',
@@ -327,10 +385,14 @@ export const UPSTREAM_OWNED = Object.freeze({
   '--palette-system-red': 'the system palette — platform-owned upstream, carries its own modes',
   '--palette-transparent': 'a literal, not a theme decision',
   '--palette-white': 'a literal, not a theme decision',
-  '--radius-lg': 'site alias of the trinity radius ladder — the bridge re-points the size-radius steps, not these short names',
-  '--radius-md': 'site alias of the trinity radius ladder — the bridge re-points the size-radius steps, not these short names',
-  '--radius-sm': 'site alias of the trinity radius ladder — the bridge re-points the size-radius steps, not these short names',
-  '--radius-xl': 'site alias of the trinity radius ladder — the bridge re-points the size-radius steps, not these short names',
+  '--radius-lg':
+    'site alias of the trinity radius ladder — the bridge re-points the size-radius steps, not these short names',
+  '--radius-md':
+    'site alias of the trinity radius ladder — the bridge re-points the size-radius steps, not these short names',
+  '--radius-sm':
+    'site alias of the trinity radius ladder — the bridge re-points the size-radius steps, not these short names',
+  '--radius-xl':
+    'site alias of the trinity radius ladder — the bridge re-points the size-radius steps, not these short names',
   '--shadow-float': 'elevation is a neutral alpha ramp, not a palette',
   '--shadow-focus': 'elevation is a neutral alpha ramp, not a palette',
   '--shadow-focus-ring': 'elevation is a neutral alpha ramp, not a palette',
@@ -356,17 +418,28 @@ export const UPSTREAM_OWNED = Object.freeze({
   '--size-menu-min': 'layout measure — an app decision, not a palette one',
   '--size-nav-rail': 'layout measure — an app decision, not a palette one',
   '--size-palette-max': 'layout measure — an app decision, not a palette one',
-  '--size-radius-2xl': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
-  '--size-radius-container': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
-  '--size-radius-control': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
-  '--size-radius-indicator': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
-  '--size-radius-legacy-container': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
-  '--size-radius-legacy-control': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
-  '--size-radius-legacy-modal': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
-  '--size-radius-md': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
-  '--size-radius-none': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
-  '--size-radius-sheet': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
-  '--size-radius-xl': 'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-2xl':
+    'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-container':
+    'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-control':
+    'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-indicator':
+    'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-legacy-container':
+    'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-legacy-control':
+    'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-legacy-modal':
+    'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-md':
+    'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-none':
+    'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-sheet':
+    'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
+  '--size-radius-xl':
+    'trinity radius step with no counterpart on the theme ladder, which pins to the legacy steps by value',
   '--size-sheet-max': 'layout measure — an app decision, not a palette one',
   '--size-switch-block': 'layout measure — an app decision, not a palette one',
   '--size-switch-inline': 'layout measure — an app decision, not a palette one',
@@ -392,7 +465,8 @@ export const UPSTREAM_OWNED = Object.freeze({
   '--spacing-margin-auto': 'space ladder — a grid is not identity; override it in app CSS',
   '--spacing-safe-bottom': 'space ladder — a grid is not identity; override it in app CSS',
   '--spacing-safe-right': 'space ladder — a grid is not identity; override it in app CSS',
-  '--spacing-toggle-knob-inset-legacy': 'space ladder — a grid is not identity; override it in app CSS',
+  '--spacing-toggle-knob-inset-legacy':
+    'space ladder — a grid is not identity; override it in app CSS',
 });
 
 /**
@@ -414,9 +488,7 @@ export const UPSTREAM_OWNED = Object.freeze({
  * @returns {{ ok: boolean, unbridged: string[] }}
  */
 export function validateBridge(componentsCss, { exclude = [] } = {}) {
-  const consumed = new Set(
-    [...componentsCss.matchAll(/var\(\s*(--[a-z0-9-]+)/g)].map((m) => m[1]),
-  );
+  const consumed = new Set([...componentsCss.matchAll(/var\(\s*(--[a-z0-9-]+)/g)].map((m) => m[1]));
   const bridged = new Set(CTI_BRIDGED);
   const excluded = new Set(exclude);
   const unbridged = [...consumed]

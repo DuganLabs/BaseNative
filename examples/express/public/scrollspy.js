@@ -1,7 +1,7 @@
 /**
- * Contents scrollspy. Marks the in-page sidebar link or filter chip
- * for the section in view. The docs subnav and the component chips
- * are both the sidebar component (variants subnav and chips).
+ * Contents scrollspy. Marks the in-page subnav control for the section
+ * in view. Docs uses links; the component filter uses buttons. Both are
+ * the same sidebar variant.
  */
 (function () {
   if (typeof IntersectionObserver === 'undefined') return;
@@ -14,11 +14,7 @@
       var target = id && document.getElementById(id);
       if (target) controlsByTarget.set(target, link);
     }
-  }
-
-  var filterBar = document.querySelector('aside[variant="chips"]');
-  if (filterBar) {
-    for (var button of filterBar.querySelectorAll('button')) {
+    for (var button of nav.querySelectorAll('button')) {
       var cat = button.value;
       if (!cat || cat === 'all') continue;
       var section = document.getElementById('cat-' + cat);

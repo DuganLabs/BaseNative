@@ -1,12 +1,14 @@
 {{ hero }}
 
 <section id="visual-builder" aria-labelledby="visual-builder-heading">
-  <h2 id="visual-builder-heading" class="visually-hidden">Builder canvas</h2>
+  <h2 id="visual-builder-heading" data-bn-visually-hidden>Builder canvas</h2>
   <bn-builder data-bn-builder-root></bn-builder>
   <article data-bn-builder-export-panel hidden>
     <header>
       <h3>Generated code</h3>
-      <button type="button" class="bn-builder__btn" data-bn="bn-builder-action" data-bn-builder-export-copy>Copy code</button>
+      <button type="button" data-bn="bn-builder-action" data-bn-builder-export-copy>
+        Copy code
+      </button>
     </header>
     <pre
       data-bn-builder-export-output

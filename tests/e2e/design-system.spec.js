@@ -775,18 +775,21 @@ async function loadAxe(page) {
 async function partsChrome(page) {
   return page.evaluate(() => {
     const search = document.querySelector('[data-bn-component-search]');
-    const filters = document.querySelector('aside[variant="chips"]');
+    const filters = document.querySelector('aside[variant="subnav"]');
     const bar = document.querySelector('body > nav[variant="app-bar"]');
     if (!search || !filters || !bar) return ['missing parts chrome'];
+    if (document.querySelector('aside[variant="chips"]'))
+      return ['a second subnav variant is present'];
     const problems = [];
-    // One row of sentence-case chips. On a phone the row scrolls
-    // sideways instead of wrapping into a tall card.
+    // The filter is the same subnav as /docs: a row of items, not a chip strip.
     const filtersStyle = getComputedStyle(filters.querySelector('ul') || filters);
-    if (filtersStyle.flexWrap !== 'nowrap') problems.push(`chips wrap (${filtersStyle.flexWrap})`);
+    if (filtersStyle.flexDirection !== 'row')
+      problems.push(`subnav is ${filtersStyle.flexDirection}`);
     const sample = filters.querySelector('button');
     if (sample && getComputedStyle(sample).textTransform === 'uppercase')
-      problems.push('chips are uppercase');
-    if (sample && sample.getBoundingClientRect().height < 24) problems.push('chip is under 24px');
+      problems.push('subnav is uppercase');
+    if (sample && sample.getBoundingClientRect().height < 24)
+      problems.push('subnav item is under 24px');
     // The in-page nav contract (Warren, 2026-10-28): the docs
     // contents nav and this filter are one pattern, and at phone
     // width the pattern is NOT pinned — a sticky card with large
@@ -1039,7 +1042,7 @@ test.describe('contents scrollspy', () => {
         () =>
           page.evaluate(() => {
             const current = document.querySelector(
-              "aside[variant='chips'] button[aria-current='true']",
+              "aside[variant='subnav'] button[aria-current='true']",
             );
             return current ? current.value : null;
           }),
@@ -1078,4 +1081,34 @@ test.describe('contents scrollspy', () => {
     expect(paint.bg).toContain('232, 146, 10');
     expect(paint.brand.trim()).toBe('#e8920a');
   });
+});
+
+test('docs and components share one subnav treatment', async ({ page }) => {
+  await page.setViewportSize({ width: 393, height: 852 });
+  const measure = (pressed) => {
+    const root = document.querySelector('aside[variant="subnav"]');
+    const el = pressed
+      ? root.querySelector('button[aria-pressed="true"]')
+      : root.querySelector('a, button[aria-pressed="false"]');
+    const ul = root.querySelector('ul');
+    const s = getComputedStyle(el);
+    const u = getComputedStyle(ul);
+    return {
+      fontSize: s.fontSize,
+      padding: s.padding,
+      radius: s.borderRadius,
+      borderWidth: s.borderTopWidth,
+      bg: s.backgroundColor,
+      color: s.color,
+      weight: s.fontWeight,
+      wrap: u.flexWrap,
+      direction: u.flexDirection,
+    };
+  };
+  await page.goto('/docs');
+  const docs = await page.evaluate(measure, false);
+  await page.goto('/components');
+  const filters = await page.evaluate(measure, false);
+  expect(filters).toEqual(docs);
+  expect(await page.locator('aside[variant="chips"]').count()).toBe(0);
 });

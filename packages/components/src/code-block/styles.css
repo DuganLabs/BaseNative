@@ -1,4 +1,4 @@
-figure[variant="code"] {
+figure[variant='code'] {
   display: var(--display-code-block);
   margin: var(--spacing-code-block-margin);
   background-color: var(--color-bkg-code-block);
@@ -41,4 +41,63 @@ figure[variant="code"] {
       font-family: var(--font-code-block-code-family);
     }
   }
+}
+
+/* One highlight vocabulary for every code sample, including the
+   playground editor overlay. The engine maps each token to one element;
+   these colours are the only styling of that vocabulary. */
+pre i,
+code i {
+  color: var(--color-text-syntax-comment);
+}
+pre strong,
+code strong {
+  color: var(--color-text-syntax-tag);
+  font-weight: var(--font-weight-semibold);
+}
+pre abbr,
+code abbr {
+  color: var(--color-text-syntax-attr);
+  text-decoration: var(--text-decoration-none);
+}
+pre dfn,
+code dfn {
+  color: var(--color-text-syntax-directive);
+  font-weight: var(--font-weight-semibold);
+}
+pre samp,
+code samp {
+  color: var(--color-text-syntax-binding);
+  font-weight: var(--font-weight-semibold);
+}
+pre mark,
+code mark {
+  color: var(--color-text-syntax-string);
+  background-color: var(--palette-transparent);
+}
+pre b,
+code b {
+  color: var(--color-text-syntax-keyword);
+  font-weight: var(--font-weight-semibold);
+}
+pre em,
+code em {
+  color: var(--color-text-syntax-function);
+}
+pre data,
+code data {
+  color: var(--color-text-syntax-number);
+}
+pre kbd,
+code kbd {
+  color: var(--color-text-syntax-interpolation);
+}
+pre cite,
+code cite {
+  color: var(--color-text-syntax-token-item);
+}
+pre small,
+code small {
+  color: var(--color-text-syntax-token-state);
+  font-weight: var(--font-weight-semibold);
 }

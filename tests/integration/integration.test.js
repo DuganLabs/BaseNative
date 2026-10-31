@@ -1049,7 +1049,7 @@ describe('the contents navs have a working scrollspy', () => {
   it('/components: every category filter maps to a section on the page', () => {
     const route = siteRoutes.find((r) => r.path === '/components');
     const html = renderRoute(route, { tasks: [], hasApi: false });
-    const barAt = html.indexOf('variant="chips"');
+    const barAt = html.indexOf('variant="subnav"');
     const bar = html.slice(barAt, html.indexOf('</aside>', barAt));
     const cats = [...bar.matchAll(/value="([^"]+)"/g)]
       .map((m) => m[1])
@@ -1072,8 +1072,8 @@ describe('the contents navs have a working scrollspy', () => {
   it('the scrollspy observes the TOC targets and marks the current link', () => {
     const src = readFileSync(repo('examples/express/public/scrollspy.js'), 'utf8');
     assert.ok(src.includes('IntersectionObserver'), 'scrollspy should use IntersectionObserver');
-    assert.ok(src.includes('aside[variant="subnav"]'), 'scrollspy should cover the docs subnav');
-    assert.ok(src.includes('aside[variant="chips"]'), 'scrollspy should cover the component chips');
+    assert.ok(src.includes('aside[variant="subnav"]'), 'scrollspy should cover the one subnav');
+    assert.ok(!src.includes('aside[variant="chips"]'), 'scrollspy should not keep a second nav');
     assert.ok(
       src.includes("setAttribute('aria-current', 'true')"),
       'scrollspy should set aria-current',
@@ -1087,8 +1087,8 @@ describe('the contents navs have a working scrollspy', () => {
   it('the current TOC link takes the sidebar current treatment', () => {
     const sidebar = readFileSync(repo('packages/components/src/sidebar/styles.css'), 'utf8');
     assert.ok(sidebar.includes("aside[variant='subnav']"), 'subnav variant is styled');
-    assert.ok(sidebar.includes("aside[variant='chips']"), 'chips variant is styled');
-    assert.ok(sidebar.includes("[aria-pressed='true']"), 'pressed chips share the current fill');
+    assert.ok(!sidebar.includes("aside[variant='chips']"), 'the chips variant is gone');
+    assert.ok(sidebar.includes("[aria-pressed='true']"), 'pressed items share the current fill');
     assert.ok(
       sidebar.includes('--color-bkg-sidebar-link-current'),
       'the current item uses the sidebar fill token',

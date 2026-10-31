@@ -1,14 +1,13 @@
 <link rel="stylesheet" href="/playground.css" />
-<link rel="stylesheet" href="/playground/components.css" />
 
 {{ hero }}
 
-<section class="workspace" aria-label="Playground workspace">
+<section aria-label="Playground workspace">
   {{ chrome }} {{ editors }}
 
-  <section class="stage" aria-label="Result">
-    <article class="preview-card">
-      <header class="card-head">
+  <section aria-label="Result">
+    <article>
+      <header>
         <h2>RESULT</h2>
         <output id="runStatus">Not run yet</output>
       </header>
@@ -22,7 +21,7 @@
   </section>
 </section>
 
-<footer class="cheatsheet">
+<footer aria-label="Quick syntax">
   <p>
     <strong>Quick syntax —</strong>
     interpolate <code>&#123;&#123; count() &#125;&#125;</code> · branch

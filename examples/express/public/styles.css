@@ -150,80 +150,8 @@
     --noise-size: 200px;
     --z-noise: 9999;
 
-    /* Syntax highlighting — the playground's classes and palette.
-     Site code is tokenized by the same engine as the playground's
-     editors (public/highlight-engine.js, shared verbatim), so it
-     wears the tk-* classes; the --color-text-syntax-* tokens are the
-     playground sheet's own, declared here with its values — light,
-     and dark under the same media query the playground uses — so a
-     token reads the same colour on every page as in the editors. */
-    :root {
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-      }
-    }
-    pre i,
-    code i {
-      color: var(--color-text-syntax-comment);
-      font-style: italic;
-    }
-    pre strong,
-    code strong {
-      color: var(--color-text-syntax-tag);
-      font-weight: 600;
-    }
-    pre abbr,
-    code abbr {
-      color: var(--color-text-syntax-attr);
-      text-decoration: none;
-    }
-    pre dfn,
-    code dfn {
-      color: var(--color-text-syntax-directive);
-      font-weight: 600;
-      font-style: normal;
-    }
-    pre samp,
-    code samp {
-      color: var(--color-text-syntax-binding);
-      font-weight: 600;
-    }
-    pre mark,
-    code mark {
-      color: var(--color-text-syntax-string);
-      background: transparent;
-    }
-    pre b,
-    code b {
-      color: var(--color-text-syntax-keyword);
-      font-weight: 600;
-    }
-    pre em,
-    code em {
-      color: var(--color-text-syntax-function);
-      font-style: normal;
-    }
-    pre data,
-    code data {
-      color: var(--color-text-syntax-number);
-    }
-    pre kbd,
-    code kbd {
-      color: var(--color-text-syntax-interpolation);
-    }
-    pre cite,
-    code cite {
-      color: var(--color-text-syntax-token-item);
-      font-style: normal;
-    }
-    pre small,
-    code small {
-      color: var(--color-text-syntax-token-state);
-      font-weight: 600;
-      font-size: inherit;
-    }
-
+    /* Highlight colours live on the code-block component. This sheet
+     does not paint a second vocabulary. */
     body::after {
       content: '';
       position: fixed;
@@ -1079,33 +1007,6 @@
       overflow-x: auto;
       max-inline-size: 100%;
       margin-block-start: var(--space-sm);
-    }
-
-    /* Syntax highlighting */
-    .kw {
-      color: var(--color-syntax-keyword);
-    }
-    .str {
-      color: var(--color-syntax-string);
-    }
-    .fn {
-      color: var(--color-syntax-function);
-    }
-    .num {
-      color: var(--color-syntax-number);
-    }
-    .cmt {
-      color: var(--color-syntax-comment);
-      font-style: italic;
-    }
-    .tag {
-      color: var(--color-syntax-tag);
-    }
-    .attr {
-      color: var(--color-syntax-attr);
-    }
-    .var {
-      color: var(--color-syntax-variable);
     }
 
     /* -- Labels -- */
@@ -4168,10 +4069,6 @@
    grouped list formalises, applied to the hand-authored lists. The
    old treatment gave every row its own bordered mini-card; grouped
    rows share the card's surface instead. */
-    main ul[variant] > li > strong,
-    main ul[variant] li strong {
-      font-size: var(--font-body-size);
-    }
     section ul[role='list']:not([data-stat-grid]) > li {
       background: transparent;
       border: none;

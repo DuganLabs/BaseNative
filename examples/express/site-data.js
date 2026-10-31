@@ -329,10 +329,11 @@ export function getComponentsPageContext() {
   const categories = trinityCategoriesWith(entries);
   const filters = raw(
     renderTrinity('sidebar', {
-      variant: 'chips',
+      variant: 'subnav',
       label: 'Filter by category',
       sections: [
         {
+          label: 'Filter by category',
           items: [
             { label: 'All', value: 'all', pressed: true },
             ...categories.map((cat) => ({ label: sentenceCase(cat.title), value: cat.id })),

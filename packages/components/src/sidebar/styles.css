@@ -1,6 +1,5 @@
 aside[variant='sidebar'],
-aside[variant='subnav'],
-aside[variant='chips'] {
+aside[variant='subnav'] {
   inline-size: var(--size-sidebar-inline);
   background-color: var(--color-bkg-sidebar);
   border-inline-end-width: var(--size-border-sidebar-inline-end);
@@ -45,6 +44,8 @@ aside[variant='chips'] {
           padding-block: var(--spacing-sidebar-link-padding-block);
           padding-inline: var(--spacing-sidebar-link-padding-inline);
           border-radius: var(--size-radius-sidebar-link);
+          border-width: var(--size-border-none);
+          background-color: var(--palette-transparent);
           color: var(--color-text-sidebar-link);
           font-family: var(--font-sidebar-link-family);
           font-size: var(--font-sidebar-link-size);
@@ -52,6 +53,8 @@ aside[variant='chips'] {
           line-height: var(--font-sidebar-link-leading);
           letter-spacing: var(--font-sidebar-link-tracking);
           text-decoration: var(--text-decoration-sidebar-link);
+          white-space: var(--white-space-nowrap);
+          cursor: var(--cursor-pointer);
 
           &:hover {
             background-color: var(--color-bkg-sidebar-link-hover);
@@ -59,14 +62,16 @@ aside[variant='chips'] {
           }
 
           &[aria-current='page'],
-          &[aria-current='true'] {
+          &[aria-current='true'],
+          &[aria-pressed='true'] {
             background-color: var(--color-bkg-sidebar-link-current);
             color: var(--color-text-sidebar-link-current);
             font-weight: var(--font-sidebar-link-weight-current);
           }
 
           &[aria-current='page']:hover,
-          &[aria-current='true']:hover {
+          &[aria-current='true']:hover,
+          &[aria-pressed='true']:hover {
             background-color: var(--color-bkg-sidebar-link-current);
             color: var(--color-text-sidebar-link-current);
           }
@@ -95,38 +100,5 @@ aside[variant='subnav'] {
     flex-direction: var(--flex-direction-row);
     flex-wrap: var(--flex-wrap-wrap);
     gap: var(--spacing-1);
-  }
-}
-
-/* Filter chips: one row, sentence case, scrolling sideways on a
-   phone instead of wrapping into a tall card. */
-aside[variant='chips'] {
-  inline-size: var(--size-full);
-  background-color: var(--palette-transparent);
-  border-inline-end-width: var(--size-border-none);
-  padding-block: var(--spacing-0);
-  padding-inline: var(--spacing-0);
-  overflow: var(--overflow-auto);
-
-  & > nav > section > p {
-    display: var(--display-none);
-  }
-
-  & > nav > section > ul {
-    display: var(--display-flex);
-    flex-direction: var(--flex-direction-row);
-    flex-wrap: var(--flex-wrap-nowrap);
-    overflow-x: var(--overflow-auto);
-    gap: var(--spacing-2);
-  }
-
-  & > nav > section > ul > li > button {
-    white-space: var(--white-space-nowrap);
-  }
-
-  & > nav > section > ul > li > button[aria-pressed='true'] {
-    background-color: var(--color-bkg-sidebar-link-current);
-    color: var(--color-text-sidebar-link-current);
-    font-weight: var(--font-sidebar-link-weight-current);
   }
 }

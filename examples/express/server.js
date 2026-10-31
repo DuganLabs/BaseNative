@@ -4,7 +4,6 @@ import { dirname, join } from 'node:path';
 import { hmrMiddleware } from '@basenative/hmr';
 import { renderRoute, renderComponentPage, renderNotFoundPage, siteRoutes } from './page.js';
 import { trinitySiteCss } from './trinity.js';
-import { playgroundComponentsCss } from './playground-data.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pkgRoot = join(__dirname, '..', '..');
@@ -87,11 +86,6 @@ for (const route of siteRoutes) {
 // the parent page posts to it.
 app.get('/playground/preview', (req, res) => {
   res.sendFile(join(__dirname, 'public', 'playground-preview.html'));
-});
-
-// The playground's assembled component sheet (see playground-data.js).
-app.get('/playground/components.css', (req, res) => {
-  res.type('css').send(playgroundComponentsCss);
 });
 
 app.get('/components/:slug', (req, res) => {
