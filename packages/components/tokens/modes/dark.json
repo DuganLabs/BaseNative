@@ -1242,7 +1242,7 @@
     }
   },
   "color-tint-strong": {
-    "$value": "#409cff",
+    "$value": "#ffb340",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -1296,7 +1296,7 @@
     }
   },
   "color-tint-fill": {
-    "$value": "rgb(10 132 255 / 0.16)",
+    "$value": "rgb(255 159 10 / 0.18)",
     "$type": "color",
     "$extensions": {
       "com.basenative": {

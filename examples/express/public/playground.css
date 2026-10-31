@@ -15,8 +15,9 @@
 /* Playground colors live in the DTCG token source (playground.json). */
 
 section[aria-label='Playground workspace'] {
+  display: grid;
+  gap: 12px;
   min-inline-size: 0;
-  max-inline-size: 100%;
   overflow-x: clip;
 }
 
@@ -116,7 +117,6 @@ section[aria-label='Playground workspace']
   margin: 0;
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.08em;
   color: var(--color-text-playground);
 }
 .pane-head p {
@@ -170,7 +170,6 @@ section[aria-label='Playground workspace']
   padding: 10px 8px 10px 0;
   text-align: right;
   color: var(--color-text-syntax-comment);
-  opacity: 0.65;
   overflow: hidden;
   white-space: pre;
   pointer-events: none;
@@ -213,7 +212,7 @@ section[aria-label='Playground workspace']
 /* ---------- stage ---------- */
 section[aria-label='Result'] {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
   align-items: stretch;
 }
@@ -237,7 +236,6 @@ section[aria-label='Result'] > article > header h2 {
   margin: 0;
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.08em;
   color: var(--color-text-playground);
 }
 section[aria-label='Result'] > article > header output {
@@ -278,7 +276,6 @@ section[aria-label='Result'] > article > header output.bad {
   flex: 1;
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.08em;
   color: var(--color-text-playground);
 }
 .console-head button {
@@ -311,7 +308,6 @@ section[aria-label='Result'] > article > header output.bad {
   flex: none;
   font-weight: 700;
   font-size: 10.5px;
-  letter-spacing: 0.05em;
   padding-top: 2px;
   min-width: 34px;
   color: var(--color-text-playground-muted);

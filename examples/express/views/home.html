@@ -1,40 +1,38 @@
-<article>
-  {{ hero }}
+{{ hero }}
 
-  <section>
-    <h2>Runtime</h2>
-    {{ runtimeList }}
-  </section>
+<section>
+  <h2>Why BaseNative</h2>
+  {{ runtimeList }}
+</section>
 
-  <section>
-    <h2>The catalog</h2>
-    {{ catalogList }}
-  </section>
+<section>
+  <h2>What’s in the box</h2>
+  {{ catalogList }}
+</section>
 
-  <section>
-    <h2>A counter</h2>
-    <pre
-      tabindex="0"
-      aria-label="Code example: a reactive counter"
-    ><code>&lt;button @click="increment()"&gt;
-  Clicked &#123;&#123; count() &#125;&#125; times
+<section>
+  <h2>A counter</h2>
+  <pre
+    tabindex="0"
+    aria-label="Code example: a reactive counter"
+  ><code>&lt;button @click="increment()"&gt;
+Clicked &#123;&#123; count() &#125;&#125; times
 &lt;/button&gt;
 
 &lt;script type="module"&gt;
-  import { signal, computed, effect, hydrate } from '@basenative/runtime';
+import { signal, computed, effect, hydrate } from '@basenative/runtime';
 
-  const count = signal(0);
-  const doubled = computed(() =&gt; count() * 2);
+const count = signal(0);
+const doubled = computed(() =&gt; count() * 2);
 
-  effect(() =&gt; {
-    document.title = String(doubled());
-  });
+effect(() =&gt; {
+  document.title = String(doubled());
+});
 
-  function increment() {
-    count.set(count() + 1);
-  }
+function increment() {
+  count.set(count() + 1);
+}
 
-  hydrate(document.body, { count, increment });
+hydrate(document.body, { count, increment });
 &lt;/script&gt;</code></pre>
-  </section>
-</article>
+</section>

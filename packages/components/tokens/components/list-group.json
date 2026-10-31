@@ -72,7 +72,7 @@
     }
   },
   "color-bkg-list-group": {
-    "$value": "{color-background-grouped}",
+    "$value": "{color-background-grouped-2}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {

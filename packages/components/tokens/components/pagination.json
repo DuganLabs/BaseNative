@@ -252,7 +252,7 @@
     }
   },
   "color-text-pagination-link": {
-    "$value": "{color-tint}",
+    "$value": "{color-tint-strong}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {

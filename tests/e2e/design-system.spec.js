@@ -554,7 +554,9 @@ async function heroPattern(page) {
     const problems = [];
     if (!h1) problems.push('hero has no title');
     const ems = h1 ? h1.querySelectorAll('em') : [];
-    if (ems.length !== 1) problems.push(`hero accent count ${ems.length}`);
+    // Plain titles since the design tightening: the title is the one
+    // heavy line on the page and carries no italic accent.
+    if (ems.length !== 0) problems.push(`hero accent count ${ems.length}`);
     // The catalog hero's figcaption: eyebrow paragraph, title, lede
     // paragraph. One type scale at every width — the pre-trinity gate
     // switched expectations on a data-bn-platform attribute the shell

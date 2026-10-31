@@ -104,6 +104,38 @@ if (sidebar.includes("variant='chips'") || sidebar.includes('variant="chips"')) 
   problems.push('sidebar still styles a chips variant');
 }
 
+// The tightened system, held on every source the site ships: no shouted
+// type, no brand tint used as text (it fails contrast; text takes
+// --color-tint-strong), the layered sheets only, no shouted headings in
+// any template.
+const siteCss = readdirSync(join(root, 'examples/express/public'))
+  .filter((n) => n.endsWith('.css'))
+  .map((n) => `examples/express/public/${n}`)
+  .concat(['packages/builder/src/builder.css']);
+for (const rel of siteCss) {
+  const text = read(rel);
+  if (/text-transform:\s*uppercase/.test(text)) problems.push(`${rel}: text-transform: uppercase`);
+  if (/(^|[;{\s])color:\s*var\(--(?:color-tint|accent)\)/m.test(text)) {
+    problems.push(`${rel}: the tint as a text colour (use --color-tint-strong)`);
+  }
+}
+const layoutHtml = read('examples/express/views/layout.html');
+if (/\/bn-css\/(?:index|components)\.css/.test(layoutHtml)) {
+  problems.push('layout.html links the unlayered component bundle');
+}
+const templates = readdirSync(join(root, 'examples/express/views'))
+  .filter((n) => n.endsWith('.html'))
+  .map((n) => `examples/express/views/${n}`)
+  .concat(
+    readdirSync(join(root, 'examples/express'))
+      .filter((n) => n.endsWith('.js'))
+      .map((n) => `examples/express/${n}`),
+  );
+for (const rel of templates) {
+  const m = read(rel).match(/<h[1-6][^>]*>\s*[A-Z][A-Z ]{4,}\s*<\/h[1-6]>/);
+  if (m) problems.push(`${rel}: an all-caps heading (${m[0]})`);
+}
+
 if (problems.length) {
   console.error(`${problems.length} site composition failure(s):`);
   for (const problem of problems) console.error(`  ${problem}`);

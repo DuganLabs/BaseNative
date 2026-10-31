@@ -648,7 +648,7 @@
     }
   },
   "spacing-sidebar-link-padding-block": {
-    "$value": "{spacing-2}",
+    "$value": "{spacing-3}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
