@@ -1,6 +1,6 @@
 {
   "name": "@basenative/keyboard",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Accessible mobile-first on-screen virtual keyboard primitive \u2014 layout-agnostic, signal-driven key state coloring, themable",
   "type": "module",
   "exports": {

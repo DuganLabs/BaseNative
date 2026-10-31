@@ -1,5 +1,11 @@
 # Changelog — @basenative/share
 
+## 3.1.0
+
+### Patch Changes
+
+- @basenative/og-image@3.1.0
+
 ## 3.0.0
 
 ### Patch Changes
