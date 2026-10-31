@@ -100,7 +100,7 @@ export function getDesignSystemContext() {
     .filter((e) => isRole(e.name))
     .map((e) => ({ ...e, light: e.value, dark: dark[e.name] }));
 
-  const systemColors = family(light, '--system-').map((e) => ({
+  const systemColors = family(light, '--palette-system-').map((e) => ({
     ...e,
     dark: dark[e.name] ?? e.value,
   }));
@@ -159,13 +159,13 @@ export function getDesignSystemContext() {
 
   const radiusSteps = family(light, '--size-radius-');
   const ladderCss = raw(
-    [
+    `<style>@layer components {\n${[
       ...systemColors.map((c) => `[data-bn-swatch="${c.name}"]{background:var(${c.name})}`),
       ...radiusSteps.map(
         (step) =>
           `[data-bn-radius="${step.name}"]{border-radius:var(${step.name});background:var(--color-tint)}`,
       ),
-    ].join(''),
+    ].join('\n')}\n}</style>`,
   );
 
   return {
