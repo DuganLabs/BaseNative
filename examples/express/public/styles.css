@@ -11,6 +11,12 @@
   html {
     hanging-punctuation: first last;
   }
+  /* One visible focus ring for everything focusable; component sheets
+     that draw their own ring win on specificity. */
+  :focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
   .visually-hidden {
     position: absolute;
     width: 1px;
