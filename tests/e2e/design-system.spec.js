@@ -968,9 +968,17 @@ test.describe('design system gates', () => {
             // anti-aliasing. 320 still matches exactly. Run 40723362543
             // (PR #335) differed by 109 pixels on /components dark at 768
             // and 1280 — same noise, larger glyph — so the /components
-            // budget grows to 128.
+            // budget grows to 128. Run 41253278441 (PR #347) differed by
+            // 38–51 pixels on /playground at 768 and 1280 in both themes,
+            // editor glyph anti-aliasing; 320 matches exactly.
             maxDiffPixels:
-              path === '/components' ? 128 : path === '/compare' && width >= 768 ? 250 : 0,
+              path === '/components'
+                ? 128
+                : path === '/compare' && width >= 768
+                  ? 250
+                  : path === '/playground' && width >= 768
+                    ? 64
+                    : 0,
           });
           expect(await overflow(page)).toEqual([]);
           expect(await singleLine(page)).toEqual([]);
