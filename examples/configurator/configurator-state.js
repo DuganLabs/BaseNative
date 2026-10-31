@@ -20,7 +20,7 @@ import { createPanelScheduleComputed } from './components/panel-schedule.js';
  * @param {{signal: Function, computed: Function, batch: Function}} deps
  * @returns {Record<string, any>} flat context for hydrate()
  */
-export function createState({ signal, computed, batch }) {
+export function createState({ signal, computed, batch: _batch }) {
   // ─── Primary Signals ───────────────────────────────────────────
   const footprint = signal({ width: 20, length: 30 });
   const ceilingHeight = signal(108);

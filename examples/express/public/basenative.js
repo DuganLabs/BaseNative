@@ -29,10 +29,10 @@ function enableDevtools() {
     };
   }
 }
-function registerTracked(registry2, ids, key, label, prefix, extra, mintId) {
+function registerTracked(registry3, ids, key, label, prefix, extra, mintId) {
   const existing = ids.get(key);
   if (existing !== void 0) {
-    const info = registry2.get(existing);
+    const info = registry3.get(existing);
     if (info) {
       if (label) info.label = label;
       if (extra) {
@@ -45,7 +45,7 @@ function registerTracked(registry2, ids, key, label, prefix, extra, mintId) {
   }
   const id = mintId();
   ids.set(key, id);
-  registry2.set(id, { label: label || `${prefix}_${id}`, ...extra });
+  registry3.set(id, { label: label || `${prefix}_${id}`, ...extra });
   return id;
 }
 function trackSignal(accessor, label, subscriberCount) {
@@ -72,11 +72,11 @@ function trackEffect(handle, label, disposed) {
     () => nextEffectId++
   );
 }
-function recordHydration(root, details = {}) {
+function recordHydration(root48, details = {}) {
   if (!devtoolsState.enabled) return;
   devtoolsState.hydrations.push({
     timestamp: Date.now(),
-    root: root?.tagName || "unknown",
+    root: root48?.tagName || "unknown",
     directivesProcessed: details.directivesProcessed || 0,
     duration: details.duration || 0
   });
@@ -712,9 +712,9 @@ function isScopeSlot(value) {
 function resolveValue(value) {
   return isScopeSlot(value) ? value.get() : value;
 }
-function lookupIdentifier(ctx, name) {
+function lookupIdentifier(ctx, name48) {
   if (ctx == null) return void 0;
-  return resolveValue(ctx[name]);
+  return resolveValue(ctx[name48]);
 }
 function safeMemberRead(object, property, source) {
   if (typeof property === "symbol") {
@@ -883,9 +883,6 @@ function unwrapRaw(value) {
 function escapeText(value) {
   return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
-function escapeAttr(value) {
-  return escapeText(value).replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-}
 var URL_ATTRIBUTES = /* @__PURE__ */ new Set([
   "href",
   "src",
@@ -900,8 +897,8 @@ var URL_ATTRIBUTES = /* @__PURE__ */ new Set([
   "codebase"
 ]);
 var DANGEROUS_SCHEME = /^(?:javascript|vbscript|data|blob|file):/i;
-function isUrlAttribute(name) {
-  return URL_ATTRIBUTES.has(String(name).toLowerCase());
+function isUrlAttribute(name48) {
+  return URL_ATTRIBUTES.has(String(name48).toLowerCase());
 }
 function sanitizeUrl(value) {
   const stripped = String(value).replace(/[\u0000-\u0020\u007F-\u00A0]/g, "");
@@ -1040,27 +1037,27 @@ function updateLoopContext(slots, itemName, item, index, length) {
 
 // ../../packages/runtime/src/shared/directives.js
 var registry = /* @__PURE__ */ new Map();
-function registerDirective(name, config = {}) {
-  if (typeof name !== "string" || name === "") {
+function registerDirective(name48, config = {}) {
+  if (typeof name48 !== "string" || name48 === "") {
     throw new Error("registerDirective: name must be a non-empty string.");
   }
-  if (registry.has(name)) {
-    throw new Error(`Directive "@${name}" is already registered.`);
+  if (registry.has(name48)) {
+    throw new Error(`Directive "@${name48}" is already registered.`);
   }
   if (typeof config.server !== "function" && typeof config.client !== "function") {
-    throw new Error(`Directive "@${name}" needs a "server" and/or "client" handler function.`);
+    throw new Error(`Directive "@${name48}" needs a "server" and/or "client" handler function.`);
   }
-  registry.set(name, {
+  registry.set(name48, {
     on: config.on === "template" ? "template" : "element",
     server: typeof config.server === "function" ? config.server : void 0,
     client: typeof config.client === "function" ? config.client : void 0
   });
 }
-function unregisterDirective(name) {
-  registry.delete(name);
+function unregisterDirective(name48) {
+  registry.delete(name48);
 }
-function getDirective(name) {
-  return registry.get(name);
+function getDirective(name48) {
+  return registry.get(name48);
 }
 function listDirectives() {
   return [...registry.keys()];
@@ -1150,9 +1147,9 @@ function bindNode(node, ctx, options) {
       processed++;
     } else if (attr.value.includes("{{")) {
       const raw2 = attr.value;
-      const name = attr.name;
+      const name48 = attr.name;
       const runner = effect(() => {
-        node.setAttribute(name, interpolate(raw2, ctx, options));
+        node.setAttribute(name48, interpolate(raw2, ctx, options));
       });
       registerCleanup(node, () => runner.dispose?.());
       processed++;
@@ -1212,16 +1209,16 @@ function removeRenderedNodes(nodes) {
     removeNodeTree(node);
   }
 }
-function cloneAndHydrate(template, ctx, options) {
-  const fragment = template.content.cloneNode(true);
+function cloneAndHydrate(template48, ctx, options) {
+  const fragment = template48.content.cloneNode(true);
   hydrateChildren(fragment, ctx, options);
   return [...fragment.childNodes];
 }
-function createBlock(template, ctx, options, label = "@for:item") {
+function createBlock(template48, ctx, options, label = "@for:item") {
   const fragment = document.createDocumentFragment();
   const start = document.createComment(label);
   const end = document.createComment(`${label}:end`);
-  const nodes = cloneAndHydrate(template, ctx, options);
+  const nodes = cloneAndHydrate(template48, ctx, options);
   fragment.append(start);
   for (const node of nodes) fragment.append(node);
   fragment.append(end);
@@ -1305,7 +1302,7 @@ function clearForState(state) {
   state.blocks = [];
   state.blocksByKey.clear();
 }
-function renderUntrackedList(state, anchor, template, emptyNode, ctx, options, itemName, list) {
+function renderUntrackedList(state, anchor, template48, emptyNode, ctx, options, itemName, list) {
   for (const block of state.blocks) removeBlock(block);
   state.blocks = [];
   state.blocksByKey.clear();
@@ -1319,13 +1316,13 @@ function renderUntrackedList(state, anchor, template, emptyNode, ctx, options, i
   let cursor = anchor;
   for (let index = 0; index < list.length; index++) {
     const itemCtx = createLoopEvalContext(ctx, itemName, list[index], index, list.length);
-    const nodes = cloneAndHydrate(template, itemCtx, options);
+    const nodes = cloneAndHydrate(template48, itemCtx, options);
     insertAfterAnchor(cursor, nodes);
     cursor = nodes[nodes.length - 1] ?? cursor;
     state.rendered.push(...nodes);
   }
 }
-function reconcileTrackedList(state, anchor, template, emptyNode, ctx, options, itemName, list, trackExpr) {
+function reconcileTrackedList(state, anchor, template48, emptyNode, ctx, options, itemName, list, trackExpr) {
   removeRenderedNodes(state.rendered);
   state.rendered = [];
   clearEmptyBlock(state);
@@ -1353,7 +1350,7 @@ function reconcileTrackedList(state, anchor, template, emptyNode, ctx, options, 
         key
       });
       clearForState(state);
-      renderUntrackedList(state, anchor, template, emptyNode, ctx, options, itemName, list);
+      renderUntrackedList(state, anchor, template48, emptyNode, ctx, options, itemName, list);
       return;
     }
     seenKeys.add(key);
@@ -1363,7 +1360,7 @@ function reconcileTrackedList(state, anchor, template, emptyNode, ctx, options, 
       updateLoopContext(block.slots, itemName, item, index, list.length);
     } else {
       const loopState = createLoopContext(ctx, itemName, item, index, list.length);
-      block = createBlock(template, loopState.ctx, options);
+      block = createBlock(template48, loopState.ctx, options);
       block.slots = loopState.slots;
       block.key = key;
     }
@@ -1486,23 +1483,23 @@ function mountSwitchTemplate(templateNode, ctx, options) {
   });
 }
 function findBlockDirective(node) {
-  for (const name of listDirectives()) {
-    const directive = getDirective(name);
-    if (directive?.on === "template" && node.hasAttribute(`@${name}`)) {
-      return { name, directive };
+  for (const name48 of listDirectives()) {
+    const directive = getDirective(name48);
+    if (directive?.on === "template" && node.hasAttribute(`@${name48}`)) {
+      return { name: name48, directive };
     }
   }
   return null;
 }
-function mountDirectiveBlockTemplate(templateNode, name, directive, ctx, options) {
-  const value = templateNode.getAttribute(`@${name}`);
+function mountDirectiveBlockTemplate(templateNode, name48, directive, ctx, options) {
+  const value = templateNode.getAttribute(`@${name48}`);
   let elseNode = null;
   const next = templateNode.nextElementSibling;
   if (next?.tagName === "TEMPLATE" && next.hasAttribute("@else")) {
     elseNode = next;
     elseNode.remove();
   }
-  const anchor = document.createComment(`@${name}`);
+  const anchor = document.createComment(`@${name48}`);
   templateNode.replaceWith(anchor);
   let rendered = [];
   const runner = effect(() => {
@@ -1518,9 +1515,9 @@ function mountDirectiveBlockTemplate(templateNode, name, directive, ctx, options
     rendered = [];
   });
 }
-function hasHydrationMarkers(root) {
+function hasHydrationMarkers(root48) {
   const SHOW_COMMENT = globalThis.NodeFilter?.SHOW_COMMENT ?? 128;
-  const walker = document.createTreeWalker(root, SHOW_COMMENT);
+  const walker = document.createTreeWalker(root48, SHOW_COMMENT);
   while (walker.nextNode()) {
     if (String(walker.currentNode.nodeValue).startsWith("bn:")) return true;
   }
@@ -1553,8 +1550,8 @@ function hydrateChildren(parent, ctx, options = {}) {
   }
   return processed;
 }
-function hydrateDeferred(root, ctx, options) {
-  const existing = root.querySelectorAll?.("[data-bn-defer]") ?? [];
+function hydrateDeferred(root48, ctx, options) {
+  const existing = root48.querySelectorAll?.("[data-bn-defer]") ?? [];
   for (const el of existing) {
     if (el.children.length > 0) {
       hydrateChildren(el, ctx, options);
@@ -1565,28 +1562,28 @@ function hydrateDeferred(root, ctx, options) {
   function onDefer(event) {
     const id = event.detail?.id;
     if (!id) return;
-    const target = root.querySelector?.(`[data-bn-defer-resolve="${id}"] ~ [data-bn-defer="${id}"]`) ?? root.querySelector?.(`div[data-bn-defer="${id}"]`);
+    const target = root48.querySelector?.(`[data-bn-defer-resolve="${id}"] ~ [data-bn-defer="${id}"]`) ?? root48.querySelector?.(`div[data-bn-defer="${id}"]`);
     if (!target) return;
     hydrateChildren(target, ctx, options);
   }
   document.addEventListener("bn:defer", onDefer);
   return () => document.removeEventListener("bn:defer", onDefer);
 }
-function hydrate(root, ctx, options = {}) {
+function hydrate(root48, ctx, options = {}) {
   const runtimeOptions = createRuntimeOptions(options);
   const startedAt = Date.now();
-  const processed = hydrateChildren(root, ctx, runtimeOptions);
-  recordHydration(root, { directivesProcessed: processed, duration: Date.now() - startedAt });
-  const cleanupDeferred = hydrateDeferred(root, ctx, runtimeOptions);
+  const processed = hydrateChildren(root48, ctx, runtimeOptions);
+  recordHydration(root48, { directivesProcessed: processed, duration: Date.now() - startedAt });
+  const cleanupDeferred = hydrateDeferred(root48, ctx, runtimeOptions);
   if (processed === 0) {
-    const markerMessage = hasHydrationMarkers(root) ? "hydrate() found server render markers but no template source; this build can diagnose SSR boundaries, but it still recovers by client-side template hydration only" : "hydrate() found no BaseNative template directives in the target root";
+    const markerMessage = hasHydrationMarkers(root48) ? "hydrate() found server render markers but no template source; this build can diagnose SSR boundaries, but it still recovers by client-side template hydration only" : "hydrate() found no BaseNative template directives in the target root";
     reportHydrationMismatch(runtimeOptions, markerMessage, {
-      code: hasHydrationMarkers(root) ? "BN_HYDRATE_MARKERS_WITHOUT_TEMPLATE" : "BN_HYDRATE_NO_DIRECTIVES"
+      code: hasHydrationMarkers(root48) ? "BN_HYDRATE_MARKERS_WITHOUT_TEMPLATE" : "BN_HYDRATE_NO_DIRECTIVES"
     });
   }
   return () => {
     cleanupDeferred();
-    disposeNodeTree(root);
+    disposeNodeTree(root48);
   };
 }
 
@@ -1604,8 +1601,8 @@ function detectBrowserFeatures(target = globalThis) {
     baseSelect: cssSupports(target, "appearance: base-select") || cssSupports(target, "-webkit-appearance: base-select")
   };
 }
-function supportsFeature(name, target = globalThis) {
-  return Boolean(detectBrowserFeatures(target)[name]);
+function supportsFeature(name48, target = globalThis) {
+  return Boolean(detectBrowserFeatures(target)[name48]);
 }
 var browserFeatures = /* @__PURE__ */ detectBrowserFeatures();
 
@@ -1701,14 +1698,14 @@ function createPluginRegistry() {
   const plugins2 = /* @__PURE__ */ new Map();
   const hooks = /* @__PURE__ */ new Map();
   const directives = /* @__PURE__ */ new Map();
-  function addDirective(name, handler) {
-    if (typeof name !== "string" || name === "") {
+  function addDirective(name48, handler) {
+    if (typeof name48 !== "string" || name48 === "") {
       throw new Error("Directive name must be a non-empty string.");
     }
     if (typeof handler !== "function") {
-      throw new Error(`Directive handler for "${name}" must be a function.`);
+      throw new Error(`Directive handler for "${name48}" must be a function.`);
     }
-    directives.set(name, handler);
+    directives.set(name48, handler);
   }
   function addHook(hookName, fn) {
     if (!VALID_HOOKS.includes(hookName)) {
@@ -1749,8 +1746,8 @@ function createPluginRegistry() {
       fn(...args);
     }
   }
-  function getDirective2(name) {
-    return directives.get(name);
+  function getDirective2(name48) {
+    return directives.get(name48);
   }
   function getPlugins() {
     return [...plugins2.keys()];
@@ -2023,13 +2020,13 @@ function getDebugStats() {
 var _config = {
   trackReads: false
 };
-function debugSignal(s, name = "signal") {
+function debugSignal(s, name48 = "signal") {
   stats.signalsCreated++;
-  log("debug", `signal:${name} created`, `(${s()})`);
+  log("debug", `signal:${name48} created`, `(${s()})`);
   const wrapped = () => {
     if (_config.trackReads) {
       stats.signalReads++;
-      log("debug", `signal:${name} read \u2192`, s());
+      log("debug", `signal:${name48} read \u2192`, s());
     }
     return s();
   };
@@ -2039,23 +2036,23 @@ function debugSignal(s, name = "signal") {
     const after = s();
     if (_debugEnabled) {
       stats.signalWrites++;
-      log("debug", `signal:${name} set`, before, "\u2192", after);
+      log("debug", `signal:${name48} set`, before, "\u2192", after);
     }
   };
   wrapped.peek = () => s.peek();
   return wrapped;
 }
-function debugEffect(fn, name = "effect") {
+function debugEffect(fn, name48 = "effect") {
   stats.effectsCreated++;
   let runCount = 0;
   const handle = effect(() => {
     runCount++;
     stats.effectRuns++;
     const start = typeof performance !== "undefined" ? performance.now() : Date.now();
-    log("debug", `effect:${name} run #${runCount} started`);
+    log("debug", `effect:${name48} run #${runCount} started`);
     const result = fn();
     const duration = (typeof performance !== "undefined" ? performance.now() : Date.now()) - start;
-    log("debug", `effect:${name} run #${runCount} done (${duration.toFixed(2)}ms)`);
+    log("debug", `effect:${name48} run #${runCount} done (${duration.toFixed(2)}ms)`);
     return result;
   });
   return handle;
@@ -2079,575 +2076,913 @@ function debugAssert(condition, message) {
     throw new Error(`[BN:debug] Assertion failed: ${message}`);
   }
 }
-function debugDeps(s, name = "signal") {
+function debugDeps(s, name48 = "signal") {
   if (!_debugEnabled) return;
   const value = typeof s === "function" ? s() : s;
-  log("info", `deps:${name} current value:`, value);
+  log("info", `deps:${name48} current value:`, value);
 }
 
-// ../../packages/components/src/multiselect.js
-function tagHtml(value, text) {
-  return `<span data-bn="tag" data-value="${escapeAttr(value)}">${escapeText(text)}<button type="button" data-bn="tag-remove" aria-label="Remove ${escapeAttr(text)}">&times;</button></span>`;
+// ../../packages/components/src/accordion/index.js
+var name = "accordion";
+var root = "details";
+function create(props) {
+  if (!props.summary) throw new TypeError("accordion: summary is required");
+  const summary = signal(props.summary);
+  const bodyHtml = signal(props.bodyHtml ?? "");
+  const open = signal(props.open ?? false);
+  const variant = signal(props.variant ?? "default");
+  return { summary, bodyHtml, open, variant, raw };
 }
-var TAGS = '[data-bn="multiselect-tags"]';
-var TAG = '[data-bn="tag"]';
-var REMOVE = '[data-bn="tag-remove"]';
-var SEARCH = '[data-bn="multiselect-search"]';
-function closestFrom(target, selector) {
-  return target && typeof target.closest === "function" ? target.closest(selector) : null;
+function registerVariants(registry3) {
+  registry3.registerVariant("accordion", "default");
 }
-function initMultiselect(root, options = {}) {
-  const { onChange } = options;
-  const select = root.querySelector("select[multiple]");
-  const tags = root.querySelector(TAGS);
-  const input = root.querySelector(SEARCH);
-  const selectOptions = () => Array.from(select ? select.querySelectorAll("option") : []);
-  const values = () => selectOptions().filter((option) => option.selected).map((option) => option.value);
-  const tagFor = (value) => Array.from(tags ? tags.querySelectorAll(TAG) : []).find((tag) => tag.getAttribute("data-value") === value) ?? null;
-  function emit() {
-    if (onChange) onChange(values());
+var template = new URL("./index.html", import.meta.url);
+var styles = new URL("./styles.css", import.meta.url);
+var accordion = { name, root, create, registerVariants, template, styles };
+
+// ../../packages/components/src/alert/index.js
+var name2 = "alert";
+var root2 = "aside";
+function create2(props) {
+  if (!props.title) throw new TypeError("alert: title is required");
+  const title = signal(props.title);
+  const body = signal(props.body ?? "");
+  const variant = signal(props.variant ?? "info");
+  const role = computed(() => variant() === "danger" ? "alert" : "status");
+  const dismissHtml = signal(props.dismissHtml ?? "");
+  const hasDismiss = computed(() => dismissHtml() !== "");
+  return { title, body, variant, role, dismissHtml, hasDismiss, raw };
+}
+function registerVariants2(registry3) {
+  registry3.registerVariant("alert", "info");
+  registry3.registerVariant("alert", "success");
+  registry3.registerVariant("alert", "warning");
+  registry3.registerVariant("alert", "danger");
+}
+var template2 = new URL("./index.html", import.meta.url);
+var styles2 = new URL("./styles.css", import.meta.url);
+var alert = { name: name2, root: root2, create: create2, registerVariants: registerVariants2, template: template2, styles: styles2 };
+
+// ../../packages/components/src/app-bar/index.js
+var name3 = "app-bar";
+var root3 = "nav";
+var MORE_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>';
+function create3(props) {
+  if (!Array.isArray(props.items) || props.items.length === 0) {
+    throw new TypeError("app-bar: items is required");
   }
-  function remove(value) {
-    const option = selectOptions().find((o) => o.value === value);
-    if (!option || !option.selected) return false;
-    option.selected = false;
-    const tag = tagFor(value);
-    if (tag && typeof tag.remove === "function") tag.remove();
-    return true;
-  }
-  function add(value) {
-    const option = selectOptions().find((o) => o.value === value);
-    if (!option || option.selected) return false;
-    option.selected = true;
-    if (tags && !tagFor(value)) tags.insertAdjacentHTML("beforeend", tagHtml(value, String(option.textContent ?? value)));
-    return true;
-  }
-  function commitInput() {
-    if (!input) return false;
-    const text = String(input.value ?? "").trim().toLowerCase();
-    if (!text) return false;
-    const option = selectOptions().find((o) => String(o.textContent ?? "").trim().toLowerCase() === text || String(o.value).toLowerCase() === text);
-    if (!option) return false;
-    input.value = "";
-    if (add(option.value)) emit();
-    return true;
-  }
-  function onClick(e) {
-    const button = closestFrom(e.target, REMOVE);
-    const tag = button ? closestFrom(button, TAG) : null;
-    if (!tag) return;
-    if (!remove(tag.getAttribute("data-value"))) return;
-    if (input && typeof input.focus === "function") input.focus();
-    emit();
-  }
-  function onKeydown(e) {
-    if (!input || e.target !== input) return;
-    if (e.key === "Backspace" && !input.value) {
-      const last = values().at(-1);
-      if (last !== void 0 && remove(last)) {
-        e.preventDefault();
-        emit();
-      }
-    } else if (e.key === "Enter" && commitInput()) {
-      e.preventDefault();
-    }
-  }
-  function onInputChange(e) {
-    if (input && e.target === input) commitInput();
-  }
-  root.addEventListener("click", onClick);
-  root.addEventListener("keydown", onKeydown);
-  root.addEventListener("change", onInputChange);
+  const limit = props.barLimit ?? 4;
+  const enrich = (item) => ({
+    ...item,
+    iconHtml: item.iconHtml ?? "",
+    ariaCurrent: item.current ? "page" : false
+  });
+  const primaryItems = signal(props.items.slice(0, limit).map(enrich));
+  const overflowItems = signal(props.items.slice(limit).map(enrich));
+  const label = signal(props.label ?? "Primary");
+  const moreLabel = signal(props.moreLabel ?? "More");
+  const variant = signal(props.variant ?? "app-bar");
+  const id = signal(props.id ?? "app-bar");
+  const hasOverflow = computed(() => overflowItems().length > 0);
+  const moreAriaCurrent = computed(() => overflowItems().some((item) => item.ariaCurrent === "page") ? "page" : false);
+  const moreId = computed(() => `${id()}-more`);
+  const moreButtonId = computed(() => `${id()}-more-btn`);
+  const moreIconHtml = signal(MORE_ICON);
   return {
-    add,
-    remove,
-    values,
-    destroy() {
-      root.removeEventListener("click", onClick);
-      root.removeEventListener("keydown", onKeydown);
-      root.removeEventListener("change", onInputChange);
-    }
+    primaryItems,
+    overflowItems,
+    label,
+    moreLabel,
+    variant,
+    hasOverflow,
+    moreAriaCurrent,
+    moreId,
+    moreButtonId,
+    moreIconHtml,
+    raw
   };
 }
+function registerVariants3(registry3) {
+  registry3.registerVariant("app-bar", "app-bar");
+}
+var template3 = new URL("./index.html", import.meta.url);
+var styles3 = new URL("./styles.css", import.meta.url);
+var appBar = { name: name3, root: root3, create: create3, registerVariants: registerVariants3, template: template3, styles: styles3 };
 
-// ../../packages/components/src/datagrid.js
-var TH = '[data-bn="datagrid-th"]';
-var TH_BUTTON = '[data-bn="datagrid-th-button"]';
-var TD = '[data-bn="datagrid-td"]';
-var ROW = '[data-bn="datagrid-row"]';
-var SELECT_ALL = '[data-bn="datagrid-select-all"]';
-var ROW_SELECT = '[data-bn="datagrid-row-select"]';
-var CELL = '[data-bn="datagrid-th-select"], [data-bn="datagrid-th"], [data-bn="datagrid-td-select"], [data-bn="datagrid-td"]';
-function closestFrom2(target, selector) {
-  return target && typeof target.closest === "function" ? target.closest(selector) : null;
+// ../../packages/components/src/app-shell/index.js
+var name4 = "app-shell";
+var root4 = "main";
+function create4(props) {
+  if (!props.sidebarHtml) throw new TypeError("app-shell: sidebarHtml is required \u2014 render the sidebar into it");
+  if (!props.appBarHtml) throw new TypeError("app-shell: appBarHtml is required \u2014 render the app bar into it");
+  if (!props.contentHtml) throw new TypeError("app-shell: contentHtml is required");
+  const sidebarHtml = signal(props.sidebarHtml);
+  const appBarHtml = signal(props.appBarHtml);
+  const contentHtml = signal(props.contentHtml);
+  const variant = signal(props.variant ?? "default");
+  const mainId = signal(props.mainId ?? false);
+  return { sidebarHtml, appBarHtml, contentHtml, variant, mainId, raw };
 }
-function isCell(el) {
-  return Boolean(el) && typeof el.matches === "function" && el.matches(CELL);
+function registerVariants4(registry3) {
+  registry3.registerVariant("app-shell", "default");
 }
-function stripArrow(text) {
-  return String(text ?? "").replace(/\s*[↑↓]\s*$/, "");
+var template4 = new URL("./index.html", import.meta.url);
+var styles4 = new URL("./styles.css", import.meta.url);
+var appShell = { name: name4, root: root4, create: create4, registerVariants: registerVariants4, template: template4, styles: styles4 };
+
+// ../../packages/components/src/avatar/index.js
+var name5 = "avatar";
+var root5 = "figure";
+function create5(props) {
+  const src = signal(props.src ?? "");
+  const alt = signal(props.alt ?? "");
+  const initials = signal(props.initials ?? "");
+  const variant = signal(props.variant ?? "default");
+  const hasImage = computed(() => src() !== "");
+  return { src, alt, initials, variant, hasImage };
 }
-function initDataGrid(wrapper, options = {}) {
-  const { onSort, onSelectionChange } = options;
-  const all = (selector) => Array.from(wrapper.querySelectorAll(selector));
-  const rowBoxes = () => all(ROW_SELECT);
-  function sortState() {
-    const th = wrapper.querySelector(`${TH}[data-sorted]`);
-    return th ? { key: th.getAttribute("data-key"), dir: th.getAttribute("data-sorted") } : null;
+function registerVariants5(registry3) {
+  registry3.registerVariant("avatar", "default");
+  for (let tone = 0; tone <= 7; tone += 1) registry3.registerVariant("avatar", `tone-${tone}`);
+}
+var template5 = new URL("./index.html", import.meta.url);
+var styles5 = new URL("./styles.css", import.meta.url);
+var avatar = { name: name5, root: root5, create: create5, registerVariants: registerVariants5, template: template5, styles: styles5 };
+
+// ../../packages/components/src/badge/index.js
+var name6 = "badge";
+var root6 = "small";
+function create6(props) {
+  if (!props.label) throw new TypeError("badge: label is required");
+  const label = signal(props.label);
+  const variant = signal(props.variant ?? "default");
+  return { label, variant };
+}
+function registerVariants6(registry3) {
+  registry3.registerVariant("badge", "default");
+  registry3.registerVariant("badge", "info");
+  registry3.registerVariant("badge", "success");
+  registry3.registerVariant("badge", "warning");
+  registry3.registerVariant("badge", "danger");
+}
+var template6 = new URL("./index.html", import.meta.url);
+var styles6 = new URL("./styles.css", import.meta.url);
+var badge = { name: name6, root: root6, create: create6, registerVariants: registerVariants6, template: template6, styles: styles6 };
+
+// ../../packages/components/src/breadcrumb/index.js
+var name7 = "breadcrumb";
+var root7 = "nav";
+function create7(props) {
+  if (!Array.isArray(props.items) || props.items.length === 0) {
+    throw new TypeError("breadcrumb: items is required");
   }
-  function applySort(th, dir) {
-    for (const other of all(TH)) {
-      const button = other.querySelector(TH_BUTTON);
-      if (other === th) {
-        other.setAttribute("data-sorted", dir);
-        other.setAttribute("aria-sort", dir === "asc" ? "ascending" : "descending");
-        if (button) button.textContent = `${stripArrow(button.textContent)} ${dir === "asc" ? "\u2191" : "\u2193"}`;
-      } else {
-        other.removeAttribute("data-sorted");
-        other.removeAttribute("aria-sort");
-        if (button) button.textContent = stripArrow(button.textContent);
+  const items = signal(props.items);
+  const label = signal(props.label ?? "Breadcrumb");
+  const variant = signal(props.variant ?? "breadcrumb");
+  return { items, label, variant };
+}
+function registerVariants7(registry3) {
+  registry3.registerVariant("breadcrumb", "breadcrumb");
+}
+var template7 = new URL("./index.html", import.meta.url);
+var styles7 = new URL("./styles.css", import.meta.url);
+var breadcrumb = { name: name7, root: root7, create: create7, registerVariants: registerVariants7, template: template7, styles: styles7 };
+
+// ../../packages/components/src/button/index.js
+var name8 = "button";
+var root8 = "button";
+function create8(props) {
+  if (!props.label) throw new TypeError("button: label is required");
+  const label = signal(props.label);
+  const variant = signal(props.variant ?? "default");
+  const href = signal(props.href ?? "");
+  const type = signal(props.type ?? "button");
+  const disabled = signal(props.disabled ?? false);
+  const isBusy = signal(props.busy ?? false);
+  const isDisabled = computed(() => disabled() || isBusy());
+  const hasHref = computed(() => href() !== "");
+  const hrefAttr = computed(() => isDisabled() ? false : href());
+  const disabledAttr = computed(() => isDisabled() ? "true" : false);
+  function activate(event) {
+    if (isDisabled.peek()) return;
+    props.onActivate?.(event);
+  }
+  return { label, variant, type, disabled, isBusy, isDisabled, hasHref, hrefAttr, disabledAttr, activate };
+}
+function registerVariants8(registry3) {
+  registry3.registerVariant("button", "default");
+  registry3.registerVariant("button", "primary");
+  registry3.registerVariant("button", "ghost");
+  registry3.registerVariant("button", "destructive");
+}
+var template8 = new URL("./index.html", import.meta.url);
+var styles8 = new URL("./styles.css", import.meta.url);
+var button = { name: name8, root: root8, create: create8, registerVariants: registerVariants8, template: template8, styles: styles8 };
+
+// ../../packages/components/src/calendar/index.js
+var name9 = "calendar";
+var root9 = "section";
+var MONTH_NAMES = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December"
+];
+var WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+function iso(y, m, d) {
+  return `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+}
+function create9(props) {
+  if (!props.year || !props.month) throw new TypeError("calendar: year and month are required");
+  const variant = signal(props.variant ?? "month");
+  const prevHtml = signal(props.prevHtml ?? "");
+  const nextHtml = signal(props.nextHtml ?? "");
+  const bodyHtml = signal(props.bodyHtml ?? "");
+  const todayIso = props.today ?? iso((/* @__PURE__ */ new Date()).getFullYear(), (/* @__PURE__ */ new Date()).getMonth() + 1, (/* @__PURE__ */ new Date()).getDate());
+  const title = computed(() => `${MONTH_NAMES[props.month - 1]} ${props.year}`);
+  const isMonth = computed(() => variant() === "month");
+  const weeks = computed(() => {
+    const first = new Date(Date.UTC(props.year, props.month - 1, 1));
+    const start = new Date(first);
+    start.setUTCDate(1 - first.getUTCDay());
+    const grid = [];
+    const cursor = new Date(start);
+    for (let w = 0; w < 6; w += 1) {
+      const week = [];
+      for (let d = 0; d < 7; d += 1) {
+        const date = iso(cursor.getUTCFullYear(), cursor.getUTCMonth() + 1, cursor.getUTCDate());
+        week.push({
+          date,
+          day: cursor.getUTCDate(),
+          inMonth: cursor.getUTCMonth() === props.month - 1,
+          isToday: date === todayIso,
+          isSelected: date === props.selected
+        });
+        cursor.setUTCDate(cursor.getUTCDate() + 1);
       }
+      grid.push(week);
+    }
+    return grid;
+  });
+  const events = signal(props.events ?? []);
+  const status = signal("");
+  const days = computed(() => {
+    const byDate = /* @__PURE__ */ new Map();
+    for (const event of events()) {
+      const list = byDate.get(event.date) ?? [];
+      list.push(event);
+      byDate.set(event.date, list);
+    }
+    return [...byDate.entries()].sort(([a], [b]) => a < b ? -1 : 1).map(([date, events2]) => {
+      const [y, m, d] = date.split("-").map(Number);
+      const weekday = WEEKDAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
+      return { date, label: `${weekday}, ${MONTH_NAMES[m - 1]} ${d}`, events: events2 };
+    });
+  });
+  function moveEvent(eventId, target) {
+    const event = events().find((entry) => (entry.id ?? entry.title) === eventId);
+    if (!event) return false;
+    const pad = (n) => String(n).padStart(2, "0");
+    const datetime = `${target.date}T${pad(target.hour)}:${pad(target.minute)}`;
+    const moved = {
+      ...event,
+      date: target.date,
+      at: datetime,
+      timeLabel: `${(target.hour + 11) % 12 + 1}:${pad(target.minute)} ${target.hour < 12 ? "AM" : "PM"}`
+    };
+    events.set(events().map((entry) => entry === event ? moved : entry));
+    props.onDrop?.({
+      eventId,
+      date: target.date,
+      hour: target.hour,
+      minute: target.minute,
+      datetime,
+      sourceType: "event"
+    });
+    const [y, m, d] = target.date.split("-").map(Number);
+    const weekday = WEEKDAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
+    status.set(`Moved ${event.title} to ${weekday}, ${MONTH_NAMES[m - 1]} ${d} at ${moved.timeLabel}.`);
+    return true;
+  }
+  return { title, prevHtml, nextHtml, bodyHtml, variant, isMonth, weeks, days, events, status, moveEvent, raw };
+}
+function registerVariants9(registry3) {
+  registry3.registerVariant("calendar", "month");
+  registry3.registerVariant("calendar", "schedule");
+}
+var template9 = new URL("./index.html", import.meta.url);
+var styles9 = new URL("./styles.css", import.meta.url);
+var calendar = { name: name9, root: root9, create: create9, registerVariants: registerVariants9, template: template9, styles: styles9 };
+
+// ../../packages/components/src/card/index.js
+var name10 = "card";
+var root10 = "article";
+function create10(props) {
+  if (!props.title) throw new TypeError("card: title is required");
+  const title = signal(props.title);
+  const body = signal(props.body ?? "");
+  const variant = signal(props.variant ?? "default");
+  const footerHtml = signal(props.footerHtml ?? "");
+  const hasFooter = computed(() => footerHtml().length > 0);
+  return { title, body, variant, footerHtml, hasFooter, raw };
+}
+function registerVariants10(registry3) {
+  registry3.registerVariant("card", "default");
+  registry3.registerVariant("card", "floating");
+}
+var template10 = new URL("./index.html", import.meta.url);
+var styles10 = new URL("./styles.css", import.meta.url);
+var card = { name: name10, root: root10, create: create10, registerVariants: registerVariants10, template: template10, styles: styles10 };
+
+// ../../packages/components/src/checkbox/index.js
+var name11 = "checkbox";
+var root11 = "input";
+function create11(props) {
+  if (!props.label) throw new TypeError("checkbox: label is required");
+  const label = signal(props.label);
+  const variant = signal("checkbox");
+  const checked = signal(props.checked ?? false);
+  const disabled = signal(props.disabled ?? false);
+  function toggle2(event) {
+    checked.set(event.target.checked);
+    props.onToggle?.(event.target.checked);
+  }
+  return { label, variant, checked, disabled, toggle: toggle2 };
+}
+function registerVariants11(registry3) {
+  registry3.registerVariant("checkbox", "checkbox");
+}
+var template11 = new URL("./index.html", import.meta.url);
+var styles11 = new URL("./styles.css", import.meta.url);
+var checkbox = { name: name11, root: root11, create: create11, registerVariants: registerVariants11, template: template11, styles: styles11 };
+
+// ../../packages/components/src/choice-group/index.js
+var name12 = "choice-group";
+var root12 = "fieldset";
+function create12(props) {
+  if (!props.legend) throw new TypeError("choice-group: legend is required");
+  if (!props.name) throw new TypeError("choice-group: name is required");
+  if (!Array.isArray(props.options) || props.options.length === 0) {
+    throw new TypeError("choice-group: options must be a non-empty array");
+  }
+  for (const option of props.options) {
+    if (!option.contentHtml) throw new TypeError("choice-group: every option needs contentHtml \u2014 render its substrate component");
+  }
+  const legend = signal(props.legend);
+  const groupName = signal(props.name);
+  const inputType = signal(props.type ?? "radio");
+  const options = signal(props.options);
+  const variant = signal(props.variant ?? "choice-group");
+  const values = signal(
+    props.values ?? (props.value !== void 0 ? [props.value] : inputType() === "radio" ? [props.options[0].value] : [])
+  );
+  function isChecked(option) {
+    return values().includes(option.value);
+  }
+  function change(option, event) {
+    const selected = inputType() === "radio" ? true : event.target.checked;
+    values.set(
+      inputType() === "radio" ? [option.value] : selected ? [...values(), option.value] : values().filter((v) => v !== option.value)
+    );
+    props.onChange?.({
+      name: groupName(),
+      mode: inputType(),
+      values: [...values()],
+      changed: option.value,
+      selected
+    });
+  }
+  return { legend, groupName, inputType, options, variant, values, isChecked, change, raw };
+}
+function registerVariants12(registry3) {
+  registry3.registerVariant("choice-group", "choice-group");
+}
+var template12 = new URL("./index.html", import.meta.url);
+var styles12 = new URL("./styles.css", import.meta.url);
+var choiceGroup = { name: name12, root: root12, create: create12, registerVariants: registerVariants12, template: template12, styles: styles12 };
+
+// ../../packages/components/src/code-block/index.js
+var name13 = "code-block";
+var root13 = "figure";
+function create13(props) {
+  if (!props.code) throw new TypeError("code-block: code is required");
+  const code = signal(props.code);
+  const caption = signal(props.caption ?? "");
+  const actionsHtml = signal(props.actionsHtml ?? "");
+  const variant = signal(props.variant ?? "code");
+  const hasHeader = computed(() => caption() !== "" || actionsHtml() !== "");
+  return { code, caption, actionsHtml, variant, hasHeader, raw };
+}
+function registerVariants13(registry3) {
+  registry3.registerVariant("code-block", "code");
+}
+var template13 = new URL("./index.html", import.meta.url);
+var styles13 = new URL("./styles.css", import.meta.url);
+var codeBlock = { name: name13, root: root13, create: create13, registerVariants: registerVariants13, template: template13, styles: styles13 };
+
+// ../../packages/components/src/combobox/index.js
+var name14 = "combobox";
+var root14 = "section";
+function create14(props) {
+  if (!props.id) throw new TypeError("combobox: id is required");
+  if (!props.inputHtml) throw new TypeError("combobox: inputHtml is required (render the input component)");
+  const label = signal(props.label ?? "");
+  const inputHtml = signal(props.inputHtml);
+  const options = signal(props.options ?? []);
+  const open = signal(props.open ?? false);
+  const activeValue = signal(props.activeValue ?? "");
+  const value = signal("");
+  const variant = signal(props.variant ?? "default");
+  const listboxId = computed(() => `${props.id}-listbox`);
+  const optionId = (option) => `${props.id}-option-${option.value}`;
+  const activeOption = computed(() => options().find((option) => option.value === activeValue()) ?? null);
+  const activeDescendant = computed(() => {
+    const active = activeOption();
+    return open() && active ? optionId(active) : "";
+  });
+  const isActive = (option) => option.value === activeValue() ? "true" : "false";
+  const select2 = (option) => {
+    value.set(option.value);
+    activeValue.set(option.value);
+    open.set(false);
+    props.onSelect?.({ value: option.value, label: option.label });
+  };
+  function moveActive(delta) {
+    const list = options();
+    if (list.length === 0) return;
+    const index = list.findIndex((option) => option.value === activeValue());
+    const next = list[(index + delta + list.length) % list.length];
+    activeValue.set(next.value);
+  }
+  function onKeydown(event) {
+    switch (event.key) {
+      case "ArrowDown":
+        event.preventDefault();
+        if (!open()) {
+          open.set(true);
+          if (!activeOption() && options().length > 0) activeValue.set(options()[0].value);
+        } else moveActive(1);
+        return;
+      case "ArrowUp":
+        event.preventDefault();
+        if (!open()) {
+          open.set(true);
+          if (!activeOption() && options().length > 0) activeValue.set(options()[options().length - 1].value);
+        } else moveActive(-1);
+        return;
+      case "Home":
+        if (!open() || options().length === 0) return;
+        event.preventDefault();
+        activeValue.set(options()[0].value);
+        return;
+      case "End":
+        if (!open() || options().length === 0) return;
+        event.preventDefault();
+        activeValue.set(options()[options().length - 1].value);
+        return;
+      case "Enter": {
+        const active = activeOption();
+        if (open() && active) {
+          event.preventDefault();
+          select2(active);
+        }
+        return;
+      }
+      case "Escape":
+        if (open()) {
+          event.preventDefault();
+          open.set(false);
+        }
+        return;
+      default:
     }
   }
-  function sortRows(key, dir) {
-    const rows2 = all(ROW);
-    const tbody = rows2[0]?.parentElement;
-    if (!tbody) return;
-    const text = (row) => {
-      const cell = Array.from(row.querySelectorAll(TD)).find((td) => td.getAttribute("data-key") === key);
-      return String(cell?.textContent ?? "").trim();
-    };
+  return {
+    label,
+    inputHtml,
+    options,
+    open,
+    activeValue,
+    activeOption,
+    activeDescendant,
+    value,
+    variant,
+    listboxId,
+    optionId,
+    isActive,
+    select: select2,
+    moveActive,
+    onKeydown,
+    raw
+  };
+}
+function registerVariants14(registry3) {
+  registry3.registerVariant("combobox", "default");
+}
+var template14 = new URL("./index.html", import.meta.url);
+var styles14 = new URL("./styles.css", import.meta.url);
+var combobox = { name: name14, root: root14, create: create14, registerVariants: registerVariants14, template: template14, styles: styles14 };
+
+// ../../packages/components/src/command-palette/index.js
+var name15 = "command-palette";
+var root15 = "dialog";
+function create15(props) {
+  if (!props.id) throw new TypeError("command-palette: id is required");
+  if (!props.searchHtml) throw new TypeError("command-palette: searchHtml is required (render the field + input)");
+  const label = signal(props.label ?? "");
+  const searchHtml = signal(props.searchHtml);
+  const groups = signal(props.groups ?? []);
+  const query = signal("");
+  const variant = signal(props.variant ?? "command-palette");
+  const visibleGroups = computed(() => {
+    const q = query().trim().toLowerCase();
+    if (q === "") return groups();
+    return groups().map((group) => ({
+      ...group,
+      options: group.options.filter((option) => option.label.toLowerCase().includes(q))
+    })).filter((group) => group.options.length > 0);
+  });
+  const flatOptions = computed(() => visibleGroups().flatMap((group) => group.options));
+  const activeValue = signal(props.activeValue ?? "");
+  const activeOption = computed(() => {
+    const list = flatOptions();
+    return list.find((option) => option.value === activeValue()) ?? list[0] ?? null;
+  });
+  const activeDescendant = computed(() => {
+    const active = activeOption();
+    return active ? `${props.id}-option-${active.value}` : "";
+  });
+  const optionId = (option) => `${props.id}-option-${option.value}`;
+  const isActive = (option) => option.value === activeOption()?.value ? "true" : "false";
+  const select2 = (option) => {
+    props.onSelect?.({ value: option.value, label: option.label });
+  };
+  function setQuery(value) {
+    query.set(value ?? "");
+    const first = flatOptions()[0];
+    activeValue.set(first ? first.value : "");
+  }
+  function moveActive(delta) {
+    const list = flatOptions();
+    if (list.length === 0) return;
+    const current = activeOption();
+    const index = current ? list.indexOf(current) : -1;
+    const next = list[(index + delta + list.length) % list.length];
+    activeValue.set(next.value);
+    return next;
+  }
+  function choose(event, option) {
+    select2(option);
+    const dialog2 = (event.currentTarget ?? event.target)?.closest?.("dialog");
+    if (dialog2?.open) dialog2.close();
+  }
+  function onKeydown(event) {
+    switch (event.key) {
+      case "ArrowDown":
+        event.preventDefault();
+        moveActive(1);
+        return;
+      case "ArrowUp":
+        event.preventDefault();
+        moveActive(-1);
+        return;
+      case "Enter": {
+        const active = activeOption();
+        if (!active) return;
+        event.preventDefault();
+        choose(event, active);
+        return;
+      }
+      default:
+    }
+  }
+  return {
+    label,
+    searchHtml,
+    groups,
+    query,
+    visibleGroups,
+    flatOptions,
+    activeValue,
+    activeOption,
+    activeDescendant,
+    variant,
+    optionId,
+    isActive,
+    select: select2,
+    setQuery,
+    moveActive,
+    choose,
+    onKeydown,
+    raw
+  };
+}
+function registerVariants15(registry3) {
+  registry3.registerVariant("command-palette", "command-palette");
+}
+var template15 = new URL("./index.html", import.meta.url);
+var styles15 = new URL("./styles.css", import.meta.url);
+var commandPalette = { name: name15, root: root15, create: create15, registerVariants: registerVariants15, template: template15, styles: styles15 };
+
+// ../../packages/components/src/datagrid/index.js
+var name16 = "datagrid";
+var root16 = "table";
+function cellText(html) {
+  return String(html ?? "").replace(/<[^>]*>/g, "").trim();
+}
+function create16(props) {
+  if (!Array.isArray(props.columns)) throw new TypeError("datagrid: columns is required");
+  if (!Array.isArray(props.rows)) throw new TypeError("datagrid: rows is required");
+  const columns = signal(props.columns.map((column) => ({
+    ...column,
+    sortHtml: column.sortHtml ?? column.label
+  })));
+  const rows = signal(props.rows);
+  const caption = signal(props.caption ?? "");
+  const selectable = signal(props.selectable ?? false);
+  const selectAllHtml = signal(props.selectAllHtml ?? "");
+  const selectedIds = signal(props.selectedIds ?? []);
+  const variant = signal(props.variant ?? "datagrid");
+  const hasCaption = computed(() => caption() !== "");
+  const focusPos = signal({ r: 0, c: 0 });
+  const colOffset = computed(() => selectable() ? 1 : 0);
+  const viewColumns = computed(() => columns().map((column, i) => ({ ...column, c: i + colOffset() })));
+  const viewRows = computed(() => rows().map((row, r) => ({
+    ...row,
+    id: row.id ?? String(r),
+    r: r + 1,
+    cells: row.cells.map((html, i) => ({ html, r: r + 1, c: i + colOffset() }))
+  })));
+  const selectAllState = computed(() => {
+    const total = rows().length;
+    const count = selectedIds().length;
+    if (total > 0 && count === total) return "all";
+    if (count > 0) return "some";
+    return "none";
+  });
+  function isRowSelected(row) {
+    return selectedIds().includes(row.id) ? "true" : "false";
+  }
+  function toggleRow(id, checked) {
+    const next = checked ? [.../* @__PURE__ */ new Set([...selectedIds(), id])] : selectedIds().filter((item) => item !== id);
+    selectedIds.set(next);
+    props.onSelectionChange?.(next);
+  }
+  function toggleAll(checked) {
+    const next = checked ? viewRows().map((row) => row.id) : [];
+    selectedIds.set(next);
+    props.onSelectionChange?.(next);
+  }
+  function select2(ids) {
+    selectedIds.set([...ids]);
+  }
+  function sortBy(column) {
+    const dir = column.sort === "ascending" ? "desc" : "asc";
+    columns.set(columns().map((item) => item.key === column.key ? { ...item, sort: dir === "asc" ? "ascending" : "descending" } : { ...item, sort: void 0 }));
+    if (props.onSort) {
+      props.onSort({ key: column.key, dir });
+      return;
+    }
+    const index = columns().findIndex((item) => item.key === column.key);
     const collator = new Intl.Collator(void 0, { numeric: true, sensitivity: "base" });
     const sign = dir === "asc" ? 1 : -1;
-    const sorted = rows2.map((row, i) => ({ row, i, text: text(row) })).sort((a, b) => collator.compare(a.text, b.text) * sign || a.i - b.i);
-    for (const { row } of sorted) tbody.appendChild(row);
+    rows.set(rows().map((row, i) => ({ row, i, text: cellText(row.cells[index]) })).sort((a, b) => collator.compare(a.text, b.text) * sign || a.i - b.i).map((entry) => entry.row));
   }
-  function sort(key, dir = "asc", notify = false) {
-    const th = all(TH).find((t) => t.getAttribute("data-key") === key);
-    if (!th) return false;
-    applySort(th, dir);
-    if (notify && onSort) onSort({ key, dir });
-    else if (!onSort) sortRows(key, dir);
-    return true;
+  function sortState() {
+    const sorted = columns().find((column) => column.sort);
+    return sorted ? { key: sorted.key, dir: sorted.sort === "ascending" ? "asc" : "desc" } : null;
   }
-  function selected() {
-    return rowBoxes().filter((box) => box.checked).map((box) => box.getAttribute("data-row-id"));
+  function cellTabIndex(cell) {
+    const focus = focusPos();
+    return focus.r === cell.r && focus.c === cell.c ? 0 : -1;
   }
-  function reflectSelection() {
-    const boxes = rowBoxes();
-    const count = boxes.filter((box) => box.checked).length;
-    const master = wrapper.querySelector(SELECT_ALL);
-    if (master) {
-      master.checked = count > 0 && count === boxes.length;
-      master.indeterminate = count > 0 && count < boxes.length;
-    }
-    for (const box of boxes) {
-      const row = closestFrom2(box, ROW);
-      if (row) row.setAttribute("aria-selected", box.checked ? "true" : "false");
-    }
+  function headerTabIndex(column) {
+    const focus = focusPos();
+    return focus.r === 0 && focus.c === column.c ? 0 : -1;
   }
-  function onClick(e) {
-    const button = closestFrom2(e.target, TH_BUTTON);
-    const th = button ? closestFrom2(button, TH) : null;
-    if (!th) return;
-    sort(th.getAttribute("data-key"), th.getAttribute("data-sorted") === "asc" ? "desc" : "asc", true);
+  function selectAllTabIndex() {
+    const focus = focusPos();
+    return focus.r === 0 && focus.c === 0 ? 0 : -1;
   }
-  function onChange(e) {
-    const master = closestFrom2(e.target, SELECT_ALL);
-    if (master) {
-      for (const box of rowBoxes()) box.checked = Boolean(master.checked);
-    } else if (!closestFrom2(e.target, ROW_SELECT)) {
-      return;
-    }
-    reflectSelection();
-    if (onSelectionChange) onSelectionChange(selected());
+  function selectionTabIndex(row) {
+    const focus = focusPos();
+    return focus.r === row.r && focus.c === 0 ? 0 : -1;
   }
-  const rows = () => all("tr").filter((row) => Array.from(row.children ?? []).some(isCell));
-  const cellsOf = (row) => Array.from(row.children ?? []).filter(isCell);
-  const cellAt = (row, index) => row ? cellsOf(row)[Math.min(index, cellsOf(row).length - 1)] : void 0;
-  function focusCell(cell) {
-    for (const row of rows()) for (const c of cellsOf(row)) c.setAttribute("tabindex", c === cell ? "0" : "-1");
-    if (typeof cell.focus === "function") cell.focus();
-  }
-  function onKeydown(e) {
-    const cell = closestFrom2(e.target, CELL);
+  function onKeydown(event) {
+    const cell = event.target?.closest?.("th, td");
     if (!cell) return;
-    const ownControl = closestFrom2(e.target, TH_BUTTON) || closestFrom2(e.target, SELECT_ALL) || closestFrom2(e.target, ROW_SELECT);
-    if (e.target !== cell && !ownControl) return;
-    const editing = cell.hasAttribute("contenteditable") && (e.key === "ArrowLeft" || e.key === "ArrowRight");
-    if (editing) return;
-    const row = cell.parentElement;
-    const list = rows();
-    const rowCells = cellsOf(row);
-    const r = list.indexOf(row);
-    const c = rowCells.indexOf(cell);
+    const table2 = cell.closest("table");
+    if (!table2) return;
+    if (event.target !== cell && !event.target?.closest?.("button, input, select, textarea, a")) return;
+    if (cell.hasAttribute("contenteditable") && (event.key === "ArrowLeft" || event.key === "ArrowRight")) return;
+    const rowEls = [...table2.querySelectorAll("tr")];
+    const r = rowEls.indexOf(cell.parentElement);
+    const cellEls = [...cell.parentElement.children].filter((el) => el.matches("th, td"));
+    const c = cellEls.indexOf(cell);
     if (r < 0 || c < 0) return;
+    const lastRow = rowEls.length - 1;
+    const lastCol = (row) => [...rowEls[row].children].filter((el) => el.matches("th, td")).length - 1;
     let next;
-    switch (e.key) {
+    switch (event.key) {
       case "ArrowRight":
-        next = rowCells[c + 1];
+        next = { r, c: c + 1 };
         break;
       case "ArrowLeft":
-        next = rowCells[c - 1];
+        next = { r, c: c - 1 };
         break;
       case "ArrowDown":
-        next = cellAt(list[r + 1], c);
+        next = { r: r + 1, c };
         break;
       case "ArrowUp":
-        next = cellAt(list[r - 1], c);
+        next = { r: r - 1, c };
         break;
       case "Home":
-        next = e.ctrlKey ? cellAt(list[0], 0) : rowCells[0];
-        break;
-      case "End": {
-        const lastRow = list[list.length - 1];
-        next = e.ctrlKey ? cellsOf(lastRow)[cellsOf(lastRow).length - 1] : rowCells[rowCells.length - 1];
-        break;
-      }
-      default:
-        return;
-    }
-    e.preventDefault();
-    if (next) focusCell(next);
-  }
-  const first = cellAt(rows()[0], 0);
-  if (first) for (const row of rows()) for (const c of cellsOf(row)) c.setAttribute("tabindex", c === first ? "0" : "-1");
-  reflectSelection();
-  wrapper.addEventListener("click", onClick);
-  wrapper.addEventListener("change", onChange);
-  wrapper.addEventListener("keydown", onKeydown);
-  return {
-    sort: (key, dir = "asc") => sort(key, dir),
-    sortState,
-    select(ids) {
-      const wanted = new Set(ids.map(String));
-      for (const box of rowBoxes()) box.checked = wanted.has(box.getAttribute("data-row-id"));
-      reflectSelection();
-    },
-    selected,
-    destroy() {
-      wrapper.removeEventListener("click", onClick);
-      wrapper.removeEventListener("change", onChange);
-      wrapper.removeEventListener("keydown", onKeydown);
-    }
-  };
-}
-
-// ../../packages/components/src/tree.js
-var ITEM = '[data-bn="tree-item"]';
-var CONTENT = '[data-bn="tree-item-content"]';
-var TOGGLE = '[data-bn="tree-toggle"]';
-var CHILDREN = '[data-bn="tree-children"]';
-var HIDDEN_GROUP = '[data-bn="tree-children"][hidden]';
-function closestFrom3(target, selector) {
-  return target && typeof target.closest === "function" ? target.closest(selector) : null;
-}
-function initTree(tree, options = {}) {
-  const { onToggle, onSelect } = options;
-  const items = () => Array.from(tree.querySelectorAll(ITEM));
-  const visible = () => items().filter((item) => !closestFrom3(item, HIDDEN_GROUP));
-  const idOf = (item) => item.getAttribute("data-node-id");
-  const byId = (id) => items().find((item) => idOf(item) === id) ?? null;
-  const isExpandable = (item) => item.hasAttribute("aria-expanded");
-  const isExpanded = (item) => item.getAttribute("aria-expanded") === "true";
-  const parentOf = (item) => closestFrom3(item.parentElement, ITEM);
-  function setExpanded(item, expanded) {
-    if (!isExpandable(item) || isExpanded(item) === expanded) return false;
-    item.setAttribute("aria-expanded", String(expanded));
-    const group = item.querySelector(CHILDREN);
-    if (group) {
-      if (expanded) group.removeAttribute("hidden");
-      else group.setAttribute("hidden", "");
-    }
-    const toggle2 = item.querySelector(TOGGLE);
-    if (toggle2) {
-      toggle2.setAttribute("aria-label", expanded ? "Collapse" : "Expand");
-      toggle2.textContent = expanded ? "\u25BE" : "\u25B8";
-    }
-    return true;
-  }
-  function toggle(item) {
-    const next = !isExpanded(item);
-    if (setExpanded(item, next) && onToggle) onToggle(idOf(item), next, item);
-  }
-  function roving(item) {
-    for (const it of items()) it.setAttribute("tabindex", it === item ? "0" : "-1");
-  }
-  function focusItem(item) {
-    if (!item) return;
-    roving(item);
-    if (typeof item.focus === "function") item.focus();
-  }
-  function applySelection(item) {
-    for (const it of items()) {
-      it.setAttribute("aria-selected", it === item ? "true" : "false");
-      const content = it.querySelector(CONTENT);
-      if (!content) continue;
-      if (it === item) content.setAttribute("data-selected", "");
-      else content.removeAttribute("data-selected");
-    }
-  }
-  function select(item) {
-    applySelection(item);
-    if (onSelect) onSelect(idOf(item), item);
-  }
-  function onClick(e) {
-    const item = closestFrom3(e.target, ITEM);
-    if (!item) return;
-    if (closestFrom3(e.target, TOGGLE)) {
-      toggle(item);
-      roving(item);
-      return;
-    }
-    if (!closestFrom3(e.target, CONTENT)) return;
-    select(item);
-    focusItem(item);
-  }
-  function onKeydown(e) {
-    const item = closestFrom3(e.target, ITEM);
-    if (!item) return;
-    const onToggleButton = Boolean(closestFrom3(e.target, TOGGLE));
-    const list = visible();
-    const index = list.indexOf(item);
-    if (index < 0) return;
-    let next;
-    switch (e.key) {
-      case "ArrowDown":
-        next = list[index + 1];
-        break;
-      case "ArrowUp":
-        next = list[index - 1];
-        break;
-      case "Home":
-        next = list[0];
+        next = event.ctrlKey ? { r: 0, c: 0 } : { r, c: 0 };
         break;
       case "End":
-        next = list[list.length - 1];
-        break;
-      case "ArrowRight":
-        if (isExpandable(item) && !isExpanded(item)) toggle(item);
-        else if (isExpanded(item)) next = visible()[index + 1];
-        break;
-      case "ArrowLeft":
-        if (isExpanded(item)) toggle(item);
-        else next = parentOf(item);
-        break;
-      case "Enter":
-      case " ":
-        if (onToggleButton) return;
-        select(item);
+        next = event.ctrlKey ? { r: lastRow, c: lastCol(lastRow) } : { r, c: lastCol(r) };
         break;
       default:
         return;
     }
-    e.preventDefault();
-    if (next) focusItem(next);
+    if (next.r < 0 || next.r > lastRow || next.c < 0 || next.c > lastCol(next.r)) return;
+    event.preventDefault();
+    focusPos.set(next);
+    const targetRow = rowEls[next.r];
+    const target = [...targetRow.children].filter((el) => el.matches("th, td"))[next.c];
+    target?.focus();
   }
-  const initial = items().find((item) => item.getAttribute("aria-selected") === "true") ?? items()[0] ?? null;
-  if (initial) roving(initial);
-  tree.addEventListener("click", onClick);
-  tree.addEventListener("keydown", onKeydown);
   return {
-    expand(id) {
-      const item = byId(id);
-      return Boolean(item) && setExpanded(item, true);
-    },
-    collapse(id) {
-      const item = byId(id);
-      return Boolean(item) && setExpanded(item, false);
-    },
-    select(id) {
-      const item = byId(id);
-      if (!item) return false;
-      applySelection(item);
-      roving(item);
-      return true;
-    },
-    selected() {
-      const item = items().find((it) => it.getAttribute("aria-selected") === "true");
-      return item ? idOf(item) : null;
-    },
-    destroy() {
-      tree.removeEventListener("click", onClick);
-      tree.removeEventListener("keydown", onKeydown);
-    }
+    columns,
+    rows,
+    caption,
+    selectable,
+    selectAllHtml,
+    selectedIds,
+    variant,
+    hasCaption,
+    viewColumns,
+    viewRows,
+    selectAllState,
+    isRowSelected,
+    toggleRow,
+    toggleAll,
+    select: select2,
+    sortBy,
+    sortState,
+    focusPos,
+    cellTabIndex,
+    headerTabIndex,
+    selectAllTabIndex,
+    selectionTabIndex,
+    onKeydown,
+    raw
   };
 }
-
-// ../../packages/components/src/virtualizer.js
-function defaultRenderItem(item, index) {
-  return `<div data-bn="virtual-item" data-index="${index}">${escapeText(item)}</div>`;
+function registerVariants16(registry3) {
+  registry3.registerVariant("datagrid", "datagrid");
 }
-var WINDOW = '[data-bn="virtual-window"]';
-function initVirtualList(container, options = {}) {
-  if (!Array.isArray(options.items)) {
-    throw new TypeError("initVirtualList needs options.items \u2014 the array renderVirtualList() rendered from. Only the first window is in the DOM, so the initialiser cannot recover the rest.");
-  }
-  const { renderItem = defaultRenderItem, overscan = 5 } = options;
-  let items = options.items;
-  const win = container.querySelector(WINDOW);
-  const spacer = win ? win.parentElement : null;
-  const itemHeight = Number(options.itemHeight ?? (win ? win.getAttribute("data-item-height") : 0)) || 40;
-  let range = { start: -1, end: -1 };
-  function height() {
-    return Number(container.clientHeight) || Number.parseFloat(container.style?.height) || 0;
-  }
-  function update() {
-    if (!win) return range;
-    const total = items.length;
-    const top = Number(container.scrollTop) || 0;
-    const start = Math.max(0, Math.floor(top / itemHeight) - overscan);
-    const end = Math.min(total, Math.ceil((top + height()) / itemHeight) + overscan);
-    if (start === range.start && end === range.end) return range;
-    range = { start, end };
-    win.innerHTML = items.slice(start, end).map((item, i) => renderItem(item, start + i)).join("");
-    win.style.top = `${start * itemHeight}px`;
-    win.setAttribute("data-total", String(total));
-    if (spacer && spacer.style) spacer.style.height = `${total * itemHeight}px`;
-    return range;
-  }
-  update();
-  container.addEventListener("scroll", update, { passive: true });
-  return {
-    update,
-    range: () => range,
-    scrollTo(index) {
-      container.scrollTop = Math.max(0, index) * itemHeight;
-      update();
-    },
-    setItems(next) {
-      items = Array.isArray(next) ? next : [];
-      range = { start: -1, end: -1 };
-      update();
-    },
-    destroy() {
-      container.removeEventListener("scroll", update);
+var template16 = new URL("./index.html", import.meta.url);
+var styles16 = new URL("./styles.css", import.meta.url);
+var datagrid = { name: name16, root: root16, create: create16, registerVariants: registerVariants16, template: template16, styles: styles16 };
+
+// ../../packages/components/src/internal/dialog.js
+function createDialogBehavior(props) {
+  const idAttr = () => props.id ?? false;
+  function resolveDialog(from) {
+    if (from && typeof from === "object" && "closest" in from && typeof from.closest === "function") {
+      return from.closest("dialog");
     }
+    if (from && typeof from === "object" && "currentTarget" in from) {
+      return from.currentTarget?.closest?.("dialog") ?? null;
+    }
+    if (props.id && typeof document !== "undefined") return document.getElementById(props.id);
+    return null;
+  }
+  function show(from) {
+    const dialog2 = resolveDialog(from);
+    if (!dialog2 || dialog2.open) return;
+    dialog2.showModal();
+    props.onChange?.(true);
+  }
+  function close(from) {
+    const dialog2 = resolveDialog(from);
+    if (!dialog2 || !dialog2.open) return;
+    dialog2.close();
+    props.onChange?.(false);
+  }
+  function isOpen(from) {
+    return Boolean(resolveDialog(from)?.open);
+  }
+  function onBackdropClick(event) {
+    if (event.target === event.currentTarget) close(event);
+  }
+  return { idAttr, show, close, isOpen, onBackdropClick };
+}
+
+// ../../packages/components/src/dialog/index.js
+var name17 = "dialog";
+var root17 = "dialog";
+function create17(props) {
+  if (!props.title) throw new TypeError("dialog: title is required");
+  const title = signal(props.title);
+  const body = signal(props.body ?? "");
+  const variant = signal(props.variant ?? "default");
+  const closeHtml = signal(props.closeHtml ?? "");
+  const footerHtml = signal(props.footerHtml ?? "");
+  const behavior = createDialogBehavior(props);
+  return {
+    title,
+    body,
+    variant,
+    closeHtml,
+    footerHtml,
+    raw,
+    idAttr: behavior.idAttr,
+    show: behavior.show,
+    close: behavior.close,
+    isOpen: behavior.isOpen,
+    onBackdropClick: behavior.onBackdropClick
   };
 }
+function registerVariants17(registry3) {
+  registry3.registerVariant("dialog", "default");
+  registry3.registerVariant("dialog", "destructive");
+}
+var template17 = new URL("./index.html", import.meta.url);
+var styles17 = new URL("./styles.css", import.meta.url);
+var dialog = { name: name17, root: root17, create: create17, registerVariants: registerVariants17, template: template17, styles: styles17 };
 
-// ../../packages/components/src/drawer.js
-var OVERLAY = '[data-bn="drawer-overlay"]';
-var CLOSE = '[data-bn="drawer-close"]';
-function overlayFor(drawer) {
-  const prev = drawer.previousElementSibling;
-  return prev && typeof prev.matches === "function" && prev.matches(OVERLAY) ? prev : null;
-}
-function focus(el) {
-  if (el && typeof el.focus === "function") el.focus();
-}
-function initDrawer(drawer, options = {}) {
-  const { dismissible = true, onChange } = options;
-  const overlay = options.overlay ?? overlayFor(drawer);
-  const doc = drawer.ownerDocument ?? (typeof document === "undefined" ? null : document);
-  let returnTarget = null;
-  const isOpen = () => drawer.hasAttribute("data-open");
-  function open() {
-    if (isOpen()) return;
-    returnTarget = doc?.activeElement ?? null;
-    drawer.removeAttribute("inert");
-    drawer.setAttribute("data-open", "");
-    if (overlay) overlay.setAttribute("data-open", "");
-    const target = drawer.querySelector(CLOSE);
-    if (!target && !drawer.hasAttribute("tabindex")) drawer.setAttribute("tabindex", "-1");
-    focus(target ?? drawer);
-    if (onChange) onChange(true);
-  }
-  function close() {
-    if (!isOpen()) return;
-    drawer.removeAttribute("data-open");
-    if (overlay) overlay.removeAttribute("data-open");
-    focus(returnTarget);
-    returnTarget = null;
-    drawer.setAttribute("inert", "");
-    if (onChange) onChange(false);
-  }
-  function onClick(e) {
-    const button = typeof e.target.closest === "function" ? e.target.closest(CLOSE) : null;
-    if (!button) return;
-    if (typeof button.closest === "function" && button.closest('[data-bn="drawer"]') !== drawer) return;
-    close();
-  }
-  function onOverlayClick() {
-    if (dismissible) close();
-  }
-  function onKeydown(e) {
-    if (e.key !== "Escape" || !isOpen()) return;
-    e.preventDefault();
-    close();
-  }
-  drawer.addEventListener("click", onClick);
-  if (overlay) overlay.addEventListener("click", onOverlayClick);
-  if (doc) doc.addEventListener("keydown", onKeydown);
+// ../../packages/components/src/drawer/index.js
+var name18 = "drawer";
+var root18 = "dialog";
+function create18(props) {
+  if (!props.title) throw new TypeError("drawer: title is required");
+  const title = signal(props.title);
+  const body = signal(props.body ?? "");
+  const closeHtml = signal(props.closeHtml ?? "");
+  const footerHtml = signal(props.footerHtml ?? "");
+  const variant = signal(props.variant ?? "drawer");
+  const hasFooter = computed(() => footerHtml() !== "");
+  const behavior = createDialogBehavior(props);
   return {
-    open,
-    close,
-    toggle() {
-      if (isOpen()) close();
-      else open();
-    },
-    isOpen,
-    destroy() {
-      drawer.removeEventListener("click", onClick);
-      if (overlay) overlay.removeEventListener("click", onOverlayClick);
-      if (doc) doc.removeEventListener("keydown", onKeydown);
-    }
+    title,
+    body,
+    closeHtml,
+    footerHtml,
+    variant,
+    hasFooter,
+    raw,
+    idAttr: behavior.idAttr,
+    show: behavior.show,
+    close: behavior.close,
+    isOpen: behavior.isOpen,
+    onBackdropClick: behavior.onBackdropClick
   };
 }
-
-// ../../packages/components/src/tabs.js
-function closestTab(target) {
-  return target && typeof target.closest === "function" ? target.closest('[data-bn="tab"]') : null;
+function registerVariants18(registry3) {
+  registry3.registerVariant("drawer", "drawer");
 }
-function initTabs(root, options = {}) {
-  const { onChange, activation = "automatic" } = options;
-  const own = (selector) => Array.from(root.querySelectorAll(selector)).filter(
-    (el) => typeof el.closest !== "function" || el.closest('[data-bn="tabs"]') === root
-  );
-  const tabs = () => own('[data-bn="tab"]');
-  const panels = () => own('[data-bn="tab-panel"]');
-  const enabled = () => tabs().filter((tab) => !tab.hasAttribute("disabled"));
-  const idOf = (tab) => tab.getAttribute("data-tab");
-  function roving(target) {
-    for (const tab of tabs()) tab.setAttribute("tabindex", tab === target ? "0" : "-1");
+var template18 = new URL("./index.html", import.meta.url);
+var styles18 = new URL("./styles.css", import.meta.url);
+var drawer = { name: name18, root: root18, create: create18, registerVariants: registerVariants18, template: template18, styles: styles18 };
+
+// ../../packages/components/src/dropdown-menu/index.js
+var name19 = "dropdown-menu";
+var root19 = "menu";
+function create19(props) {
+  if (!Array.isArray(props.items)) throw new TypeError("dropdown-menu: items is required");
+  const items = signal(props.items);
+  const label = signal(props.label ?? "");
+  const variant = signal(props.variant ?? "default");
+  function isDisabled(item) {
+    return item.disabled ? "true" : "false";
   }
-  function apply(target) {
-    for (const tab of tabs()) tab.setAttribute("aria-selected", tab === target ? "true" : "false");
-    roving(target);
-    const controls = target.getAttribute("aria-controls");
-    for (const panel of panels()) {
-      if (panel.getAttribute("id") === controls) panel.removeAttribute("hidden");
-      else panel.setAttribute("hidden", "");
-    }
+  function activate(item) {
+    if (item.disabled || item.separator) return;
+    props.onSelect?.(item.action ?? "", item);
   }
-  let current = tabs().find((tab) => tab.getAttribute("aria-selected") === "true") ?? enabled()[0] ?? null;
-  if (current) apply(current);
-  function change(tab, focus2 = false) {
-    const changed = tab !== current;
-    if (changed) {
-      current = tab;
-      apply(tab);
-    }
-    if (focus2 && typeof tab.focus === "function") tab.focus();
-    if (changed && onChange) onChange(idOf(tab), tab);
-  }
-  function onClick(e) {
-    const tab = closestTab(e.target);
-    if (!tab || tab.hasAttribute("disabled") || !tabs().includes(tab)) return;
-    change(tab);
-  }
-  function onKeydown(e) {
-    const tab = closestTab(e.target);
-    if (!tab) return;
-    const list = enabled();
-    const index = list.indexOf(tab);
+  function onKeydown(event) {
+    const target = event.currentTarget ?? event.target;
+    const menu = target?.closest?.("menu");
+    if (!menu) return;
+    const list = [...menu.querySelectorAll('[role="menuitem"]')];
+    const index = list.indexOf(target);
     if (index < 0) return;
     let next;
-    switch (e.key) {
-      case "ArrowRight":
+    switch (event.key) {
+      case "ArrowDown":
         next = list[(index + 1) % list.length];
         break;
-      case "ArrowLeft":
+      case "ArrowUp":
         next = list[(index - 1 + list.length) % list.length];
         break;
       case "Home":
@@ -2659,890 +2994,1382 @@ function initTabs(root, options = {}) {
       default:
         return;
     }
-    e.preventDefault();
-    if (activation === "manual") {
-      roving(next);
-      if (typeof next.focus === "function") next.focus();
-    } else {
-      change(next, true);
-    }
+    event.preventDefault();
+    next?.focus();
   }
-  root.addEventListener("click", onClick);
-  root.addEventListener("keydown", onKeydown);
+  return { items, label, variant, isDisabled, activate, onKeydown };
+}
+function registerVariants19(registry3) {
+  registry3.registerVariant("dropdown-menu", "default");
+}
+var template19 = new URL("./index.html", import.meta.url);
+var styles19 = new URL("./styles.css", import.meta.url);
+var dropdownMenu = { name: name19, root: root19, create: create19, registerVariants: registerVariants19, template: template19, styles: styles19 };
+
+// ../../packages/components/src/empty-state/index.js
+var name20 = "empty-state";
+var root20 = "article";
+function create20(props) {
+  if (!props.title) throw new TypeError("empty-state: title is required");
+  const title = signal(props.title);
+  const body = signal(props.body ?? "");
+  const mediaHtml = signal(props.mediaHtml ?? "");
+  const actionHtml = signal(props.actionHtml ?? "");
+  const variant = signal(props.variant ?? "empty-state");
+  const hasMedia = computed(() => mediaHtml() !== "");
+  const hasBody = computed(() => body() !== "");
+  const hasAction = computed(() => actionHtml() !== "");
+  return { title, body, mediaHtml, actionHtml, variant, hasMedia, hasBody, hasAction, raw };
+}
+function registerVariants20(registry3) {
+  registry3.registerVariant("empty-state", "empty-state");
+}
+var template20 = new URL("./index.html", import.meta.url);
+var styles20 = new URL("./styles.css", import.meta.url);
+var emptyState = { name: name20, root: root20, create: create20, registerVariants: registerVariants20, template: template20, styles: styles20 };
+
+// ../../packages/components/src/field/index.js
+var name21 = "field";
+var root21 = "p";
+function create21(props) {
+  if (!props.label) throw new TypeError("field: label is required");
+  if (!props.controlId) throw new TypeError("field: controlId is required");
+  const label = signal(props.label);
+  const controlId = signal(props.controlId);
+  const controlHtml = signal(props.controlHtml ?? "");
+  const variant = signal(props.variant ?? "default");
+  const hint = signal(props.hint ?? "");
+  const error = signal(props.error ?? "");
+  const hasError = computed(() => error() !== "");
+  const showHint = computed(() => !hasError() && hint() !== "");
+  return { label, controlId, controlHtml, variant, hint, error, hasError, showHint, raw };
+}
+function registerVariants21(registry3) {
+  registry3.registerVariant("field", "default");
+}
+var template21 = new URL("./index.html", import.meta.url);
+var styles21 = new URL("./styles.css", import.meta.url);
+var field = { name: name21, root: root21, create: create21, registerVariants: registerVariants21, template: template21, styles: styles21 };
+
+// ../../packages/components/src/form/index.js
+var name22 = "form";
+var root22 = "form";
+function create22(props) {
+  if (!props.fieldsHtml) throw new TypeError("form: fieldsHtml is required \u2014 render the fields into it");
+  const formName = signal(props.name ?? "");
+  const heading = signal(props.heading ?? "");
+  const fieldsHtml = signal(props.fieldsHtml);
+  const summaryHtml = signal(props.summaryHtml ?? "");
+  const actionsHtml = signal(props.actionsHtml ?? "");
+  const variant = signal(props.variant ?? "default");
+  const submitted = signal(false);
+  const hasHeading = computed(() => heading() !== "");
+  const hasSummary = computed(() => summaryHtml() !== "");
+  const hasActions = computed(() => actionsHtml() !== "");
+  function submit(event) {
+    event?.preventDefault?.();
+    submitted.set(true);
+    props.onSubmit?.({ name: formName() });
+  }
+  return { formName, heading, fieldsHtml, summaryHtml, actionsHtml, variant, submitted, hasHeading, hasSummary, hasActions, submit, raw };
+}
+function registerVariants22(registry3) {
+  registry3.registerVariant("form", "default");
+}
+var template22 = new URL("./index.html", import.meta.url);
+var styles22 = new URL("./styles.css", import.meta.url);
+var form = { name: name22, root: root22, create: create22, registerVariants: registerVariants22, template: template22, styles: styles22 };
+
+// ../../packages/components/src/hero/index.js
+var name23 = "hero";
+var root23 = "figure";
+function create23(props) {
+  if (!props.title && !props.titleHtml) {
+    throw new TypeError("hero: title (or titleHtml) is required");
+  }
+  const variant = signal(props.variant ?? "stacked");
+  const eyebrow = signal(props.eyebrow ?? "");
+  const title = signal(props.title ?? "");
+  const titleHtml = signal(props.titleHtml ?? "");
+  const lede = signal(props.lede ?? "");
+  const ledeHtml = signal(props.ledeHtml ?? "");
+  const mediaSrc = signal(props.mediaSrc ?? "");
+  const mediaAlt = signal(props.mediaAlt ?? "");
+  const mediaHtml = signal(props.mediaHtml ?? "");
+  const actionsHtml = signal(props.actionsHtml ?? "");
+  const afterHtml = signal(props.afterHtml ?? "");
+  const actionsLabel = signal(props.actionsLabel ?? "Primary");
+  const hasMedia = computed(() => mediaHtml() !== "" || mediaSrc() !== "");
+  const hasEyebrow = computed(() => eyebrow() !== "");
+  const hasLede = computed(() => ledeHtml() !== "" || lede() !== "");
+  const hasActions = computed(() => actionsHtml() !== "");
+  const hasAfter = computed(() => afterHtml() !== "");
+  const isH2 = computed(() => props.headingLevel === "h2");
   return {
-    select(id) {
-      const tab = tabs().find((t) => idOf(t) === id);
-      if (!tab) return false;
-      if (tab !== current) {
-        current = tab;
-        apply(tab);
-      }
-      return true;
-    },
-    active: () => current ? idOf(current) : null,
-    destroy() {
-      root.removeEventListener("click", onClick);
-      root.removeEventListener("keydown", onKeydown);
-    }
+    variant,
+    eyebrow,
+    title,
+    titleHtml,
+    lede,
+    ledeHtml,
+    mediaSrc,
+    mediaAlt,
+    mediaHtml,
+    actionsHtml,
+    actionsLabel,
+    afterHtml,
+    hasMedia,
+    hasEyebrow,
+    hasLede,
+    hasActions,
+    hasAfter,
+    isH2,
+    raw
   };
 }
-
-// ../../packages/components/src/dropdown-menu.js
-var TRIGGER = '[data-bn="dropdown-trigger"]';
-var MENU = '[data-bn="dropdown-menu"]';
-var ITEM2 = '[data-bn="dropdown-item"]';
-function closestFrom4(target, selector) {
-  return target && typeof target.closest === "function" ? target.closest(selector) : null;
+function registerVariants23(registry3) {
+  registry3.registerVariant("hero", "stacked");
+  registry3.registerVariant("hero", "overlay");
+  registry3.registerVariant("hero", "split");
 }
-function initDropdownMenu(root, options = {}) {
-  const { onSelect } = options;
-  const menu = root.querySelector(MENU);
-  const items = () => Array.from(menu ? menu.querySelectorAll(ITEM2) : []);
-  let open = false;
-  let focusOnOpen = "first";
-  function focusItem(item) {
-    if (item && typeof item.focus === "function") item.focus();
+var template23 = new URL("./index.html", import.meta.url);
+var styles23 = new URL("./styles.css", import.meta.url);
+var hero = { name: name23, root: root23, create: create23, registerVariants: registerVariants23, template: template23, styles: styles23 };
+
+// ../../packages/components/src/input/index.js
+var name24 = "input";
+var root24 = "input";
+function create24(props = {}) {
+  const value = signal(props.value ?? "");
+  const controlId = signal(props.id ?? "");
+  const variant = signal(props.variant ?? "default");
+  const type = signal(props.type ?? "text");
+  const disabled = signal(props.disabled ?? false);
+  const isInvalid = signal(props.invalid ?? false);
+  function update(event) {
+    value.set(event.target.value);
   }
-  function show() {
-    if (open || !menu || typeof menu.showPopover !== "function") return;
-    menu.showPopover();
+  return { value, controlId, variant, type, disabled, isInvalid, update };
+}
+function registerVariants24(registry3) {
+  registry3.registerVariant("input", "default");
+}
+var template24 = new URL("./index.html", import.meta.url);
+var styles24 = new URL("./styles.css", import.meta.url);
+var input = { name: name24, root: root24, create: create24, registerVariants: registerVariants24, template: template24, styles: styles24 };
+
+// ../../packages/components/src/list-group/index.js
+var name25 = "list-group";
+var root25 = "ul";
+function create25(props) {
+  if (!Array.isArray(props.items)) throw new TypeError("list-group: items is required");
+  const items = signal(props.items);
+  const variant = signal(props.variant ?? "default");
+  return { items, variant, raw };
+}
+function registerVariants25(registry3) {
+  registry3.registerVariant("list-group", "default");
+}
+var template25 = new URL("./index.html", import.meta.url);
+var styles25 = new URL("./styles.css", import.meta.url);
+var listGroup = { name: name25, root: root25, create: create25, registerVariants: registerVariants25, template: template25, styles: styles25 };
+
+// ../../packages/components/src/multiselect/index.js
+var name26 = "multiselect";
+var root26 = "section";
+function create26(props) {
+  if (!props.id) throw new TypeError("multiselect: id is required");
+  if (!props.inputHtml) throw new TypeError("multiselect: inputHtml is required (render the input component)");
+  const label = signal(props.label ?? "");
+  const inputHtml = signal(props.inputHtml);
+  const options = signal(props.options ?? []);
+  const selected = signal(props.selected ?? []);
+  const open = signal(props.open ?? false);
+  const activeValue = signal("");
+  const variant = signal(props.variant ?? "multiselect");
+  const listboxId = computed(() => `${props.id}-listbox`);
+  const optionId = (option) => `${props.id}-option-${option.value}`;
+  const hasSelected = computed(() => selected().length > 0);
+  const activeOption = computed(() => options().find((option) => option.value === activeValue()) ?? null);
+  const activeDescendant = computed(() => {
+    const active = activeOption();
+    return open() && active ? optionId(active) : "";
+  });
+  const isSelected = (option) => selected().some((item) => item.value === option.value) ? "true" : "false";
+  const isActive = (option) => option.value === activeValue() ? "true" : "false";
+  const toggle2 = (option) => {
+    const current = selected();
+    const next = current.some((item) => item.value === option.value) ? current.filter((item) => item.value !== option.value) : [...current, { value: option.value, label: option.label, dismissHtml: option.dismissHtml ?? "" }];
+    selected.set(next);
+    props.onChange?.({ values: next.map((item) => item.value) });
+  };
+  const addValue = (value) => {
+    const option = options().find((item) => item.value === value);
+    if (!option || selected().some((item) => item.value === value)) return false;
+    selected.set([...selected(), { value: option.value, label: option.label, dismissHtml: "" }]);
+    return true;
+  };
+  const removeValue = (value) => {
+    if (!selected().some((item) => item.value === value)) return false;
+    selected.set(selected().filter((item) => item.value !== value));
+    props.onChange?.({ values: selected().map((item) => item.value) });
+    return true;
+  };
+  const removeLast = () => {
+    const last = selected().at(-1);
+    return last ? removeValue(last.value) : false;
+  };
+  function moveActive(delta) {
+    const list = options();
+    if (list.length === 0) return;
+    const index = list.findIndex((option) => option.value === activeValue());
+    activeValue.set(list[(index + delta + list.length) % list.length].value);
   }
-  function hide() {
-    if (!open || !menu || typeof menu.hidePopover !== "function") return;
-    menu.hidePopover();
-  }
-  function onToggle(e) {
-    open = e.newState === "open";
-    if (!open) return;
-    const list = items();
-    focusItem(focusOnOpen === "last" ? list[list.length - 1] : list[0]);
-    focusOnOpen = "first";
-  }
-  function onClick(e) {
-    const item = closestFrom4(e.target, ITEM2);
-    if (!item) return;
-    if (item.getAttribute("aria-disabled") === "true") {
-      e.preventDefault();
-      return;
-    }
-    hide();
-    if (onSelect) onSelect(item.getAttribute("data-action") ?? "", item);
-  }
-  function onKeydown(e) {
-    const list = items();
-    if (!list.length) return;
-    const item = closestFrom4(e.target, ITEM2);
-    const onTrigger = !item && Boolean(closestFrom4(e.target, TRIGGER));
-    if (!item && !onTrigger) return;
-    const index = list.indexOf(item);
-    let next;
-    switch (e.key) {
+  function onKeydown(event) {
+    switch (event.key) {
       case "ArrowDown":
-        next = item ? list[(index + 1) % list.length] : list[0];
-        break;
+        event.preventDefault();
+        if (!open()) open.set(true);
+        else moveActive(1);
+        if (open() && !activeOption() && options().length > 0) activeValue.set(options()[0].value);
+        return;
       case "ArrowUp":
-        next = item ? list[(index - 1 + list.length) % list.length] : list[list.length - 1];
-        break;
+        event.preventDefault();
+        if (!open()) open.set(true);
+        else moveActive(-1);
+        if (open() && !activeOption() && options().length > 0) activeValue.set(options()[options().length - 1].value);
+        return;
       case "Home":
-        next = list[0];
-        break;
+        if (!open() || options().length === 0) return;
+        event.preventDefault();
+        activeValue.set(options()[0].value);
+        return;
       case "End":
-        next = list[list.length - 1];
-        break;
-      default:
+        if (!open() || options().length === 0) return;
+        event.preventDefault();
+        activeValue.set(options()[options().length - 1].value);
         return;
-    }
-    e.preventDefault();
-    if (onTrigger && !open) {
-      focusOnOpen = e.key === "ArrowUp" || e.key === "End" ? "last" : "first";
-      show();
-      return;
-    }
-    focusItem(next);
-  }
-  root.addEventListener("click", onClick);
-  root.addEventListener("keydown", onKeydown);
-  if (menu) menu.addEventListener("toggle", onToggle);
-  return {
-    open: show,
-    close: hide,
-    isOpen: () => open,
-    destroy() {
-      root.removeEventListener("click", onClick);
-      root.removeEventListener("keydown", onKeydown);
-      if (menu) menu.removeEventListener("toggle", onToggle);
-    }
-  };
-}
-
-// ../../packages/components/src/command-palette.js
-var INPUT = '[data-bn="command-input"]';
-var ITEM3 = '[data-bn="command-item"]';
-var GROUP = '[data-bn="command-group"]';
-var LABEL = '[data-bn="command-label"]';
-function closestFrom5(target, selector) {
-  return target && typeof target.closest === "function" ? target.closest(selector) : null;
-}
-function labelOf(item) {
-  const label = item.querySelector(LABEL);
-  return String((label ?? item).textContent ?? "");
-}
-function parseHotkey(hotkey) {
-  const parts = String(hotkey).split("+").map((part) => part.trim().toLowerCase()).filter(Boolean);
-  const key = parts.pop() ?? "";
-  return { key, mod: parts.includes("mod"), ctrl: parts.includes("ctrl"), meta: parts.includes("meta"), shift: parts.includes("shift"), alt: parts.includes("alt") };
-}
-function hotkeyMatches(spec, e) {
-  if (String(e.key ?? "").toLowerCase() !== spec.key) return false;
-  if (spec.mod && !(e.metaKey || e.ctrlKey)) return false;
-  if (spec.ctrl && !e.ctrlKey) return false;
-  if (spec.meta && !e.metaKey) return false;
-  return spec.shift === Boolean(e.shiftKey) && spec.alt === Boolean(e.altKey);
-}
-function initCommandPalette(dialog, options = {}) {
-  const { onSelect, hotkey } = options;
-  const doc = dialog.ownerDocument ?? (typeof document === "undefined" ? null : document);
-  const input = dialog.querySelector(INPUT);
-  const items = () => Array.from(dialog.querySelectorAll(ITEM3));
-  const groups = () => Array.from(dialog.querySelectorAll(GROUP));
-  const visible = () => items().filter((item) => !item.hasAttribute("hidden"));
-  const isOpen = () => dialog.hasAttribute("open");
-  let active = null;
-  const prefix = dialog.getAttribute("id") || "bn-command";
-  items().forEach((item, i) => {
-    if (!item.getAttribute("id")) item.setAttribute("id", `${prefix}-item-${i}`);
-  });
-  function setActive(item) {
-    active = item ?? null;
-    for (const it of items()) {
-      if (it === active) it.setAttribute("aria-selected", "true");
-      else it.removeAttribute("aria-selected");
-    }
-    if (input) {
-      if (active) input.setAttribute("aria-activedescendant", active.getAttribute("id"));
-      else input.removeAttribute("aria-activedescendant");
-    }
-    if (active && typeof active.scrollIntoView === "function") active.scrollIntoView({ block: "nearest" });
-  }
-  function filter(query) {
-    const q = String(query ?? "").trim().toLowerCase();
-    for (const item of items()) {
-      if (q === "" || labelOf(item).toLowerCase().includes(q)) item.removeAttribute("hidden");
-      else item.setAttribute("hidden", "");
-    }
-    for (const group of groups()) {
-      const any = Array.from(group.querySelectorAll(ITEM3)).some((item) => !item.hasAttribute("hidden"));
-      if (any) group.removeAttribute("hidden");
-      else group.setAttribute("hidden", "");
-    }
-    const list = visible();
-    setActive(list[0] ?? null);
-    return list;
-  }
-  function close() {
-    if (!isOpen()) return;
-    if (typeof dialog.close === "function") dialog.close();
-    else dialog.removeAttribute("open");
-  }
-  function open() {
-    if (!isOpen()) {
-      if (typeof dialog.showModal === "function") dialog.showModal();
-      else dialog.setAttribute("open", "");
-    }
-    if (input) {
-      input.value = "";
-      if (typeof input.focus === "function") input.focus();
-    }
-    filter("");
-  }
-  function activate(item) {
-    if (!item) return;
-    close();
-    if (onSelect) onSelect(item.getAttribute("data-action") ?? "", item);
-  }
-  function onInput(e) {
-    if (input && e.target === input) filter(input.value);
-  }
-  function onClick(e) {
-    const item = closestFrom5(e.target, ITEM3);
-    if (!item || item.hasAttribute("hidden")) return;
-    e.preventDefault();
-    activate(item);
-  }
-  function onKeydown(e) {
-    const list = visible();
-    const index = list.indexOf(active);
-    switch (e.key) {
-      case "ArrowDown":
-        e.preventDefault();
-        if (list.length) setActive(list[(index + 1) % list.length]);
+      case "Enter": {
+        const active = activeOption();
+        if (open() && active) {
+          event.preventDefault();
+          toggle2(active);
+        }
         return;
-      case "ArrowUp":
-        e.preventDefault();
-        if (list.length) setActive(list[(index - 1 + list.length) % list.length]);
-        return;
-      case "Enter":
-        e.preventDefault();
-        activate(list.includes(active) ? active : list[0]);
-        return;
+      }
       case "Escape":
-        e.preventDefault();
-        close();
+        if (open()) {
+          event.preventDefault();
+          open.set(false);
+        }
         return;
       default:
     }
   }
-  const spec = hotkey ? parseHotkey(hotkey) : null;
-  function onHotkey(e) {
-    if (!spec || !hotkeyMatches(spec, e)) return;
-    e.preventDefault();
-    if (isOpen()) close();
-    else open();
-  }
-  filter(input ? input.value ?? "" : "");
-  dialog.addEventListener("input", onInput);
-  dialog.addEventListener("click", onClick);
-  dialog.addEventListener("keydown", onKeydown);
-  if (spec && doc) doc.addEventListener("keydown", onHotkey);
   return {
+    label,
+    inputHtml,
+    options,
+    selected,
     open,
-    close,
-    isOpen,
-    filter,
-    active: () => active ? active.getAttribute("data-action") ?? "" : null,
-    destroy() {
-      dialog.removeEventListener("input", onInput);
-      dialog.removeEventListener("click", onClick);
-      dialog.removeEventListener("keydown", onKeydown);
-      if (spec && doc) doc.removeEventListener("keydown", onHotkey);
-    }
+    activeValue,
+    activeOption,
+    activeDescendant,
+    variant,
+    listboxId,
+    optionId,
+    hasSelected,
+    isSelected,
+    isActive,
+    toggle: toggle2,
+    addValue,
+    removeValue,
+    removeLast,
+    moveActive,
+    onKeydown,
+    raw
   };
 }
+function registerVariants26(registry3) {
+  registry3.registerVariant("multiselect", "multiselect");
+}
+var template26 = new URL("./index.html", import.meta.url);
+var styles26 = new URL("./styles.css", import.meta.url);
+var multiselect = { name: name26, root: root26, create: create26, registerVariants: registerVariants26, template: template26, styles: styles26 };
 
-// ../../packages/components/src/internal/drag.js
-function bindDrag(el, handlers) {
-  const entries = Object.entries(handlers).filter(([, fn]) => typeof fn === "function");
-  for (const [type, fn] of entries) el.addEventListener(type, fn);
-  return {
-    destroy() {
-      for (const [type, fn] of entries) el.removeEventListener(type, fn);
-    }
-  };
-}
-function clearDragState(container) {
-  container.querySelectorAll("[data-dragging], [data-picked], [data-drop-target]").forEach((el) => {
-    el.removeAttribute("data-dragging");
-    el.removeAttribute("data-picked");
-    el.removeAttribute("data-drop-target");
-  });
-}
-function clearDropTargets(container) {
-  if (typeof container.querySelectorAll !== "function") return;
-  container.querySelectorAll("[data-drop-target]").forEach((el) => el.removeAttribute("data-drop-target"));
-}
-function readDragData(e) {
-  try {
-    return JSON.parse(e.dataTransfer.getData("text/plain"));
-  } catch {
-    return null;
-  }
-}
-
-// ../../packages/components/src/calendar.js
-var DATE_ONLY = /^(\d{4})-(\d{2})-(\d{2})$/;
-var pad = (n) => String(n).padStart(2, "0");
-function parseLocalDate(value) {
-  if (value instanceof Date) return new Date(value.getTime());
-  const m = DATE_ONLY.exec(String(value));
-  if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
-  return new Date(value);
-}
-function toLocalDateString(d) {
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-}
-function formatDay(dateStr) {
-  const d = parseLocalDate(dateStr);
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  return `${days[d.getDay()]} ${d.getMonth() + 1}/${d.getDate()}`;
-}
-function slotMinute(e, slot, snap) {
-  const rect = typeof slot.getBoundingClientRect === "function" ? slot.getBoundingClientRect() : null;
-  if (!rect || !(rect.height > 0) || typeof e.clientY !== "number") return 0;
-  const fraction = Math.min(Math.max((e.clientY - rect.top) / rect.height, 0), 0.999);
-  const step = snap > 1 ? snap : 1;
-  return Math.min(Math.floor(fraction * 60 / step) * step, 59);
-}
-function shiftDate(date, days) {
-  const d = parseLocalDate(date);
-  d.setDate(d.getDate() + days);
-  return toLocalDateString(d);
-}
-function clockText(hour, minute) {
-  const h12 = hour % 12 === 0 ? 12 : hour % 12;
-  return `${h12}:${pad(minute)} ${hour < 12 ? "AM" : "PM"}`;
-}
-var isActivate = (e) => e.key === "Enter" || e.key === " " || e.key === "Spacebar";
-var KEY_MOVES = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] };
-function announce(container, bn, text) {
-  const region = typeof container.querySelector === "function" ? container.querySelector(`[data-bn="${bn}"]`) : null;
-  if (region) region.textContent = text;
-}
-function itemLabel(el, fallback) {
-  const title = typeof el.getAttribute === "function" ? el.getAttribute("title") : null;
-  return title || fallback;
-}
-function initCalendarDragDrop(container, callbacks = {}) {
-  const { onDrop, dragSource, snapMinutes = 15 } = callbacks;
-  const step = snapMinutes > 1 ? snapMinutes : 1;
-  const say = (text) => announce(container, "calendar-status", text);
-  const query = (selector) => typeof container.querySelector === "function" ? container.querySelector(selector) : null;
-  const slotAt = (date, hour) => query(`[data-bn="calendar-slot"][data-date="${date}"][data-hour="${hour}"]`);
-  let picked = null;
-  let target = null;
-  function itemOf(node) {
-    const event = node.closest("[data-event-id]");
-    if (event) return { type: "event", id: event.dataset.eventId, el: event };
-    const block = node.closest("[data-block-id]");
-    if (block) return { type: "pipeline", id: block.dataset.blockId, el: block };
-    return null;
-  }
-  const label = () => itemLabel(picked.el, picked.id);
-  function release() {
-    if (picked) picked.el.removeAttribute("data-picked");
-    picked = null;
-    target = null;
-    clearDropTargets(container);
-  }
-  function cancel() {
-    if (!picked) return;
-    const moved = label();
-    release();
-    say(`Cancelled moving ${moved}.`);
-  }
-  function initialTarget(el) {
-    const { date, hour, minute } = el.dataset ?? {};
-    if (date && hour != null) return { date, hour: parseInt(hour, 10), minute: parseInt(minute, 10) || 0 };
-    const first = query('[data-bn="calendar-slot"]');
-    return first ? { date: first.dataset.date, hour: parseInt(first.dataset.hour, 10), minute: 0 } : null;
-  }
-  function showTarget() {
-    clearDropTargets(container);
-    const slot = target && slotAt(target.date, target.hour);
-    if (slot) slot.setAttribute("data-drop-target", "");
-  }
-  function pick(item) {
-    release();
-    picked = item;
-    item.el.setAttribute("data-picked", "");
-    target = initialTarget(item.el);
-    showTarget();
-    say(
-      target ? `Picked up ${label()}. Use the arrow keys to choose a new time, Enter to drop, Escape to cancel.` : `Picked up ${label()}. Choose a time slot to drop it on, or press Escape to cancel.`
-    );
-  }
-  function place(date, hour, minute) {
-    const moved = label();
-    const sourceType = picked.type;
-    const eventId = picked.id;
-    release();
-    if (onDrop) {
-      onDrop({
-        eventId,
-        date,
-        hour,
-        minute,
-        datetime: `${date}T${pad(hour)}:${pad(minute)}`,
-        sourceType
+// ../../packages/components/src/pagination/index.js
+var name27 = "pagination";
+var root27 = "nav";
+function create27(props) {
+  if (!props.pages || props.pages < 1) throw new TypeError("pagination: pages is required");
+  const page = signal(props.page ?? 1);
+  const pages = signal(props.pages);
+  const label = signal(props.label ?? "Pagination");
+  const variant = signal(props.variant ?? "pagination");
+  const hrefFor = props.hrefFor ?? ((n) => `#page-${n}`);
+  const items = computed(() => {
+    const total = pages();
+    const current = page();
+    const numbers = /* @__PURE__ */ new Set([1, total, current - 1, current, current + 1]);
+    const list = [{
+      label: props.prevLabel ?? "Previous",
+      page: current > 1 ? current - 1 : null,
+      current: false,
+      href: current > 1 ? hrefFor(current - 1) : ""
+    }];
+    let elided = false;
+    for (let n = 1; n <= total; n += 1) {
+      if (!numbers.has(n)) {
+        if (!elided) {
+          list.push({ label: "\u2026", page: null, current: false, href: "" });
+          elided = true;
+        }
+        continue;
+      }
+      elided = false;
+      list.push({
+        label: String(n),
+        page: n === current ? null : n,
+        current: n === current,
+        href: n === current ? "" : hrefFor(n)
       });
     }
-    say(`Moved ${moved} to ${formatDay(date)} at ${clockText(hour, minute)}.`);
-  }
-  function shiftTarget(from, days, minutes) {
-    let minute = from.minute + minutes;
-    const carry = Math.floor(minute / 60);
-    minute -= carry * 60;
-    return { date: days ? shiftDate(from.date, days) : from.date, hour: from.hour + carry, minute };
-  }
-  function dragstart(e) {
-    release();
-    const event = e.target.closest("[data-event-id]");
-    const block = e.target.closest("[data-block-id]");
-    if (event) {
-      e.dataTransfer.setData("text/plain", JSON.stringify({
-        type: "event",
-        id: event.dataset.eventId
-      }));
-      e.dataTransfer.effectAllowed = "move";
-      event.setAttribute("data-dragging", "");
-    } else if (block) {
-      e.dataTransfer.setData("text/plain", JSON.stringify({
-        type: "pipeline",
-        id: block.dataset.blockId
-      }));
-      e.dataTransfer.effectAllowed = "copy";
-      block.setAttribute("data-dragging", "");
-    }
-  }
-  function click(e) {
-    const item = itemOf(e.target);
-    if (item) {
-      if (picked && picked.el === item.el) cancel();
-      else pick(item);
-      return;
-    }
-    if (!picked) return;
-    const slot = e.target.closest('[data-bn="calendar-slot"]');
-    if (slot) place(slot.dataset.date, parseInt(slot.dataset.hour, 10), slotMinute(e, slot, snapMinutes));
-  }
-  function keydown(e) {
-    if (e.key === "Escape") {
-      if (picked) {
-        e.preventDefault();
-        cancel();
-      }
-      return;
-    }
-    if (isActivate(e)) {
-      const item = itemOf(e.target);
-      if (picked && (!item || item.el === picked.el)) {
-        e.preventDefault();
-        if (target) place(target.date, target.hour, target.minute);
-        return;
-      }
-      if (item) {
-        e.preventDefault();
-        pick(item);
-      }
-      return;
-    }
-    const move = KEY_MOVES[e.key];
-    if (!move || !picked || !target) return;
-    e.preventDefault();
-    const next = shiftTarget(target, move[0], move[1] * step);
-    if (!slotAt(next.date, next.hour)) return;
-    target = next;
-    showTarget();
-    say(`${formatDay(next.date)} at ${clockText(next.hour, next.minute)}. Press Enter to drop ${label()} here.`);
-  }
-  const handle = bindDrag(container, {
-    dragstart,
-    dragover(e) {
-      const slot = e.target.closest('[data-bn="calendar-slot"]');
-      if (slot) {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = "move";
-        slot.setAttribute("data-drop-target", "");
-      }
-    },
-    dragleave(e) {
-      const slot = e.target.closest('[data-bn="calendar-slot"]');
-      if (slot) {
-        slot.removeAttribute("data-drop-target");
-      }
-    },
-    drop(e) {
-      e.preventDefault();
-      const slot = e.target.closest('[data-bn="calendar-slot"]');
-      if (!slot) return;
-      slot.removeAttribute("data-drop-target");
-      const data = readDragData(e);
-      if (data && onDrop) {
-        const hour = parseInt(slot.dataset.hour, 10);
-        const minute = slotMinute(e, slot, snapMinutes);
-        onDrop({
-          eventId: data.id,
-          date: slot.dataset.date,
-          hour,
-          minute,
-          datetime: `${slot.dataset.date}T${pad(hour)}:${pad(minute)}`,
-          sourceType: data.type
-        });
-      }
-    },
-    dragend() {
-      release();
-      clearDragState(container);
-    },
-    click,
-    keydown
+    list.push({
+      label: props.nextLabel ?? "Next",
+      page: current < total ? current + 1 : null,
+      current: false,
+      href: current < total ? hrefFor(current + 1) : ""
+    });
+    return list;
   });
-  const outside = (fn) => (e) => {
-    if (typeof container.contains === "function" && container.contains(e.target)) return;
-    fn(e);
-  };
-  const source = dragSource && dragSource !== container ? bindDrag(dragSource, {
-    dragstart: outside(dragstart),
-    dragend() {
-      release();
-      clearDragState(dragSource);
-      clearDragState(container);
-    },
-    click: outside(click),
-    keydown: outside(keydown)
-  }) : null;
+  return { items, label, variant };
+}
+function registerVariants27(registry3) {
+  registry3.registerVariant("pagination", "pagination");
+}
+var template27 = new URL("./index.html", import.meta.url);
+var styles27 = new URL("./styles.css", import.meta.url);
+var pagination = { name: name27, root: root27, create: create27, registerVariants: registerVariants27, template: template27, styles: styles27 };
+
+// ../../packages/components/src/pipeline/index.js
+var name28 = "pipeline";
+var root28 = "ol";
+function create28(props) {
+  if (!Array.isArray(props.columns)) throw new TypeError("pipeline: columns is required");
+  const columns = signal(props.columns);
+  const variant = signal(props.variant ?? "pipeline");
+  function moveCard(fromColumn, fromIndex, toColumn, toIndex) {
+    const cols = columns().map((column) => ({ ...column, cardsHtml: [...column.cardsHtml] }));
+    const source = cols[fromColumn];
+    const target = cols[toColumn];
+    if (!source || !target || fromIndex < 0 || fromIndex >= source.cardsHtml.length) return false;
+    const [card2] = source.cardsHtml.splice(fromIndex, 1);
+    const clamped = Math.max(0, Math.min(toIndex, target.cardsHtml.length));
+    target.cardsHtml.splice(clamped, 0, card2);
+    columns.set(cols);
+    props.onCardMove?.({ fromColumn, fromIndex, toColumn, toIndex: clamped });
+    return true;
+  }
+  return { columns, variant, moveCard, raw };
+}
+function registerVariants28(registry3) {
+  registry3.registerVariant("pipeline", "pipeline");
+}
+var template28 = new URL("./index.html", import.meta.url);
+var styles28 = new URL("./styles.css", import.meta.url);
+var pipeline = { name: name28, root: root28, create: create28, registerVariants: registerVariants28, template: template28, styles: styles28 };
+
+// ../../packages/components/src/progress/index.js
+var name29 = "progress";
+var root29 = "progress";
+function create29(props = {}) {
+  const value = signal(props.value ?? null);
+  const max = signal(props.max ?? 100);
+  const variant = signal(props.variant ?? "default");
+  const isIndeterminate = computed(() => value() === null);
+  return { value, max, variant, isIndeterminate };
+}
+function registerVariants29(registry3) {
+  registry3.registerVariant("progress", "default");
+}
+var template29 = new URL("./index.html", import.meta.url);
+var styles29 = new URL("./styles.css", import.meta.url);
+var progress = { name: name29, root: root29, create: create29, registerVariants: registerVariants29, template: template29, styles: styles29 };
+
+// ../../packages/components/src/radio/index.js
+var name30 = "radio";
+var root30 = "fieldset";
+function create30(props) {
+  if (!props.legend) throw new TypeError("radio: legend is required");
+  if (!props.name) throw new TypeError("radio: name is required");
+  if (!Array.isArray(props.options) || props.options.length === 0) {
+    throw new TypeError("radio: options must be a non-empty array");
+  }
+  const legend = signal(props.legend);
+  const groupName = signal(props.name);
+  const options = signal(props.options);
+  const variant = signal(props.variant ?? "default");
+  const value = signal(props.value ?? props.options[0].value);
+  function isChecked(option) {
+    return option.value === value();
+  }
+  function choose(option) {
+    value.set(option.value);
+    props.onChoose?.(option.value);
+  }
+  return { legend, groupName, options, variant, value, isChecked, choose };
+}
+function registerVariants30(registry3) {
+  registry3.registerVariant("radio", "default");
+}
+var template30 = new URL("./index.html", import.meta.url);
+var styles30 = new URL("./styles.css", import.meta.url);
+var radio = { name: name30, root: root30, create: create30, registerVariants: registerVariants30, template: template30, styles: styles30 };
+
+// ../../packages/components/src/rating/index.js
+var name31 = "rating";
+var root31 = "fieldset";
+function create31(props) {
+  if (!props.legend) throw new TypeError("rating: legend is required");
+  if (!props.name) throw new TypeError("rating: name is required");
+  if (!props.starHtml) throw new TypeError("rating: starHtml is required \u2014 render the star mark into it");
+  const max = props.max ?? 5;
+  if (!Number.isInteger(max) || max < 1 || max > 5) {
+    throw new TypeError("rating: max must be an integer from one to five \u2014 the range rules are authored for five steps");
+  }
+  const legend = signal(props.legend);
+  const groupName = signal(props.name);
+  const starHtml = signal(props.starHtml);
+  const variant = signal(props.variant ?? "rating");
+  const inputVariant = signal("default");
+  const options = signal(
+    Array.from({ length: max }, (_, index) => {
+      const value = index + 1;
+      return { value: String(value), numeric: value, label: value + (value === 1 ? " star" : " stars") };
+    })
+  );
+  const selected = signal(props.value !== void 0 ? String(props.value) : "");
+  function isChecked(option) {
+    return option.value === selected();
+  }
+  function change(option) {
+    if (option.value === selected()) return;
+    selected.set(option.value);
+    props.onChange?.({
+      name: groupName(),
+      mode: "rating",
+      values: [option.numeric],
+      changed: option.numeric,
+      selected: true
+    });
+  }
+  return { legend, groupName, starHtml, variant, inputVariant, options, selected, isChecked, change, raw };
+}
+function registerVariants31(registry3) {
+  registry3.registerVariant("rating", "rating");
+}
+var template31 = new URL("./index.html", import.meta.url);
+var styles31 = new URL("./styles.css", import.meta.url);
+var rating = { name: name31, root: root31, create: create31, registerVariants: registerVariants31, template: template31, styles: styles31 };
+
+// ../../packages/components/src/search-field/index.js
+var name32 = "search-field";
+var root32 = "search";
+function create32(props) {
+  if (!props.label) throw new TypeError("search-field: label is required");
+  if (!props.controlId) throw new TypeError("search-field: controlId is required");
+  const label = signal(props.label);
+  const controlId = signal(props.controlId);
+  const groupName = signal(props.name ?? "");
+  const value = signal(props.value ?? "");
+  const clearLabel = signal(props.clearLabel ?? "Clear");
+  const submitHtml = signal(props.submitHtml ?? "");
+  const inputVariant = signal("default");
+  const variant = signal(props.variant ?? "default");
+  const hasValue = computed(() => value() !== "");
+  const hasSubmit = computed(() => submitHtml() !== "");
+  function update(event) {
+    value.set(event.target.value);
+  }
+  function clear() {
+    if (value() === "") return;
+    value.set("");
+    props.onClear?.({ name: groupName() });
+  }
+  function submit() {
+    props.onSearch?.({ name: groupName(), value: value() });
+  }
+  function keydown(event) {
+    if (event.key !== "Enter") return;
+    event.preventDefault?.();
+    submit();
+  }
+  return { label, controlId, groupName, value, clearLabel, submitHtml, inputVariant, variant, hasValue, hasSubmit, update, clear, submit, keydown, raw };
+}
+function registerVariants32(registry3) {
+  registry3.registerVariant("search-field", "default");
+}
+var template32 = new URL("./index.html", import.meta.url);
+var styles32 = new URL("./styles.css", import.meta.url);
+var searchField = { name: name32, root: root32, create: create32, registerVariants: registerVariants32, template: template32, styles: styles32 };
+
+// ../../packages/components/src/segmented-control/index.js
+var name33 = "segmented-control";
+var root33 = "fieldset";
+function create33(props) {
+  if (!props.legend) throw new TypeError("segmented-control: legend is required");
+  if (!props.name) throw new TypeError("segmented-control: name is required");
+  if (!Array.isArray(props.options) || props.options.length === 0) {
+    throw new TypeError("segmented-control: options must be a non-empty array");
+  }
+  const legend = signal(props.legend);
+  const groupName = signal(props.name);
+  const options = signal(props.options);
+  const variant = signal(props.variant ?? "segmented-control");
+  const inputVariant = signal("default");
+  const selected = signal(props.value ?? props.options[0].value);
+  function isChecked(option) {
+    return option.value === selected();
+  }
+  function change(option) {
+    if (option.value === selected()) return;
+    selected.set(option.value);
+    props.onChange?.({
+      name: groupName(),
+      mode: "segmented",
+      values: [option.value],
+      changed: option.value,
+      selected: true
+    });
+  }
+  return { legend, groupName, options, variant, inputVariant, selected, isChecked, change };
+}
+function registerVariants33(registry3) {
+  registry3.registerVariant("segmented-control", "segmented-control");
+}
+var template33 = new URL("./index.html", import.meta.url);
+var styles33 = new URL("./styles.css", import.meta.url);
+var segmentedControl = { name: name33, root: root33, create: create33, registerVariants: registerVariants33, template: template33, styles: styles33 };
+
+// ../../packages/components/src/select/index.js
+var name34 = "select";
+var root34 = "section";
+function create34(props) {
+  if (!Array.isArray(props.options) || props.options.length === 0) {
+    throw new TypeError("select: options must be a non-empty array");
+  }
+  const options = signal(props.options);
+  const value = signal(props.value ?? props.options[0].value);
+  const open = signal(props.open ?? false);
+  const controlId = signal(props.id ?? "");
+  const fieldName = signal(props.name ?? "");
+  const label = signal(props.label ?? "");
+  const variant = signal(props.variant ?? "select");
+  const disabled = signal(props.disabled ?? false);
+  function isNative() {
+    return variant() === "native";
+  }
+  function isPopover() {
+    return variant() !== "native";
+  }
+  function isSelected(option) {
+    return option.value === value();
+  }
+  function selectedAttr(option) {
+    return isSelected(option) ? "true" : "false";
+  }
+  function selectedLabel() {
+    return options().find((option) => option.value === value())?.label ?? "";
+  }
+  function listboxId() {
+    return controlId() === "" ? "" : `${controlId()}-listbox`;
+  }
+  function optionId(option) {
+    return controlId() === "" ? "" : `${controlId()}-option-${option.value}`;
+  }
+  function expandedAttr() {
+    return open() ? "true" : "false";
+  }
+  function toggle2() {
+    open.set(!open());
+  }
+  function close() {
+    open.set(false);
+  }
+  function choose(option) {
+    value.set(option.value);
+    open.set(false);
+    props.onChoose?.(option.value);
+  }
+  function chooseNative(event) {
+    const option = options().find((entry) => entry.value === event.target.value);
+    if (option) choose(option);
+  }
+  function keydown(event) {
+    if (event.key === "Escape") open.set(false);
+  }
   return {
-    destroy() {
-      handle.destroy();
-      if (source) source.destroy();
-    }
+    options,
+    value,
+    open,
+    controlId,
+    fieldName,
+    label,
+    variant,
+    disabled,
+    isNative,
+    isPopover,
+    isSelected,
+    selectedAttr,
+    selectedLabel,
+    listboxId,
+    optionId,
+    expandedAttr,
+    toggle: toggle2,
+    close,
+    choose,
+    chooseNative,
+    keydown
   };
 }
-function dropPosition(e, cardArea, draggedId) {
-  const all = typeof cardArea.querySelectorAll === "function" ? Array.from(cardArea.querySelectorAll("[data-card-id]")) : [];
-  const others = all.filter((c) => c.dataset?.cardId !== draggedId);
-  const over = e.target.closest("[data-card-id]");
-  if (!over) return others.length;
-  if (over.dataset?.cardId === draggedId) return Math.max(all.indexOf(over), 0);
-  const index = others.indexOf(over);
-  if (index < 0) return others.length;
-  const rect = typeof over.getBoundingClientRect === "function" ? over.getBoundingClientRect() : null;
-  const below = Boolean(rect && rect.height > 0 && typeof e.clientY === "number" && e.clientY > rect.top + rect.height / 2);
-  return below ? index + 1 : index;
+function registerVariants34(registry3) {
+  registry3.registerVariant("select", "select");
+  registry3.registerVariant("select", "native");
 }
-function initPipelineDragDrop(container, callbacks = {}) {
-  const { onCardMove } = callbacks;
-  const say = (text) => announce(container, "pipeline-status", text);
-  const queryAll = (root, selector) => typeof root.querySelectorAll === "function" ? Array.from(root.querySelectorAll(selector)) : [];
-  const queryOne = (root, selector) => typeof root.querySelector === "function" ? root.querySelector(selector) : null;
-  const columns = () => queryAll(container, "[data-column-id]");
-  const columnOf = (columnId) => columns().find((c) => c.dataset?.columnId === columnId) ?? null;
-  const columnTitle = (column) => queryOne(column, '[data-bn="pipeline-column-title"]')?.textContent || column.dataset.columnId;
-  let picked = null;
-  let target = null;
-  const label = () => itemLabel(picked.el, picked.id);
-  const othersIn = (column) => queryAll(column, "[data-card-id]").filter((c) => c.dataset?.cardId !== picked.id);
-  function release() {
-    if (picked) picked.el.removeAttribute("data-picked");
-    picked = null;
-    target = null;
-    clearDropTargets(container);
+var template34 = new URL("./index.html", import.meta.url);
+var styles34 = new URL("./styles.css", import.meta.url);
+var select = { name: name34, root: root34, create: create34, registerVariants: registerVariants34, template: template34, styles: styles34 };
+
+// ../../packages/components/src/sidebar/index.js
+var name35 = "sidebar";
+var root35 = "aside";
+function create35(props) {
+  if (!Array.isArray(props.sections) || props.sections.length === 0) {
+    throw new TypeError("sidebar: sections is required");
   }
-  function cancel() {
-    if (!picked) return;
-    const moved = label();
-    release();
-    say(`Cancelled moving ${moved}.`);
+  const sections = signal(props.sections.map((section) => ({
+    label: section.label ?? "",
+    items: (section.items ?? []).map((item) => ({
+      ...item,
+      iconHtml: item.iconHtml ?? "",
+      ariaCurrent: item.current ? "page" : false
+    }))
+  })));
+  const label = signal(props.label ?? "Sidebar");
+  const variant = signal(props.variant ?? "sidebar");
+  return { sections, label, variant, raw };
+}
+function registerVariants35(registry3) {
+  registry3.registerVariant("sidebar", "sidebar");
+}
+var template35 = new URL("./index.html", import.meta.url);
+var styles35 = new URL("./styles.css", import.meta.url);
+var sidebar = { name: name35, root: root35, create: create35, registerVariants: registerVariants35, template: template35, styles: styles35 };
+
+// ../../packages/components/src/site-footer/index.js
+var name36 = "site-footer";
+var root36 = "footer";
+function create36(props) {
+  if (!Array.isArray(props.groups) || props.groups.length === 0) {
+    throw new TypeError("site-footer: groups is required");
   }
-  function showTarget() {
-    clearDropTargets(container);
-    const column = target && columnOf(target.columnId);
-    const area = column && queryOne(column, '[data-bn="pipeline-column-cards"]');
-    if (area) area.setAttribute("data-drop-target", "");
+  const groups = signal(props.groups);
+  const noteHtml = signal(props.noteHtml ?? "");
+  const variant = signal(props.variant ?? "default");
+  function groupLabel(group) {
+    return group.ariaLabel ?? group.label ?? "Footer";
   }
-  function pick(card) {
-    release();
-    picked = { id: card.dataset.cardId, el: card };
-    card.setAttribute("data-picked", "");
-    const column = card.closest("[data-column-id]");
-    if (column) {
-      target = { columnId: column.dataset.columnId, position: Math.max(queryAll(column, "[data-card-id]").indexOf(card), 0) };
-    } else {
-      const first = columns()[0];
-      target = first ? { columnId: first.dataset.columnId, position: 0 } : null;
-    }
-    showTarget();
-    say(`Picked up ${label()}. Use the arrow keys to choose a column and position, Enter to drop, Escape to cancel.`);
+  return { groups, noteHtml, variant, groupLabel, raw };
+}
+function registerVariants36(registry3) {
+  registry3.registerVariant("site-footer", "default");
+}
+var template36 = new URL("./index.html", import.meta.url);
+var styles36 = new URL("./styles.css", import.meta.url);
+var siteFooter = { name: name36, root: root36, create: create36, registerVariants: registerVariants36, template: template36, styles: styles36 };
+
+// ../../packages/components/src/stepper/index.js
+var name37 = "stepper";
+var root37 = "ol";
+function create37(props) {
+  if (!Array.isArray(props.steps) || props.steps.length === 0) {
+    throw new TypeError("stepper: steps must be a non-empty array");
   }
-  function place(columnId, position) {
-    const moved = label();
-    const cardId = picked.id;
-    const column = columnOf(columnId);
-    release();
-    if (onCardMove) onCardMove({ cardId, targetColumnId: columnId, position });
-    say(`Moved ${moved} to ${column ? columnTitle(column) : columnId}, position ${position + 1}.`);
+  const stepperName = signal(props.name ?? "");
+  const steps = signal(props.steps);
+  const variant = signal(props.variant ?? "stepper");
+  const currentValue = signal(props.current ?? props.steps[0].value);
+  const currentIndex = computed(() => steps().findIndex((step) => step.value === currentValue()));
+  function indexOf(step) {
+    return steps().findIndex((candidate) => candidate.value === step.value);
   }
-  function click(e) {
-    const card = e.target.closest("[data-card-id]");
-    if (card && (!picked || picked.el === card)) {
-      if (picked) cancel();
-      else pick(card);
-      return;
-    }
-    if (!picked) return;
-    const cardArea = e.target.closest('[data-bn="pipeline-column-cards"]');
-    const column = cardArea && cardArea.closest("[data-column-id]");
-    if (column) place(column.dataset.columnId, dropPosition(e, cardArea, picked.id));
+  function stateFor(step) {
+    const index = indexOf(step);
+    if (index < currentIndex()) return "complete";
+    if (index === currentIndex()) return "current";
+    return "upcoming";
   }
-  function keydown(e) {
-    if (e.key === "Escape") {
-      if (picked) {
-        e.preventDefault();
-        cancel();
-      }
-      return;
-    }
-    if (isActivate(e)) {
-      const card = e.target.closest("[data-card-id]");
-      if (picked && (!card || card === picked.el)) {
-        e.preventDefault();
-        if (target) place(target.columnId, target.position);
+  function isCurrent(step) {
+    return step.value === currentValue();
+  }
+  function stepNumber(step) {
+    return String(indexOf(step) + 1);
+  }
+  function goTo(value) {
+    const index = steps().findIndex((step) => step.value === value);
+    if (index === -1 || value === currentValue()) return;
+    currentValue.set(value);
+    props.onStep?.({ name: stepperName(), index, value, label: steps()[index].label });
+  }
+  function next() {
+    const target = steps()[currentIndex() + 1];
+    if (target) goTo(target.value);
+  }
+  function previous() {
+    const target = steps()[currentIndex() - 1];
+    if (target) goTo(target.value);
+  }
+  return { stepperName, steps, variant, currentValue, currentIndex, stateFor, isCurrent, stepNumber, goTo, next, previous };
+}
+function registerVariants37(registry3) {
+  registry3.registerVariant("stepper", "stepper");
+}
+var template37 = new URL("./index.html", import.meta.url);
+var styles37 = new URL("./styles.css", import.meta.url);
+var stepper = { name: name37, root: root37, create: create37, registerVariants: registerVariants37, template: template37, styles: styles37 };
+
+// ../../packages/components/src/table/index.js
+var name38 = "table";
+var root38 = "table";
+function create38(props) {
+  if (!Array.isArray(props.columns)) throw new TypeError("table: columns is required");
+  if (!Array.isArray(props.rows)) throw new TypeError("table: rows is required");
+  const columns = signal(props.columns);
+  const rows = signal(props.rows.map((row) => row.map((cell, i) => {
+    const normalized = typeof cell === "string" ? { text: cell } : cell;
+    if (normalized.header) return normalized;
+    const label = props.columns[i];
+    return typeof label === "string" && label !== "" ? { ...normalized, label } : normalized;
+  })));
+  const caption = signal(props.caption ?? "");
+  const variant = signal(props.variant ?? "default");
+  const hasCaption = computed(() => caption() !== "");
+  return { columns, rows, caption, variant, hasCaption, raw };
+}
+function registerVariants38(registry3) {
+  registry3.registerVariant("table", "default");
+  registry3.registerVariant("table", "striped");
+}
+var template38 = new URL("./index.html", import.meta.url);
+var styles38 = new URL("./styles.css", import.meta.url);
+var table = { name: name38, root: root38, create: create38, registerVariants: registerVariants38, template: template38, styles: styles38 };
+
+// ../../packages/components/src/tabs/index.js
+var name39 = "tabs";
+var root39 = "section";
+function create39(props) {
+  if (!props.id) throw new TypeError("tabs: id is required \u2014 it bases the tab and panel ids");
+  if (!props.label) throw new TypeError("tabs: label is required");
+  if (!Array.isArray(props.tabs) || props.tabs.length === 0) {
+    throw new TypeError("tabs: tabs must be a non-empty array");
+  }
+  for (const tab of props.tabs) {
+    if (!tab.panelHtml) throw new TypeError("tabs: every tab needs panelHtml \u2014 render its panel");
+  }
+  const idBase = signal(props.id);
+  const label = signal(props.label);
+  const groupName = signal(props.name ?? "");
+  const tabs2 = signal(props.tabs);
+  const variant = signal(props.variant ?? "tabs");
+  const activation = signal(props.activation ?? "automatic");
+  const firstEnabled = props.tabs.find((tab) => !tab.disabled);
+  const selected = signal(
+    props.tabs.some((tab) => tab.value === props.value && !tab.disabled) ? props.value ?? "" : firstEnabled?.value ?? props.tabs[0].value
+  );
+  const focused = signal(selected());
+  function isSelected(tab) {
+    return tab.value === selected();
+  }
+  function selectedAttr(tab) {
+    return isSelected(tab) ? "true" : "false";
+  }
+  function tabIndex(tab) {
+    return tab.value === focused() && !tab.disabled ? 0 : -1;
+  }
+  function tabId(tab) {
+    return idBase() + "-tab-" + tab.value;
+  }
+  function panelId(tab) {
+    return idBase() + "-panel-" + tab.value;
+  }
+  function select2(tab) {
+    if (tab.disabled) return;
+    focused.set(tab.value);
+    if (tab.value === selected()) return;
+    selected.set(tab.value);
+    props.onSelect?.({
+      name: groupName(),
+      mode: "tabs",
+      values: [tab.value],
+      changed: tab.value,
+      selected: true
+    });
+  }
+  function onKeydown(event, tab) {
+    const enabled = tabs2().filter((t) => !t.disabled);
+    const index = enabled.findIndex((t) => t.value === tab.value);
+    if (index < 0) return;
+    let next;
+    switch (event.key) {
+      case "ArrowRight":
+        next = enabled[(index + 1) % enabled.length];
+        break;
+      case "ArrowLeft":
+        next = enabled[(index - 1 + enabled.length) % enabled.length];
+        break;
+      case "Home":
+        next = enabled[0];
+        break;
+      case "End":
+        next = enabled[enabled.length - 1];
+        break;
+      default:
         return;
-      }
-      if (card) {
-        e.preventDefault();
-        pick(card);
-      }
-      return;
     }
-    const move = KEY_MOVES[e.key];
-    if (!move || !picked || !target) return;
-    e.preventDefault();
-    const all = columns();
-    const column = all[all.findIndex((c) => c.dataset?.columnId === target.columnId) + move[0]];
-    if (!column) return;
-    const max = othersIn(column).length;
-    const position = Math.min(Math.max(target.position + move[1], 0), max);
-    target = { columnId: column.dataset.columnId, position };
-    showTarget();
-    say(`${columnTitle(column)}, position ${position + 1} of ${max + 1}. Press Enter to drop ${label()} here.`);
+    event.preventDefault();
+    focused.set(next.value);
+    if (activation() === "automatic") select2(next);
+    const doc = (event.currentTarget ?? event.target)?.ownerDocument;
+    doc?.getElementById(tabId(next))?.focus();
   }
-  return bindDrag(container, {
-    dragstart(e) {
-      const card = e.target.closest("[data-card-id]");
-      if (!card) return;
-      release();
-      e.dataTransfer.setData("text/plain", JSON.stringify({
-        type: "pipeline-card",
-        cardId: card.dataset.cardId
-      }));
-      e.dataTransfer.effectAllowed = "move";
-      card.setAttribute("data-dragging", "");
-    },
-    dragover(e) {
-      const cardArea = e.target.closest('[data-bn="pipeline-column-cards"]');
-      if (cardArea) {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = "move";
-        cardArea.setAttribute("data-drop-target", "");
-      }
-    },
-    dragleave(e) {
-      if (!e.target.closest("[data-card-id]")) {
-        clearDropTargets(container);
-      }
-    },
-    drop(e) {
-      e.preventDefault();
-      const cardArea = e.target.closest('[data-bn="pipeline-column-cards"]');
-      if (!cardArea) return;
-      cardArea.removeAttribute("data-drop-target");
-      const data = readDragData(e);
-      const targetColumn = cardArea.closest("[data-column-id]");
-      if (data && onCardMove && targetColumn) {
-        onCardMove({
-          cardId: data.cardId,
-          targetColumnId: targetColumn.dataset.columnId,
-          position: dropPosition(e, cardArea, data.cardId)
-        });
-      }
-    },
-    dragend() {
-      release();
-      clearDragState(container);
-    },
-    click,
-    keydown
-  });
+  return {
+    idBase,
+    label,
+    groupName,
+    tabs: tabs2,
+    variant,
+    activation,
+    selected,
+    focused,
+    isSelected,
+    selectedAttr,
+    tabIndex,
+    tabId,
+    panelId,
+    select: select2,
+    onKeydown,
+    raw
+  };
+}
+function registerVariants39(registry3) {
+  registry3.registerVariant("tabs", "tabs");
+}
+var template39 = new URL("./index.html", import.meta.url);
+var styles39 = new URL("./styles.css", import.meta.url);
+var tabs = { name: name39, root: root39, create: create39, registerVariants: registerVariants39, template: template39, styles: styles39 };
+
+// ../../packages/components/src/textarea/index.js
+var name40 = "textarea";
+var root40 = "textarea";
+function create40(props = {}) {
+  const value = signal(props.value ?? "");
+  const controlId = signal(props.id ?? "");
+  const rows = signal(props.rows ?? 4);
+  const placeholder = signal(props.placeholder ?? "");
+  const variant = signal(props.variant ?? "default");
+  const disabled = signal(props.disabled ?? false);
+  const isInvalid = signal(props.invalid ?? false);
+  function update(event) {
+    value.set(event.target.value);
+  }
+  return { value, controlId, rows, placeholder, variant, disabled, isInvalid, update };
+}
+function registerVariants40(registry3) {
+  registry3.registerVariant("textarea", "default");
+}
+var template40 = new URL("./index.html", import.meta.url);
+var styles40 = new URL("./styles.css", import.meta.url);
+var textarea = { name: name40, root: root40, create: create40, registerVariants: registerVariants40, template: template40, styles: styles40 };
+
+// ../../packages/components/src/theme-toggle/index.js
+var name41 = "theme-toggle";
+var root41 = "fieldset";
+var THEME_MODES = [
+  { value: "system", label: "System" },
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" }
+];
+function create41(props = {}) {
+  const legend = signal(props.legend ?? "Theme");
+  const groupName = signal(props.name ?? "theme");
+  const mode = signal(props.value ?? "system");
+  const options = signal(THEME_MODES);
+  const variant = signal(props.variant ?? "theme-toggle");
+  const inputVariant = signal("default");
+  const isChecked = (option) => option.value === mode();
+  const change = (option) => {
+    const previousMode = mode();
+    if (option.value === previousMode) return;
+    mode.set(option.value);
+    props.onThemeChange?.({ name: groupName(), mode: option.value, previousMode });
+  };
+  return { legend, groupName, mode, options, variant, inputVariant, isChecked, change };
+}
+function registerVariants41(registry3) {
+  registry3.registerVariant("theme-toggle", "theme-toggle");
+}
+var template41 = new URL("./index.html", import.meta.url);
+var styles41 = new URL("./styles.css", import.meta.url);
+var themeToggle = { name: name41, root: root41, create: create41, registerVariants: registerVariants41, template: template41, styles: styles41 };
+
+// ../../packages/components/src/ids.js
+var counter = 0;
+function nextId(prefix) {
+  counter += 1;
+  return `bn-${prefix}-${counter}`;
 }
 
-// ../../packages/components/src/site-chrome.js
-function initSiteHeader(root, options = {}) {
-  const { onToggle } = options;
-  const doc = root.ownerDocument ?? (typeof document === "undefined" ? null : document);
-  const toggleBtn = () => root.querySelector('[data-bn="nav-toggle"]');
-  const isOpen = () => root.hasAttribute("data-open");
-  function apply(open2) {
-    if (open2) root.setAttribute("data-open", "");
-    else root.removeAttribute("data-open");
-    const btn2 = toggleBtn();
-    if (btn2) btn2.setAttribute("aria-expanded", open2 ? "true" : "false");
-    if (onToggle) onToggle(open2);
+// ../../packages/components/src/toast/index.js
+var name42 = "toast";
+var root42 = "ol";
+var ICON_PATHS = {
+  success: '<circle cx="8" cy="8" r="6"/><path d="M5.5 8.2l1.8 1.8 3.4-3.8"/>',
+  info: '<circle cx="8" cy="8" r="6"/><path d="M8 7.4v3.4"/><path d="M8 5v.1"/>',
+  warning: '<path d="M8 2.9l5.3 9.1H2.7z"/><path d="M8 6.5v2.7"/><path d="M8 11v.1"/>',
+  danger: '<circle cx="8" cy="8" r="6"/><path d="M5.8 5.8l4.4 4.4"/><path d="M10.2 5.8l-4.4 4.4"/>'
+};
+function create42(props) {
+  const items = signal(props.items ?? []);
+  const live = signal(props.live ?? "polite");
+  const variant = signal(props.variant ?? "default");
+  const iconFor = (item) => {
+    const inner = ICON_PATHS[item.tone ?? "info"] ?? ICON_PATHS.info;
+    return '<svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' + inner + "</svg>";
+  };
+  return { items, live, variant, iconFor, raw };
+}
+function createToaster(options = {}) {
+  const defaultDuration = options.duration ?? 5e3;
+  const items = signal(
+    /** @type {ToastItem[]} */
+    []
+  );
+  const dismiss = (id) => {
+    items.set(items().filter((item) => (
+      /** @type {ToastItem & { id?: string }} */
+      item.id !== id
+    )));
+  };
+  const push = (item) => {
+    const id = item.id ?? nextId("toast");
+    items.set([...items(), { ...item, id, dismissHtml: item.dismissHtml ?? "" }]);
+    const duration = item.duration ?? defaultDuration;
+    if (duration > 0 && typeof setTimeout === "function") {
+      setTimeout(() => dismiss(id), duration);
+    }
+    return id;
+  };
+  return { items, push, dismiss };
+}
+function registerVariants42(registry3) {
+  registry3.registerVariant("toast", "default");
+}
+var template42 = new URL("./index.html", import.meta.url);
+var styles42 = new URL("./styles.css", import.meta.url);
+var toast = { name: name42, root: root42, create: create42, registerVariants: registerVariants42, template: template42, styles: styles42 };
+
+// ../../packages/components/src/toggle/index.js
+var name43 = "toggle";
+var root43 = "input";
+function create43(props) {
+  if (!props.label) throw new TypeError("toggle: label is required");
+  const label = signal(props.label);
+  const variant = signal("switch");
+  const checked = signal(props.checked ?? false);
+  const disabled = signal(props.disabled ?? false);
+  function toggle2(event) {
+    checked.set(event.target.checked);
+    props.onToggle?.(event.target.checked);
   }
-  function open() {
-    if (!isOpen()) apply(true);
+  return { label, variant, checked, disabled, toggle: toggle2 };
+}
+function registerVariants43(registry3) {
+  registry3.registerVariant("toggle", "switch");
+}
+var template43 = new URL("./index.html", import.meta.url);
+var styles43 = new URL("./styles.css", import.meta.url);
+var toggle = { name: name43, root: root43, create: create43, registerVariants: registerVariants43, template: template43, styles: styles43 };
+
+// ../../packages/components/src/toolbar/index.js
+var name44 = "toolbar";
+var root44 = "section";
+function create44(props) {
+  if (!props.label) throw new TypeError("toolbar: label is required");
+  if (!props.actionsHtml) throw new TypeError("toolbar: actionsHtml is required \u2014 render the primary actions into it");
+  const label = signal(props.label);
+  const actionsHtml = signal(props.actionsHtml);
+  const overflowHtml = signal(props.overflowHtml ?? "");
+  const overflowLabel = signal(props.overflowLabel ?? "More");
+  const variant = signal(props.variant ?? "toolbar");
+  const overflowOpen = signal(props.overflowOpen ?? false);
+  const hasOverflow = computed(() => overflowHtml() !== "");
+  function expandedAttr() {
+    return overflowOpen() ? "true" : "false";
   }
-  function close() {
-    if (isOpen()) apply(false);
+  function toggleOverflow() {
+    overflowOpen.set(!overflowOpen());
+    props.onOverflow?.({ open: overflowOpen() });
   }
-  function toggle() {
-    apply(!isOpen());
+  return { label, actionsHtml, overflowHtml, overflowLabel, variant, overflowOpen, hasOverflow, expandedAttr, toggleOverflow, raw };
+}
+function registerVariants44(registry3) {
+  registry3.registerVariant("toolbar", "toolbar");
+}
+var template44 = new URL("./index.html", import.meta.url);
+var styles44 = new URL("./styles.css", import.meta.url);
+var toolbar = { name: name44, root: root44, create: create44, registerVariants: registerVariants44, template: template44, styles: styles44 };
+
+// ../../packages/components/src/tooltip/index.js
+var name45 = "tooltip";
+var root45 = "aside";
+function create45(props) {
+  if (!props.text) throw new TypeError("tooltip: text is required");
+  if (!props.invokerHtml) throw new TypeError("tooltip: invokerHtml is required (render the invoker)");
+  const text = signal(props.text);
+  const invokerHtml = signal(props.invokerHtml);
+  const variant = signal(props.variant ?? "default");
+  return { text, invokerHtml, variant, raw };
+}
+function registerVariants45(registry3) {
+  registry3.registerVariant("tooltip", "default");
+}
+var template45 = new URL("./index.html", import.meta.url);
+var styles45 = new URL("./styles.css", import.meta.url);
+var tooltip = { name: name45, root: root45, create: create45, registerVariants: registerVariants45, template: template45, styles: styles45 };
+
+// ../../packages/components/src/tree/index.js
+var name46 = "tree";
+var root46 = "ul";
+function create46(props) {
+  if (!Array.isArray(props.items)) throw new TypeError("tree: items is required");
+  const items = signal(props.items);
+  const variant = signal(props.variant ?? "tree");
+  const role = computed(() => variant());
+  const idOf = (item) => item.id ?? item.label;
+  const selectedId = signal(props.selectedId ?? null);
+  const focusedId = signal(props.selectedId ?? (props.items[0] ? idOf(props.items[0]) : null));
+  const expandedState = (item) => item.expanded ? "true" : "false";
+  const selectedAttr = (item) => selectedId() === idOf(item) ? "true" : "false";
+  const tabIndex = (item) => focusedId() === idOf(item) ? 0 : -1;
+  const isExpanded = (item) => Boolean(item.childrenHtml && item.expanded);
+  function setExpanded(item, expanded) {
+    if (!item.childrenHtml || Boolean(item.expanded) === expanded) return false;
+    items.set(items().map((entry) => idOf(entry) === idOf(item) ? { ...entry, expanded } : entry));
+    props.onToggle?.(idOf(item), expanded);
+    return true;
   }
-  function onToggleClick() {
-    toggle();
+  function toggle2(item) {
+    setExpanded(item, !item.expanded);
   }
-  function onDocumentClick(event) {
-    if (!isOpen()) return;
+  function select2(item) {
+    selectedId.set(idOf(item));
+    focusedId.set(idOf(item));
+    props.onSelect?.(idOf(item));
+  }
+  const expand = (id) => {
+    const item = items().find((entry) => idOf(entry) === id);
+    if (!item || !item.childrenHtml || item.expanded) return false;
+    items.set(items().map((entry) => idOf(entry) === id ? { ...entry, expanded: true } : entry));
+    return true;
+  };
+  const collapse = (id) => {
+    const item = items().find((entry) => idOf(entry) === id);
+    if (!item || !item.childrenHtml || !item.expanded) return false;
+    items.set(items().map((entry) => idOf(entry) === id ? { ...entry, expanded: false } : entry));
+    return true;
+  };
+  const selectById = (id) => {
+    const item = items().find((entry) => idOf(entry) === id);
+    if (!item) return false;
+    selectedId.set(id);
+    focusedId.set(id);
+    return true;
+  };
+  const selected = () => selectedId();
+  function ownItem(event) {
     const target = event.target;
-    const inside = target === root || typeof root.contains === "function" && root.contains(target);
-    if (!inside) close();
+    const item = target?.closest?.('[role="treeitem"]');
+    if (!item || item.parentElement !== (event.currentTarget ?? null)) return null;
+    return item;
   }
-  function onDocumentKeydown(event) {
-    if (!isOpen() || event.key !== "Escape") return;
-    close();
-    const btn2 = toggleBtn();
-    if (btn2 && typeof btn2.focus === "function") btn2.focus();
+  function modelFromEvent(event) {
+    const item = ownItem(event);
+    if (!item) return null;
+    const index = [...item.parentElement.children].indexOf(item);
+    return items()[index] ?? null;
   }
-  const btn = toggleBtn();
-  if (btn) btn.addEventListener("click", onToggleClick);
-  if (doc) {
-    doc.addEventListener("click", onDocumentClick);
-    doc.addEventListener("keydown", onDocumentKeydown);
+  function onFocusin(event) {
+    const model = modelFromEvent(event);
+    if (model) focusedId.set(idOf(model));
+  }
+  function onClick(event) {
+    if (event.target?.closest?.("button")) return;
+    const model = modelFromEvent(event);
+    if (model) select2(model);
+  }
+  function onKeydown(event) {
+    const item = ownItem(event);
+    if (!item) return;
+    const list = items();
+    const index = [...item.parentElement.children].indexOf(item);
+    const model = list[index];
+    if (!model) return;
+    let focusEl = null;
+    switch (event.key) {
+      case "ArrowDown":
+        focusEl = item.nextElementSibling;
+        break;
+      case "ArrowUp":
+        focusEl = item.previousElementSibling;
+        break;
+      case "Home":
+        focusEl = item.parentElement.firstElementChild;
+        break;
+      case "End":
+        focusEl = item.parentElement.lastElementChild;
+        break;
+      case "ArrowRight":
+        if (model.childrenHtml && !model.expanded) {
+          toggle2(model);
+          return;
+        }
+        if (isExpanded(model)) focusEl = item.querySelector('[role="group"] [role="treeitem"]');
+        break;
+      case "ArrowLeft":
+        if (isExpanded(model)) {
+          toggle2(model);
+          return;
+        }
+        focusEl = item.closest('[role="group"]')?.parentElement?.closest?.('[role="treeitem"]') ?? null;
+        break;
+      case "Enter":
+      case " ":
+        if (event.target?.closest?.("button")) return;
+        event.preventDefault();
+        select2(model);
+        return;
+      default:
+        return;
+    }
+    if (focusEl) {
+      event.preventDefault();
+      focusEl.focus();
+    }
   }
   return {
-    open,
-    close,
-    toggle,
-    destroy() {
-      const current = toggleBtn();
-      if (current) current.removeEventListener("click", onToggleClick);
-      if (doc) {
-        doc.removeEventListener("click", onDocumentClick);
-        doc.removeEventListener("keydown", onDocumentKeydown);
-      }
-    }
+    items,
+    variant,
+    role,
+    expandedState,
+    selectedAttr,
+    tabIndex,
+    isExpanded,
+    toggle: toggle2,
+    select: select2,
+    expand,
+    collapse,
+    selectById,
+    selected,
+    onFocusin,
+    onClick,
+    onKeydown,
+    raw
   };
 }
-function initAppNav(root, options = {}) {
-  const { onToggle } = options;
-  const doc = root.ownerDocument ?? (typeof document === "undefined" ? null : document);
-  const view = doc?.defaultView ?? null;
-  const vv = view?.visualViewport ?? null;
-  let syncViewportInset = null;
-  let onFocusIn = null;
-  let onFocusOut = null;
-  if (vv && typeof vv.addEventListener === "function" && root.style && typeof root.style.setProperty === "function") {
-    let heldInset = 0;
-    const textEntryFocused = () => {
-      const el = doc?.activeElement;
-      if (!el || el === doc?.body) return false;
-      if (el.isContentEditable) return true;
-      if (el.tagName === "TEXTAREA") return true;
-      if (el.tagName !== "INPUT") return false;
-      const type = (el.getAttribute?.("type") ?? "text").toLowerCase();
-      return ![
-        "checkbox",
-        "radio",
-        "button",
-        "submit",
-        "reset",
-        "file",
-        "hidden",
-        "range",
-        "color",
-        "image"
-      ].includes(type);
-    };
-    syncViewportInset = () => {
-      const measured = vv.scale > 1.01 ? 0 : Math.max(0, Math.round(view.innerHeight - vv.height - vv.offsetTop));
-      if (measured === 0) heldInset = 0;
-      else if (textEntryFocused()) heldInset = Math.max(heldInset, measured);
-      else heldInset = measured;
-      root.style.setProperty("--size-app-nav-visual-inset", `${heldInset}px`);
-    };
-    vv.addEventListener("resize", syncViewportInset);
-    vv.addEventListener("scroll", syncViewportInset);
-    onFocusIn = () => {
-      syncViewportInset();
-      if (typeof view.requestAnimationFrame === "function") {
-        view.requestAnimationFrame(syncViewportInset);
-      }
-      if (typeof view.setTimeout === "function") view.setTimeout(syncViewportInset, 350);
-    };
-    onFocusOut = () => {
-      if (typeof view.setTimeout === "function") view.setTimeout(syncViewportInset, 50);
-    };
-    if (typeof doc?.addEventListener === "function") {
-      doc.addEventListener("focusin", onFocusIn);
-      doc.addEventListener("focusout", onFocusOut);
-    }
-    if (typeof view.addEventListener === "function") {
-      view.addEventListener("resize", syncViewportInset);
-    }
-    syncViewportInset();
-  }
-  const moreBtn = () => root.querySelector('[data-bn="app-nav-more"]');
-  const sheet = () => root.querySelector('[data-bn="app-nav-sheet"]');
-  const isOpen = () => root.hasAttribute("data-open");
-  function apply(open2) {
-    if (open2) root.setAttribute("data-open", "");
-    else root.removeAttribute("data-open");
-    const btn2 = moreBtn();
-    if (btn2) btn2.setAttribute("aria-expanded", open2 ? "true" : "false");
-    const panel = sheet();
-    if (panel) {
-      if (open2) panel.removeAttribute("hidden");
-      else panel.setAttribute("hidden", "");
-    }
-    if (onToggle) onToggle(open2);
-  }
-  function open() {
-    if (!isOpen()) apply(true);
-  }
-  function close() {
-    if (isOpen()) apply(false);
-  }
-  function toggle() {
-    apply(!isOpen());
-  }
-  function onMoreClick() {
-    toggle();
-  }
-  function onDocumentClick(event) {
-    if (!isOpen()) return;
-    const target = event.target;
-    const inside = target === root || typeof root.contains === "function" && root.contains(target);
-    if (!inside) close();
-  }
-  function onDocumentKeydown(event) {
-    if (!isOpen() || event.key !== "Escape") return;
-    close();
-    const btn2 = moreBtn();
-    if (btn2 && typeof btn2.focus === "function") btn2.focus();
-  }
-  const btn = moreBtn();
-  if (btn) btn.addEventListener("click", onMoreClick);
-  if (doc) {
-    doc.addEventListener("click", onDocumentClick);
-    doc.addEventListener("keydown", onDocumentKeydown);
+function registerVariants46(registry3) {
+  registry3.registerVariant("tree", "tree");
+  registry3.registerVariant("tree", "treegrid");
+}
+var template46 = new URL("./index.html", import.meta.url);
+var styles46 = new URL("./styles.css", import.meta.url);
+var tree = { name: name46, root: root46, create: create46, registerVariants: registerVariants46, template: template46, styles: styles46 };
+
+// ../../packages/components/src/virtualizer/index.js
+var name47 = "virtualizer";
+var root47 = "ol";
+function create47(props) {
+  if (!props.id) throw new TypeError("virtualizer: id is required");
+  if (typeof props.total !== "number") throw new TypeError("virtualizer: total is required");
+  const id = signal(props.id);
+  const total = signal(props.total);
+  const scrollTop = signal(props.scrollTop ?? 0);
+  const rowHeight = props.rowHeight ?? 44;
+  const viewportRows = props.viewportRows ?? 8;
+  const overscan = props.overscan ?? 2;
+  const variant = signal(props.variant ?? "virtualizer");
+  const startIndex = computed(() => Math.max(0, Math.floor(scrollTop() / rowHeight) - overscan));
+  const endIndex = computed(() => Math.min(total(), startIndex() + viewportRows + overscan * 2));
+  const windowIndices = computed(() => {
+    const indices = [];
+    for (let i = startIndex(); i < endIndex(); i += 1) indices.push(i);
+    return indices;
+  });
+  const spacerStartCount = computed(() => startIndex());
+  const spacerEndCount = computed(() => total() - endIndex());
+  const itemHtml = (index) => props.itemHtmlFor?.(index) ?? "";
+  const labelFor = (index) => props.labelFor?.(index) ?? "";
+  const hasItemHtml = computed(() => typeof props.itemHtmlFor === "function");
+  const setScrollTop = (value) => scrollTop.set(Math.max(0, value || 0));
+  function onScroll(event) {
+    const scroller = event.currentTarget ?? event.target;
+    if (scroller && typeof scroller.scrollTop === "number") setScrollTop(scroller.scrollTop);
   }
   return {
-    open,
-    close,
-    toggle,
-    destroy() {
-      const current = moreBtn();
-      if (current) current.removeEventListener("click", onMoreClick);
-      if (doc) {
-        doc.removeEventListener("click", onDocumentClick);
-        doc.removeEventListener("keydown", onDocumentKeydown);
-      }
-      if (vv && syncViewportInset && typeof vv.removeEventListener === "function") {
-        vv.removeEventListener("resize", syncViewportInset);
-        vv.removeEventListener("scroll", syncViewportInset);
-        if (typeof root.style.removeProperty === "function") {
-          root.style.removeProperty("--size-app-nav-visual-inset");
-        }
-      }
-      if (syncViewportInset) {
-        if (doc && typeof doc.removeEventListener === "function") {
-          if (onFocusIn) doc.removeEventListener("focusin", onFocusIn);
-          if (onFocusOut) doc.removeEventListener("focusout", onFocusOut);
-        }
-        if (view && typeof view.removeEventListener === "function") {
-          view.removeEventListener("resize", syncViewportInset);
-        }
-      }
-    }
+    id,
+    total,
+    scrollTop,
+    variant,
+    startIndex,
+    endIndex,
+    windowIndices,
+    spacerStartCount,
+    spacerEndCount,
+    itemHtml,
+    labelFor,
+    hasItemHtml,
+    setScrollTop,
+    onScroll,
+    raw
   };
 }
+function registerVariants47(registry3) {
+  registry3.registerVariant("virtualizer", "virtualizer");
+}
+var template47 = new URL("./index.html", import.meta.url);
+var styles47 = new URL("./styles.css", import.meta.url);
+var virtualizer = { name: name47, root: root47, create: create47, registerVariants: registerVariants47, template: template47, styles: styles47 };
+
+// ../../packages/components/src/registry.js
+var LITERAL = /[0-9#]|rgb\(|hsl\(|url\(/;
+function validateTemplate(html) {
+  if (/<\/?(div|span)\b/i.test(html)) {
+    throw new TypeError("template: div and span are not semantic elements");
+  }
+  if (/\sclass\s*=/i.test(html)) {
+    throw new TypeError("template: class attributes are not used; the element is the selector");
+  }
+  if (/\sdata-/i.test(html)) {
+    throw new TypeError("template: data- attributes are not used; state lives in the view model");
+  }
+  const text = html.replace(/\{\{[\s\S]*?\}\}/g, "").replace(/<[^>]+>/g, "").trim();
+  if (text !== "") {
+    throw new TypeError(`template: literal text "${text.slice(0, 24)}" \u2014 all data is bound to the view model`);
+  }
+}
+function validateCss(css) {
+  if (/\[data-/i.test(css)) {
+    throw new TypeError("styles: data- selectors are not used");
+  }
+  if (/(^|[\s,{>+~])\.[a-z]/i.test(css)) {
+    throw new TypeError("styles: class selectors are not used; the element is the selector");
+  }
+  const withoutCustomProps = css.replace(/--[a-z0-9-_]+\s*:\s*[^;{}]+;/g, "");
+  const declarations = withoutCustomProps.matchAll(/([a-z-]+)\s*:\s*([^;{}]+);/g);
+  for (const [, property, rawValue] of declarations) {
+    const value = rawValue.trim();
+    if (!/var\(--/.test(value)) {
+      throw new TypeError(`styles: "${property}: ${value}" is not token-only \u2014 every value comes from a global custom property`);
+    }
+    const rest = value.replace(/var\(--[a-z0-9-_]+\)/g, "").replace(/[,\s]+/g, " ").trim();
+    const restTokens = rest === "" ? [] : rest.split(" ");
+    const bad = restTokens.find((token) => !/^[a-z-]+$/.test(token));
+    if (LITERAL.test(rest) || bad) {
+      throw new TypeError(`styles: "${property}: ${value}" is not token-only \u2014 every value comes from a global custom property`);
+    }
+  }
+}
+function createRegistry() {
+  const components = /* @__PURE__ */ new Map();
+  const variants = /* @__PURE__ */ new Map();
+  function registerComponent(def) {
+    if (!def?.name || !def?.root || typeof def?.create !== "function") {
+      throw new TypeError("registerComponent: a component needs a name, a root element, and a create() view-model factory");
+    }
+    if (def.root === "div" || def.root === "span") {
+      throw new TypeError(`registerComponent: "${def.root}" is not a semantic root element`);
+    }
+    if (typeof def.template === "string") validateTemplate(def.template);
+    if (typeof def.styles === "string") validateCss(def.styles);
+    const existing = components.get(def.name);
+    if (existing && existing !== def) {
+      throw new TypeError(`registerComponent: "${def.name}" is already registered with a different definition`);
+    }
+    components.set(def.name, def);
+    if (!variants.has(def.name)) variants.set(def.name, /* @__PURE__ */ new Set());
+    return def;
+  }
+  function registerVariant(component, name48) {
+    if (!components.has(component)) {
+      throw new TypeError(`registerVariant: component "${component}" is not registered \u2014 register it before its variants`);
+    }
+    const root48 = components.get(component).root;
+    for (const [otherName, otherDef] of components) {
+      if (otherName !== component && otherDef.root === root48 && variants.get(otherName)?.has(name48)) {
+        throw new TypeError(`registerVariant: "${root48}[variant=\\"${name48}\\"]" is already registered by "${otherName}" \u2014 the registration tag must identify one component`);
+      }
+    }
+    variants.get(component).add(name48);
+  }
+  function resolveVariant(component, name48) {
+    const forComponent = variants.get(component);
+    if (!forComponent?.has(name48)) {
+      const known = forComponent ? [...forComponent].join(", ") : "none";
+      throw new TypeError(`resolveVariant: "${component}/${name48}" is not registered (registered: ${known})`);
+    }
+    return name48;
+  }
+  function listVariants(component) {
+    return [...variants.get(component) ?? []];
+  }
+  function listComponents() {
+    return [...components.keys()];
+  }
+  function getComponent(name48) {
+    const def = components.get(name48);
+    if (!def) {
+      throw new TypeError(`registry: component "${name48}" is not registered (registered: ${listComponents().join(", ") || "none"})`);
+    }
+    return def;
+  }
+  return { registerComponent, registerVariant, resolveVariant, listVariants, listComponents, getComponent };
+}
+var registry2 = createRegistry();
 export {
+  accordion,
+  alert,
+  appBar,
+  appShell,
+  avatar,
+  badge,
   batch,
+  breadcrumb,
   browserFeatures,
+  button,
+  calendar,
+  card,
+  checkbox,
+  choiceGroup,
+  codeBlock,
+  combobox,
+  commandPalette,
   computed,
   createErrorBoundary,
   createLazyHydrator,
   createPluginRegistry,
+  createRegistry,
+  createToaster,
   createVitalsReporter,
+  datagrid,
   debugAssert,
   debugDeps,
   debugEffect,
@@ -3550,49 +4377,68 @@ export {
   debugTime,
   definePlugin,
   detectBrowserFeatures,
+  dialog,
   disableDebug,
   disableDevtools,
+  drawer,
+  dropdownMenu,
   effect,
   emitDiagnostic,
+  emptyState,
   enableDebug,
   enableDevtools,
+  field,
+  form,
   getDebugStats,
   getDirective,
+  hero,
   hydrate,
   hydrateOnIdle,
   hydrateOnInteraction,
   hydrateOnMedia,
-  initAppNav,
-  initCalendarDragDrop,
-  initCommandPalette,
-  initDataGrid,
-  initDrawer,
-  initDropdownMenu,
-  initMultiselect,
-  initPipelineDragDrop,
-  initSiteHeader,
-  initTabs,
-  initTree,
-  initVirtualList,
+  input,
   isDebugEnabled,
   isDevtoolsEnabled,
   lazyHydrate,
   listDirectives,
+  listGroup,
+  multiselect,
   observeCLS,
   observeFCP,
   observeFID,
   observeINP,
   observeLCP,
   observeTTFB,
+  pagination,
+  pipeline,
+  progress,
+  radio,
+  rating,
   raw,
   recordHydration,
   registerDirective,
   registerPlugin,
   renderWithBoundary,
   reportHydrationMismatch,
+  searchField,
+  segmentedControl,
+  select,
+  sidebar,
   signal,
+  siteFooter,
+  stepper,
   supportsFeature,
+  table,
+  tabs,
+  textarea,
+  themeToggle,
+  toast,
+  toggle,
+  toolbar,
+  tooltip,
   trackEffect,
   trackSignal,
-  unregisterDirective
+  tree,
+  unregisterDirective,
+  virtualizer
 };

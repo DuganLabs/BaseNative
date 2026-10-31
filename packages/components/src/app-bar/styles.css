@@ -19,7 +19,12 @@ nav[variant="app-bar"] {
     padding: var(--spacing-app-bar-list-padding);
 
     & > li {
+      /* A zero basis makes flex-grow distribute the bar into equal
+         cells, and a zero min-inline-size lifts the min-content floor
+         that would otherwise let a long label widen its own cell. */
       flex-grow: var(--flex-grow-app-bar-item);
+      flex-basis: var(--flex-basis-app-bar-item);
+      min-inline-size: var(--size-app-bar-item-min-inline);
 
       & > a, & > button {
         display: var(--display-app-bar-tab);

@@ -1,19 +1,24 @@
 <template>
-  <ul :variant="variant()" :role="role()">
+  <ul :variant="variant()" :role="role()" @keydown="onKeydown($event)" @focusin="onFocusin($event)" @click="onClick($event)">
     <template @for="item of items()">
       <template @if="item.childrenHtml">
-        <li role="treeitem" :aria-expanded="expandedState(item)">
+        <li role="treeitem" :aria-expanded="expandedState(item)" :aria-selected="selectedAttr(item)" :tabindex="tabIndex(item)">
           <template @if="item.toggleHtml">
             {{ raw(item.toggleHtml) }}
           </template>
           <template @else>
             {{ item.label }}
           </template>
-          <ul role="group">{{ raw(item.childrenHtml) }}</ul>
+          <template @if="item.expanded">
+            <ul role="group">{{ raw(item.childrenHtml) }}</ul>
+          </template>
+          <template @else>
+            <ul role="group" hidden>{{ raw(item.childrenHtml) }}</ul>
+          </template>
         </li>
       </template>
       <template @else>
-        <li role="treeitem">{{ item.label }}</li>
+        <li role="treeitem" :aria-selected="selectedAttr(item)" :tabindex="tabIndex(item)">{{ item.label }}</li>
       </template>
     </template>
   </ul>

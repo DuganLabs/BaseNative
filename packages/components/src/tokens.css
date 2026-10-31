@@ -194,8 +194,10 @@
   --flex-direction-column: column;
   --flex-wrap-wrap: wrap;
   --flex-grow: 1;
+  --flex-basis-zero: 0;
   --flex-none: none;
   --white-space-nowrap: nowrap;
+  --white-space-normal: normal;
   --text-align-start: start;
   --text-align-center: center;
   --text-align-end: end;
@@ -329,6 +331,8 @@
   --display-app-bar-tab: var(--display-flex);
   --flex-direction-app-bar-tab: var(--flex-direction-column);
   --flex-grow-app-bar-item: var(--flex-grow);
+  --flex-basis-app-bar-item: var(--flex-basis-zero);
+  --size-app-bar-item-min-inline: var(--spacing-0);
   --font-app-bar-menu-link-leading: var(--font-subheadline-leading);
   --font-app-bar-menu-link-size: var(--font-subheadline-size);
   --font-app-bar-menu-link-tracking: var(--font-subheadline-tracking);
@@ -1306,6 +1310,7 @@
   --display-table-cell-restack: var(--display-block);
   --overflow-wrap-table-cell: var(--overflow-wrap-anywhere);
   --overflow-wrap-table-cell-restack: var(--overflow-wrap-anywhere);
+  --white-space-table-cell-restack: var(--white-space-normal);
   --size-border-table-cell-block-end-restack: var(--size-border-none);
   --spacing-table-row-padding-block-restack: var(--spacing-1);
   --spacing-table-cell-padding-block-restack: var(--spacing-0);

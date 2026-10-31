@@ -236,3 +236,66 @@ const html = render(
 );
 res.send(html);
 ```
+
+## @basenative/components 2.x → 3.0.0
+
+### Breaking Changes
+
+- The legacy string renderers are removed: every `render*` function
+  (buttons, tables, dialogs, trees, calendars, pipelines, toasts and
+  the rest of the flat module files) is gone. Each component has
+  exactly one implementation — its Holy Trinity directory
+  (`index.html` template, `styles.css`, `index.js` view model).
+- The client initialisers are removed: every `init*` function
+  (`initTabs`, `initDataGrid`, `initTree`, `initAppNav`,
+  `initCalendarDragDrop`, `initPipelineDragDrop`, …). The behavior
+  they carried — APG keyboard patterns, sorting, selection,
+  expand/collapse, windowing — lives in each component's `create()`
+  view model now.
+- `renderSiteHeader`, `renderSiteNav`, `renderAppShell` and
+  `renderSiteFooter` (site-chrome) and the marketing renderers
+  (`renderHero`, `renderPricingCards`, `renderFeatureCard`,
+  `renderStatCard`, `renderFaq`, …) are removed. Their successors
+  are the `app-bar`, `app-shell`, `sidebar`, `site-footer`, `hero`
+  and `card` components.
+- `renderTreeGrid` has no successor component: use `tree` for
+  hierarchies and `datagrid` for grids.
+- The `showToast` / `dismissToast` module functions are removed;
+  `createToaster()` is the toast API.
+- The root export no longer carries any of the above. It exports
+  the registry and loader, every component aggregate, the
+  calendar-state helpers, and the retained utilities
+  `renderSkeleton` and `renderLayoutGrid`.
+
+### Migration Steps
+
+1. Replace renderer calls with the loader:
+
+   ```js
+   import { loadRegistry, renderComponent } from '@basenative/components';
+   import { render } from '@basenative/server';
+
+   const registry = await loadRegistry();
+   const { html } = renderComponent(registry, render, 'table', { columns, rows });
+   ```
+
+   Or import a component directly from its subpath —
+   `@basenative/components/table`, `@basenative/components/tabs`,
+   and likewise for all 47 components — plus
+   `@basenative/components/registry`, `/loader` and `/ids`.
+
+2. Replace initialiser calls with the component's view model.
+   Create it from the same props, pass it to `hydrate` (or use it
+   directly in client code), and drive it through its methods:
+   `tabs.select(tab)`, `datagrid.sortBy(column)`,
+   `tree.expand(id)`, `calendar.moveEvent(id, target)`,
+   `pipeline.moveCard(fromColumn, fromIndex, toColumn, toIndex)`.
+   The drag-and-drop and keyboard gestures that framed the calendar
+   and pipeline initialisers are composed by the host around
+   `moveEvent` / `moveCard`, which own the move, the report
+   (`onDrop` / `onCardMove`) and the live-region announcement.
+
+3. Replace `showToast(...)` with a toaster:
+   `const toaster = createToaster(); const id = toaster.push({ message });`
+   — ids are deterministic (`bn-toast-<n>`) and `dismiss(id)`
+   removes by id.

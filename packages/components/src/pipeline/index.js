@@ -16,6 +16,7 @@ export const root = 'ol';
  *
  * @typedef {object} PipelineProps
  * @property {PipelineColumn[]} columns
+ * @property {(move: { fromColumn: number, fromIndex: number, toColumn: number, toIndex: number }) => void} [onCardMove]
  * @property {string} [variant] A registered variant name.
  */
 
@@ -26,7 +27,29 @@ export function create(props) {
   const columns = signal(props.columns);
   const variant = signal(props.variant ?? 'pipeline');
 
-  return { columns, variant, raw };
+  /**
+   * Move a card — the model half of the legacy pipeline drag-and-drop
+   * and keyboard select-then-place paths. `toIndex` is the index the
+   * card occupies among the target column's cards after the move
+   * (excluding itself), matching the legacy onCardMove convention;
+   * the move reports through onCardMove. Returns whether it moved.
+   * @param {number} fromColumn @param {number} fromIndex
+   * @param {number} toColumn @param {number} toIndex
+   */
+  function moveCard(fromColumn, fromIndex, toColumn, toIndex) {
+    const cols = columns().map((column) => ({ ...column, cardsHtml: [...column.cardsHtml] }));
+    const source = cols[fromColumn];
+    const target = cols[toColumn];
+    if (!source || !target || fromIndex < 0 || fromIndex >= source.cardsHtml.length) return false;
+    const [card] = source.cardsHtml.splice(fromIndex, 1);
+    const clamped = Math.max(0, Math.min(toIndex, target.cardsHtml.length));
+    target.cardsHtml.splice(clamped, 0, card);
+    columns.set(cols);
+    props.onCardMove?.({ fromColumn, fromIndex, toColumn, toIndex: clamped });
+    return true;
+  }
+
+  return { columns, variant, moveCard, raw };
 }
 
 /** @param {import('../registry.js').Registry} registry */

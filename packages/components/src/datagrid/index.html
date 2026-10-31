@@ -1,31 +1,31 @@
 <template>
-  <table :variant="variant()">
+  <table :variant="variant()" @keydown="onKeydown($event)">
     <template @if="hasCaption()">
       <caption>{{ caption() }}</caption>
     </template>
     <thead>
       <tr>
         <template @if="selectable()">
-          <th scope="col">{{ raw(selectAllHtml()) }}</th>
+          <th scope="col" :tabindex="selectAllTabIndex()">{{ raw(selectAllHtml()) }}</th>
         </template>
-        <template @for="column of columns()">
+        <template @for="column of viewColumns()">
           <template @if="column.sort">
-            <th scope="col" :aria-sort="column.sort">{{ raw(column.sortHtml) }}<svg aria-hidden="true" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></th>
+            <th scope="col" :aria-sort="column.sort" :tabindex="headerTabIndex(column)">{{ raw(column.sortHtml) }}<svg aria-hidden="true" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></th>
           </template>
           <template @else>
-            <th scope="col">{{ column.label }}</th>
+            <th scope="col" :tabindex="headerTabIndex(column)">{{ column.label }}</th>
           </template>
         </template>
       </tr>
     </thead>
     <tbody>
-      <template @for="row of rows()">
-        <tr>
+      <template @for="row of viewRows()">
+        <tr :aria-selected="isRowSelected(row)">
           <template @if="selectable()">
-            <td>{{ raw(row.selectHtml) }}</td>
+            <td :tabindex="selectionTabIndex(row)">{{ raw(row.selectHtml) }}</td>
           </template>
           <template @for="cell of row.cells">
-            <td>{{ raw(cell) }}</td>
+            <td :tabindex="cellTabIndex(cell)">{{ raw(cell.html) }}</td>
           </template>
         </tr>
       </template>
