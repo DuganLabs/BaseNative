@@ -1,6 +1,6 @@
 {
   "name": "@basenative/integrations",
-  "version": "2.4.0",
+  "version": "3.0.0",
   "description": "Headless third-party integration wrappers for BaseNative apps",
   "type": "module",
   "exports": {
