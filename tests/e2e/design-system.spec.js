@@ -232,6 +232,45 @@ async function themeSurfaces(page, theme) {
 // — surfaces inside surfaces by design — so the stack gate does not
 // run there; its screenshot and stage gates carry it.
 const CARD_ROUTES = new Set(['/compare', '/components']);
+// Routes whose catalog tables must key every restacked cell (below);
+// the /components/table specimen carries the same contract in the
+// adaptive spec, which runs at exactly 390px.
+const TABLE_KEY_ROUTES = new Set(['/compare', '/ai']);
+
+// When a catalog table restacks at phone width, every data cell
+// carries its column heading as a visible key line — a restacked
+// value with no key is a number without a framework. Returns problem
+// strings; [] is the pass.
+async function tableKeys(page) {
+  return page.evaluate(() => {
+    const problems = [];
+    document
+      .querySelectorAll('table[variant="default"], table[variant="striped"]')
+      .forEach((table, ti) => {
+        const heads = [...table.querySelectorAll('thead th')].map((th) =>
+          th.textContent.trim(),
+        );
+        if (heads.length === 0) return;
+        table.querySelectorAll('tbody tr').forEach((row, ri) => {
+          [...row.children].forEach((cell, ci) => {
+            if (cell.tagName !== 'TD') return;
+            const key = cell.querySelector(':scope > b');
+            if (!key) {
+              problems.push(`table ${ti} row ${ri} cell ${ci}: no key`);
+              return;
+            }
+            if (key.textContent.trim() !== heads[ci])
+              problems.push(
+                `table ${ti} row ${ri} cell ${ci}: key "${key.textContent.trim()}" != column "${heads[ci]}"`,
+              );
+            if (getComputedStyle(key).display === 'none')
+              problems.push(`table ${ti} row ${ri} cell ${ci}: key hidden while restacked`);
+          });
+        });
+      });
+    return problems;
+  });
+}
 
 async function cardStack(page) {
   return page.evaluate(() => {
@@ -914,6 +953,7 @@ test.describe('design system gates', () => {
           if (path === '/components') expect(await tasksCountInsideCard(page)).toEqual([]);
           if (path === '/components' && width < 768) expect(await partsChrome(page)).toEqual([]);
           if (path === '/docs' && width < 768) expect(await tocChrome(page)).toEqual([]);
+          if (width < 768 && TABLE_KEY_ROUTES.has(path)) expect(await tableKeys(page)).toEqual([]);
           expect(await heroPattern(page)).toEqual([]);
           expect(await sidebarAccent(page)).toEqual([]);
           expect(await metricTiles(page)).toEqual([]);

@@ -286,11 +286,11 @@ test.describe('App nav — bar geometry', () => {
  * renderer's contract; these prove the consumers that were actually
  * broken. Since the Holy Trinity migration the site's content tables are
  * the catalog table (examples/express composes them with renderTrinity):
- * semantic <table variant="…"> with no container wrapper and no stamped
- * data-labels — at narrow widths the header row steps out of the visual
- * flow and each row's first cell becomes its label line. The gates below
- * assert that contract: stacked, labelled by the row's own first cell,
- * nothing clipped, no sideways scroll.
+ * semantic <table variant="…"> with no container wrapper — at narrow
+ * widths the header row steps out of the visual flow, each row's first
+ * cell becomes its label line, and every data cell carries its column
+ * heading as a visible key line. The gates below assert that contract:
+ * stacked, keyed, nothing clipped, no sideways scroll.
  */
 test.describe('Site tables — the contract on real pages', () => {
   async function tableGeometry(page) {
@@ -303,9 +303,22 @@ test.describe('Site tables — the contract on real pages', () => {
             label: (cells[0]?.textContent || '').trim().length > 0,
             lines: new Set(cells.map((c) => Math.round(c.getBoundingClientRect().y))).size,
             cells: cells.length,
+            keys: cells.map((c) => {
+              if (c.tagName !== 'TD') return null;
+              const key = c.querySelector(':scope > b');
+              return {
+                text: key ? key.textContent.trim() : null,
+                visible: Boolean(
+                  key &&
+                    getComputedStyle(key).display !== 'none' &&
+                    key.getBoundingClientRect().height > 0,
+                ),
+              };
+            }),
           };
         });
         return {
+          heads: [...t.querySelectorAll('thead th')].map((th) => th.textContent.trim()),
           tableClient: t.clientWidth,
           tableScroll: t.scrollWidth,
           theadHeight: t.querySelector('thead')?.getBoundingClientRect().height ?? 0,
@@ -350,6 +363,13 @@ test.describe('Site tables — the contract on real pages', () => {
           expect(row.lines).toBe(row.cells);
           expect(row.label).toBe(true);
           if (rowHeaders) expect(row.header).toBe(true);
+          // Keyed: every data cell shows its own column heading — a
+          // restacked value with no key is a number without a framework.
+          row.keys.forEach((key, ci) => {
+            if (key === null) return;
+            expect(key.text).toBe(t.heads[ci]);
+            expect(key.visible).toBe(true);
+          });
         }
       }
     });
