@@ -10,14 +10,7 @@
     autocomplete="off"
     spellcheck="false"
   />
-  <nav data-bn-component-filters aria-label="Filter by category">
-    <button type="button" data-bn-component-filter="all" aria-pressed="true">All</button>
-    <template @for="cat of categories; track cat.id">
-      <button type="button" data-bn-component-filter="{{ cat.id }}" aria-pressed="false">
-        {{ cat.title }}
-      </button>
-    </template>
-  </nav>
+  {{ filters }}
   <p data-bn-component-empty role="status" aria-live="polite">
     No components match. <button type="button" data-bn-component-reset>Reset filters</button>
   </p>
@@ -59,9 +52,8 @@
   <header data-bn-component-category-head>
     <h2>App demo</h2>
     <p>
-      One whole app, composed from the catalog and hydrated with signals — the components
-      working together, live. This is the live app, not a mockup — add, filter, and delete
-      tasks.
+      One whole app, composed from the catalog and hydrated with signals — the components working
+      together, live. This is the live app, not a mockup — add, filter, and delete tasks.
     </p>
     {{ tasksNotice }}
   </header>
@@ -85,17 +77,16 @@
 
   <h3>How it works</h3>
   <p>
-    The server renders the current list into the page — the count and the rows are real
-    HTML before any script runs. The browser then hydrates that markup with
+    The server renders the current list into the page — the count and the rows are real HTML before
+    any script runs. The browser then hydrates that markup with
     <code>signal</code>, <code>computed</code> and <code>effect</code> from
-    <code>@basenative/runtime</code>: the filter, the summary line and the counts are
-    derived values, and the server-rendered list stays in sync through the same signal.
+    <code>@basenative/runtime</code>: the filter, the summary line and the counts are derived
+    values, and the server-rendered list stays in sync through the same signal.
   </p>
   <p>
-    On the dev server the app talks to <code>/api/tasks</code> — POST to add, DELETE to
-    remove — the site's one API. The static build has no API, so there the list is kept
-    in your browser's localStorage instead; the notice under the title says so when that
-    is the case.
+    On the dev server the app talks to <code>/api/tasks</code> — POST to add, DELETE to remove — the
+    site's one API. The static build has no API, so there the list is kept in your browser's
+    localStorage instead; the notice under the title says so when that is the case.
   </p>
   <p>
     The pieces are the catalog's own: the server-rendered list is the
@@ -125,17 +116,17 @@
     <li>
       <h3>Tokens, all the way down</h3>
       <p>
-        Every sheet opens with a <code>:root</code> block mapping the design system's roles onto
-        the component's own tokens. Change a role and every component follows — no component
-        hard-codes a color, a size, or a radius.
+        Every sheet opens with a <code>:root</code> block mapping the design system's roles onto the
+        component's own tokens. Change a role and every component follows — no component hard-codes
+        a color, a size, or a radius.
       </p>
     </li>
     <li>
       <h3>One component, three files</h3>
       <p>
         <code>index.html</code> holds structure and bindings, <code>styles.css</code> holds tokens
-        and selectors, <code>index.js</code> holds the view model. Templates carry no literal
-        text; state is carried by ARIA, never by a hook attribute.
+        and selectors, <code>index.js</code> holds the view model. Templates carry no literal text;
+        state is carried by ARIA, never by a hook attribute.
       </p>
     </li>
   </ol>
@@ -146,7 +137,7 @@
   const input = document.querySelector('[data-bn-component-q]');
   const cards = document.querySelectorAll('[data-bn-component-card-host]');
   const cats = document.querySelectorAll('[data-bn-component-category]');
-  const filterBtns = document.querySelectorAll('[data-bn-component-filter]');
+  const filterBtns = document.querySelectorAll('aside[variant="chips"] button');
   const reset = document.querySelector('[data-bn-component-reset]');
 
   let activeCat = 'all';
@@ -180,7 +171,7 @@
     btn.addEventListener('click', () => {
       for (const b of filterBtns) b.setAttribute('aria-pressed', 'false');
       btn.setAttribute('aria-pressed', 'true');
-      activeCat = btn.getAttribute('data-bn-component-filter') || 'all';
+      activeCat = btn.value || 'all';
       apply();
     });
   }
@@ -189,7 +180,7 @@
     activeQ = '';
     activeCat = 'all';
     for (const b of filterBtns)
-      b.setAttribute('aria-pressed', String(b.getAttribute('data-bn-component-filter') === 'all'));
+      b.setAttribute('aria-pressed', String((b.value || 'all') === 'all'));
     apply();
     input?.focus();
   });

@@ -8,7 +8,7 @@
     "renderFunctions": 28,
     "customElements": 6,
     "styledContracts": 240,
-    "componentsWithVariants": 1
+    "componentsWithVariants": 2
   },
   "stylesheets": [
     "packages/builder/src/builder.css",
@@ -71,6 +71,7 @@
     "packages/icons/reset.css",
     "packages/keyboard/src/styles.css",
     "packages/theme/src/bridge.css",
+    "packages/visual-builder/src/bn-canvas.css",
     "packages/components/src/layout-grid.js",
     "packages/marketplace/src/card.js"
   ],
@@ -495,10 +496,85 @@
           "layout-grid"
         ],
         "dataAttributes": [
-          "cell-id"
+          "cell-id",
+          "col-span",
+          "columns",
+          "gap",
+          "min-block-size",
+          "row-span"
         ]
       },
-      "variants": {},
+      "variants": {
+        "layout-cell.col-span": {
+          "contract": "layout-cell",
+          "values": [
+            "1",
+            "10",
+            "11",
+            "12",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": true
+        },
+        "layout-cell.row-span": {
+          "contract": "layout-cell",
+          "values": [
+            "1",
+            "10",
+            "11",
+            "12",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": true
+        },
+        "columns": {
+          "contract": "layout-grid",
+          "values": [
+            "1",
+            "10",
+            "11",
+            "12",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9"
+          ],
+          "openPatterns": [],
+          "matchesAnyValue": false,
+          "declaredIn": [
+            "packages/components/src/components.css"
+          ],
+          "emittedByRenderer": true
+        }
+      },
       "inertAxes": [],
       "styled": true,
       "useInsteadOf": "a bare <div> with your own classes, or literal <div data-bn=\"layout-grid\"> markup"
@@ -519,6 +595,8 @@
           "skeleton"
         ],
         "dataAttributes": [
+          "block-size",
+          "inline-size",
           "variant"
         ]
       },

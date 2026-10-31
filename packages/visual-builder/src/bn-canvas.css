@@ -1,0 +1,49 @@
+bn-canvas {
+  display: contents;
+}
+
+[data-bn-canvas-container] {
+  position: relative;
+  overflow: auto;
+  border: 1px solid var(--border, var(--color-border-separator));
+  border-radius: var(--radius-md, var(--size-radius-container));
+  background: var(--surface-1, var(--color-background-grouped-2));
+}
+
+[data-bn-canvas-surface] {
+  position: relative;
+  background-image: radial-gradient(
+    circle,
+    var(--border, var(--color-border-separator)) 1px,
+    transparent 1px
+  );
+}
+
+[data-bn-canvas-selection] {
+  position: absolute;
+  pointer-events: none;
+  border: 2px solid var(--accent, var(--color-tint));
+  border-radius: var(--radius-sm, var(--size-radius-control));
+  display: none;
+  z-index: 10;
+}
+
+[data-bn-canvas-node] {
+  position: absolute;
+  cursor: move;
+  border-radius: var(--radius-sm, var(--size-radius-control));
+  transition: box-shadow 150ms ease;
+}
+
+[data-bn-canvas-node][data-selected] {
+  box-shadow: 0 0 0 2px var(--accent, var(--color-tint));
+}
+
+[data-bn-canvas-fallback] {
+  padding: 0.5rem;
+  background: var(--surface-2, var(--color-background-grouped-3));
+  border: 1px dashed var(--border, var(--color-border-separator));
+  border-radius: var(--radius-sm, var(--size-radius-control));
+  font-size: 0.75rem;
+  color: var(--text-1, var(--color-text-label-2));
+}

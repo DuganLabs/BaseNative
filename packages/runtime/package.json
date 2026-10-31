@@ -19,6 +19,10 @@
     "./shared/directives": {
       "types": "./types/shared/directives.d.ts",
       "default": "./src/shared/directives.js"
+    },
+    "./devtools": {
+      "types": "./types/devtools.d.ts",
+      "default": "./src/devtools.js"
     }
   },
   "types": "./types/index.d.ts",

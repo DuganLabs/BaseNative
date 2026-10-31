@@ -27,16 +27,17 @@ export function renderLayoutGrid(options = {}) {
     editable = false,
   } = options;
 
-  const cellsHtml = cells.map((cell, i) => {
-    const span = cell.colSpan || 1;
-    const rowSpan = cell.rowSpan || 1;
-    const style = `grid-column: span ${escapeAttr(span)}; grid-row: span ${escapeAttr(rowSpan)}; min-height: ${escapeAttr(minCellHeight)}`;
-    const draggable = editable ? ' draggable="true"' : '';
-    const content = cell.content || (cell.label ? escapeText(cell.label) : `Cell ${i + 1}`);
-    return `<div data-bn="layout-cell" data-cell-id="${escapeAttr(cell.id || `cell-${i}`)}" style="${style}"${draggable}>${content}</div>`;
-  }).join('\n');
+  const cellsHtml = cells
+    .map((cell, i) => {
+      const span = cell.colSpan || 1;
+      const rowSpan = cell.rowSpan || 1;
+      const draggable = editable ? ' draggable="true"' : '';
+      const content = cell.content || (cell.label ? escapeText(cell.label) : `Cell ${i + 1}`);
+      return `<div data-bn="layout-cell" data-cell-id="${escapeAttr(cell.id || `cell-${i}`)}" data-col-span="${escapeAttr(span)}" data-row-span="${escapeAttr(rowSpan)}" data-min-block-size="${escapeAttr(minCellHeight)}"${draggable}>${content}</div>`;
+    })
+    .join('\n');
 
-  return `<div data-bn="layout-grid" id="${escapeAttr(id)}" style="display:grid;grid-template-columns:repeat(${escapeAttr(columns)},1fr);gap:${escapeAttr(gap)}">
+  return `<div data-bn="layout-grid" id="${escapeAttr(id)}" data-columns="${escapeAttr(columns)}" data-gap="${escapeAttr(gap)}">
 ${cellsHtml}
 </div>`;
 }

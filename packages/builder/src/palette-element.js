@@ -52,7 +52,7 @@ export class BnBuilderPalette extends HTMLElement {
   }
 
   connectedCallback() {
-    this.style.display = 'contents';
+    /* display: contents lives in builder.css */
     this.setAttribute('role', 'toolbar');
     this.setAttribute('aria-label', 'Component palette');
     this._render();

@@ -40,13 +40,15 @@ export const root = 'dialog';
 /** @param {CommandPaletteProps} props */
 export function create(props) {
   if (!props.id) throw new TypeError('command-palette: id is required');
-  if (!props.searchHtml) throw new TypeError('command-palette: searchHtml is required (render the field + input)');
+  if (!props.searchHtml)
+    throw new TypeError('command-palette: searchHtml is required (render the field + input)');
 
   const label = signal(props.label ?? '');
   const searchHtml = signal(props.searchHtml);
   const groups = signal(props.groups ?? []);
   const query = signal('');
   const variant = signal(props.variant ?? 'command-palette');
+  const dialogId = signal(`${props.id}-dialog`);
 
   const visibleGroups = computed(() => {
     const q = query().trim().toLowerCase();
@@ -73,7 +75,8 @@ export function create(props) {
   });
 
   const optionId = (/** @type {PaletteOption} */ option) => `${props.id}-option-${option.value}`;
-  const isActive = (/** @type {PaletteOption} */ option) => (option.value === activeOption()?.value ? 'true' : 'false');
+  const isActive = (/** @type {PaletteOption} */ option) =>
+    option.value === activeOption()?.value ? 'true' : 'false';
   const select = (/** @type {PaletteOption} */ option) => {
     props.onSelect?.({ value: option.value, label: option.label });
   };
@@ -129,9 +132,25 @@ export function create(props) {
   }
 
   return {
-    label, searchHtml, groups, query, visibleGroups, flatOptions, activeValue,
-    activeOption, activeDescendant, variant, optionId, isActive, select,
-    setQuery, moveActive, choose, onKeydown, raw,
+    label,
+    searchHtml,
+    groups,
+    query,
+    visibleGroups,
+    flatOptions,
+    activeValue,
+    activeOption,
+    activeDescendant,
+    dialogId,
+    variant,
+    optionId,
+    isActive,
+    select,
+    setQuery,
+    moveActive,
+    choose,
+    onKeydown,
+    raw,
   };
 }
 

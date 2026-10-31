@@ -1,7 +1,5 @@
 <article data-bn-component-page>
-  {{ breadcrumb }}
-
-  {{ hero }}
+  {{ breadcrumb }} {{ hero }}
 
   <section data-bn-component-quickstart>
     <header>
@@ -12,7 +10,7 @@
         the template against it.
       </p>
     </header>
-    <div data-bn-code-block>
+    <figure>
       <pre tabindex="0" role="group" aria-label="Code sample"><code>{{ quickstart }}</code></pre>
       <button
         type="button"
@@ -21,7 +19,7 @@
       >
         Copy
       </button>
-    </div>
+    </figure>
   </section>
 
   <section data-bn-component-examples>
@@ -55,33 +53,27 @@
         nowhere else. The registry facts first, then each file in full.
       </p>
     </header>
-    <div data-bn="table-container">
-      <table data-bn="table">
-        <caption data-bn-visually-hidden>{{ component.title }} facts</caption>
-        <tbody>
-          <template @for="fact of facts; track fact.term">
-            <tr>
-              <th scope="row">{{ fact.term }}</th>
-              <td><code>{{ fact.value }}</code></td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
-    </div>
+    <table>
+      <caption data-bn-visually-hidden>
+        {{ component.title }} facts
+      </caption>
+      <tbody>
+        <template @for="fact of facts; track fact.term">
+          <tr>
+            <th scope="row">{{ fact.term }}</th>
+            <td><code>{{ fact.value }}</code></td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
 
     <template @for="file of files; track file.name">
       <figure data-bn-component-source>
         <figcaption>{{ file.name }}</figcaption>
-        <div data-bn-code-block>
-          <pre tabindex="0" role="group" aria-label="Code sample"><code>{{ file.code }}</code></pre>
-          <button
-            type="button"
-            data-bn-action="copy-code"
-            aria-label="Copy this file to clipboard"
-          >
-            Copy
-          </button>
-        </div>
+        <pre tabindex="0" role="group" aria-label="Code sample"><code>{{ file.code }}</code></pre>
+        <button type="button" data-bn-action="copy-code" aria-label="Copy this file to clipboard">
+          Copy
+        </button>
       </figure>
     </template>
   </section>

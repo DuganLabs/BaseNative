@@ -6,9 +6,6 @@
    does not change. They are legacy names the builder still speaks;
    the catalog token system (CTI+) does not carry them. */
 :root {
-  --bn-brand: #e8920a;
-  --bn-brand-ink: #0c0b09;
-  --bn-brand-text: #9a5f05;
   --bn-content-leading: 22px;
   --bn-content-secondary: CanvasText;
   --bn-content-size: 15px;
@@ -93,7 +90,16 @@
   }
 
   /* ── Toolbar ─────────────────────────────────────────────────────── */
+  bn-builder,
+  bn-builder-canvas,
+  bn-builder-inspector,
+  bn-builder-palette,
+  bn-builder-tree {
+    display: contents;
+  }
+
   .bn-builder__toolbar {
+    justify-content: center;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -107,8 +113,8 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
     gap: var(--bn-len-6, 6px);
-    margin-inline-start: auto;
   }
 
   .bn-builder__traffic {
@@ -172,13 +178,13 @@
   }
 
   .bn-builder__btn[data-bn-builder-action='export'] {
-    background: var(--bn-brand, #e8920a);
-    color: var(--bn-brand-ink, #0c0b09);
+    background: var(--site-brand);
+    color: var(--site-brand-ink);
     font-weight: 600;
   }
 
   .bn-builder__btn[data-bn-builder-action='export']:hover:not(:disabled) {
-    background: var(--bn-brand, #e8920a);
+    background: var(--site-brand);
     filter: brightness(1.08);
   }
 
@@ -190,7 +196,7 @@
   .bn-tree__toggle:focus-visible,
   .bn-inspector__input:focus-visible,
   .bn-inspector__select:focus-visible {
-    outline: 2px solid var(--bn-brand, #e8920a);
+    outline: 2px solid var(--site-brand);
     outline-offset: 1px;
   }
 
@@ -217,7 +223,7 @@
 
   @container builder (max-width: 46rem) {
     .bn-builder {
-      block-size: auto;
+      block-size: 86dvh;
     }
 
     .bn-builder__panes {
@@ -230,7 +236,7 @@
          this frame (the sections' scrollers contribute no intrinsic
          height), so the stacked sections share the window's height
          and each scrolls internally — canvas largest, inspector last. */
-      grid-template-rows: minmax(0, 1.55fr) minmax(0, 1.45fr) minmax(0, 0.9fr);
+      grid-template-rows: minmax(8rem, 1fr) minmax(8rem, 1fr) minmax(8rem, 1fr);
       block-size: auto;
     }
 
@@ -350,8 +356,8 @@
   }
 
   .bn-builder__canvas-surface[data-bn-drop-active='true'] {
-    border-color: var(--bn-brand, #e8920a);
-    box-shadow: 0 0 0 1px var(--bn-brand, #e8920a) inset;
+    border-color: var(--site-brand);
+    box-shadow: 0 0 0 1px var(--site-brand) inset;
   }
 
   .bn-builder__empty {
@@ -369,6 +375,8 @@
   .bn-builder__empty svg {
     inline-size: var(--bn-len-36, 36px);
     block-size: var(--bn-len-36, 36px);
+    flex: none;
+    overflow: visible;
   }
 
   .bn-builder__empty-title {
@@ -396,12 +404,12 @@
 
   .bn-builder__canvas-surface [data-bn-node]:hover,
   .bn-builder__canvas-surface [data-bn-hover='true'] {
-    border-color: var(--bn-brand, #e8920a);
+    border-color: var(--site-brand);
   }
 
   .bn-builder__canvas-surface [data-bn-selected='true'] {
-    border-color: var(--bn-brand, #e8920a);
-    box-shadow: 0 0 0 1px var(--bn-brand, #e8920a) inset;
+    border-color: var(--site-brand);
+    box-shadow: 0 0 0 1px var(--site-brand) inset;
   }
 
   /* ── Palette ─────────────────────────────────────────────────────── */
@@ -440,7 +448,8 @@
 
   .bn-palette [data-bn-palette-groups] {
     overflow-y: auto;
-    min-block-size: 0;
+    flex: 1;
+    min-block-size: 6rem;
     display: flex;
     flex-direction: column;
     gap: var(--bn-len-16, 16px);
@@ -622,8 +631,8 @@
   }
 
   .bn-tree__row--selected > .bn-tree__label {
-    background: var(--bn-brand, #e8920a);
-    color: var(--bn-brand-ink, #0c0b09);
+    background: var(--site-brand);
+    color: var(--site-brand-ink);
   }
 
   .bn-tree__row--selected .bn-tree__summary {
@@ -709,7 +718,7 @@
     inline-size: var(--bn-len-16, 16px);
     block-size: var(--bn-len-16, 16px);
     margin: 0;
-    accent-color: var(--bn-brand, #e8920a);
+    accent-color: var(--site-brand);
   }
 
   .bn-inspector__actions {
@@ -739,7 +748,7 @@
   }
 
   .bn-inspector__btn:focus-visible {
-    outline: 2px solid var(--bn-brand, #e8920a);
+    outline: 2px solid var(--site-brand);
     outline-offset: 1px;
   }
 

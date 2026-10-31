@@ -265,31 +265,6 @@ export function renderWithBoundary(
   options?: { onError?: (error: Error) => void; fallback?: string },
 ): string;
 
-// --- Devtools ---
-
-/**
- * Enables devtools instrumentation and installs `globalThis.__BASENATIVE_DEVTOOLS__`.
- */
-export function enableDevtools(): void;
-
-/** Disables devtools and clears all tracked signals, effects, and hydrations. */
-export function disableDevtools(): void;
-
-/** Returns whether devtools instrumentation is enabled. */
-export function isDevtoolsEnabled(): boolean;
-
-/** Registers a signal for devtools inspection; a no-op unless devtools are enabled. */
-export function trackSignal(accessor: Signal<unknown>, label?: string): number | undefined;
-
-/** Registers an effect for devtools inspection; a no-op unless devtools are enabled. */
-export function trackEffect(handle: EffectHandle, label?: string): number | undefined;
-
-/** Records a hydration event on the devtools timeline; a no-op unless devtools are enabled. */
-export function recordHydration(
-  root: Element | null | undefined,
-  details?: { directivesProcessed?: number; duration?: number },
-): void;
-
 // --- Debug Mode ---
 
 export interface DebugOptions {

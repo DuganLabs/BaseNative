@@ -17,15 +17,15 @@ export const THEME_MODES = [
  * it does with no toggle at all. Light and dark stamp data-theme,
  * which the token sheet scopes its forced values under.
  * @param {string} mode system | light | dark
- * @param {{ dataset: Record<string, string | undefined>, style: { colorScheme: string } }} el
+ * The token sheet owns `color-scheme` for `[data-theme]`. This function
+ * only stamps the attribute.
+ * @param {{ dataset: Record<string, string | undefined> }} el
  */
 export function applyTheme(mode, el) {
   if (mode === 'system') {
     delete el.dataset.theme;
-    el.style.colorScheme = '';
   } else {
     el.dataset.theme = mode;
-    el.style.colorScheme = mode;
   }
 }
 

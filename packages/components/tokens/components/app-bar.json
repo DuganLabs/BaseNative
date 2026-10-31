@@ -773,6 +773,42 @@
       }
     }
   },
+  "position-area-app-bar-menu": {
+    "$value": "block-start span-inline-end",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "position-area",
+          "type": null,
+          "item": "app-bar-menu",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-bkg-app-bar-menu-backdrop": {
+    "$value": "rgb(0 0 0 / 0.4)",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "app-bar-menu",
+          "variant": null,
+          "subitem": "backdrop",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "position-app-bar-menu": {
     "$value": "{position-fixed}",
     "$type": "string",

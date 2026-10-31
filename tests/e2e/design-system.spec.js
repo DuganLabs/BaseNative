@@ -74,7 +74,9 @@ async function overflow(page) {
     // The trinity component-root signature: variant-bearing elements and
     // the surviving data-bn app hooks (the pre-trinity scan matched
     // [data-bn^="bn-"] roots, which the catalog no longer emits).
-    for (const el of document.body.querySelectorAll('[data-bn^="bn-"], [variant], [data-bn-component-search]')) {
+    for (const el of document.body.querySelectorAll(
+      '[data-bn^="bn-"], [variant], [data-bn-component-search]',
+    )) {
       const style = getComputedStyle(el);
       if (style.display === 'none' || style.display === 'contents') continue;
       if (containedByClip(el)) continue;
@@ -103,8 +105,7 @@ async function overflow(page) {
           for (const node of el.querySelectorAll('*')) {
             const nodeBox = node.getBoundingClientRect();
             if (nodeBox.width < 1) continue;
-            const spills =
-              nodeBox.right > box.right + 1 || nodeBox.left < box.left - 1;
+            const spills = nodeBox.right > box.right + 1 || nodeBox.left < box.left - 1;
             if (spills && (nodeBox.right > window.innerWidth + 1 || nodeBox.left < -1)) {
               pastViewport = true;
               break;
@@ -247,9 +248,7 @@ async function tableKeys(page) {
     document
       .querySelectorAll('table[variant="default"], table[variant="striped"]')
       .forEach((table, ti) => {
-        const heads = [...table.querySelectorAll('thead th')].map((th) =>
-          th.textContent.trim(),
-        );
+        const heads = [...table.querySelectorAll('thead th')].map((th) => th.textContent.trim());
         if (heads.length === 0) return;
         table.querySelectorAll('tbody tr').forEach((row, ri) => {
           [...row.children].forEach((cell, ci) => {
@@ -306,8 +305,7 @@ async function cardStack(page) {
         if (gap < token - 1) problems.push(`hero gap ${gap.toFixed(1)}px is under ${token}px`);
       }
     }
-    const selector =
-      'article, section, figure[variant], ul[variant], [data-bn-component-card]';
+    const selector = 'article, section, figure[variant], ul[variant], [data-bn-component-card]';
     for (const el of document.querySelectorAll(selector)) {
       if (!paints(el)) continue;
       // The catalog's component cards are tiles in a grid laid over a
@@ -327,8 +325,7 @@ async function cardStack(page) {
       // defect is a distinguishable second surface inside the first.
       const elStyle = getComputedStyle(el);
       const parentStyle = getComputedStyle(parent);
-      const bordered =
-        parseFloat(elStyle.borderTopWidth) > 0 && elStyle.borderTopStyle !== 'none';
+      const bordered = parseFloat(elStyle.borderTopWidth) > 0 && elStyle.borderTopStyle !== 'none';
       const shadowed = elStyle.boxShadow !== 'none' && parentStyle.boxShadow === 'none';
       if (elStyle.backgroundColor === parentStyle.backgroundColor && !bordered && !shadowed)
         continue;
@@ -424,10 +421,7 @@ async function buttonContrast(page) {
       probe.remove();
       return value;
     }
-    const tintPaints = new Set([
-      tokenColor('--color-tint'),
-      tokenColor('--color-danger-strong'),
-    ]);
+    const tintPaints = new Set([tokenColor('--color-tint'), tokenColor('--color-danger-strong')]);
     const problems = [];
     const seen = new Set();
     const buttons = document.querySelectorAll(
@@ -554,9 +548,7 @@ async function heroPattern(page) {
     // still stands, and pageIdentity gates it). Every content route
     // keeps the hero; a missing one anywhere else fails here.
     if (!hero) {
-      return document.body.getAttribute('data-active') === 'playground'
-        ? []
-        : ['missing hero'];
+      return document.body.getAttribute('data-active') === 'playground' ? [] : ['missing hero'];
     }
     const h1 = hero.querySelector('h1');
     const problems = [];
@@ -569,9 +561,10 @@ async function heroPattern(page) {
     // no longer sets, because there is no platform switch left.
     const cap = hero.querySelector('figcaption');
     const eyebrow = cap ? cap.querySelector('p') : null;
-    const lede = h1 && h1.nextElementSibling && h1.nextElementSibling.tagName === 'P'
-      ? h1.nextElementSibling
-      : null;
+    const lede =
+      h1 && h1.nextElementSibling && h1.nextElementSibling.tagName === 'P'
+        ? h1.nextElementSibling
+        : null;
     if (!eyebrow) problems.push('missing eyebrow');
     if (!lede) problems.push('missing lede');
     if (h1) {
@@ -655,7 +648,7 @@ async function sectionRhythm(page) {
     const token = 12;
     const problems = [];
     const nodes = document.querySelectorAll(
-      'main > section, [data-bn-docs-toc], [data-bn-component-category]',
+      "main > section, aside[variant='subnav'], [data-bn-component-category]",
     );
     for (const el of nodes) {
       const style = getComputedStyle(el);
@@ -699,7 +692,10 @@ async function contentMeasure(page) {
       problems.push(`measure off-center ${leftGap.toFixed(0)}/${rightGap.toFixed(0)}`);
     if (rightGap > 64) problems.push(`right gutter ${rightGap.toFixed(0)}`);
     if (frame === hero) {
-      if (Math.abs(frameBox.left - heroBox.left) > 2 || Math.abs(frameBox.right - heroBox.right) > 2)
+      if (
+        Math.abs(frameBox.left - heroBox.left) > 2 ||
+        Math.abs(frameBox.right - heroBox.right) > 2
+      )
         problems.push('header does not fill the content column');
     } else {
       const heroStyle = getComputedStyle(hero);
@@ -709,7 +705,12 @@ async function contentMeasure(page) {
       const bgAlpha = bgParts.length > 3 ? bgParts[3] : bg ? 1 : 0;
       const bordered =
         parseFloat(heroStyle.borderLeftWidth) > 0 && heroStyle.borderLeftStyle !== 'none';
-      if (bgAlpha > 0 || bordered || parseFloat(heroStyle.paddingLeft) > 0 || parseFloat(heroStyle.paddingRight) > 0)
+      if (
+        bgAlpha > 0 ||
+        bordered ||
+        parseFloat(heroStyle.paddingLeft) > 0 ||
+        parseFloat(heroStyle.paddingRight) > 0
+      )
         problems.push('framed hero paints its own surface');
       const insetLeft = heroBox.left - frameBox.left;
       const insetRight = frameBox.right - heroBox.right;
@@ -774,22 +775,18 @@ async function loadAxe(page) {
 async function partsChrome(page) {
   return page.evaluate(() => {
     const search = document.querySelector('[data-bn-component-search]');
-    const filters = document.querySelector('[data-bn-component-filters]');
+    const filters = document.querySelector('aside[variant="chips"]');
     const bar = document.querySelector('body > nav[variant="app-bar"]');
     if (!search || !filters || !bar) return ['missing parts chrome'];
     const problems = [];
-    // The chips wrap inside the card (the site sheet's phone rule: a
-    // single scrolling row cut the end chips mid-word at the box
-    // edge, which read as overflow). Containment — every chip fully
-    // inside the card, no sideways overflow anywhere in the filters.
-    const searchBox = search.getBoundingClientRect();
-    for (const chip of filters.querySelectorAll('button')) {
-      const chipBox = chip.getBoundingClientRect();
-      if (chipBox.right > searchBox.right + 1 || chipBox.left < searchBox.left - 1)
-        problems.push(`chip ${chip.textContent.trim()} escapes the card`);
-    }
-    if (filters.scrollWidth > filters.clientWidth + 1)
-      problems.push('filters scroll sideways');
+    // One row of sentence-case chips. On a phone the row scrolls
+    // sideways instead of wrapping into a tall card.
+    const filtersStyle = getComputedStyle(filters.querySelector('ul') || filters);
+    if (filtersStyle.flexWrap !== 'nowrap') problems.push(`chips wrap (${filtersStyle.flexWrap})`);
+    const sample = filters.querySelector('button');
+    if (sample && getComputedStyle(sample).textTransform === 'uppercase')
+      problems.push('chips are uppercase');
+    if (sample && sample.getBoundingClientRect().height < 24) problems.push('chip is under 24px');
     // The in-page nav contract (Warren, 2026-10-28): the docs
     // contents nav and this filter are one pattern, and at phone
     // width the pattern is NOT pinned — a sticky card with large
@@ -809,7 +806,7 @@ async function partsChrome(page) {
 
 async function tocChrome(page) {
   return page.evaluate(() => {
-    const toc = document.querySelector('[data-bn-docs-toc]');
+    const toc = document.querySelector('aside[variant="subnav"]');
     if (!toc) return ['missing docs toc'];
     const problems = [];
     // The other half of the in-page nav contract above: the docs
@@ -819,8 +816,7 @@ async function tocChrome(page) {
     if (stuck !== 'static') problems.push(`toc is ${stuck}`);
     const scroller = document.scrollingElement;
     scroller.scrollTop = 1500;
-    if (toc.getBoundingClientRect().top >= 0)
-      problems.push('toc still in view after scrolling');
+    if (toc.getBoundingClientRect().top >= 0) problems.push('toc still in view after scrolling');
     scroller.scrollTop = 0;
     return problems;
   });
@@ -857,9 +853,7 @@ async function sidebarAccent(page) {
       probe.remove();
       return value;
     }
-    const current = document.querySelector(
-      'aside[variant="sidebar"] [aria-current="page"]',
-    );
+    const current = document.querySelector('aside[variant="sidebar"] [aria-current="page"]');
     if (!current) return ['missing selected sidebar item'];
     const style = getComputedStyle(current);
     // The sidebar's current item is filled with its link-current
@@ -870,8 +864,11 @@ async function sidebarAccent(page) {
     const ink = resolve(current, 'color', '--color-text-sidebar-link-current');
     const problems = [];
     if (!same(style.backgroundColor, fill))
-      problems.push(`selected sidebar fill is ${style.backgroundColor}, link-current token is ${fill}`);
-    if (!same(style.color, ink)) problems.push(`selected sidebar label is ${style.color}, link-current text token is ${ink}`);
+      problems.push(
+        `selected sidebar fill is ${style.backgroundColor}, link-current token is ${fill}`,
+      );
+    if (!same(style.color, ink))
+      problems.push(`selected sidebar label is ${style.color}, link-current text token is ${ink}`);
     return problems;
   });
 }
@@ -929,10 +926,7 @@ test.describe('design system gates', () => {
           await page.evaluate(() => {
             const unstamp = (text) =>
               text.replace(/\/basenative\.js\?v=[0-9a-f]+/g, '/basenative.js');
-            const walker = document.createTreeWalker(
-              document.body,
-              NodeFilter.SHOW_TEXT,
-            );
+            const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
             for (let n = walker.nextNode(); n; n = walker.nextNode()) {
               if (n.nodeValue.includes('/basenative.js?v=')) {
                 n.nodeValue = unstamp(n.nodeValue);
@@ -1008,13 +1002,13 @@ test.describe('contents scrollspy', () => {
     }, id);
   }
 
-  async function currentTocLink(page, navAttr) {
-    return page.evaluate((attr) => {
-      const nav = document.querySelector(`[${attr}]`);
+  async function currentTocLink(page, navSelector) {
+    return page.evaluate((selector) => {
+      const nav = document.querySelector(selector);
       if (!nav) return null;
       const current = nav.querySelector('a[aria-current="true"]');
       return current ? current.getAttribute('href') : null;
-    }, navAttr);
+    }, navSelector);
   }
 
   test('/docs marks the contents link for the section in view', async ({ page }) => {
@@ -1022,11 +1016,11 @@ test.describe('contents scrollspy', () => {
     await page.goto('/docs', { waitUntil: 'domcontentloaded' });
     await scrollSectionIntoBand(page, 'server-rendering');
     await expect
-      .poll(() => currentTocLink(page, 'data-bn-docs-toc'), { timeout: 10_000 })
+      .poll(() => currentTocLink(page, "aside[variant='subnav']"), { timeout: 10_000 })
       .toBe('#server-rendering');
     await scrollSectionIntoBand(page, 'api-reference');
     await expect
-      .poll(() => currentTocLink(page, 'data-bn-docs-toc'), { timeout: 10_000 })
+      .poll(() => currentTocLink(page, "aside[variant='subnav']"), { timeout: 10_000 })
       .toBe('#api-reference');
   });
 
@@ -1045,9 +1039,9 @@ test.describe('contents scrollspy', () => {
         () =>
           page.evaluate(() => {
             const current = document.querySelector(
-              '[data-bn-component-filter][aria-current="true"]',
+              "aside[variant='chips'] button[aria-current='true']",
             );
-            return current ? current.getAttribute('data-bn-component-filter') : null;
+            return current ? current.value : null;
           }),
         { timeout: 10_000 },
       )
@@ -1059,7 +1053,7 @@ test.describe('contents scrollspy', () => {
     await page.goto('/docs', { waitUntil: 'domcontentloaded' });
     await scrollSectionIntoBand(page, 'template-directives');
     await expect
-      .poll(() => currentTocLink(page, 'data-bn-docs-toc'), { timeout: 10_000 })
+      .poll(() => currentTocLink(page, "aside[variant='subnav']"), { timeout: 10_000 })
       .toBe('#template-directives');
     // The marked link's fill transitions in over 0.15s; poll the
     // paint itself until it settles instead of reading one frame
@@ -1068,18 +1062,18 @@ test.describe('contents scrollspy', () => {
       .poll(
         () =>
           page.evaluate(() => {
-            const link = document.querySelector('[data-bn-docs-toc] a[aria-current="true"]');
+            const link = document.querySelector("aside[variant='subnav'] a[aria-current='true']");
             if (!link) return '';
             const style = getComputedStyle(link);
-            return `${style.backgroundColor}|${style.getPropertyValue('--bn-brand').trim()}`;
+            return `${style.backgroundColor}|${style.getPropertyValue('--color-tint').trim()}`;
           }),
         { timeout: 10_000 },
       )
       .toContain('232, 146, 10');
     const paint = await page.evaluate(() => {
-      const link = document.querySelector('[data-bn-docs-toc] a[aria-current="true"]');
+      const link = document.querySelector("aside[variant='subnav'] a[aria-current='true']");
       const style = getComputedStyle(link);
-      return { bg: style.backgroundColor, brand: style.getPropertyValue('--bn-brand') };
+      return { bg: style.backgroundColor, brand: style.getPropertyValue('--color-tint') };
     });
     expect(paint.bg).toContain('232, 146, 10');
     expect(paint.brand.trim()).toBe('#e8920a');

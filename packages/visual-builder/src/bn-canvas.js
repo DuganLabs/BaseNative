@@ -1,6 +1,24 @@
 import { createCanvas } from './canvas.js';
 import { renderNode } from './renderer.js';
 
+const CANVAS_CSS = `
+bn-canvas { display: contents; }
+[data-bn-canvas-container] { position: relative; overflow: auto; border: 1px solid var(--border, var(--color-border-separator)); border-radius: var(--radius-md, var(--size-radius-container)); background: var(--surface-1, var(--color-background-grouped-2)); }
+[data-bn-canvas-surface] { position: relative; background-image: radial-gradient(circle, var(--border, var(--color-border-separator)) 1px, transparent 1px); }
+[data-bn-canvas-selection] { position: absolute; pointer-events: none; border: 2px solid var(--accent, var(--color-tint)); border-radius: var(--radius-sm, var(--size-radius-control)); display: none; z-index: 10; }
+[data-bn-canvas-node] { position: absolute; cursor: move; border-radius: var(--radius-sm, var(--size-radius-control)); }
+[data-bn-canvas-node][data-selected] { box-shadow: 0 0 0 2px var(--accent, var(--color-tint)); }
+[data-bn-canvas-fallback] { padding: 0.5rem; background: var(--surface-2, var(--color-background-grouped-3)); border: 1px dashed var(--border, var(--color-border-separator)); border-radius: var(--radius-sm, var(--size-radius-control)); font-size: 0.75rem; color: var(--text-1, var(--color-text-label-2)); }
+`;
+
+function ensureCanvasSheet() {
+  if (typeof document === 'undefined' || document.querySelector('[data-bn-canvas-sheet]')) return;
+  const style = document.createElement('style');
+  style.setAttribute('data-bn-canvas-sheet', '');
+  style.textContent = CANVAS_CSS;
+  document.head.append(style);
+}
+
 /**
  * <bn-canvas> Web Component
  *
@@ -32,11 +50,11 @@ export class BnCanvas extends HTMLElement {
     this._selectedId = null;
     this._dragState = null;
     this._unsubscribe = null;
+    this._geomId = `bn-canvas-${Math.random().toString(36).slice(2, 8)}`;
   }
 
   connectedCallback() {
-    // display: contents — host does not affect layout
-    this.style.display = 'contents';
+    ensureCanvasSheet();
 
     this._canvas = createCanvas({
       width: parseInt(this.getAttribute('width') || '1024', 10),
@@ -46,7 +64,9 @@ export class BnCanvas extends HTMLElement {
 
     this._unsubscribe = this._canvas.subscribe((event, data) => {
       this.dispatchEvent(new CustomEvent(`bn-canvas-${event}`, { detail: data, bubbles: true }));
-      this.dispatchEvent(new CustomEvent('bn-canvas-change', { detail: { event, data }, bubbles: true }));
+      this.dispatchEvent(
+        new CustomEvent('bn-canvas-change', { detail: { event, data }, bubbles: true }),
+      );
       this._render();
     });
 
@@ -62,15 +82,11 @@ export class BnCanvas extends HTMLElement {
     }
   }
 
-  attributeChangedCallback(name, oldVal, newVal) {
+  attributeChangedCallback(name, _oldVal, _newVal) {
     if (!this._canvas) return;
     // Re-create canvas with new dimensions if changed
     if (['width', 'height', 'grid-size'].includes(name)) {
-      const surface = this.querySelector('[data-bn-canvas-surface]');
-      if (surface) {
-        if (name === 'width') surface.style.width = `${newVal}px`;
-        if (name === 'height') surface.style.height = `${newVal}px`;
-      }
+      this._syncGeometry();
     }
   }
 
@@ -90,18 +106,43 @@ export class BnCanvas extends HTMLElement {
     return this._selectedId;
   }
 
+  _syncGeometry() {
+    if (!this._canvas || typeof CSSStyleSheet === 'undefined' || typeof document === 'undefined')
+      return;
+    if (!this._geomSheet) {
+      this._geomSheet = new CSSStyleSheet();
+      document.adoptedStyleSheets = [...document.adoptedStyleSheets, this._geomSheet];
+    }
+    const id = this._geomId;
+    const rules = [
+      `[data-bn-canvas-id="${id}"]{width:${this._canvas.width}px;height:${this._canvas.height}px;background-size:${this._canvas.gridSize}px ${this._canvas.gridSize}px}`,
+    ];
+    for (const node of this._canvas.getNodes()) {
+      const nodeId = String(node.id).replace(/"/g, '');
+      rules.push(
+        `[data-bn-node-id="${nodeId}"]{left:${node.position.x}px;top:${node.position.y}px;width:${node.size.width}px;min-height:${node.size.height}px}`,
+      );
+    }
+    const selected = this._selectedId && this._canvas.getNode(this._selectedId);
+    if (selected) {
+      rules.push(
+        `[data-bn-canvas-id="${id}"] [data-bn-canvas-selection]{display:block;left:${selected.position.x - 2}px;top:${selected.position.y - 2}px;width:${selected.size.width + 4}px;height:${selected.size.height + 4}px}`,
+      );
+    }
+    this._geomSheet.replaceSync(rules.join('\n'));
+  }
+
   _setupDOM() {
-    const w = this._canvas.width;
-    const h = this._canvas.height;
     const mode = this.getAttribute('mode') || 'edit';
 
     this.innerHTML = `
-      <div data-bn-canvas-container style="position:relative;overflow:auto;border:1px solid var(--border,hsl(220 15% 22%));border-radius:0.5rem;background:var(--surface-1,hsl(220 20% 10%))">
-        <div data-bn-canvas-surface style="position:relative;width:${w}px;height:${h}px;background-image:radial-gradient(circle,var(--border,hsl(220 15% 22%)) 1px,transparent 1px);background-size:${this._canvas.gridSize}px ${this._canvas.gridSize}px">
+      <div data-bn-canvas-container>
+        <div data-bn-canvas-surface data-bn-canvas-id="${this._geomId}">
           <div data-bn-canvas-nodes></div>
-          ${mode === 'edit' ? '<div data-bn-canvas-selection style="position:absolute;pointer-events:none;border:2px solid var(--accent,hsl(210 100% 60%));border-radius:4px;display:none;z-index:10"></div>' : ''}
+          ${mode === 'edit' ? '<div data-bn-canvas-selection></div>' : ''}
         </div>
       </div>`;
+    this._syncGeometry();
   }
 
   _render() {
@@ -114,25 +155,22 @@ export class BnCanvas extends HTMLElement {
     for (const node of nodes) {
       const wrapper = document.createElement('div');
       wrapper.dataset.bnNodeId = node.id;
-      wrapper.style.cssText = `position:absolute;left:${node.position.x}px;top:${node.position.y}px;width:${node.size.width}px;min-height:${node.size.height}px;cursor:move;border-radius:4px;transition:box-shadow 150ms ease`;
-
-      if (this._selectedId === node.id) {
-        wrapper.style.boxShadow = '0 0 0 2px var(--accent, hsl(210 100% 60%))';
-      }
+      wrapper.setAttribute('data-bn-canvas-node', '');
+      if (this._selectedId === node.id) wrapper.setAttribute('data-selected', '');
 
       // Render node content
       const renderFn = this._componentMap[node.type];
       if (renderFn) {
         wrapper.innerHTML = renderNode(node, this._componentMap);
       } else {
-        wrapper.innerHTML = `<div style="padding:0.5rem;background:var(--surface-2,hsl(220 15% 14%));border:1px dashed var(--border,hsl(220 15% 22%));border-radius:4px;font-size:0.75rem;color:var(--text-muted)">${node.type}</div>`;
+        wrapper.innerHTML = `<div data-bn-canvas-fallback>${node.type}</div>`;
       }
 
       wrapper.setAttribute('draggable', 'true');
       container.appendChild(wrapper);
     }
 
-    // Update selection outline
+    this._syncGeometry();
     this._updateSelection();
   }
 
@@ -140,22 +178,7 @@ export class BnCanvas extends HTMLElement {
     const outline = this.querySelector('[data-bn-canvas-selection]');
     if (!outline) return;
 
-    if (!this._selectedId) {
-      outline.style.display = 'none';
-      return;
-    }
-
-    const node = this._canvas.getNode(this._selectedId);
-    if (!node) {
-      outline.style.display = 'none';
-      return;
-    }
-
-    outline.style.display = 'block';
-    outline.style.left = `${node.position.x - 2}px`;
-    outline.style.top = `${node.position.y - 2}px`;
-    outline.style.width = `${node.size.width + 4}px`;
-    outline.style.height = `${node.size.height + 4}px`;
+    outline.hidden = !this._selectedId || !this._canvas.getNode(this._selectedId);
   }
 
   _attachDragListeners() {

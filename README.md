@@ -287,10 +287,14 @@ See [SECURITY.md](SECURITY.md) for the security policy and how to report vulnera
 
 Measured by `scripts/bundle-size.js`, enforced in CI:
 
-| Package               | Gzipped | Budget |
-| --------------------- | ------- | ------ |
-| `@basenative/runtime` | 9.2KB   | 10KB   |
-| `@basenative/server`  | 2.2KB   | 16KB   |
+| Package               | Budget |
+| --------------------- | ------ |
+| `@basenative/runtime` | 10KB   |
+| `@basenative/server`  | 16KB   |
+
+The gzipped figure is whatever `node scripts/bundle-size.js` prints. Do not
+copy it into this table — a copied figure goes stale, and `/compare` already
+reads the measurement.
 
 Zero production dependencies in the runtime.
 

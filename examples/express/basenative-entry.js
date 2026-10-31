@@ -55,6 +55,6 @@ export { toggle } from '../../packages/components/src/toggle/index.js';
 export { toolbar } from '../../packages/components/src/toolbar/index.js';
 export { tooltip } from '../../packages/components/src/tooltip/index.js';
 export { tree } from '../../packages/components/src/tree/index.js';
-export { virtualizer } from '../../packages/components/src/virtualizer/index.js';
+export { virtualizer, bindSpacerCounts } from '../../packages/components/src/virtualizer/index.js';
 export { createToaster } from '../../packages/components/src/toast/index.js';
 export { createRegistry } from '../../packages/components/src/registry.js';

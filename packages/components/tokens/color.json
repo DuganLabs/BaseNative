@@ -1044,7 +1044,7 @@
     }
   },
   "color-text-label-2": {
-    "$value": "rgb(60 60 67 / 0.6)",
+    "$value": "#545458",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -1062,7 +1062,7 @@
     }
   },
   "color-text-label-3": {
-    "$value": "rgb(60 60 67 / 0.3)",
+    "$value": "#5c5c61",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -1332,7 +1332,7 @@
     }
   },
   "color-tint": {
-    "$value": "{palette-system-blue}",
+    "$value": "#e8920a",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -1350,7 +1350,7 @@
     }
   },
   "color-tint-strong": {
-    "$value": "#0062cc",
+    "$value": "#9a5f05",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -1368,7 +1368,7 @@
     }
   },
   "color-text-on-tint": {
-    "$value": "#ffffff",
+    "$value": "#0c0b09",
     "$type": "color",
     "$extensions": {
       "com.basenative": {

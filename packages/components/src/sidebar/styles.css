@@ -1,4 +1,6 @@
-aside[variant="sidebar"] {
+aside[variant='sidebar'],
+aside[variant='subnav'],
+aside[variant='chips'] {
   inline-size: var(--size-sidebar-inline);
   background-color: var(--color-bkg-sidebar);
   border-inline-end-width: var(--size-border-sidebar-inline-end);
@@ -34,8 +36,10 @@ aside[variant="sidebar"] {
         margin: var(--spacing-sidebar-list-margin);
         padding: var(--spacing-sidebar-list-padding);
 
-        & > li > a {
+        & > li > a,
+        & > li > button {
           display: var(--display-sidebar-link);
+          min-block-size: var(--size-target-min);
           align-items: var(--align-sidebar-link);
           gap: var(--spacing-sidebar-link-gap);
           padding-block: var(--spacing-sidebar-link-padding-block);
@@ -54,13 +58,15 @@ aside[variant="sidebar"] {
             color: var(--color-text-sidebar-link-hover);
           }
 
-          &[aria-current="page"] {
+          &[aria-current='page'],
+          &[aria-current='true'] {
             background-color: var(--color-bkg-sidebar-link-current);
             color: var(--color-text-sidebar-link-current);
             font-weight: var(--font-sidebar-link-weight-current);
           }
 
-          &[aria-current="page"]:hover {
+          &[aria-current='page']:hover,
+          &[aria-current='true']:hover {
             background-color: var(--color-bkg-sidebar-link-current);
             color: var(--color-text-sidebar-link-current);
           }
@@ -73,5 +79,54 @@ aside[variant="sidebar"] {
         }
       }
     }
+  }
+}
+
+/* In-page subnav: the same sidebar, laid out as a row of links in
+   the content column instead of the rail. */
+aside[variant='subnav'] {
+  inline-size: var(--size-full);
+  background-color: var(--palette-transparent);
+  border-inline-end-width: var(--size-border-none);
+  overflow-x: var(--overflow-auto);
+
+  & > nav > section > ul {
+    display: var(--display-flex);
+    flex-direction: var(--flex-direction-row);
+    flex-wrap: var(--flex-wrap-wrap);
+    gap: var(--spacing-1);
+  }
+}
+
+/* Filter chips: one row, sentence case, scrolling sideways on a
+   phone instead of wrapping into a tall card. */
+aside[variant='chips'] {
+  inline-size: var(--size-full);
+  background-color: var(--palette-transparent);
+  border-inline-end-width: var(--size-border-none);
+  padding-block: var(--spacing-0);
+  padding-inline: var(--spacing-0);
+  overflow: var(--overflow-auto);
+
+  & > nav > section > p {
+    display: var(--display-none);
+  }
+
+  & > nav > section > ul {
+    display: var(--display-flex);
+    flex-direction: var(--flex-direction-row);
+    flex-wrap: var(--flex-wrap-nowrap);
+    overflow-x: var(--overflow-auto);
+    gap: var(--spacing-2);
+  }
+
+  & > nav > section > ul > li > button {
+    white-space: var(--white-space-nowrap);
+  }
+
+  & > nav > section > ul > li > button[aria-pressed='true'] {
+    background-color: var(--color-bkg-sidebar-link-current);
+    color: var(--color-text-sidebar-link-current);
+    font-weight: var(--font-sidebar-link-weight-current);
   }
 }

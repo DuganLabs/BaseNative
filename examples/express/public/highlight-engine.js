@@ -38,8 +38,26 @@ function highlightWith(re, src, classify) {
   return out;
 }
 
+const MARK = {
+  'tk-com': 'i',
+  'tk-tag': 'strong',
+  'tk-attr': 'abbr',
+  'tk-dir': 'dfn',
+  'tk-bind': 'samp',
+  'tk-str': 'mark',
+  'tk-kw': 'b',
+  'tk-fn': 'em',
+  'tk-num': 'data',
+  'tk-interp': 'kbd',
+  'tk-cp-category': 'b',
+  'tk-cp-type': 'em',
+  'tk-cp-item': 'cite',
+  'tk-cp-state': 'small',
+};
+
 function span(cls, text) {
-  return '<span class="' + cls + '">' + escHtml(text) + '</span>';
+  const tag = MARK[cls] || 'span';
+  return '<' + tag + '>' + escHtml(text) + '</' + tag + '>';
 }
 
 function hlTag(tok) {

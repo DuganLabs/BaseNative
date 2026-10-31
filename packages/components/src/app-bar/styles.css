@@ -1,4 +1,4 @@
-nav[variant="app-bar"] {
+nav[variant='app-bar'] {
   position: var(--position-app-bar);
   inset-block-end: var(--inset-app-bar-block-end);
   inset-inline: var(--inset-app-bar-inline);
@@ -21,7 +21,8 @@ nav[variant="app-bar"] {
     & > li {
       flex-grow: var(--flex-grow-app-bar-item);
 
-      & > a, & > button {
+      & > a,
+      & > button {
         display: var(--display-app-bar-tab);
         flex-direction: var(--flex-direction-app-bar-tab);
         align-items: var(--align-app-bar-tab);
@@ -40,7 +41,7 @@ nav[variant="app-bar"] {
         letter-spacing: var(--font-app-bar-tab-tracking);
         text-decoration: var(--text-decoration-app-bar-tab);
 
-        &[aria-current="page"] {
+        &[aria-current='page'] {
           color: var(--color-text-app-bar-tab-current);
           font-weight: var(--font-app-bar-tab-weight-current);
         }
@@ -60,6 +61,10 @@ nav[variant="app-bar"] {
     inset-block-end: var(--inset-app-bar-menu-block-end);
     inset-inline-end: var(--inset-app-bar-menu-inline-end);
     margin: var(--spacing-app-bar-menu-margin);
+
+    &::backdrop {
+      background-color: var(--color-bkg-app-bar-menu-backdrop);
+    }
     min-inline-size: var(--size-app-bar-menu-min-inline);
     gap: var(--spacing-app-bar-menu-gap);
     /* Rows pack at the start of the box — the menu sizes to its
@@ -78,7 +83,9 @@ nav[variant="app-bar"] {
       display: var(--display-app-bar-menu);
     }
 
-    & > li > a {
+    & > li > a,
+    & > li > button {
+      min-block-size: var(--size-target-min);
       display: var(--display-app-bar-menu-link);
       padding-block: var(--spacing-app-bar-menu-link-padding-block);
       padding-inline: var(--spacing-app-bar-menu-link-padding-inline);
@@ -95,7 +102,7 @@ nav[variant="app-bar"] {
         background-color: var(--color-bkg-app-bar-menu-link-hover);
       }
 
-      &[aria-current="page"] {
+      &[aria-current='page'] {
         color: var(--color-text-app-bar-menu-link-current);
       }
     }
@@ -110,7 +117,7 @@ nav[variant="app-bar"] {
    in force — the long label keeps its cell, the short labels
    compress, and no label's text bleeds across a cell edge. */
 @media (min-width: 23.5rem) {
-  nav[variant="app-bar"] > ul > li {
+  nav[variant='app-bar'] > ul > li {
     flex-basis: var(--flex-basis-app-bar-item);
     min-inline-size: var(--size-app-bar-item-min-inline);
   }

@@ -187,12 +187,10 @@ chore(ci): add bundle size check to PR workflow
 ## Key Invariants to Preserve
 
 1. `@basenative/runtime` must stay under **10KB gzipped** — the budget enforced by
-   `scripts/bundle-size.js` in CI. Currently 9.6KB. (The long-standing "<5KB" claim
-   was never true against the measured build; the budget has always been 10KB.)
-   Do not re-type this number anywhere: `node scripts/compare-stats.js` prints the
-   measured value, and the site reads it from there. `9.2KB` is still stale in
-   `README.md`, `docs/PRD.md`, `docs/migration.md`, `docs/api/cli.md` and
-   `docs/CONSUMING-FROM-GH-PACKAGES.md`.
+   `scripts/bundle-size.js` in CI. The budget has always been 10KB. Devtools are
+   the `@basenative/runtime/devtools` subpath and are not part of that measurement.
+   Do not hardcode the measured gzip: `node scripts/compare-stats.js` prints it,
+   and the site reads it from there.
 2. The CSP-safe evaluator must never use `eval` or `new Function`
 3. All parameterized DB queries use `?` placeholders — never string interpolation
 4. `hydrate()` must work from server-rendered HTML without JavaScript re-rendering everything

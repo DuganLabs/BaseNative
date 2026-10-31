@@ -1,5 +1,5 @@
 <template>
-  <aside :variant="variant()">
+  <aside :variant="variant()" :role="landmark()" :aria-label="label()">
     <nav :aria-label="label()">
       <template @for="section of sections()">
         <section>
@@ -9,12 +9,23 @@
           <ul>
             <template @for="item of section.items">
               <li>
-                <a :href="item.href" :aria-current="item.ariaCurrent">
-                  <template @if="item.iconHtml">
-                    {{ raw(item.iconHtml) }}
-                  </template>
-                  {{ item.label }}
-                </a>
+                <template @if="item.isLink">
+                  <a :href="item.href" :aria-current="item.ariaCurrent">
+                    <template @if="item.iconHtml"> {{ raw(item.iconHtml) }} </template>
+                    {{ item.label }}
+                  </a>
+                </template>
+                <template @else>
+                  <button
+                    type="button"
+                    :value="item.value"
+                    :aria-pressed="item.pressed"
+                    :aria-current="item.ariaCurrent"
+                  >
+                    <template @if="item.iconHtml"> {{ raw(item.iconHtml) }} </template>
+                    {{ item.label }}
+                  </button>
+                </template>
               </li>
             </template>
           </ul>

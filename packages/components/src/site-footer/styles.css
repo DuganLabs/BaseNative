@@ -1,4 +1,4 @@
-footer[variant="default"] {
+footer[variant='default'] {
   display: var(--display-site-footer);
   text-align: var(--text-align-site-footer);
   flex-wrap: var(--flex-wrap-site-footer);
@@ -31,6 +31,7 @@ footer[variant="default"] {
       padding: var(--spacing-site-footer-list-padding);
 
       & > li > a {
+        min-block-size: var(--size-target-min);
         color: var(--color-text-site-footer-link);
         font-family: var(--font-site-footer-link-family);
         font-size: var(--font-site-footer-link-size);

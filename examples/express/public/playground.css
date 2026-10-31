@@ -11,112 +11,13 @@
  * The --color-text-syntax-* tokens dress the editors' highlighting; the
  * --color-text-syntax-token-* set colours the segments of a CTI+ custom
  * property name (see hlCSS in playground.js). */
-:root {
-  --color-bkg-playground: #eef0ee;
-  --color-bkg-playground-surface: #ffffff;
-  --color-bkg-playground-surface-raised: #e4e7e4;
-  --color-bkg-playground-editor: #fcfdfc;
-  --color-bkg-playground-preview: #ffffff;
-  --color-text-playground: #171a1d;
-  --color-text-playground-muted: #5b636d;
-  --color-border-playground: #d3d8d4;
-  --color-text-playground-accent: #0d7a3e;
-  --color-text-playground-danger: #c62f24;
-  --color-text-playground-warn: #9a6a00;
-  --color-text-playground-diag: #0e6e8c;
-  --color-text-syntax-plain: #23272c;
-  --color-text-syntax-comment: #7a8288;
-  --color-text-syntax-tag: #0d7a3e;
-  --color-text-syntax-attr: #8a5a00;
-  --color-text-syntax-directive: #0e6e8c;
-  --color-text-syntax-binding: #a03d63;
-  --color-text-syntax-string: #9c3d1e;
-  --color-text-syntax-keyword: #0e6e8c;
-  --color-text-syntax-function: #6d4fc2;
-  --color-text-syntax-number: #9c3d1e;
-  --color-text-syntax-interpolation: #a03d63;
-  --color-text-syntax-token-category: #0e6e8c;
-  --color-text-syntax-token-type: #6d4fc2;
-  --color-text-syntax-token-item: #23272c;
-  --color-text-syntax-token-state: #a03d63;
-  --font-family-playground-mono:
-    ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
-  --font-family-playground-sans:
-    system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-}
-/* Dark values follow the site's theme, not only the OS: boot.js
-   stamps data-theme on <html> (the toggle's stored choice wins over
-   the OS), so the OS block below stands down when the visitor locked
-   light, and the data-theme block applies the same values whenever
-   dark is the page's theme. Same pattern as the catalog tokens. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --color-bkg-playground: #0f1113;
-    --color-bkg-playground-surface: #17191d;
-    --color-bkg-playground-surface-raised: #1f2226;
-    --color-bkg-playground-editor: #121417;
-    --color-bkg-playground-preview: #131518;
-    --color-text-playground: #eceff1;
-    --color-text-playground-muted: #99a1a9;
-    --color-border-playground: #2b2f34;
-    --color-text-playground-accent: #3fb96f;
-    --color-text-playground-danger: #ff7a6e;
-    --color-text-playground-warn: #e3b341;
-    --color-text-playground-diag: #56c8e8;
-    --color-text-syntax-plain: #d7dce0;
-    --color-text-syntax-comment: #6d767f;
-    --color-text-syntax-tag: #57cc85;
-    --color-text-syntax-attr: #e3b341;
-    --color-text-syntax-directive: #56c8e8;
-    --color-text-syntax-binding: #f08bb4;
-    --color-text-syntax-string: #f09383;
-    --color-text-syntax-keyword: #56c8e8;
-    --color-text-syntax-function: #b7a6f2;
-    --color-text-syntax-number: #f09383;
-    --color-text-syntax-interpolation: #f08bb4;
-    --color-text-syntax-token-category: #56c8e8;
-    --color-text-syntax-token-type: #b7a6f2;
-    --color-text-syntax-token-item: #d7dce0;
-    --color-text-syntax-token-state: #f08bb4;
-  }
-}
-:root[data-theme='dark'] {
-  --color-bkg-playground: #0f1113;
-  --color-bkg-playground-surface: #17191d;
-  --color-bkg-playground-surface-raised: #1f2226;
-  --color-bkg-playground-editor: #121417;
-  --color-bkg-playground-preview: #131518;
-  --color-text-playground: #eceff1;
-  --color-text-playground-muted: #99a1a9;
-  --color-border-playground: #2b2f34;
-  --color-text-playground-accent: #3fb96f;
-  --color-text-playground-danger: #ff7a6e;
-  --color-text-playground-warn: #e3b341;
-  --color-text-playground-diag: #56c8e8;
-  --color-text-syntax-plain: #d7dce0;
-  --color-text-syntax-comment: #6d767f;
-  --color-text-syntax-tag: #57cc85;
-  --color-text-syntax-attr: #e3b341;
-  --color-text-syntax-directive: #56c8e8;
-  --color-text-syntax-binding: #f08bb4;
-  --color-text-syntax-string: #f09383;
-  --color-text-syntax-keyword: #56c8e8;
-  --color-text-syntax-function: #b7a6f2;
-  --color-text-syntax-number: #f09383;
-  --color-text-syntax-interpolation: #f08bb4;
-  --color-text-syntax-token-category: #56c8e8;
-  --color-text-syntax-token-type: #b7a6f2;
-  --color-text-syntax-token-item: #d7dce0;
-  --color-text-syntax-token-state: #f08bb4;
-  }
 
-/* The workspace sits under the hero, inside the site's content column. */
+/* Playground colors live in the DTCG token source (playground.json). */
+
 .workspace {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 12px 0 0;
-  width: 100%;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  overflow-x: clip;
 }
 
 /* ---------- controls row: the toolbar component ---------- */
@@ -299,54 +200,53 @@
   overflow: hidden;
   outline: none;
 }
-.tk-com {
+.editor i {
   color: var(--color-text-syntax-comment);
   font-style: italic;
 }
-.tk-tag {
+.editor strong {
   color: var(--color-text-syntax-tag);
   font-weight: 600;
 }
-.tk-attr {
+.editor abbr {
   color: var(--color-text-syntax-attr);
+  text-decoration: none;
 }
-.tk-dir {
+.editor dfn {
   color: var(--color-text-syntax-directive);
   font-weight: 600;
+  font-style: normal;
 }
-.tk-bind {
+.editor samp {
   color: var(--color-text-syntax-binding);
   font-weight: 600;
 }
-.tk-str {
+.editor mark {
   color: var(--color-text-syntax-string);
+  background: transparent;
 }
-.tk-kw {
+.editor b {
   color: var(--color-text-syntax-keyword);
+  font-weight: 600;
 }
-.tk-fn {
+.editor em {
   color: var(--color-text-syntax-function);
+  font-style: normal;
 }
-.tk-num {
+.editor data {
   color: var(--color-text-syntax-number);
 }
-.tk-interp {
+.editor kbd {
   color: var(--color-text-syntax-interpolation);
 }
-/* The segments of a CTI+ custom property name. */
-.tk-cp-category {
-  color: var(--color-text-syntax-token-category);
-  font-weight: 600;
-}
-.tk-cp-type {
-  color: var(--color-text-syntax-token-type);
-}
-.tk-cp-item {
+.editor cite {
   color: var(--color-text-syntax-token-item);
+  font-style: normal;
 }
-.tk-cp-state {
+.editor small {
   color: var(--color-text-syntax-token-state);
   font-weight: 600;
+  font-size: inherit;
 }
 
 /* ---------- stage ---------- */

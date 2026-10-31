@@ -62,6 +62,10 @@ jobs:
         if: matrix.node-version == 22
         run: pnpm exec nx run-many --target=lint
 
+      - name: Lint workspace
+        if: matrix.node-version == 22
+        run: pnpm exec eslint .
+
       - name: Test
         run: pnpm exec nx run-many --target=test
 
