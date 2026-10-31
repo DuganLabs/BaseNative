@@ -13,6 +13,13 @@ export const root = 'section';
  * it adds or removes a value and reports the whole set through
  * onChange, the same telemetry shape as choice-group.
  *
+ * Like the combobox, typing filters the options (a pure function of
+ * the field text, the model's `query`) and focusing the field opens
+ * the popup; the section's delegated handlers receive both as they
+ * bubble from the composed input. A chip's dismiss button removes
+ * its value through the same toggle() and returns focus to the
+ * field — without that refocus reading as a fresh open.
+ *
  * @typedef {object} MultiselectOption
  * @property {string} value
  * @property {string} label
@@ -36,15 +43,26 @@ export function create(props) {
   const label = signal(props.label ?? '');
   const inputHtml = signal(props.inputHtml);
   const options = signal(props.options ?? []);
+  const query = signal('');
   const selected = signal(props.selected ?? []);
   const open = signal(props.open ?? false);
   const activeValue = signal('');
   const variant = signal(props.variant ?? 'multiselect');
+  /* Set by the chip dismissal so the refocus it performs does not
+     read as a fresh open to onFocus; consumed by that next focus. */
+  let suppressOpen = false;
 
   const listboxId = computed(() => `${props.id}-listbox`);
   const optionId = (/** @type {MultiselectOption} */ option) => `${props.id}-option-${option.value}`;
   const hasSelected = computed(() => selected().length > 0);
-  const activeOption = computed(() => options().find((option) => option.value === activeValue()) ?? null);
+  /* Filtering is a pure function of the field text: an option is
+     visible iff the query appears in its label (case-insensitive). */
+  const visibleOptions = computed(() => {
+    const q = query().trim().toLowerCase();
+    if (q === '') return options();
+    return options().filter((option) => option.label.toLowerCase().includes(q));
+  });
+  const activeOption = computed(() => visibleOptions().find((option) => option.value === activeValue()) ?? null);
   const activeDescendant = computed(() => {
     const active = activeOption();
     return open() && active ? optionId(active) : '';
@@ -82,9 +100,59 @@ export function create(props) {
     return last ? removeValue(last.value) : false;
   };
 
+  /**
+   * The field's text drives the filter: typing sets the query, opens
+   * the popup, and makes the first visible option active.
+   * @param {{ target: { value?: string } }} event
+   */
+  function onInput(event) {
+    query.set(event.target?.value ?? '');
+    if (!open()) open.set(true);
+    const first = visibleOptions()[0];
+    activeValue.set(first ? first.value : '');
+  }
+
+  /* Focusing the field opens the popup — unless the focus is the
+     chip dismissal returning to the field, which leaves the popup
+     exactly as it was. */
+  function onFocus() {
+    if (suppressOpen) {
+      suppressOpen = false;
+      return;
+    }
+    query.set('');
+    if (!open()) open.set(true);
+  }
+
+  /**
+   * A chip's dismiss button removes its value through toggle() and
+   * returns focus to the field. The chip list renders the selection
+   * in order, so the clicked chip's position in the list is its
+   * position in the set. The input is resolved before the toggle
+   * re-renders the list; where there is no composed input this
+   * still removes the value.
+   * @param {Event} event
+   */
+  function onChipsClick(event) {
+    const button = (event.target)?.closest?.('button');
+    if (!button) return;
+    const li = button.closest?.('li');
+    const list = (event.currentTarget ?? event.target)?.closest?.('ul');
+    if (!li || !list) return;
+    const index = [...list.children].indexOf(li);
+    const item = selected()[index];
+    if (!item) return;
+    const input = list.closest?.('section')?.querySelector?.('input');
+    toggle(item);
+    if (input) {
+      suppressOpen = true;
+      input.focus();
+    }
+  }
+
   /** @param {number} delta */
   function moveActive(delta) {
-    const list = options();
+    const list = visibleOptions();
     if (list.length === 0) return;
     const index = list.findIndex((option) => option.value === activeValue());
     activeValue.set(list[(index + delta + list.length) % list.length].value);
@@ -97,23 +165,23 @@ export function create(props) {
         event.preventDefault();
         if (!open()) open.set(true);
         else moveActive(1);
-        if (open() && !activeOption() && options().length > 0) activeValue.set(options()[0].value);
+        if (open() && !activeOption() && visibleOptions().length > 0) activeValue.set(visibleOptions()[0].value);
         return;
       case 'ArrowUp':
         event.preventDefault();
         if (!open()) open.set(true);
         else moveActive(-1);
-        if (open() && !activeOption() && options().length > 0) activeValue.set(options()[options().length - 1].value);
+        if (open() && !activeOption() && visibleOptions().length > 0) activeValue.set(visibleOptions()[visibleOptions().length - 1].value);
         return;
       case 'Home':
-        if (!open() || options().length === 0) return;
+        if (!open() || visibleOptions().length === 0) return;
         event.preventDefault();
-        activeValue.set(options()[0].value);
+        activeValue.set(visibleOptions()[0].value);
         return;
       case 'End':
-        if (!open() || options().length === 0) return;
+        if (!open() || visibleOptions().length === 0) return;
         event.preventDefault();
-        activeValue.set(options()[options().length - 1].value);
+        activeValue.set(visibleOptions()[visibleOptions().length - 1].value);
         return;
       case 'Enter': {
         const active = activeOption();
@@ -134,9 +202,9 @@ export function create(props) {
   }
 
   return {
-    label, inputHtml, options, selected, open, activeValue, activeOption, activeDescendant,
+    label, inputHtml, options, query, visibleOptions, selected, open, activeValue, activeOption, activeDescendant,
     variant, listboxId, optionId, hasSelected, isSelected, isActive, toggle,
-    addValue, removeValue, removeLast, moveActive, onKeydown, raw,
+    addValue, removeValue, removeLast, moveActive, onKeydown, onInput, onFocus, onChipsClick, raw,
   };
 }
 

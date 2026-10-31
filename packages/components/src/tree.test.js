@@ -101,6 +101,31 @@ describe('tree — view model behavior', () => {
     assert.deepEqual(reports, [], 'reflectors never report');
   });
 
+  it('a click on the toggle button toggles the branch; a click on the item selects it', () => {
+    const vm = createTree(branch());
+    const list = { children: [] };
+    const makeItem = () => {
+      const li = { parentElement: list };
+      list.children.push(li);
+      return li;
+    };
+    const branchLi = makeItem();
+    makeItem();
+    const clickOn = (li, onButton) => ({
+      target: {
+        closest: (sel) => (sel === 'button' ? (onButton ? {} : null) : li),
+      },
+      currentTarget: list,
+    });
+    vm.onClick(clickOn(branchLi, true));
+    assert.equal(vm.items()[0].expanded, true, 'the toggle button expands the branch');
+    assert.equal(vm.selected(), null, 'toggling does not select');
+    vm.onClick(clickOn(branchLi, true));
+    assert.equal(vm.items()[0].expanded, false, 'a second click collapses it');
+    vm.onClick(clickOn(branchLi, false));
+    assert.equal(vm.selected(), 'a', 'a plain item click selects');
+  });
+
   it('select reports the id; selectById reflects silently; both move the roving stop', () => {
     const picked = [];
     const vm = createTree({ ...branch(), onSelect: (id) => picked.push(id) });

@@ -16,10 +16,15 @@ export const root = 'section';
  * The keyboard pattern lives in the view model: ArrowDown / ArrowUp
  * open the popup and move the active option (wrapping at the ends),
  * Home / End jump to the first / last option, Enter selects the
- * active option, Escape closes. The input's aria-activedescendant is
- * this model's `activeDescendant`, which follows the active option —
- * the composition that renders the input binds it, so it never sits
- * null while the popup is open.
+ * active option, Escape closes. Typing in the field filters the
+ * options — a pure function of the field text, the model's `query` —
+ * and the first visible option becomes active; focusing the field
+ * opens the popup. The section's delegated handlers receive these
+ * events as they bubble from the composed input, so the composition
+ * only renders the input; the one thing it still binds is the
+ * input's aria-activedescendant and aria-expanded, which follow this
+ * model's `activeDescendant` and `open`, so the descendant never
+ * sits null while the popup is open.
  *
  * @typedef {object} ComboboxOption
  * @property {string} value
@@ -29,7 +34,7 @@ export const root = 'section';
  * @property {string} id Base id; the listbox and option ids derive from it.
  * @property {string} label Accessible name for the popup.
  * @property {string} inputHtml The rendered input component.
- * @property {ComboboxOption[]} [options] Already filtered by the caller.
+ * @property {ComboboxOption[]} [options] The full option set; the model filters it by the field text.
  * @property {boolean} [open]
  * @property {string} [activeValue] The initially active option's value.
  * @property {(event: { value: string, label: string }) => void} [onSelect]
@@ -44,6 +49,7 @@ export function create(props) {
   const label = signal(props.label ?? '');
   const inputHtml = signal(props.inputHtml);
   const options = signal(props.options ?? []);
+  const query = signal('');
   const open = signal(props.open ?? false);
   const activeValue = signal(props.activeValue ?? '');
   const value = signal('');
@@ -51,7 +57,14 @@ export function create(props) {
 
   const listboxId = computed(() => `${props.id}-listbox`);
   const optionId = (/** @type {ComboboxOption} */ option) => `${props.id}-option-${option.value}`;
-  const activeOption = computed(() => options().find((option) => option.value === activeValue()) ?? null);
+  /* Filtering is a pure function of the field text: an option is
+     visible iff the query appears in its label (case-insensitive). */
+  const visibleOptions = computed(() => {
+    const q = query().trim().toLowerCase();
+    if (q === '') return options();
+    return options().filter((option) => option.label.toLowerCase().includes(q));
+  });
+  const activeOption = computed(() => visibleOptions().find((option) => option.value === activeValue()) ?? null);
   const activeDescendant = computed(() => {
     const active = activeOption();
     return open() && active ? optionId(active) : '';
@@ -64,9 +77,42 @@ export function create(props) {
     props.onSelect?.({ value: option.value, label: option.label });
   };
 
+  /**
+   * Choosing from the popup also lands the option's label in the
+   * composed input — the field shows what was chosen. The input is
+   * resolved from the event, the dialog behavior's pattern; where
+   * there is no composed input (a unit test, the server) this no-ops.
+   * @param {Event} event
+   * @param {ComboboxOption} option
+   */
+  function choose(event, option) {
+    select(option);
+    const root = (event.currentTarget ?? event.target)?.closest?.('section');
+    const input = root?.querySelector?.('input');
+    if (input) input.value = option.label;
+  }
+
+  /**
+   * The field's text drives the filter: typing sets the query, opens
+   * the popup, and makes the first visible option active.
+   * @param {{ target: { value?: string } }} event
+   */
+  function onInput(event) {
+    query.set(event.target?.value ?? '');
+    if (!open()) open.set(true);
+    const first = visibleOptions()[0];
+    activeValue.set(first ? first.value : '');
+  }
+
+  /* Focusing the field opens the popup on its full, unfiltered set. */
+  function onFocus() {
+    query.set('');
+    if (!open()) open.set(true);
+  }
+
   /** @param {number} delta */
   function moveActive(delta) {
-    const list = options();
+    const list = visibleOptions();
     if (list.length === 0) return;
     const index = list.findIndex((option) => option.value === activeValue());
     const next = list[(index + delta + list.length) % list.length];
@@ -80,31 +126,36 @@ export function create(props) {
         event.preventDefault();
         if (!open()) {
           open.set(true);
-          if (!activeOption() && options().length > 0) activeValue.set(options()[0].value);
+          if (!activeOption() && visibleOptions().length > 0) activeValue.set(visibleOptions()[0].value);
         } else moveActive(1);
         return;
       case 'ArrowUp':
         event.preventDefault();
         if (!open()) {
           open.set(true);
-          if (!activeOption() && options().length > 0) activeValue.set(options()[options().length - 1].value);
+          if (!activeOption() && visibleOptions().length > 0) activeValue.set(visibleOptions()[visibleOptions().length - 1].value);
         } else moveActive(-1);
         return;
       case 'Home':
-        if (!open() || options().length === 0) return;
+        if (!open() || visibleOptions().length === 0) return;
         event.preventDefault();
-        activeValue.set(options()[0].value);
+        activeValue.set(visibleOptions()[0].value);
         return;
       case 'End':
-        if (!open() || options().length === 0) return;
+        if (!open() || visibleOptions().length === 0) return;
         event.preventDefault();
-        activeValue.set(options()[options().length - 1].value);
+        activeValue.set(visibleOptions()[visibleOptions().length - 1].value);
         return;
       case 'Enter': {
         const active = activeOption();
         if (open() && active) {
           event.preventDefault();
           select(active);
+          /* The keyboard path chooses from the field itself, so the
+             label lands in it directly — the same end state choose()
+             produces for a pointer selection. */
+          const target = (event.target);
+          if (target && 'value' in target) target.value = active.label;
         }
         return;
       }
@@ -119,8 +170,8 @@ export function create(props) {
   }
 
   return {
-    label, inputHtml, options, open, activeValue, activeOption, activeDescendant,
-    value, variant, listboxId, optionId, isActive, select, moveActive, onKeydown, raw,
+    label, inputHtml, options, query, visibleOptions, open, activeValue, activeOption, activeDescendant,
+    value, variant, listboxId, optionId, isActive, select, choose, moveActive, onKeydown, onInput, onFocus, raw,
   };
 }
 

@@ -47,9 +47,10 @@ test.describe('Enterprise Example', () => {
 // Demo behaviour that only a browser can prove: a staged dialog
 // dismissing. The pre-trinity demo this gate opened (an opener
 // button, #demo-dialog-page, a [data-bn="dialog-close"] hook) is
-// gone — the catalog specimens stage open in flow now, and
-// specimens.js dismisses a staged dialog from any action inside
-// it. The gate proves that wiring on the dialog page itself.
+// gone — the catalog specimens stage open in flow now, and the
+// dialog component's own behavior dismisses a staged dialog from
+// its header close control (specimens.js only mounts it). The gate
+// proves that behavior on the dialog page itself.
 test.describe('Component demos', () => {
   test('the staged dialog dismisses from its Close button on /components/dialog', async ({ page }) => {
     await page.goto('/components/dialog');

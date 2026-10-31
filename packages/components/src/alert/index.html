@@ -1,5 +1,5 @@
 <template>
-  <aside :variant="variant()" :role="role()">
+  <aside :variant="variant()" :role="role()" @click="dismiss($event)">
     <h3>{{ title() }}</h3>
     <p>{{ body() }}</p>
     <template @if="hasDismiss()">

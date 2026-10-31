@@ -1077,12 +1077,26 @@ function bindNode(node, ctx, options) {
   if (node.nodeType === Node.TEXT_NODE) {
     const source = node.textContent;
     if (source.includes("{{")) {
+      let inserted = [];
       const runner = effect(() => {
         const result = interpolate(source, ctx, options);
-        if (isRaw(result)) node.innerHTML = unwrapRaw(result);
-        else node.textContent = result;
+        for (const child of inserted) child.remove();
+        inserted = [];
+        if (isRaw(result)) {
+          const template48 = document.createElement("template");
+          template48.innerHTML = unwrapRaw(result);
+          inserted = [...template48.content.childNodes];
+          node.after(template48.content);
+          node.textContent = "";
+        } else {
+          node.textContent = result;
+        }
       });
-      registerCleanup(node, () => runner.dispose?.());
+      registerCleanup(node, () => {
+        runner.dispose?.();
+        for (const child of inserted) child.remove();
+        inserted = [];
+      });
       processed++;
     }
     return processed;
@@ -2111,7 +2125,12 @@ function create2(props) {
   const role = computed(() => variant() === "danger" ? "alert" : "status");
   const dismissHtml = signal(props.dismissHtml ?? "");
   const hasDismiss = computed(() => dismissHtml() !== "");
-  return { title, body, variant, role, dismissHtml, hasDismiss, raw };
+  function dismiss(event) {
+    if (!event.target?.closest?.("button")) return;
+    const aside = (event.currentTarget ?? event.target)?.closest?.("aside");
+    aside?.remove();
+  }
+  return { title, body, variant, role, dismissHtml, hasDismiss, dismiss, raw };
 }
 function registerVariants2(registry3) {
   registry3.registerVariant("alert", "info");
@@ -2497,13 +2516,19 @@ function create14(props) {
   const label = signal(props.label ?? "");
   const inputHtml = signal(props.inputHtml);
   const options = signal(props.options ?? []);
+  const query = signal("");
   const open = signal(props.open ?? false);
   const activeValue = signal(props.activeValue ?? "");
   const value = signal("");
   const variant = signal(props.variant ?? "default");
   const listboxId = computed(() => `${props.id}-listbox`);
   const optionId = (option) => `${props.id}-option-${option.value}`;
-  const activeOption = computed(() => options().find((option) => option.value === activeValue()) ?? null);
+  const visibleOptions = computed(() => {
+    const q = query().trim().toLowerCase();
+    if (q === "") return options();
+    return options().filter((option) => option.label.toLowerCase().includes(q));
+  });
+  const activeOption = computed(() => visibleOptions().find((option) => option.value === activeValue()) ?? null);
   const activeDescendant = computed(() => {
     const active = activeOption();
     return open() && active ? optionId(active) : "";
@@ -2515,8 +2540,24 @@ function create14(props) {
     open.set(false);
     props.onSelect?.({ value: option.value, label: option.label });
   };
+  function choose(event, option) {
+    select2(option);
+    const root48 = (event.currentTarget ?? event.target)?.closest?.("section");
+    const input2 = root48?.querySelector?.("input");
+    if (input2) input2.value = option.label;
+  }
+  function onInput(event) {
+    query.set(event.target?.value ?? "");
+    if (!open()) open.set(true);
+    const first = visibleOptions()[0];
+    activeValue.set(first ? first.value : "");
+  }
+  function onFocus() {
+    query.set("");
+    if (!open()) open.set(true);
+  }
   function moveActive(delta) {
-    const list = options();
+    const list = visibleOptions();
     if (list.length === 0) return;
     const index = list.findIndex((option) => option.value === activeValue());
     const next = list[(index + delta + list.length) % list.length];
@@ -2528,31 +2569,33 @@ function create14(props) {
         event.preventDefault();
         if (!open()) {
           open.set(true);
-          if (!activeOption() && options().length > 0) activeValue.set(options()[0].value);
+          if (!activeOption() && visibleOptions().length > 0) activeValue.set(visibleOptions()[0].value);
         } else moveActive(1);
         return;
       case "ArrowUp":
         event.preventDefault();
         if (!open()) {
           open.set(true);
-          if (!activeOption() && options().length > 0) activeValue.set(options()[options().length - 1].value);
+          if (!activeOption() && visibleOptions().length > 0) activeValue.set(visibleOptions()[visibleOptions().length - 1].value);
         } else moveActive(-1);
         return;
       case "Home":
-        if (!open() || options().length === 0) return;
+        if (!open() || visibleOptions().length === 0) return;
         event.preventDefault();
-        activeValue.set(options()[0].value);
+        activeValue.set(visibleOptions()[0].value);
         return;
       case "End":
-        if (!open() || options().length === 0) return;
+        if (!open() || visibleOptions().length === 0) return;
         event.preventDefault();
-        activeValue.set(options()[options().length - 1].value);
+        activeValue.set(visibleOptions()[visibleOptions().length - 1].value);
         return;
       case "Enter": {
         const active = activeOption();
         if (open() && active) {
           event.preventDefault();
           select2(active);
+          const target = event.target;
+          if (target && "value" in target) target.value = active.label;
         }
         return;
       }
@@ -2569,6 +2612,8 @@ function create14(props) {
     label,
     inputHtml,
     options,
+    query,
+    visibleOptions,
     open,
     activeValue,
     activeOption,
@@ -2579,8 +2624,11 @@ function create14(props) {
     optionId,
     isActive,
     select: select2,
+    choose,
     moveActive,
     onKeydown,
+    onInput,
+    onFocus,
     raw
   };
 }
@@ -2756,6 +2804,10 @@ function create16(props) {
     const sign = dir === "asc" ? 1 : -1;
     rows.set(rows().map((row, i) => ({ row, i, text: cellText(row.cells[index]) })).sort((a, b) => collator.compare(a.text, b.text) * sign || a.i - b.i).map((entry) => entry.row));
   }
+  function sortClick(event, column) {
+    if (!event.target?.closest?.("button")) return;
+    sortBy(column);
+  }
   function sortState() {
     const sorted = columns().find((column) => column.sort);
     return sorted ? { key: sorted.key, dir: sorted.sort === "ascending" ? "asc" : "desc" } : null;
@@ -2837,6 +2889,7 @@ function create16(props) {
     toggleAll,
     select: select2,
     sortBy,
+    sortClick,
     sortState,
     focusPos,
     cellTabIndex,
@@ -2885,7 +2938,24 @@ function createDialogBehavior(props) {
   function onBackdropClick(event) {
     if (event.target === event.currentTarget) close(event);
   }
-  return { idAttr, show, close, isOpen, onBackdropClick };
+  function onClick(event) {
+    if (event.target === event.currentTarget) {
+      close(event);
+      return;
+    }
+    const button2 = event.target?.closest?.("button");
+    if (!button2) return;
+    const header = event.currentTarget?.querySelector?.("header");
+    if (header?.contains(button2)) close(event);
+  }
+  function onKeydown(event) {
+    if (event.key !== "Escape") return;
+    const dialog2 = resolveDialog(event);
+    if (!dialog2?.open) return;
+    event.preventDefault();
+    close(event);
+  }
+  return { idAttr, show, close, isOpen, onBackdropClick, onClick, onKeydown };
 }
 
 // ../../packages/components/src/dialog/index.js
@@ -2910,7 +2980,9 @@ function create17(props) {
     show: behavior.show,
     close: behavior.close,
     isOpen: behavior.isOpen,
-    onBackdropClick: behavior.onBackdropClick
+    onBackdropClick: behavior.onBackdropClick,
+    onClick: behavior.onClick,
+    onKeydown: behavior.onKeydown
   };
 }
 function registerVariants17(registry3) {
@@ -2945,7 +3017,9 @@ function create18(props) {
     show: behavior.show,
     close: behavior.close,
     isOpen: behavior.isOpen,
-    onBackdropClick: behavior.onBackdropClick
+    onBackdropClick: behavior.onBackdropClick,
+    onClick: behavior.onClick,
+    onKeydown: behavior.onKeydown
   };
 }
 function registerVariants18(registry3) {
@@ -3183,14 +3257,21 @@ function create26(props) {
   const label = signal(props.label ?? "");
   const inputHtml = signal(props.inputHtml);
   const options = signal(props.options ?? []);
+  const query = signal("");
   const selected = signal(props.selected ?? []);
   const open = signal(props.open ?? false);
   const activeValue = signal("");
   const variant = signal(props.variant ?? "multiselect");
+  let suppressOpen = false;
   const listboxId = computed(() => `${props.id}-listbox`);
   const optionId = (option) => `${props.id}-option-${option.value}`;
   const hasSelected = computed(() => selected().length > 0);
-  const activeOption = computed(() => options().find((option) => option.value === activeValue()) ?? null);
+  const visibleOptions = computed(() => {
+    const q = query().trim().toLowerCase();
+    if (q === "") return options();
+    return options().filter((option) => option.label.toLowerCase().includes(q));
+  });
+  const activeOption = computed(() => visibleOptions().find((option) => option.value === activeValue()) ?? null);
   const activeDescendant = computed(() => {
     const active = activeOption();
     return open() && active ? optionId(active) : "";
@@ -3219,8 +3300,38 @@ function create26(props) {
     const last = selected().at(-1);
     return last ? removeValue(last.value) : false;
   };
+  function onInput(event) {
+    query.set(event.target?.value ?? "");
+    if (!open()) open.set(true);
+    const first = visibleOptions()[0];
+    activeValue.set(first ? first.value : "");
+  }
+  function onFocus() {
+    if (suppressOpen) {
+      suppressOpen = false;
+      return;
+    }
+    query.set("");
+    if (!open()) open.set(true);
+  }
+  function onChipsClick(event) {
+    const button2 = event.target?.closest?.("button");
+    if (!button2) return;
+    const li = button2.closest?.("li");
+    const list = (event.currentTarget ?? event.target)?.closest?.("ul");
+    if (!li || !list) return;
+    const index = [...list.children].indexOf(li);
+    const item = selected()[index];
+    if (!item) return;
+    const input2 = list.closest?.("section")?.querySelector?.("input");
+    toggle2(item);
+    if (input2) {
+      suppressOpen = true;
+      input2.focus();
+    }
+  }
   function moveActive(delta) {
-    const list = options();
+    const list = visibleOptions();
     if (list.length === 0) return;
     const index = list.findIndex((option) => option.value === activeValue());
     activeValue.set(list[(index + delta + list.length) % list.length].value);
@@ -3231,23 +3342,23 @@ function create26(props) {
         event.preventDefault();
         if (!open()) open.set(true);
         else moveActive(1);
-        if (open() && !activeOption() && options().length > 0) activeValue.set(options()[0].value);
+        if (open() && !activeOption() && visibleOptions().length > 0) activeValue.set(visibleOptions()[0].value);
         return;
       case "ArrowUp":
         event.preventDefault();
         if (!open()) open.set(true);
         else moveActive(-1);
-        if (open() && !activeOption() && options().length > 0) activeValue.set(options()[options().length - 1].value);
+        if (open() && !activeOption() && visibleOptions().length > 0) activeValue.set(visibleOptions()[visibleOptions().length - 1].value);
         return;
       case "Home":
-        if (!open() || options().length === 0) return;
+        if (!open() || visibleOptions().length === 0) return;
         event.preventDefault();
-        activeValue.set(options()[0].value);
+        activeValue.set(visibleOptions()[0].value);
         return;
       case "End":
-        if (!open() || options().length === 0) return;
+        if (!open() || visibleOptions().length === 0) return;
         event.preventDefault();
-        activeValue.set(options()[options().length - 1].value);
+        activeValue.set(visibleOptions()[visibleOptions().length - 1].value);
         return;
       case "Enter": {
         const active = activeOption();
@@ -3270,6 +3381,8 @@ function create26(props) {
     label,
     inputHtml,
     options,
+    query,
+    visibleOptions,
     selected,
     open,
     activeValue,
@@ -3287,6 +3400,9 @@ function create26(props) {
     removeLast,
     moveActive,
     onKeydown,
+    onInput,
+    onFocus,
+    onChipsClick,
     raw
   };
 }
@@ -3606,7 +3722,14 @@ function create34(props) {
     if (option) choose(option);
   }
   function keydown(event) {
-    if (event.key === "Escape") open.set(false);
+    if (event.key === "Escape") {
+      open.set(false);
+      return;
+    }
+    if ((event.key === "ArrowDown" || event.key === "ArrowUp") && !open()) {
+      event.preventDefault?.();
+      open.set(true);
+    }
   }
   return {
     options,
@@ -3946,7 +4069,13 @@ function create42(props) {
     const inner = ICON_PATHS[item.tone ?? "info"] ?? ICON_PATHS.info;
     return '<svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' + inner + "</svg>";
   };
-  return { items, live, variant, iconFor, raw };
+  const dismissItem = (item) => {
+    items.set(items().filter((entry) => entry !== item));
+  };
+  function onItemClick(event, item) {
+    if (event.target?.closest?.("button")) dismissItem(item);
+  }
+  return { items, live, variant, iconFor, dismissItem, onItemClick, raw };
 }
 function createToaster(options = {}) {
   const defaultDuration = options.duration ?? 5e3;
@@ -4020,7 +4149,19 @@ function create44(props) {
     overflowOpen.set(!overflowOpen());
     props.onOverflow?.({ open: overflowOpen() });
   }
-  return { label, actionsHtml, overflowHtml, overflowLabel, variant, overflowOpen, hasOverflow, expandedAttr, toggleOverflow, raw };
+  function closeOverflow() {
+    if (!overflowOpen()) return;
+    overflowOpen.set(false);
+    props.onOverflow?.({ open: false });
+  }
+  function onKeydown(event) {
+    if (event.key !== "Escape" || !overflowOpen()) return;
+    event.preventDefault();
+    closeOverflow();
+    const bar = (event.currentTarget ?? event.target)?.closest?.("section");
+    bar?.querySelector?.("button[aria-expanded]")?.focus();
+  }
+  return { label, actionsHtml, overflowHtml, overflowLabel, variant, overflowOpen, hasOverflow, expandedAttr, toggleOverflow, closeOverflow, onKeydown, raw };
 }
 function registerVariants44(registry3) {
   registry3.registerVariant("toolbar", "toolbar");
@@ -4112,10 +4253,25 @@ function create46(props) {
     const model = modelFromEvent(event);
     if (model) focusedId.set(idOf(model));
   }
+  function refocusItem(event, index, toButton) {
+    const list = event.currentTarget;
+    const li = list?.children?.[index];
+    if (!li) return;
+    (toButton ? li.querySelector?.("button") ?? li : li).focus?.();
+  }
   function onClick(event) {
-    if (event.target?.closest?.("button")) return;
+    const item = ownItem(event);
     const model = modelFromEvent(event);
-    if (model) select2(model);
+    if (!model || !item) return;
+    if (event.target?.closest?.("button")) {
+      if (model.childrenHtml) {
+        const index = [...item.parentElement.children].indexOf(item);
+        toggle2(model);
+        refocusItem(event, index, true);
+      }
+      return;
+    }
+    select2(model);
   }
   function onKeydown(event) {
     const item = ownItem(event);
@@ -4141,6 +4297,7 @@ function create46(props) {
       case "ArrowRight":
         if (model.childrenHtml && !model.expanded) {
           toggle2(model);
+          refocusItem(event, index, false);
           return;
         }
         if (isExpanded(model)) focusEl = item.querySelector('[role="group"] [role="treeitem"]');
@@ -4148,6 +4305,7 @@ function create46(props) {
       case "ArrowLeft":
         if (isExpanded(model)) {
           toggle2(model);
+          refocusItem(event, index, false);
           return;
         }
         focusEl = item.closest('[role="group"]')?.parentElement?.closest?.('[role="treeitem"]') ?? null;

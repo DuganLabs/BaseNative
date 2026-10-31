@@ -1,7 +1,7 @@
 <template>
-  <section :variant="variant()" :aria-label="label()">
+  <section :variant="variant()" :aria-label="label()" @keydown="onKeydown($event)" @input="onInput($event)" @focusin="onFocus($event)">
     <template @if="hasSelected()">
-      <ul>
+      <ul @click="onChipsClick($event)">
         <template @for="item of selected()">
           <li>{{ item.label }} {{ raw(item.dismissHtml) }}</li>
         </template>
@@ -10,7 +10,7 @@
     {{ raw(inputHtml()) }}
     <template @if="open()">
       <ul role="listbox" aria-multiselectable="true" :id="listboxId()" :aria-label="label()">
-        <template @for="option of options()">
+        <template @for="option of visibleOptions()">
           <li role="option" :id="optionId(option)" :aria-selected="isSelected(option)" @click="toggle(option)">{{ option.label }}</li>
         </template>
       </ul>

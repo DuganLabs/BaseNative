@@ -26,6 +26,10 @@ import { create as createDropdownMenu } from './dropdown-menu/index.js';
 import { create as createCommandPalette } from './command-palette/index.js';
 import { create as createCombobox } from './combobox/index.js';
 import { create as createMultiselect } from './multiselect/index.js';
+import { create as createSelect } from './select/index.js';
+import { create as createToolbar } from './toolbar/index.js';
+import { create as createToast } from './toast/index.js';
+import { create as createAlert } from './alert/index.js';
 import { create as createDatagrid } from './datagrid/index.js';
 import { create as createVirtualizer } from './virtualizer/index.js';
 import { create as createCalendar } from './calendar/index.js';
@@ -395,6 +399,166 @@ describe('multiselect — toggle model and keyboard', () => {
     vm.onKeydown(keyEvent('Escape'));
     assert.equal(vm.open(), false);
     assert.equal(vm.activeDescendant(), '');
+  });
+});
+
+describe('specimen behaviors — the patterns that moved in from the site boot', () => {
+  const comboOptions = () => [
+    { value: 'orange', label: 'Orange County' },
+    { value: 'la', label: 'Los Angeles' },
+    { value: 'riverside', label: 'Riverside' },
+  ];
+
+  it('combobox: typing filters the options and activates the first visible one; focus opens unfiltered', () => {
+    const vm = createCombobox({ id: 'cb', inputHtml: '<input>', options: comboOptions() });
+    vm.onFocus();
+    assert.equal(vm.open(), true);
+    assert.deepEqual(vm.visibleOptions().map((o) => o.value), ['orange', 'la', 'riverside']);
+    vm.onInput({ target: { value: 'ang' } });
+    assert.deepEqual(vm.visibleOptions().map((o) => o.value), ['orange', 'la']);
+    assert.equal(vm.activeDescendant(), 'cb-option-orange');
+    vm.onInput({ target: { value: 'river' } });
+    assert.deepEqual(vm.visibleOptions().map((o) => o.value), ['riverside']);
+    assert.equal(vm.activeOption().value, 'riverside');
+  });
+
+  it('combobox: Enter on the active option lands its label in the field', () => {
+    const vm = createCombobox({ id: 'cb', inputHtml: '<input>', options: comboOptions() });
+    vm.onFocus();
+    vm.onInput({ target: { value: 'river' } });
+    const field = { value: 'river' };
+    vm.onKeydown({ key: 'Enter', preventDefault() {}, target: field });
+    assert.equal(vm.value(), 'riverside');
+    assert.equal(field.value, 'Riverside');
+    assert.equal(vm.open(), false);
+  });
+
+  it('combobox: choosing from the popup lands the label in the composed input', () => {
+    const vm = createCombobox({ id: 'cb', inputHtml: '<input>', options: comboOptions(), open: true });
+    const input = { value: '' };
+    const li = { closest: () => ({ querySelector: () => input }) };
+    vm.choose({ currentTarget: li, target: li }, vm.options()[1]);
+    assert.equal(input.value, 'Los Angeles');
+    assert.equal(vm.value(), 'la');
+    assert.equal(vm.open(), false);
+  });
+
+  it('multiselect: typing filters; a chip button removes its value and the refocus does not reopen', () => {
+    const vm = createMultiselect({
+      id: 'ms', inputHtml: '<input>',
+      options: [
+        { value: 'ev', label: 'EV charging' },
+        { value: 'panel', label: 'Panel upgrade' },
+        { value: 'lighting', label: 'Lighting' },
+      ],
+      selected: [{ value: 'ev', label: 'EV charging', dismissHtml: '<button>Remove</button>' }],
+    });
+    vm.onInput({ target: { value: 'light' } });
+    assert.deepEqual(vm.visibleOptions().map((o) => o.value), ['lighting']);
+    assert.equal(vm.open(), true);
+
+    let focused = false;
+    const input = { focus() { focused = true; } };
+    const chipLi = {};
+    const section = { querySelector: () => input };
+    const chipList = { children: [chipLi], closest: (sel) => (sel === 'ul' ? chipList : section) };
+    const button = { closest: (sel) => (sel === 'button' ? button : chipLi) };
+    vm.onChipsClick({ target: button, currentTarget: chipList });
+    assert.deepEqual(vm.selected(), [], 'the chip click removed the only selection');
+    assert.equal(focused, true, 'focus returned to the field');
+    vm.open.set(false);
+    vm.onFocus();
+    assert.equal(vm.open(), false, 'the dismissal refocus is not a fresh open');
+    vm.onFocus();
+    assert.equal(vm.open(), true, 'a later, genuine focus opens again');
+  });
+
+  it('select: an arrow key opens the closed popover; Escape closes it', () => {
+    const vm = createSelect({ id: 'sel', options: comboOptions(), value: 'la' });
+    vm.keydown(keyEvent('ArrowDown'));
+    assert.equal(vm.open(), true);
+    vm.keydown(keyEvent('Escape'));
+    assert.equal(vm.open(), false);
+    vm.keydown(keyEvent('Enter'));
+    assert.equal(vm.open(), false, 'keys other than the arrows do not open');
+  });
+
+  it('dialog behavior: the header close control dismisses, a footer action does not; Escape closes an open dialog', () => {
+    const dialog = {
+      open: true,
+      close() { this.open = false; },
+      closest() { return this; },
+      querySelector(sel) { return sel === 'header' ? this.header : null; },
+      header: { contains: (el) => el === headerButton },
+    };
+    const headerButton = { closest: () => headerButton };
+    const footerButton = { closest: () => footerButton };
+    const vm = createDialogBehavior({ id: 'dlg' });
+    vm.onClick({ target: footerButton, currentTarget: dialog });
+    assert.equal(dialog.open, true, 'footer actions belong to the app');
+    vm.onClick({ target: headerButton, currentTarget: dialog });
+    assert.equal(dialog.open, false, 'the header close control dismisses');
+    dialog.open = true;
+    vm.onKeydown({ key: 'Escape', preventDefault() {}, currentTarget: dialog });
+    assert.equal(dialog.open, false, 'Escape dismisses a dialog staged open in flow');
+    vm.onKeydown({ key: 'Escape', preventDefault() {}, currentTarget: dialog });
+    assert.equal(dialog.open, false, 'Escape on a closed dialog is a no-op');
+  });
+
+  it('toolbar: Escape closes the overflow and reports; closeOverflow is idempotent', () => {
+    const reports = [];
+    const vm = createToolbar({
+      label: 'Actions', actionsHtml: '<button>New</button>', overflowHtml: '<menu></menu>',
+      overflowOpen: true, onOverflow: (payload) => reports.push(payload.open),
+    });
+    let refocused = false;
+    const bar = { querySelector: () => ({ focus() { refocused = true; } }) };
+    vm.onKeydown({ key: 'Escape', preventDefault() {}, currentTarget: { closest: () => bar } });
+    assert.equal(vm.overflowOpen(), false);
+    assert.equal(refocused, true, 'focus returns to the More button');
+    vm.closeOverflow();
+    assert.deepEqual(reports, [false], 'closing a closed overflow does not report again');
+  });
+
+  it('toast: a click on an item dismiss control removes exactly that item', () => {
+    const vm = createToast({
+      items: [
+        { message: 'One', tone: 'success', dismissHtml: '<button>Dismiss</button>' },
+        { message: 'Two', tone: 'danger', dismissHtml: '<button>Dismiss</button>' },
+      ],
+    });
+    const [first] = vm.items();
+    vm.onItemClick({ target: { closest: () => null } }, first);
+    assert.equal(vm.items().length, 2, 'a click off the button keeps the item');
+    vm.onItemClick({ target: { closest: () => ({}) } }, first);
+    assert.deepEqual(vm.items().map((item) => item.message), ['Two']);
+  });
+
+  it('alert: only a button click dismisses, and it removes the aside', () => {
+    const vm = createAlert({ title: 'Heads up', body: 'Body', dismissHtml: '<button>Dismiss</button>' });
+    let removed = false;
+    const aside = { remove() { removed = true; } };
+    const fromAside = { closest: () => aside };
+    vm.dismiss({ target: { closest: () => null }, currentTarget: fromAside });
+    assert.equal(removed, false, 'a click off the button keeps the alert');
+    vm.dismiss({ target: { closest: () => ({}) }, currentTarget: fromAside });
+    assert.equal(removed, true);
+  });
+
+  it('datagrid: sortClick sorts only when the click lands on the header button', () => {
+    const vm = createDatagrid({
+      columns: [
+        { key: 'lead', label: 'Lead', sort: 'ascending', sortHtml: '<button>Lead</button>' },
+        { key: 'fee', label: 'Fee' },
+      ],
+      rows: [{ cells: ['Garcia', '$85'] }, { cells: ['Nguyen', '$65'] }],
+    });
+    const column = vm.viewColumns()[0];
+    vm.sortClick({ target: { closest: () => null } }, column);
+    assert.deepEqual(vm.viewRows().map((row) => row.cells[0].html), ['Garcia', 'Nguyen'], 'a cell click does not sort');
+    vm.sortClick({ target: { closest: () => ({}) } }, column);
+    assert.deepEqual(vm.viewRows().map((row) => row.cells[0].html), ['Nguyen', 'Garcia'], 'the button click flips to descending');
+    assert.equal(vm.sortState().dir, 'desc');
   });
 });
 

@@ -336,11 +336,12 @@ export function renderRoute(route, site = {}) {
 }
 
 /**
- * The specimen boot for a page: the live specs a page's demos recorded
- * (see trinity-catalog.js) as one JSON script, then the boot itself.
- * public/specimens.js wires every catalog specimen on the page — the
- * popovers, the theme toggle, tabs, dialogs, and the rest — from the
- * components' own rendered markup plus these props.
+ * The specimen mount for a page: the specs a page's demos recorded
+ * (see trinity-catalog.js) as one JSON script, then the mount itself.
+ * public/specimens.js mounts every catalog specimen on the page —
+ * it builds each component's view model from these props and
+ * hydrates the component's own template; the behaviours live in
+ * the components.
  */
 export function liveSpecimenScripts(specs) {
   const json = JSON.stringify(specs).replaceAll('<', '\\u003c');
@@ -472,10 +473,10 @@ export function renderComponentPage(slug) {
     ogTitle: `${component.title} — BaseNative`,
     path: `/components/${component.slug}`,
     activePage: 'components',
-    // The specimen boot runs on every component page: it wires the
-    // specimens' behaviour (theme toggle, tabs, dialogs, dismissals,
-    // and — from the recorded live specs — the popovers and the
-    // virtualizer) against the components' own server-rendered markup.
+    // The specimen mount runs on every component page: from the
+    // recorded specs it hydrates each specimen with its component's
+    // own view model and template, so the behaviours on the page are
+    // the components' own.
     scripts: demos.liveSpecimens.length
       ? liveSpecimenScripts(demos.liveSpecimens)
       : '<script type="module" src="/specimens.js"></script>',

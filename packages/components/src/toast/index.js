@@ -41,7 +41,25 @@ export function create(props) {
     return '<svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' + inner + '</svg>';
   };
 
-  return { items, live, variant, iconFor, raw };
+  /* Dismissal removes the item from the stack — the same removal
+     the toaster's dismiss(id) performs, by identity for a stack
+     whose items carry no ids. */
+  const dismissItem = (/** @type {ToastItem} */ item) => {
+    items.set(items().filter((entry) => entry !== item));
+  };
+
+  /* The item's dismiss control is caller-rendered HTML inside the
+     item, so its click is delegated at the item: a click on the
+     button dismisses, a click anywhere else does nothing. */
+  /**
+   * @param {MouseEvent} event
+   * @param {ToastItem} item
+   */
+  function onItemClick(event, item) {
+    if ((event.target)?.closest?.('button')) dismissItem(item);
+  }
+
+  return { items, live, variant, iconFor, dismissItem, onItemClick, raw };
 }
 
 /**

@@ -76,11 +76,15 @@ const D = (title, html, note) => ({ title, html, ...(note ? { note } : {}) });
 
 /**
  * Demo factories take (renderTrinity, renderTrinityVm, live). A demo
- * whose behaviour the site boot drives — the popovers and the
- * virtualizer, whose closed/resting markup does not carry their data —
- * calls live(spec) with the very props it renders from, and the page
- * ships those specs to public/specimens.js as JSON. One source: the
- * props a specimen renders with are the props its behaviour runs on.
+ * with behaviour calls live(spec) with the very props it renders
+ * from, and the page ships those specs to public/specimens.js as
+ * JSON; the boot mounts each one — it builds the component's view
+ * model from the spec's props and hydrates the component's own
+ * template in place of the server render. One source: the props a
+ * specimen renders with are the props its behaviour runs on. A spec
+ * is { name, props, selector?, open? }: selector overrides the boot's
+ * default root match when a page stages two of a kind, and open
+ * stages a dialog-family specimen open in flow, as its render does.
  */
 export const trinityDemos = {
   button: (r) => [
@@ -119,16 +123,14 @@ export const trinityDemos = {
       { value: 'plumbing', label: 'Plumbing' },
       { value: 'hvac', label: 'HVAC' },
     ];
-    // The popover composes closed — its rest state. The site boot
-    // (public/specimens.js) opens it on demand from this live spec.
-    live?.({ kind: 'select', id: 'demo-trade', label: 'Trade', value: 'hvac', options });
+    // The popover composes closed — its rest state; the mount opens
+    // it on demand from this same props object.
+    const props = { id: 'demo-trade', value: 'hvac', label: 'Trade', options };
+    live?.({ name: 'select', props });
     return [
     D('Trade, popover', r('field', {
       label: 'Trade', controlId: 'demo-trade',
-      controlHtml: r('select', {
-        id: 'demo-trade', value: 'hvac', label: 'Trade',
-        options,
-      }),
+      controlHtml: r('select', props),
       hint: 'The trade decides which pricing engine runs.',
     })),
     D('The native variant', r('field', {
@@ -168,50 +170,65 @@ export const trinityDemos = {
       { value: 'la', label: 'Los Angeles' },
       { value: 'riverside', label: 'Riverside' },
     ];
-    // Composes closed — the popup's rest state. specimens.js opens it
-    // on focus from this live spec and filters purely by the field text.
-    live?.({ kind: 'combobox', id: 'demo-combo', label: 'County', options });
-    return [
-    D('County', r('combobox', {
+    // Composes closed — the popup's rest state. The mount opens it
+    // on focus from these same props and the model filters purely
+    // by the field text; the field's starting text names the active
+    // option, as it did when the boot wired the popup by hand.
+    const props = {
       id: 'demo-combo', label: 'County',
       inputHtml: r('input', { id: 'demo-combo', type: 'search', value: 'Orange County', ariaLabel: 'County' }),
-      options,
-    })),
+      options, activeValue: 'orange',
+    };
+    live?.({ name: 'combobox', props });
+    return [
+    D('County', r('combobox', props)),
     ];
   },
   multiselect: (r, _vm, live) => {
+    const dismissHtml = r('button', { label: 'Remove', variant: 'ghost' });
+    // Every option carries the chip dismiss control, so a chip the
+    // visitor adds at runtime dismisses exactly like the staged one.
     const options = [
-      { value: 'ev', label: 'EV charging' },
-      { value: 'panel', label: 'Panel upgrade' },
-      { value: 'lighting', label: 'Lighting' },
+      { value: 'ev', label: 'EV charging', dismissHtml },
+      { value: 'panel', label: 'Panel upgrade', dismissHtml },
+      { value: 'lighting', label: 'Lighting', dismissHtml },
     ];
-    // Composes closed, one chip already chosen. specimens.js drives
-    // the popup and the chip set from this live spec.
-    live?.({ kind: 'multiselect', id: 'demo-trades', label: 'Trades', options, selected: ['ev'] });
-    return [
-    D('Trades', r('multiselect', {
+    // Composes closed, one chip already chosen. The mount drives the
+    // popup and the chip set from these same props.
+    const props = {
       id: 'demo-trades', label: 'Trades',
       inputHtml: r('input', { id: 'demo-trades', type: 'search', value: '', ariaLabel: 'Trades' }),
-      selected: [{ value: 'ev', label: 'EV charging', dismissHtml: r('button', { label: 'Remove', variant: 'ghost' }) }],
+      selected: [{ value: 'ev', label: 'EV charging', dismissHtml }],
       options,
-    })),
+    };
+    live?.({ name: 'multiselect', props });
+    return [
+    D('Trades', r('multiselect', props)),
     ];
   },
-  'search-field': (r) => [
-    D('Search leads', r('search-field', {
+  'search-field': (r, _vm, live) => {
+    const props = {
       label: 'Search leads', controlId: 'demo-lead-q', name: 'lead-search', value: 'panel',
       submitHtml: r('button', { label: 'Search', variant: 'primary' }),
-    })),
-  ],
-  form: (r) => [
-    D('Request a quote', r('form', {
+    };
+    live?.({ name: 'search-field', props });
+    return [
+    D('Search leads', r('search-field', props)),
+    ];
+  },
+  form: (r, _vm, live) => {
+    const props = {
       name: 'demo-quote', heading: 'Request a quote',
       fieldsHtml:
         r('field', { label: 'Name', controlId: 'demo-q-name', controlHtml: r('input', { id: 'demo-q-name', value: '' }), hint: 'Whoever the crew should ask for on site.' }) +
         r('field', { label: 'Email', controlId: 'demo-q-email', controlHtml: r('input', { id: 'demo-q-email', type: 'email', value: '' }), hint: 'We send the exact quote here.' }),
       actionsHtml: r('button', { label: 'Cancel', variant: 'ghost' }) + r('button', { label: 'Request quote', variant: 'primary' }),
-    })),
-  ],
+    };
+    live?.({ name: 'form', props });
+    return [
+    D('Request a quote', r('form', props)),
+    ];
+  },
   'choice-group': (r) => [
     D('Pick a plan', r('choice-group', {
       legend: 'Pick a plan', name: 'demo-cg-plan', value: 'schedule',
@@ -248,12 +265,19 @@ export const trinityDemos = {
       starHtml: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z"/></svg>',
     })),
   ],
-  alert: (r) => [
+  alert: (r, _vm, live) => {
+    const dismissHtml = r('button', { label: 'Dismiss', variant: 'ghost' });
+    const info = { title: 'Schedule updated', body: 'Two crews are out today; afternoon windows shifted by an hour.', dismissHtml };
+    const danger = { title: 'Payment failed', body: 'The card on file was declined. Ask the customer for another method.', variant: 'danger', dismissHtml };
+    live?.({ name: 'alert', props: info });
+    live?.({ name: 'alert', props: danger, selector: 'aside[variant="danger"]' });
+    return [
     D('Tones', [
-      r('alert', { title: 'Schedule updated', body: 'Two crews are out today; afternoon windows shifted by an hour.', dismissHtml: r('button', { label: 'Dismiss', variant: 'ghost' }) }),
-      r('alert', { title: 'Payment failed', body: 'The card on file was declined. Ask the customer for another method.', variant: 'danger', dismissHtml: r('button', { label: 'Dismiss', variant: 'ghost' }) }),
+      r('alert', info),
+      r('alert', danger),
     ].join('\n')),
-  ],
+    ];
+  },
   progress: (r) => [
     D('Upload, 60%', r('progress', { value: 60 })),
     D('Indeterminate', r('progress', {})),
@@ -266,14 +290,19 @@ export const trinityDemos = {
       r('badge', { label: '12 delivered', variant: 'success' }),
     ].join('\n')),
   ],
-  toast: (r) => [
-    D('Stack', r('toast', {
+  toast: (r, _vm, live) => {
+    const dismissHtml = r('button', { label: 'Dismiss', variant: 'ghost' });
+    const props = {
       items: [
-        { message: 'Lead delivered — Garcia, panel upgrade', tone: 'success', dismissHtml: r('button', { label: 'Dismiss', variant: 'ghost' }) },
-        { message: 'Payment failed — retry scheduled', tone: 'danger', dismissHtml: r('button', { label: 'Dismiss', variant: 'ghost' }) },
+        { message: 'Lead delivered — Garcia, panel upgrade', tone: 'success', dismissHtml },
+        { message: 'Payment failed — retry scheduled', tone: 'danger', dismissHtml },
       ],
-    })),
-  ],
+    };
+    live?.({ name: 'toast', props });
+    return [
+    D('Stack', r('toast', props)),
+    ];
+  },
   'empty-state': (r) => [
     D('No leads yet', r('empty-state', {
       title: 'No leads yet',
@@ -303,16 +332,20 @@ export const trinityDemos = {
       r('accordion', { summary: 'When is the fee charged?', bodyHtml: '<p>When the lead is delivered into your schedule — never for a search or a click.</p>' }),
     ].join('\n')),
   ],
-  tabs: (r) => [
-    D('Job views', r('tabs', {
+  tabs: (r, _vm, live) => {
+    const props = {
       id: 'demo-job', label: 'Job views', name: 'demo-job-tabs',
       tabs: [
         { value: 'details', label: 'Details', panelHtml: '<p>Panel upgrade — 200A service. Permit pulled, materials on site, quoted at $2,400 exactly.</p>' },
         { value: 'activity', label: 'Activity', panelHtml: '<p>Quote sent Monday. The customer confirmed in-platform Tuesday; the crew is booked for the 26th.</p>' },
         { value: 'billing', label: 'Billing', panelHtml: '<p>Flat lead fee charged on delivery. The job invoice is issued when the work is done.</p>' },
       ],
-    })),
-  ],
+    };
+    live?.({ name: 'tabs', props });
+    return [
+    D('Job views', r('tabs', props)),
+    ];
+  },
   table: (r) => [
     D('Delivered leads', r('table', {
       variant: 'striped', caption: 'Delivered leads this week',
@@ -324,8 +357,8 @@ export const trinityDemos = {
       ],
     })),
   ],
-  datagrid: (r) => [
-    D('Selectable, sortable', r('datagrid', {
+  datagrid: (r, _vm, live) => {
+    const props = {
       selectable: true,
       selectAllHtml: r('checkbox', { label: 'Select all', name: 'demo-grid-all', value: 'all' }),
       columns: [
@@ -336,27 +369,36 @@ export const trinityDemos = {
         { cells: ['Garcia', '$85'], selectHtml: r('checkbox', { label: 'Select Garcia', name: 'demo-grid-sel', value: '1' }) },
         { cells: ['Nguyen', '$65'], selectHtml: r('checkbox', { label: 'Select Nguyen', name: 'demo-grid-sel', value: '2' }) },
       ],
-    })),
-  ],
-  tree: (r) => [
-    D('Services', r('tree', {
+    };
+    live?.({ name: 'datagrid', props });
+    return [
+    D('Selectable, sortable', r('datagrid', props)),
+    ];
+  },
+  tree: (r, _vm, live) => {
+    const props = {
       items: [
         { label: 'Services', expanded: true, toggleHtml: r('button', { label: 'Services', variant: 'ghost' }), childrenHtml: r('tree', { items: [{ label: 'Panel upgrade' }, { label: 'EV charger' }, { label: 'Lighting' }] }) },
         { label: 'Settings' },
       ],
-    })),
-  ],
+    };
+    live?.({ name: 'tree', props });
+    return [
+    D('Services', r('tree', props)),
+    ];
+  },
   virtualizer: (r, _vm, live) => {
-    // The label is a template so the live spec can rebuild any row the
-    // window scrolls to — one source for the server render and the boot.
+    // The label is a template so the mount can rebuild any row the
+    // window scrolls to — one source for the server render and the
+    // mounted list.
     const labelTemplate = 'Lead {n} — Orange County';
-    live?.({
-      kind: 'virtualizer', id: 'demo-leads', total: 100, rowHeight: 44,
-      viewportRows: 8, overscan: 2, labelTemplate,
-    });
+    const props = {
+      id: 'demo-leads', total: 100, scrollTop: 0, rowHeight: 44, viewportRows: 8, overscan: 2,
+    };
+    live?.({ name: 'virtualizer', props, labelTemplate });
     return [
     D('One hundred leads, eight in the DOM', r('virtualizer', {
-      id: 'demo-leads', total: 100, scrollTop: 0, rowHeight: 44, viewportRows: 8, overscan: 2,
+      ...props,
       labelFor: (i) => labelTemplate.replace('{n}', String(i + 1)),
     })),
     ];
@@ -417,43 +459,62 @@ export const trinityDemos = {
       ],
     })),
   ],
-  toolbar: (r) => [
+  toolbar: (r, _vm, live) => {
     // The overflow composes as the component renders it — no string
-    // surgery on the output. specimens.js owns the More toggle.
-    D('Lead actions, with overflow', r('toolbar', {
+    // surgery on the output. The toolbar's own model owns the More
+    // toggle; the mount hydrates it.
+    const props = {
       label: 'Lead actions',
       actionsHtml: r('button', { label: 'New lead', variant: 'primary' }) + r('button', { label: 'Import', variant: 'ghost' }),
       overflowHtml: r('dropdown-menu', { label: 'More lead actions', items: [{ label: 'Export leads' }, { label: 'Archive delivered' }] }),
       overflowOpen: true,
-    })),
-  ],
-  'theme-toggle': (r) => [
+    };
+    live?.({ name: 'toolbar', props });
+    return [
+    D('Lead actions, with overflow', r('toolbar', props)),
+    ];
+  },
+  'theme-toggle': (r, _vm, live) => {
+    live?.({ name: 'theme-toggle', props: {} });
+    return [
     D('Appearance', r('theme-toggle', {}), 'Live — it stamps this document and the token sheet answers.'),
-  ],
-  dialog: (r) => [
-    D('Archive, open', r('dialog', {
+    ];
+  },
+  dialog: (r, _vm, live) => {
+    const closeHtml = r('button', { label: 'Close', variant: 'ghost' });
+    const archive = {
       title: 'Archive this job?',
       body: 'Archived jobs leave the board but keep their history.',
-      closeHtml: r('button', { label: 'Close', variant: 'ghost' }),
+      closeHtml,
       footerHtml: r('button', { label: 'Cancel', variant: 'ghost' }) + r('button', { label: 'Archive', variant: 'primary' }),
-    }).replace('<dialog', '<dialog open')),
-    D('Delete, destructive', r('dialog', {
+    };
+    const destructive = {
       title: 'Delete this lead?', variant: 'destructive',
       body: 'The destructive variant re-points the dialog tokens by scope — the footer button below is a plain default button.',
-      closeHtml: r('button', { label: 'Close', variant: 'ghost' }),
+      closeHtml,
       footerHtml: r('button', { label: 'Cancel', variant: 'ghost' }) + r('button', { label: 'Delete lead' }),
-    }).replace('<dialog', '<dialog open')),
-  ],
-  drawer: (r) => [
-    D('Lead detail, open', r('drawer', {
+    };
+    live?.({ name: 'dialog', props: archive, open: true });
+    live?.({ name: 'dialog', props: destructive, selector: 'dialog[variant="destructive"]', open: true });
+    return [
+    D('Archive, open', r('dialog', archive).replace('<dialog', '<dialog open')),
+    D('Delete, destructive', r('dialog', destructive).replace('<dialog', '<dialog open')),
+    ];
+  },
+  drawer: (r, _vm, live) => {
+    const props = {
       title: 'Garcia — panel upgrade',
       body: 'Quoted $2,400. Site survey done, permit pulled, awaiting the bilateral confirmation.',
       closeHtml: r('button', { label: 'Close', variant: 'ghost' }),
       footerHtml: r('button', { label: 'Open job', variant: 'primary' }),
-    }).replace('<dialog', '<dialog open')),
-  ],
-  'dropdown-menu': (r) => [
-    D('Lead actions', r('dropdown-menu', {
+    };
+    live?.({ name: 'drawer', props, open: true });
+    return [
+    D('Lead detail, open', r('drawer', props).replace('<dialog', '<dialog open')),
+    ];
+  },
+  'dropdown-menu': (r, _vm, live) => {
+    const props = {
       label: 'Lead actions',
       items: [
         { label: 'Open lead', href: '#' },
@@ -461,10 +522,14 @@ export const trinityDemos = {
         { separator: true },
         { label: 'Archive' },
       ],
-    })),
-  ],
-  'command-palette': (r) => [
-    D('Open', r('command-palette', {
+    };
+    live?.({ name: 'dropdown-menu', props });
+    return [
+    D('Lead actions', r('dropdown-menu', props)),
+    ];
+  },
+  'command-palette': (r, _vm, live) => {
+    const props = {
       id: 'demo-palette', label: 'Command palette', activeValue: 'new-lead',
       searchHtml: r('field', {
         label: 'Search commands', controlId: 'demo-palette-search',
@@ -474,8 +539,12 @@ export const trinityDemos = {
         { heading: 'Leads', options: [{ value: 'new-lead', label: 'New lead' }, { value: 'import', label: 'Import leads' }] },
         { heading: 'Jobs', options: [{ value: 'schedule', label: "Today's schedule" }] },
       ],
-    }).replace('<dialog', '<dialog open')),
-  ],
+    };
+    live?.({ name: 'command-palette', props, open: true });
+    return [
+    D('Open', r('command-palette', props).replace('<dialog', '<dialog open')),
+    ];
+  },
   tooltip: (r) => [
     D('On a ghost button', r('tooltip', {
       text: 'Delivered into the schedule',

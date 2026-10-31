@@ -9,9 +9,11 @@ export const root = 'ul';
  * The recursive list. A branch item carries its children as rendered
  * HTML — the caller renders the SAME component for the child list and
  * nests it, so recursion is composition, not a template trick. The
- * branch's toggle is a caller-rendered button whose activation calls
- * this model's `toggle`; aria-expanded lives on the treeitem and the
- * children group hides while the branch is collapsed.
+ * branch's toggle is a caller-rendered button; the list's delegated
+ * click routes a click on it to this model's `toggle` (a click
+ * anywhere else on the item selects it). aria-expanded lives on the
+ * treeitem and the children group hides while the branch is
+ * collapsed.
  *
  * The WAI-ARIA APG tree keyboard pattern lives in the view model,
  * ported from the legacy initTree: a roving tabindex over the items
@@ -135,11 +137,40 @@ export function create(props) {
     if (model) focusedId.set(idOf(model));
   }
 
+  /**
+   * Toggling re-renders the item, which replaces its element — and
+   * a replaced element takes the focus with it. Restore focus to
+   * the item at the same position in the same list (to its toggle
+   * button when the toggle was the control used), so a keyboard or
+   * switch user stays on the branch they just flipped.
+   * @param {Event} event
+   * @param {number} index
+   * @param {boolean} toButton
+   */
+  function refocusItem(event, index, toButton) {
+    const list = (event.currentTarget);
+    const li = list?.children?.[index];
+    if (!li) return;
+    (toButton ? li.querySelector?.('button') ?? li : li).focus?.();
+  }
+
   /** @param {MouseEvent} event */
   function onClick(event) {
-    if ((event.target)?.closest?.('button')) return;
+    const item = ownItem(event);
     const model = modelFromEvent(event);
-    if (model) select(model);
+    if (!model || !item) return;
+    /* The branch's toggle button is the branch's own control — it
+       replaces the label in the render — so a click on it toggles
+       the branch; a click anywhere else on the item selects it. */
+    if ((event.target)?.closest?.('button')) {
+      if (model.childrenHtml) {
+        const index = [...item.parentElement.children].indexOf(item);
+        toggle(model);
+        refocusItem(event, index, true);
+      }
+      return;
+    }
+    select(model);
   }
 
   /** @param {KeyboardEvent} event */
@@ -157,11 +188,19 @@ export function create(props) {
       case 'Home': focusEl = item.parentElement.firstElementChild; break;
       case 'End': focusEl = item.parentElement.lastElementChild; break;
       case 'ArrowRight':
-        if (model.childrenHtml && !model.expanded) { toggle(model); return; }
+        if (model.childrenHtml && !model.expanded) {
+          toggle(model);
+          refocusItem(event, index, false);
+          return;
+        }
         if (isExpanded(model)) focusEl = item.querySelector('[role="group"] [role="treeitem"]');
         break;
       case 'ArrowLeft':
-        if (isExpanded(model)) { toggle(model); return; }
+        if (isExpanded(model)) {
+          toggle(model);
+          refocusItem(event, index, false);
+          return;
+        }
         focusEl = item.closest('[role="group"]')?.parentElement?.closest?.('[role="treeitem"]') ?? null;
         break;
       case 'Enter':

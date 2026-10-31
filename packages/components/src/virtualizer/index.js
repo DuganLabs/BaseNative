@@ -56,9 +56,11 @@ export function create(props) {
   const labelFor = (/** @type {number} */ index) => props.labelFor?.(index) ?? '';
   const hasItemHtml = computed(() => typeof props.itemHtmlFor === 'function');
 
-  /* Scroll re-slices the window: the host binds the scroller's scroll
-     event here (the legacy initVirtualList wiring), and the window
-     computeds redo the arithmetic. setScrollTop reflects silently. */
+  /* Scroll re-slices the window: the template binds the list's own
+     scroll event here, and the window computeds redo the arithmetic.
+     setScrollTop reflects silently. The host's one remaining job is
+     the spacer channel: re-pointing the two spacer-count tokens in
+     its scope from spacerStartCount / spacerEndCount as they move. */
   const setScrollTop = (/** @type {number} */ value) => scrollTop.set(Math.max(0, value || 0));
   /** @param {Event} event */
   function onScroll(event) {

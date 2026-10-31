@@ -1,10 +1,10 @@
 <template>
-  <section :variant="variant()" :aria-label="label()">
+  <section :variant="variant()" :aria-label="label()" @keydown="onKeydown($event)" @input="onInput($event)" @focusin="onFocus($event)">
     {{ raw(inputHtml()) }}
     <template @if="open()">
       <ul role="listbox" :id="listboxId()" :aria-label="label()">
-        <template @for="option of options()">
-          <li role="option" :id="optionId(option)" :aria-selected="isActive(option)" @click="select(option)">{{ option.label }}</li>
+        <template @for="option of visibleOptions()">
+          <li role="option" :id="optionId(option)" :aria-selected="isActive(option)" @click="choose($event, option)">{{ option.label }}</li>
         </template>
       </ul>
     </template>

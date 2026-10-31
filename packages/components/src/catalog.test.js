@@ -719,7 +719,7 @@ test('the datagrid shows its sort direction with a chevron that flips', async ()
   const html = await readFile(new URL('./datagrid/index.html', import.meta.url), 'utf8');
   const css = await readFile(new URL('./datagrid/styles.css', import.meta.url), 'utf8');
   const tokens = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
-  assert.match(html, /:aria-sort="column\.sort" :tabindex="headerTabIndex\(column\)">\{\{ raw\(column\.sortHtml\) \}\}<svg/);
+  assert.match(html, /:aria-sort="column\.sort" :tabindex="headerTabIndex\(column\)" @click="sortClick\(\$event, column\)">\{\{ raw\(column\.sortHtml\) \}\}<svg/);
   assert.match(tokens, /--transform-datagrid-sort-icon-ascending: rotate\(180deg\)/);
   assert.match(css, /th\[aria-sort="ascending"\] > svg \{\s*transform: var\(--transform-datagrid-sort-icon-ascending\)/);
 });
