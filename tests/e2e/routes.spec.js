@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const routes = ['/compare', '/ai', '/builder', '/does-not-exist'];
+const routes = ['/compare', '/ai', '/builder', '/playground', '/does-not-exist'];
 
 test.describe('routes the shell must serve', () => {
   for (const path of routes) {

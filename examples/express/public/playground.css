@@ -395,7 +395,8 @@
   border: 1px solid var(--color-border-playground);
   border-radius: 5px;
   padding: 1px 5px;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .cheatsheet strong {
   color: var(--color-text-playground);
