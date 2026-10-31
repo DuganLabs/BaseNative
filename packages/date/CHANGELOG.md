@@ -1,5 +1,12 @@
 # @basenative/date
 
+## 3.1.0
+
+### Patch Changes
+
+- Updated dependencies [f88c30b]
+  - @basenative/runtime@3.1.0
+
 ## 3.0.0
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @basenative/mcp
 
+## 3.1.0
+
+### Patch Changes
+
+- Updated dependencies [f88c30b]
+  - @basenative/runtime@3.1.0
+  - @basenative/server@3.1.0
+  - @basenative/validate@3.1.0
+
 ## 3.0.0
 
 ### Patch Changes

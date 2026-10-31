@@ -1,6 +1,6 @@
 {
   "name": "@basenative/marketplace",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Component registry for BaseNative \u2014 publishing and discovery infrastructure",
   "type": "module",
   "main": "./src/index.js",
