@@ -190,16 +190,15 @@ export const siteRoutes = [
   {
     path: '/',
     view: 'home.html',
-    title: 'Home',
+    title: 'Reactive UI in plain HTML',
     description: DEFAULT_DESCRIPTION,
-    ogTitle: 'BaseNative — Semantic HTML + Signals',
+    ogTitle: 'BaseNative — Reactive UI in plain HTML',
     activePage: 'home',
     ctx: () => getHomePageContext(),
     hero: (site, ctx) => ({
       eyebrow: `Runtime ${ctx.runtimeVersion}`,
-      titleHtml: 'Base<em>Native</em>',
-      ledeHtml:
-        '<p>Signals over semantic HTML. One <code>set()</code> settles derived computeds, then runs each affected effect once. The expression language is an allowlist. Install <code>@basenative/runtime</code> and <code>@basenative/server</code> from npmjs.org, with no token and no <code>.npmrc</code>.</p>',
+      title: 'Reactive UI in plain HTML.',
+      ledeHtml: `<p>Signals, server rendering and ${catalogEntries.length} accessible components built on real HTML elements. No build step, no virtual DOM, no dependencies in core — <code>npm install @basenative/runtime</code> and ship.</p>`,
       actions: [
         { label: 'Try the playground', href: '/playground' },
         { label: 'Read the docs', href: '/docs' },
@@ -218,7 +217,7 @@ export const siteRoutes = [
     ctx: () => getComparePageContext(),
     hero: {
       eyebrow: 'Compare',
-      titleHtml: 'How BaseNative <em>compares</em>',
+      title: 'How BaseNative compares',
       lede: "BaseNative is a small runtime for the web platform itself: valid HTML templates that stay data instead of becoming code, no build step, no dependencies, nothing to eval — so a page can be generated, stored in a CMS or database, and served under a strict CSP. An honest look alongside React, Angular, and Svelte: where it wins, where it doesn't, and why that matters.",
     },
   },
@@ -235,7 +234,7 @@ export const siteRoutes = [
     }),
     hero: (site, ctx) => ({
       eyebrow: 'Component library',
-      titleHtml: 'Semantic <em>by construction</em>',
+      title: 'Components',
       ledeHtml: `<p>${ctx.totalCount} components across ${ctx.categoryCount} categories. Every one is built on a real HTML element — <code>&lt;button&gt;</code>, <code>&lt;dialog&gt;</code>, <code>&lt;details&gt;</code>, <code>&lt;table&gt;</code> — addressed by element and <code>variant</code> attribute, with zero CSS classes. Each component is three files: a template, a token sheet, and its logic.</p>`,
       actions: [{ label: 'Read the API docs', href: '/docs' }],
       label: 'Quick links',
@@ -253,7 +252,7 @@ export const siteRoutes = [
     ctx: () => ({ ...getDocsPageContext(), ...getDesignSystemContext() }),
     hero: (site, ctx) => ({
       eyebrow: 'Docs',
-      titleHtml: 'API <em>Reference</em>',
+      title: 'API reference',
       ledeHtml:
         '<p>BaseNative currently exposes a small runtime/server surface and an intentionally constrained expression model. The goal in `v0.x` is correctness and trust, not arbitrary template execution.</p>' +
         `<p><code>@basenative/*</code> publishes to <strong>npmjs.org</strong>: the release pipeline publishes there directly, using OIDC trusted publishing — no registry tokens and no <code>.npmrc</code> redirect. A plain <code>npm install @basenative/runtime</code> gets the current release line (<code>${ctx.runtimeVersion}</code>). The <code>0.2.x</code>/<code>0.3.x</code> builds are the old pre-1.0 line, not stale mirrors of current releases.</p>`,
@@ -270,7 +269,7 @@ export const siteRoutes = [
     ctx: () => getAiPageContext(),
     hero: {
       eyebrow: 'AI',
-      titleHtml: 'The scorecard for <em>models</em>',
+      title: 'The scorecard for models',
       lede: 'Every point a previous page would have held against BaseNative, with an honest status. Fixed means the runtime or the docs changed. Accepted means the tradeoff stands.',
       actions: [
         { label: 'Cheat sheet', href: '/llms-start.txt' },
@@ -290,7 +289,7 @@ export const siteRoutes = [
     ctx: () => getPlaygroundPageContext(),
     hero: {
       eyebrow: 'Playground',
-      titleHtml: 'Signals <em>Playground</em>',
+      title: 'Playground',
       lede: 'A CodePen for BaseNative: edit the template, the CSS and the view model, and watch the real runtime hydrate it — no build step, nothing saved, reload resets.',
     },
   },
@@ -304,7 +303,7 @@ export const siteRoutes = [
     ctx: () => ({}),
     hero: {
       eyebrow: 'Builder',
-      titleHtml: 'Visual <em>Builder</em>',
+      title: 'Builder',
       lede: 'A macOS window: organism palette, canvas, layers, and inspector. Pick an organism, drop it on the canvas, edit it, and export BaseNative.',
     },
   },
@@ -321,7 +320,7 @@ export const siteRoutes = [
     ctx: () => ({ items: TEST_SIGNAL_ITEMS, itemsJson: JSON.stringify(TEST_SIGNAL_ITEMS) }),
     hero: {
       eyebrow: 'Signals',
-      titleHtml: 'Signals <em>Verification</em>',
+      title: 'Signals verification',
       lede: 'End-to-end verification: server-rendered data hydrated with reactive signals. No manual change detection.',
     },
   },
@@ -430,7 +429,7 @@ export function renderComponentPage(slug) {
     hero: raw(
       renderHero({
         eyebrow: component.categoryTitle,
-        titleHtml: `${escapeText(titleLead)}<em>${escapeText(titleAccent)}</em>`,
+        title: component.title,
         lede: component.summary,
         after:
           `<dl>` +
@@ -499,7 +498,7 @@ export function renderNotFoundPage() {
       hero: raw(
         renderHero({
           eyebrow: '404',
-          titleHtml: 'Page <em>not found</em>',
+          title: 'Page not found',
           lede: 'There is nothing at this address. The link may be out of date, or the URL may have a typo — every page on the site is reachable from the navigation.',
           actions: [
             { label: 'Back to home', href: '/' },

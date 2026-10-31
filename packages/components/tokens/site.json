@@ -936,7 +936,7 @@
     }
   },
   "site-color-text-link": {
-    "$value": "{color-tint}",
+    "$value": "{color-tint-strong}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -1800,7 +1800,7 @@
     }
   },
   "site-color-warning-text": {
-    "$value": "{color-tint}",
+    "$value": "{color-tint-strong}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -1926,7 +1926,7 @@
     }
   },
   "site-color-warning-badge-text": {
-    "$value": "{color-tint}",
+    "$value": "{color-tint-strong}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {

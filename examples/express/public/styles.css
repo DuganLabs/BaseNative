@@ -10,7 +10,6 @@
   }
   html {
     hanging-punctuation: first last;
-    scroll-behavior: smooth;
   }
   .visually-hidden {
     position: absolute;
@@ -90,7 +89,7 @@
     --line-height-tight: 1.55;
 
     /* Sizing */
-    --size-inline-max: 52rem;
+    --size-inline-max: 68rem;
     --size-text-max: 52ch;
 
     /* Spacing */
@@ -191,7 +190,7 @@
 
     body > header h1 em {
       font-style: normal;
-      color: var(--accent);
+      color: var(--color-tint-strong);
     }
 
     body > header ul {
@@ -232,17 +231,16 @@
         background var(--duration-fast);
     }
     body > header a:hover {
-      color: var(--accent);
+      color: var(--color-tint-strong);
       background: var(--surface-2);
     }
     body > header a[aria-current='page'] {
-      color: var(--accent);
+      color: var(--color-tint-strong);
     }
 
     main {
       flex: 1;
-      max-inline-size: var(--size-inline-max);
-      margin-inline: auto;
+      max-inline-size: none;
       padding: var(--space-2xl) var(--space-lg) var(--space-page-block-end);
       inline-size: 100%;
       container-type: inline-size;
@@ -258,6 +256,14 @@
       main {
         padding: var(--space-xl) var(--space-md) var(--space-3xl);
       }
+    }
+
+    /* The column is the shell's whole remaining width; the page stack is
+     centred in it at one measure, so a wide screen gets balanced
+     margins instead of a void beside a left-pinned column. */
+    main > * {
+      max-inline-size: var(--size-inline-max);
+      margin-inline: auto;
     }
 
     body > footer {
@@ -298,7 +304,7 @@
      every page's hero sat flush on the surface below it. -- */
     main > figure[variant],
     main > article:not([data-bn-component-page]) > figure[variant] {
-      --spacing-hero-margin: 0 0 var(--site-section-space, 12px);
+      --spacing-hero-margin: 0 auto var(--spacing-6, 24px);
     }
 
     section > h2 {
@@ -312,7 +318,7 @@
 
     section > h2 em {
       font-style: normal;
-      color: var(--accent);
+      color: var(--color-tint-strong);
     }
 
     section > p {
@@ -386,7 +392,7 @@
       font-family: var(--font-family);
       font-stretch: var(--font-serif);
       font-size: var(--stat-value-size);
-      color: var(--accent);
+      color: var(--color-tint-strong);
     }
 
     ul[role='list'][data-stat-grid] span {
@@ -394,8 +400,6 @@
       font-stretch: var(--font-mono);
       font-size: var(--font-size-sm);
       color: var(--text-2);
-      text-transform: uppercase;
-      letter-spacing: var(--letter-spacing-wider);
     }
 
     /* -- Articles (cards) -- */
@@ -443,7 +447,7 @@
       font-stretch: var(--font-mono);
       font-size: var(--font-size-sm);
       font-weight: var(--font-weight-semibold);
-      color: var(--accent);
+      color: var(--color-tint-strong);
       letter-spacing: var(--letter-spacing-wide);
     }
 
@@ -479,7 +483,7 @@
       font-size: 0.875em;
       padding: 0.08em 0.35em;
       background: var(--surface-2);
-      color: var(--accent);
+      color: var(--color-tint-strong);
       border-radius: var(--radius-sm);
       -webkit-box-decoration-break: clone;
       box-decoration-break: clone;
@@ -532,7 +536,7 @@
     mark[data-status='dom'],
     mark[data-status='binding'] {
       background: var(--status-idle-bg);
-      color: var(--accent);
+      color: var(--color-tint-strong);
     }
     mark[data-status='error'] {
       background: var(--status-error-bg);
@@ -601,7 +605,7 @@
     [data-variant='outline']:hover {
       background: var(--surface-2);
       border-color: var(--accent);
-      color: var(--accent);
+      color: var(--color-tint-strong);
       box-shadow: none;
     }
 
@@ -890,12 +894,12 @@
         background: var(--select-option-hover);
       }
       select:not([data-bn]):not([variant]) option:checked {
-        color: var(--accent);
+        color: var(--color-tint-strong);
         font-weight: var(--font-weight-semibold);
       }
 
       select:not([data-bn]):not([variant]) option::checkmark {
-        color: var(--accent);
+        color: var(--color-tint-strong);
         margin-inline-end: var(--space-sm);
       }
 
@@ -904,8 +908,6 @@
         font-stretch: var(--font-mono);
         font-size: var(--font-size-xs);
         color: var(--text-2);
-        text-transform: uppercase;
-        letter-spacing: var(--letter-spacing-wider);
         padding: var(--space-sm) var(--space-md);
       }
     }
@@ -1057,7 +1059,7 @@
 
     [data-effect-log] li:first-child {
       opacity: 1;
-      color: var(--accent);
+      color: var(--color-tint-strong);
     }
 
     [data-greeting-output] {
@@ -1070,7 +1072,7 @@
       font-family: var(--font-family);
       font-stretch: var(--font-serif);
       font-size: var(--font-size-lg);
-      color: var(--accent);
+      color: var(--color-tint-strong);
     }
 
     /* -- Playground controls -- */
@@ -1090,9 +1092,7 @@
       font-family: var(--font-family);
       font-stretch: var(--font-mono);
       font-size: var(--font-size-xs);
-      color: var(--accent);
-      letter-spacing: var(--letter-spacing-wider);
-      text-transform: uppercase;
+      color: var(--color-tint-strong);
       padding-inline: var(--space-sm);
     }
 
@@ -1142,8 +1142,6 @@
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-semibold);
       color: var(--text-2);
-      text-transform: uppercase;
-      letter-spacing: var(--letter-spacing-wider);
       text-align: start;
       padding: var(--space-sm) var(--space-md);
       background: var(--table-header-bg);
@@ -1246,7 +1244,7 @@
     }
     details:not([data-bn]):not([variant]):not([variant]) > summary:hover {
       background: var(--surface-2);
-      color: var(--accent);
+      color: var(--color-tint-strong);
     }
     details:not([data-bn]):not([variant]):not([variant]) > summary::-webkit-details-marker {
       display: none;
@@ -1420,7 +1418,7 @@
     nav[popover] a:hover,
     nav[popover] button:hover {
       background: var(--surface-3);
-      color: var(--accent);
+      color: var(--color-tint-strong);
       box-shadow: none;
     }
 
@@ -1458,7 +1456,7 @@
         background var(--duration-fast);
     }
     [data-datepicker-trigger]:hover {
-      color: var(--accent);
+      color: var(--color-tint-strong);
       background: var(--surface-3);
       box-shadow: none;
     }
@@ -1506,7 +1504,7 @@
     [data-datepicker-prev]:hover,
     [data-datepicker-next]:hover {
       background: var(--surface-3);
-      color: var(--accent);
+      color: var(--color-tint-strong);
       border-color: var(--accent-dim);
       box-shadow: none;
     }
@@ -1559,7 +1557,7 @@
 
     [data-datepicker-grid] td button[data-today] {
       border-color: var(--accent-dim);
-      color: var(--accent);
+      color: var(--color-tint-strong);
     }
 
     [data-datepicker-grid] td button[data-selected] {
@@ -1714,7 +1712,7 @@
     }
     [data-datepicker-title-btn]:hover {
       background: var(--surface-3);
-      color: var(--accent);
+      color: var(--color-tint-strong);
       box-shadow: none;
     }
 
@@ -1745,7 +1743,7 @@
     }
     [data-datepicker-months] button[data-current] {
       border-color: var(--accent-dim);
-      color: var(--accent);
+      color: var(--color-tint-strong);
     }
 
     /* -- Docs page -- */
@@ -1895,7 +1893,7 @@
       border-radius: var(--radius-md);
       font-variant-numeric: tabular-nums;
       font-size: 1.25rem;
-      color: var(--accent);
+      color: var(--color-tint-strong);
     }
 
     [data-bn='virtualizer'] {
@@ -2029,7 +2027,7 @@
       transition: color var(--duration-fast);
     }
     body > [data-bn-site-footer] nav a:hover {
-      color: var(--accent);
+      color: var(--color-tint-strong);
     }
 
     /* ==========================================================================
@@ -2039,7 +2037,7 @@
 
     /* -- Hero on /components -- */
     [data-bn-page-hero] {
-      --spacing-hero-margin: 0 0 var(--site-section-space, 12px);
+      --spacing-hero-margin: 0 auto var(--spacing-6, 24px);
       --font-hero-title-family: var(--font-family);
       --spacing-hero-title-margin: 0 0 var(--space-md);
 
@@ -2048,7 +2046,7 @@
 
         & em {
           font-style: normal;
-          color: var(--accent);
+          color: var(--color-tint-strong);
         }
       }
     }
@@ -2057,9 +2055,7 @@
       font-family: var(--font-family);
       font-stretch: var(--font-mono);
       font-size: var(--font-size-xs);
-      color: var(--accent);
-      letter-spacing: var(--letter-spacing-wider);
-      text-transform: uppercase;
+      color: var(--color-tint-strong);
       margin-block-end: var(--space-sm);
     }
 
@@ -2071,7 +2067,7 @@
 
       & code {
         font-size: 0.95em;
-        color: var(--accent);
+        color: var(--color-tint-strong);
         background: var(--surface-2);
         padding: 0.1em 0.4em;
         border-radius: var(--radius-sm);
@@ -2122,7 +2118,7 @@
 
         &:hover {
           background: var(--surface-2);
-          color: var(--accent);
+          color: var(--color-tint-strong);
           border-color: var(--accent);
         }
       }
@@ -2178,7 +2174,7 @@
 
         &:hover {
           background: var(--surface-3);
-          color: var(--accent);
+          color: var(--color-tint-strong);
         }
 
         /* The section in view, marked by the scrollspy — the same
@@ -2256,6 +2252,7 @@
     }
 
     [data-bn-component-card] {
+      block-size: 100%;
       display: flex;
       flex-direction: column;
       gap: var(--space-sm);
@@ -2297,7 +2294,7 @@
           font-family: var(--font-family);
           font-stretch: var(--font-serif);
           font-size: var(--font-size-lg);
-          font-weight: var(--font-weight-normal);
+          font-weight: var(--font-weight-semibold);
           color: var(--text-0);
           letter-spacing: var(--letter-spacing-tight);
         }
@@ -2316,7 +2313,7 @@
         align-items: center;
         justify-content: space-between;
         gap: var(--space-sm);
-        color: var(--accent);
+        color: var(--color-tint-strong);
         font-size: var(--font-size-md);
         margin: 0;
         padding: 0;
@@ -2338,7 +2335,7 @@
       font-family: var(--font-family);
       font-stretch: var(--font-mono);
       font-size: var(--font-size-xs);
-      color: var(--accent);
+      color: var(--color-tint-strong);
       background: color-mix(in srgb, var(--accent) 12%, transparent);
       padding: 0.15rem 0.45rem;
       border-radius: var(--radius-sm);
@@ -2353,7 +2350,7 @@
 
       & > h2 em {
         font-style: normal;
-        color: var(--accent);
+        color: var(--color-tint-strong);
       }
     }
 
@@ -2379,7 +2376,7 @@
           font-family: var(--font-family);
           font-stretch: var(--font-mono);
           font-size: var(--font-size-xs);
-          color: var(--accent);
+          color: var(--color-tint-strong);
           letter-spacing: var(--letter-spacing-wider);
           margin-block-end: var(--space-sm);
           display: block;
@@ -2405,7 +2402,7 @@
         font-family: var(--font-family);
         font-stretch: var(--font-mono);
         font-size: 0.95em;
-        color: var(--accent);
+        color: var(--color-tint-strong);
         background: var(--surface-2);
         padding: 0.1em 0.35em;
         border-radius: var(--radius-sm);
@@ -2506,8 +2503,6 @@
         font-stretch: var(--font-mono);
         font-size: var(--font-size-xs);
         color: var(--text-2);
-        text-transform: uppercase;
-        letter-spacing: var(--letter-spacing-wider);
       }
 
       & dd {
@@ -2523,7 +2518,7 @@
         font-family: var(--font-family);
         font-stretch: var(--font-mono);
         font-size: var(--font-size-sm);
-        color: var(--accent);
+        color: var(--color-tint-strong);
       }
     }
 
@@ -2643,8 +2638,6 @@
         font-stretch: var(--font-mono);
         font-size: var(--font-size-xs);
         color: var(--text-2);
-        text-transform: uppercase;
-        letter-spacing: var(--letter-spacing-wider);
         padding: var(--space-xs) var(--space-md);
         background: var(--surface-2);
         border-block-end: var(--border-width) solid var(--border);
@@ -2815,8 +2808,6 @@
         font-stretch: var(--font-mono);
         font-size: var(--font-size-xs);
         color: var(--text-2);
-        text-transform: uppercase;
-        letter-spacing: var(--letter-spacing-wider);
         font-weight: var(--font-weight-normal);
       }
 
@@ -2825,7 +2816,7 @@
       }
 
       & tbody th[scope='row'] {
-        color: var(--accent);
+        color: var(--color-tint-strong);
         font-weight: var(--font-weight-normal);
       }
 
@@ -2837,7 +2828,7 @@
       }
 
       & tbody th[scope='row'] code {
-        color: var(--accent);
+        color: var(--color-tint-strong);
       }
     }
 
@@ -2867,7 +2858,7 @@
           color var(--duration-fast);
 
         &:hover {
-          color: var(--accent);
+          color: var(--color-tint-strong);
           background: var(--surface-2);
         }
 
@@ -2899,7 +2890,7 @@
       font-family: var(--font-family);
       font-stretch: var(--font-serif);
       font-size: var(--font-size-2xl);
-      color: var(--accent);
+      color: var(--color-tint-strong);
       margin-block-end: var(--space-sm);
     }
 
@@ -3039,7 +3030,7 @@
     }
     dialog[data-bn='dialog'] [data-bn='dialog-close']:hover {
       background: var(--surface-3);
-      color: var(--accent);
+      color: var(--color-tint-strong);
     }
     dialog[data-bn='dialog'] [data-bn='dialog-body'] {
       padding: var(--space-lg);
@@ -3104,7 +3095,7 @@
     }
     [data-bn='drawer'] [data-bn='drawer-close']:hover {
       background: var(--surface-3);
-      color: var(--accent);
+      color: var(--color-tint-strong);
     }
     [data-bn='drawer'] [data-bn='drawer-body'] {
       padding: var(--space-lg);
@@ -3185,7 +3176,7 @@
     }
     [data-bn='dropdown-item']:hover {
       background: var(--surface-3);
-      color: var(--accent);
+      color: var(--color-tint-strong);
     }
     [data-bn='dropdown-icon'] {
       inline-size: 1rem;
@@ -3343,7 +3334,7 @@
       font-family: var(--font-family);
       font-stretch: var(--font-serif);
       font-size: var(--font-size-3xl, 2.5rem);
-      color: var(--accent);
+      color: var(--color-tint-strong);
       min-inline-size: 4ch;
       text-align: center;
       padding: var(--space-xs) var(--space-md);
@@ -3377,7 +3368,7 @@
       font-family: var(--font-family);
       font-stretch: var(--font-mono);
       font-size: var(--font-size-2xl);
-      color: var(--accent);
+      color: var(--color-tint-strong);
       padding: var(--space-sm) var(--space-md);
       background: var(--surface-2);
       border: var(--border-width) solid var(--border);
@@ -3420,8 +3411,6 @@
         font-stretch: var(--font-mono);
         font-size: var(--font-size-xs);
         color: var(--text-2);
-        letter-spacing: var(--letter-spacing-wider);
-        text-transform: uppercase;
         align-self: center;
       }
 
@@ -3433,7 +3422,7 @@
         color: var(--text-0);
 
         &[data-parity='odd'] {
-          color: var(--accent);
+          color: var(--color-tint-strong);
         }
 
         &[data-parity='even'] {
@@ -3479,7 +3468,7 @@
         & button {
           background: none;
           border: none;
-          color: var(--accent);
+          color: var(--color-tint-strong);
           font-family: inherit;
           font-size: inherit;
           cursor: pointer;
@@ -3504,8 +3493,6 @@
         font-family: var(--font-family);
         font-stretch: var(--font-mono);
         font-size: var(--font-size-xs);
-        letter-spacing: var(--letter-spacing-wider);
-        text-transform: uppercase;
         padding: var(--space-xs) var(--space-md);
         border-radius: var(--radius-sm);
         cursor: pointer;
@@ -3516,7 +3503,7 @@
 
         &:hover {
           background: var(--surface-3);
-          color: var(--accent);
+          color: var(--color-tint-strong);
         }
 
         &[aria-pressed='true'] {
@@ -3563,7 +3550,7 @@
 
         & em {
           font-style: normal;
-          color: var(--accent);
+          color: var(--color-tint-strong);
         }
       }
     }
@@ -3621,7 +3608,7 @@
       font-weight: var(--font-weight-semibold);
     }
     [data-compare-table] span[data-tone='cost'] {
-      color: var(--accent);
+      color: var(--color-tint-strong);
     }
     [data-compare-table] span[data-tone='even'] {
       color: var(--text-1);
@@ -3644,7 +3631,7 @@
       color: var(--success);
     }
     [data-compare-card='cost'] > header h3 {
-      color: var(--accent);
+      color: var(--color-tint-strong);
     }
 
     /* Reset the site's default list-item chrome — these are prose bullets with a
@@ -3677,7 +3664,7 @@
     }
     ul[role='list'][data-compare-list='cost'] > li::before {
       content: '~';
-      color: var(--accent);
+      color: var(--color-tint-strong);
     }
 
     [data-compare-code] {
@@ -3687,8 +3674,6 @@
       font-family: var(--font-family);
       font-stretch: var(--font-mono);
       font-size: var(--font-size-xs);
-      text-transform: uppercase;
-      letter-spacing: var(--letter-spacing-wider);
       color: var(--text-2);
     }
     [data-compare-code] > [data-compare-note] {
@@ -3924,7 +3909,7 @@
     h2 em,
     h3 em {
       font-style: normal;
-      color: var(--color-tint);
+      color: var(--color-tint-strong);
     }
 
     /* Section intros read as secondary body copy, not display type. */
@@ -3980,6 +3965,11 @@
     [data-hero] nav {
       justify-content: flex-start;
     }
+    /* The hero's row lays its buttons out with a gap; the button sheet's
+       adjacent margin would double it and indent a wrapped button. */
+    [data-hero] nav > * + * {
+      margin-inline-start: 0;
+    }
     [data-hero] > p {
       text-align: start;
       margin-inline: 0;
@@ -4008,6 +3998,27 @@
       background: transparent;
       box-shadow: none;
       padding: 0;
+    }
+
+    /* The same holds for a section whose surface is its list or its card
+   grid: the list-group and the component cards are the cards, so the
+   section is a heading zone whose heading sits on the card text line. */
+    main > section:has(> ul, > [data-bn-component-grid]) {
+      background: transparent;
+      box-shadow: none;
+      padding: 0;
+
+      & > :is(h2, header) {
+        padding-inline: var(--spacing-5);
+      }
+    }
+    /* Workbenches (playground, builder) are tools, not cards: their panes
+   and window are the surfaces, and they take the wide column. */
+    main > section:is([aria-label='Playground workspace'], #visual-builder) {
+      background: transparent;
+      box-shadow: none;
+      padding: 0;
+      max-inline-size: var(--size-inline-wide, 92rem);
     }
     article {
       background: var(--color-background-grouped-2);
@@ -4069,7 +4080,7 @@
    grouped list formalises, applied to the hand-authored lists. The
    old treatment gave every row its own bordered mini-card; grouped
    rows share the card's surface instead. */
-    section ul[role='list']:not([data-stat-grid]) > li {
+    section ul[role='list']:not([data-stat-grid], [data-bn-component-grid]) > li {
       background: transparent;
       border: none;
       border-radius: 0;
@@ -4077,7 +4088,7 @@
       padding-block: var(--spacing-3);
       border-block-start: 1px solid var(--color-border-separator);
     }
-    section ul[role='list']:not([data-stat-grid]) > li:first-child {
+    section ul[role='list']:not([data-stat-grid], [data-bn-component-grid]) > li:first-child {
       border-block-start: none;
       padding-block-start: 0;
     }
@@ -4145,8 +4156,6 @@
       line-height: var(--font-caption-1-leading);
       font-weight: var(--font-caption-1-weight);
       font-weight: 600;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
       color: var(--color-text-label-2);
     }
     table:not([data-bn]):not([variant]) th,
@@ -4221,13 +4230,13 @@
     a[role='button'][data-variant='outline'],
     button:not([data-bn]):not([variant])[data-variant='outline'] {
       background: var(--accent-dim);
-      color: var(--color-tint);
+      color: var(--color-tint-strong);
       border: none;
     }
     a[role='button'][data-variant='outline']:hover,
     button:not([data-bn]):not([variant])[data-variant='outline']:hover {
       background: var(--accent-dim);
-      color: var(--color-tint);
+      color: var(--color-tint-strong);
       opacity: 1;
     }
     /* The page-hero CTAs share the same two treatments. */
@@ -4251,7 +4260,7 @@
       line-height: var(--font-headline-leading);
       font-weight: var(--font-headline-weight);
       background: var(--accent-dim);
-      color: var(--color-tint);
+      color: var(--color-tint-strong);
       border: none;
       border-radius: var(--radius-pill);
       padding: var(--spacing-3) var(--spacing-5);
@@ -4269,7 +4278,7 @@
       text-decoration-thickness: 1px;
     }
     main a:where(:not([data-bn]):not([variant]):not([role='button']):not([data-bn-cta])) {
-      color: var(--color-tint);
+      color: var(--color-tint-strong);
     }
 
     /* Pagination's links are plain <a> inside the [data-bn] nav, so the
@@ -4330,7 +4339,7 @@
       line-height: var(--font-subheadline-leading);
       font-weight: var(--font-subheadline-weight);
       background: var(--accent-dim);
-      color: var(--color-tint);
+      color: var(--color-tint-strong);
       border: none;
       border-radius: var(--radius-pill);
       padding: var(--spacing-2) var(--spacing-4);
@@ -4382,7 +4391,7 @@
       color: var(--color-text-label-2);
     }
     body > [data-bn-site-footer] nav a:hover {
-      color: var(--color-tint);
+      color: var(--color-tint-strong);
     }
 
     /* ── The app nav in the site's language ───────────────────────────── */
@@ -4409,7 +4418,7 @@
       line-height: var(--font-headline-leading);
       font-weight: var(--font-headline-weight);
       background: var(--accent-dim);
-      color: var(--color-tint);
+      color: var(--color-tint-strong);
       border-radius: var(--radius-pill);
       padding: var(--spacing-2) var(--spacing-4);
       text-align: center;

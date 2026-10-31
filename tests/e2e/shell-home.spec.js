@@ -66,7 +66,9 @@ test.describe('home shell', () => {
           scroller.scrollTop = place === 'top' ? 0 : place === 'bottom' ? max : max / 2;
           const found = [];
           const b = bar.getBoundingClientRect();
-          for (const el of document.querySelectorAll('main h1, main h2, main p, main li, main pre, main a, footer a')) {
+          for (const el of document.querySelectorAll(
+            'main h1, main h2, main p, main li, main pre, main a, footer a',
+          )) {
             const style = getComputedStyle(el);
             if (style.display === 'none' || style.visibility === 'hidden') continue;
             const r = el.getBoundingClientRect();
@@ -101,9 +103,11 @@ test.describe('home shell', () => {
     test(`desktop reading column (${theme})`, async ({ page }) => {
       await open(page, 1280, theme);
       const box = await page.evaluate(() => {
-        const article = document.querySelector('main article');
+        // Home has no page article since the design tightening: the
+        // grouped list is the widest surface in the reading column.
+        const column = document.querySelector('main ul[variant]');
         const main = document.querySelector('main');
-        const a = article.getBoundingClientRect();
+        const a = column.getBoundingClientRect();
         const m = main.getBoundingClientRect();
         const h1 = getComputedStyle(document.querySelector('h1'));
         const hero = document.querySelector('main figure[variant]');
@@ -244,25 +248,23 @@ test.describe('home shell', () => {
       expect(foot.shadow).toBe('none');
     });
 
-    test(`list markers at phone width (${theme})`, async ({ page }) => {
+    test(`list rows at phone width (${theme})`, async ({ page }) => {
       await open(page, 320, theme);
-      const markers = await page.evaluate(() =>
-        [...document.querySelectorAll('main ul[variant] > li small[variant]')].map((marker) => {
-          const rect = marker.getBoundingClientRect();
-          return {
-            height: rect.height,
-            fill: getComputedStyle(marker).backgroundColor,
-          };
-        }),
+      const rows = await page.evaluate(() =>
+        [...document.querySelectorAll('main ul[variant] > li')].map((row) => ({
+          marker: Boolean(row.querySelector('small[variant]')),
+          lead: Boolean(row.querySelector('strong')),
+          height: row.getBoundingClientRect().height,
+        })),
       );
-      expect(markers.length).toBeGreaterThanOrEqual(10);
-      for (const marker of markers) {
-        expect(marker.height).toBeGreaterThanOrEqual(23);
-        expect(marker.height).toBeLessThanOrEqual(25);
-        // A tint, never an empty or solid block.
-        const alpha = marker.fill.match(/rgba?\(([^)]+)\)/)?.[1].split(',')[3];
-        expect(marker.fill).not.toBe('rgba(0, 0, 0, 0)');
-        expect(alpha === undefined || parseFloat(alpha) < 1).toBe(true);
+      // The home lists are plain grouped rows since the design
+      // tightening: a bold lead and its detail, no badge markers, each
+      // row a full touch target.
+      expect(rows.length).toBeGreaterThanOrEqual(10);
+      for (const row of rows) {
+        expect(row.marker).toBe(false);
+        expect(row.lead).toBe(true);
+        expect(row.height).toBeGreaterThanOrEqual(44);
       }
     });
 
@@ -311,22 +313,23 @@ test.describe('home shell', () => {
       }
     });
 
-    test(`list markers at desktop width (${theme})`, async ({ page }) => {
+    test(`list rows at desktop width (${theme})`, async ({ page }) => {
       await open(page, 1280, theme);
-      const markers = await page.evaluate(() =>
-        [...document.querySelectorAll('main ul[variant] > li small[variant]')].map((marker) => {
-          const rect = marker.getBoundingClientRect();
-          return {
-            height: rect.height,
-            fill: getComputedStyle(marker).backgroundColor,
-          };
-        }),
+      const rows = await page.evaluate(() =>
+        [...document.querySelectorAll('main ul[variant] > li')].map((row) => ({
+          marker: Boolean(row.querySelector('small[variant]')),
+          lead: Boolean(row.querySelector('strong')),
+          height: row.getBoundingClientRect().height,
+        })),
       );
-      expect(markers.length).toBeGreaterThanOrEqual(10);
-      for (const marker of markers) {
-        expect(marker.height).toBeGreaterThanOrEqual(23);
-        expect(marker.height).toBeLessThanOrEqual(25);
-        expect(marker.fill).not.toBe('rgba(0, 0, 0, 0)');
+      // The home lists are plain grouped rows since the design
+      // tightening: a bold lead and its detail, no badge markers, each
+      // row a full touch target.
+      expect(rows.length).toBeGreaterThanOrEqual(10);
+      for (const row of rows) {
+        expect(row.marker).toBe(false);
+        expect(row.lead).toBe(true);
+        expect(row.height).toBeGreaterThanOrEqual(44);
       }
     });
 
@@ -397,8 +400,7 @@ test.describe('home shell', () => {
           return {
             own: cs.backgroundColor,
             backdrop: paintedBackdrop(el),
-            bordered:
-              parseFloat(cs.borderTopWidth) >= 1 && cs.borderTopStyle !== 'none',
+            bordered: parseFloat(cs.borderTopWidth) >= 1 && cs.borderTopStyle !== 'none',
             parent: el.parentElement?.tagName,
           };
         };
@@ -424,9 +426,9 @@ test.describe('home shell', () => {
       // against its container it reads correctly in both themes.)
       for (const name of ['pre', 'list']) {
         expect(surfaces[name].own).not.toBe('rgba(0, 0, 0, 0)');
-        expect(
-          surfaces[name].own !== surfaces[name].backdrop || surfaces[name].bordered,
-        ).toBe(true);
+        expect(surfaces[name].own !== surfaces[name].backdrop || surfaces[name].bordered).toBe(
+          true,
+        );
       }
       // The hero heads the page article on home, where the stand-down
       // contract (the site sheet's main > article > figure rule) makes
@@ -438,7 +440,8 @@ test.describe('home shell', () => {
       // is a surface that collapsed.
       const hero = surfaces.hero;
       if (hero.own === 'rgba(0, 0, 0, 0)') {
-        expect(hero.parent).toBe('ARTICLE');
+        // Home's hero heads main itself since the design tightening.
+        expect(['ARTICLE', 'MAIN']).toContain(hero.parent);
         expect(hero.bordered).toBe(false);
         expect(hero.backdrop).not.toBe('rgba(0, 0, 0, 0)');
       } else {

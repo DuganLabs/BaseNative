@@ -51,7 +51,7 @@ function pane(lang, title, note, source, extra = '') {
 
 const consoleRegion = `<section class="console-region" aria-label="Console">
               <header class="console-head">
-                <h3>CONSOLE</h3>
+                <h3>Console</h3>
                 ${component('button', { label: 'Clear', variant: 'ghost' })}
               </header>
               <section class="console-body" tabindex="0">

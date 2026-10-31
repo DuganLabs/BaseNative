@@ -1494,7 +1494,7 @@
     }
   },
   "color-tint-fill": {
-    "$value": "rgb(0 122 255 / 0.12)",
+    "$value": "rgb(232 146 10 / 0.12)",
     "$type": "color",
     "$extensions": {
       "com.basenative": {

@@ -42,9 +42,9 @@
 }
 @layer components {
   /* ── Window frame ──────────────────────────────────────────────────
-     The builder is a workbench, not prose: it breaks out of the page's
-     text column to near-viewport width and takes a definite, app-like
-     height. Panes scroll internally; the window never grows into a
+     The builder is a workbench, not prose: it fills the host's wide
+     column (never the viewport, so it cannot slide under an app-shell
+     rail) and takes a definite, app-like height. Panes scroll internally; the window never grows into a
      tower driven by the palette's length. Pane layout responds to the
      WINDOW's width via container queries, so the proportions hold at
      any embed size. Centring: builder-element.js measures the host
@@ -55,9 +55,7 @@
     container-type: inline-size;
     container-name: builder;
     position: relative;
-    inset-inline-start: 50%;
-    translate: calc(-50% + var(--bn-builder-center-shift, 0px)) 0;
-    inline-size: min(92rem, calc(100vw - var(--bn-len-32, 32px)));
+    inline-size: 100%;
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
     block-size: clamp(34rem, 74dvh, 52rem);
@@ -329,8 +327,6 @@
     margin: 0 0 var(--bn-len-8, 8px);
     font-size: var(--bn-type-13, 13px);
     font-weight: 600;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
     color: var(--bn-content-secondary, CanvasText);
     flex: none;
   }
@@ -760,9 +756,7 @@
   /* ── Export panel (site view, styled here with the app) ──────────── */
   [data-bn-builder-export-panel] {
     position: relative;
-    inset-inline-start: 50%;
-    translate: calc(-50% + var(--bn-builder-center-shift, 0px)) 0;
-    inline-size: min(92rem, calc(100vw - var(--bn-len-32, 32px)));
+    inline-size: 100%;
     margin-block-start: var(--bn-len-16, 16px);
     border: 1px solid var(--bn-glass-rim, Canvas);
     border-radius: var(--bn-plat-radius-12, 12px);

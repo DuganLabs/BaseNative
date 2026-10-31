@@ -204,14 +204,11 @@ export function getHomePageContext() {
   // the item is a single child of the row, the shape the component's
   // layout is built for. The platform's renderBnList left with the
   // platform.
-  const tones = ['info', 'warning', 'success', 'danger'];
   const listOf = (rows) =>
     raw(
       renderTrinity('list-group', {
-        items: rows.map((row, i) => ({
-          contentHtml:
-            `<p>${renderTrinity('badge', { label: row.mark, variant: tones[i % tones.length] })} ` +
-            `<strong>${row.title}</strong> ${row.detail}</p>`,
+        items: rows.map((row) => ({
+          contentHtml: `<p><strong>${row.title}</strong> ${row.detail}</p>`,
         })),
       }),
     );
@@ -219,30 +216,30 @@ export function getHomePageContext() {
     runtimeVersion,
     runtimeList: listOf([
       {
-        title: 'One set()',
-        detail: 'Derived computeds settle, then each affected effect runs once.',
-        mark: '1',
-      },
-      {
-        title: 'BN_EFFECT_LOOP',
+        title: 'No build step.',
         detail:
-          'An effect that writes a signal it also read throws. Use .peek(), or write a different signal.',
-        mark: '!',
+          'Templates are valid HTML. Ship them as they are; the runtime hydrates them in the browser.',
       },
       {
-        title: 'class and :class',
-        detail: 'The two merge. A false binding adds nothing.',
-        mark: 'C',
+        title: 'Signals, not a virtual DOM.',
+        detail: 'One set() updates exactly the bindings that read it. An effect that writes a signal it read throws <code>BN_EFFECT_LOOP</code> instead of looping.',
       },
       {
-        title: ':value and :checked',
-        detail: 'Those bindings write the DOM property.',
-        mark: 'V',
+        title: 'Server-first.',
+        detail:
+          '@basenative/server renders the same templates to HTML, so pages are fast and crawlable before any script runs.',
       },
       {
-        title: 'Evaluator',
-        detail: `An allowlist. Gzip ${runtimeSizeStat()}.`,
-        mark: 'E',
+        title: 'Safe by default.',
+        detail: `The expression language is an allowlist, never eval, so pages run under a strict CSP. Gzip ${runtimeSizeStat()}.`,
+      },
+      {
+        title: 'Accessible components.',
+        detail:
+          'Built on <button>, <dialog>, <details> and <table>, in light and dark, on phone and desktop.'.replace(
+            /</g,
+            '&lt;',
+          ),
       },
     ]),
     catalogList: listOf([

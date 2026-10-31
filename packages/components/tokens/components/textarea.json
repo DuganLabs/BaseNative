@@ -432,7 +432,7 @@
     }
   },
   "color-border-textarea-outline-focus": {
-    "$value": "{color-tint}",
+    "$value": "{color-tint-strong}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {

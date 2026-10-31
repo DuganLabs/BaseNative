@@ -54,7 +54,7 @@
     }
   },
   "color-bkg-hero": {
-    "$value": "{color-background-grouped-2}",
+    "$value": "{palette-transparent}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -594,7 +594,7 @@
     }
   },
   "size-border-hero": {
-    "$value": "{size-border}",
+    "$value": "{size-border-none}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
@@ -900,7 +900,7 @@
     }
   },
   "spacing-hero-padding-block": {
-    "$value": "{spacing-6}",
+    "$value": "{spacing-2}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
@@ -918,7 +918,7 @@
     }
   },
   "spacing-hero-padding-inline": {
-    "$value": "{spacing-6}",
+    "$value": "{spacing-5}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
