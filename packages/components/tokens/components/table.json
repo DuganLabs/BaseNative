@@ -791,6 +791,24 @@
       }
     }
   },
+  "white-space-table-cell-restack": {
+    "$value": "{white-space-normal}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "white-space",
+          "type": null,
+          "item": "table-cell",
+          "variant": null,
+          "subitem": "restack",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "size-border-table-cell-block-end-restack": {
     "$value": "{size-border-none}",
     "$type": "dimension",

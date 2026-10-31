@@ -38,24 +38,106 @@ export function create(props) {
   const options = signal(props.options ?? []);
   const selected = signal(props.selected ?? []);
   const open = signal(props.open ?? false);
+  const activeValue = signal('');
   const variant = signal(props.variant ?? 'multiselect');
 
   const listboxId = computed(() => `${props.id}-listbox`);
   const optionId = (/** @type {MultiselectOption} */ option) => `${props.id}-option-${option.value}`;
   const hasSelected = computed(() => selected().length > 0);
+  const activeOption = computed(() => options().find((option) => option.value === activeValue()) ?? null);
+  const activeDescendant = computed(() => {
+    const active = activeOption();
+    return open() && active ? optionId(active) : '';
+  });
   const isSelected = (/** @type {MultiselectOption} */ option) => (
     selected().some((item) => item.value === option.value) ? 'true' : 'false'
   );
+  const isActive = (/** @type {MultiselectOption} */ option) => (option.value === activeValue() ? 'true' : 'false');
   const toggle = (/** @type {MultiselectOption & { dismissHtml: string }} */ option) => {
     const current = selected();
     const next = current.some((item) => item.value === option.value)
       ? current.filter((item) => item.value !== option.value)
-      : [...current, { value: option.value, label: option.label, dismissHtml: option.dismissHtml }];
+      : [...current, { value: option.value, label: option.label, dismissHtml: option.dismissHtml ?? '' }];
     selected.set(next);
     props.onChange?.({ values: next.map((item) => item.value) });
   };
 
-  return { label, inputHtml, options, selected, open, variant, listboxId, optionId, hasSelected, isSelected, toggle, raw };
+  /* Silent reflectors (the legacy initMultiselect add/remove API):
+     they move the set without reporting, so a host can mirror state
+     it owns. removeLast backs the input's Backspace-on-empty gesture. */
+  const addValue = (/** @type {string} */ value) => {
+    const option = options().find((item) => item.value === value);
+    if (!option || selected().some((item) => item.value === value)) return false;
+    selected.set([...selected(), { value: option.value, label: option.label, dismissHtml: '' }]);
+    return true;
+  };
+  const removeValue = (/** @type {string} */ value) => {
+    if (!selected().some((item) => item.value === value)) return false;
+    selected.set(selected().filter((item) => item.value !== value));
+    props.onChange?.({ values: selected().map((item) => item.value) });
+    return true;
+  };
+  const removeLast = () => {
+    const last = selected().at(-1);
+    return last ? removeValue(last.value) : false;
+  };
+
+  /** @param {number} delta */
+  function moveActive(delta) {
+    const list = options();
+    if (list.length === 0) return;
+    const index = list.findIndex((option) => option.value === activeValue());
+    activeValue.set(list[(index + delta + list.length) % list.length].value);
+  }
+
+  /** @param {KeyboardEvent} event */
+  function onKeydown(event) {
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        if (!open()) open.set(true);
+        else moveActive(1);
+        if (open() && !activeOption() && options().length > 0) activeValue.set(options()[0].value);
+        return;
+      case 'ArrowUp':
+        event.preventDefault();
+        if (!open()) open.set(true);
+        else moveActive(-1);
+        if (open() && !activeOption() && options().length > 0) activeValue.set(options()[options().length - 1].value);
+        return;
+      case 'Home':
+        if (!open() || options().length === 0) return;
+        event.preventDefault();
+        activeValue.set(options()[0].value);
+        return;
+      case 'End':
+        if (!open() || options().length === 0) return;
+        event.preventDefault();
+        activeValue.set(options()[options().length - 1].value);
+        return;
+      case 'Enter': {
+        const active = activeOption();
+        if (open() && active) {
+          event.preventDefault();
+          toggle(active);
+        }
+        return;
+      }
+      case 'Escape':
+        if (open()) {
+          event.preventDefault();
+          open.set(false);
+        }
+        return;
+      default:
+    }
+  }
+
+  return {
+    label, inputHtml, options, selected, open, activeValue, activeOption, activeDescendant,
+    variant, listboxId, optionId, hasSelected, isSelected, isActive, toggle,
+    addValue, removeValue, removeLast, moveActive, onKeydown, raw,
+  };
 }
 
 /** @param {import('../registry.js').Registry} registry */

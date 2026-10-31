@@ -154,7 +154,7 @@ describe('landingHandler', () => {
     const handler = landingHandler({
       store,
       ogImage: () => 'https://x/og.png',
-      buildMeta: (card) => ({ title: 't', description: 'd', imageUrl: 'i', canonicalUrl: 'c' }),
+      buildMeta: (_card) => ({ title: 't', description: 'd', imageUrl: 'i', canonicalUrl: 'c' }),
     });
     const bad = await handler({ request: new Request('https://x/s/!!'), env: {}, params: { id: '!!' } });
     assert.equal(bad.status, 400);

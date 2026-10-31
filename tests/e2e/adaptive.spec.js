@@ -2,7 +2,12 @@ import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { renderTable, renderAppNav } from '../../packages/components/src/index.js';
+import { render } from '../../packages/server/src/render.js';
+import {
+  loadRegistry,
+  renderComponent as renderCatalog,
+  assembleStyles,
+} from '../../packages/components/src/loader.js';
 
 /*
  * Adaptive-component layout contracts, asserted on real geometry.
@@ -15,6 +20,14 @@ import { renderTable, renderAppNav } from '../../packages/components/src/index.j
  * fixtures deliberately carry the hostile content: long prose and a
  * long unbroken token, the cell content that broke the table in the
  * wild.
+ *
+ * The fixtures render the catalog components through the registry and
+ * load the loader's own style assembly (tokens + the components'
+ * sheets, the same CSS the site serves as trinity.css), so the fixture
+ * cannot drift from the shipped styles the way a hand-kept file list
+ * once did. The table restack keys off the table's CONTAINER, so the
+ * fixture wraps tables in a section that establishes one, the way a
+ * host's layout does.
  */
 
 const SRC = join(
@@ -25,22 +38,14 @@ const SRC = join(
   'components',
   'src',
 );
-// The fixture loads the package's sheets the way its own CSS entry
-// (index.css) composes them. The list once drifted from index.css and
-// named a token sheet that declared none of the tokens the component
-// sheets consume, so every var() in them silently resolved to nothing
-// (the app-nav icons rendered at 0x0 in this fixture). Mirror
-// index.css exactly; when it changes, change this list with it.
+
+const registry = await loadRegistry();
 const CSS = [
-  'layers.css',
-  'reset.css',
-  'tokens.css',
-  'layout.css',
-  'components.css',
-  'states.css',
-]
-  .map((file) => readFileSync(join(SRC, file), 'utf8'))
-  .join('\n');
+  readFileSync(join(SRC, 'layers.css'), 'utf8'),
+  readFileSync(join(SRC, 'reset.css'), 'utf8'),
+  await assembleStyles(registry, ['table', 'app-bar', 'sidebar', 'app-shell']),
+  'body > section { container-type: inline-size; }',
+].join('\n');
 
 async function renderComponent(page, html) {
   await page.setContent(
@@ -51,34 +56,27 @@ async function renderComponent(page, html) {
 const LONG_TOKEN =
   'unbroken-token-that-refuses-to-wrap-and-would-force-any-container-wide-open-0123456789abcdef';
 
-function proseTable(labelCells) {
-  return renderTable({
+function proseTable() {
+  return renderCatalog(registry, render, 'table', {
     caption: 'Posture',
-    columns: [
-      { key: 'measure', label: 'Measure' },
-      { key: 'basenative', label: 'BaseNative' },
-      { key: 'react', label: 'React 19' },
-      { key: 'angular', label: 'Angular 20' },
-      { key: 'ref', label: 'Reference' },
-    ],
+    columns: ['Measure', 'BaseNative', 'React 19', 'Angular 20', 'Reference'],
     rows: [
-      {
-        measure: 'A stored template (CMS, database, model output) renders as-is',
-        basenative: 'Yes — interpreted against a scope, prototype access blocklisted',
-        react: 'No — it must go through the build first',
-        angular: 'No — it must go through the build first',
-        ref: LONG_TOKEN,
-      },
-      {
-        measure: 'eval / Function constructor in shipped code',
-        basenative: '0',
-        react: '0 — after its compiler runs',
-        angular: '0 — after AOT compilation',
-        ref: 'docs/api/components.md#responsive-stacking',
-      },
+      [
+        'A stored template (CMS, database, model output) renders as-is',
+        'Yes — interpreted against a scope, prototype access blocklisted',
+        'No — it must go through the build first',
+        'No — it must go through the build first',
+        LONG_TOKEN,
+      ],
+      [
+        'eval / Function constructor in shipped code',
+        '0',
+        '0 — after its compiler runs',
+        '0 — after AOT compilation',
+        'docs/api/components.md#responsive-stacking',
+      ],
     ],
-    labelCells,
-  });
+  }).html;
 }
 
 test.describe('Table — narrow-width contract', () => {
@@ -87,14 +85,14 @@ test.describe('Table — narrow-width contract', () => {
       page,
     }) => {
       await page.setViewportSize({ width, height: 844 });
-      await renderComponent(page, proseTable(true));
+      await renderComponent(page, `<section>${proseTable()}</section>`);
 
       const geometry = await page.evaluate(() => {
-        const container = document.querySelector('[data-bn="table-container"]');
-        const thead = document.querySelector('[data-bn="table"] thead');
-        const cells = [...document.querySelectorAll('[data-bn="table"] tbody td')];
+        const container = document.querySelector('body > section');
+        const thead = document.querySelector('table[variant="default"] thead');
+        const cells = [...document.querySelectorAll('table[variant="default"] tbody td')];
         const firstRowCells = [
-          ...document.querySelectorAll('[data-bn="table"] tbody tr:first-child td'),
+          ...document.querySelectorAll('table[variant="default"] tbody tr:first-child td'),
         ];
         return {
           containerClient: container.clientWidth,
@@ -127,12 +125,12 @@ test.describe('Table — narrow-width contract', () => {
 
   test('stays a table where the container fits it (1280px)', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await renderComponent(page, proseTable(true));
+    await renderComponent(page, `<section>${proseTable()}</section>`);
 
     const geometry = await page.evaluate(() => {
-      const thead = document.querySelector('[data-bn="table"] thead');
+      const thead = document.querySelector('table[variant="default"] thead');
       const firstRowCells = [
-        ...document.querySelectorAll('[data-bn="table"] tbody tr:first-child td'),
+        ...document.querySelectorAll('table[variant="default"] tbody tr:first-child td'),
       ];
       return {
         theadHeight: thead.getBoundingClientRect().height,
@@ -147,30 +145,36 @@ test.describe('Table — narrow-width contract', () => {
   test('a consumer nowrap on row headings cannot pin a stacked cell open', async ({ page }) => {
     // The failure this guards: a wide-table stylesheet that keeps row
     // headings on one line (the site's own compare-table rule did) meets
-    // markup in the component contract. The stack resets white-space, so
-    // the heading wraps like any other cell instead of painting past its
-    // box and forcing the container into a sideways scroll.
+    // the component contract. Consumer sheets are layered; the catalog's
+    // sheets are not, and the stack resets white-space, so the heading
+    // wraps like any other cell instead of painting past its box and
+    // forcing the container into a sideways scroll.
     await page.setViewportSize({ width: 390, height: 844 });
-    await renderComponent(
-      page,
-      `<div data-bn="table-container"><table data-bn="table" data-hostile>
-        <thead><tr><th scope="col">Measure</th><th scope="col">BaseNative</th><th scope="col">React 19</th></tr></thead>
-        <tbody><tr>
-          <th scope="row" data-label="Measure">A stored template (CMS, database, model output) renders as-is</th>
-          <td data-label="BaseNative">Yes — interpreted against a scope, prototype access blocklisted</td>
-          <td data-label="React 19">No — it must go through the build first</td>
-        </tr></tbody>
-      </table></div>`,
-    );
+    const table = renderCatalog(registry, render, 'table', {
+      columns: ['Measure', 'BaseNative', 'React 19'],
+      rows: [
+        [
+          {
+            text: 'A stored template (CMS, database, model output) renders as-is',
+            header: true,
+          },
+          'Yes — interpreted against a scope, prototype access blocklisted',
+          'No — it must go through the build first',
+        ],
+      ],
+    }).html;
+    await renderComponent(page, `<section>${table}</section>`);
     await page.addStyleTag({
-      content: '@layer components { [data-hostile] th[scope="row"] { white-space: nowrap; } }',
+      content: '@layer components { table[variant="default"] th[scope="row"] { white-space: nowrap; } }',
     });
 
     const geometry = await page.evaluate(() => {
-      const container = document.querySelector('[data-bn="table-container"]');
-      const heading = document.querySelector('[data-bn="table"] tbody th');
+      const container = document.querySelector('body > section');
+      const heading = document.querySelector('table[variant="default"] tbody th');
       const cells = [
-        ...document.querySelectorAll('[data-bn="table"] tbody th, [data-bn="table"] tbody td'),
+        ...document.querySelectorAll(
+          'table[variant="default"] tbody th, table[variant="default"] tbody td',
+        ),
       ].map((c) => {
         const box = c.getBoundingClientRect();
         const range = document.createRange();
@@ -202,27 +206,31 @@ test.describe('Table — narrow-width contract', () => {
 
 const ICON = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg>';
 const NAV_ITEMS = [
-  { label: 'Home', href: '/', icon: ICON, current: true },
-  { label: 'Compare', href: '/compare', icon: ICON },
-  { label: 'Components', href: '/components', icon: ICON },
-  { label: 'Docs', href: '/docs', icon: ICON },
-  { label: 'Playground', href: '/playground', icon: ICON },
-  { label: 'Builder', href: '/builder', icon: ICON },
+  { label: 'Home', href: '/', iconHtml: ICON, current: true },
+  { label: 'Compare', href: '/compare', iconHtml: ICON },
+  { label: 'Components', href: '/components', iconHtml: ICON },
+  { label: 'Docs', href: '/docs', iconHtml: ICON },
+  { label: 'Playground', href: '/playground', iconHtml: ICON },
+  { label: 'Builder', href: '/builder', iconHtml: ICON },
 ];
+
+function appBarHtml() {
+  return renderCatalog(registry, render, 'app-bar', { items: NAV_ITEMS }).html;
+}
 
 test.describe('App nav — bar geometry', () => {
   test('equal cells and symmetric edge insets at 390px, More included', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await renderComponent(page, renderAppNav({ items: NAV_ITEMS, overflow: {}, brand: {} }));
+    await renderComponent(page, appBarHtml());
 
     const geometry = await page.evaluate(() => {
-      const nav = document.querySelector('[data-bn="app-nav"]');
+      const nav = document.querySelector('nav[variant="app-bar"]');
       const navBox = nav.getBoundingClientRect();
-      const cells = [...nav.querySelectorAll('[data-bn="app-nav-list"] > li')]
+      const cells = [...nav.querySelectorAll(':scope > ul > li')]
         .filter((li) => li.getClientRects().length)
         .map((li) => {
           const box = li.getBoundingClientRect();
-          const icon = li.querySelector('[data-bn="app-nav-icon"]');
+          const icon = li.querySelector('svg');
           const iconBox = icon ? icon.getBoundingClientRect() : null;
           return {
             width: box.width,
@@ -243,7 +251,7 @@ test.describe('App nav — bar geometry', () => {
     // Equal cells must not be bought with ellipsized labels: the whole
     // standard label set fits its cell at this width.
     const ellipsized = await page.evaluate(() =>
-      [...document.querySelectorAll('[data-bn="app-nav-label"]')]
+      [...document.querySelectorAll('nav[variant="app-bar"] > ul > li > a')]
         .filter((el) => el.getClientRects().length)
         .filter((el) => el.scrollWidth > el.clientWidth + 1)
         .map((el) => el.textContent),
@@ -251,38 +259,45 @@ test.describe('App nav — bar geometry', () => {
     expect(ellipsized).toEqual([]);
   });
 
-  test('rail at 1280px: More cell hidden, overflow items restored, inline insets symmetric', async ({
+  test('at 1280px the shell retires the bar and the rail carries every destination', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await renderComponent(page, renderAppNav({ items: NAV_ITEMS, overflow: {}, brand: {} }));
+    const sidebar = renderCatalog(registry, render, 'sidebar', {
+      sections: [{ items: NAV_ITEMS }],
+    }).html;
+    const shell = renderCatalog(registry, render, 'app-shell', {
+      sidebarHtml: sidebar,
+      appBarHtml: appBarHtml(),
+      contentHtml: '<p>Page content</p>',
+    }).html;
+    await renderComponent(page, shell);
 
     const geometry = await page.evaluate(() => {
-      const nav = document.querySelector('[data-bn="app-nav"]');
-      const navBox = nav.getBoundingClientRect();
-      const moreCell = nav.querySelector('[data-bn="app-nav-more-cell"]');
-      const visibleItems = [...nav.querySelectorAll('[data-bn="app-nav-list"] > li > a')].filter(
+      const bar = document.querySelector('nav[variant="app-bar"]');
+      const rail = document.querySelector('aside[variant="sidebar"]');
+      const railBox = rail.getBoundingClientRect();
+      const visibleItems = [...rail.querySelectorAll('a')].filter(
         (a) => a.getClientRects().length,
       );
       const firstLink = visibleItems[0].getBoundingClientRect();
+      const lastLink = visibleItems[visibleItems.length - 1].getBoundingClientRect();
       return {
-        direction: getComputedStyle(nav).flexDirection,
-        moreCellVisible: moreCell ? moreCell.getClientRects().length > 0 : false,
+        barVisible: bar ? bar.getClientRects().length > 0 : false,
         visibleCount: visibleItems.length,
-        leftInset: firstLink.x - navBox.x,
-        rightInset: navBox.x + navBox.width - (firstLink.x + firstLink.width),
+        leftInset: firstLink.x - railBox.x,
+        rightInset: railBox.x + railBox.width - (lastLink.x + lastLink.width),
       };
     });
 
-    expect(geometry.direction).toBe('column');
-    expect(geometry.moreCellVisible).toBe(false);
+    expect(geometry.barVisible).toBe(false);
     expect(geometry.visibleCount).toBe(6);
     expect(Math.abs(geometry.leftInset - geometry.rightInset)).toBeLessThanOrEqual(1);
   });
 });
 
 /*
- * The contract on the real pages. The fixtures above prove the legacy
+ * The contract on the real pages. The fixtures above prove the catalog
  * renderer's contract; these prove the consumers that were actually
  * broken. Since the Holy Trinity migration the site's content tables are
  * the catalog table (examples/express composes them with renderTrinity):

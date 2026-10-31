@@ -3,7 +3,7 @@
     <ul role="tablist" :aria-label="label()">
       <template @for="tab of tabs()">
         <li role="presentation">
-          <button type="button" role="tab" :id="tabId(tab)" :aria-selected="selectedAttr(tab)" :aria-controls="panelId(tab)" @click="select(tab)">{{ tab.label }}</button>
+          <button type="button" role="tab" :id="tabId(tab)" :aria-selected="selectedAttr(tab)" :aria-controls="panelId(tab)" :tabindex="tabIndex(tab)" :disabled="tab.disabled" @click="select(tab)" @keydown="onKeydown($event, tab)">{{ tab.label }}</button>
         </li>
       </template>
     </ul>

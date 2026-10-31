@@ -1,66 +1,36 @@
+/* Component behavior tests for the Holy Trinity view models.
+ *
+ * Markup contracts live in catalog.test.js and holy-trinity.test.js
+ * (rendered through the loader + server renderer). This suite covers
+ * what those cannot: the behavior each component's create() owns —
+ * the APG keyboard patterns, selection/sort models, the dialog
+ * behavior, the toaster — exercised at the view-model level with
+ * plain event stubs, plus the retained utility modules (skeleton,
+ * layout-grid, ids, internal helpers) that predate the trinity and
+ * are not components. DOM-level keyboard behavior is covered by the
+ * Playwright specs in tests/e2e. */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 
-import { renderButton, buttonVariants } from './button.js';
-import { renderInput } from './input.js';
-import { renderTextarea } from './textarea.js';
-import { renderCheckbox } from './checkbox.js';
-import { renderRadioGroup } from './radio.js';
-import { renderToggle } from './toggle.js';
-import { renderSelect } from './select.js';
-import { renderAlert } from './alert.js';
-import { renderTable } from './table.js';
-import { renderPagination } from './pagination.js';
-import { renderBadge } from './badge.js';
-import { renderCard } from './card.js';
-import { renderProgress, renderSpinner } from './progress.js';
 import { renderSkeleton } from './skeleton.js';
-import { renderToastContainer } from './toast.js';
-import { renderDialog } from './dialog.js';
-import { renderDrawer, initDrawer } from './drawer.js';
-import { renderTabs, initTabs } from './tabs.js';
-import { renderAccordion } from './accordion.js';
-import { renderBreadcrumb } from './breadcrumb.js';
-import { renderTooltip } from './tooltip.js';
-import { renderDropdownMenu, initDropdownMenu } from './dropdown-menu.js';
-import { renderCommandPalette, initCommandPalette } from './command-palette.js';
-import { renderCombobox } from './combobox.js';
-import { renderMultiselect, initMultiselect } from './multiselect.js';
-import { renderDataGrid, initDataGrid } from './datagrid.js';
-import { renderTree, renderTreeGrid, initTree } from './tree.js';
-import { renderVirtualList, initVirtualList, defaultRenderItem } from './virtualizer.js';
-import { renderAvatar } from './avatar.js';
-import { renderCalendar, renderPipelineBlock, renderPipeline, initCalendarDragDrop, initPipelineDragDrop } from './calendar.js';
 import { renderLayoutGrid } from './layout-grid.js';
-import { renderField as renderPublicField, renderFormField } from './field.js';
-import {
-  renderAppNav,
-  initAppNav,
-  renderSiteNav,
-  renderSiteHeader,
-  initSiteHeader,
-  renderSiteFooter,
-  renderAppShell,
-} from './site-chrome.js';
-import { renderListGroup } from './list-group.js';
-import {
-  renderHero,
-  renderPricingCard,
-  renderPricingCards,
-  renderFeatureCard,
-  renderStatCard,
-  renderFaqItem,
-  renderFaq,
-} from './marketing.js';
-import { createCalendarState } from './calendar-state.js';
-import { createToaster, showToast, dismissToast } from './toast.js';
 import { nextId, resetIds } from './ids.js';
 import * as api from './index.js';
 import { bindDrag } from './internal/drag.js';
 import { normalizeItem } from './internal/items.js';
 import { describedBy, renderField } from './internal/field.js';
 import { attrsSuffix } from './internal/attrs.js';
+import { createDialogBehavior } from './internal/dialog.js';
+import { create as createTabs } from './tabs/index.js';
+import { create as createDropdownMenu } from './dropdown-menu/index.js';
+import { create as createCommandPalette } from './command-palette/index.js';
+import { create as createCombobox } from './combobox/index.js';
+import { create as createMultiselect } from './multiselect/index.js';
+import { create as createDatagrid } from './datagrid/index.js';
+import { create as createVirtualizer } from './virtualizer/index.js';
+import { create as createCalendar } from './calendar/index.js';
+import { create as createPipeline } from './pipeline/index.js';
+import { createToaster } from './toast/index.js';
 
 const XSS = '"><script>alert(1)</script>';
 
@@ -68,35 +38,6 @@ function assertEscaped(html) {
   assert.ok(!html.includes('<script>'), 'raw <script> leaked into markup');
   assert.ok(!html.includes('"><script'), 'attribute breakout');
   assert.ok(html.includes('&lt;script&gt;'), 'payload was not escaped');
-}
-
-/**
- * Every `<th>`/`<td>` of a rendered table as `{ tag, attrs, content }` plus
- * attribute accessors, so a test can assert what a cell *says* instead of the
- * order its attributes happen to be emitted in. Pinning a whole open tag makes
- * every additive attribute a test failure, which is how a suite ends up
- * recording today's markup rather than the contract.
- */
-function tableCells(html) {
-  return [...html.matchAll(/<(th|td)\b([^>]*)>([\s\S]*?)<\/\1>/g)].map(([, tag, attrs, content]) => ({
-    tag,
-    attrs,
-    content,
-    has: name => new RegExp(`(?:^|\\s)${name}(?:[=\\s]|$)`).test(attrs),
-    attr: name => (attrs.match(new RegExp(`(?:^|\\s)${name}="([^"]*)"`)) || [])[1],
-  }));
-}
-
-/** The one cell whose rendered content is exactly `content`. */
-function cellWith(html, content) {
-  const found = tableCells(html).filter(c => c.content === content);
-  assert.equal(found.length, 1, `expected exactly one cell rendering ${JSON.stringify(content)}`);
-  return found[0];
-}
-
-/** Just the body/footer `<td>` contents, in document order. */
-function cellContents(html) {
-  return tableCells(html).filter(c => c.tag === 'td').map(c => c.content);
 }
 
 function fakeContainer() {
@@ -109,180 +50,7 @@ function fakeContainer() {
   };
 }
 
-describe('Button', () => {
-  it('renders a primary button', () => {
-    const html = renderButton('Submit', { variant: 'primary' });
-    assert.ok(html.includes('data-variant="primary"'));
-    assert.ok(html.includes('Submit'));
-    assert.ok(html.includes('<button'));
-  });
-
-  it('renders disabled button', () => {
-    const html = renderButton('Save', { disabled: true });
-    assert.ok(html.includes(' disabled'));
-  });
-
-  it('returns variant class string', () => {
-    assert.equal(buttonVariants('destructive', 'sm'), 'bn-button bn-button--destructive bn-button--sm');
-  });
-});
-
-describe('Input', () => {
-  it('renders a text input with label', () => {
-    const html = renderInput({ name: 'email', label: 'Email', type: 'email' });
-    assert.ok(html.includes('type="email"'));
-    assert.ok(html.includes('<label'));
-    assert.ok(html.includes('Email'));
-  });
-
-  it('renders error state', () => {
-    const html = renderInput({ name: 'name', error: 'Required' });
-    assert.ok(html.includes('aria-invalid="true"'));
-    assert.ok(html.includes('Required'));
-    assert.ok(html.includes('role="alert"'));
-  });
-});
-
-describe('Textarea', () => {
-  it('renders a textarea', () => {
-    const html = renderTextarea({ name: 'bio', label: 'Bio', rows: 5 });
-    assert.ok(html.includes('<textarea'));
-    assert.ok(html.includes('rows="5"'));
-  });
-});
-
-describe('Checkbox', () => {
-  it('renders a checkbox with label', () => {
-    const html = renderCheckbox({ name: 'agree', label: 'I agree' });
-    assert.ok(html.includes('type="checkbox"'));
-    assert.ok(html.includes('I agree'));
-  });
-});
-
-describe('Radio', () => {
-  it('renders a radio group', () => {
-    const html = renderRadioGroup({
-      name: 'color',
-      label: 'Pick a color',
-      items: ['red', 'blue', 'green'],
-      selected: 'blue',
-    });
-    assert.ok(html.includes('<fieldset'));
-    assert.ok(html.includes('type="radio"'));
-    assert.ok(html.includes('checked'));
-  });
-});
-
-describe('Toggle', () => {
-  it('renders a switch toggle', () => {
-    const html = renderToggle({ name: 'dark', label: 'Dark mode' });
-    assert.ok(html.includes('role="switch"'));
-    assert.ok(html.includes('Dark mode'));
-  });
-});
-
-describe('Select', () => {
-  it('renders a select with options', () => {
-    const html = renderSelect({
-      name: 'country',
-      label: 'Country',
-      items: [{ value: 'us', label: 'USA' }, { value: 'uk', label: 'UK' }],
-      selected: 'us',
-    });
-    assert.ok(html.includes('<select'));
-    assert.ok(html.includes('selected'));
-    assert.ok(html.includes('USA'));
-  });
-});
-
-describe('Alert', () => {
-  it('renders an info alert', () => {
-    const html = renderAlert('Info message', { variant: 'info' });
-    assert.ok(html.includes('data-variant="info"'));
-    assert.ok(html.includes('role="status"'));
-    assert.ok(html.includes('Info message'));
-  });
-
-  it('renders an error alert with role="alert"', () => {
-    const html = renderAlert('Error!', { variant: 'error' });
-    assert.ok(html.includes('role="alert"'));
-  });
-
-  it('renders dismissible alert', () => {
-    const html = renderAlert('Dismiss me', { dismissible: true });
-    assert.ok(html.includes('alert-dismiss'));
-  });
-});
-
-describe('Table', () => {
-  it('renders a data table', () => {
-    const html = renderTable({
-      columns: [{ key: 'name', label: 'Name' }, { key: 'role', label: 'Role' }],
-      rows: [{ name: 'Alice', role: 'Admin' }],
-    });
-    assert.ok(html.includes('<table'));
-    assert.ok(html.includes('Alice'));
-    assert.ok(html.includes('Admin'));
-  });
-
-  it('renders empty state', () => {
-    const html = renderTable({
-      columns: [{ key: 'name', label: 'Name' }],
-      rows: [],
-      emptyMessage: 'No users found',
-    });
-    assert.ok(html.includes('No users found'));
-  });
-});
-
-describe('Pagination', () => {
-  it('renders pagination controls', () => {
-    const html = renderPagination({ currentPage: 2, totalPages: 5 });
-    assert.ok(html.includes('aria-label="Pagination"'));
-    assert.ok(html.includes('aria-current="page"'));
-    assert.ok(html.includes('rel="prev"'));
-    assert.ok(html.includes('rel="next"'));
-  });
-
-  it('returns empty for single page', () => {
-    assert.equal(renderPagination({ currentPage: 1, totalPages: 1 }), '');
-  });
-});
-
-describe('Badge', () => {
-  it('renders a badge', () => {
-    const html = renderBadge('Active', { variant: 'success' });
-    assert.ok(html.includes('data-variant="success"'));
-    assert.ok(html.includes('Active'));
-  });
-});
-
-describe('Card', () => {
-  it('renders a card with sections', () => {
-    const html = renderCard({ header: 'Title', body: 'Content', footer: 'Footer' });
-    assert.ok(html.includes('<article'));
-    assert.ok(html.includes('Title'));
-    assert.ok(html.includes('Content'));
-    assert.ok(html.includes('Footer'));
-  });
-});
-
-describe('Progress', () => {
-  it('renders a progress bar', () => {
-    const html = renderProgress({ value: 75, max: 100 });
-    assert.ok(html.includes('<progress'));
-    assert.ok(html.includes('value="75"'));
-    assert.ok(html.includes('75%'));
-  });
-});
-
-describe('Spinner', () => {
-  it('renders a spinner', () => {
-    const html = renderSpinner({ label: 'Saving' });
-    assert.ok(html.includes('role="status"'));
-    assert.ok(html.includes('aria-label="Saving"'));
-  });
-});
+const keyEvent = (key) => ({ key, preventDefault() {} });
 
 describe('Skeleton', () => {
   it('renders a skeleton', () => {
@@ -298,876 +66,26 @@ describe('Skeleton', () => {
   });
 });
 
-describe('ToastContainer', () => {
-  it('renders toast container', () => {
-    const html = renderToastContainer('top-right');
-    assert.ok(html.includes('data-bn="toast-container"'));
-    assert.ok(html.includes('aria-live="polite"'));
+describe('LayoutGrid — hardening', () => {
+  it('renders with minimal options', () => {
+    const html = renderLayoutGrid();
+    assert.ok(html.startsWith('<div data-bn="layout-grid" id="layout-grid" style="display:grid;grid-template-columns:repeat(12,1fr);gap:1rem">'));
   });
-});
 
-describe('Dialog', () => {
-  it('renders a modal dialog', () => {
-    const html = renderDialog({ title: 'Confirm', content: 'Are you sure?' });
-    assert.ok(html.includes('<dialog'));
-    assert.ok(html.includes('Confirm'));
-    assert.ok(html.includes('Are you sure?'));
+  it('renders with all options', () => {
+    const html = renderLayoutGrid({ id: 'g', columns: 4, gap: '2px', minCellHeight: '1rem', editable: true, cells: [{ id: 'c1', label: 'L', colSpan: 2, rowSpan: 3 }, { content: '<b>x</b>' }, {}] });
+    assert.ok(html.includes('repeat(4,1fr);gap:2px'));
+    assert.ok(html.includes('data-cell-id="c1" style="grid-column: span 2; grid-row: span 3; min-height: 1rem" draggable="true">L</div>'));
+    assert.ok(html.includes('data-cell-id="cell-1"'));
+    assert.ok(html.includes('>Cell 3</div>'));
   });
 
-  it('renders close button when closable', () => {
-    const html = renderDialog({ closable: true });
-    assert.ok(html.includes('dialog-close'));
+  it('escapes id, cell ids, labels and style values', () => {
+    assertEscaped(renderLayoutGrid({ id: XSS, gap: XSS, columns: XSS, minCellHeight: XSS, cells: [{ id: XSS, label: XSS }] }));
   });
 
-  it('omits close button when not closable', () => {
-    const html = renderDialog({ closable: false });
-    assert.ok(!html.includes('dialog-close'));
-  });
-});
-
-describe('Drawer', () => {
-  it('renders a drawer with position', () => {
-    const html = renderDrawer({ title: 'Settings', position: 'left' });
-    assert.ok(html.includes('data-position="left"'));
-    assert.ok(html.includes('Settings'));
-    assert.ok(html.includes('role="dialog"'));
-  });
-});
-
-describe('Tabs', () => {
-  it('renders tabs with panels', () => {
-    const html = renderTabs({
-      tabs: [
-        { id: 'a', label: 'Tab A', content: 'Panel A' },
-        { id: 'b', label: 'Tab B', content: 'Panel B' },
-      ],
-      activeTab: 'a',
-    });
-    assert.ok(html.includes('role="tablist"'));
-    assert.ok(html.includes('role="tab"'));
-    assert.ok(html.includes('role="tabpanel"'));
-    assert.ok(html.includes('aria-selected="true"'));
-    assert.ok(html.includes('Panel A'));
-  });
-});
-
-describe('Accordion', () => {
-  it('renders accordion with details/summary', () => {
-    const html = renderAccordion({
-      items: [
-        { title: 'Section 1', content: 'Content 1', open: true },
-        { title: 'Section 2', content: 'Content 2' },
-      ],
-    });
-    assert.ok(html.includes('<details'));
-    assert.ok(html.includes('<summary'));
-    assert.ok(html.includes('Section 1'));
-    assert.ok(html.includes(' open'));
-  });
-});
-
-describe('Breadcrumb', () => {
-  it('renders breadcrumb navigation', () => {
-    const html = renderBreadcrumb({ items: [{ label: 'Home', href: '/' }, { label: 'Page' }] });
-    assert.ok(html.includes('aria-label="Breadcrumb"'));
-    assert.ok(html.includes('Home'));
-    assert.ok(html.includes('Page'));
-  });
-});
-
-describe('Tooltip', () => {
-  it('renders tooltip with trigger', () => {
-    const html = renderTooltip({ content: 'Help text', trigger: 'Hover me' });
-    assert.ok(html.includes('data-bn="tooltip"'));
-    assert.ok(html.includes('Help text'));
-    assert.ok(html.includes('Hover me'));
-  });
-});
-
-describe('DropdownMenu', () => {
-  it('renders dropdown with items', () => {
-    const html = renderDropdownMenu({
-      trigger: 'Menu',
-      items: [{ label: 'Edit', action: 'edit' }, { separator: true }, { label: 'Delete', action: 'delete' }],
-    });
-    assert.ok(html.includes('role="menu"'));
-    assert.ok(html.includes('role="menuitem"'));
-    assert.ok(html.includes('Edit'));
-    assert.ok(html.includes('role="separator"'));
-  });
-});
-
-describe('CommandPalette', () => {
-  it('renders command palette', () => {
-    const html = renderCommandPalette({
-      commands: [{ label: 'Save', action: 'save', shortcut: '⌘S' }],
-    });
-    assert.ok(html.includes('<dialog'));
-    assert.ok(html.includes('role="combobox"'));
-    assert.ok(html.includes('Save'));
-    assert.ok(html.includes('⌘S'));
-  });
-});
-
-describe('Combobox', () => {
-  it('renders combobox with datalist', () => {
-    const html = renderCombobox({ name: 'fruit', items: ['Apple', 'Banana'] });
-    assert.ok(html.includes('role="combobox"'));
-    assert.ok(html.includes('<datalist'));
-    assert.ok(html.includes('Apple'));
-  });
-});
-
-describe('Multiselect', () => {
-  it('renders multiselect with tags', () => {
-    const html = renderMultiselect({
-      name: 'tags',
-      items: ['React', 'Vue', 'Svelte'],
-      selected: ['React'],
-    });
-    assert.ok(html.includes('data-bn="multiselect"'));
-    assert.ok(html.includes('data-bn="tag"'));
-    assert.ok(html.includes('React'));
-  });
-});
-
-describe('DataGrid', () => {
-  it('renders a data grid with sorting', () => {
-    const html = renderDataGrid({
-      columns: [{ key: 'name', label: 'Name', sortable: true }],
-      rows: [{ name: 'Alice' }],
-      sortBy: 'name',
-      sortDir: 'asc',
-    });
-    assert.ok(html.includes('role="grid"'));
-    assert.ok(html.includes('data-sorted="asc"'));
-    assert.ok(html.includes('aria-sort="ascending"'));
-    assert.ok(html.includes('Alice'));
-  });
-
-  it('sortable headers are a real <button> inside the <th> — focusable and activatable with no client JS', () => {
-    const html = renderDataGrid({
-      columns: [{ key: 'name', label: 'Name', sortable: true }],
-      rows: [],
-    });
-    assert.ok(html.includes('<th data-bn="datagrid-th" data-key="name" data-sortable scope="col"><button type="button" data-bn="datagrid-th-button">Name</button></th>'));
-  });
-
-  it('non-sortable headers stay plain text — no button wrapper', () => {
-    const html = renderDataGrid({
-      columns: [{ key: 'name', label: 'Name' }],
-      rows: [],
-    });
-    assert.ok(html.includes('<th data-bn="datagrid-th" data-key="name" scope="col">Name</th>'));
-    assert.ok(!html.includes('datagrid-th-button'));
-  });
-
-  it('renders selectable rows', () => {
-    const html = renderDataGrid({
-      columns: [{ key: 'name', label: 'Name' }],
-      rows: [{ id: 1, name: 'Bob' }],
-      selectable: true,
-    });
-    assert.ok(html.includes('Select all'));
-    assert.ok(html.includes('Select row 1'));
-  });
-});
-
-describe('Tree', () => {
-  it('renders a tree view', () => {
-    const html = renderTree({
-      items: [
-        { id: 'root', label: 'Root', children: [{ id: 'child', label: 'Child' }] },
-      ],
-      expanded: new Set(['root']),
-    });
-    assert.ok(html.includes('role="tree"'));
-    assert.ok(html.includes('role="treeitem"'));
-    assert.ok(html.includes('Root'));
-    assert.ok(html.includes('Child'));
-  });
-});
-
-describe('TreeGrid', () => {
-  it('renders a tree grid', () => {
-    const html = renderTreeGrid({
-      columns: [{ key: 'name', label: 'Name' }],
-      items: [{ name: 'Parent', children: [{ name: 'Child' }] }],
-      expanded: new Set(['Parent']),
-    });
-    assert.ok(html.includes('role="treegrid"'));
-    assert.ok(html.includes('Parent'));
-    assert.ok(html.includes('Child'));
-  });
-});
-
-describe('VirtualList', () => {
-  it('renders a virtual scroll container', () => {
-    const items = Array.from({ length: 100 }, (_, i) => `Item ${i}`);
-    const html = renderVirtualList({ items, itemHeight: 40, containerHeight: 200 });
-    assert.ok(html.includes('data-bn="virtualizer"'));
-    assert.ok(html.includes('data-total="100"'));
-    assert.ok(html.includes('height:4000px'));
-  });
-});
-
-describe('Avatar', () => {
-  it('renders an avatar', () => {
-    const html = renderAvatar({ name: 'Jane Doe', src: '/img/jane.jpg' });
-    assert.ok(html.includes('data-bn="avatar"'));
-    assert.ok(html.includes('Jane Doe'));
-  });
-});
-
-describe('Select — additional', () => {
-  it('marks selected option', () => {
-    const html = renderSelect({ name: 'country', items: ['US', 'CA', 'MX'], selected: 'CA' });
-    assert.ok(html.includes('value="CA" selected'));
-  });
-
-  it('renders required and disabled attributes', () => {
-    const html = renderSelect({ name: 'size', items: [], required: true, disabled: true });
-    assert.ok(html.includes(' required'));
-    assert.ok(html.includes(' disabled'));
-  });
-
-  it('renders error message and aria-invalid', () => {
-    const html = renderSelect({ name: 'lang', items: [], error: 'Please select a language' });
-    assert.ok(html.includes('aria-invalid="true"'));
-    assert.ok(html.includes('Please select a language'));
-  });
-
-  it('renders placeholder option when not selected', () => {
-    const html = renderSelect({ name: 'size', items: ['S', 'M'], placeholder: 'Pick a size', selected: '' });
-    assert.ok(html.includes('Pick a size'));
-    assert.ok(html.includes('disabled'));
-    assert.ok(html.includes('selected')); // placeholder should be selected
-  });
-});
-
-describe('Alert — additional', () => {
-  it('renders success variant', () => {
-    const html = renderAlert('All good!', { variant: 'success' });
-    assert.ok(html.includes('All good!'));
-    assert.ok(html.includes('data-variant="success"'));
-  });
-
-  it('renders warning variant with role="alert"', () => {
-    const html = renderAlert('Watch out', { variant: 'warning' });
-    assert.ok(html.includes('role="alert"'));
-    assert.ok(html.includes('Watch out'));
-  });
-});
-
-describe('Dialog — additional', () => {
-  it('renders with custom id', () => {
-    const html = renderDialog({ title: 'Confirm', content: 'Are you sure?', id: 'confirm-dialog' });
-    assert.ok(html.includes('confirm-dialog'));
-  });
-
-  it('renders footer content', () => {
-    const html = renderDialog({
-      title: 'Delete',
-      content: 'This is irreversible.',
-      footer: '<button>Cancel</button><button>Delete</button>',
-    });
-    assert.ok(html.includes('Cancel'));
-    assert.ok(html.includes('data-bn="dialog-footer"'));
-  });
-});
-
-describe('Breadcrumb — additional', () => {
-  it('last item is aria-current="page"', () => {
-    const html = renderBreadcrumb({
-      items: [
-        { label: 'Home', href: '/' },
-        { label: 'Docs', href: '/docs' },
-        { label: 'API' },
-      ],
-    });
-    assert.ok(html.includes('aria-current="page"'));
-    assert.ok(html.includes('API'));
-  });
-});
-
-describe('Tabs — additional', () => {
-  it('active tab panel is visible', () => {
-    const html = renderTabs({
-      tabs: [
-        { id: 'a', label: 'Alpha', content: '<p>Alpha content</p>' },
-        { id: 'b', label: 'Beta', content: '<p>Beta content</p>' },
-      ],
-      activeTab: 'a',
-    });
-    assert.ok(html.includes('Alpha content'));
-    assert.ok(html.includes('aria-selected'));
-  });
-});
-
-describe('Tooltip — additional', () => {
-  it('includes tooltip content and trigger', () => {
-    const html = renderTooltip({ trigger: 'Hover me', content: 'More info' });
-    assert.ok(html.includes('More info'));
-    assert.ok(html.includes('Hover me'));
-    assert.ok(html.includes('role="tooltip"'));
-  });
-});
-
-describe('buttonVariants — additional', () => {
-  it('generates secondary variant class', () => {
-    const cls = buttonVariants('secondary', 'sm');
-    assert.ok(cls.includes('secondary'));
-    assert.ok(cls.includes('sm'));
-  });
-
-  it('generates destructive variant class', () => {
-    const cls = buttonVariants('destructive');
-    assert.ok(cls.includes('destructive'));
-  });
-});
-
-describe('Input — additional', () => {
-  it('renders required and disabled attributes', () => {
-    const html = renderInput({ name: 'email', required: true, disabled: true });
-    assert.ok(html.includes(' required'));
-    assert.ok(html.includes(' disabled'));
-  });
-
-  it('renders help text with aria-describedby', () => {
-    const html = renderInput({ name: 'email', helpText: 'Enter your email' });
-    assert.ok(html.includes('Enter your email'));
-    assert.ok(html.includes('aria-describedby'));
-    assert.ok(html.includes('data-bn="field-help"'));
-  });
-
-  it('renders placeholder attribute', () => {
-    const html = renderInput({ name: 'search', placeholder: 'Search...' });
-    assert.ok(html.includes('placeholder="Search..."'));
-  });
-
-  it('renders with existing value', () => {
-    const html = renderInput({ name: 'name', value: 'Alice' });
-    assert.ok(html.includes('value="Alice"'));
-  });
-
-  it('escapes HTML in value attribute', () => {
-    const html = renderInput({ name: 'q', value: '<script>' });
-    assert.ok(!html.includes('<script>'));
-    assert.ok(html.includes('&lt;script'));
-  });
-});
-
-describe('Table — column render slot and attrs', () => {
-  it('render(value, row) fills the cell unescaped while other columns stay escaped', () => {
-    const rows = [{ name: '<b>Ann</b>', start: '2025-06-02', status: 'paid' }];
-    const html = renderTable({
-      columns: [
-        { key: 'name', label: 'Name' },
-        { key: 'start', label: 'Start', render: (value, row) => `<time datetime="${value}">${row.status}</time>` },
-        { key: 'status', label: 'Status', render: value => renderBadge(value, { variant: 'success' }) },
-      ],
-      rows,
-    });
-    assert.deepEqual(cellContents(html), [
-      '&lt;b&gt;Ann&lt;/b&gt;',
-      '<time datetime="2025-06-02">paid</time>',
-      '<span data-bn="badge" data-variant="success">paid</span>',
-    ]);
-  });
-
-  it('render receives the raw value (undefined for a missing key) and a nullish result renders an empty cell', () => {
-    const seen = [];
-    const html = renderTable({
-      columns: [{ key: 'missing', label: 'M', render: (value, row) => { seen.push([value, row]); return null; } }],
-      rows: [{ id: 1 }],
-    });
-    assert.deepEqual(seen, [[undefined, { id: 1 }]]);
-    assert.deepEqual(cellContents(html), ['']);
-  });
-
-  it('render is not consulted for the empty state or the header', () => {
-    let calls = 0;
-    const html = renderTable({ columns: [{ key: 'a', label: 'A', render: () => { calls += 1; return 'x'; } }], rows: [] });
-    assert.equal(calls, 0);
-    assert.ok(html.includes('data-bn="table-empty"'));
-  });
-
-  it('attrs is spliced onto the container', () => {
-    const html = renderTable({ attrs: 'data-testid="jobs" aria-busy="true"' });
-    assert.ok(html.startsWith('<div data-bn="table-container" data-testid="jobs" aria-busy="true"><table data-bn="table">'));
-    assert.ok(renderTable().startsWith('<div data-bn="table-container"><table'));
-  });
-});
-
-describe('Table — numeric columns, alignment, labels and footer', () => {
-  const money = [
-    { label: 'Chase Sapphire', principal: '$18,420' },
-    { label: 'Amex Platinum', principal: '$7,310' },
-  ];
-  const columns = [
-    { key: 'label', label: 'Liability' },
-    { key: 'principal', label: 'Principal', numeric: true },
-  ];
-  const total = [{ label: 'Total', principal: '$25,730' }];
-
-  it('numeric marks the heading as well as the cells, so they cannot drift apart', () => {
-    const html = renderTable({ columns, rows: money });
-    for (const cell of [cellWith(html, 'Principal'), cellWith(html, '$18,420')]) {
-      assert.equal(cell.attr('data-align'), 'end');
-      assert.ok(cell.has('data-numeric'));
-    }
-    const plain = cellWith(html, 'Liability');
-    assert.equal(plain.attr('data-align'), undefined);
-    assert.ok(!plain.has('data-numeric'));
-  });
-
-  it('an explicit align wins over the end alignment numeric implies', () => {
-    const html = renderTable({
-      columns: [{ key: 'n', label: 'N', numeric: true, align: 'center' }],
-      rows: [{ n: 1 }],
-    });
-    assert.equal(cellWith(html, '1').attr('data-align'), 'center');
-    assert.ok(cellWith(html, '1').has('data-numeric'));
-    assert.ok(!html.includes('data-align="end"'));
-  });
-
-  it('align "start" is the default and emits nothing', () => {
-    const html = renderTable({ columns: [{ key: 'n', label: 'N', align: 'start' }], rows: [{ n: 1 }] });
-    assert.ok(!html.includes('data-align'));
-  });
-
-  it('ignores an unknown align rather than emitting one no rule would match', () => {
-    const html = renderTable({ columns: [{ key: 'n', label: 'N', align: 'middle' }], rows: [{ n: 1 }] });
-    assert.ok(!html.includes('data-align'));
-  });
-
-  it('every data-align value it can emit is declared by the shipped stylesheet', () => {
-    const css = readFileSync(new URL('./components.css', import.meta.url), 'utf8');
-    for (const align of ['center', 'end']) {
-      const html = renderTable({ columns: [{ key: 'n', label: 'N', align }], rows: [{ n: 1 }] });
-      assert.equal(cellWith(html, '1').attr('data-align'), align, `${align} was not emitted`);
-      assert.ok(css.includes(`[data-align="${align}"]`), `${align} renders unstyled: no rule declares it`);
-    }
-    assert.ok(css.includes('[data-numeric]'), 'data-numeric renders unstyled: no rule declares it');
-  });
-
-  it('labelCells recovers the hidden heading for body and footer cells alike', () => {
-    const html = renderTable({ columns, rows: money, footer: total, labelCells: true });
-    assert.equal(cellWith(html, 'Chase Sapphire').attr('data-label'), 'Liability');
-    assert.equal(cellWith(html, '$18,420').attr('data-label'), 'Principal');
-    assert.equal(cellWith(html, 'Total').attr('data-label'), 'Liability');
-    assert.equal(cellWith(html, '$25,730').attr('data-label'), 'Principal');
-  });
-
-  it('labels every body and footer cell by default — the stacked presentation reads them', () => {
-    const html = renderTable({ columns, rows: money, footer: total });
-    assert.equal(cellWith(html, 'Chase Sapphire').attr('data-label'), 'Liability');
-    assert.equal(cellWith(html, '$18,420').attr('data-label'), 'Principal');
-    assert.equal(cellWith(html, 'Total').attr('data-label'), 'Liability');
-    assert.equal(cellWith(html, '$25,730').attr('data-label'), 'Principal');
-  });
-
-  it('leaves every cell unlabelled while labelCells is off, footer included', () => {
-    const html = renderTable({ columns, rows: money, footer: total, labelCells: false });
-    assert.ok(!html.includes('data-label'));
-  });
-
-  it('ships the stacked presentation in the stylesheet: named container, container query, data-label headings', () => {
-    const base = readFileSync(new URL('./components.css', import.meta.url), 'utf8');
-    const states = readFileSync(new URL('./states.css', import.meta.url), 'utf8');
-    assert.ok(base.includes('container-name: table'), 'the table container is a named container');
-    assert.ok(
-      states.includes('@container table (max-width: 40rem)'),
-      'the stack is keyed to the table container, not the viewport'
-    );
-    assert.ok(states.includes('content: attr(data-label)'), 'stacked cells are headed by their data-label');
-    assert.ok(
-      /\[data-bn="table"\] th,\s*\[data-bn="table"\] td \{[^}]*white-space: normal/.test(states),
-      'stacked cells reset white-space, so a consumer nowrap cannot pin a cell open'
-    );
-  });
-
-  it('renders a footer row as th scope=row plus cells, using the same render hooks', () => {
-    const html = renderTable({
-      columns: [
-        { key: 'label', label: 'Liability' },
-        { key: 'principal', label: 'Principal', numeric: true, render: value => `<b>${value}</b>` },
-      ],
-      rows: money,
-      footer: total,
-    });
-    const [heading, ...rest] = tableCells(html.slice(html.indexOf('<tfoot>'), html.indexOf('</tfoot>')));
-    assert.equal(heading.tag, 'th');
-    assert.equal(heading.attr('scope'), 'row');
-    assert.equal(heading.content, 'Total');
-    assert.deepEqual(rest.map(c => [c.tag, c.content]), [['td', '<b>$25,730</b>']]);
-    assert.ok(rest[0].has('data-numeric'), 'a footer cell does not carry its column alignment');
-  });
-
-  it('a column cellAttrs hook reaches its footer cell too', () => {
-    const html = renderTable({
-      columns: [
-        { key: 'label', label: 'Liability' },
-        { key: 'principal', label: 'Principal', cellAttrs: 'data-role="figure"' },
-      ],
-      rows: money,
-      footer: total,
-    });
-    assert.equal(cellWith(html, '$25,730').attr('data-role'), 'figure');
-    assert.equal(cellWith(html, '$18,420').attr('data-role'), 'figure');
-  });
-
-  it('omits tfoot entirely when there is no footer, or no columns to place it in', () => {
-    assert.ok(!renderTable({ columns, rows: money }).includes('<tfoot>'));
-    assert.ok(!renderTable({ columns: [], rows: [], footer: [{ a: 1 }] }).includes('<tfoot>'));
-  });
-
-  it('a footer survives an empty body, so a zeroed total can still be shown', () => {
-    const html = renderTable({ columns, rows: [], footer: [{ label: 'Total', principal: '$0' }] });
-    assert.ok(html.includes('data-bn="table-empty"'));
-    assert.ok(html.includes('<tfoot>'));
-  });
-
-  it('escapes footer values, which are data like any other row', () => {
-    assertEscaped(renderTable({ columns, rows: [], footer: [{ label: XSS, principal: XSS }] }));
-  });
-
-  it('emptyContent is an HTML slot that replaces emptyMessage', () => {
-    const html = renderTable({
-      columns,
-      rows: [],
-      emptyMessage: 'ignored',
-      emptyContent: 'No accounts yet. <a href="/settings">Connect a bank</a>',
-    });
-    assert.ok(html.includes('<a href="/settings">Connect a bank</a>'));
-    assert.ok(!html.includes('ignored'));
-  });
-
-  it('still escapes emptyMessage when no emptyContent is given', () => {
-    const html = renderTable({ columns, rows: [], emptyMessage: '<script>x</script>' });
-    assert.ok(html.includes('&lt;script'));
-    assert.ok(!html.includes('<script>x'));
-  });
-});
-
-describe('Pagination — additional', () => {
-  it('on first page, prev is disabled', () => {
-    const html = renderPagination({ currentPage: 1, totalPages: 5 });
-    assert.ok(html.includes('aria-disabled="true"'));
-    assert.ok(html.includes('rel="next"'));
-    assert.ok(!html.includes('rel="prev"'));
-  });
-
-  it('on last page, next is disabled', () => {
-    const html = renderPagination({ currentPage: 5, totalPages: 5 });
-    assert.ok(html.includes('rel="prev"'));
-    assert.ok(!html.includes('rel="next"'));
-  });
-
-  it('includes baseUrl in page links', () => {
-    const html = renderPagination({ currentPage: 2, totalPages: 3, baseUrl: '/posts' });
-    assert.ok(html.includes('/posts?page='));
-  });
-});
-
-describe('Avatar — additional', () => {
-  it('renders initials when no src', () => {
-    const html = renderAvatar({ name: 'John Doe' });
-    assert.ok(html.includes('JD'));
-    assert.ok(html.includes('data-bn="avatar-initials"'));
-  });
-
-  it('uses ? when no name and no src', () => {
-    const html = renderAvatar({});
-    assert.ok(html.includes('?'));
-  });
-
-  it('renders custom size and shape', () => {
-    const html = renderAvatar({ name: 'AB', size: 'lg', shape: 'square' });
-    assert.ok(html.includes('data-size="lg"'));
-    assert.ok(html.includes('data-shape="square"'));
-  });
-});
-
-describe('Badge — additional', () => {
-  it('badge content is an HTML slot and renders markup', () => {
-    const html = renderBadge('<b>bold</b>');
-    assert.ok(html.includes('<b>bold</b>'));
-  });
-
-  it('renders default variant when none given', () => {
-    const html = renderBadge('New');
-    assert.ok(html.includes('data-variant="default"'));
-  });
-});
-
-describe('VirtualList — additional', () => {
-  it('renders custom renderItem function', () => {
-    const html = renderVirtualList({
-      items: ['alpha', 'beta'],
-      itemHeight: 30,
-      containerHeight: 100,
-      renderItem: (item) => `<li>${item}</li>`,
-    });
-    assert.ok(html.includes('<li>alpha</li>'));
-    assert.ok(html.includes('<li>beta</li>'));
-  });
-
-  it('includes container height in style', () => {
-    const html = renderVirtualList({ items: [], itemHeight: 40, containerHeight: 300 });
-    assert.ok(html.includes('height:300px'));
-  });
-});
-
-describe('Checkbox — additional', () => {
-  it('renders checked state', () => {
-    const html = renderCheckbox({ name: 'agree', label: 'Yes', checked: true });
-    assert.ok(html.includes(' checked'));
-  });
-
-  it('renders disabled state', () => {
-    const html = renderCheckbox({ name: 'terms', label: 'Terms', disabled: true });
-    assert.ok(html.includes(' disabled'));
-  });
-});
-
-describe('Textarea — additional', () => {
-  it('renders error state', () => {
-    const html = renderTextarea({ name: 'bio', error: 'Too short' });
-    assert.ok(html.includes('aria-invalid="true"'));
-    assert.ok(html.includes('Too short'));
-  });
-
-  it('renders placeholder', () => {
-    const html = renderTextarea({ name: 'note', placeholder: 'Enter note...' });
-    assert.ok(html.includes('placeholder="Enter note..."'));
-  });
-});
-
-describe('Calendar', () => {
-  it('renders a weekly grid', () => {
-    const html = renderCalendar({ startDate: '2025-06-02' });
-    assert.ok(html.includes('data-bn="calendar"'));
-    assert.ok(html.includes('data-bn="calendar-grid"'));
-  });
-
-  it('renders day headers for 7 days', () => {
-    const html = renderCalendar({ startDate: '2025-06-02' });
-    assert.ok(html.includes('data-bn="calendar-day-header"'));
-    assert.ok(html.includes('data-date="2025-06-02"'));
-    assert.ok(html.includes('data-date="2025-06-08"'));
-  });
-
-  it('renders events in the correct column', () => {
-    const html = renderCalendar({
-      startDate: '2025-06-02',
-      events: [
-        { id: 'j1', title: 'Fix wiring', start: '2025-06-03T09:00', end: '2025-06-03T11:00' },
-      ],
-    });
-    assert.ok(html.includes('data-event-id="j1"'));
-    assert.ok(html.includes('Fix wiring'));
-    assert.ok(html.includes('draggable="true"'));
-  });
-
-  it('renders event status attributes', () => {
-    const html = renderCalendar({
-      startDate: '2025-06-02',
-      events: [
-        { id: 'j2', title: 'HVAC', start: '2025-06-02T14:00', end: '2025-06-02T16:00', status: 'in_progress' },
-      ],
-    });
-    assert.ok(html.includes('data-status="in_progress"'));
-  });
-
-  it('renders empty message when no events', () => {
-    const html = renderCalendar({ startDate: '2025-06-02', emptyMessage: 'Nothing scheduled' });
-    assert.ok(html.includes('Nothing scheduled'));
-  });
-
-  it('renders time gutter labels', () => {
-    const html = renderCalendar({ startDate: '2025-06-02', hours: { start: 8, end: 17 } });
-    assert.ok(html.includes('data-bn="calendar-time-label"'));
-  });
-
-  it('renders drop zone slots', () => {
-    const html = renderCalendar({ startDate: '2025-06-02' });
-    assert.ok(html.includes('data-bn="calendar-slot"'));
-  });
-
-  it('aligns the hour label, slot, and event to the same grid row', () => {
-    const html = renderCalendar({
-      startDate: '2025-06-02',
-      hours: { start: 9, end: 17 },
-      events: [{ id: 'ev', title: 'Office hours', start: '2025-06-02T11:00', end: '2025-06-02T12:00' }],
-    });
-
-    const labelMatch = html.match(/data-bn="calendar-time-label" data-hour="11" style="grid-row: (\d+)"/);
-    const slotMatch = html.match(/data-bn="calendar-slot" data-date="2025-06-02" data-hour="11" style="grid-row: (\d+)"/);
-    const eventMatch = html.match(/data-event-id="ev"[^>]*style="grid-row: (\d+) \/ span/);
-
-    assert.ok(labelMatch, 'expected an 11 AM time label');
-    assert.ok(slotMatch, 'expected an 11 AM slot');
-    assert.ok(eventMatch, 'expected the 11:00-12:00 event');
-
-    assert.equal(labelMatch[1], slotMatch[1], 'label and slot should share a grid row');
-    assert.equal(labelMatch[1], eventMatch[1], 'label and event should share a grid row');
-    assert.equal(labelMatch[1], '3', '11am is the third hour row of the subgrid');
-  });
-
-  it('gives the first and last hour their own subgrid rows', () => {
-    const html = renderCalendar({ startDate: '2025-06-02', hours: { start: 7, end: 19 } });
-    assert.match(html, /data-bn="calendar-time-label" data-hour="7" style="grid-row: 1"/);
-    assert.match(html, /data-bn="calendar-time-label" data-hour="18" style="grid-row: 12"/);
-    assert.match(html, /data-bn="calendar-slot" data-date="2025-06-02" data-hour="7" style="grid-row: 1"/);
-    assert.match(html, /data-bn="calendar-slot" data-date="2025-06-02" data-hour="18" style="grid-row: 12"/);
-    assert.ok(!html.includes('style="grid-row: 13"'), 'no label or slot is numbered past the 12-track subgrid');
-  });
-
-  it('places a half-past event on an integer row with a sub-hour offset', () => {
-    const html = renderCalendar({
-      startDate: '2025-06-02',
-      hours: { start: 7, end: 19 },
-      events: [{ id: 'h', title: 'Half past', start: '2025-06-02T09:30', end: '2025-06-02T10:30' }],
-    });
-    const style = html.match(/data-event-id="h"[^>]*style="([^"]*)"/)[1];
-    assert.match(style, /grid-row: 3 \/ span 2/);
-    assert.ok(!/grid-row: \d+\.\d/.test(style), 'grid-row start must be an integer');
-    assert.match(style, /--number-calendar-event-rows: 2;/);
-    assert.match(style, /--number-calendar-event-lead: 0\.5;/);
-    assert.match(style, /--number-calendar-event-trail: 0\.5;/);
-  });
-
-  it('emits no offset properties for an on-the-hour event', () => {
-    const html = renderCalendar({
-      startDate: '2025-06-02',
-      hours: { start: 7, end: 19 },
-      events: [{ id: 'o', title: 'On the hour', start: '2025-06-02T09:00', end: '2025-06-02T11:00' }],
-    });
-    const style = html.match(/data-event-id="o"[^>]*style="([^"]*)"/)[1];
-    assert.equal(style, 'grid-row: 3 / span 2;');
-  });
-
-  it('does not round a quarter-hour start onto the hour', () => {
-    const html = renderCalendar({
-      startDate: '2025-06-02',
-      hours: { start: 7, end: 19 },
-      events: [{ id: 'q', title: 'Quarter past', start: '2025-06-02T10:15', end: '2025-06-02T11:00' }],
-    });
-    const style = html.match(/data-event-id="q"[^>]*style="([^"]*)"/)[1];
-    assert.equal(style, 'grid-row: 4 / span 1; --number-calendar-event-rows: 1; --number-calendar-event-lead: 0.25; --number-calendar-event-trail: 0;');
-  });
-});
-
-describe('PipelineBlock', () => {
-  it('renders a draggable block', () => {
-    const html = renderPipelineBlock({ id: 'opp-1', title: 'New Lead' });
-    assert.ok(html.includes('data-bn="pipeline-block"'));
-    assert.ok(html.includes('draggable="true"'));
-    assert.ok(html.includes('data-block-id="opp-1"'));
-    assert.ok(html.includes('New Lead'));
-  });
-
-  it('renders subtitle and status', () => {
-    const html = renderPipelineBlock({ id: 'opp-2', title: 'Job', subtitle: '$1,500', status: 'qualified' });
-    assert.ok(html.includes('$1,500'));
-    assert.ok(html.includes('data-status="qualified"'));
-  });
-});
-
-describe('Pipeline', () => {
-  it('renders a pipeline container', () => {
-    const html = renderPipeline({
-      columns: [{ id: 'new', title: 'New Leads' }],
-      cards: [],
-    });
-    assert.ok(html.includes('data-bn="pipeline"'));
-  });
-
-  it('renders columns with headers', () => {
-    const html = renderPipeline({
-      columns: [
-        { id: 'new', title: 'New Leads' },
-        { id: 'qualified', title: 'Qualified' },
-      ],
-      cards: [],
-    });
-    assert.ok(html.includes('data-bn="pipeline-column"'));
-    assert.ok(html.includes('data-column-id="new"'));
-    assert.ok(html.includes('data-column-id="qualified"'));
-    assert.ok(html.includes('New Leads'));
-    assert.ok(html.includes('Qualified'));
-  });
-
-  it('renders cards in columns', () => {
-    const html = renderPipeline({
-      columns: [{ id: 'new', title: 'New' }],
-      cards: [
-        { id: 'c1', columnId: 'new', title: 'Acme Corp' },
-        { id: 'c2', columnId: 'new', title: 'Tech Startup' },
-      ],
-    });
-    assert.ok(html.includes('data-bn="pipeline-card"'));
-    assert.ok(html.includes('data-card-id="c1"'));
-    assert.ok(html.includes('data-card-id="c2"'));
-    assert.ok(html.includes('draggable="true"'));
-    assert.ok(html.includes('Acme Corp'));
-    assert.ok(html.includes('Tech Startup'));
-  });
-
-  it('renders card subtitles and descriptions', () => {
-    const html = renderPipeline({
-      columns: [{ id: 'new', title: 'New' }],
-      cards: [
-        {
-          id: 'c1',
-          columnId: 'new',
-          title: 'Acme',
-          subtitle: '$50k',
-          description: 'Enterprise customer',
-        },
-      ],
-    });
-    assert.ok(html.includes('data-bn="pipeline-card-title"'));
-    assert.ok(html.includes('data-bn="pipeline-card-subtitle"'));
-    assert.ok(html.includes('data-bn="pipeline-card-description"'));
-    assert.ok(html.includes('$50k'));
-    assert.ok(html.includes('Enterprise customer'));
-  });
-
-  it('renders empty message when no cards', () => {
-    const html = renderPipeline({
-      columns: [{ id: 'new', title: 'New' }],
-      cards: [],
-      emptyMessage: 'No leads yet',
-    });
-    assert.ok(html.includes('No leads yet'));
-  });
-
-  it('distributes cards to correct columns', () => {
-    const html = renderPipeline({
-      columns: [
-        { id: 'new', title: 'New' },
-        { id: 'qualified', title: 'Qualified' },
-      ],
-      cards: [
-        { id: 'c1', columnId: 'new', title: 'Lead 1' },
-        { id: 'c2', columnId: 'qualified', title: 'Lead 2' },
-      ],
-    });
-    // Both cards should be in the HTML, but in their respective columns
-    assert.ok(html.includes('Lead 1'));
-    assert.ok(html.includes('Lead 2'));
-    assert.ok(html.includes('data-column-id="new"'));
-    assert.ok(html.includes('data-column-id="qualified"'));
-  });
-
-  it('renders card status attribute', () => {
-    const html = renderPipeline({
-      columns: [{ id: 'new', title: 'New' }],
-      cards: [{ id: 'c1', columnId: 'new', title: 'Lead', status: 'hot' }],
-    });
-    assert.ok(html.includes('data-status="hot"'));
+  it('cell content is an HTML slot', () => {
+    assert.ok(renderLayoutGrid({ cells: [{ content: '<b>x</b>' }] }).includes('><b>x</b></div>'));
   });
 });
 
@@ -1182,63 +100,6 @@ describe('ids', () => {
     nextId('x');
     resetIds();
     assert.equal(nextId('x'), 'bn-x-1');
-  });
-
-  it('two renders after resetIds() produce identical markup', () => {
-    const page = () => [
-      renderDialog({ title: 'A' }),
-      renderTabs({ tabs: [{ id: 'a', label: 'A' }] }),
-      renderTree({ items: [{ label: 'root', children: [{ label: 'leaf' }] }] }),
-      renderAccordion({ items: [{ title: 'S' }] }),
-      renderDrawer({}),
-      renderTooltip({ content: 'c', trigger: 't' }),
-      renderDropdownMenu({ trigger: 'm', items: [] }),
-      renderCommandPalette({}),
-      renderCombobox({}),
-      renderMultiselect({}),
-      renderDataGrid({}),
-      renderTreeGrid({}),
-      renderVirtualList({}),
-      renderCalendar({ startDate: '2025-06-02' }),
-      renderPipeline({}),
-    ].join('');
-    resetIds();
-    const first = page();
-    resetIds();
-    const second = page();
-    assert.equal(first, second);
-    assert.ok(first.includes('id="bn-dialog-1"'));
-    assert.ok(!/[0-9a-z]{8,}/.test(first.match(/id="bn-[a-z]+-[^"]+"/)[0].slice(4, -1).replace(/bn-[a-z]+-/, '')));
-  });
-
-  it('every renderer honours an explicit id option', () => {
-    const renders = [
-      renderDialog({ id: 'custom' }),
-      renderDrawer({ id: 'custom' }),
-      renderTabs({ id: 'custom' }),
-      renderAccordion({ id: 'custom' }),
-      renderTooltip({ id: 'custom', content: '', trigger: '' }),
-      renderDropdownMenu({ id: 'custom', trigger: '' }),
-      renderCommandPalette({ id: 'custom' }),
-      renderCombobox({ id: 'custom', name: 'n' }),
-      renderMultiselect({ id: 'custom', name: 'n' }),
-      renderDataGrid({ id: 'custom' }),
-      renderTree({ id: 'custom' }),
-      renderTreeGrid({ id: 'custom' }),
-      renderVirtualList({ id: 'custom' }),
-      renderCalendar({ id: 'custom', startDate: '2025-06-02' }),
-      renderPipeline({ id: 'custom' }),
-      renderLayoutGrid({ id: 'custom' }),
-      renderInput({ id: 'custom', name: 'n' }),
-      renderTextarea({ id: 'custom', name: 'n' }),
-      renderSelect({ id: 'custom', name: 'n' }),
-      renderCheckbox({ id: 'custom', name: 'n' }),
-      renderToggle({ id: 'custom', name: 'n' }),
-    ];
-    for (const html of renders) {
-      assert.ok(html.includes('id="custom"'), html.slice(0, 80));
-      assert.ok(!/id="bn-/.test(html), 'generated id leaked despite explicit id');
-    }
   });
 
   it('is exported from the package index', () => {
@@ -1281,3940 +142,480 @@ describe('internal helpers', () => {
     handle.destroy();
     assert.equal(el.listeners.size, 0);
   });
-
-  it('no renderer leaks a stray space before the closing bracket', () => {
-    const renders = [
-      renderButton('x'),
-      renderDialog({}),
-      renderDrawer({}),
-      renderTabs({}),
-      renderAccordion({}),
-      renderBreadcrumb({}),
-      renderAvatar({}),
-      renderTooltip({}),
-      renderDropdownMenu({}),
-      renderCommandPalette({}),
-      renderCombobox({}),
-      renderMultiselect({}),
-      renderDataGrid({}),
-      renderTree({}),
-      renderTreeGrid({}),
-      renderVirtualList({}),
-      renderCalendar({ startDate: '2025-06-02' }),
-      renderPipelineBlock({ id: 'p', title: 't' }),
-      renderPipeline({}),
-    ];
-    for (const html of renders) {
-      assert.ok(!/" >/.test(html), html.slice(0, 80));
-    }
-  });
 });
 
-describe('Button — hardening', () => {
-  it('renders with minimal options', () => {
-    const html = renderButton('Go');
-    assert.equal(html, '<button data-bn="button" data-variant="primary" data-size="default" type="button">Go</button>');
-  });
-
-  it('text is an escaped slot and wins over content', () => {
-    const html = renderButton('<b>bold</b>', { text: XSS });
-    assertEscaped(html);
-    assert.ok(!html.includes('<b>bold</b>'));
-  });
-
-  it('renders with all options', () => {
-    const html = renderButton('Go', { variant: 'ghost', size: 'sm', disabled: true, type: 'submit', attrs: 'data-x="1"' });
-    assert.ok(html.includes('data-variant="ghost"'));
-    assert.ok(html.includes('data-size="sm"'));
-    assert.ok(html.includes('type="submit" disabled data-x="1">'));
-  });
-
-  it('escapes attribute options', () => {
-    assertEscaped(renderButton('Go', { variant: XSS, size: XSS, type: XSS }));
-  });
-
-  it('content is an HTML slot', () => {
-    assert.ok(renderButton('<em>Go</em>').includes('<em>Go</em>'));
-  });
-});
-
-describe('Input — hardening', () => {
-  it('renders with minimal options', () => {
-    const html = renderInput({ name: 'q' });
-    assert.ok(html.startsWith('<div data-bn="field"><input data-bn="input" type="text" id="q" name="q"'));
-    assert.ok(!html.includes('<label'));
-    assert.ok(!html.includes('aria-describedby'));
-  });
-
-  it('renders with all options', () => {
-    const html = renderInput({
-      name: 'q', type: 'search', label: 'Q', placeholder: 'p', value: 'v', required: true, disabled: true,
-      helpText: 'h', error: 'e', id: 'qid', attrs: 'data-x="1"',
-    });
-    assert.ok(html.includes('<label for="qid">Q</label>'));
-    assert.ok(html.includes('type="search"'));
-    assert.ok(html.includes('value="v"'));
-    assert.ok(html.includes('placeholder="p"'));
-    assert.ok(html.includes(' required disabled'));
-    assert.ok(html.includes('aria-invalid="true" data-x="1" />'));
-  });
-
-  it('escapes attributes and text fields', () => {
-    assertEscaped(renderInput({ name: XSS, type: XSS, label: XSS, placeholder: XSS, value: XSS, helpText: XSS, error: XSS, id: XSS }));
-  });
-
-  it('help and error get distinct ids and aria-describedby lists both', () => {
-    const html = renderInput({ name: 'email', helpText: 'h', error: 'e' });
-    assert.ok(html.includes('id="email-help"'));
-    assert.ok(html.includes('id="email-error"'));
-    assert.ok(html.includes('aria-describedby="email-help email-error"'));
-  });
-
-  it('aria-describedby points only at the help span when there is no error', () => {
-    const html = renderInput({ name: 'email', helpText: 'h' });
-    assert.ok(html.includes('aria-describedby="email-help"'));
-    assert.ok(!html.includes('email-error'));
-  });
-
-  it('aria-describedby points only at the error span when there is no help', () => {
-    const html = renderInput({ name: 'email', error: 'e' });
-    assert.ok(html.includes('aria-describedby="email-error"'));
-    assert.ok(html.includes('role="alert"'));
-    assert.ok(!html.includes('email-help'));
-  });
-});
-
-describe('Textarea — hardening', () => {
-  it('renders with minimal options', () => {
-    const html = renderTextarea({ name: 'bio' });
-    assert.ok(html.includes('<textarea data-bn="textarea" id="bio" name="bio" rows="3" placeholder=""></textarea>'));
-  });
-
-  it('renders with all options', () => {
-    const html = renderTextarea({
-      name: 'bio', label: 'Bio', placeholder: 'p', value: 'v', rows: 8, required: true, disabled: true,
-      helpText: 'h', error: 'e', id: 'b', attrs: 'data-x="1"',
-    });
-    assert.ok(html.includes('<label for="b">Bio</label>'));
-    assert.ok(html.includes('rows="8"'));
-    assert.ok(html.includes(' required disabled aria-describedby="b-help b-error" aria-invalid="true" data-x="1">v</textarea>'));
-  });
-
-  it('escapes attributes and text fields', () => {
-    assertEscaped(renderTextarea({ name: XSS, label: XSS, placeholder: XSS, value: XSS, helpText: XSS, error: XSS }));
-  });
-
-  it('emits aria-describedby and an error id like renderInput', () => {
-    const html = renderTextarea({ name: 'bio', helpText: 'h', error: 'e' });
-    assert.ok(html.includes('aria-describedby="bio-help bio-error"'));
-    assert.ok(html.includes('<span data-bn="field-error" id="bio-error" role="alert">e</span>'));
-  });
-
-  it('escapes the value as text content', () => {
-    const html = renderTextarea({ name: 'bio', value: '</textarea><b>' });
-    assert.ok(html.includes('&lt;/textarea&gt;&lt;b&gt;'));
-  });
-});
-
-describe('Checkbox — hardening', () => {
-  it('renders with minimal options', () => {
-    const html = renderCheckbox({ name: 'agree' });
-    assert.equal(html, '<label data-bn="checkbox-label"><input data-bn="checkbox" type="checkbox" id="agree" name="agree" /><span></span></label>');
-  });
-
-  it('renders with all options', () => {
-    const html = renderCheckbox({ name: 'agree', label: 'Yes', checked: true, disabled: true, value: 'on', id: 'a', attrs: 'data-x="1"' });
-    assert.ok(html.includes('<label data-bn="checkbox-label" data-x="1">'));
-    assert.ok(html.includes('id="a" name="agree" value="on" checked disabled'));
-    assert.ok(html.includes('<span>Yes</span>'));
-  });
-
-  it('escapes attributes and label, including < in the label', () => {
-    assertEscaped(renderCheckbox({ name: XSS, label: XSS, value: XSS, id: XSS }));
-    assert.ok(renderCheckbox({ name: 'a', label: '<b>' }).includes('&lt;b&gt;'));
-  });
-
-  it('associates the label by wrapping the input', () => {
-    const html = renderCheckbox({ name: 'a', label: 'L' });
-    assert.ok(/^<label[^>]*><input/.test(html));
-  });
-});
-
-describe('Radio — hardening', () => {
-  it('renders with minimal options', () => {
-    const html = renderRadioGroup({ name: 'c' });
-    assert.equal(html, '<fieldset data-bn="radio-group"></fieldset>');
-  });
-
-  it('renders with all options', () => {
-    const html = renderRadioGroup({
-      name: 'c', label: 'Color', items: [{ value: 'r', label: 'Red', disabled: true }, 'blue'],
-      selected: 'blue', disabled: false, attrs: 'data-x="1"',
-    });
-    assert.ok(html.includes('<fieldset data-bn="radio-group" data-x="1">'));
-    assert.ok(html.includes('<legend>Color</legend>'));
-    assert.ok(html.includes('id="c-r" name="c" value="r" disabled'));
-    assert.ok(html.includes('id="c-blue" name="c" value="blue" checked'));
-  });
-
-  it('group disabled disables every item', () => {
-    const html = renderRadioGroup({ name: 'c', items: ['a', 'b'], disabled: true });
-    assert.equal((html.match(/ disabled/g) || []).length, 2);
-  });
-
-  it('escapes attributes and labels', () => {
-    assertEscaped(renderRadioGroup({ name: XSS, label: XSS, items: [{ value: XSS, label: XSS }] }));
-  });
-
-  it('string and object items render identically', () => {
-    const a = renderRadioGroup({ name: 'c', items: ['x'] });
-    const b = renderRadioGroup({ name: 'c', items: [{ value: 'x', label: 'x' }] });
-    assert.equal(a, b);
-  });
-});
-
-describe('Toggle — hardening', () => {
-  it('renders with minimal options', () => {
-    const html = renderToggle({ name: 'dark' });
-    assert.equal(html, '<label data-bn="toggle-label"><input data-bn="toggle" type="checkbox" role="switch" id="dark" name="dark" /><span></span></label>');
-  });
-
-  it('renders with all options', () => {
-    const html = renderToggle({ name: 'dark', label: 'Dark', checked: true, disabled: true, id: 'd', attrs: 'data-x="1"' });
-    assert.ok(html.includes('<label data-bn="toggle-label" data-x="1">'));
-    assert.ok(html.includes('id="d" name="dark" checked disabled'));
-    assert.ok(html.includes('<span>Dark</span>'));
-  });
-
-  it('escapes attributes and label', () => {
-    assertEscaped(renderToggle({ name: XSS, label: XSS, id: XSS }));
-  });
-
-  it('keeps role="switch" on the checkbox', () => {
-    assert.ok(renderToggle({ name: 'x' }).includes('type="checkbox" role="switch"'));
-  });
-});
-
-describe('Select — hardening', () => {
-  it('renders with minimal options', () => {
-    const html = renderSelect({ name: 's' });
-    assert.equal(html, '<div data-bn="field"><select data-bn="select" id="s" name="s"></select></div>');
-  });
-
-  it('renders with all options', () => {
-    const html = renderSelect({
-      name: 's', label: 'S', items: [{ value: 'a', label: 'A', disabled: true }, 'b'], selected: 'b', placeholder: 'Pick',
-      required: true, disabled: true, helpText: 'h', error: 'e', id: 'sid', attrs: 'data-x="1"',
-    });
-    assert.ok(html.includes('<label for="sid">S</label>'));
-    assert.ok(html.includes(' required disabled aria-describedby="sid-help sid-error" aria-invalid="true" data-x="1">'));
-    assert.ok(html.includes('<option value="" disabled>Pick</option>'));
-    assert.ok(html.includes('<option value="a" disabled>A</option>'));
-    assert.ok(html.includes('<option value="b" selected>b</option>'));
-    assert.ok(html.includes('id="sid-help"'));
-    assert.ok(html.includes('id="sid-error"'));
-  });
-
-  it('escapes attributes, options and text fields', () => {
-    assertEscaped(renderSelect({ name: XSS, label: XSS, placeholder: XSS, error: XSS, helpText: XSS, items: [{ value: XSS, label: XSS }] }));
-  });
-
-  it('error span has an id and aria-describedby references it', () => {
-    const html = renderSelect({ name: 's', error: 'Required' });
-    assert.ok(html.includes('aria-describedby="s-error"'));
-    assert.ok(html.includes('<span data-bn="field-error" id="s-error" role="alert">Required</span>'));
-  });
-
-  it('string and object items render identically', () => {
-    assert.equal(renderSelect({ name: 's', items: ['x'] }), renderSelect({ name: 's', items: [{ value: 'x', label: 'x' }] }));
-  });
-});
-
-describe('Alert — hardening', () => {
-  it('renders with minimal options', () => {
-    assert.equal(renderAlert('Hi'), '<div data-bn="alert" data-variant="info" role="status"><span data-bn="alert-content">Hi</span></div>');
-  });
-
-  it('escapes the variant attribute', () => {
-    assertEscaped(renderAlert('Hi', { variant: XSS }));
-  });
-
-  it('content is an HTML slot', () => {
-    assert.ok(renderAlert('<a href="/x">link</a>').includes('<a href="/x">link</a>'));
-  });
-
-  it('text is an escaped slot and wins over content', () => {
-    const html = renderAlert('<a href="/x">link</a>', { text: XSS });
-    assertEscaped(html);
-    assert.ok(!html.includes('<a href="/x">'));
-  });
-
-  it('appends attrs to the container', () => {
-    assert.ok(renderAlert('Hi', { attrs: 'id="a1" data-x="1"' }).startsWith('<div data-bn="alert" data-variant="info" role="status" id="a1" data-x="1">'));
-  });
-});
-
-describe('Badge — hardening', () => {
-  it('renders with minimal options', () => {
-    assert.equal(renderBadge('New'), '<span data-bn="badge" data-variant="default">New</span>');
-  });
-
-  it('escapes the variant attribute', () => {
-    assertEscaped(renderBadge('New', { variant: XSS }));
-  });
-
-  it('text is an escaped slot and wins over content', () => {
-    const html = renderBadge('<b>bold</b>', { text: XSS });
-    assertEscaped(html);
-    assert.ok(!html.includes('<b>bold</b>'));
-  });
-
-  it('appends attrs to the span', () => {
-    assert.equal(
-      renderBadge('New', { attrs: 'id="b1"' }),
-      '<span data-bn="badge" data-variant="default" id="b1">New</span>',
+describe('package surface', () => {
+  it('exports every catalog component as an aggregate', () => {
+    const aggregates = Object.values(api).filter(
+      (value) => value && typeof value === 'object' && typeof value.create === 'function' && typeof value.name === 'string',
     );
-  });
-});
-
-describe('Card — hardening', () => {
-  it('renders with minimal options', () => {
-    assert.equal(renderCard(), '<article data-bn="card" data-variant="default"><div data-bn="card-body"></div></article>');
+    assert.equal(aggregates.length, 47);
   });
 
-  it('escapes the variant attribute', () => {
-    assertEscaped(renderCard({ variant: XSS }));
-  });
-
-  it('header, body and footer are HTML slots', () => {
-    const html = renderCard({ header: '<h2>H</h2>', body: '<p>B</p>', footer: '<button>F</button>' });
-    assert.ok(html.includes('<header data-bn="card-header"><h2>H</h2></header>'));
-    assert.ok(html.includes('<div data-bn="card-body"><p>B</p></div>'));
-    assert.ok(html.includes('<footer data-bn="card-footer"><button>F</button></footer>'));
-  });
-
-  it('emits an escaped id and appends attrs so the card can be labelled and bound', () => {
-    const html = renderCard({ id: 'c1', attrs: 'aria-labelledby="c1-title" data-bn-bind="row"' });
-    assert.ok(html.startsWith('<article data-bn="card" data-variant="default" id="c1" aria-labelledby="c1-title" data-bn-bind="row">'));
-    assertEscaped(renderCard({ id: XSS }));
-  });
-});
-
-describe('Table — cell hooks', () => {
-  it('labelCells stamps the escaped column label on every body cell', () => {
-    const html = renderTable({
-      columns: [{ key: 'a', label: 'Last <sync>' }],
-      rows: [{ a: 1 }],
-      labelCells: true,
-    });
-    assert.equal(cellWith(html, '1').attr('data-label'), 'Last &lt;sync&gt;');
-  });
-
-  it('labelCells leaves an unlabelled column alone', () => {
-    const html = renderTable({ columns: [{ key: 'a', label: '' }], rows: [{ a: 1 }], labelCells: true });
-    assert.equal(cellWith(html, '1').attr('data-label'), undefined);
-  });
-
-  it('stamps the srLabel when a column has no visible label, so the stack can still head the cell', () => {
-    const html = renderTable({
-      columns: [{ key: 'a', label: '', srLabel: 'Row actions' }],
-      rows: [{ a: 'x' }],
-    });
-    assert.equal(cellWith(html, 'x').attr('data-label'), 'Row actions');
-  });
-
-  it('cellAttrs is spliced onto the cell, as a string or per row', () => {
-    const html = renderTable({
-      columns: [
-        { key: 'a', label: 'A', cellAttrs: 'data-role="figure"' },
-        { key: 'b', label: 'B', cellAttrs: (value) => `data-v="${value}"` },
-      ],
-      rows: [{ a: 1, b: 2 }],
-    });
-    assert.equal(cellWith(html, '1').attr('data-role'), 'figure');
-    assert.equal(cellWith(html, '2').attr('data-v'), '2');
-  });
-
-  it('a cellAttrs function returning nothing adds no stray space', () => {
-    const html = renderTable({
-      columns: [{ key: 'a', label: 'A', cellAttrs: () => undefined }],
-      rows: [{ a: 1 }],
-      labelCells: false,
-    });
-    assert.equal(cellWith(html, '1').attrs, '');
-  });
-
-  it('srLabel names a column with no visible heading instead of leaving <th> empty', () => {
-    const html = renderTable({ columns: [{ key: 'a', label: '', srLabel: 'Actions' }], rows: [] });
-    assert.ok(html.includes('<th scope="col"><span data-bn="sr-only">Actions</span></th>'));
-  });
-
-  it('srLabel is escaped', () => {
-    assertEscaped(renderTable({ columns: [{ key: 'a', label: '', srLabel: XSS }], rows: [] }));
-  });
-});
-
-describe('Table — hardening', () => {
-  it('renders with minimal options', () => {
-    const html = renderTable();
-    assert.ok(html.includes('<td colspan="0" data-bn="table-empty">No data</td>'));
-  });
-
-  it('renders with all options', () => {
-    const html = renderTable({
-      columns: [{ key: 'a', label: 'A', sortable: true }, { key: 'b', label: 'B' }],
-      rows: [{ a: 1, b: null }],
-      caption: 'Cap',
-      emptyMessage: 'none',
-    });
-    assert.ok(html.includes('<caption>Cap</caption>'));
-    assert.ok(html.includes('<th scope="col" data-sortable>A</th>'));
-    assert.deepEqual(cellContents(html), ['1', '']);
-  });
-
-  it('escapes caption, labels, cells and empty message', () => {
-    assertEscaped(renderTable({ columns: [{ key: 'a', label: XSS }], rows: [{ a: XSS }], caption: XSS }));
-    assertEscaped(renderTable({ columns: [{ key: 'a', label: 'A' }], rows: [], emptyMessage: XSS }));
-  });
-
-  it('header cells carry scope="col"', () => {
-    assert.ok(renderTable({ columns: [{ key: 'a', label: 'A' }] }).includes('scope="col"'));
-  });
-});
-
-describe('Pagination — hardening', () => {
-  it('renders with minimal options', () => {
-    const html = renderPagination({ totalPages: 2 });
-    assert.ok(html.includes('<a href="?page=1" aria-current="page" data-active>1</a>'));
-    assert.ok(html.includes('<a href="?page=2">2</a>'));
-  });
-
-  it('renders with all options and ellipses', () => {
-    const html = renderPagination({ currentPage: 10, totalPages: 20, baseUrl: '/p?x=1', window: 1 });
-    assert.ok(html.includes('href="/p?x=1&amp;page=9"'));
-    assert.ok(html.includes('data-bn="pagination-ellipsis"'));
-    assert.ok(html.includes('>20</a>'));
-  });
-
-  it('escapes the base url', () => {
-    assertEscaped(renderPagination({ currentPage: 1, totalPages: 3, baseUrl: XSS }));
-  });
-
-  it('labels prev/next links for assistive tech', () => {
-    const html = renderPagination({ currentPage: 2, totalPages: 3 });
-    assert.ok(html.includes('aria-label="Previous page"'));
-    assert.ok(html.includes('aria-label="Next page"'));
-    assert.ok(html.includes('aria-label="Pagination"'));
-  });
-});
-
-describe('Progress — hardening', () => {
-  it('renders with minimal options', () => {
-    assert.equal(renderProgress(), '<progress data-bn="progress" value="0" max="100">0%</progress>');
-  });
-
-  it('renders with all options', () => {
-    const html = renderProgress({ value: 1, max: 4, label: 'Upload', attrs: 'data-x="1"' });
-    assert.equal(html, '<progress data-bn="progress" value="1" max="4" aria-label="Upload" data-x="1">25%</progress>');
-  });
-
-  it('escapes the label and numeric attributes', () => {
-    assertEscaped(renderProgress({ label: XSS, value: XSS, max: 100 }));
-  });
-
-  it('guards division by zero when max is 0', () => {
-    const html = renderProgress({ value: 5, max: 0 });
-    assert.ok(html.includes('>0%</progress>'));
-    assert.ok(!html.includes('NaN'));
-  });
-});
-
-describe('Spinner — hardening', () => {
-  it('renders with minimal options', () => {
-    assert.equal(renderSpinner(), '<span data-bn="spinner" data-size="default" role="status" aria-label="Loading"><span aria-hidden="true"></span></span>');
-  });
-
-  it('escapes label and size', () => {
-    assertEscaped(renderSpinner({ label: XSS, size: XSS }));
-  });
-
-  it('has role="status" for live announcement', () => {
-    assert.ok(renderSpinner({ size: 'lg' }).includes('role="status"'));
-  });
-});
-
-describe('Skeleton — hardening', () => {
-  it('renders with minimal options', () => {
-    assert.equal(renderSkeleton(), '<div data-bn="skeleton" data-variant="text" style="width:100%;height:1rem" aria-hidden="true"></div>');
-  });
-
-  it('escapes width, height and variant', () => {
-    assertEscaped(renderSkeleton({ width: XSS, height: XSS, variant: XSS }));
-  });
-
-  it('count 1 and count 3 use the same markup per placeholder', () => {
-    const one = renderSkeleton({ width: '2rem' });
-    assert.equal(renderSkeleton({ width: '2rem', count: 3 }), one + one + one);
-  });
-});
-
-describe('Toast — hardening', () => {
-  it('escapes the container position', () => {
-    assertEscaped(renderToastContainer(XSS));
-  });
-
-  it('showToast returns a deterministic id and queues the toast', () => {
-    resetIds();
-    const toaster = createToaster({ duration: 0 });
-    const id = showToast(toaster, { message: 'hi', duration: 0 });
-    assert.equal(id, 'bn-toast-1');
-    assert.equal(toaster.toasts()[0].message, 'hi');
-  });
-
-  it('showToast honours an explicit id', () => {
-    const toaster = createToaster();
-    assert.equal(showToast(toaster, { id: 'mine', duration: 0 }), 'mine');
-  });
-
-  it('dismissToast removes a toast by id', () => {
-    const toaster = createToaster();
-    const id = showToast(toaster, { duration: 0 });
-    dismissToast(toaster, id);
-    assert.equal(toaster.toasts().length, 0);
-  });
-});
-
-describe('Dialog — hardening', () => {
-  it('renders with minimal options', () => {
-    resetIds();
-    const html = renderDialog();
-    assert.ok(html.startsWith('<dialog data-bn="dialog" data-size="default" id="bn-dialog-1" aria-modal="true" data-modal="true">'));
-    assert.ok(!html.includes('dialog-title'));
-    assert.ok(!html.includes('dialog-footer'));
-  });
-
-  it('renders with all options', () => {
-    const html = renderDialog({ title: 'T', content: 'C', open: true, modal: false, closable: false, size: 'lg', footer: 'F', id: 'd', attrs: 'data-x="1"' });
-    assert.ok(html.includes('data-size="lg" id="d" open data-modal="false" aria-labelledby="d-title" data-x="1">'));
-    assert.ok(html.includes('<h2 data-bn="dialog-title" id="d-title">T</h2>'));
-    assert.ok(!html.includes('dialog-close'));
-    assert.ok(html.includes('<div data-bn="dialog-footer">F</div>'));
-  });
-
-  it('escapes title, size and id', () => {
-    assertEscaped(renderDialog({ title: XSS, size: XSS, id: XSS }));
-  });
-
-  it('content and footer are HTML slots', () => {
-    const html = renderDialog({ content: '<form></form>', footer: '<button>Ok</button>' });
-    assert.ok(html.includes('<div data-bn="dialog-body"><form></form></div>'));
-    assert.ok(html.includes('<button>Ok</button>'));
-  });
-
-  it('honours modal: true with aria-modal and modal: false without it', () => {
-    assert.ok(renderDialog({ modal: true }).includes('aria-modal="true" data-modal="true"'));
-    const nonModal = renderDialog({ modal: false });
-    assert.ok(nonModal.includes('data-modal="false"'));
-    assert.ok(!nonModal.includes('aria-modal'));
-  });
-
-  it('close button is labelled', () => {
-    assert.ok(renderDialog().includes('aria-label="Close" type="button"'));
-  });
-
-  it('is labelled by its title through a generated id', () => {
-    resetIds();
-    const html = renderDialog({ title: 'Delete project?' });
-    assert.ok(html.startsWith('<dialog data-bn="dialog" data-size="default" id="bn-dialog-1" aria-modal="true" data-modal="true" aria-labelledby="bn-dialog-1-title">'));
-    assert.ok(html.includes('<h2 data-bn="dialog-title" id="bn-dialog-1-title">Delete project?</h2>'));
-    assert.ok(!html.includes('aria-describedby') && !html.includes('dialog-description'));
-  });
-
-  it('has no aria-labelledby without a title', () => {
-    const html = renderDialog({ id: 'd', content: 'C' });
-    assert.ok(!html.includes('aria-labelledby') && !html.includes('d-title'));
-  });
-
-  it('description renders an escaped paragraph before the content and sets aria-describedby', () => {
-    const html = renderDialog({ id: 'd', title: 'T', description: 'This cannot be undone.', content: '<form></form>' });
-    assert.ok(html.includes('aria-labelledby="d-title" aria-describedby="d-description">'));
-    assert.ok(html.includes('<div data-bn="dialog-body"><p data-bn="dialog-description" id="d-description">This cannot be undone.</p><form></form></div>'));
-    assertEscaped(renderDialog({ id: 'd', description: XSS }));
-    assert.ok(renderDialog({ id: 'd', description: 'only' }).includes('aria-describedby="d-description"'));
-  });
-
-  it('escapes the generated label ids', () => {
-    const html = renderDialog({ id: 'a"b', title: 'T', description: 'D' });
-    assert.ok(html.includes('aria-labelledby="a&quot;b-title"') && html.includes('id="a&quot;b-title"'));
-    assert.ok(html.includes('aria-describedby="a&quot;b-description"') && html.includes('id="a&quot;b-description"'));
-  });
-});
-
-describe('Drawer — hardening', () => {
-  it('renders closed with inert so the close button is not tabbable', () => {
-    resetIds();
-    const html = renderDrawer();
-    assert.ok(html.includes('id="bn-drawer-1" inert role="dialog"'));
-    assert.ok(!html.includes('data-open'));
-  });
-
-  it('renders open without inert', () => {
-    const html = renderDrawer({ open: true });
-    assert.ok(html.includes(' data-open role="dialog"'));
-    assert.ok(!html.includes('inert'));
-    assert.ok(html.includes('<div data-bn="drawer-overlay" data-open></div>'));
-  });
-
-  it('renders with all options', () => {
-    const html = renderDrawer({ title: 'T', content: 'C', open: false, position: 'left', size: 'sm', closable: false, overlay: false, id: 'dr', attrs: 'data-x="1"' });
-    assert.ok(!html.includes('drawer-overlay'));
-    assert.ok(html.includes('data-position="left" data-size="sm" id="dr" inert role="dialog" aria-modal="true" data-x="1">'));
-    assert.ok(!html.includes('drawer-close'));
-    assert.ok(html.includes('<h2 data-bn="drawer-title">T</h2>'));
-  });
-
-  it('escapes title, position, size and id', () => {
-    assertEscaped(renderDrawer({ title: XSS, position: XSS, size: XSS, id: XSS }));
-  });
-
-  it('content is an HTML slot', () => {
-    assert.ok(renderDrawer({ content: '<nav>N</nav>' }).includes('<div data-bn="drawer-body"><nav>N</nav></div>'));
-  });
-});
-
-describe('initDrawer', () => {
-  function fakeDocument() {
-    const listeners = new Map();
-    return {
-      listeners,
-      activeElement: null,
-      addEventListener(type, fn) { listeners.set(type, fn); },
-      removeEventListener(type, fn) { if (listeners.get(type) === fn) listeners.delete(type); },
-      dispatch(type, event = {}) { listeners.get(type)?.({ preventDefault() {}, ...event }); },
-    };
-  }
-
-  function fakeElement(doc, bn, { children = [], focusable = true } = {}) {
-    const attrs = new Map();
-    const listeners = new Map();
-    const el = {
-      bn,
-      attrs,
-      listeners,
-      ownerDocument: doc,
-      previousElementSibling: null,
-      parent: null,
-      focusCount: 0,
-      hasAttribute: name => attrs.has(name),
-      getAttribute: name => attrs.get(name) ?? null,
-      setAttribute(name, value) { attrs.set(name, value); },
-      removeAttribute(name) { attrs.delete(name); },
-      addEventListener(type, fn) { listeners.set(type, fn); },
-      removeEventListener(type, fn) { if (listeners.get(type) === fn) listeners.delete(type); },
-      dispatch(type, event = {}) { listeners.get(type)?.({ target: el, preventDefault() {}, ...event }); },
-      matches: selector => selector === `[data-bn="${bn}"]`,
-      closest(selector) {
-        let node = el;
-        while (node) {
-          if (node.matches(selector)) return node;
-          node = node.parent;
-        }
-        return null;
-      },
-      querySelector(selector) {
-        for (const child of children) {
-          if (child.matches(selector)) return child;
-          const nested = child.querySelector(selector);
-          if (nested) return nested;
-        }
-        return null;
-      },
-    };
-    if (focusable) el.focus = () => { el.focusCount++; doc.activeElement = el; };
-    for (const child of children) child.parent = el;
-    return el;
-  }
-
-  /** The shape renderDrawer() emits: overlay sibling first, then the <aside> with a close button. */
-  function setup({ overlay = true, closable = true, open = false } = {}) {
-    const doc = fakeDocument();
-    const closeBtn = fakeElement(doc, 'drawer-close');
-    const drawer = fakeElement(doc, 'drawer', { children: closable ? [closeBtn] : [] });
-    const overlayEl = overlay ? fakeElement(doc, 'drawer-overlay', { focusable: false }) : null;
-    if (open) {
-      drawer.setAttribute('data-open', '');
-      overlayEl?.setAttribute('data-open', '');
-    } else {
-      drawer.setAttribute('inert', '');
+  it('exports the registry, loader and toaster factories', () => {
+    for (const name of ['createRegistry', 'validateTemplate', 'validateCss', 'loadRegistry', 'renderComponent', 'assembleStyles', 'createToaster']) {
+      assert.equal(typeof api[name], 'function', name);
     }
-    if (overlayEl) drawer.previousElementSibling = overlayEl;
-    const opener = fakeElement(doc, 'button');
-    opener.focus();
-    return { doc, drawer, overlayEl, closeBtn, opener };
+    assert.equal(typeof api.registry.registerComponent, 'function', 'the shared registry instance');
+  });
+});
+
+describe('tabs — APG keyboard pattern', () => {
+  const tabList = () => [
+    { value: 'a', label: 'A', panelHtml: '<p>A</p>' },
+    { value: 'b', label: 'B', panelHtml: '<p>B</p>' },
+    { value: 'c', label: 'C', panelHtml: '<p>C</p>', disabled: true },
+    { value: 'd', label: 'D', panelHtml: '<p>D</p>' },
+  ];
+
+  it('requires id, label and tabs with panels', () => {
+    assert.throws(() => createTabs({ label: 'L', tabs: tabList() }), /id is required/);
+    assert.throws(() => createTabs({ id: 't', label: 'L', tabs: [{ value: 'a' }] }), /panelHtml/);
+  });
+
+  it('selects the first enabled tab and roves tabindex with selection', () => {
+    const vm = createTabs({ id: 't', label: 'L', tabs: tabList() });
+    assert.equal(vm.selected(), 'a');
+    const [a, b] = vm.tabs();
+    assert.equal(vm.tabIndex(a), 0);
+    assert.equal(vm.tabIndex(b), -1);
+    assert.equal(vm.tabId(a), 't-tab-a');
+    assert.equal(vm.panelId(a), 't-panel-a');
+  });
+
+  it('arrows move and select under automatic activation, skipping disabled and wrapping', () => {
+    const vm = createTabs({ id: 't', label: 'L', tabs: tabList() });
+    const [a, , , d] = vm.tabs();
+    vm.onKeydown(keyEvent('ArrowRight'), a);
+    assert.equal(vm.selected(), 'b');
+    assert.equal(vm.focused(), 'b');
+    vm.onKeydown(keyEvent('ArrowRight'), vm.tabs()[1]);
+    assert.equal(vm.selected(), 'd', 'the disabled tab is skipped');
+    vm.onKeydown(keyEvent('ArrowRight'), d);
+    assert.equal(vm.selected(), 'a', 'wraps to the first tab');
+    vm.onKeydown(keyEvent('ArrowLeft'), a);
+    assert.equal(vm.selected(), 'd', 'wraps backwards');
+    vm.onKeydown(keyEvent('Home'), d);
+    assert.equal(vm.selected(), 'a');
+    vm.onKeydown(keyEvent('End'), a);
+    assert.equal(vm.selected(), 'd');
+  });
+
+  it('manual activation moves focus without selecting until select() runs', () => {
+    const reported = [];
+    const vm = createTabs({
+      id: 't', label: 'L', name: 'group', activation: 'manual', tabs: tabList(),
+      onSelect: (payload) => reported.push(payload),
+    });
+    const [a, b] = vm.tabs();
+    vm.onKeydown(keyEvent('ArrowRight'), a);
+    assert.equal(vm.focused(), 'b');
+    assert.equal(vm.selected(), 'a');
+    assert.equal(vm.tabIndex(b), 0, 'tabindex follows focus, not selection');
+    vm.select(b);
+    assert.equal(vm.selected(), 'b');
+    assert.deepEqual(reported, [{ name: 'group', mode: 'tabs', values: ['b'], changed: 'b', selected: true }]);
+    vm.select(vm.tabs()[2]);
+    assert.equal(vm.selected(), 'b', 'a disabled tab cannot be selected');
+  });
+});
+
+describe('dropdown-menu — activation', () => {
+  it('reports the action of an enabled item and ignores disabled and separators', () => {
+    const calls = [];
+    const vm = createDropdownMenu({
+      items: [
+        { label: 'Rename', action: 'rename' },
+        { label: 'Delete', action: 'delete', disabled: true },
+        { separator: true },
+        { label: 'Plain' },
+      ],
+      onSelect: (action, item) => calls.push([action, item.label]),
+    });
+    const [rename, del, separator, plain] = vm.items();
+    vm.activate(rename);
+    vm.activate(del);
+    vm.activate(separator);
+    vm.activate(plain);
+    assert.deepEqual(calls, [['rename', 'Rename'], ['', 'Plain']]);
+    assert.equal(vm.isDisabled(del), 'true');
+    assert.equal(vm.isDisabled(rename), 'false');
+  });
+
+  it('requires an items array', () => {
+    assert.throws(() => createDropdownMenu({}), /items is required/);
+  });
+});
+
+describe('command-palette — filter, active option, choose', () => {
+  const groups = () => [
+    { label: 'Pages', options: [{ value: 'home', label: 'Home' }, { value: 'docs', label: 'Docs' }] },
+    { label: 'Actions', options: [{ value: 'build', label: 'Build site' }] },
+  ];
+
+  it('starts on the first option and follows it with aria-activedescendant', () => {
+    const vm = createCommandPalette({ id: 'cp', searchHtml: '<input>', groups: groups() });
+    assert.equal(vm.activeOption().value, 'home');
+    assert.equal(vm.activeDescendant(), 'cp-option-home');
+    vm.onKeydown(keyEvent('ArrowDown'));
+    assert.equal(vm.activeOption().value, 'docs');
+    vm.onKeydown(keyEvent('ArrowDown'));
+    assert.equal(vm.activeOption().value, 'build', 'movement crosses groups');
+    vm.onKeydown(keyEvent('ArrowDown'));
+    assert.equal(vm.activeOption().value, 'home', 'wraps');
+    vm.onKeydown(keyEvent('ArrowUp'));
+    assert.equal(vm.activeOption().value, 'build', 'wraps backwards');
+  });
+
+  it('setQuery filters by label, drops empty groups and resets the active option', () => {
+    const vm = createCommandPalette({ id: 'cp', searchHtml: '<input>', groups: groups() });
+    vm.setQuery('doc');
+    assert.equal(vm.visibleGroups().length, 1);
+    assert.deepEqual(vm.flatOptions().map((o) => o.value), ['docs']);
+    assert.equal(vm.activeOption().value, 'docs');
+    assert.equal(vm.activeDescendant(), 'cp-option-docs');
+    vm.setQuery('zzz');
+    assert.equal(vm.flatOptions().length, 0);
+    assert.equal(vm.activeOption(), null);
+    assert.equal(vm.activeDescendant(), '');
+    vm.setQuery('');
+    assert.equal(vm.flatOptions().length, 3);
+  });
+
+  it('choose reports the option and closes the hosting dialog', () => {
+    const picked = [];
+    const vm = createCommandPalette({
+      id: 'cp', searchHtml: '<input>', groups: groups(),
+      onSelect: (payload) => picked.push(payload),
+    });
+    const dialog = { open: true, close() { this.open = false; } };
+    const event = { currentTarget: { closest: () => dialog } };
+    vm.choose(event, vm.flatOptions()[1]);
+    assert.deepEqual(picked, [{ value: 'docs', label: 'Docs' }]);
+    assert.equal(dialog.open, false);
+  });
+});
+
+describe('combobox — APG listbox pattern', () => {
+  const options = () => [
+    { value: 'apple', label: 'Apple' },
+    { value: 'pear', label: 'Pear' },
+    { value: 'plum', label: 'Plum' },
+  ];
+
+  it('aria-activedescendant stays empty while closed and follows the arrows once open', () => {
+    const vm = createCombobox({ id: 'cb', inputHtml: '<input>', options: options() });
+    assert.equal(vm.activeDescendant(), '');
+    vm.onKeydown(keyEvent('ArrowDown'));
+    assert.equal(vm.open(), true);
+    assert.equal(vm.activeDescendant(), 'cb-option-apple');
+    vm.onKeydown(keyEvent('ArrowDown'));
+    assert.equal(vm.activeDescendant(), 'cb-option-pear');
+    vm.onKeydown(keyEvent('ArrowUp'));
+    assert.equal(vm.activeDescendant(), 'cb-option-apple');
+    vm.onKeydown(keyEvent('End'));
+    assert.equal(vm.activeDescendant(), 'cb-option-plum');
+    vm.onKeydown(keyEvent('Home'));
+    assert.equal(vm.activeDescendant(), 'cb-option-apple');
+  });
+
+  it('Enter selects the active option, closes and reports; Escape closes without selecting', () => {
+    const picked = [];
+    const vm = createCombobox({
+      id: 'cb', inputHtml: '<input>', options: options(),
+      onSelect: (payload) => picked.push(payload),
+    });
+    vm.onKeydown(keyEvent('ArrowDown'));
+    vm.onKeydown(keyEvent('ArrowDown'));
+    vm.onKeydown(keyEvent('Enter'));
+    assert.equal(vm.value(), 'pear');
+    assert.equal(vm.open(), false);
+    assert.deepEqual(picked, [{ value: 'pear', label: 'Pear' }]);
+    vm.onKeydown(keyEvent('ArrowDown'));
+    assert.equal(vm.open(), true);
+    vm.onKeydown(keyEvent('Escape'));
+    assert.equal(vm.open(), false);
+    assert.equal(picked.length, 1);
+  });
+
+  it('clicking an option selects it', () => {
+    const vm = createCombobox({ id: 'cb', inputHtml: '<input>', options: options(), open: true });
+    vm.select(vm.options()[2]);
+    assert.equal(vm.value(), 'plum');
+    assert.equal(vm.open(), false);
+  });
+});
+
+describe('multiselect — toggle model and keyboard', () => {
+  const options = () => [
+    { value: 'a', label: 'Alpha' },
+    { value: 'b', label: 'Beta' },
+    { value: 'c', label: 'Gamma' },
+  ];
+
+  it('toggle adds and removes, reporting the values each time', () => {
+    const reports = [];
+    const vm = createMultiselect({
+      id: 'ms', inputHtml: '<input>', options: options(),
+      onChange: (payload) => reports.push(payload.values),
+    });
+    const [a, b] = vm.options();
+    vm.toggle(a);
+    vm.toggle(b);
+    assert.deepEqual(vm.selected().map((item) => item.value), ['a', 'b']);
+    assert.equal(vm.isSelected(a), 'true');
+    vm.toggle(a);
+    assert.deepEqual(vm.selected().map((item) => item.value), ['b']);
+    assert.deepEqual(reports, [['a'], ['a', 'b'], ['b']]);
+    assert.equal(vm.hasSelected(), true);
+  });
+
+  it('silent reflectors add and remove without double-adding; removeLast backs Backspace', () => {
+    const vm = createMultiselect({ id: 'ms', inputHtml: '<input>', options: options() });
+    assert.equal(vm.addValue('a'), true);
+    assert.equal(vm.addValue('a'), false, 'already selected');
+    assert.equal(vm.addValue('nope'), false, 'unknown value');
+    assert.equal(vm.addValue('c'), true);
+    assert.equal(vm.removeLast(), true);
+    assert.deepEqual(vm.selected().map((item) => item.value), ['a']);
+    assert.equal(vm.removeValue('zzz'), false);
+    assert.equal(vm.removeValue('a'), true);
+    assert.equal(vm.removeLast(), false, 'nothing left to remove');
+  });
+
+  it('arrows open and move the active option; Enter toggles it', () => {
+    const vm = createMultiselect({ id: 'ms', inputHtml: '<input>', options: options() });
+    vm.onKeydown(keyEvent('ArrowDown'));
+    assert.equal(vm.open(), true);
+    assert.equal(vm.activeDescendant(), 'ms-option-a');
+    vm.onKeydown(keyEvent('ArrowDown'));
+    assert.equal(vm.activeDescendant(), 'ms-option-b');
+    vm.onKeydown(keyEvent('Enter'));
+    assert.deepEqual(vm.selected().map((item) => item.value), ['b']);
+    vm.onKeydown(keyEvent('Escape'));
+    assert.equal(vm.open(), false);
+    assert.equal(vm.activeDescendant(), '');
+  });
+});
+
+describe('datagrid — sort and selection models', () => {
+  const columns = () => [
+    { key: 'name', label: 'Name' },
+    { key: 'size', label: 'Size' },
+  ];
+  const rows = () => [
+    { id: 'r1', cells: ['Beta', '10'] },
+    { id: 'r2', cells: ['Alpha', '2'] },
+  ];
+
+  it('decorates rows and cells with grid coordinates, offset by the selection column', () => {
+    const plain = createDatagrid({ columns: columns(), rows: rows() });
+    assert.deepEqual(plain.viewRows().map((row) => [row.r, row.cells[0].c]), [[1, 0], [2, 0]]);
+    const selectable = createDatagrid({ columns: columns(), rows: rows(), selectable: true });
+    assert.deepEqual(selectable.viewColumns().map((col) => col.c), [1, 2]);
+    assert.deepEqual(selectable.viewRows().map((row) => row.cells[0].c), [1, 1]);
+    assert.equal(selectable.selectAllTabIndex(), 0, 'the selection header cell holds the roving stop');
+  });
+
+  it('sortBy sorts by stripped cell text with numeric collation and flips on repeat', () => {
+    const vm = createDatagrid({ columns: columns(), rows: rows() });
+    vm.sortBy(vm.columns()[0]);
+    assert.deepEqual(vm.rows().map((row) => row.id), ['r2', 'r1']);
+    assert.deepEqual(vm.sortState(), { key: 'name', dir: 'asc' });
+    vm.sortBy(vm.columns()[0]);
+    assert.deepEqual(vm.rows().map((row) => row.id), ['r1', 'r2']);
+    assert.deepEqual(vm.sortState(), { key: 'name', dir: 'desc' });
+    vm.sortBy(vm.columns()[1]);
+    assert.deepEqual(vm.rows().map((row) => row.id), ['r2', 'r1'], 'numeric collation: 2 before 10');
+  });
+
+  it('an onSort host owns the ordering; the grid only reports', () => {
+    const calls = [];
+    const vm = createDatagrid({ columns: columns(), rows: rows(), onSort: (payload) => calls.push(payload) });
+    vm.sortBy(vm.columns()[1]);
+    assert.deepEqual(calls, [{ key: 'size', dir: 'asc' }]);
+    assert.deepEqual(vm.rows().map((row) => row.id), ['r1', 'r2'], 'rows untouched');
+  });
+
+  it('selection toggles report, select() reflects silently, selectAllState tracks coverage', () => {
+    const reports = [];
+    const vm = createDatagrid({
+      columns: columns(), rows: rows(), selectable: true,
+      onSelectionChange: (ids) => reports.push(ids),
+    });
+    assert.equal(vm.selectAllState(), 'none');
+    vm.toggleRow('r1', true);
+    assert.equal(vm.selectAllState(), 'some');
+    assert.equal(vm.isRowSelected(vm.viewRows()[0]), 'true');
+    vm.toggleAll(true);
+    assert.equal(vm.selectAllState(), 'all');
+    vm.toggleRow('r1', false);
+    assert.deepEqual(vm.selectedIds(), ['r2']);
+    vm.select([]);
+    assert.equal(vm.selectAllState(), 'none');
+    assert.equal(reports.length, 3, 'select() does not report');
+  });
+});
+
+describe('virtualizer — window math', () => {
+  it('computes the window and spacers from scrollTop and re-slices on setScrollTop', () => {
+    const vm = createVirtualizer({ id: 'v', total: 100, rowHeight: 20, viewportRows: 5, overscan: 1 });
+    assert.equal(vm.startIndex(), 0);
+    assert.equal(vm.endIndex(), 7);
+    assert.deepEqual(vm.windowIndices(), [0, 1, 2, 3, 4, 5, 6]);
+    assert.equal(vm.spacerEndCount(), 93);
+    vm.setScrollTop(400);
+    assert.equal(vm.startIndex(), 19);
+    assert.equal(vm.endIndex(), 26);
+    assert.equal(vm.spacerStartCount(), 19);
+    assert.equal(vm.spacerEndCount(), 74);
+    assert.ok(!vm.windowIndices().includes(0));
+    vm.setScrollTop(-50);
+    assert.equal(vm.scrollTop(), 0, 'negative offsets clamp to the top');
+    vm.onScroll({ target: { scrollTop: 40 } });
+    assert.equal(vm.scrollTop(), 40, 'onScroll reads the scroller element');
+  });
+});
+
+describe('calendar — moveEvent', () => {
+  const setup = () => {
+    const drops = [];
+    const vm = createCalendar({
+      year: 2026, month: 11,
+      events: [{ id: 'e1', title: 'Dentist', date: '2026-11-02', at: '2026-11-02T09:00', timeLabel: '9:00 AM' }],
+      onDrop: (payload) => drops.push(payload),
+    });
+    return { vm, drops };
+  };
+
+  it('re-dates the event, rebuilds its time label, reports the drop and announces it', () => {
+    const { vm, drops } = setup();
+    assert.equal(vm.title(), 'November 2026');
+    assert.equal(vm.moveEvent('e1', { date: '2026-11-03', hour: 14, minute: 30 }), true);
+    const [event] = vm.events();
+    assert.equal(event.date, '2026-11-03');
+    assert.equal(event.at, '2026-11-03T14:30');
+    assert.equal(event.timeLabel, '2:30 PM');
+    assert.deepEqual(drops, [{
+      eventId: 'e1', date: '2026-11-03', hour: 14, minute: 30,
+      datetime: '2026-11-03T14:30', sourceType: 'event',
+    }]);
+    assert.equal(vm.status(), 'Moved Dentist to Tue, November 3 at 2:30 PM.');
+    assert.deepEqual(vm.days().map((day) => day.date), ['2026-11-03']);
+  });
+
+  it('finds an event by title when it has no id and refuses unknown events', () => {
+    const { vm } = setup();
+    assert.equal(vm.moveEvent('nope', { date: '2026-11-04', hour: 9, minute: 0 }), false);
+    const vm2 = createCalendar({
+      year: 2026, month: 11,
+      events: [{ title: 'Loose', date: '2026-11-02', at: '2026-11-02T09:00', timeLabel: '9:00 AM' }],
+    });
+    assert.equal(vm2.moveEvent('Loose', { date: '2026-11-05', hour: 8, minute: 15 }), true);
+    assert.equal(vm2.events()[0].timeLabel, '8:15 AM');
+  });
+});
+
+describe('pipeline — moveCard', () => {
+  const setup = () => {
+    const moves = [];
+    const vm = createPipeline({
+      columns: [
+        { title: 'New', cardsHtml: ['<p>A</p>', '<p>B</p>'] },
+        { title: 'Doing', cardsHtml: ['<p>C</p>'] },
+      ],
+      onCardMove: (payload) => moves.push(payload),
+    });
+    return { vm, moves };
+  };
+
+  it('moves a card across columns at the requested index and reports it', () => {
+    const { vm, moves } = setup();
+    assert.equal(vm.moveCard(0, 0, 1, 1), true);
+    assert.deepEqual(vm.columns()[0].cardsHtml, ['<p>B</p>']);
+    assert.deepEqual(vm.columns()[1].cardsHtml, ['<p>C</p>', '<p>A</p>']);
+    assert.deepEqual(moves, [{ fromColumn: 0, fromIndex: 0, toColumn: 1, toIndex: 1 }]);
+  });
+
+  it('reorders within a column, clamps the target index and refuses bad sources', () => {
+    const { vm, moves } = setup();
+    assert.equal(vm.moveCard(0, 1, 0, 0), true);
+    assert.deepEqual(vm.columns()[0].cardsHtml, ['<p>B</p>', '<p>A</p>']);
+    assert.equal(vm.moveCard(0, 0, 1, 99), true);
+    assert.equal(moves.at(-1).toIndex, 1, 'clamped to the end of the target column');
+    assert.equal(vm.moveCard(0, 5, 1, 0), false);
+    assert.equal(vm.moveCard(9, 0, 1, 0), false);
+    assert.equal(moves.length, 2, 'failed moves do not report');
+  });
+});
+
+describe('dialog behavior — show, backdrop, change reports', () => {
+  function fakeDialog() {
+    return {
+      open: false,
+      showModal() { this.open = true; },
+      close() { this.open = false; },
+      closest() { return this; },
+    };
   }
 
-  it('removes inert when it opens and restores it when it closes', () => {
-    const { drawer, overlayEl } = setup();
-    const handle = initDrawer(drawer);
-    assert.ok(drawer.hasAttribute('inert'), 'starts closed and inert');
-    handle.open();
-    assert.ok(!drawer.hasAttribute('inert'), 'an open drawer must not be inert');
-    assert.ok(drawer.hasAttribute('data-open'));
-    assert.ok(overlayEl.hasAttribute('data-open'), 'the scrim must be shown by data-open, not hidden');
-    assert.equal(handle.isOpen(), true);
-    handle.close();
-    assert.ok(drawer.hasAttribute('inert'));
-    assert.ok(!drawer.hasAttribute('data-open'));
-    assert.ok(!overlayEl.hasAttribute('data-open'));
-    assert.equal(handle.isOpen(), false);
-  });
-
-  it('moves focus to the close button on open and back to the opener on close', () => {
-    const { doc, drawer, closeBtn, opener } = setup();
-    const handle = initDrawer(drawer);
-    handle.open();
-    assert.equal(doc.activeElement, closeBtn);
-    handle.close();
-    assert.equal(doc.activeElement, opener, 'focus returns to the element focused before open()');
-    assert.equal(opener.focusCount, 2);
-  });
-
-  it('focuses the panel itself when there is no close button', () => {
-    const { doc, drawer } = setup({ closable: false });
-    initDrawer(drawer).open();
-    assert.equal(doc.activeElement, drawer);
-    assert.equal(drawer.getAttribute('tabindex'), '-1', 'an <aside> needs tabindex to take focus');
-  });
-
-  it('the close button closes it', () => {
-    const { drawer, closeBtn } = setup();
-    const handle = initDrawer(drawer);
-    handle.open();
-    drawer.dispatch('click', { target: closeBtn });
-    assert.equal(handle.isOpen(), false);
-    assert.ok(drawer.hasAttribute('inert'));
-  });
-
-  it('a click elsewhere in the drawer does not close it', () => {
-    const { drawer } = setup();
-    const handle = initDrawer(drawer);
-    handle.open();
-    drawer.dispatch('click', { target: drawer });
-    assert.equal(handle.isOpen(), true);
-  });
-
-  it('a click on the overlay closes it', () => {
-    const { drawer, overlayEl } = setup();
-    const handle = initDrawer(drawer);
-    handle.open();
-    overlayEl.dispatch('click');
-    assert.equal(handle.isOpen(), false);
-    assert.ok(!overlayEl.hasAttribute('data-open'));
-  });
-
-  it('dismissible: false keeps the overlay click from closing it but not the close button', () => {
-    const { drawer, overlayEl, closeBtn } = setup();
-    const handle = initDrawer(drawer, { dismissible: false });
-    handle.open();
-    overlayEl.dispatch('click');
-    assert.equal(handle.isOpen(), true);
-    drawer.dispatch('click', { target: closeBtn });
-    assert.equal(handle.isOpen(), false);
-  });
-
-  it('Escape closes it only while open', () => {
-    const { doc, drawer } = setup();
-    const handle = initDrawer(drawer);
-    let prevented = 0;
-    doc.dispatch('keydown', { key: 'Escape', preventDefault: () => prevented++ });
-    assert.equal(prevented, 0, 'a closed drawer does not swallow Escape');
-    handle.open();
-    doc.dispatch('keydown', { key: 'Enter' });
-    assert.equal(handle.isOpen(), true);
-    doc.dispatch('keydown', { key: 'Escape', preventDefault: () => prevented++ });
-    assert.equal(handle.isOpen(), false);
-    assert.equal(prevented, 1);
-  });
-
-  it('toggle() alternates and onChange reports each transition', () => {
-    const { drawer } = setup();
+  it('show opens through showModal once and reports; close reports back', () => {
+    const dialog = fakeDialog();
     const changes = [];
-    const handle = initDrawer(drawer, { onChange: open => changes.push(open) });
-    handle.toggle();
-    handle.toggle();
-    handle.close();
+    const vm = createDialogBehavior({ id: 'dlg', onChange: (open) => changes.push(open) });
+    assert.equal(vm.idAttr(), 'dlg');
+    vm.show(dialog);
+    assert.equal(dialog.open, true);
+    vm.show(dialog);
+    assert.deepEqual(changes, [true], 'showing an open dialog is a no-op');
+    assert.equal(vm.isOpen(dialog), true);
+    vm.close(dialog);
+    assert.equal(dialog.open, false);
     assert.deepEqual(changes, [true, false]);
   });
 
-  it('closes a drawer rendered open without a remembered focus target', () => {
-    const { drawer, overlayEl } = setup({ open: true });
-    const handle = initDrawer(drawer);
-    assert.equal(handle.isOpen(), true);
-    handle.close();
-    assert.ok(drawer.hasAttribute('inert'));
-    assert.ok(!overlayEl.hasAttribute('data-open'));
+  it('a backdrop click closes; a content click does not', () => {
+    const dialog = fakeDialog();
+    const vm = createDialogBehavior({ id: 'dlg' });
+    vm.show(dialog);
+    vm.onBackdropClick({ target: { closest: () => dialog }, currentTarget: dialog });
+    assert.equal(dialog.open, true, 'the click landed on content inside the dialog');
+    vm.onBackdropClick({ target: dialog, currentTarget: dialog });
+    assert.equal(dialog.open, false, 'target === currentTarget is the backdrop itself');
   });
 
-  it('finds the overlay only as the preceding sibling, or via options.overlay', () => {
-    const { drawer } = setup({ overlay: false });
-    const handle = initDrawer(drawer);
-    handle.open();
-    handle.close();
-    assert.ok(drawer.hasAttribute('inert'), 'works with renderDrawer({ overlay: false }) markup');
-
-    const other = setup({ overlay: false });
-    const explicit = fakeElement(other.doc, 'drawer-overlay', { focusable: false });
-    const explicitHandle = initDrawer(other.drawer, { overlay: explicit });
-    explicitHandle.open();
-    assert.ok(explicit.hasAttribute('data-open'));
-    explicit.dispatch('click');
-    assert.equal(explicitHandle.isOpen(), false);
-  });
-
-  it('destroy() removes every listener it added', () => {
-    const { doc, drawer, overlayEl } = setup();
-    const handle = initDrawer(drawer);
-    assert.equal(drawer.listeners.size, 1);
-    assert.equal(overlayEl.listeners.size, 1);
-    assert.equal(doc.listeners.size, 1);
-    handle.destroy();
-    assert.equal(drawer.listeners.size, 0);
-    assert.equal(overlayEl.listeners.size, 0);
-    assert.equal(doc.listeners.size, 0);
+  it('resolves the dialog from an invoker event and no-ops without a document', () => {
+    const dialog = fakeDialog();
+    const vm = createDialogBehavior({ onChange: () => {} });
+    assert.equal(vm.idAttr(), false, 'no id prop, no id attribute');
+    vm.show({ currentTarget: { closest: () => dialog } });
+    assert.equal(dialog.open, true);
+    vm.close();
+    assert.equal(dialog.open, true, 'no element and no document: nothing to close, no throw');
   });
 });
 
-describe('Tabs — hardening', () => {
-  it('renders with minimal options', () => {
-    const html = renderTabs({ id: 't' });
-    assert.ok(html.includes('<div data-bn="tabs" data-variant="default" id="t">'));
-    assert.ok(html.includes('<div data-bn="tab-list" role="tablist"></div>'));
-  });
-
-  it('renders with all options', () => {
-    const html = renderTabs({ id: 't', variant: 'pills', activeTab: 'b', attrs: 'data-x="1"', tabs: [{ id: 'a', label: 'A', disabled: true }, { id: 'b', label: 'B', content: 'BB' }] });
-    assert.ok(html.includes('data-variant="pills" id="t" data-x="1">'));
-    assert.ok(html.includes('id="t-tab-a" aria-selected="false" aria-controls="t-panel-a" data-tab="a" disabled>A</button>'));
-    assert.ok(html.includes('id="t-panel-b" aria-labelledby="t-tab-b">BB</div>'));
-    assert.ok(html.includes('id="t-panel-a" aria-labelledby="t-tab-a" hidden></div>'));
-  });
-
-  it('escapes labels, ids and variant', () => {
-    assertEscaped(renderTabs({ id: XSS, variant: XSS, tabs: [{ id: XSS, label: XSS }] }));
-  });
-
-  it('tab buttons are type="button"', () => {
-    const html = renderTabs({ tabs: [{ id: 'a', label: 'A' }] });
-    assert.ok(html.includes('<button data-bn="tab" role="tab" type="button"'));
-  });
-
-  it('panel content is an HTML slot', () => {
-    assert.ok(renderTabs({ tabs: [{ id: 'a', label: 'A', content: '<p>x</p>' }] }).includes('<p>x</p>'));
-  });
-});
-
-describe('Accordion — hardening', () => {
-  it('renders with minimal options', () => {
-    assert.equal(renderAccordion({ id: 'acc' }), '<div data-bn="accordion" id="acc"></div>');
-  });
-
-  it('renders with all options', () => {
-    const html = renderAccordion({ id: 'acc', multiple: true, attrs: 'data-x="1"', items: [{ title: 'T', content: 'C', open: true }] });
-    assert.ok(html.includes('<div data-bn="accordion" id="acc" data-x="1">'));
-    assert.ok(html.includes('<details data-bn="accordion-item" open>'));
-    assert.ok(!html.includes('name="acc"'));
-  });
-
-  it('exclusive mode names every details after the accordion id', () => {
-    assert.ok(renderAccordion({ id: 'acc', items: [{ title: 'T' }] }).includes('<details data-bn="accordion-item" name="acc">'));
-  });
-
-  it('escapes titles and id', () => {
-    assertEscaped(renderAccordion({ id: XSS, items: [{ title: XSS }] }));
-  });
-
-  it('section content is an HTML slot', () => {
-    assert.ok(renderAccordion({ items: [{ title: 'T', content: '<ul><li>x</li></ul>' }] }).includes('<ul><li>x</li></ul>'));
-  });
-});
-
-describe('Breadcrumb — hardening', () => {
-  it('renders with minimal options', () => {
-    const html = renderBreadcrumb();
-    assert.ok(html.startsWith('<nav data-bn="breadcrumb" aria-label="Breadcrumb">'));
-    assert.ok(html.includes('<ol data-bn="breadcrumb-list"></ol>'));
-  });
-
-  it('renders with all options', () => {
-    const html = renderBreadcrumb({ separator: '<svg></svg>', attrs: 'data-x="1"', items: [{ label: 'Home', href: '/' }, { label: 'Here' }] });
-    assert.ok(html.includes('aria-label="Breadcrumb" data-x="1">'));
-    assert.ok(html.includes('<a href="/">Home</a><span data-bn="breadcrumb-separator" aria-hidden="true"><svg></svg></span>'));
-  });
-
-  it('escapes labels and hrefs', () => {
-    assertEscaped(renderBreadcrumb({ items: [{ label: XSS, href: XSS }, { label: XSS }] }));
-  });
-
-  it('marks the last item aria-current', () => {
-    assert.ok(renderBreadcrumb({ items: [{ label: 'X' }] }).includes('<li data-bn="breadcrumb-item" aria-current="page">X</li>'));
-  });
-});
-
-describe('Tooltip — hardening', () => {
-  it('renders with minimal options', () => {
-    const html = renderTooltip({ id: 'tt' });
-    assert.ok(html.includes('<button type="button" data-bn="tooltip-trigger" popovertarget="tt" popovertargetaction="toggle" aria-describedby="tt"></button>'));
-    assert.ok(html.includes('<span data-bn="tooltip" id="tt" popover data-position="top" role="tooltip"></span>'));
-  });
-
-  it('renders with all options', () => {
-    const html = renderTooltip({ id: 'tt', content: 'C', trigger: 'T', position: 'bottom', attrs: 'data-x="1"' });
-    assert.ok(html.includes('<button type="button" data-bn="tooltip-trigger" popovertarget="tt" popovertargetaction="toggle" aria-describedby="tt" data-x="1">T</button>'));
-    assert.ok(html.includes('data-position="bottom" role="tooltip">C</span>'));
-  });
-
-  it('escapes content, id and position', () => {
-    assertEscaped(renderTooltip({ content: XSS, id: XSS, position: XSS, trigger: '' }));
-  });
-
-  it('a plain-text trigger is wrapped in a real <button>, a valid popover invoker', () => {
-    const html = renderTooltip({ id: 'tt', content: 'c', trigger: 'Hover me' });
-    assert.ok(html.includes('<button type="button" data-bn="tooltip-trigger" popovertarget="tt" popovertargetaction="toggle" aria-describedby="tt">Hover me</button>'));
-  });
-
-  it('a trigger HTML slot that already starts with <button> is used as the invoker in place, not double-wrapped', () => {
-    const html = renderTooltip({ id: 'tt', content: 'c', trigger: '<button>?</button>' });
-    assert.ok(html.includes('<button data-bn="tooltip-trigger" popovertarget="tt" popovertargetaction="toggle" aria-describedby="tt">?</button>'));
-    assert.ok(!html.includes('<button type="button"><button'));
-  });
-
-  it('a trigger HTML slot that already starts with <input> is used as the invoker in place', () => {
-    const html = renderTooltip({ id: 'tt', content: 'c', trigger: '<input type="button" value="?">' });
-    assert.ok(html.includes('<input data-bn="tooltip-trigger" popovertarget="tt" popovertargetaction="toggle" aria-describedby="tt" type="button" value="?">'));
-  });
-});
-
-describe('DropdownMenu — hardening', () => {
-  it('renders with minimal options', () => {
-    const html = renderDropdownMenu({ id: 'dd' });
-    assert.ok(html.includes('<button data-bn="dropdown-trigger" popovertarget="dd" type="button"></button>'));
-    assert.ok(html.includes('<div data-bn="dropdown-menu" id="dd" popover data-position="bottom-start" role="menu"></div>'));
-  });
-
-  it('renders with all options', () => {
-    const html = renderDropdownMenu({
-      id: 'dd', trigger: 'Menu', position: 'top-end', attrs: 'data-x="1"',
-      items: [{ label: 'Edit', action: 'edit', icon: '<svg></svg>', shortcut: 'E', disabled: true }, { separator: true }],
-    });
-    assert.ok(html.includes('<div data-bn="dropdown" data-x="1">'));
-    assert.ok(html.includes('data-position="top-end"'));
-    assert.ok(html.includes('data-action="edit" aria-disabled="true" type="button"><span data-bn="dropdown-icon"><svg></svg></span>Edit<span data-bn="dropdown-shortcut">E</span></button>'));
-    assert.ok(html.includes('<hr data-bn="dropdown-separator" role="separator">'));
-  });
-
-  it('escapes labels, actions, shortcuts, id and position', () => {
-    assertEscaped(renderDropdownMenu({ id: XSS, position: XSS, trigger: '', items: [{ label: XSS, action: XSS, shortcut: XSS }] }));
-  });
-
-  it('trigger and icon are HTML slots', () => {
-    const html = renderDropdownMenu({ trigger: '<b>M</b>', items: [{ label: 'x', icon: '<i></i>' }] });
-    assert.ok(html.includes('<b>M</b>'));
-    assert.ok(html.includes('<i></i>'));
-  });
-
-  it('menu items have role="menuitem" and are type="button"', () => {
-    assert.ok(renderDropdownMenu({ trigger: '', items: [{ label: 'x' }] }).includes('role="menuitem" data-action="" type="button"'));
-  });
-});
-
-describe('CommandPalette — hardening', () => {
-  it('renders with minimal options', () => {
-    const html = renderCommandPalette({ id: 'cp' });
-    assert.ok(html.startsWith('<dialog data-bn="command-palette" id="cp">'));
-    assert.ok(html.includes('<div data-bn="command-list" id="cp-list" role="listbox"></div>'));
-    assert.ok(html.includes('role="combobox" aria-expanded="true" aria-autocomplete="list" aria-controls="cp-list"'));
-  });
-
-  it('renders with all options', () => {
-    const html = renderCommandPalette({
-      id: 'cp', open: true, placeholder: 'Go', attrs: 'data-x="1"',
-      commands: [{ label: 'Save', action: 'save', icon: '<svg></svg>', shortcut: 'S', group: 'File' }, { id: 'quit', label: 'Quit' }],
-    });
-    assert.ok(html.startsWith('<dialog data-bn="command-palette" id="cp" open data-x="1">'));
-    assert.ok(html.includes('placeholder="Go"'));
-    assert.ok(html.includes('role="group" aria-label="File"'));
-    assert.ok(html.includes('<div data-bn="command-group-label">Commands</div>'));
-    assert.ok(html.includes('data-action="quit"'));
-    assert.ok(html.includes('<span data-bn="command-icon"><svg></svg></span><span data-bn="command-label">Save</span><kbd data-bn="command-shortcut">S</kbd>'));
-  });
-
-  it('escapes labels, groups, shortcuts, actions, placeholder and id', () => {
-    assertEscaped(renderCommandPalette({ id: XSS, placeholder: XSS, commands: [{ label: XSS, action: XSS, shortcut: XSS, group: XSS }] }));
-  });
-
-  it('exposes combobox/listbox/option roles', () => {
-    const html = renderCommandPalette({ commands: [{ label: 'x' }] });
-    assert.ok(html.includes('role="combobox"'));
-    assert.ok(html.includes('role="listbox"'));
-    assert.ok(html.includes('role="option"'));
-  });
-});
-
-describe('Combobox — hardening', () => {
-  it('renders with minimal options', () => {
+describe('toaster — ids, dismiss, auto-dismiss', () => {
+  it('push returns deterministic ids and dismiss removes by id', () => {
     resetIds();
-    const html = renderCombobox();
-    assert.ok(html.includes('id="bn-combobox-1"'));
-    assert.ok(html.includes('<datalist id="bn-combobox-1-list"></datalist>'));
-  });
-
-  it('derives its id from the name', () => {
-    const html = renderCombobox({ name: 'fruit' });
-    assert.ok(html.includes('id="bn-combobox-fruit" name="fruit" list="bn-combobox-fruit-list"'));
-  });
-
-  it('renders with all options', () => {
-    const html = renderCombobox({ name: 'f', label: 'Fruit', items: ['a', { value: 'b', label: 'B' }], placeholder: 'p', required: true, disabled: true, value: 'a', id: 'cb', attrs: 'data-x="1"' });
-    assert.ok(html.includes('<label for="cb" data-bn="label">Fruit</label>'));
-    assert.ok(html.includes('value="a" placeholder="p" required disabled'));
-    assert.ok(html.includes('aria-expanded="false" data-x="1">'));
-    assert.ok(html.includes('<option value="a">a</option><option value="b">B</option>'));
-  });
-
-  it('escapes attributes, label and options', () => {
-    assertEscaped(renderCombobox({ name: XSS, label: XSS, placeholder: XSS, value: XSS, id: XSS, items: [{ value: XSS, label: XSS }] }));
-  });
-
-  it('label is associated with the input', () => {
-    const html = renderCombobox({ name: 'f', label: 'L' });
-    assert.ok(html.includes('for="bn-combobox-f"'));
-    assert.ok(html.includes('role="combobox" aria-autocomplete="list"'));
-  });
-});
-
-describe('Multiselect — hardening', () => {
-  it('renders with minimal options', () => {
-    resetIds();
-    const html = renderMultiselect();
-    assert.ok(html.includes('<select id="bn-multiselect-1" name="undefined" multiple hidden></select>'));
-  });
-
-  it('derives its id from the name', () => {
-    assert.ok(renderMultiselect({ name: 'tags' }).includes('<select id="bn-multiselect-tags" name="tags"'));
-  });
-
-  it('renders with all options', () => {
-    const html = renderMultiselect({ name: 't', label: 'Tags', items: ['a', { value: 'b', label: 'B' }], selected: ['b', 'zz'], placeholder: 'p', disabled: true, id: 'ms', attrs: 'data-x="1"' });
-    assert.ok(html.includes('<div data-bn="multiselect" data-disabled>'));
-    assert.ok(html.includes('<label for="ms" data-bn="label">Tags</label>'));
-    assert.ok(html.includes('<span data-bn="tag" data-value="b">B<button type="button" data-bn="tag-remove" aria-label="Remove B">&times;</button></span>'));
-    assert.ok(html.includes('data-value="zz">zz<'));
-    assert.ok(html.includes('placeholder="p" autocomplete="off" aria-label="Tags" list="ms-options" data-x="1">'));
-    assert.ok(html.includes('<datalist id="ms-options"><option value="a"></option><option value="B"></option></datalist>'));
-    assert.ok(html.includes('<option value="b" selected>B</option>'));
-    assert.ok(html.includes('multiple hidden disabled>'));
-  });
-
-  it('escapes attributes, label, tags and options', () => {
-    assertEscaped(renderMultiselect({ name: XSS, label: XSS, placeholder: XSS, id: XSS, items: [{ value: XSS, label: XSS }], selected: [XSS] }));
-  });
-
-  it('search input falls back to a Search aria-label', () => {
-    assert.ok(renderMultiselect({ name: 't' }).includes('aria-label="Search"'));
-  });
-});
-
-describe('DataGrid — hardening', () => {
-  it('renders with minimal options', () => {
-    const html = renderDataGrid({ id: 'g' });
-    assert.ok(html.includes('<div data-bn="datagrid" id="g">'));
-    assert.ok(html.includes('<td colspan="0" data-bn="datagrid-empty">No data</td>'));
-    assert.ok(html.includes('Showing 0–0 of 0'));
-  });
-
-  it('renders with all options', () => {
-    const html = renderDataGrid({
-      id: 'g', attrs: 'data-x="1"', caption: 'People', page: 2, pageSize: 1, totalRows: 5, sortBy: 'n', sortDir: 'desc',
-      selectable: true, selectedRows: [7],
-      columns: [{ key: 'n', label: 'N', sortable: true, resizable: true, editable: true, width: '10rem' }],
-      rows: [{ id: 7, n: 'Ann' }],
-    });
-    assert.ok(html.includes('<div data-bn="datagrid" id="g" data-x="1">'));
-    assert.ok(html.includes('aria-label="People"'));
-    assert.ok(html.includes('<caption>People</caption>'));
-    assert.ok(html.includes('data-key="n" data-sortable data-sorted="desc" aria-sort="descending" style="width:10rem" data-resizable scope="col"><button type="button" data-bn="datagrid-th-button">N ↓</button></th>'));
-    assert.ok(html.includes('<input type="checkbox" checked aria-label="Select row 7"'));
-    assert.ok(html.includes('contenteditable="true" data-editable>Ann</td>'));
-    assert.ok(html.includes('Showing 2–2 of 5'));
-  });
-
-  it('escapes labels, raw cell values, caption, empty message and ids', () => {
-    assertEscaped(renderDataGrid({ id: XSS, caption: XSS, columns: [{ key: XSS, label: XSS }], rows: [{ [XSS]: XSS, id: XSS }] }));
-    assertEscaped(renderDataGrid({ columns: [{ key: 'a', label: 'A' }], emptyMessage: XSS }));
-  });
-
-  it('column render() output is an HTML slot', () => {
-    const html = renderDataGrid({ columns: [{ key: 'a', label: 'A', render: v => `<b>${v}</b>` }], rows: [{ a: 'x' }] });
-    assert.ok(html.includes('<td data-bn="datagrid-td" data-key="a"><b>x</b></td>'));
-  });
-
-  it('scroll region is labelled and focusable', () => {
-    const html = renderDataGrid({ columns: [] });
-    assert.ok(html.includes('role="region" aria-label="Data grid" tabindex="0"'));
-    assert.ok(html.includes('role="grid"'));
-  });
-});
-
-describe('Tree — hardening', () => {
-  it('renders with minimal options', () => {
-    assert.equal(renderTree({ id: 't' }), '<ul data-bn="tree" id="t" role="tree"></ul>');
-  });
-
-  it('renders with all options', () => {
-    const html = renderTree({
-      id: 't', attrs: 'data-x="1"', selected: 'c', expanded: new Set(['p']),
-      items: [{ id: 'p', label: 'P', icon: '<svg></svg>', children: [{ id: 'c', label: 'C' }] }],
-    });
-    assert.ok(html.includes('<ul data-bn="tree" id="t" role="tree" data-x="1">'));
-    assert.ok(html.includes('role="treeitem" tabindex="0" aria-expanded="true" aria-selected="false" data-node-id="p" data-level="0"'));
-    assert.ok(html.includes('aria-label="Collapse" type="button">▾</button><span data-bn="tree-icon"><svg></svg></span>'));
-    assert.ok(html.includes('<ul data-bn="tree-children" role="group"><li data-bn="tree-item" role="treeitem" tabindex="-1" aria-selected="true" data-node-id="c" data-level="1"><div data-bn="tree-item-content" data-selected>'));
-  });
-
-  it('the first item in document order is tabindex="0"; every other item is tabindex="-1" (roving tabindex)', () => {
-    const html = renderTree({
-      expanded: new Set(['p']),
-      items: [
-        { id: 'p', label: 'P', children: [{ id: 'c', label: 'C' }] },
-        { id: 'q', label: 'Q' },
-      ],
-    });
-    // The roving tabindex sits on the element that carries role="treeitem".
-    assert.ok(html.includes('<li data-bn="tree-item" role="treeitem" tabindex="0"'));
-    assert.equal((html.match(/tabindex="0"/g) || []).length, 1);
-    assert.equal((html.match(/tabindex="-1"/g) || []).length, 2);
-  });
-
-  it('escapes labels, node ids and tree id', () => {
-    assertEscaped(renderTree({ id: XSS, items: [{ id: XSS, label: XSS }] }));
-  });
-
-  it('leaf nodes omit aria-expanded; parents carry it', () => {
-    const html = renderTree({ items: [{ id: 'p', label: 'P', children: [{ id: 'c', label: 'C' }] }] });
-    assert.ok(!html.includes('aria-expanded="undefined"'));
-    assert.ok(html.includes('aria-expanded="false"'));
-    assert.ok(!renderTree({ items: [{ id: 'leaf', label: 'L' }] }).includes('aria-expanded'));
-  });
-
-  it('collapsed parents render their children in a hidden group so the client can expand them', () => {
-    const html = renderTree({ items: [{ id: 'p', label: 'P', children: [{ id: 'c', label: 'Hidden' }] }] });
-    assert.ok(html.includes('<ul data-bn="tree-children" role="group" hidden><li data-bn="tree-item" role="treeitem" tabindex="-1" aria-selected="false" data-node-id="c" data-level="1">'));
-    assert.ok(html.includes('Hidden'));
-    assert.ok(html.includes('aria-label="Expand"'));
-    const expanded = renderTree({ items: [{ id: 'p', label: 'P', children: [{ id: 'c', label: 'Shown' }] }], expanded: new Set(['p']) });
-    assert.ok(expanded.includes('<ul data-bn="tree-children" role="group"><li'));
-    assert.ok(!renderTree({ items: [{ id: 'leaf', label: 'L' }] }).includes('tree-children'));
-  });
-});
-
-describe('TreeGrid — hardening', () => {
-  it('renders with minimal options', () => {
-    const html = renderTreeGrid({ id: 'tg' });
-    assert.ok(html.startsWith('<table data-bn="treegrid" id="tg" role="treegrid">'));
-  });
-
-  it('renders with all options', () => {
-    const html = renderTreeGrid({
-      id: 'tg', attrs: 'data-x="1"', expanded: new Set(['p']),
-      columns: [{ key: 'name', label: 'Name' }, { key: 'size', label: 'Size' }],
-      items: [{ id: 'p', name: 'Parent', size: 1, children: [{ id: 'c', name: 'Child', size: 2 }] }],
-    });
-    assert.ok(html.includes('role="treegrid" data-x="1">'));
-    assert.ok(html.includes('<th scope="col">Name</th><th scope="col">Size</th>'));
-    assert.ok(html.includes('data-node-id="p" aria-level="1" aria-expanded="true" role="row" tabindex="0"><td><span data-level="0">▾ </span>Parent</td><td>1</td></tr>'));
-    assert.ok(html.includes('data-node-id="c" aria-level="2" role="row" tabindex="-1"><td><span data-level="1">    </span>Child</td><td>2</td></tr>'));
-  });
-
-  it('escapes column labels, cell values and ids', () => {
-    assertEscaped(renderTreeGrid({ id: XSS, columns: [{ key: 'n', label: XSS }], items: [{ id: XSS, n: XSS }] }));
-  });
-
-  it('leaf rows omit aria-expanded', () => {
-    const html = renderTreeGrid({ columns: [{ key: 'n', label: 'N' }], items: [{ n: 'leaf' }] });
-    assert.ok(!html.includes('aria-expanded'));
-    assert.ok(html.includes('aria-level="1"'));
-  });
-
-  it('the first row is tabindex="0"; every other row is tabindex="-1" (roving tabindex)', () => {
-    const html = renderTreeGrid({
-      expanded: new Set(['p']),
-      columns: [{ key: 'n', label: 'N' }],
-      items: [
-        { id: 'p', n: 'Parent', children: [{ id: 'c', n: 'Child' }] },
-        { id: 'q', n: 'Q' },
-      ],
-    });
-    assert.ok(html.includes('data-node-id="p" aria-level="1" aria-expanded="true" role="row" tabindex="0">'));
-    assert.equal((html.match(/tabindex="0"/g) || []).length, 1);
-    assert.equal((html.match(/tabindex="-1"/g) || []).length, 2);
-  });
-});
-
-describe('VirtualList — hardening', () => {
-  it('renders with minimal options', () => {
-    const html = renderVirtualList({ id: 'v' });
-    assert.ok(
-      html.includes(
-        '<div data-bn="virtualizer" id="v" tabindex="0" role="region" aria-label="Scrollable list" style="height:400px;overflow:auto">',
-      ),
-    );
-    assert.ok(html.includes('data-item-height="40" data-total="0"'));
-  });
-
-  it('renders only the visible window plus overscan', () => {
-    const items = Array.from({ length: 100 }, (_, i) => `i${i}`);
-    const html = renderVirtualList({ items, itemHeight: 10, containerHeight: 50, overscan: 1 });
-    assert.equal((html.match(/data-bn="virtual-item"/g) || []).length, 7);
-  });
-
-  it('default renderItem escapes items', () => {
-    assertEscaped(renderVirtualList({ items: [XSS] }));
-    assertEscaped(renderVirtualList({ id: XSS }));
-  });
-
-  it('custom renderItem is an HTML slot', () => {
-    assert.ok(renderVirtualList({ items: ['a'], renderItem: i => `<li>${i}</li>` }).includes('<li>a</li>'));
-  });
-});
-
-describe('Avatar — hardening', () => {
-  it('with an image the wrapper has no role and the img carries alt', () => {
-    const html = renderAvatar({ src: '/a.png', name: 'Jane Doe' });
-    assert.equal(html, '<span data-bn="avatar" data-size="default" data-shape="circle"><img src="/a.png" alt="Jane Doe" data-bn="avatar-img"></span>');
-    assert.ok(!html.includes('role="img"'));
-  });
-
-  it('without an image the wrapper is role="img" with an aria-label', () => {
-    const html = renderAvatar({ name: 'Jane Doe' });
-    assert.ok(html.includes('role="img" aria-label="Jane Doe"'));
-    assert.ok(html.includes('<span data-bn="avatar-initials">JD</span>'));
-  });
-
-  it('renders with all options', () => {
-    const html = renderAvatar({ src: '/a.png', alt: 'Alt', name: 'N', size: 'lg', shape: 'square', attrs: 'data-x="1"' });
-    assert.ok(html.includes('data-size="lg" data-shape="square" data-x="1"><img src="/a.png" alt="Alt"'));
-  });
-
-  it('escapes src, alt, name, size and shape', () => {
-    assertEscaped(renderAvatar({ src: XSS, alt: XSS, size: XSS, shape: XSS }));
-    assertEscaped(renderAvatar({ name: XSS, size: XSS }));
-  });
-
-  it('falls back to an Avatar label', () => {
-    assert.ok(renderAvatar().includes('aria-label="Avatar"'));
-  });
-});
-
-describe('Calendar — hardening', () => {
-  it('escapes event title, assignee, ids, status, color and empty message', () => {
-    assertEscaped(renderCalendar({
-      id: XSS, startDate: '2025-06-02',
-      events: [{ id: XSS, title: XSS, assignee: XSS, status: XSS, color: XSS, start: '2025-06-02T09:00', end: '2025-06-02T10:00' }],
-    }));
-    assertEscaped(renderCalendar({ startDate: '2025-06-02', emptyMessage: XSS }));
-  });
-
-  it('interprets a date-only startDate as local midnight in every timezone', () => {
-    const html = renderCalendar({ startDate: '2025-06-02T00:00' });
-    assert.ok(html.includes('data-date="2025-06-02">Mon 6/2</div>'));
-    assert.ok(html.includes('data-date="2025-06-08">Sun 6/8</div>'));
-    assert.equal(renderCalendar({ startDate: '2025-06-02', id: 'c' }), renderCalendar({ startDate: '2025-06-02T00:00', id: 'c' }));
-  });
-
-  it('places an event that crosses midnight in the column of its local start day', () => {
-    const html = renderCalendar({
-      startDate: '2025-06-02',
-      hours: { start: 0, end: 24 },
-      events: [{ id: 'late', title: 'Late', start: '2025-06-02T23:30', end: '2025-06-03T00:30' }],
-    });
-    const monday = html.slice(html.indexOf('data-bn="calendar-day-column" data-date="2025-06-02"'), html.indexOf('data-bn="calendar-day-column" data-date="2025-06-03"'));
-    assert.ok(monday.includes('data-event-id="late"'));
-    assert.ok(monday.includes('grid-row: 24 / span 1; --number-calendar-event-rows: 1; --number-calendar-event-lead: 0.5; --number-calendar-event-trail: 0;'));
-  });
-
-  it('renders with all options', () => {
-    const html = renderCalendar({
-      id: 'cal', attrs: 'data-x="1"', startDate: '2025-06-02', hours: { start: 8, end: 10 }, emptyMessage: 'none',
-      events: [{ id: 'e', title: 'T', start: '2025-06-02T08:00', end: '2025-06-02T09:00', status: 'done', color: 'red', assignee: 'Ann' }],
-    });
-    assert.ok(html.includes('<div data-bn="calendar" id="cal" data-x="1">'));
-    assert.ok(html.includes('--number-calendar-hours: 2;'));
-    assert.ok(html.includes('data-status="done" title="T" style="grid-row: 1 / span 1; --color-text-calendar-event: red;"'));
-    assert.ok(html.includes('<span data-bn="calendar-event-assignee">Ann</span>'));
-    assert.ok(!html.includes('calendar-empty'));
-  });
-
-  it('uses a deterministic id', () => {
-    resetIds();
-    assert.ok(renderCalendar({ startDate: '2025-06-02' }).includes('id="bn-calendar-1"'));
-  });
-});
-
-describe('PipelineBlock — hardening', () => {
-  it('renders with minimal options', () => {
-    const html = renderPipelineBlock({ id: 'b', title: 'T' });
-    assert.ok(html.startsWith('<div data-bn="pipeline-block" draggable="true" tabindex="0" data-block-id="b">'));
-    assert.ok(!html.includes('subtitle'));
-  });
-
-  it('renders with all options without a stray space', () => {
-    const html = renderPipelineBlock({ id: 'b', title: 'T', subtitle: 'S', status: 'hot', attrs: 'data-x="1"' });
-    assert.ok(html.startsWith('<div data-bn="pipeline-block" draggable="true" tabindex="0" data-block-id="b" data-status="hot" data-x="1">'));
-    assert.ok(html.includes('<span data-bn="pipeline-block-subtitle">S</span>'));
-  });
-
-  it('escapes id, title, subtitle and status', () => {
-    assertEscaped(renderPipelineBlock({ id: XSS, title: XSS, subtitle: XSS, status: XSS }));
-  });
-});
-
-describe('Pipeline — hardening', () => {
-  it('renders with minimal options', () => {
-    resetIds();
-    assert.ok(renderPipeline().startsWith('<div data-bn="pipeline" id="bn-pipeline-1">'));
-  });
-
-  it('escapes column and card fields', () => {
-    assertEscaped(renderPipeline({
-      id: XSS,
-      columns: [{ id: XSS, title: XSS }],
-      cards: [{ id: XSS, columnId: XSS, title: XSS, subtitle: XSS, description: XSS, status: XSS }],
-    }));
-    assertEscaped(renderPipeline({ columns: [{ id: 'a', title: 'A' }], emptyMessage: XSS }));
-  });
-
-  it('cards are draggable, focusable articles titled for hover and described by the wrapper\'s instructions', () => {
-    const html = renderPipeline({ id: 'p', columns: [{ id: 'a', title: 'A' }], cards: [{ id: 'c', columnId: 'a', title: 'Card' }] });
-    assert.ok(html.includes('<article data-bn="pipeline-card" data-card-id="c" draggable="true" tabindex="0" aria-describedby="p-help" title="Card">'));
-    assert.ok(html.includes('<p data-bn="pipeline-help" id="p-help">Press Enter or Space to pick up, Up and Down to reorder, Left and Right to change column, Enter to drop, Escape to cancel; or tap the card, then a column.</p>'));
-    assert.ok(html.includes('<div data-bn="pipeline-status" aria-live="polite" aria-atomic="true"></div>'));
-  });
-});
-
-describe('Drag and drop init', () => {
-  it('initCalendarDragDrop binds the five drag events plus click and keydown, and destroy unbinds them', () => {
-    const el = fakeContainer();
-    const handle = initCalendarDragDrop(el, {});
-    assert.deepEqual([...el.listeners.keys()].sort(), ['click', 'dragend', 'dragleave', 'dragover', 'dragstart', 'drop', 'keydown']);
-    handle.destroy();
-    assert.equal(el.listeners.size, 0);
-  });
-
-  it('initPipelineDragDrop binds the five drag events plus click and keydown, and destroy unbinds them', () => {
-    const el = fakeContainer();
-    const handle = initPipelineDragDrop(el, {});
-    assert.deepEqual([...el.listeners.keys()].sort(), ['click', 'dragend', 'dragleave', 'dragover', 'dragstart', 'drop', 'keydown']);
-    handle.destroy();
-    assert.equal(el.listeners.size, 0);
-  });
-
-  it('calendar drop reports the slot date/hour and drag payload', () => {
-    const el = fakeContainer();
-    const dropped = [];
-    initCalendarDragDrop(el, { onDrop: d => dropped.push(d) });
-    const slot = { removeAttribute() {}, dataset: { date: '2025-06-02', hour: '9' } };
-    el.listeners.get('drop')({
-      preventDefault() {},
-      target: { closest: sel => (sel === '[data-bn="calendar-slot"]' ? slot : null) },
-      dataTransfer: { getData: () => JSON.stringify({ type: 'event', id: 'e1' }) },
-    });
-    assert.deepEqual(dropped, [{ eventId: 'e1', date: '2025-06-02', hour: 9, minute: 0, datetime: '2025-06-02T09:00', sourceType: 'event' }]);
-  });
-
-  it('calendar drop reports the minute within the slot from the pointer, snapped to 15 by default', () => {
-    const el = fakeContainer();
-    const dropped = [];
-    initCalendarDragDrop(el, { onDrop: d => dropped.push(d) });
-    const slot = { removeAttribute() {}, dataset: { date: '2025-06-02', hour: '9' }, getBoundingClientRect: () => ({ top: 100, height: 60 }) };
-    el.listeners.get('drop')({
-      preventDefault() {},
-      clientY: 135,
-      target: { closest: sel => (sel === '[data-bn="calendar-slot"]' ? slot : null) },
-      dataTransfer: { getData: () => JSON.stringify({ type: 'pipeline', id: 'b1' }) },
-    });
-    assert.deepEqual(dropped, [{ eventId: 'b1', date: '2025-06-02', hour: 9, minute: 30, datetime: '2025-06-02T09:30', sourceType: 'pipeline' }]);
-  });
-
-  it('snapMinutes: 1 reports the exact minute and the last pixel stays inside the hour', () => {
-    const el = fakeContainer();
-    const dropped = [];
-    initCalendarDragDrop(el, { onDrop: d => dropped.push(d), snapMinutes: 1 });
-    const slot = { removeAttribute() {}, dataset: { date: '2025-06-02', hour: '9' }, getBoundingClientRect: () => ({ top: 100, height: 60 }) };
-    const drop = clientY => el.listeners.get('drop')({
-      preventDefault() {},
-      clientY,
-      target: { closest: sel => (sel === '[data-bn="calendar-slot"]' ? slot : null) },
-      dataTransfer: { getData: () => JSON.stringify({ type: 'event', id: 'e' }) },
-    });
-    drop(135);
-    drop(160);
-    drop(-5);
-    assert.deepEqual(dropped.map(d => [d.minute, d.datetime]), [[35, '2025-06-02T09:35'], [59, '2025-06-02T09:59'], [0, '2025-06-02T09:00']]);
-  });
-
-  it('initCalendarDragDrop also hears dragstart from an external dragSource', () => {
-    const container = fakeContainer();
-    container.contains = () => false;
-    const palette = fakeContainer();
-    const handle = initCalendarDragDrop(container, { dragSource: palette });
-    assert.deepEqual([...container.listeners.keys()].sort(), ['click', 'dragend', 'dragleave', 'dragover', 'dragstart', 'drop', 'keydown']);
-    assert.deepEqual([...palette.listeners.keys()].sort(), ['click', 'dragend', 'dragstart', 'keydown']);
-
-    const set = [];
-    const block = { dataset: { blockId: 'opp-1' }, attrs: {}, setAttribute(k, v) { this.attrs[k] = v; } };
-    const dataTransfer = { setData: (t, v) => set.push([t, v]) };
-    palette.listeners.get('dragstart')({
-      target: { closest: sel => (sel === '[data-block-id]' ? block : null) },
-      dataTransfer,
-    });
-    assert.deepEqual(set, [['text/plain', JSON.stringify({ type: 'pipeline', id: 'opp-1' })]]);
-    assert.equal(dataTransfer.effectAllowed, 'copy');
-    assert.equal(block.attrs['data-dragging'], '');
-
-    handle.destroy();
-    assert.equal(container.listeners.size, 0);
-    assert.equal(palette.listeners.size, 0);
-  });
-
-  it('a dragSource that contains the calendar does not double-handle the calendar\'s own events', () => {
-    const container = fakeContainer();
-    container.contains = () => true;
-    const layout = fakeContainer();
-    initCalendarDragDrop(container, { dragSource: layout });
-    let sets = 0;
-    layout.listeners.get('dragstart')({
-      target: { closest: () => ({ dataset: { eventId: 'e1' }, setAttribute() {} }) },
-      dataTransfer: { setData() { sets += 1; } },
-    });
-    assert.equal(sets, 0);
-  });
-
-  it('dragSource === container binds nothing twice', () => {
-    const el = fakeContainer();
-    const handle = initCalendarDragDrop(el, { dragSource: el });
-    assert.equal(el.listeners.size, 7);
-    handle.destroy();
-    assert.equal(el.listeners.size, 0);
-  });
-
-  it('malformed drag data is ignored', () => {
-    const el = fakeContainer();
-    let calls = 0;
-    initPipelineDragDrop(el, { onCardMove: () => { calls += 1; } });
-    const cardArea = { removeAttribute() {}, closest: () => ({ dataset: { columnId: 'new' } }) };
-    el.listeners.get('drop')({
-      preventDefault() {},
-      target: { closest: sel => (sel === '[data-bn="pipeline-column-cards"]' ? cardArea : null) },
-      dataTransfer: { getData: () => 'not json' },
-    });
-    assert.equal(calls, 0);
-  });
-
-  it('pipeline drop reports card and target column', () => {
-    const el = fakeContainer();
-    const moves = [];
-    initPipelineDragDrop(el, { onCardMove: m => moves.push(m) });
-    const cardArea = { removeAttribute() {}, closest: () => ({ dataset: { columnId: 'won' } }), querySelectorAll: () => [] };
-    el.listeners.get('drop')({
-      preventDefault() {},
-      target: { closest: sel => (sel === '[data-bn="pipeline-column-cards"]' ? cardArea : null) },
-      dataTransfer: { getData: () => JSON.stringify({ type: 'pipeline-card', cardId: 'c1' }) },
-    });
-    assert.deepEqual(moves, [{ cardId: 'c1', targetColumnId: 'won', position: 0 }]);
-  });
-
-  describe('pipeline drop position', () => {
-    const card = (id, top) => ({ dataset: { cardId: id }, getBoundingClientRect: () => ({ top, height: 40 }) });
-    function board(cards, { overId = null, clientY } = {}) {
-      const over = cards.find(c => c.dataset.cardId === overId) ?? null;
-      const cardArea = { removeAttribute() {}, closest: () => ({ dataset: { columnId: 'won' } }), querySelectorAll: () => cards };
-      return {
-        preventDefault() {},
-        clientY,
-        target: { closest: sel => (sel === '[data-bn="pipeline-column-cards"]' ? cardArea : sel === '[data-card-id]' ? over : null) },
-        dataTransfer: { getData: () => JSON.stringify({ type: 'pipeline-card', cardId: 'dragged' }) },
-      };
-    }
-    const position = event => {
-      const el = fakeContainer();
-      const moves = [];
-      initPipelineDragDrop(el, { onCardMove: m => moves.push(m) });
-      el.listeners.get('drop')(event);
-      return moves[0].position;
-    };
-
-    it('is the column length when dropped on empty space', () => {
-      assert.equal(position(board([card('a', 0), card('b', 40)])), 2);
-    });
-
-    it('is the index of the card under the pointer, +1 in its lower half', () => {
-      const cards = [card('a', 0), card('b', 40), card('c', 80)];
-      assert.equal(position(board(cards, { overId: 'b', clientY: 45 })), 1);
-      assert.equal(position(board(cards, { overId: 'b', clientY: 75 })), 2);
-      assert.equal(position(board(cards, { overId: 'a', clientY: 5 })), 0);
-      assert.equal(position(board(cards, { overId: 'c', clientY: 119 })), 3);
-    });
-
-    it('excludes the dragged card from the count when it is already in the column', () => {
-      const cards = [card('a', 0), card('dragged', 40), card('c', 80)];
-      assert.equal(position(board(cards, { overId: 'c', clientY: 85 })), 1);
-      assert.equal(position(board(cards, { overId: 'c', clientY: 115 })), 2);
-      assert.equal(position(board(cards)), 2);
-      assert.equal(position(board(cards, { overId: 'dragged', clientY: 60 })), 1, 'dropped on itself keeps its index');
-    });
-
-    it('falls back to the upper half when no geometry is available', () => {
-      const cards = [{ dataset: { cardId: 'a' } }, { dataset: { cardId: 'b' } }];
-      assert.equal(position(board(cards, { overId: 'b' })), 1);
-    });
-  });
-});
-
-describe('Select, then place', () => {
-  /**
-   * A minimal DOM: attribute-only selectors (`[a]`, `[a="v"]`, compounds and
-   * comma lists), closest/querySelector/querySelectorAll over a tree, dataset
-   * derived from data-* attributes, and events that bubble to every ancestor's
-   * listeners with `target` set to the node they were fired on.
-   */
-  function matches(node, selector) {
-    return selector.split(',').some(part => {
-      const conds = [...part.trim().matchAll(/\[([\w-]+)(?:="([^"]*)")?\]/g)];
-      return conds.length > 0 && conds.every(([, name, value]) => (value === undefined ? node.attrs.has(name) : node.attrs.get(name) === value));
-    });
-  }
-  function node(attributes = {}, children = []) {
-    const attrs = new Map(Object.entries(attributes));
-    const listeners = new Map();
-    const el = {
-      attrs,
-      listeners,
-      children,
-      parent: null,
-      textContent: attributes.text ?? '',
-      rect: null,
-      get dataset() {
-        const out = {};
-        for (const [k, v] of attrs) if (k.startsWith('data-')) out[k.slice(5).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = v;
-        return out;
-      },
-      hasAttribute: name => attrs.has(name),
-      getAttribute: name => attrs.get(name) ?? null,
-      setAttribute(name, value) { attrs.set(name, value); },
-      removeAttribute(name) { attrs.delete(name); },
-      addEventListener(type, fn) { listeners.set(type, fn); },
-      removeEventListener(type, fn) { if (listeners.get(type) === fn) listeners.delete(type); },
-      matches: selector => matches(el, selector),
-      closest(selector) {
-        let n = el;
-        while (n) { if (n.matches(selector)) return n; n = n.parent; }
-        return null;
-      },
-      querySelectorAll(selector) {
-        const out = [];
-        for (const child of children) {
-          if (child.matches(selector)) out.push(child);
-          out.push(...child.querySelectorAll(selector));
-        }
-        return out;
-      },
-      querySelector(selector) { return el.querySelectorAll(selector)[0] ?? null; },
-      contains(other) { let n = other; while (n) { if (n === el) return true; n = n.parent; } return false; },
-    };
-    for (const child of children) child.parent = el;
-    return el;
-  }
-  /** Dispatch on `target`, bubbling to every ancestor's listener of that type. */
-  function fire(target, type, extra = {}) {
-    const prevented = [];
-    const event = { type, target, key: extra.key, clientY: extra.clientY, preventDefault() { prevented.push(type); }, ...extra };
-    for (let n = target; n; n = n.parent) n.listeners.get(type)?.(event);
-    return prevented.length > 0;
-  }
-
-  /** The shape renderCalendar emits for 2025-06-02..08, hours 8–12, one event Tue 9:30. */
-  function calendar() {
-    const dates = ['2025-06-02', '2025-06-03', '2025-06-04', '2025-06-05', '2025-06-06', '2025-06-07', '2025-06-08'];
-    const slots = {};
-    const eventBlock = node({ 'data-bn': 'calendar-event', tabindex: '0', 'data-date': '2025-06-03', 'data-hour': '9', 'data-minute': '30', 'data-event-id': 'ev', title: 'Fix wiring' });
-    const columns = dates.map(date => {
-      const daySlots = [];
-      for (let h = 8; h < 12; h++) {
-        const slot = node({ 'data-bn': 'calendar-slot', 'data-date': date, 'data-hour': String(h) });
-        slot.getBoundingClientRect = () => ({ top: 100, height: 60 });
-        daySlots.push(slot);
-        slots[`${date}:${h}`] = slot;
-      }
-      return node({ 'data-bn': 'calendar-day-column', 'data-date': date }, date === '2025-06-03' ? [...daySlots, eventBlock] : daySlots);
-    });
-    const status = node({ 'data-bn': 'calendar-status', 'aria-live': 'polite' });
-    const container = node({ 'data-bn': 'calendar' }, [node({ 'data-bn': 'calendar-grid' }, columns), status]);
-    return { container, eventBlock, status, slotFor: (date, hour) => slots[`${date}:${hour}`] };
-  }
-
-  it('renders events focusable, described by one shared instruction node, with a polite live region', () => {
-    const html = renderCalendar({ id: 'cal', startDate: '2025-06-02', events: [{ id: 'ev', title: 'T', start: '2025-06-03T09:30', end: '2025-06-03T10:30' }] });
-    assert.ok(html.includes('<div data-bn="calendar-event" draggable="true" tabindex="0" aria-describedby="cal-help" data-date="2025-06-03" data-hour="9" data-minute="30" data-event-id="ev" title="T"'));
-    assert.equal((html.match(/data-bn="calendar-help"/g) || []).length, 1);
-    assert.ok(html.includes('<p data-bn="calendar-help" id="cal-help">Press Enter or Space to pick up, arrow keys to move by time and day, Enter to drop, Escape to cancel; or tap the event, then a time slot.</p>'));
-    assert.ok(html.includes('<div data-bn="calendar-status" aria-live="polite" aria-atomic="true"></div>'));
-  });
-
-  it('reschedules by tap-to-pick then tap-to-place, with no drag events', () => {
-    const { container, eventBlock, status, slotFor } = calendar();
-    const drops = [];
-    initCalendarDragDrop(container, { onDrop: d => drops.push(d) });
-    fire(eventBlock, 'click');
-    assert.ok(eventBlock.hasAttribute('data-picked'), 'the tapped event is marked picked');
-    assert.match(status.textContent, /Picked up Fix wiring/);
-    fire(slotFor('2025-06-03', 14) ?? slotFor('2025-06-03', 11), 'click', { clientY: 100 });
-    assert.equal(drops.length, 1);
-    assert.deepEqual(
-      { eventId: drops[0].eventId, date: drops[0].date, hour: drops[0].hour, sourceType: drops[0].sourceType },
-      { eventId: 'ev', date: '2025-06-03', hour: 11, sourceType: 'event' },
-    );
-    assert.equal(drops[0].datetime, '2025-06-03T11:00');
-    assert.ok(!eventBlock.hasAttribute('data-picked'), 'the pick is released after the drop');
-    assert.match(status.textContent, /Moved Fix wiring to Tue 6\/3 at 11:00 AM/);
-  });
-
-  it('a tap on a slot reports the minute from the tap position, like a drop', () => {
-    const { container, eventBlock, slotFor } = calendar();
-    const drops = [];
-    initCalendarDragDrop(container, { onDrop: d => drops.push(d) });
-    fire(eventBlock, 'click');
-    fire(slotFor('2025-06-05', 10), 'click', { clientY: 135 });
-    assert.deepEqual(drops, [{ eventId: 'ev', date: '2025-06-05', hour: 10, minute: 30, datetime: '2025-06-05T10:30', sourceType: 'event' }]);
-  });
-
-  it('a tap on a slot with nothing picked, or a second tap on the picked event, drops nothing', () => {
-    const { container, eventBlock, status, slotFor } = calendar();
-    const drops = [];
-    initCalendarDragDrop(container, { onDrop: d => drops.push(d) });
-    fire(slotFor('2025-06-02', 8), 'click');
-    fire(eventBlock, 'click');
-    fire(eventBlock, 'click');
-    assert.ok(!eventBlock.hasAttribute('data-picked'));
-    assert.match(status.textContent, /Cancelled moving Fix wiring/);
-    fire(slotFor('2025-06-02', 8), 'click');
-    assert.equal(drops.length, 0);
-  });
-
-  it('reschedules from the keyboard', () => {
-    const { container, eventBlock, status, slotFor } = calendar();
-    const drops = [];
-    initCalendarDragDrop(container, { onDrop: d => drops.push(d) });
-    assert.ok(fire(eventBlock, 'keydown', { key: 'Enter' }), 'Enter on an event is consumed');
-    assert.ok(eventBlock.hasAttribute('data-picked'));
-    assert.ok(slotFor('2025-06-03', 9).hasAttribute('data-drop-target'), 'the pending target starts at the event\'s own slot');
-    fire(eventBlock, 'keydown', { key: 'ArrowRight' });
-    assert.ok(slotFor('2025-06-04', 9).hasAttribute('data-drop-target'));
-    assert.ok(!slotFor('2025-06-03', 9).hasAttribute('data-drop-target'));
-    assert.match(status.textContent, /Wed 6\/4 at 9:30 AM/);
-    fire(eventBlock, 'keydown', { key: 'Enter' });
-    assert.deepEqual(drops, [{ eventId: 'ev', date: '2025-06-04', hour: 9, minute: 30, datetime: '2025-06-04T09:30', sourceType: 'event' }]);
-    assert.ok(!eventBlock.hasAttribute('data-picked'));
-    assert.ok(!slotFor('2025-06-04', 9).hasAttribute('data-drop-target'));
-  });
-
-  it('ArrowUp/ArrowDown move by snapMinutes and carry across the hour; moves off the grid are ignored', () => {
-    const { container, eventBlock, slotFor } = calendar();
-    const drops = [];
-    initCalendarDragDrop(container, { onDrop: d => drops.push(d) });
-    fire(eventBlock, 'keydown', { key: ' ' });
-    fire(eventBlock, 'keydown', { key: 'ArrowDown' });
-    fire(eventBlock, 'keydown', { key: 'ArrowDown' });
-    assert.ok(slotFor('2025-06-03', 10).hasAttribute('data-drop-target'), '9:30 + 15 + 15 = 10:00');
-    for (let i = 0; i < 12; i++) fire(eventBlock, 'keydown', { key: 'ArrowDown' });
-    assert.ok(slotFor('2025-06-03', 11).hasAttribute('data-drop-target'), 'stops at the last rendered hour');
-    for (let i = 0; i < 20; i++) fire(eventBlock, 'keydown', { key: 'ArrowUp' });
-    assert.ok(slotFor('2025-06-03', 8).hasAttribute('data-drop-target'), 'stops at the first rendered hour');
-    for (let i = 0; i < 3; i++) fire(eventBlock, 'keydown', { key: 'ArrowLeft' });
-    assert.ok(slotFor('2025-06-02', 8).hasAttribute('data-drop-target'), 'stops at the first rendered day');
-    fire(eventBlock, 'keydown', { key: ' ' });
-    assert.deepEqual(drops.map(d => d.datetime), ['2025-06-02T08:00']);
-  });
-
-  it('Escape cancels a pick and clears the marks; unpicked, it is not consumed', () => {
-    const { container, eventBlock, status, slotFor } = calendar();
-    const drops = [];
-    initCalendarDragDrop(container, { onDrop: d => drops.push(d) });
-    assert.equal(fire(eventBlock, 'keydown', { key: 'Escape' }), false);
-    fire(eventBlock, 'keydown', { key: 'Enter' });
-    assert.equal(fire(eventBlock, 'keydown', { key: 'Escape' }), true);
-    assert.ok(!eventBlock.hasAttribute('data-picked'));
-    assert.ok(!slotFor('2025-06-03', 9).hasAttribute('data-drop-target'));
-    assert.match(status.textContent, /Cancelled/);
-    fire(eventBlock, 'keydown', { key: 'Enter' });
-    fire(eventBlock, 'keydown', { key: 'ArrowRight' });
-    fire(eventBlock, 'keydown', { key: 'Escape' });
-    fire(eventBlock, 'keydown', { key: 'Enter' });
-    fire(eventBlock, 'keydown', { key: 'Enter' });
-    assert.deepEqual(drops.map(d => d.date), ['2025-06-03'], 'a fresh pick starts again from the event\'s own slot');
-  });
-
-  it('a drag started while an event is picked cancels the pick', () => {
-    const { container, eventBlock, slotFor } = calendar();
-    initCalendarDragDrop(container, {});
-    fire(eventBlock, 'click');
-    fire(eventBlock, 'dragstart', { dataTransfer: { setData() {} } });
-    assert.ok(!eventBlock.hasAttribute('data-picked'));
-    assert.ok(eventBlock.hasAttribute('data-dragging'));
-    assert.ok(!slotFor('2025-06-03', 9).hasAttribute('data-drop-target'));
-    fire(container, 'dragend');
-    assert.ok(!eventBlock.hasAttribute('data-dragging'));
-  });
-
-  it('a pipeline block in an external dragSource is picked by tap or Enter and placed on a calendar slot', () => {
-    const { container, status, slotFor } = calendar();
-    const block = node({ 'data-bn': 'pipeline-block', tabindex: '0', 'data-block-id': 'job-7', title: 'Job 7' });
-    const palette = node({ 'data-bn-sidebar': '' }, [block]);
-    const drops = [];
-    initCalendarDragDrop(container, { onDrop: d => drops.push(d), dragSource: palette });
-    fire(block, 'click');
-    assert.ok(block.hasAttribute('data-picked'));
-    fire(slotFor('2025-06-06', 9), 'click', { clientY: 100 });
-    assert.deepEqual(drops, [{ eventId: 'job-7', date: '2025-06-06', hour: 9, minute: 0, datetime: '2025-06-06T09:00', sourceType: 'pipeline' }]);
-    assert.ok(!block.hasAttribute('data-picked'));
-
-    fire(block, 'keydown', { key: 'Enter' });
-    assert.ok(slotFor('2025-06-02', 8).hasAttribute('data-drop-target'), 'a block has no slot of its own: the target starts at the first slot');
-    fire(block, 'keydown', { key: 'ArrowDown' });
-    fire(block, 'keydown', { key: 'ArrowRight' });
-    fire(block, 'keydown', { key: 'Enter' });
-    assert.equal(drops[1].datetime, '2025-06-03T08:15');
-    assert.match(status.textContent, /Moved Job 7 to Tue 6\/3 at 8:15 AM/);
-  });
-
-  it('destroy() unbinds the tap and keyboard paths too', () => {
-    const { container, eventBlock, slotFor } = calendar();
-    const drops = [];
-    initCalendarDragDrop(container, { onDrop: d => drops.push(d) }).destroy();
-    assert.equal(container.listeners.size, 0);
-    fire(eventBlock, 'click');
-    fire(slotFor('2025-06-03', 10), 'click');
-    fire(eventBlock, 'keydown', { key: 'Enter' });
-    assert.equal(drops.length, 0);
-    assert.ok(!eventBlock.hasAttribute('data-picked'));
-  });
-
-  /** The shape renderPipeline emits: two columns, cards a/b in the first, c in the second. */
-  function pipeline() {
-    const card = (id, top) => {
-      const el = node({ 'data-bn': 'pipeline-card', tabindex: '0', 'data-card-id': id, title: `Card ${id.toUpperCase()}` });
-      el.getBoundingClientRect = () => ({ top, height: 40 });
-      return el;
-    };
-    const cards = { a: card('a', 0), b: card('b', 40), c: card('c', 0) };
-    const column = (id, title, kids) => {
-      const area = node({ 'data-bn': 'pipeline-column-cards' }, kids);
-      return { column: node({ 'data-bn': 'pipeline-column', 'data-column-id': id }, [node({ 'data-bn': 'pipeline-column-header' }, [node({ 'data-bn': 'pipeline-column-title', text: title })]), area]), area };
-    };
-    const first = column('new', 'New leads', [cards.a, cards.b]);
-    const second = column('won', 'Won', [cards.c]);
-    const status = node({ 'data-bn': 'pipeline-status', 'aria-live': 'polite' });
-    const container = node({ 'data-bn': 'pipeline' }, [first.column, second.column, status]);
-    return { container, cards, areas: { new: first.area, won: second.area }, status };
-  }
-
-  it('moves a pipeline card by tap-to-pick then tap-to-place', () => {
-    const { container, cards, areas, status } = pipeline();
-    const moves = [];
-    initPipelineDragDrop(container, { onCardMove: m => moves.push(m) });
-    fire(cards.a, 'click');
-    assert.ok(cards.a.hasAttribute('data-picked'));
-    assert.ok(areas.new.hasAttribute('data-drop-target'));
-    fire(areas.won, 'click');
-    assert.deepEqual(moves, [{ cardId: 'a', targetColumnId: 'won', position: 1 }]);
-    assert.ok(!cards.a.hasAttribute('data-picked'));
-    assert.ok(!areas.new.hasAttribute('data-drop-target'));
-    assert.match(status.textContent, /Moved Card A to Won, position 2/);
-
-    fire(cards.b, 'click');
-    fire(cards.c, 'click', { clientY: 5 });
-    assert.deepEqual(moves[1], { cardId: 'b', targetColumnId: 'won', position: 0 }, 'a tap on a card in the upper half drops before it');
-  });
-
-  it('moves a pipeline card from the keyboard', () => {
-    const { container, cards, areas, status } = pipeline();
-    const moves = [];
-    initPipelineDragDrop(container, { onCardMove: m => moves.push(m) });
-    fire(cards.b, 'keydown', { key: 'Enter' });
-    assert.ok(cards.b.hasAttribute('data-picked'));
-    assert.match(status.textContent, /Picked up Card B/);
-    fire(cards.b, 'keydown', { key: 'ArrowRight' });
-    assert.ok(areas.won.hasAttribute('data-drop-target'));
-    assert.ok(!areas.new.hasAttribute('data-drop-target'));
-    assert.match(status.textContent, /Won, position 2 of 2/);
-    fire(cards.b, 'keydown', { key: 'ArrowUp' });
-    assert.match(status.textContent, /Won, position 1 of 2/);
-    fire(cards.b, 'keydown', { key: 'ArrowUp' });
-    assert.match(status.textContent, /position 1 of 2/, 'clamped at the top');
-    fire(cards.b, 'keydown', { key: 'ArrowRight' });
-    assert.ok(areas.won.hasAttribute('data-drop-target'), 'no column to the right: stays put');
-    fire(cards.b, 'keydown', { key: 'Enter' });
-    assert.deepEqual(moves, [{ cardId: 'b', targetColumnId: 'won', position: 0 }]);
-    assert.ok(!cards.b.hasAttribute('data-picked'));
-
-    fire(cards.a, 'keydown', { key: ' ' });
-    fire(cards.a, 'keydown', { key: 'ArrowDown' });
-    fire(cards.a, 'keydown', { key: 'Escape' });
-    assert.ok(!cards.a.hasAttribute('data-picked'));
-    assert.ok(!areas.new.hasAttribute('data-drop-target'));
-    assert.equal(moves.length, 1);
-  });
-});
-
-describe('LayoutGrid — hardening', () => {
-  it('renders with minimal options', () => {
-    const html = renderLayoutGrid();
-    assert.ok(html.startsWith('<div data-bn="layout-grid" id="layout-grid" style="display:grid;grid-template-columns:repeat(12,1fr);gap:1rem">'));
-  });
-
-  it('renders with all options', () => {
-    const html = renderLayoutGrid({ id: 'g', columns: 4, gap: '2px', minCellHeight: '1rem', editable: true, cells: [{ id: 'c1', label: 'L', colSpan: 2, rowSpan: 3 }, { content: '<b>x</b>' }, {}] });
-    assert.ok(html.includes('repeat(4,1fr);gap:2px'));
-    assert.ok(html.includes('data-cell-id="c1" style="grid-column: span 2; grid-row: span 3; min-height: 1rem" draggable="true">L</div>'));
-    assert.ok(html.includes('data-cell-id="cell-1"'));
-    assert.ok(html.includes('>Cell 3</div>'));
-  });
-
-  it('escapes id, cell ids, labels and style values', () => {
-    assertEscaped(renderLayoutGrid({ id: XSS, gap: XSS, columns: XSS, minCellHeight: XSS, cells: [{ id: XSS, label: XSS }] }));
-  });
-
-  it('cell content is an HTML slot', () => {
-    assert.ok(renderLayoutGrid({ cells: [{ content: '<b>x</b>' }] }).includes('><b>x</b></div>'));
-  });
-});
-
-describe('Calendar — local-date bucketing', () => {
-  const column = (html, date) => {
-    const start = html.indexOf(`data-bn="calendar-day-column" data-date="${date}"`);
-    assert.ok(start >= 0, `expected a column for ${date}`);
-    const next = html.indexOf('data-bn="calendar-day-column"', start + 1);
-    return html.slice(start, next < 0 ? undefined : next);
-  };
-  const ALL_DAY = { start: 0, end: 24 };
-
-  it('buckets a UTC ISO timestamp by its local calendar date, not its string prefix', () => {
-    const start = new Date('2025-06-03T03:00:00Z');
-    const end = new Date(start.getTime() + 60 * 60 * 1000);
-    const pad = n => String(n).padStart(2, '0');
-    const localDate = `${start.getFullYear()}-${pad(start.getMonth() + 1)}-${pad(start.getDate())}`;
-    const html = renderCalendar({
-      startDate: '2025-06-01', hours: ALL_DAY, now: null,
-      events: [{ id: 'utc', title: 'UTC', start: start.toISOString(), end: end.toISOString() }],
-    });
-    assert.equal(html.split('data-event-id="utc"').length - 1, 1, 'rendered exactly once');
-    const col = column(html, localDate);
-    assert.ok(col.includes('data-event-id="utc"'));
-    const localHour = start.getHours() + start.getMinutes() / 60;
-    assert.ok(col.includes(`grid-row: ${Math.floor(localHour) + 1} / span ${Math.ceil(localHour + 1) - Math.floor(localHour)}`));
-  });
-
-  it('timeZone buckets and positions events in that zone regardless of the runtime zone', () => {
-    const events = [{ id: 'z', title: 'Zoned', start: '2025-06-03T03:00:00Z', end: '2025-06-03T04:30:00Z' }];
-    const la = renderCalendar({ startDate: '2025-06-01', hours: ALL_DAY, now: null, timeZone: 'America/Los_Angeles', events });
-    assert.ok(column(la, '2025-06-02').includes('data-event-id="z"'));
-    assert.ok(column(la, '2025-06-02').includes('grid-row: 21 / span 2; --number-calendar-event-rows: 2; --number-calendar-event-lead: 0; --number-calendar-event-trail: 0.5;'));
-    assert.ok(!column(la, '2025-06-03').includes('data-event-id="z"'));
-    assert.ok(la.includes('8:00'), 'time label is formatted in the zone');
-
-    const tokyo = renderCalendar({ startDate: '2025-06-01', hours: ALL_DAY, now: null, timeZone: 'Asia/Tokyo', events });
-    assert.ok(column(tokyo, '2025-06-03').includes('grid-row: 13 / span 2; --number-calendar-event-rows: 2; --number-calendar-event-lead: 0; --number-calendar-event-trail: 0.5;'));
-    assert.ok(!column(tokyo, '2025-06-02').includes('data-event-id="z"'));
-  });
-
-  it('rejects an unknown timeZone with an actionable error', () => {
-    assert.throws(
-      () => renderCalendar({ startDate: '2025-06-01', timeZone: 'Mars/Olympus', events: [{ id: 'e', title: 'T', start: '2025-06-02T09:00', end: '2025-06-02T10:00' }] }),
-      /unknown timeZone "Mars\/Olympus".*IANA/
-    );
-  });
-
-  it('toLocalDate overrides the day an event is bucketed into', () => {
-    const html = renderCalendar({
-      startDate: '2025-06-01', hours: ALL_DAY, now: null,
-      toLocalDate: () => '2025-06-05',
-      events: [{ id: 'h', title: 'Hooked', start: '2025-06-02T09:00', end: '2025-06-02T10:00' }],
-    });
-    assert.ok(column(html, '2025-06-05').includes('data-event-id="h"'));
-    assert.ok(!column(html, '2025-06-02').includes('data-event-id="h"'));
-  });
-
-  it('skips events whose start cannot be parsed instead of throwing', () => {
-    const html = renderCalendar({ startDate: '2025-06-01', now: null, events: [{ id: 'bad', title: 'Bad', start: 'not a date', end: 'nope' }] });
-    assert.ok(!html.includes('data-event-id="bad"'));
-    assert.ok(!html.includes('calendar-empty'), 'the events array was not empty');
-  });
-
-  it('a moved calendar-state event (UTC ISO from toISOString) renders in the target column', () => {
-    const cal = createCalendarState({ startDate: '2025-06-02' });
-    cal.addEvent({ id: 'm', title: 'Moved', start: '2025-06-02T09:00', end: '2025-06-02T10:00' });
-    const moved = cal.moveEvent('m', '2025-06-04', 14);
-    assert.ok(moved.start.endsWith('Z'));
-    const html = renderCalendar({ startDate: '2025-06-02', hours: ALL_DAY, now: null, events: cal.events() });
-    assert.ok(column(html, '2025-06-04').includes('grid-row: 15 / span 1'));
-    assert.ok(!column(html, '2025-06-02').includes('data-event-id="m"'));
-  });
-});
-
-describe('Calendar — today marker', () => {
-  it('marks the header and column matching now with data-today and aria-current', () => {
-    const html = renderCalendar({ startDate: '2025-06-02', now: '2025-06-04' });
-    assert.ok(html.includes('<div data-bn="calendar-day-header" data-date="2025-06-04" data-today aria-current="date">Wed 6/4</div>'));
-    assert.ok(html.includes('<div data-bn="calendar-day-column" data-date="2025-06-04" data-today style="grid-column: 4">'));
-    assert.equal(html.split('data-today').length - 1, 2);
-    assert.ok(!html.includes('data-date="2025-06-03" data-today'));
-  });
-
-  it('defaults now to the current instant and accepts Date / ISO values through timeZone', () => {
-    const pad = n => String(n).padStart(2, '0');
-    const d = new Date();
-    const today = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-    const weekStart = new Date(d);
-    weekStart.setDate(d.getDate() - d.getDay());
-    const html = renderCalendar({ startDate: `${weekStart.getFullYear()}-${pad(weekStart.getMonth() + 1)}-${pad(weekStart.getDate())}` });
-    assert.ok(html.includes(`data-date="${today}" data-today`));
-
-    const zoned = renderCalendar({ startDate: '2025-06-01', timeZone: 'America/Los_Angeles', now: '2025-06-04T03:00:00Z' });
-    assert.ok(zoned.includes('data-date="2025-06-03" data-today'));
-    assert.ok(!zoned.includes('data-date="2025-06-04" data-today'));
-  });
-
-  it('now: null renders no marker', () => {
-    const html = renderCalendar({ startDate: '2025-06-02', now: null });
-    assert.ok(!html.includes('data-today'));
-    assert.ok(!html.includes('aria-current'));
-  });
-});
-
-describe('Calendar — automatic hour range', () => {
-  it('keeps 7–19 when nothing is given and no event falls outside', () => {
-    const html = renderCalendar({ startDate: '2025-06-02', now: null, events: [{ id: 'e', title: 'T', start: '2025-06-02T09:00', end: '2025-06-02T10:00' }] });
-    assert.ok(html.includes('--number-calendar-hours: 12;'));
-    assert.ok(html.includes('data-hour="7"'));
-    assert.ok(!html.includes('data-hour="6"'));
-  });
-
-  it('widens the range to cover the earliest start and latest end, clamped to 0–24', () => {
-    const html = renderCalendar({
-      startDate: '2025-06-02', now: null,
-      events: [
-        { id: 'early', title: 'Early', start: '2025-06-02T05:30', end: '2025-06-02T06:15' },
-        { id: 'late', title: 'Late', start: '2025-06-03T20:00', end: '2025-06-03T21:15' },
-      ],
-    });
-    assert.ok(html.includes('--number-calendar-hours: 17;'), 'start 5, end 22');
-    assert.ok(html.includes('data-bn="calendar-time-label" data-hour="5"'));
-    assert.ok(html.includes('data-bn="calendar-time-label" data-hour="21"'));
-    assert.ok(!html.includes('data-hour="22"'));
-    assert.ok(html.includes('data-event-id="early"') && html.includes('grid-row: 1 / span 2; --number-calendar-event-rows: 2; --number-calendar-event-lead: 0.5; --number-calendar-event-trail: 0.75;'));
-
-    const overnight = renderCalendar({ startDate: '2025-06-02', now: null, events: [{ id: 'n', title: 'N', start: '2025-06-02T23:30', end: '2025-06-03T00:30' }] });
-    assert.ok(overnight.includes('--number-calendar-hours: 24;'), 'covers the 23:30–24:00 and 0:00–0:30 segments: start 0, end 24');
-    assert.ok(overnight.includes('data-event-id="n" data-continues="after"') && overnight.includes('data-event-id="n" data-continues="before"'));
-  });
-
-  it('derives only the missing bound when one is given', () => {
-    const html = renderCalendar({
-      startDate: '2025-06-02', now: null, hours: { start: 9 },
-      events: [{ id: 'e', title: 'T', start: '2025-06-02T06:00', end: '2025-06-02T21:15' }],
-    });
-    assert.ok(html.includes('--number-calendar-hours: 13;'), 'start stays 9, end becomes 22');
-    assert.ok(!html.includes('data-hour="6"'));
-  });
-
-  it('explicit hours are honoured verbatim and an inverted range still renders one row', () => {
-    const html = renderCalendar({ startDate: '2025-06-02', now: null, hours: { start: 9, end: 12 }, events: [{ id: 'e', title: 'T', start: '2025-06-02T06:00', end: '2025-06-02T21:00' }] });
-    assert.ok(html.includes('--number-calendar-hours: 3;'));
-    assert.ok(html.includes('grid-row: 1 / span 3;"'), 'span is capped at the grid');
-    assert.ok(renderCalendar({ startDate: '2025-06-02', now: null, hours: { start: 12, end: 12 } }).includes('--number-calendar-hours: 1;'));
-  });
-});
-
-describe('Calendar — multi-day events', () => {
-  const column = (html, date) => {
-    const start = html.indexOf(`data-bn="calendar-day-column" data-date="${date}"`);
-    const next = html.indexOf('data-bn="calendar-day-column"', start + 1);
-    return html.slice(start, next < 0 ? undefined : next);
-  };
-
-  it('repeats the event in every day it covers, clipped to each day, with data-continues', () => {
-    const html = renderCalendar({
-      startDate: '2025-06-02', hours: { start: 0, end: 24 }, now: null,
-      events: [{ id: 'md', title: 'Multi', start: '2025-06-02T22:00', end: '2025-06-04T02:00', status: 'scheduled' }],
-    });
-    assert.equal(html.split('data-event-id="md"').length - 1, 3);
-    assert.ok(column(html, '2025-06-02').includes('data-event-id="md" data-continues="after" data-status="scheduled" title="Multi" style="grid-row: 23 / span 2;"'));
-    assert.ok(column(html, '2025-06-03').includes('data-event-id="md" data-continues="both" data-status="scheduled" title="Multi" style="grid-row: 1 / span 24;"'));
-    assert.ok(column(html, '2025-06-04').includes('data-event-id="md" data-continues="before" data-status="scheduled" title="Multi" style="grid-row: 1 / span 2;"'));
-  });
-
-  it('an event ending exactly at midnight gets no segment on the following day', () => {
-    const html = renderCalendar({
-      startDate: '2025-06-02', hours: { start: 0, end: 24 }, now: null,
-      events: [{ id: 'mid', title: 'Mid', start: '2025-06-02T22:00', end: '2025-06-03T00:00' }],
-    });
-    assert.equal(html.split('data-event-id="mid"').length - 1, 1);
-    assert.ok(column(html, '2025-06-02').includes('grid-row: 23 / span 2'));
-  });
-
-  it('an event that started before the week still shows its in-week days', () => {
-    const html = renderCalendar({
-      startDate: '2025-06-02', hours: { start: 0, end: 24 }, now: null,
-      events: [{ id: 'pre', title: 'Pre', start: '2025-05-31T09:00', end: '2025-06-02T12:00' }],
-    });
-    assert.ok(column(html, '2025-06-02').includes('data-event-id="pre" data-continues="before"'));
-    assert.ok(column(html, '2025-06-02').includes('grid-row: 1 / span 12'));
-  });
-
-  it('single-day events carry no data-continues', () => {
-    const html = renderCalendar({ startDate: '2025-06-02', now: null, events: [{ id: 's', title: 'S', start: '2025-06-02T09:00', end: '2025-06-02T10:00' }] });
-    assert.ok(!html.includes('data-continues'));
-  });
-});
-
-describe('Pipeline — consumer slots', () => {
-  const opts = extra => ({ id: 'p', columns: [{ id: 'new', title: 'New' }], cards: [{ id: 'c1', columnId: 'new', title: 'Acme', ...extra }] });
-
-  it('actions and footer are HTML slots', () => {
-    const html = renderPipeline(opts({ actions: '<button type="button" data-action="convert">Convert</button>', footer: '<time datetime="2025-06-02">Jun 2</time>' }));
-    assert.ok(html.includes('<div data-bn="pipeline-card-actions"><button type="button" data-action="convert">Convert</button></div>'));
-    assert.ok(html.includes('<footer data-bn="pipeline-card-footer"><time datetime="2025-06-02">Jun 2</time></footer>'));
-    const bare = renderPipeline(opts({}));
-    assert.ok(!bare.includes('pipeline-card-actions') && !bare.includes('pipeline-card-footer'));
-  });
-
-  it('badge is escaped text rendered through renderBadge with an optional variant', () => {
-    const html = renderPipeline(opts({ badge: 'Qualified', badgeVariant: 'success' }));
-    assert.ok(html.includes('<div data-bn="pipeline-card-title">Acme</div><span data-bn="badge" data-variant="success">Qualified</span>'));
-    assert.ok(renderPipeline(opts({ badge: 'New' })).includes('data-variant="default">New</span>'));
-    assertEscaped(renderPipeline(opts({ badge: XSS })));
-    assertEscaped(renderPipeline(opts({ badge: 'x', badgeVariant: XSS })));
-    assert.ok(!renderPipeline(opts({})).includes('data-bn="badge"'));
-  });
-
-  it('each column is a section labelled by its header, which shows the card count', () => {
-    const html = renderPipeline({
-      id: 'board',
-      columns: [{ id: 'new', title: 'New' }, { id: 'won', title: 'Won', count: 12 }],
-      cards: [{ id: 'c1', columnId: 'new', title: 'A' }, { id: 'c2', columnId: 'new', title: 'B' }],
-    });
-    assert.ok(html.includes('<section data-bn="pipeline-column" data-column-id="new" aria-labelledby="board-column-new">'));
-    assert.ok(html.includes('<header data-bn="pipeline-column-header" id="board-column-new"><span data-bn="pipeline-column-title">New</span><span data-bn="pipeline-column-count">2</span></header>'));
-    assert.ok(html.includes('id="board-column-won"><span data-bn="pipeline-column-title">Won</span><span data-bn="pipeline-column-count">12</span></header>'), 'explicit count wins');
-  });
-
-  it('escapes the heading ids it generates', () => {
-    assertEscaped(renderPipeline({ id: XSS, columns: [{ id: XSS, title: 'T' }] }));
-    const html = renderPipeline({ id: 'a"b', columns: [{ id: 'c', title: 'T' }] });
-    assert.ok(html.includes('aria-labelledby="a&quot;b-column-c"') && html.includes('id="a&quot;b-column-c"'));
-  });
-});
-
-describe('Tabs — roving tabindex in markup', () => {
-  it('gives the active tab tabindex="0" and every other tab -1', () => {
-    const html = renderTabs({ id: 't', activeTab: 'b', tabs: [{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }, { id: 'c', label: 'C' }] });
-    assert.ok(html.includes('<button data-bn="tab" role="tab" type="button" tabindex="-1" id="t-tab-a"'));
-    assert.ok(html.includes('<button data-bn="tab" role="tab" type="button" tabindex="0" id="t-tab-b"'));
-    assert.ok(html.includes('tabindex="-1" id="t-tab-c"'));
-  });
-
-  it('falls back to the first enabled tab when the active tab is disabled or unknown', () => {
-    const disabled = renderTabs({ id: 't', activeTab: 'a', tabs: [{ id: 'a', label: 'A', disabled: true }, { id: 'b', label: 'B' }] });
-    assert.ok(disabled.includes('tabindex="-1" id="t-tab-a"') && disabled.includes('tabindex="0" id="t-tab-b"'));
-    const unknown = renderTabs({ id: 't', activeTab: 'zzz', tabs: [{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }] });
-    assert.ok(unknown.includes('tabindex="0" id="t-tab-a"'));
-  });
-});
-
-/** Minimal DOM stand-in for initTabs: attribute bags, closest(), focus() and root-level listeners. */
-function fakeTabs(ids, { active = ids[0], disabled = [], allHidden = false } = {}) {
-  const root = {
-    listeners: new Map(),
-    addEventListener(type, fn) { this.listeners.set(type, fn); },
-    removeEventListener(type, fn) { if (this.listeners.get(type) === fn) this.listeners.delete(type); },
-    focused: null,
-  };
-  const make = attrs => ({
-    attrs: { ...attrs },
-    focusCount: 0,
-    getAttribute(k) { return k in this.attrs ? this.attrs[k] : null; },
-    setAttribute(k, v) { this.attrs[k] = String(v); },
-    removeAttribute(k) { delete this.attrs[k]; },
-    hasAttribute(k) { return k in this.attrs; },
-    focus() { this.focusCount += 1; root.focused = this; },
-    closest(sel) {
-      if (sel === '[data-bn="tab"]') return this.attrs['data-bn'] === 'tab' ? this : null;
-      if (sel === '[data-bn="tabs"]') return this.owner ?? root;
-      return null;
-    },
-  });
-  root.tabs = ids.map(id => make({
-    'data-bn': 'tab', 'data-tab': id, id: `t-tab-${id}`, 'aria-controls': `t-panel-${id}`,
-    'aria-selected': id === active ? 'true' : 'false', tabindex: id === active ? '0' : '-1',
-    ...(disabled.includes(id) ? { disabled: '' } : {}),
-  }));
-  root.panels = ids.map(id => make({ 'data-bn': 'tab-panel', id: `t-panel-${id}`, ...(id === active && !allHidden ? {} : { hidden: '' }) }));
-  root.querySelectorAll = sel => (sel === '[data-bn="tab"]' ? [...root.tabs] : sel === '[data-bn="tab-panel"]' ? [...root.panels] : []);
-  root.tab = id => root.tabs.find(t => t.attrs['data-tab'] === id);
-  root.click = id => root.listeners.get('click')({ target: root.tab(id) });
-  root.key = (id, key) => {
-    const e = { key, target: root.tab(id), prevented: false, preventDefault() { this.prevented = true; } };
-    root.listeners.get('keydown')(e);
-    return e;
-  };
-  root.selected = () => root.tabs.filter(t => t.attrs['aria-selected'] === 'true').map(t => t.attrs['data-tab']);
-  root.focusable = () => root.tabs.filter(t => t.attrs.tabindex === '0').map(t => t.attrs['data-tab']);
-  root.visible = () => root.panels.filter(p => !('hidden' in p.attrs)).map(p => p.attrs.id.replace('t-panel-', ''));
-  return root;
-}
-
-describe('initTabs', () => {
-  it('binds click and keydown on the root and destroy unbinds them', () => {
-    const root = fakeTabs(['a', 'b']);
-    const handle = initTabs(root);
-    assert.deepEqual([...root.listeners.keys()].sort(), ['click', 'keydown']);
-    handle.destroy();
-    assert.equal(root.listeners.size, 0);
-  });
-
-  it('reconciles aria-selected, tabindex and hidden on init and selects the first enabled tab when none is', () => {
-    const root = fakeTabs(['a', 'b'], { active: 'b', allHidden: true });
-    initTabs(root);
-    assert.deepEqual([root.selected(), root.focusable(), root.visible()], [['b'], ['b'], ['b']]);
-
-    const none = fakeTabs(['a', 'b'], { active: 'none', disabled: ['a'] });
-    const handle = initTabs(none);
-    assert.deepEqual([none.selected(), none.focusable(), none.visible()], [['b'], ['b'], ['b']]);
-    assert.equal(handle.active(), 'b');
-  });
-
-  it('click selects a tab, flips the panels and reports the change once', () => {
-    const root = fakeTabs(['a', 'b', 'c'], { disabled: ['c'] });
-    const changes = [];
-    const handle = initTabs(root, { onChange: (id, tab) => changes.push([id, tab.attrs.id]) });
-    root.click('b');
-    assert.deepEqual([root.selected(), root.focusable(), root.visible()], [['b'], ['b'], ['b']]);
-    assert.deepEqual(changes, [['b', 't-tab-b']]);
-    root.click('b');
-    assert.equal(changes.length, 1, 'clicking the current tab is a no-op');
-    root.click('c');
-    assert.equal(handle.active(), 'b', 'disabled tabs are ignored');
-    root.listeners.get('click')({ target: { closest: () => null } });
-    assert.equal(changes.length, 1);
-  });
-
-  it('ArrowRight / ArrowLeft wrap and skip disabled tabs, Home / End jump, and focus follows (automatic activation)', () => {
-    const root = fakeTabs(['a', 'b', 'c', 'd'], { disabled: ['c'] });
-    const changes = [];
-    initTabs(root, { onChange: id => changes.push(id) });
-
-    assert.ok(root.key('a', 'ArrowRight').prevented);
-    assert.deepEqual([root.selected(), root.visible(), root.focused.attrs['data-tab']], [['b'], ['b'], 'b']);
-    root.key('b', 'ArrowRight');
-    assert.deepEqual(root.selected(), ['d'], 'c is disabled and skipped');
-    root.key('d', 'ArrowRight');
-    assert.deepEqual(root.selected(), ['a'], 'wraps to the start');
-    root.key('a', 'ArrowLeft');
-    assert.deepEqual(root.selected(), ['d'], 'wraps to the end');
-    root.key('d', 'Home');
-    assert.deepEqual(root.selected(), ['a']);
-    root.key('a', 'End');
-    assert.deepEqual([root.selected(), root.focusable()], [['d'], ['d']]);
-    assert.deepEqual(changes, ['b', 'd', 'a', 'd', 'a', 'd']);
-
-    const other = root.key('d', 'ArrowDown');
-    assert.ok(!other.prevented);
-    assert.deepEqual(root.selected(), ['d']);
-    assert.ok(!root.key('c', 'ArrowRight').prevented, 'keys on a disabled tab are ignored');
-  });
-
-  it('manual activation moves focus and the roving tabindex without selecting; click selects', () => {
-    const root = fakeTabs(['a', 'b', 'c']);
-    const changes = [];
-    initTabs(root, { activation: 'manual', onChange: id => changes.push(id) });
-    root.key('a', 'ArrowRight');
-    assert.deepEqual([root.selected(), root.focusable(), root.visible(), root.focused.attrs['data-tab']], [['a'], ['b'], ['a'], 'b']);
-    assert.deepEqual(changes, []);
-    root.click('b');
-    assert.deepEqual([root.selected(), root.focusable(), root.visible()], [['b'], ['b'], ['b']]);
-    assert.deepEqual(changes, ['b']);
-  });
-
-  it('select(id) reflects state silently and reports whether the tab exists', () => {
-    const root = fakeTabs(['a', 'b']);
-    const changes = [];
-    const handle = initTabs(root, { onChange: id => changes.push(id) });
-    assert.equal(handle.select('b'), true);
-    assert.deepEqual([root.selected(), root.focusable(), root.visible(), handle.active()], [['b'], ['b'], ['b'], 'b']);
-    assert.equal(handle.select('zzz'), false);
-    assert.equal(handle.active(), 'b');
-    assert.deepEqual(changes, []);
-    assert.equal(root.focused, null, 'programmatic selection does not steal focus');
-  });
-
-  it('ignores tabs that belong to a nested tabs widget', () => {
-    const root = fakeTabs(['a', 'b']);
-    const inner = fakeTabs(['x']);
-    inner.tabs[0].owner = inner;
-    root.tabs.push(inner.tabs[0]);
-    initTabs(root);
-    root.key('b', 'ArrowRight');
-    assert.deepEqual(root.selected().filter(id => id !== 'x'), ['a'], 'wrapped within the outer widget only');
-    assert.deepEqual(inner.tabs[0].attrs, { ...inner.tabs[0].attrs, 'aria-selected': 'true', tabindex: '0' }, 'the nested widget is untouched');
-  });
-});
-
-// ─── Stylesheet contracts ────────────────────────────────────────────────────
-// node:test has no layout engine, so these pin the declarations the catalogue
-// copy and the accessibility floor depend on. Each one was a live defect.
-
-describe('components.css contracts', () => {
-  const css = readFileSync(new URL('./components.css', import.meta.url), 'utf8');
-
-  it('textarea auto-sizes with field-sizing: content, as the catalogue says', () => {
-    assert.match(css, /\[data-bn="textarea"\][^{]*\{[^}]*field-sizing:\s*content/s);
-  });
-
-  it('select opts into appearance: base-select where the engine supports it', () => {
-    assert.match(css, /@supports\s*\(appearance:\s*base-select\)\s*\{[^}]*\[data-bn="select"\]/s);
-    assert.match(css, /appearance:\s*base-select/);
-  });
-
-  it('pagination lays out an <ol> the same as a <ul>', () => {
-    assert.match(css, /\[data-bn="pagination"\]\s*:is\(ul,\s*ol\)\s*\{/);
-    assert.doesNotMatch(css, /\[data-bn="pagination"\]\s+(?:ul|ol)\s*\{/);
-  });
-
-  it('the virtualizer takes a definite width so a flex parent cannot collapse it', () => {
-    const rule = css.match(/\[data-bn="virtualizer"\]\s*\{[^}]*\}/)[0];
-    assert.match(rule, /inline-size:\s*100%/);
-    assert.doesNotMatch(css, /\[data-bn="virtual-window"\]\s*\{\s*position:\s*relative/,
-      'the inline position:absolute always wins; a relative rule only implies the window is in flow');
-  });
-
-  describe('WCAG 2.5.8 minimum target size', () => {
-    const targetBlock = css.slice(
-      css.indexOf('Minimum target size'),
-      css.indexOf('/* BaseNative Component Styles */'),
-    );
-    const reset = css.match(/:where\(([^)]*)\)\s*\{\s*appearance: none/)[1];
-    const members = [...reset.matchAll(/data-bn="([^"]+)"/g)].map((m) => m[1]);
-    // A component's own rule, i.e. the one after the shared blocks at the top.
-    const componentStart = css.indexOf('/* BaseNative Component Styles */');
-    const ruleFor = (selector) =>
-      css.slice(css.indexOf(`\n${selector} {`, componentStart)).match(/\{([^}]*)\}/)[1];
-
-    // Reset-group members that clear the 24px floor in their own rule rather
-    // than in the target block. Each entry is the declaration that makes it so.
-    const ownFloor = {
-      'dialog-close': (rule) => /width:\s*2rem;\s*height:\s*2rem/.test(rule),
-      'drawer-close': (rule) => /width:\s*2rem;\s*height:\s*2rem/.test(rule),
-      'command-item': (rule) => /padding:\s*var\(--spacing-2\)\s+var\(--spacing-3\)/.test(rule),
-      'dropdown-item': (rule) => /padding:\s*var\(--spacing-2\)\s+var\(--spacing-3\)/.test(rule),
-    };
-
-    it('alert-dismiss and breadcrumb links resolve the floor from the shared token', () => {
-      for (const token of ['alert-dismiss"]', 'breadcrumb-item"] a']) {
-        assert.ok(targetBlock.includes(`[data-bn="${token}`), `${token} is not in the target-size block`);
-      }
-      assert.match(targetBlock, /min-inline-size:\s*var\(--size-target-floor\)/);
-      assert.match(targetBlock, /min-block-size:\s*var\(--size-target-floor\)/);
-      assert.match(ruleFor('[data-bn="alert-dismiss"]'), /display:\s*inline-flex/);
-      assert.match(ruleFor('[data-bn="breadcrumb-item"] a'), /padding-inline:\s*var\(--spacing-1\)/);
-    });
-
-    it('every member of the button-reset group has a target-size floor', () => {
-      assert.ok(members.length >= 7, 'the reset group lost members');
-      for (const m of members) {
-        if (targetBlock.includes(`"${m}"`)) continue;
-        const reason = ownFloor[m];
-        assert.ok(reason, `${m} has no WCAG 2.5.8 target-size floor`);
-        assert.ok(reason(ruleFor(`[data-bn="${m}"]`)),
-          `${m} is exempt from the target block because its own rule sizes it, but that declaration is gone`);
-      }
-    });
-  });
-});
-
-/**
- * DOM stand-in for the BN-018 client initialisers, in the same shape as the
- * select-then-place stub above: attribute bags plus a tag name, closest /
- * querySelector(All) over a tree with attribute and tag selectors, events
- * that bubble to every ancestor's listener, focus tracked on a shared
- * document, and the few properties the initialisers read or write (value,
- * checked, textContent, style, scrollTop, innerHTML, remove, appendChild,
- * insertAdjacentHTML, the dialog and popover methods).
- */
-function clientDom() {
-  const doc = {
-    activeElement: null,
-    listeners: new Map(),
-    addEventListener(type, fn) { this.listeners.set(type, fn); },
-    removeEventListener(type, fn) { if (this.listeners.get(type) === fn) this.listeners.delete(type); },
-  };
-  function matchesPart(node, part) {
-    const m = part.trim().match(/^([a-zA-Z]*)((?:\[[^\]]+\])*)$/);
-    if (!m) return false;
-    const [, tag, attrPart] = m;
-    if (tag && node.tag !== tag) return false;
-    const conds = [...attrPart.matchAll(/\[([\w-]+)(?:="([^"]*)")?\]/g)];
-    return conds.every(([, name, value]) => (value === undefined ? node.attrs.has(name) : node.attrs.get(name) === value));
-  }
-  const matches = (node, selector) => selector.split(',').some(part => matchesPart(node, part));
-  function detach(child) {
-    if (!child.parent) return;
-    child.parent.children.splice(child.parent.children.indexOf(child), 1);
-    child.parent = null;
-  }
-  function el(tag, attributes = {}, children = []) {
-    const { text, ...rest } = attributes;
-    const attrs = new Map(Object.entries(rest));
-    const listeners = new Map();
-    const node = {
-      tag, attrs, listeners, children, parent: null, ownerDocument: doc,
-      textContent: text ?? '', value: rest.value ?? '', checked: 'checked' in rest, indeterminate: false, selected: 'selected' in rest,
-      style: {}, scrollTop: 0, clientHeight: 0, focusCount: 0, innerHTML: '', inserted: [],
-      get parentElement() { return node.parent; },
-      hasAttribute: name => attrs.has(name),
-      getAttribute: name => attrs.get(name) ?? null,
-      setAttribute(name, v) { attrs.set(name, String(v)); },
-      removeAttribute(name) { attrs.delete(name); },
-      addEventListener(type, fn) { listeners.set(type, fn); },
-      removeEventListener(type, fn) { if (listeners.get(type) === fn) listeners.delete(type); },
-      matches: selector => matches(node, selector),
-      closest(selector) { let n = node; while (n) { if (n.matches(selector)) return n; n = n.parent; } return null; },
-      querySelectorAll(selector) {
-        const out = [];
-        for (const child of node.children) { if (child.matches(selector)) out.push(child); out.push(...child.querySelectorAll(selector)); }
-        return out;
-      },
-      querySelector(selector) { return node.querySelectorAll(selector)[0] ?? null; },
-      contains(other) { let n = other; while (n) { if (n === node) return true; n = n.parent; } return false; },
-      focus() { node.focusCount += 1; doc.activeElement = node; },
-      appendChild(child) { detach(child); child.parent = node; node.children.push(child); },
-      remove() { detach(node); },
-      insertAdjacentHTML(_where, html) {
-        node.inserted.push(html);
-        const value = html.match(/data-value="([^"]*)"/)?.[1];
-        const label = html.match(/">([^<]*)<button/)?.[1];
-        node.appendChild(el('span', { 'data-bn': 'tag', 'data-value': value, text: label }, [el('button', { 'data-bn': 'tag-remove', type: 'button' })]));
-      },
-      scrollIntoView() {},
-    };
-    for (const child of children) child.parent = node;
-    return node;
-  }
-  /** Dispatch on `target`, bubbling to every ancestor's listener of that type; returns the event so tests can read `prevented`. */
-  function fire(target, type, extra = {}) {
-    const event = { type, target, key: extra.key, prevented: false, preventDefault() { event.prevented = true; }, ...extra };
-    for (let n = target; n; n = n.parent) n.listeners.get(type)?.(event);
-    return event;
-  }
-  return { doc, el, fire };
-}
-
-describe('initCommandPalette', () => {
-  /** The shape renderCommandPalette emits: header input, grouped items, all inside an open <dialog>. */
-  function palette({ open = true, withIds = true } = {}) {
-    const dom = clientDom();
-    const { el } = dom;
-    const item = (id, label) => el('button', { 'data-bn': 'command-item', role: 'option', ...(withIds ? { id: `cp-item-${id}` } : {}), 'data-action': id, type: 'button' }, [el('span', { 'data-bn': 'command-label', text: label })]);
-    const input = el('input', { 'data-bn': 'command-input', role: 'combobox' });
-    const file = el('div', { 'data-bn': 'command-group', 'aria-label': 'File' }, [item('new', 'New file'), item('save', 'Save')]);
-    const view = el('div', { 'data-bn': 'command-group', 'aria-label': 'View' }, [item('settings', 'Settings')]);
-    const dialog = el('dialog', { 'data-bn': 'command-palette', id: 'cp', ...(open ? { open: '' } : {}) }, [
-      el('div', { 'data-bn': 'command-header' }, [input]),
-      el('div', { 'data-bn': 'command-list', role: 'listbox' }, [file, view]),
-    ]);
-    dialog.modalCount = 0;
-    dialog.closeCount = 0;
-    dialog.showModal = () => { dialog.attrs.set('open', ''); dialog.modalCount += 1; };
-    dialog.close = () => { dialog.attrs.delete('open'); dialog.closeCount += 1; };
-    const items = () => dialog.querySelectorAll('[data-bn="command-item"]');
-    const visibleItems = () => items().filter(i => !i.hasAttribute('hidden'));
-    const labels = list => list.map(i => i.querySelector('[data-bn="command-label"]').textContent);
-    const highlighted = () => labels(items().filter(i => i.getAttribute('aria-selected') === 'true'));
-    return { ...dom, dialog, input, file, view, items, visibleItems, labels, highlighted, byAction: a => items().find(i => i.getAttribute('data-action') === a) };
-  }
-
-  it('filters the command list as you type, hiding empty groups and highlighting the first match', () => {
-    const p = palette();
-    initCommandPalette(p.dialog, {});
-    assert.deepEqual(p.highlighted(), ['New file'], 'the first command is highlighted on init');
-    assert.equal(p.input.getAttribute('aria-activedescendant'), 'cp-item-new');
-
-    p.input.value = 'set';
-    p.fire(p.input, 'input');
-    assert.deepEqual(p.labels(p.visibleItems()), ['Settings']);
-    assert.ok(p.file.hasAttribute('hidden'), 'a group with no visible command is hidden');
-    assert.ok(!p.view.hasAttribute('hidden'));
-    assert.deepEqual(p.highlighted(), ['Settings']);
-    assert.equal(p.input.getAttribute('aria-activedescendant'), 'cp-item-settings');
-
-    p.input.value = '  SET ';
-    p.fire(p.input, 'input');
-    assert.deepEqual(p.labels(p.visibleItems()), ['Settings'], 'case and surrounding space do not matter');
-
-    p.input.value = '';
-    p.fire(p.input, 'input');
-    assert.deepEqual(p.labels(p.visibleItems()), ['New file', 'Save', 'Settings']);
-    assert.ok(!p.file.hasAttribute('hidden'));
-    assert.deepEqual(p.highlighted(), ['New file']);
-  });
-
-  it('ArrowDown and ArrowUp move the highlight through the visible commands and wrap', () => {
-    const p = palette();
-    const handle = initCommandPalette(p.dialog, {});
-    assert.ok(p.fire(p.input, 'keydown', { key: 'ArrowDown' }).prevented);
-    assert.deepEqual([p.highlighted(), handle.active()], [['Save'], 'save']);
-    p.fire(p.input, 'keydown', { key: 'ArrowDown' });
-    assert.deepEqual(p.highlighted(), ['Settings']);
-    p.fire(p.input, 'keydown', { key: 'ArrowDown' });
-    assert.deepEqual(p.highlighted(), ['New file'], 'wraps to the top');
-    p.fire(p.input, 'keydown', { key: 'ArrowUp' });
-    assert.deepEqual(p.highlighted(), ['Settings'], 'wraps to the bottom');
-    assert.equal(p.input.getAttribute('aria-activedescendant'), 'cp-item-settings');
-
-    p.input.value = 'n';
-    p.fire(p.input, 'input');
-    assert.deepEqual(p.labels(p.visibleItems()), ['New file', 'Settings']);
-    p.fire(p.input, 'keydown', { key: 'ArrowDown' });
-    assert.deepEqual(p.highlighted(), ['Settings'], 'hidden commands are skipped');
-  });
-
-  it('Enter activates the highlighted command, closes the dialog and reports its action', () => {
-    const p = palette();
-    const picked = [];
-    initCommandPalette(p.dialog, { onSelect: (action, item) => picked.push([action, item.getAttribute('id')]) });
-    p.fire(p.input, 'keydown', { key: 'ArrowDown' });
-    assert.ok(p.fire(p.input, 'keydown', { key: 'Enter' }).prevented);
-    assert.deepEqual(picked, [['save', 'cp-item-save']]);
-    assert.ok(!p.dialog.hasAttribute('open'));
-    assert.equal(p.dialog.closeCount, 1);
-  });
-
-  it('a click on a command activates it', () => {
-    const p = palette();
-    const picked = [];
-    initCommandPalette(p.dialog, { onSelect: action => picked.push(action) });
-    p.fire(p.byAction('settings').querySelector('[data-bn="command-label"]'), 'click');
-    assert.deepEqual(picked, ['settings']);
-    assert.ok(!p.dialog.hasAttribute('open'));
-  });
-
-  it('Escape closes without selecting', () => {
-    const p = palette();
-    const picked = [];
-    const handle = initCommandPalette(p.dialog, { onSelect: action => picked.push(action) });
-    assert.ok(p.fire(p.input, 'keydown', { key: 'Escape' }).prevented);
-    assert.deepEqual([picked, handle.isOpen(), p.dialog.closeCount], [[], false, 1]);
-  });
-
-  it('open() clears the filter, shows the dialog modally and focuses the input', () => {
-    const p = palette({ open: false });
-    const handle = initCommandPalette(p.dialog, {});
-    handle.filter('set');
-    assert.deepEqual(p.labels(p.visibleItems()), ['Settings']);
-    p.input.value = 'set';
-    handle.open();
-    assert.deepEqual([p.dialog.modalCount, handle.isOpen(), p.input.value, p.doc.activeElement], [1, true, '', p.input]);
-    assert.deepEqual(p.labels(p.visibleItems()), ['New file', 'Save', 'Settings']);
-    handle.open();
-    assert.equal(p.dialog.modalCount, 1, 'an open dialog is not shown twice');
-  });
-
-  it('hotkey toggles it from the document, and destroy unbinds every listener', () => {
-    const p = palette({ open: false });
-    const handle = initCommandPalette(p.dialog, { hotkey: 'Mod+K' });
-    assert.deepEqual([...p.dialog.listeners.keys()].sort(), ['click', 'input', 'keydown']);
-    assert.ok(p.doc.listeners.has('keydown'));
-    const press = extra => { const e = { key: 'k', prevented: false, preventDefault() { e.prevented = true; }, ...extra }; p.doc.listeners.get('keydown')(e); return e; };
-    assert.ok(!press({}).prevented, 'a bare k is not the hotkey');
-    assert.equal(handle.isOpen(), false);
-    assert.ok(press({ ctrlKey: true }).prevented);
-    assert.equal(handle.isOpen(), true);
-    assert.ok(press({ metaKey: true, key: 'K' }).prevented);
-    assert.equal(handle.isOpen(), false);
-    handle.destroy();
-    assert.deepEqual([p.dialog.listeners.size, p.doc.listeners.size], [0, 0]);
-  });
-
-  it('gives id-less commands an id so aria-activedescendant can name them', () => {
-    const p = palette({ withIds: false });
-    initCommandPalette(p.dialog, {});
-    assert.deepEqual(p.items().map(i => i.getAttribute('id')), ['cp-item-0', 'cp-item-1', 'cp-item-2']);
-    assert.equal(p.input.getAttribute('aria-activedescendant'), 'cp-item-0');
-  });
-
-  it('renderCommandPalette emits the ids and aria-controls the initialiser relies on', () => {
-    const html = renderCommandPalette({ id: 'cp', commands: [{ label: 'Save', action: 'save', group: 'File' }, { id: 'quit', label: 'Quit' }] });
-    assert.ok(html.includes('<button data-bn="command-item" role="option" id="cp-item-0" data-action="save" type="button">'));
-    assert.ok(html.includes('<button data-bn="command-item" role="option" id="cp-item-1" data-action="quit" type="button">'));
-    assert.ok(html.includes('aria-controls="cp-list"'));
-    assert.ok(html.includes('<div data-bn="command-list" id="cp-list" role="listbox">'));
-  });
-});
-
-describe('initDataGrid', () => {
-  /** The shape renderDataGrid emits for two sortable columns (name sorted asc) and selectable rows. */
-  function grid({ checked = [] } = {}) {
-    const dom = clientDom();
-    const { el } = dom;
-    const th = (key, label, sorted) => el('th', {
-      'data-bn': 'datagrid-th', 'data-key': key, 'data-sortable': '', scope: 'col',
-      ...(sorted ? { 'data-sorted': sorted, 'aria-sort': sorted === 'asc' ? 'ascending' : 'descending' } : {}),
-    }, [el('button', { 'data-bn': 'datagrid-th-button', type: 'button', text: `${label}${sorted ? (sorted === 'asc' ? ' ↑' : ' ↓') : ''}` })]);
-    const selectAll = el('input', { type: 'checkbox', 'data-bn': 'datagrid-select-all' });
-    const header = el('tr', {}, [el('th', { 'data-bn': 'datagrid-th-select' }, [selectAll]), th('name', 'Name', 'asc'), th('total', 'Total')]);
-    const row = (id, name, total) => el('tr', { 'data-bn': 'datagrid-row', 'data-row-id': id }, [
-      el('td', { 'data-bn': 'datagrid-td-select' }, [el('input', { type: 'checkbox', 'data-bn': 'datagrid-row-select', 'data-row-id': id, ...(checked.includes(id) ? { checked: '' } : {}) })]),
-      el('td', { 'data-bn': 'datagrid-td', 'data-key': 'name', text: name }),
-      el('td', { 'data-bn': 'datagrid-td', 'data-key': 'total', text: total }),
-    ]);
-    const tbody = el('tbody', {}, [row('r1', 'Acme', '120'), row('r2', 'Zed', '8'), row('r3', 'Beta', '35')]);
-    const wrapper = el('div', { 'data-bn': 'datagrid' }, [el('div', { 'data-bn': 'datagrid-scroll' }, [el('table', { 'data-bn': 'datagrid-table', role: 'grid' }, [el('thead', {}, [header]), tbody])])]);
-    const ths = () => wrapper.querySelectorAll('[data-bn="datagrid-th"]');
-    const thFor = key => ths().find(t => t.getAttribute('data-key') === key);
-    const buttonFor = key => thFor(key).querySelector('[data-bn="datagrid-th-button"]');
-    const boxFor = id => wrapper.querySelectorAll('[data-bn="datagrid-row-select"]').find(b => b.getAttribute('data-row-id') === id);
-    const order = () => tbody.children.map(r => r.getAttribute('data-row-id'));
-    const cell = (rowIndex, cellIndex) => (rowIndex === 0 ? header : tbody.children[rowIndex - 1]).children[cellIndex];
-    return { ...dom, wrapper, tbody, header, selectAll, ths, thFor, buttonFor, boxFor, order, cell };
-  }
-
-  it('a header click emits { key, dir } and moves the sort indicator, flipping on the next click', () => {
-    const g = grid();
-    const sorts = [];
-    const handle = initDataGrid(g.wrapper, { onSort: s => sorts.push(s) });
-    assert.deepEqual(handle.sortState(), { key: 'name', dir: 'asc' });
-    g.fire(g.buttonFor('total'), 'click');
-    assert.deepEqual(sorts, [{ key: 'total', dir: 'asc' }]);
-    assert.deepEqual([g.thFor('total').getAttribute('data-sorted'), g.thFor('total').getAttribute('aria-sort'), g.buttonFor('total').textContent], ['asc', 'ascending', 'Total ↑']);
-    assert.deepEqual([g.thFor('name').hasAttribute('data-sorted'), g.thFor('name').hasAttribute('aria-sort'), g.buttonFor('name').textContent], [false, false, 'Name']);
-    g.fire(g.buttonFor('total'), 'click');
-    assert.deepEqual(sorts.at(-1), { key: 'total', dir: 'desc' });
-    assert.deepEqual([g.thFor('total').getAttribute('aria-sort'), g.buttonFor('total').textContent], ['descending', 'Total ↓']);
-    assert.deepEqual(g.order(), ['r1', 'r2', 'r3'], 'with onSort the rows are the caller\'s to reorder');
-  });
-
-  it('without onSort the rows are reordered in place, numeric-aware and stable', () => {
-    const g = grid();
-    initDataGrid(g.wrapper);
-    g.fire(g.buttonFor('total'), 'click');
-    assert.deepEqual(g.order(), ['r2', 'r3', 'r1'], '8 < 35 < 120, not "120" < "35" < "8"');
-    g.fire(g.buttonFor('total'), 'click');
-    assert.deepEqual(g.order(), ['r1', 'r3', 'r2']);
-    g.fire(g.buttonFor('name'), 'click');
-    assert.deepEqual(g.order(), ['r1', 'r3', 'r2'], 'name: Acme, Beta, Zed');
-  });
-
-  it('select-all checks every row, row checkboxes keep select-all indeterminate, and every change reports the selection', () => {
-    const g = grid();
-    const selections = [];
-    initDataGrid(g.wrapper, { onSelectionChange: ids => selections.push(ids) });
-    g.selectAll.checked = true;
-    g.fire(g.selectAll, 'change');
-    assert.deepEqual(['r1', 'r2', 'r3'].map(id => g.boxFor(id).checked), [true, true, true]);
-    assert.deepEqual(selections, [['r1', 'r2', 'r3']]);
-    assert.deepEqual(g.tbody.children.map(r => r.getAttribute('aria-selected')), ['true', 'true', 'true']);
-
-    g.boxFor('r2').checked = false;
-    g.fire(g.boxFor('r2'), 'change');
-    assert.deepEqual([g.selectAll.checked, g.selectAll.indeterminate], [false, true], 'some rows selected → indeterminate');
-    assert.deepEqual(selections.at(-1), ['r1', 'r3']);
-    assert.equal(g.tbody.children[1].getAttribute('aria-selected'), 'false');
-
-    g.selectAll.checked = false;
-    g.fire(g.selectAll, 'change');
-    assert.deepEqual([g.selectAll.checked, g.selectAll.indeterminate, selections.at(-1)], [false, false, []]);
-
-    g.boxFor('r1').checked = true;
-    g.fire(g.boxFor('r1'), 'change');
-    g.boxFor('r2').checked = true;
-    g.fire(g.boxFor('r2'), 'change');
-    g.boxFor('r3').checked = true;
-    g.fire(g.boxFor('r3'), 'change');
-    assert.deepEqual([g.selectAll.checked, g.selectAll.indeterminate], [true, false], 'all rows selected by hand → select-all checked');
-  });
-
-  it('reconciles select-all from a server-rendered partial selection on init, without reporting', () => {
-    const g = grid({ checked: ['r1'] });
-    const selections = [];
-    const handle = initDataGrid(g.wrapper, { onSelectionChange: ids => selections.push(ids) });
-    assert.deepEqual([g.selectAll.checked, g.selectAll.indeterminate, selections, handle.selected()], [false, true, [], ['r1']]);
-    assert.equal(g.tbody.children[0].getAttribute('aria-selected'), 'true');
-  });
-
-  it('arrow keys, Home and End rove focus between cells', () => {
-    const g = grid();
-    initDataGrid(g.wrapper);
-    assert.equal(g.cell(0, 0).getAttribute('tabindex'), '0', 'the first header cell is the tab stop');
-    assert.deepEqual([g.cell(0, 1), g.cell(1, 1), g.cell(3, 2)].map(c => c.getAttribute('tabindex')), ['-1', '-1', '-1']);
-
-    assert.ok(g.fire(g.cell(0, 1), 'keydown', { key: 'ArrowDown' }).prevented);
-    assert.equal(g.doc.activeElement, g.cell(1, 1));
-    assert.deepEqual([g.cell(1, 1).getAttribute('tabindex'), g.cell(0, 0).getAttribute('tabindex')], ['0', '-1'], 'the tab stop follows focus');
-    g.fire(g.cell(1, 1), 'keydown', { key: 'ArrowRight' });
-    assert.equal(g.doc.activeElement, g.cell(1, 2));
-    g.fire(g.cell(1, 2), 'keydown', { key: 'ArrowRight' });
-    assert.equal(g.doc.activeElement, g.cell(1, 2), 'no cell to the right: stays put');
-    g.fire(g.cell(1, 2), 'keydown', { key: 'ArrowUp' });
-    assert.equal(g.doc.activeElement, g.cell(0, 2));
-    g.fire(g.cell(0, 2), 'keydown', { key: 'Home' });
-    assert.equal(g.doc.activeElement, g.cell(0, 0));
-    g.fire(g.cell(0, 0), 'keydown', { key: 'End', ctrlKey: true });
-    assert.equal(g.doc.activeElement, g.cell(3, 2));
-    g.fire(g.cell(3, 2), 'keydown', { key: 'Home', ctrlKey: true });
-    assert.equal(g.doc.activeElement, g.cell(0, 0));
-
-    const fromButton = g.fire(g.buttonFor('name'), 'keydown', { key: 'ArrowLeft' });
-    assert.ok(fromButton.prevented, 'arrows work from the sort button inside a header cell');
-    assert.equal(g.doc.activeElement, g.cell(0, 0));
-    assert.ok(!g.fire(g.cell(1, 1), 'keydown', { key: 'a' }).prevented, 'other keys are left alone');
-  });
-
-  it('select(ids) and sort() reflect silently, and destroy unbinds', () => {
-    const g = grid();
-    const calls = [];
-    const handle = initDataGrid(g.wrapper, { onSort: s => calls.push(s), onSelectionChange: ids => calls.push(ids) });
-    handle.select(['r2', 'r3']);
-    assert.deepEqual([g.boxFor('r1').checked, g.boxFor('r2').checked, g.boxFor('r3').checked, g.selectAll.indeterminate], [false, true, true, true]);
-    assert.ok(handle.sort('total', 'desc'));
-    assert.deepEqual(handle.sortState(), { key: 'total', dir: 'desc' });
-    assert.ok(!handle.sort('nope'));
-    assert.deepEqual(calls, []);
-    assert.deepEqual([...g.wrapper.listeners.keys()].sort(), ['change', 'click', 'keydown']);
-    handle.destroy();
-    assert.equal(g.wrapper.listeners.size, 0);
-  });
-});
-
-describe('initTree', () => {
-  /**
-   * The shape renderTree emits: src (expanded) > [index.js, lib (collapsed, its
-   * group hidden) > [util.js]], then README at the top level.
-   */
-  function tree() {
-    const dom = clientDom();
-    const { el } = dom;
-    const content = (label, expandable, expanded) => el('div', { 'data-bn': 'tree-item-content' }, [
-      ...(expandable ? [el('button', { 'data-bn': 'tree-toggle', 'aria-label': expanded ? 'Collapse' : 'Expand', type: 'button', text: expanded ? '▾' : '▸' })] : [el('span', { 'data-bn': 'tree-indent' })]),
-      el('span', { 'data-bn': 'tree-label', text: label }),
-    ]);
-    const item = (id, level, { children = null, expanded = false, tabindex = -1 } = {}) => el('li', {
-      'data-bn': 'tree-item', role: 'treeitem', tabindex: String(tabindex), 'aria-selected': 'false', 'data-node-id': id, 'data-level': String(level),
-      ...(children ? { 'aria-expanded': String(expanded) } : {}),
-    }, [content(id, Boolean(children), expanded), ...(children ? [el('ul', { 'data-bn': 'tree-children', role: 'group', ...(expanded ? {} : { hidden: '' }) }, children)] : [])]);
-    const util = item('util.js', 2);
-    const lib = item('lib', 1, { children: [util] });
-    const index = item('index.js', 1);
-    const src = item('src', 0, { children: [index, lib], expanded: true, tabindex: 0 });
-    const readme = item('README', 0);
-    const root = el('ul', { 'data-bn': 'tree', role: 'tree' }, [src, readme]);
-    const toggleOf = node => node.querySelector('[data-bn="tree-toggle"]');
-    const labelOf = node => node.querySelector('[data-bn="tree-label"]');
-    const groupOf = node => node.querySelector('[data-bn="tree-children"]');
-    const focusable = () => root.querySelectorAll('[data-bn="tree-item"]').filter(i => i.getAttribute('tabindex') === '0').map(i => i.getAttribute('data-node-id'));
-    const selected = () => root.querySelectorAll('[data-bn="tree-item"]').filter(i => i.getAttribute('aria-selected') === 'true').map(i => i.getAttribute('data-node-id'));
-    return { ...dom, root, src, index, lib, util, readme, toggleOf, labelOf, groupOf, focusable, selected };
-  }
-
-  it('the toggle collapses and expands its group, relabels itself and reports', () => {
-    const t = tree();
-    const toggles = [];
-    initTree(t.root, { onToggle: (id, expanded) => toggles.push([id, expanded]) });
-    t.fire(t.toggleOf(t.src), 'click');
-    assert.deepEqual([t.src.getAttribute('aria-expanded'), t.groupOf(t.src).hasAttribute('hidden')], ['false', true]);
-    assert.deepEqual([t.toggleOf(t.src).getAttribute('aria-label'), t.toggleOf(t.src).textContent], ['Expand', '▸']);
-    assert.deepEqual(toggles, [['src', false]]);
-    t.fire(t.toggleOf(t.src), 'click');
-    assert.deepEqual([t.src.getAttribute('aria-expanded'), t.groupOf(t.src).hasAttribute('hidden')], ['true', false]);
-    assert.deepEqual([t.toggleOf(t.src).getAttribute('aria-label'), t.toggleOf(t.src).textContent], ['Collapse', '▾']);
-    assert.deepEqual(toggles, [['src', false], ['src', true]]);
-    assert.deepEqual(t.selected(), [], 'the toggle does not select');
-  });
-
-  it('a click on the row selects the node, moves focus there and reports', () => {
-    const t = tree();
-    const picks = [];
-    initTree(t.root, { onSelect: id => picks.push(id) });
-    t.fire(t.labelOf(t.index), 'click');
-    assert.deepEqual([t.selected(), picks, t.focusable(), t.doc.activeElement], [['index.js'], ['index.js'], ['index.js'], t.index]);
-    assert.ok(t.index.querySelector('[data-bn="tree-item-content"]').hasAttribute('data-selected'));
-    t.fire(t.labelOf(t.readme), 'click');
-    assert.deepEqual(t.selected(), ['README']);
-    assert.ok(!t.index.querySelector('[data-bn="tree-item-content"]').hasAttribute('data-selected'));
-  });
-
-  it('ArrowDown and ArrowUp walk the visible nodes only; Home and End jump', () => {
-    const t = tree();
-    initTree(t.root);
-    assert.deepEqual(t.focusable(), ['src']);
-    assert.ok(t.fire(t.src, 'keydown', { key: 'ArrowDown' }).prevented);
-    assert.equal(t.doc.activeElement, t.index);
-    t.fire(t.index, 'keydown', { key: 'ArrowDown' });
-    assert.equal(t.doc.activeElement, t.lib);
-    t.fire(t.lib, 'keydown', { key: 'ArrowDown' });
-    assert.equal(t.doc.activeElement, t.readme, 'util.js sits in a hidden group and is skipped');
-    assert.deepEqual(t.focusable(), ['README'], 'the roving tabindex follows focus');
-    t.fire(t.readme, 'keydown', { key: 'ArrowDown' });
-    assert.equal(t.doc.activeElement, t.readme, 'no wrap at the end');
-    t.fire(t.readme, 'keydown', { key: 'ArrowUp' });
-    assert.equal(t.doc.activeElement, t.lib);
-    t.fire(t.lib, 'keydown', { key: 'Home' });
-    assert.equal(t.doc.activeElement, t.src);
-    t.fire(t.src, 'keydown', { key: 'End' });
-    assert.equal(t.doc.activeElement, t.readme);
-    assert.ok(!t.fire(t.readme, 'keydown', { key: 'a' }).prevented);
-  });
-
-  it('ArrowRight expands then descends; ArrowLeft collapses then ascends', () => {
-    const t = tree();
-    const toggles = [];
-    initTree(t.root, { onToggle: (id, expanded) => toggles.push([id, expanded]) });
-    t.fire(t.lib, 'keydown', { key: 'ArrowRight' });
-    assert.deepEqual([t.lib.getAttribute('aria-expanded'), t.groupOf(t.lib).hasAttribute('hidden'), toggles], ['true', false, [['lib', true]]]);
-    assert.equal(t.doc.activeElement, null, 'expanding does not move focus');
-    t.fire(t.lib, 'keydown', { key: 'ArrowRight' });
-    assert.equal(t.doc.activeElement, t.util, 'already expanded: move into the first child');
-    t.fire(t.util, 'keydown', { key: 'ArrowRight' });
-    assert.equal(t.doc.activeElement, t.util, 'a leaf has nowhere to go');
-    t.fire(t.util, 'keydown', { key: 'ArrowLeft' });
-    assert.equal(t.doc.activeElement, t.lib, 'a leaf goes to its parent');
-    t.fire(t.lib, 'keydown', { key: 'ArrowLeft' });
-    assert.deepEqual([t.lib.getAttribute('aria-expanded'), toggles.at(-1)], ['false', ['lib', false]]);
-    t.fire(t.lib, 'keydown', { key: 'ArrowLeft' });
-    assert.equal(t.doc.activeElement, t.src, 'collapsed: go to the parent');
-    t.fire(t.src, 'keydown', { key: 'ArrowLeft' });
-    t.fire(t.src, 'keydown', { key: 'ArrowLeft' });
-    assert.equal(t.doc.activeElement, t.src, 'a collapsed top-level node has no parent to go to');
-  });
-
-  it('Enter and Space select; on the toggle button they are left to its native click', () => {
-    const t = tree();
-    const picks = [];
-    initTree(t.root, { onSelect: id => picks.push(id) });
-    assert.ok(t.fire(t.index, 'keydown', { key: 'Enter' }).prevented);
-    assert.ok(t.fire(t.readme, 'keydown', { key: ' ' }).prevented);
-    assert.deepEqual([picks, t.selected()], [['index.js', 'README'], ['README']]);
-    assert.ok(!t.fire(t.toggleOf(t.src), 'keydown', { key: 'Enter' }).prevented);
-    assert.equal(t.src.getAttribute('aria-expanded'), 'true', 'the keydown itself does not toggle; the button\'s click will');
-  });
-
-  it('starts the roving tabindex on the selected node, and expand/collapse/select are silent', () => {
-    const t = tree();
-    t.readme.setAttribute('aria-selected', 'true');
-    const calls = [];
-    const handle = initTree(t.root, { onToggle: (...a) => calls.push(a), onSelect: (...a) => calls.push(a) });
-    assert.deepEqual([t.focusable(), handle.selected()], [['README'], 'README']);
-    assert.ok(handle.collapse('src'));
-    assert.ok(t.groupOf(t.src).hasAttribute('hidden'));
-    assert.ok(!handle.collapse('src'), 'already collapsed');
-    assert.ok(handle.expand('src'));
-    assert.ok(!handle.expand('index.js'), 'a leaf cannot expand');
-    assert.ok(handle.select('index.js'));
-    assert.deepEqual([handle.selected(), t.focusable()], ['index.js', ['index.js']]);
-    assert.ok(!handle.select('nope'));
-    assert.deepEqual(calls, []);
-    assert.deepEqual([...t.root.listeners.keys()].sort(), ['click', 'keydown']);
-    handle.destroy();
-    assert.equal(t.root.listeners.size, 0);
-  });
-});
-
-describe('initMultiselect', () => {
-  /** The shape renderMultiselect emits: tags for the selected values, a search input, and the hidden <select multiple>. */
-  function multiselect({ selected = ['css'] } = {}) {
-    const dom = clientDom();
-    const { el } = dom;
-    const items = [['a11y', 'Accessibility'], ['css', 'CSS'], ['html', 'HTML']];
-    const tag = (value, label) => el('span', { 'data-bn': 'tag', 'data-value': value, text: label }, [el('button', { type: 'button', 'data-bn': 'tag-remove', 'aria-label': `Remove ${label}` })]);
-    const tags = el('div', { 'data-bn': 'multiselect-tags' }, items.filter(([v]) => selected.includes(v)).map(([v, l]) => tag(v, l)));
-    const input = el('input', { type: 'text', 'data-bn': 'multiselect-search', list: 'ms-options' });
-    const select = el('select', { id: 'ms', name: 'tags', multiple: '', hidden: '' }, items.map(([v, l]) => el('option', { value: v, text: l, ...(selected.includes(v) ? { selected: '' } : {}) })));
-    const root = el('div', { 'data-bn': 'multiselect' }, [el('div', { 'data-bn': 'multiselect-container' }, [tags, input]), el('datalist', { id: 'ms-options' }), select]);
-    const option = value => select.children.find(o => o.value === value);
-    const tagValues = () => tags.querySelectorAll('[data-bn="tag"]').map(t => t.getAttribute('data-value'));
-    const removeFor = value => tags.querySelectorAll('[data-bn="tag"]').find(t => t.getAttribute('data-value') === value).querySelector('[data-bn="tag-remove"]');
-    return { ...dom, root, tags, input, select, option, tagValues, removeFor };
-  }
-
-  it('the × deselects the option, removes the tag, focuses the input and reports', () => {
-    const m = multiselect();
-    const changes = [];
-    const handle = initMultiselect(m.root, { onChange: v => changes.push(v) });
-    assert.deepEqual(handle.values(), ['css']);
-    m.fire(m.removeFor('css'), 'click');
-    assert.deepEqual([m.option('css').selected, m.tagValues(), handle.values(), changes, m.doc.activeElement], [false, [], [], [[]], m.input]);
-  });
-
-  it('Backspace on an empty input removes the last selected value; with text it is left alone', () => {
-    const m = multiselect({ selected: ['a11y', 'css'] });
-    const changes = [];
-    initMultiselect(m.root, { onChange: v => changes.push(v) });
-    m.input.value = 'x';
-    assert.ok(!m.fire(m.input, 'keydown', { key: 'Backspace' }).prevented);
-    assert.deepEqual(m.tagValues(), ['a11y', 'css']);
-    m.input.value = '';
-    assert.ok(m.fire(m.input, 'keydown', { key: 'Backspace' }).prevented);
-    assert.deepEqual([m.option('css').selected, m.tagValues(), changes], [false, ['a11y'], [['a11y']]]);
-    m.fire(m.input, 'keydown', { key: 'Backspace' });
-    assert.deepEqual([m.tagValues(), changes.at(-1)], [[], []]);
-    assert.ok(!m.fire(m.input, 'keydown', { key: 'Backspace' }).prevented, 'nothing left to remove');
-  });
-
-  it('Enter or a datalist pick selects the item whose label or value matches, appends its tag and clears the input', () => {
-    const m = multiselect();
-    const changes = [];
-    initMultiselect(m.root, { onChange: v => changes.push(v) });
-    m.input.value = 'html';
-    assert.ok(m.fire(m.input, 'keydown', { key: 'Enter' }).prevented);
-    assert.deepEqual([m.option('html').selected, m.tagValues(), m.input.value, changes], [true, ['css', 'html'], '', [['css', 'html']]]);
-    assert.match(m.tags.inserted[0], /^<span data-bn="tag" data-value="html">HTML<button type="button" data-bn="tag-remove" aria-label="Remove HTML">&times;<\/button><\/span>$/);
-    m.input.value = ' accessibility ';
-    m.fire(m.input, 'change');
-    assert.deepEqual([m.option('a11y').selected, m.tagValues(), changes.at(-1)], [true, ['css', 'html', 'a11y'], ['a11y', 'css', 'html']]);
-    m.input.value = 'nope';
-    assert.ok(!m.fire(m.input, 'keydown', { key: 'Enter' }).prevented, 'no match: the form may submit');
-    assert.deepEqual([m.input.value, changes.length], ['nope', 2]);
-    m.input.value = 'CSS';
-    m.fire(m.input, 'change');
-    assert.deepEqual([changes.length, m.tagValues().length], [2, 3], 'already selected: nothing changes');
-  });
-
-  it('add and remove are silent, values() reads the select, and destroy unbinds', () => {
-    const m = multiselect();
-    const changes = [];
-    const handle = initMultiselect(m.root, { onChange: v => changes.push(v) });
-    assert.ok(handle.add('html'));
-    assert.ok(!handle.add('html'));
-    assert.ok(!handle.add('nope'));
-    assert.deepEqual([handle.values(), m.tagValues()], [['css', 'html'], ['css', 'html']]);
-    assert.ok(handle.remove('css'));
-    assert.ok(!handle.remove('css'));
-    assert.deepEqual([handle.values(), m.tagValues(), changes], [['html'], ['html'], []]);
-    assert.deepEqual([...m.root.listeners.keys()].sort(), ['change', 'click', 'keydown']);
-    handle.destroy();
-    assert.equal(m.root.listeners.size, 0);
-  });
-
-  it('renderMultiselect backs the search input with a datalist of the item labels', () => {
-    const html = renderMultiselect({ name: 'tags', items: ['a11y', { value: 'css', label: 'CSS' }] });
-    assert.ok(html.includes('data-bn="multiselect-search" placeholder="Select items..." autocomplete="off" aria-label="Search" list="bn-multiselect-tags-options">'));
-    assert.ok(html.includes('<datalist id="bn-multiselect-tags-options"><option value="a11y"></option><option value="CSS"></option></datalist>'));
-  });
-});
-
-describe('initVirtualList', () => {
-  /** The shape renderVirtualList emits for 100 rows of 40px in a 200px container. */
-  function list({ total = 100, clientHeight = 200 } = {}) {
-    const dom = clientDom();
-    const { el } = dom;
-    const items = Array.from({ length: total }, (_, i) => `Item ${i}`);
-    const win = el('div', { 'data-bn': 'virtual-window', 'data-item-height': '40', 'data-total': String(total) });
-    const spacer = el('div', { 'data-bn': 'virtual-spacer' }, [win]);
-    const container = el('div', { 'data-bn': 'virtualizer', tabindex: '0', role: 'region' }, [spacer]);
-    container.clientHeight = clientHeight;
-    const indexes = () => [...win.innerHTML.matchAll(/data-index="(\d+)"/g)].map(m => Number(m[1]));
-    return { ...dom, items, win, spacer, container, indexes };
-  }
-
-  it('renders the window for the scroll position and re-slices it on scroll', () => {
-    const v = list();
-    const handle = initVirtualList(v.container, { items: v.items });
-    assert.deepEqual(handle.range(), { start: 0, end: 10 }, 'ceil(200 / 40) + 5 overscan below');
-    assert.deepEqual([v.indexes()[0], v.indexes().at(-1), v.win.style.top], [0, 9, '0px']);
-    assert.ok(v.win.innerHTML.includes('<div data-bn="virtual-item" data-index="9">Item 9</div>'));
-
-    v.container.scrollTop = 2000;
-    v.fire(v.container, 'scroll');
-    assert.deepEqual(handle.range(), { start: 45, end: 60 }, '50 - 5 overscan above; 55 + 5 below');
-    assert.deepEqual([v.indexes()[0], v.indexes().at(-1), v.win.style.top], [45, 59, '1800px']);
-
-    v.container.scrollTop = 3950;
-    v.fire(v.container, 'scroll');
-    assert.deepEqual(handle.range(), { start: 93, end: 100 }, 'clamped to the list');
-  });
-
-  it('uses renderItem and skips the re-render when the range is unchanged', () => {
-    const v = list();
-    let renders = 0;
-    initVirtualList(v.container, { items: v.items, renderItem: (item, i) => { renders += 1; return `<p data-index="${i}">${item.toUpperCase()}</p>`; } });
-    assert.equal(renders, 10);
-    assert.ok(v.win.innerHTML.startsWith('<p data-index="0">ITEM 0</p>'));
-    v.fire(v.container, 'scroll');
-    assert.equal(renders, 10, 'a scroll event that leaves the range as it was is not a re-render');
-    v.container.scrollTop = 5;
-    v.fire(v.container, 'scroll');
-    assert.equal(renders, 21, 'five pixels bring a partial item into view: the window grows by one and is re-rendered');
-  });
-
-  it('scrollTo, setItems and destroy', () => {
-    const v = list();
-    const handle = initVirtualList(v.container, { items: v.items });
-    handle.scrollTo(10);
-    assert.deepEqual([v.container.scrollTop, handle.range()], [400, { start: 5, end: 20 }]);
-    handle.setItems(v.items.slice(0, 12));
-    assert.deepEqual([handle.range(), v.win.getAttribute('data-total'), v.spacer.style.height], [{ start: 5, end: 12 }, '12', '480px']);
-    assert.ok(v.container.listeners.has('scroll'));
-    handle.destroy();
-    assert.equal(v.container.listeners.size, 0);
-  });
-
-  it('refuses to run without the items array, and says why', () => {
-    const v = list();
-    assert.throws(() => initVirtualList(v.container, {}), /options\.items/);
-  });
-
-  it('defaultRenderItem is the markup renderVirtualList uses, escaped', () => {
-    assert.equal(defaultRenderItem('a<b', 3), '<div data-bn="virtual-item" data-index="3">a&lt;b</div>');
-    assert.ok(renderVirtualList({ items: ['a<b'] }).includes(defaultRenderItem('a<b', 0)));
-  });
-});
-
-describe('initDropdownMenu', () => {
-  /** The shape renderDropdownMenu emits: trigger, then the popover menu with an item, a separator and a disabled item. */
-  function dropdown() {
-    const dom = clientDom();
-    const { el, fire } = dom;
-    const rename = el('button', { 'data-bn': 'dropdown-item', role: 'menuitem', 'data-action': 'rename', type: 'button', text: 'Rename' });
-    const copy = el('button', { 'data-bn': 'dropdown-item', role: 'menuitem', 'data-action': 'copy', type: 'button', text: 'Copy' });
-    const del = el('button', { 'data-bn': 'dropdown-item', role: 'menuitem', 'data-action': 'delete', 'aria-disabled': 'true', type: 'button', text: 'Delete' });
-    const menu = el('div', { 'data-bn': 'dropdown-menu', id: 'dd', popover: '', role: 'menu' }, [rename, copy, el('hr', { 'data-bn': 'dropdown-separator', role: 'separator' }), del]);
-    const trigger = el('button', { 'data-bn': 'dropdown-trigger', popovertarget: 'dd', type: 'button', text: 'Actions' });
-    const root = el('div', { 'data-bn': 'dropdown' }, [trigger, menu]);
-    menu.shown = 0;
-    menu.hidden = 0;
-    // The Popover API queues `toggle`; delivering it synchronously here keeps the tests linear.
-    menu.showPopover = () => { menu.shown += 1; fire(menu, 'toggle', { newState: 'open', oldState: 'closed' }); };
-    menu.hidePopover = () => { menu.hidden += 1; fire(menu, 'toggle', { newState: 'closed', oldState: 'open' }); };
-    return { ...dom, root, trigger, menu, rename, copy, del };
-  }
-
-  it('focuses the first item when the popover opens, and the arrows, Home and End move between items with wrap', () => {
-    const d = dropdown();
-    const handle = initDropdownMenu(d.root);
-    assert.equal(handle.isOpen(), false);
-    d.fire(d.menu, 'toggle', { newState: 'open' });
-    assert.deepEqual([handle.isOpen(), d.doc.activeElement], [true, d.rename]);
-    assert.ok(d.fire(d.rename, 'keydown', { key: 'ArrowDown' }).prevented);
-    assert.equal(d.doc.activeElement, d.copy);
-    d.fire(d.copy, 'keydown', { key: 'ArrowDown' });
-    assert.equal(d.doc.activeElement, d.del, 'a disabled item stays in the arrow order');
-    d.fire(d.del, 'keydown', { key: 'ArrowDown' });
-    assert.equal(d.doc.activeElement, d.rename, 'wraps');
-    d.fire(d.rename, 'keydown', { key: 'ArrowUp' });
-    assert.equal(d.doc.activeElement, d.del);
-    d.fire(d.del, 'keydown', { key: 'Home' });
-    assert.equal(d.doc.activeElement, d.rename);
-    d.fire(d.rename, 'keydown', { key: 'End' });
-    assert.equal(d.doc.activeElement, d.del);
-    assert.ok(!d.fire(d.del, 'keydown', { key: 'Tab' }).prevented);
-  });
-
-  it('ArrowDown on the trigger opens the menu on the first item; ArrowUp opens it on the last', () => {
-    const d = dropdown();
-    const handle = initDropdownMenu(d.root);
-    assert.ok(d.fire(d.trigger, 'keydown', { key: 'ArrowDown' }).prevented);
-    assert.deepEqual([d.menu.shown, handle.isOpen(), d.doc.activeElement], [1, true, d.rename]);
-    handle.close();
-    assert.deepEqual([d.menu.hidden, handle.isOpen()], [1, false]);
-    d.fire(d.trigger, 'keydown', { key: 'ArrowUp' });
-    assert.deepEqual([d.menu.shown, d.doc.activeElement], [2, d.del]);
-    d.fire(d.trigger, 'keydown', { key: 'ArrowDown' });
-    assert.deepEqual([d.menu.shown, d.doc.activeElement], [2, d.rename], 'already open: the arrow moves to the first item instead');
-  });
-
-  it('activating an item hides the popover and reports; a disabled item does neither', () => {
-    const d = dropdown();
-    const picked = [];
-    const handle = initDropdownMenu(d.root, { onSelect: (action, item) => picked.push([action, item.textContent]) });
-    handle.open();
-    d.fire(d.copy, 'click');
-    assert.deepEqual([picked, d.menu.hidden, handle.isOpen()], [[['copy', 'Copy']], 1, false]);
-    handle.open();
-    assert.ok(d.fire(d.del, 'click').prevented);
-    assert.deepEqual([picked.length, d.menu.hidden, handle.isOpen()], [1, 1, true]);
-    handle.close();
-    handle.close();
-    assert.equal(d.menu.hidden, 2, 'closing a closed menu is a no-op');
-  });
-
-  it('destroy unbinds the root and the menu', () => {
-    const d = dropdown();
-    const handle = initDropdownMenu(d.root);
-    assert.deepEqual([[...d.root.listeners.keys()].sort(), [...d.menu.listeners.keys()]], [['click', 'keydown'], ['toggle']]);
-    handle.destroy();
-    assert.deepEqual([d.root.listeners.size, d.menu.listeners.size], [0, 0]);
-  });
-});
-
-describe('Field — public', () => {
-  it('the package exports renderField and renderFormField', () => {
-    assert.equal(typeof api.renderField, 'function');
-    assert.equal(typeof api.renderFormField, 'function');
-    assert.equal(api.renderField, renderPublicField, 'the export is the public module, not a copy');
-  });
-
-  it('renderField renders the label, control, help and error as one unit', () => {
-    const html = renderPublicField({
-      id: 'email',
-      label: 'Email',
-      control: '<input id="email" />',
-      helpText: 'We never share it.',
-      error: 'Required',
-    });
-    assert.ok(html.startsWith('<div data-bn="field">'));
-    assert.ok(html.includes('<label for="email">Email</label>'));
-    assert.ok(html.includes('<input id="email" />'), 'the control slot is inserted verbatim');
-    assert.ok(html.includes('<span data-bn="field-help" id="email-help">We never share it.</span>'));
-    assert.ok(html.includes('<span data-bn="field-error" id="email-error" role="alert">Required</span>'));
-  });
-
-  it('renderFormField defaults to an input and matches renderInput', () => {
-    const options = { name: 'email', label: 'Email', type: 'email', helpText: 'Hint', error: 'Bad' };
-    assert.equal(renderFormField(options), renderInput(options));
-    assert.equal(renderFormField({ control: 'input', ...options }), renderInput(options));
-  });
-
-  it('renderFormField renders textarea and select through their own renderers', () => {
-    const area = renderFormField({ control: 'textarea', name: 'bio', label: 'Bio', rows: 4 });
-    assert.ok(area.includes('<textarea'));
-    assert.ok(area.includes('rows="4"'));
-    const select = renderFormField({
-      control: 'select',
-      name: 'plan',
-      label: 'Plan',
-      items: ['Free', 'Pro'],
-      helpText: 'Pick one',
-    });
-    assert.ok(select.includes('<select'));
-    assert.ok(select.includes('aria-describedby="plan-help"'), 'the select wires its own describedby');
-  });
-
-  it('renderFormField leaves checkbox and toggle bare without help or error', () => {
-    const box = renderFormField({ control: 'checkbox', name: 'tos', label: 'Agree' });
-    assert.equal(box, renderCheckbox({ name: 'tos', label: 'Agree' }));
-    assert.ok(!box.includes('data-bn="field"'));
-    const toggle = renderFormField({ control: 'toggle', name: 'dark', label: 'Dark mode' });
-    assert.equal(toggle, renderToggle({ name: 'dark', label: 'Dark mode' }));
-  });
-
-  it('renderFormField wraps checkbox, toggle and radio in the shell when help or error is given', () => {
-    const box = renderFormField({ control: 'checkbox', name: 'tos', label: 'Agree', error: 'Required' });
-    assert.ok(box.startsWith('<div data-bn="field">'));
-    assert.ok(box.includes('data-bn="checkbox"'), 'the control renders inside the shell');
-    assert.ok(box.includes('<span data-bn="field-error" id="tos-error" role="alert">Required</span>'));
-    assert.equal((box.match(/<label/g) || []).length, 1, 'no second label beside the checkbox label');
-
-    const radio = renderFormField({
-      control: 'radio',
-      name: 'size',
-      label: 'Size',
-      items: ['S', 'M'],
-      helpText: 'Fits true to size',
-    });
-    assert.ok(radio.includes('<fieldset data-bn="radio-group">'));
-    assert.ok(radio.includes('<span data-bn="field-help" id="size-help">Fits true to size</span>'));
-  });
-
-  it('renderFormField wraps pre-rendered control markup', () => {
-    const html = renderFormField({
-      controlHtml: '<input id="custom" />',
-      name: 'custom',
-      label: 'Custom',
-      helpText: 'Built elsewhere',
-    });
-    assert.ok(html.includes('<label for="custom">Custom</label>'));
-    assert.ok(html.includes('<input id="custom" />'));
-    assert.ok(html.includes('id="custom-help"'));
-  });
-
-  it('renderFormField rejects an unknown control name', () => {
-    assert.throws(() => renderFormField({ control: 'wysiwyg', name: 'x' }), /unknown control/);
-  });
-
-  it('renderFormField escapes label, help and error through the composer', () => {
-    assertEscaped(renderFormField({ name: 'x', label: XSS, helpText: XSS, error: XSS }));
-    assertEscaped(renderFormField({ control: 'checkbox', name: 'x', label: XSS, error: XSS }));
-  });
-});
-
-describe('SiteNav', () => {
-  const items = [
-    { label: 'Features', href: '/features' },
-    { label: 'Pricing', href: '/pricing', current: true },
-  ];
-
-  it('renders a labelled nav list with aria-current on the current item only', () => {
-    const html = renderSiteNav({ items });
-    assert.ok(html.startsWith('<nav data-bn="site-nav" aria-label="Primary">'));
-    assert.ok(html.includes('<ul data-bn="nav-menu">'));
-    assert.ok(html.includes('<li><a href="/features">Features</a></li>'));
-    assert.ok(html.includes('<li><a href="/pricing" aria-current="page">Pricing</a></li>'));
-  });
-
-  it('escapes item labels and hrefs', () => {
-    assertEscaped(renderSiteNav({ items: [{ label: XSS, href: XSS }] }));
-  });
-});
-
-describe('SiteHeader', () => {
-  it('renders brand, toggle and menu in the site-header contract', () => {
-    const html = renderSiteHeader({
-      id: 'site',
-      brand: { name: 'Greenput', logo: '<svg></svg>' },
-      items: [{ label: 'Features', href: '/features' }],
-      actions: '<a href="/start">Get Started</a>',
-    });
-    assert.ok(html.startsWith('<header data-bn="site-header" id="site">'));
-    assert.ok(html.includes('<nav data-bn="site-nav" aria-label="Primary">'));
-    assert.ok(
-      html.includes('<a data-bn="nav-logo" href="/" aria-label="Greenput home"><svg></svg><strong>Greenput</strong></a>')
-    );
-    assert.ok(html.includes('data-bn="nav-toggle"'));
-    assert.ok(html.includes('aria-expanded="false"'));
-    assert.ok(html.includes('aria-controls="site-menu"'), 'the toggle controls the menu it names');
-    assert.ok(html.includes('<ul id="site-menu" data-bn="nav-menu">'));
-    assert.ok(html.includes('<li data-bn="nav-cta"><a href="/start">Get Started</a></li>'));
-  });
-
-  it('omits the CTA item when no actions are given', () => {
-    assert.ok(!renderSiteHeader({ brand: { name: 'X' } }).includes('nav-cta'));
-  });
-
-  it('escapes the brand name', () => {
-    assertEscaped(renderSiteHeader({ brand: { name: XSS } }));
-  });
-});
-
-describe('initSiteHeader', () => {
-  function fakeDocument() {
-    const listeners = new Map();
-    return {
-      listeners,
-      activeElement: null,
-      addEventListener(type, fn) { listeners.set(type, fn); },
-      removeEventListener(type, fn) { if (listeners.get(type) === fn) listeners.delete(type); },
-      dispatch(type, event = {}) { listeners.get(type)?.({ preventDefault() {}, ...event }); },
-    };
-  }
-
-  function fakeElement(doc, bn, { children = [] } = {}) {
-    const attrs = new Map();
-    const listeners = new Map();
-    const el = {
-      bn,
-      attrs,
-      listeners,
-      ownerDocument: doc,
-      parent: null,
-      focusCount: 0,
-      hasAttribute: name => attrs.has(name),
-      getAttribute: name => attrs.get(name) ?? null,
-      setAttribute(name, value) { attrs.set(name, value); },
-      removeAttribute(name) { attrs.delete(name); },
-      addEventListener(type, fn) { listeners.set(type, fn); },
-      removeEventListener(type, fn) { if (listeners.get(type) === fn) listeners.delete(type); },
-      dispatch(type, event = {}) { listeners.get(type)?.({ target: el, preventDefault() {}, ...event }); },
-      focus() { el.focusCount++; doc.activeElement = el; },
-      matches: selector => selector === `[data-bn="${bn}"]`,
-      contains(target) {
-        let node = target;
-        while (node) {
-          if (node === el) return true;
-          node = node.parent;
-        }
-        return false;
-      },
-      querySelector(selector) {
-        for (const child of children) {
-          if (child.matches(selector)) return child;
-          const nested = child.querySelector(selector);
-          if (nested) return nested;
-        }
-        return null;
-      },
-    };
-    for (const child of children) child.parent = el;
-    return el;
-  }
-
-  function setup() {
-    const doc = fakeDocument();
-    const toggle = fakeElement(doc, 'nav-toggle');
-    toggle.setAttribute('aria-expanded', 'false');
-    const menu = fakeElement(doc, 'nav-menu');
-    const nav = fakeElement(doc, 'site-nav', { children: [toggle, menu] });
-    const header = fakeElement(doc, 'site-header', { children: [nav] });
-    const outside = fakeElement(doc, 'button');
-    return { doc, header, toggle, menu, outside };
-  }
-
-  it('the toggle button opens and closes the menu', () => {
-    const { header, toggle } = setup();
-    initSiteHeader(header);
-    toggle.dispatch('click');
-    assert.ok(header.hasAttribute('data-open'));
-    assert.equal(toggle.getAttribute('aria-expanded'), 'true');
-    toggle.dispatch('click');
-    assert.ok(!header.hasAttribute('data-open'));
-    assert.equal(toggle.getAttribute('aria-expanded'), 'false');
-  });
-
-  it('open, close and toggle drive the same state and report through onToggle', () => {
-    const { header, toggle } = setup();
-    const seen = [];
-    const handle = initSiteHeader(header, { onToggle: open => seen.push(open) });
-    handle.open();
-    handle.open();
-    handle.close();
-    handle.toggle();
-    assert.deepEqual(seen, [true, false, true], 'a no-op open does not re-report');
-    assert.ok(header.hasAttribute('data-open'));
-    assert.equal(toggle.getAttribute('aria-expanded'), 'true');
-  });
-
-  it('Escape closes the menu and returns focus to the toggle', () => {
-    const { doc, header, toggle } = setup();
-    const handle = initSiteHeader(header);
-    handle.open();
-    doc.dispatch('keydown', { key: 'Escape' });
-    assert.ok(!header.hasAttribute('data-open'));
-    assert.equal(doc.activeElement, toggle);
-    assert.equal(toggle.focusCount, 1);
-  });
-
-  it('a click outside closes the menu; a click inside does not', () => {
-    const { doc, header, menu, outside } = setup();
-    const handle = initSiteHeader(header);
-    handle.open();
-    doc.dispatch('click', { target: menu });
-    assert.ok(header.hasAttribute('data-open'), 'inside clicks keep the menu open');
-    doc.dispatch('click', { target: outside });
-    assert.ok(!header.hasAttribute('data-open'));
-  });
-
-  it('destroy unbinds the toggle and the document', () => {
-    const { doc, header, toggle } = setup();
-    const handle = initSiteHeader(header);
-    handle.destroy();
-    assert.equal(toggle.listeners.size, 0);
-    assert.equal(doc.listeners.size, 0);
-    toggle.dispatch('click');
-    assert.ok(!header.hasAttribute('data-open'));
-  });
-});
-
-describe('AppNav', () => {
-  const items = [
-    { label: 'Home', href: '/', icon: '<svg data-glyph="home"></svg>', current: true },
-    { label: 'Jobs', href: '/jobs', icon: '<svg data-glyph="jobs"></svg>' },
-    { label: 'Settings', href: '/settings' },
-  ];
-
-  it('renders one nav: brand, icon-and-label items, aria-current on the current item only', () => {
-    const html = renderAppNav({
-      brand: { name: 'GreenPut', logo: '<svg data-glyph="mark"></svg>' },
-      items,
-      actions: '<a href="/start">Get started</a>',
-    });
-    assert.ok(html.startsWith('<nav data-bn="app-nav" aria-label="Primary">'));
-    assert.ok(
-      html.includes(
-        '<a data-bn="app-nav-brand" href="/" aria-label="GreenPut home"><svg data-glyph="mark"></svg><strong>GreenPut</strong></a>'
-      )
-    );
-    assert.ok(
-      html.includes(
-        '<li><a href="/" aria-current="page"><span data-bn="app-nav-icon" aria-hidden="true"><svg data-glyph="home"></svg></span><span data-bn="app-nav-label">Home</span></a></li>'
-      )
-    );
-    assert.ok(html.includes('<div data-bn="app-nav-actions"><a href="/start">Get started</a></div>'));
-  });
-
-  it('is a single element for both postures — the fold never re-renders it', () => {
-    const html = renderAppNav({ brand: { name: 'X' }, items });
-    assert.equal(html.match(/data-bn="app-nav"/g).length, 1, 'one nav element, not a bar and a rail');
-    assert.equal(html.match(/data-bn="app-nav-list"/g).length, 1, 'one list, never duplicated per mode');
-    assert.ok(!html.includes('app-nav-bar'), 'no separate bottom-bar variant in the markup');
-    assert.ok(!html.includes('app-nav-rail'), 'no separate side-rail variant in the markup');
-  });
-
-  it('omits the brand, the actions and the icon span when they are not given', () => {
-    const html = renderAppNav({ items: [{ label: 'Jobs', href: '/jobs' }] });
-    assert.ok(!html.includes('app-nav-brand'));
-    assert.ok(!html.includes('app-nav-actions'));
-    assert.ok(!html.includes('app-nav-icon'));
-    assert.ok(html.includes('<li><a href="/jobs"><span data-bn="app-nav-label">Jobs</span></a></li>'));
-  });
-
-  it('escapes labels, hrefs and the brand name; the icon slot is trusted markup', () => {
-    assertEscaped(renderAppNav({ brand: { name: XSS }, items: [{ label: XSS, href: XSS }] }));
-    const html = renderAppNav({ items: [{ label: 'A', href: '/a', icon: '<svg></svg>' }] });
-    assert.ok(html.includes('<span data-bn="app-nav-icon" aria-hidden="true"><svg></svg></span>'));
-  });
-
-  it('ships both postures in components.css: fixed bottom bar, fixed side rail when unfolded', () => {
-    const css = readFileSync(new URL('./components.css', import.meta.url), 'utf8');
-    const section = css.slice(css.indexOf('=== App Nav ==='));
-    assert.ok(section.includes('[data-bn="app-nav"]'), 'the app-nav rules exist');
-    assert.ok(section.includes('position: fixed'), 'the nav is fixed in both postures');
-    assert.ok(
-      section.includes('@media (spanning: single-fold-vertical), (min-width: 58.6875rem)'),
-      'the unfolded class triggers on spanning a vertical fold or at 939px (58.6875rem, the Duo inner class)'
-    );
-    const rail = section.slice(section.indexOf('@media (spanning: single-fold-vertical)'));
-    assert.ok(rail.includes('inline-size: var(--size-nav-rail)'), 'the rail is the token width');
-    assert.ok(
-      rail.includes('padding-inline-start: var(--size-nav-rail)'),
-      'the clearance reserves exactly the rail width'
-    );
-    const flat = section.replace(/\s+/g, ' ');
-    assert.ok(
-      flat.includes(
-        'padding-block-end: calc( var(--size-app-nav-bar) + env(safe-area-inset-bottom, 0px) + var(--size-border) )'
-      ),
-      'the phone-class clearance reserves the bar height, the safe area and the bar border'
-    );
-    assert.ok(
-      flat.includes('scroll-padding-block-end: calc( var(--size-app-nav-bar)'),
-      'fragment jumps land the same distance clear of the bar as the page end does'
-    );
-    assert.ok(
-      rail.includes('scroll-padding-inline-start: var(--size-nav-rail)'),
-      'at the rail, fragment targets clear the rail width instead'
-    );
-  });
-
-  it('surfaces are material tokens, so a platform layer can glass the bar', () => {
-    const css = readFileSync(new URL('./components.css', import.meta.url), 'utf8');
-    const section = css.slice(css.indexOf('=== App Nav ==='));
-    assert.ok(section.includes('background: var(--color-bkg-material)'), 'the bar background is the material token');
-    assert.ok(
-      section.includes('backdrop-filter: var(--material-backdrop)'),
-      'the bar backdrop is the material token'
-    );
-    assert.ok(
-      section.includes('box-shadow: var(--shadow-material)'),
-      'the bar shadow is the material token'
-    );
-  });
-
-  describe('overflow', () => {
-    const many = [
-      { label: 'Home', href: '/', current: true },
-      { label: 'Components', href: '/components' },
-      { label: 'Showcase', href: '/showcase' },
-      { label: 'Docs', href: '/docs' },
-      { label: 'Builder', href: '/builder' },
-      { label: 'Tasks', href: '/tasks' },
-    ];
-
-    it('marks items past the bar capacity and renders a More button and sheet', () => {
-      const html = renderAppNav({ items: many, overflow: {}, id: 'site-nav' });
-      assert.equal(html.match(/data-bn-overflow/g).length, 2, 'two items past the default capacity of 4');
-      assert.ok(html.includes('<li data-bn-overflow><a href="/builder">'), 'the fifth item is marked');
-      assert.ok(html.includes('<li data-bn-overflow><a href="/tasks">'), 'the sixth item is marked');
-      assert.ok(
-        html.includes(
-          '<button type="button" data-bn="app-nav-more" aria-expanded="false" aria-haspopup="true" aria-controls="site-nav-sheet">'
-        ),
-        'the More button controls the sheet it names'
-      );
-      assert.ok(html.includes('<div data-bn="app-nav-sheet" id="site-nav-sheet" hidden>'), 'the sheet starts hidden');
-      assert.ok(html.includes('<span data-bn="app-nav-label">More</span>'), 'the button is labelled More');
-    });
-
-    it('renders the More button inside the list, in a cell of its own', () => {
-      const html = renderAppNav({ items: many, overflow: {}, id: 'site-nav' });
-      assert.ok(
-        html.includes('<li data-bn="app-nav-more-cell"><button type="button" data-bn="app-nav-more"'),
-        'the button sits in a list cell, so every bar cell is equal width and the edge insets are symmetric'
-      );
-      assert.ok(
-        html.indexOf('data-bn="app-nav-sheet"') > html.indexOf('</ul>'),
-        'the sheet stays outside the list'
-      );
-    });
-
-    it('the sheet lists exactly the overflow items, with their icons and current state', () => {
-      const html = renderAppNav({
-        items: [
-          { label: 'Home', href: '/' },
-          { label: 'Docs', href: '/docs' },
-          { label: 'Tasks', href: '/tasks', icon: '<svg data-glyph="tasks"></svg>', current: true },
-        ],
-        overflow: { after: 2 },
-      });
-      const sheet = html.slice(html.indexOf('data-bn="app-nav-sheet"'));
-      assert.ok(sheet.includes('<a href="/tasks" aria-current="page">'), 'the overflow item keeps aria-current');
-      assert.ok(sheet.includes('<svg data-glyph="tasks"></svg>'), 'the overflow item keeps its icon');
-      assert.ok(!sheet.includes('href="/docs"'), 'bar items are not repeated in the sheet');
-      assert.equal(html.match(/data-bn="app-nav-list"/g).length, 1, 'still one list for the two postures');
-    });
-
-    it('honours a custom capacity, label and glyph, and escapes the label', () => {
-      const html = renderAppNav({
-        items: many,
-        overflow: { after: 5, label: XSS, icon: '<svg data-glyph="dots"></svg>' },
-      });
-      assert.equal(html.match(/data-bn-overflow/g).length, 1, 'one item past a capacity of 5');
-      assert.ok(html.includes('<svg data-glyph="dots"></svg>'), 'the custom glyph renders');
-      assertEscaped(html);
-    });
-
-    it('renders no overflow chrome when the items fit, or when overflow is not passed', () => {
-      const fits = renderAppNav({ items, overflow: {} });
-      assert.ok(!fits.includes('app-nav-more'), 'no More button when three items fit the bar');
-      assert.ok(!fits.includes('data-bn-overflow'), 'nothing is marked when everything fits');
-      const plain = renderAppNav({ items: many });
-      assert.ok(!plain.includes('app-nav-more'), 'no More button without the option');
-      assert.ok(!plain.includes('app-nav-sheet'), 'no sheet without the option');
-    });
-
-    it('hides the overflow at phone class and restores it in the rail, in CSS', () => {
-      const css = readFileSync(new URL('./components.css', import.meta.url), 'utf8');
-      const section = css.slice(css.indexOf('=== App Nav ==='));
-      const base = section.slice(0, section.indexOf('@media (spanning: single-fold-vertical)'));
-      assert.ok(base.includes('[data-bn="app-nav-list"] li[data-bn-overflow]'), 'the marker rule exists');
-      assert.ok(base.includes('[data-bn="app-nav-more"]'), 'the button is styled');
-      assert.ok(base.includes('[data-bn="app-nav-sheet"]'), 'the sheet is styled');
-      const rail = section.slice(section.indexOf('@media (spanning: single-fold-vertical)'));
-      assert.ok(rail.includes('[data-bn="app-nav-more"]'), 'the rail addresses the More button');
-      assert.ok(rail.includes('[data-bn="app-nav-sheet"]'), 'the rail addresses the sheet');
-      assert.ok(
-        rail.includes('li[data-bn-overflow]'),
-        'the rail restores the overflow items to the list'
-      );
-      assert.ok(
-        base.includes('[data-bn="app-nav-list"] [data-bn="app-nav-more"]'),
-        'the button fills its list cell at phone class'
-      );
-      assert.ok(rail.includes('[data-bn="app-nav-more-cell"]'), 'the rail hides the More cell');
-    });
-  });
-});
-
-describe('initAppNav', () => {
-  function fakeDocument() {
-    const listeners = new Map();
-    return {
-      listeners,
-      activeElement: null,
-      addEventListener(type, fn) { listeners.set(type, fn); },
-      removeEventListener(type, fn) { if (listeners.get(type) === fn) listeners.delete(type); },
-      dispatch(type, event = {}) { listeners.get(type)?.({ preventDefault() {}, ...event }); },
-    };
-  }
-
-  function fakeElement(doc, bn, { children = [] } = {}) {
-    const attrs = new Map();
-    const listeners = new Map();
-    const el = {
-      bn,
-      attrs,
-      listeners,
-      ownerDocument: doc,
-      parent: null,
-      focusCount: 0,
-      hasAttribute: name => attrs.has(name),
-      getAttribute: name => attrs.get(name) ?? null,
-      setAttribute(name, value) { attrs.set(name, value); },
-      removeAttribute(name) { attrs.delete(name); },
-      addEventListener(type, fn) { listeners.set(type, fn); },
-      removeEventListener(type, fn) { if (listeners.get(type) === fn) listeners.delete(type); },
-      dispatch(type, event = {}) { listeners.get(type)?.({ target: el, preventDefault() {}, ...event }); },
-      focus() { el.focusCount++; doc.activeElement = el; },
-      matches: selector => selector === `[data-bn="${bn}"]`,
-      contains(target) {
-        let node = target;
-        while (node) {
-          if (node === el) return true;
-          node = node.parent;
-        }
-        return false;
-      },
-      querySelector(selector) {
-        for (const child of children) {
-          if (child.matches(selector)) return child;
-          const nested = child.querySelector(selector);
-          if (nested) return nested;
-        }
-        return null;
-      },
-    };
-    for (const child of children) child.parent = el;
-    return el;
-  }
-
-  function setup() {
-    const doc = fakeDocument();
-    const more = fakeElement(doc, 'app-nav-more');
-    more.setAttribute('aria-expanded', 'false');
-    const sheet = fakeElement(doc, 'app-nav-sheet');
-    sheet.setAttribute('hidden', '');
-    const nav = fakeElement(doc, 'app-nav', { children: [more, sheet] });
-    const outside = fakeElement(doc, 'button');
-    return { doc, nav, more, sheet, outside };
-  }
-
-  it('the More button opens and closes the sheet', () => {
-    const { nav, more, sheet } = setup();
-    initAppNav(nav);
-    more.dispatch('click');
-    assert.ok(nav.hasAttribute('data-open'));
-    assert.equal(more.getAttribute('aria-expanded'), 'true');
-    assert.ok(!sheet.hasAttribute('hidden'), 'opening lifts the sheet hidden attribute');
-    more.dispatch('click');
-    assert.ok(!nav.hasAttribute('data-open'));
-    assert.equal(more.getAttribute('aria-expanded'), 'false');
-    assert.ok(sheet.hasAttribute('hidden'), 'closing restores the sheet hidden attribute');
-  });
-
-  it('open, close and toggle drive the same state and report through onToggle', () => {
-    const { nav } = setup();
-    const seen = [];
-    const handle = initAppNav(nav, { onToggle: open => seen.push(open) });
-    handle.open();
-    handle.open();
-    handle.close();
-    handle.toggle();
-    assert.deepEqual(seen, [true, false, true], 'a no-op open does not re-report');
-    assert.ok(nav.hasAttribute('data-open'));
-  });
-
-  it('Escape closes the sheet and returns focus to the More button', () => {
-    const { doc, nav, more } = setup();
-    const handle = initAppNav(nav);
-    handle.open();
-    doc.dispatch('keydown', { key: 'Escape' });
-    assert.ok(!nav.hasAttribute('data-open'));
-    assert.equal(doc.activeElement, more);
-    assert.equal(more.focusCount, 1);
-  });
-
-  it('an outside click closes the sheet; an inside click keeps it open', () => {
-    const { doc, nav, more, outside } = setup();
-    const handle = initAppNav(nav);
-    handle.open();
-    doc.dispatch('click', { target: more });
-    assert.ok(nav.hasAttribute('data-open'), 'inside clicks keep the sheet open');
-    doc.dispatch('click', { target: outside });
-    assert.ok(!nav.hasAttribute('data-open'), 'outside clicks close it');
-  });
-
-  it('destroy unbinds the button and the document', () => {
-    const { doc, nav, more } = setup();
-    const handle = initAppNav(nav);
-    handle.destroy();
-    assert.equal(more.listeners.size, 0);
-    assert.equal(doc.listeners.size, 0);
-    more.dispatch('click');
-    assert.ok(!nav.hasAttribute('data-open'));
-  });
-
-  it('is a no-op handle over a nav rendered without overflow', () => {
-    const doc = fakeDocument();
-    const nav = fakeElement(doc, 'app-nav');
-    const handle = initAppNav(nav);
-    handle.open();
-    assert.ok(nav.hasAttribute('data-open'), 'state still tracks without a button or sheet');
-    handle.destroy();
-  });
-
-  it('keeps the bar clear of the on-screen keyboard through the visual viewport', () => {
-    const doc = fakeDocument();
-    const vvListeners = new Map();
-    const vv = {
-      height: 844,
-      offsetTop: 0,
-      scale: 1,
-      addEventListener(type, fn) { vvListeners.set(type, fn); },
-      removeEventListener(type, fn) { if (vvListeners.get(type) === fn) vvListeners.delete(type); },
-      dispatch(type) { vvListeners.get(type)?.(); },
-    };
-    doc.defaultView = { innerHeight: 844, visualViewport: vv };
-    const nav = fakeElement(doc, 'app-nav');
-    const props = new Map();
-    nav.style = {
-      setProperty(name, value) { props.set(name, value); },
-      removeProperty(name) { props.delete(name); },
-    };
-    const handle = initAppNav(nav);
-    assert.equal(props.get('--size-app-nav-visual-inset'), '0px', 'no keyboard: no inset');
-    vv.height = 508; // the keyboard covers the layout viewport's lower 336px
-    vv.dispatch('resize');
-    assert.equal(
-      props.get('--size-app-nav-visual-inset'),
-      '336px',
-      'the covered strip becomes the bar offset'
-    );
-    vv.scale = 1.6; // pinch-zoom also shrinks the visual viewport, covering nothing
-    vv.dispatch('scroll');
-    assert.equal(props.get('--size-app-nav-visual-inset'), '0px', 'pinch-zoom reports no inset');
-    vv.scale = 1;
-    vv.height = 844;
-    vv.dispatch('resize');
-    assert.equal(props.get('--size-app-nav-visual-inset'), '0px', 'keyboard dismissed: inset clears');
-    handle.destroy();
-    assert.equal(vvListeners.size, 0, 'destroy unbinds the visual viewport');
-    assert.ok(!props.has('--size-app-nav-visual-inset'), 'destroy removes the inset');
-  });
-
-  it('holds the largest inset while a text field is focused, against a late under-report', () => {
-    const doc = fakeDocument();
-    const vvListeners = new Map();
-    const vv = {
-      height: 844,
-      offsetTop: 0,
-      scale: 1,
-      addEventListener(type, fn) { vvListeners.set(type, fn); },
-      removeEventListener(type, fn) { if (vvListeners.get(type) === fn) vvListeners.delete(type); },
-      dispatch(type) { vvListeners.get(type)?.(); },
-    };
-    doc.defaultView = { innerHeight: 844, visualViewport: vv };
-    const nav = fakeElement(doc, 'app-nav');
-    const props = new Map();
-    nav.style = {
-      setProperty(name, value) { props.set(name, value); },
-      removeProperty(name) { props.delete(name); },
-    };
-    const field = fakeElement(doc, 'input');
-    field.tagName = 'INPUT';
-    initAppNav(nav);
-    field.focus();
-    vv.height = 508; // keyboard fully open: 336px covered
-    vv.dispatch('resize');
-    assert.equal(props.get('--size-app-nav-visual-inset'), '336px');
-    vv.height = 560; // a later stage under-reports (assistant bar not yet counted)
-    vv.dispatch('scroll');
-    assert.equal(
-      props.get('--size-app-nav-visual-inset'),
-      '336px',
-      'while typing, the inset may only grow — the bar cannot sink back into the keyboard'
-    );
-    vv.height = 844; // keyboard dismissed
-    vv.dispatch('resize');
-    assert.equal(props.get('--size-app-nav-visual-inset'), '0px', 'a measured zero always clears the hold');
-  });
-
-  it('re-syncs on focusin, before any visual-viewport event fires', () => {
-    const doc = fakeDocument();
-    const vv = {
-      height: 844,
-      offsetTop: 0,
-      scale: 1,
-      addEventListener() {},
-      removeEventListener() {},
-    };
-    doc.defaultView = { innerHeight: 844, visualViewport: vv };
-    const nav = fakeElement(doc, 'app-nav');
-    const props = new Map();
-    nav.style = {
-      setProperty(name, value) { props.set(name, value); },
-      removeProperty(name) { props.delete(name); },
-    };
-    initAppNav(nav);
-    assert.equal(props.get('--size-app-nav-visual-inset'), '0px');
-    vv.height = 508; // the keyboard opened without a vv event reaching the page
-    doc.dispatch('focusin');
-    assert.equal(
-      props.get('--size-app-nav-visual-inset'),
-      '336px',
-      'focus is the earliest keyboard signal — the bar moves with it'
-    );
-  });
-});
-
-describe('ListGroup', () => {
-  it('renders a headed group: link rows with chevrons, fact rows with values', () => {
-    const html = renderListGroup({
-      header: 'Packages',
-      footer: 'Every package has a generated reference.',
-      items: [
-        { label: '@basenative/runtime', href: '/docs/runtime', value: 'core' },
-        { label: 'Version', value: '2.2.0' },
-      ],
-    });
-    assert.ok(html.startsWith('<section data-bn="list-group">'));
-    assert.ok(html.includes('<h2 data-bn="list-group-header">Packages</h2>'));
-    assert.ok(html.includes('<ul data-bn="list-group-rows">'));
-    assert.ok(
-      html.includes('<a data-bn="list-group-row" href="/docs/runtime">'),
-      'an href makes the row a link'
-    );
-    assert.ok(html.includes('data-bn="list-group-chevron"'), 'link rows grow a chevron');
-    assert.ok(
-      html.includes('<span data-bn="list-group-value">core</span>'),
-      'the value rides the trailing edge'
-    );
-    assert.ok(
-      html.includes('<span data-bn="list-group-row">'),
-      'a row without an href is a fact, not a link'
-    );
-    assert.ok(html.includes('<p data-bn="list-group-footer">Every package has a generated reference.</p>'));
-  });
-
-  it('honours the heading level, marks the current row, and labels an unheaded group', () => {
-    const html = renderListGroup({
-      headingLevel: 3,
-      header: 'Related',
-      items: [{ label: 'Button', href: '/components/button', current: true }],
-    });
-    assert.ok(html.includes('<h3 data-bn="list-group-header">Related</h3>'));
-    assert.ok(html.includes('aria-current="page"'), 'the current row is announced');
-
-    const bare = renderListGroup({ label: 'Settings', items: [{ label: 'Theme', value: 'Dark' }] });
-    assert.ok(bare.includes('<section data-bn="list-group" aria-label="Settings">'));
-    assert.ok(!bare.includes('list-group-header'), 'no header element without a header');
-    assert.ok(!bare.includes('list-group-footer'), 'no footer without a footer');
-  });
-
-  it('renders the icon slot and escapes labels, values and hrefs', () => {
-    const html = renderListGroup({
-      header: XSS,
-      items: [{ label: XSS, href: XSS, value: XSS, icon: '<svg></svg>' }],
-    });
-    assert.ok(html.includes('<span data-bn="list-group-icon" aria-hidden="true"><svg></svg></span>'));
-    assertEscaped(html);
-  });
-
-  it('ships the grouped surface in components.css: raised rows, inset separators', () => {
-    const css = readFileSync(new URL('./components.css', import.meta.url), 'utf8');
-    const section = css.slice(css.indexOf('=== List Group ==='), css.indexOf('=== Combobox ==='));
-    assert.ok(section.includes('background: var(--color-surface-card)'), 'rows sit on the raised surface');
-    assert.ok(section.includes('[data-bn="list-group-rows"]'), 'the rows surface is styled');
-    assert.ok(section.includes('margin-inline-start: var(--spacing-4)'), 'separators inset to the label edge');
-  });
-});
-
-describe('SiteFooter', () => {
-  it('renders brand, link columns and the legal bar', () => {
-    const html = renderSiteFooter({
-      brand: { name: 'Greenput', tagline: 'The operating system for trade contractors.' },
-      columns: [
-        {
-          heading: 'Product',
-          label: 'Footer product navigation',
-          links: [
-            { label: 'Features', href: '/features' },
-            { label: 'GitHub', href: 'https://github.com/DuganLabs', external: true },
-          ],
-        },
-      ],
-      legal: { text: '© 2026 Greenput', links: [{ label: 'Privacy', href: '/privacy' }] },
-    });
-    assert.ok(html.startsWith('<footer data-bn="site-footer">'));
-    assert.ok(html.includes('<div data-bn="footer-brand">'));
-    assert.ok(html.includes('The operating system for trade contractors.'));
-    assert.ok(html.includes('<nav aria-label="Footer product navigation">'));
-    assert.ok(html.includes('<h2>Product</h2>'));
-    assert.ok(html.includes('<a href="https://github.com/DuganLabs" rel="noopener noreferrer">GitHub</a>'));
-    assert.ok(html.includes('<div data-bn="footer-bottom">'));
-    assert.ok(html.includes('<div data-bn="container">'));
-    assert.ok(html.includes('<p>© 2026 Greenput</p>'));
-    assert.ok(html.includes('<nav aria-label="Legal" data-bn="footer-legal"><a href="/privacy">Privacy</a></nav>'));
-  });
-
-  it('omits the legal bar when no legal content is given', () => {
-    assert.ok(!renderSiteFooter({ brand: { name: 'X' } }).includes('footer-bottom'));
-  });
-
-  it('escapes headings, labels and the legal text', () => {
-    const html = renderSiteFooter({
-      columns: [{ heading: XSS, links: [{ label: XSS, href: '/x' }] }],
-      legal: { text: XSS },
-    });
-    assertEscaped(html);
-  });
-});
-
-describe('AppShell', () => {
-  it('renders the skip link, header, main and footer in order', () => {
-    const html = renderAppShell({ header: '<header>H</header>', main: '<p>Body</p>', footer: '<footer>F</footer>' });
-    assert.ok(html.startsWith('<a data-bn="skip-link" href="#main-content">Skip to main content</a>'));
-    assert.ok(html.includes('<main id="main-content" data-bn="app-main"><p>Body</p></main>'));
-    assert.ok(html.indexOf('<header>H</header>') < html.indexOf('<main'));
-    assert.ok(html.indexOf('<footer>F</footer>') > html.indexOf('</main>'));
-  });
-
-  it('the skip link always targets the main id it renders', () => {
-    const html = renderAppShell({ mainId: 'content', skipText: 'Skip to content' });
-    assert.ok(html.includes('<a data-bn="skip-link" href="#content">Skip to content</a>'));
-    assert.ok(html.includes('<main id="content"'));
-  });
-});
-
-describe('Hero', () => {
-  it('renders the full hero: badge, heading, lead, actions, proof and visual', () => {
-    const html = renderHero({
-      id: 'hero',
-      badge: 'Now in beta',
-      heading: 'The Operating System<br />for Trade Contractors',
-      leadText: 'Tools to run the business.',
-      actions: '<a href="/start">Get Started</a>',
-      proof: 'Built with working contractors.',
-      visual: '<div>Preview</div>',
-    });
-    assert.ok(html.startsWith('<section data-bn="hero" id="hero" aria-labelledby="hero-heading">'));
-    assert.ok(html.includes('<p data-bn="hero-badge"><span>Now in beta</span></p>'));
-    assert.ok(html.includes('<h1 id="hero-heading">The Operating System<br />for Trade Contractors</h1>'));
-    assert.ok(html.includes('<p data-bn="lead">Tools to run the business.</p>'));
-    assert.ok(html.includes('<div data-bn="hero-actions"><a href="/start">Get Started</a></div>'));
-    assert.ok(html.includes('<p data-bn="hero-social-proof">Built with working contractors.</p>'));
-    assert.ok(html.includes('<div data-bn="hero-visual"><div>Preview</div></div>'));
-  });
-
-  it('omits the optional blocks when they are not given', () => {
-    const html = renderHero({ headingText: 'Hello' });
-    assert.ok(!html.includes('hero-badge'));
-    assert.ok(!html.includes('hero-actions'));
-    assert.ok(!html.includes('hero-visual'));
-    assert.ok(!html.includes('data-bn="lead"'));
-  });
-
-  it('headingText and leadText are escaped and win over the slots', () => {
-    assertEscaped(renderHero({ heading: '<b>slot</b>', headingText: XSS, leadText: XSS }));
-  });
-
-  it('the page variant renders the compact page-hero shape', () => {
-    const html = renderHero({ variant: 'page', id: 'ph', headingText: 'Features', leadText: 'All of them.' });
-    assert.ok(html.startsWith('<section data-bn="page-hero" id="ph" aria-labelledby="ph-heading">'));
-    assert.ok(html.includes('<h1 id="ph-heading">Features</h1>'));
-    assert.ok(html.includes('<p data-bn="lead">All of them.</p>'));
-    assert.ok(!html.includes('hero-content'));
-    assert.ok(!html.includes('hero-visual'));
-  });
-});
-
-describe('PricingCard', () => {
-  const plan = {
-    name: 'Lead Delivery',
-    badge: 'Core revenue model',
-    priceLabel: 'Per delivered lead',
-    priceNote: 'priced per trade vertical',
-    tagline: 'You pay for booked jobs, not bought leads.',
-    features: ['Qualified and scheduled', 'Tracked to outcome'],
-    cta: { label: 'Get Started', href: '/start' },
-  };
-
-  it('renders the plan with badge, price, tagline, features and CTA', () => {
-    const html = renderPricingCard(plan);
-    assert.ok(html.startsWith('<article data-bn="pricing-card">'));
-    assert.ok(html.includes('<p data-bn="plan-badge">Core revenue model</p>'));
-    assert.ok(html.includes('<h3>Lead Delivery</h3>'));
-    assert.ok(html.includes('<p data-bn="plan-price"><strong>Per delivered lead</strong>'));
-    assert.ok(html.includes('<span data-bn="plan-price-note">priced per trade vertical</span>'));
-    assert.ok(html.includes('<p data-bn="plan-tagline">You pay for booked jobs, not bought leads.</p>'));
-    assert.ok(html.includes('<ul data-bn="plan-features">'));
-    assert.ok(html.includes('Qualified and scheduled'));
-    assert.ok(html.includes('<a href="/start" data-bn="button" data-variant="ghost" data-full>Get Started</a>'));
-    assert.ok(!html.includes('data-featured'), 'an unfeatured plan carries no featured stamp');
-  });
-
-  it('a featured plan is stamped and its CTA defaults to primary', () => {
-    const html = renderPricingCard({ ...plan, featured: true });
-    assert.ok(html.includes('<article data-bn="pricing-card" data-featured="">'));
-    assert.ok(html.includes('data-variant="primary"'));
-  });
-
-  it('escapes plan copy', () => {
-    assertEscaped(renderPricingCard({ name: XSS, priceLabel: XSS, features: [XSS] }));
-  });
-
-  it('renderPricingCards renders the list shape with one li per plan', () => {
-    const html = renderPricingCards({ plans: [plan, { ...plan, name: 'Platform' }] });
-    assert.ok(html.startsWith('<ul data-bn="pricing-cards">'));
-    assert.equal((html.match(/<li data-bn="pricing-card"/g) || []).length, 2);
-    assert.ok(html.includes('<h3>Platform</h3>'));
-  });
-});
-
-describe('FeatureCard', () => {
-  it('renders icon, tag, title and text', () => {
-    const html = renderFeatureCard({
-      icon: '<svg></svg>',
-      tag: 'Scheduling',
-      title: 'Booked, not bought',
-      text: 'Jobs land in the schedule.',
-    });
-    assert.ok(html.startsWith('<article data-bn="feature-card">'));
-    assert.ok(html.includes('<div data-bn="feature-icon" aria-hidden="true"><svg></svg></div>'));
-    assert.ok(html.includes('<p data-bn="feature-tag">Scheduling</p>'));
-    assert.ok(html.includes('<h3>Booked, not bought</h3>'));
-    assert.ok(html.includes('<p>Jobs land in the schedule.</p>'));
-  });
-
-  it('the body slot replaces the text paragraph', () => {
-    const html = renderFeatureCard({ title: 'T', text: 'plain', body: '<p><em>rich</em></p>' });
-    assert.ok(html.includes('<p><em>rich</em></p>'));
-    assert.ok(!html.includes('plain'));
-  });
-
-  it('escapes the title and text', () => {
-    assertEscaped(renderFeatureCard({ title: XSS, text: XSS }));
-  });
-});
-
-describe('StatCard', () => {
-  it('renders value and label without a trend span by default', () => {
-    const html = renderStatCard({ value: '1,248', label: 'Jobs booked' });
-    assert.ok(html.startsWith('<div data-bn="stat-card">'));
-    assert.ok(html.includes('<span data-bn="stat-value">1,248</span>'));
-    assert.ok(html.includes('<span data-bn="stat-label">Jobs booked</span>'));
-    assert.ok(!html.includes('stat-growth'));
-  });
-
-  it('renders the trend with its direction', () => {
-    const up = renderStatCard({ value: '10', label: 'L', trendText: '+12%' });
-    assert.ok(up.includes('<span data-bn="stat-growth" data-trend="up">+12%</span>'));
-    const down = renderStatCard({ value: '10', label: 'L', trendText: '-3%', trend: 'down' });
-    assert.ok(down.includes('data-trend="down"'));
-  });
-
-  it('escapes value, label and trend text', () => {
-    assertEscaped(renderStatCard({ value: XSS, label: XSS, trendText: XSS }));
-  });
-});
-
-describe('Faq', () => {
-  it('renderFaqItem renders the dt/dd pair inside the faq-item wrapper', () => {
-    const html = renderFaqItem({ question: 'What does it cost?', answerText: 'One price per delivered lead.' });
-    assert.equal(
-      html,
-      '<div data-bn="faq-item"><dt>What does it cost?</dt><dd>One price per delivered lead.</dd></div>'
-    );
-  });
-
-  it('the answer slot is markup; answerText is escaped and wins', () => {
-    const slot = renderFaqItem({ question: 'Q', answer: '<a href="/pricing">Pricing</a>' });
-    assert.ok(slot.includes('<dd><a href="/pricing">Pricing</a></dd>'));
-    assertEscaped(renderFaqItem({ question: XSS, answer: '<b>slot</b>', answerText: XSS }));
-  });
-
-  it('renderFaq renders the dl with one item per entry', () => {
-    const html = renderFaq({
-      items: [
-        { question: 'One?', answerText: 'First.' },
-        { question: 'Two?', answerText: 'Second.' },
-      ],
-    });
-    assert.ok(html.startsWith('<dl data-bn="faq-list">'));
-    assert.equal((html.match(/data-bn="faq-item"/g) || []).length, 2);
+    const toaster = createToaster({ duration: 0 });
+    const first = toaster.push({ message: 'One' });
+    const second = toaster.push({ message: 'Two' });
+    assert.equal(first, 'bn-toast-1');
+    assert.equal(second, 'bn-toast-2');
+    assert.equal(toaster.push({ id: 'mine', message: 'Three' }), 'mine');
+    assert.equal(toaster.items().length, 3);
+    toaster.dismiss(first);
+    assert.deepEqual(toaster.items().map((item) => item.id), ['bn-toast-2', 'mine']);
+  });
+
+  it('auto-dismisses after the item duration; duration 0 persists', async () => {
+    const toaster = createToaster({ duration: 5 });
+    toaster.push({ message: 'Quick' });
+    const sticky = createToaster({ duration: 0 });
+    sticky.push({ message: 'Sticky' });
+    await new Promise((resolve) => setTimeout(resolve, 30));
+    assert.equal(toaster.items().length, 0);
+    assert.equal(sticky.items().length, 1);
   });
 });

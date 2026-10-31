@@ -1,6 +1,7 @@
 // @ts-check
 import { signal } from '@basenative/runtime';
 import { raw } from '@basenative/runtime/shared/escape';
+import { nextId } from '../ids.js';
 
 export const name = 'toast';
 export const root = 'ol';
@@ -44,21 +45,30 @@ export function create(props) {
 }
 
 /**
- * The toaster: the app's toast queue as a view model. push() appends
- * and returns the item's id; dismiss(id) removes it. Timing (auto-
- * dismiss) is the app's policy, not the component's.
+ * The toaster: the app's toast queue as a view model, ported from the
+ * legacy toast module. push() appends an item, gives it a
+ * deterministic id (`bn-toast-<n>`, or the caller's own `id`) and
+ * returns the id; the item auto-dismisses after its duration (the
+ * item's own, else the toaster's default of 5000ms; 0 keeps it until
+ * dismissed). dismiss(id) removes by id.
+ *
+ * @param {object} [options]
+ * @param {number} [options.duration] Default auto-dismiss ms.
  */
-export function createToaster() {
+export function createToaster(options = {}) {
+  const defaultDuration = options.duration ?? 5000;
   const items = signal(/** @type {ToastItem[]} */ ([]));
-  let nextId = 0;
-  const push = (/** @type {ToastItem} */ item) => {
-    nextId += 1;
-    const id = `toast-${nextId}`;
-    items.set([...items(), { ...item, dismissHtml: item.dismissHtml ?? '' }]);
-    return id;
+  const dismiss = (/** @type {string} */ id) => {
+    items.set(items().filter((item) => (/** @type {ToastItem & { id?: string }} */ (item).id) !== id));
   };
-  const dismiss = (/** @type {number} */ index) => {
-    items.set(items().filter((_, i) => i !== index));
+  const push = (/** @type {ToastItem & { id?: string, duration?: number }} */ item) => {
+    const id = item.id ?? nextId('toast');
+    items.set([...items(), { ...item, id, dismissHtml: item.dismissHtml ?? '' }]);
+    const duration = item.duration ?? defaultDuration;
+    if (duration > 0 && typeof setTimeout === 'function') {
+      setTimeout(() => dismiss(id), duration);
+    }
+    return id;
   };
   return { items, push, dismiss };
 }

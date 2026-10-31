@@ -2,15 +2,15 @@
   <menu :variant="variant()" :aria-label="label()">
     <template @for="item of items()">
       <template @if="item.separator">
-        <li><hr></li>
+        <li role="none"><hr></li>
       </template>
       <template @else>
-        <li>
+        <li role="none">
           <template @if="item.href">
-            <a :href="item.href">{{ item.label }}</a>
+            <a role="menuitem" :href="item.href" :aria-disabled="isDisabled(item)" @click="activate(item)" @keydown="onKeydown($event)">{{ item.label }}</a>
           </template>
           <template @else>
-            <button type="button">{{ item.label }}</button>
+            <button type="button" role="menuitem" :aria-disabled="isDisabled(item)" @click="activate(item)" @keydown="onKeydown($event)">{{ item.label }}</button>
           </template>
         </li>
       </template>

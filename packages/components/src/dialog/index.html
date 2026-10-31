@@ -1,5 +1,5 @@
 <template>
-  <dialog :variant="variant()" :aria-label="title()">
+  <dialog :variant="variant()" :id="idAttr()" :aria-label="title()" @click="onBackdropClick($event)">
     <header>
       <h2>{{ title() }}</h2>
       {{ raw(closeHtml()) }}

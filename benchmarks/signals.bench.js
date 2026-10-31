@@ -41,8 +41,8 @@ bench('Computed derivation', () => {
 
 bench('Effect subscription', () => {
   const s = signal(0);
-  let count = 0;
-  const e = effect(() => { count += s(); });
+  let _count = 0;
+  const e = effect(() => { _count += s(); });
   for (let i = 0; i < 100; i++) {
     s.set(i);
   }

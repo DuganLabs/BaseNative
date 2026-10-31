@@ -1,6 +1,7 @@
 // @ts-check
 import { signal, computed } from '@basenative/runtime';
 import { raw } from '@basenative/runtime/shared/escape';
+import { createDialogBehavior } from '../internal/dialog.js';
 
 export const name = 'drawer';
 export const root = 'dialog';
@@ -15,6 +16,9 @@ export const root = 'dialog';
  * @typedef {object} DrawerProps
  * @property {string} title
  * @property {string} [body]
+ * @property {string} [id] The dialog element's id — lets a host open
+ *   it from a trigger outside the drawer.
+ * @property {(open: boolean) => void} [onChange]
  * @property {string} [closeHtml] A rendered close button.
  * @property {string} [footerHtml] Rendered footer content.
  * @property {string} [variant] A registered variant name.
@@ -30,8 +34,13 @@ export function create(props) {
   const footerHtml = signal(props.footerHtml ?? '');
   const variant = signal(props.variant ?? 'drawer');
   const hasFooter = computed(() => footerHtml() !== '');
+  const behavior = createDialogBehavior(props);
 
-  return { title, body, closeHtml, footerHtml, variant, hasFooter, raw };
+  return {
+    title, body, closeHtml, footerHtml, variant, hasFooter, raw,
+    idAttr: behavior.idAttr, show: behavior.show, close: behavior.close,
+    isOpen: behavior.isOpen, onBackdropClick: behavior.onBackdropClick,
+  };
 }
 
 /** @param {import('../registry.js').Registry} registry */

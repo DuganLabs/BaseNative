@@ -1,12 +1,212 @@
 {
   "name": "@basenative/components",
   "version": "2.4.0",
-  "description": "15 semantic HTML UI components rendered as strings (forms, data grids, dialogs, calendar and kanban) with cascade-layer CSS, design tokens, light/dark themes and density scales",
+  "description": "47 semantic HTML UI components as Holy Trinity modules (template, token-driven styles, signal view model) with a registry/loader for server assembly, design tokens and light/dark themes",
   "type": "module",
   "exports": {
     ".": {
       "types": "./types/index.d.ts",
       "default": "./src/index.js"
+    },
+    "./registry": {
+      "types": "./types/registry.d.ts",
+      "default": "./src/registry.js"
+    },
+    "./loader": {
+      "types": "./types/loader.d.ts",
+      "default": "./src/loader.js"
+    },
+    "./ids": {
+      "types": "./types/ids.d.ts",
+      "default": "./src/ids.js"
+    },
+    "./accordion": {
+      "types": "./types/accordion.d.ts",
+      "default": "./src/accordion/index.js"
+    },
+    "./alert": {
+      "types": "./types/alert.d.ts",
+      "default": "./src/alert/index.js"
+    },
+    "./app-bar": {
+      "types": "./types/app-bar.d.ts",
+      "default": "./src/app-bar/index.js"
+    },
+    "./app-shell": {
+      "types": "./types/app-shell.d.ts",
+      "default": "./src/app-shell/index.js"
+    },
+    "./avatar": {
+      "types": "./types/avatar.d.ts",
+      "default": "./src/avatar/index.js"
+    },
+    "./badge": {
+      "types": "./types/badge.d.ts",
+      "default": "./src/badge/index.js"
+    },
+    "./breadcrumb": {
+      "types": "./types/breadcrumb.d.ts",
+      "default": "./src/breadcrumb/index.js"
+    },
+    "./button": {
+      "types": "./types/button.d.ts",
+      "default": "./src/button/index.js"
+    },
+    "./calendar": {
+      "types": "./types/calendar.d.ts",
+      "default": "./src/calendar/index.js"
+    },
+    "./card": {
+      "types": "./types/card.d.ts",
+      "default": "./src/card/index.js"
+    },
+    "./checkbox": {
+      "types": "./types/checkbox.d.ts",
+      "default": "./src/checkbox/index.js"
+    },
+    "./choice-group": {
+      "types": "./types/choice-group.d.ts",
+      "default": "./src/choice-group/index.js"
+    },
+    "./code-block": {
+      "types": "./types/code-block.d.ts",
+      "default": "./src/code-block/index.js"
+    },
+    "./combobox": {
+      "types": "./types/combobox.d.ts",
+      "default": "./src/combobox/index.js"
+    },
+    "./command-palette": {
+      "types": "./types/command-palette.d.ts",
+      "default": "./src/command-palette/index.js"
+    },
+    "./datagrid": {
+      "types": "./types/datagrid.d.ts",
+      "default": "./src/datagrid/index.js"
+    },
+    "./dialog": {
+      "types": "./types/dialog.d.ts",
+      "default": "./src/dialog/index.js"
+    },
+    "./drawer": {
+      "types": "./types/drawer.d.ts",
+      "default": "./src/drawer/index.js"
+    },
+    "./dropdown-menu": {
+      "types": "./types/dropdown-menu.d.ts",
+      "default": "./src/dropdown-menu/index.js"
+    },
+    "./empty-state": {
+      "types": "./types/empty-state.d.ts",
+      "default": "./src/empty-state/index.js"
+    },
+    "./field": {
+      "types": "./types/field.d.ts",
+      "default": "./src/field/index.js"
+    },
+    "./form": {
+      "types": "./types/form.d.ts",
+      "default": "./src/form/index.js"
+    },
+    "./hero": {
+      "types": "./types/hero.d.ts",
+      "default": "./src/hero/index.js"
+    },
+    "./input": {
+      "types": "./types/input.d.ts",
+      "default": "./src/input/index.js"
+    },
+    "./list-group": {
+      "types": "./types/list-group.d.ts",
+      "default": "./src/list-group/index.js"
+    },
+    "./multiselect": {
+      "types": "./types/multiselect.d.ts",
+      "default": "./src/multiselect/index.js"
+    },
+    "./pagination": {
+      "types": "./types/pagination.d.ts",
+      "default": "./src/pagination/index.js"
+    },
+    "./pipeline": {
+      "types": "./types/pipeline.d.ts",
+      "default": "./src/pipeline/index.js"
+    },
+    "./progress": {
+      "types": "./types/progress.d.ts",
+      "default": "./src/progress/index.js"
+    },
+    "./radio": {
+      "types": "./types/radio.d.ts",
+      "default": "./src/radio/index.js"
+    },
+    "./rating": {
+      "types": "./types/rating.d.ts",
+      "default": "./src/rating/index.js"
+    },
+    "./search-field": {
+      "types": "./types/search-field.d.ts",
+      "default": "./src/search-field/index.js"
+    },
+    "./segmented-control": {
+      "types": "./types/segmented-control.d.ts",
+      "default": "./src/segmented-control/index.js"
+    },
+    "./select": {
+      "types": "./types/select.d.ts",
+      "default": "./src/select/index.js"
+    },
+    "./sidebar": {
+      "types": "./types/sidebar.d.ts",
+      "default": "./src/sidebar/index.js"
+    },
+    "./site-footer": {
+      "types": "./types/site-footer.d.ts",
+      "default": "./src/site-footer/index.js"
+    },
+    "./stepper": {
+      "types": "./types/stepper.d.ts",
+      "default": "./src/stepper/index.js"
+    },
+    "./table": {
+      "types": "./types/table.d.ts",
+      "default": "./src/table/index.js"
+    },
+    "./tabs": {
+      "types": "./types/tabs.d.ts",
+      "default": "./src/tabs/index.js"
+    },
+    "./textarea": {
+      "types": "./types/textarea.d.ts",
+      "default": "./src/textarea/index.js"
+    },
+    "./theme-toggle": {
+      "types": "./types/theme-toggle.d.ts",
+      "default": "./src/theme-toggle/index.js"
+    },
+    "./toast": {
+      "types": "./types/toast.d.ts",
+      "default": "./src/toast/index.js"
+    },
+    "./toggle": {
+      "types": "./types/toggle.d.ts",
+      "default": "./src/toggle/index.js"
+    },
+    "./toolbar": {
+      "types": "./types/toolbar.d.ts",
+      "default": "./src/toolbar/index.js"
+    },
+    "./tooltip": {
+      "types": "./types/tooltip.d.ts",
+      "default": "./src/tooltip/index.js"
+    },
+    "./tree": {
+      "types": "./types/tree.d.ts",
+      "default": "./src/tree/index.js"
+    },
+    "./virtualizer": {
+      "types": "./types/virtualizer.d.ts",
+      "default": "./src/virtualizer/index.js"
     },
     "./css": "./src/index.css",
     "./layers.css": "./src/layers.css",

@@ -1097,6 +1097,24 @@
       }
     }
   },
+  "flex-basis-zero": {
+    "$value": "0",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "flex-basis-zero",
+          "type": null,
+          "item": null,
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "flex-none": {
     "$value": "none",
     "$type": "string",
@@ -1122,6 +1140,24 @@
       "com.basenative": {
         "taxonomy": {
           "category": "white-space-nowrap",
+          "type": null,
+          "item": null,
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "white-space-normal": {
+    "$value": "normal",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "white-space-normal",
           "type": null,
           "item": null,
           "variant": null,

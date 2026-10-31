@@ -13,6 +13,7 @@ const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 /**
  * @typedef {object} CalendarEvent
+ * @property {string} [id] Move identity (defaults to the title).
  * @property {string} date ISO date (yyyy-mm-dd) the event falls on.
  * @property {string} title
  * @property {string} at ISO datetime for the <time> element.
@@ -24,6 +25,8 @@ const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
  * @property {string} [today] ISO date marked as today (defaults to the real today).
  * @property {string} [selected] ISO date marked selected.
  * @property {CalendarEvent[]} [events] Schedule-mode data.
+ * @property {(drop: { eventId: string, date: string, hour: number, minute: number, datetime: string, sourceType: string }) => void} [onDrop]
+ *   Reports a moveEvent with the legacy drag-and-drop payload shape.
  * @property {string} [prevHtml] A rendered previous-month button.
  * @property {string} [nextHtml] A rendered next-month button.
  * @property {string} [bodyHtml] Month mode: the rendered month table
@@ -78,10 +81,15 @@ export function create(props) {
     return grid;
   });
 
+  const events = signal(props.events ?? []);
+  /* The last move's announcement, for the host's live region — the
+     legacy initialiser wrote these into its status element. */
+  const status = signal('');
+
   const days = computed(() => {
     /** @type {Map<string, CalendarEvent[]>} */
     const byDate = new Map();
-    for (const event of props.events ?? []) {
+    for (const event of events()) {
       const list = byDate.get(event.date) ?? [];
       list.push(event);
       byDate.set(event.date, list);
@@ -95,7 +103,42 @@ export function create(props) {
       });
   });
 
-  return { title, prevHtml, nextHtml, bodyHtml, variant, isMonth, weeks, days, raw };
+  /**
+   * Move an event to a new date/time — the model half of the legacy
+   * drag-and-drop and keyboard select-then-place paths. The gestures
+   * (HTML5 drag, arrow-key target selection) live in the composition
+   * that renders the slots; the move, the onDrop report and the live-
+   * region announcement live here. Returns whether the event moved.
+   * @param {string} eventId The event's id (or its title).
+   * @param {{ date: string, hour: number, minute: number }} target
+   */
+  function moveEvent(eventId, target) {
+    const event = events().find((entry) => (entry.id ?? entry.title) === eventId);
+    if (!event) return false;
+    const pad = (/** @type {number} */ n) => String(n).padStart(2, '0');
+    const datetime = `${target.date}T${pad(target.hour)}:${pad(target.minute)}`;
+    const moved = {
+      ...event,
+      date: target.date,
+      at: datetime,
+      timeLabel: `${((target.hour + 11) % 12) + 1}:${pad(target.minute)} ${target.hour < 12 ? 'AM' : 'PM'}`,
+    };
+    events.set(events().map((entry) => (entry === event ? moved : entry)));
+    props.onDrop?.({
+      eventId,
+      date: target.date,
+      hour: target.hour,
+      minute: target.minute,
+      datetime,
+      sourceType: 'event',
+    });
+    const [y, m, d] = target.date.split('-').map(Number);
+    const weekday = WEEKDAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
+    status.set(`Moved ${event.title} to ${weekday}, ${MONTH_NAMES[m - 1]} ${d} at ${moved.timeLabel}.`);
+    return true;
+  }
+
+  return { title, prevHtml, nextHtml, bodyHtml, variant, isMonth, weeks, days, events, status, moveEvent, raw };
 }
 
 /** @param {import('../registry.js').Registry} registry */

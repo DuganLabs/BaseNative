@@ -136,9 +136,9 @@ test('dropdown-menu renders actions, links, and separators', async () => {
     ],
   });
   assert.match(html, /<menu variant="default" aria-label="Lead actions">/);
-  assert.match(html, /<a href="\/leads\/1">Open<\/a>/);
-  assert.match(html, /<button type="button">Call<\/button>/);
-  assert.match(html, /<li><hr><\/li>/);
+  assert.match(html, /<a role="menuitem" href="\/leads\/1" aria-disabled="false">Open<\/a>/);
+  assert.match(html, /<button type="button" role="menuitem" aria-disabled="false">Call<\/button>/);
+  assert.match(html, /<li role="none"><hr><\/li>/);
 });
 
 test('command-palette groups its options under headings in a dialog listbox', async () => {
@@ -180,10 +180,11 @@ test('toast lists toned items in a live region and the toaster queues them', asy
   assert.match(html, /<li variant="danger"><svg[^>]*>.*Payment failed/);
   const { createToaster } = await import('./toast/index.js');
   const toaster = createToaster();
-  toaster.push({ message: 'One' });
+  const first = toaster.push({ message: 'One' });
   toaster.push({ message: 'Two' });
   assert.equal(toaster.items().length, 2);
-  toaster.dismiss(0);
+  assert.match(first, /^bn-toast-/);
+  toaster.dismiss(first);
   assert.deepEqual(toaster.items().map((item) => item.message), ['Two']);
 });
 
@@ -221,8 +222,10 @@ test('datagrid nests sort buttons and selection checkboxes in the table skeleton
     rows: [{ cells: ['Garcia', '$85'], selectHtml: box }],
   });
   assert.match(html, /<table variant="datagrid">/);
-  assert.match(html, /<th scope="col" aria-sort="ascending">\s*<button variant="ghost" type="button">Lead<\/button>\s*<svg/);
-  assert.match(html, /<td>\s*<label>\s*<input variant="checkbox" type="checkbox">\s*Select Garcia\s*<\/label>\s*<\/td>/);
+  assert.match(html, /<th scope="col" aria-sort="ascending" tabindex="-1">\s*<button variant="ghost" type="button">Lead<\/button>\s*<svg/);
+  /* The roving cell tabindex starts on the first header cell. */
+  assert.match(html, /<th scope="col" tabindex="0">\s*<label>/);
+  assert.match(html, /<td tabindex="-1">\s*<label>\s*<input variant="checkbox" type="checkbox">\s*Select Garcia\s*<\/label>\s*<\/td>/);
 });
 
 test('tree nests a rendered child tree inside branch items', async () => {
@@ -238,10 +241,10 @@ test('tree nests a rendered child tree inside branch items', async () => {
     ],
   });
   assert.match(html, /<ul variant="tree" role="tree">/);
-  assert.match(html, /<li role="treeitem" aria-expanded="true">\s*<button variant="ghost" type="button">Services<\/button>/);
-  assert.doesNotMatch(html, /<li role="treeitem">Settings<\/li>[\s\S]*Services\s*<ul/);
+  assert.match(html, /<li role="treeitem" aria-expanded="true" aria-selected="false" tabindex="0">\s*<button variant="ghost" type="button">Services<\/button>/);
+  assert.doesNotMatch(html, /<li role="treeitem" aria-selected="false" tabindex="-1">Settings<\/li>[\s\S]*Services\s*<ul/);
   assert.match(html, /<ul role="group">\s*<ul variant="tree" role="tree">/);
-  assert.match(html, /<li role="treeitem">Settings<\/li>/);
+  assert.match(html, /<li role="treeitem" aria-selected="false" tabindex="-1">Settings<\/li>/);
 });
 
 test('virtualizer windows the list: indices and spacer counts from scroll math', async () => {
@@ -512,8 +515,13 @@ test('tabs pairs every tab with its panel and reports selection', async () => {
   });
   assert.match(html, /<section variant="tabs">/);
   assert.match(html, /<ul role="tablist" aria-label="Job views">/);
-  assert.match(html, /<button type="button" role="tab" id="job-tab-details" aria-selected="true" aria-controls="job-panel-details">Details<\/button>/);
-  assert.match(html, /<button type="button" role="tab" id="job-tab-activity" aria-selected="false" aria-controls="job-panel-activity">Activity<\/button>/);
+  assert.match(html, /<button type="button" role="tab" id="job-tab-details" aria-selected="true" aria-controls="job-panel-details" tabindex="0">Details<\/button>/);
+  assert.match(html, /<button type="button" role="tab" id="job-tab-activity" aria-selected="false" aria-controls="job-panel-activity" tabindex="-1">Activity<\/button>/);
+  /* The APG keys live in the view model: ArrowRight from the last tab
+     wraps to the first and selects it under automatic activation. */
+  vm.onKeydown({ key: 'ArrowRight', preventDefault() {}, currentTarget: null }, vm.tabs()[1]);
+  assert.equal(vm.selected(), 'details');
+  assert.equal(vm.focused(), 'details');
   assert.match(html, /<section role="tabpanel" id="job-panel-details" aria-labelledby="job-tab-details">/);
   assert.match(html, /<section role="tabpanel" id="job-panel-activity" aria-labelledby="job-tab-activity" hidden>/);
 });
@@ -711,7 +719,7 @@ test('the datagrid shows its sort direction with a chevron that flips', async ()
   const html = await readFile(new URL('./datagrid/index.html', import.meta.url), 'utf8');
   const css = await readFile(new URL('./datagrid/styles.css', import.meta.url), 'utf8');
   const tokens = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
-  assert.match(html, /:aria-sort="column\.sort">\{\{ raw\(column\.sortHtml\) \}\}<svg/);
+  assert.match(html, /:aria-sort="column\.sort" :tabindex="headerTabIndex\(column\)">\{\{ raw\(column\.sortHtml\) \}\}<svg/);
   assert.match(tokens, /--transform-datagrid-sort-icon-ascending: rotate\(180deg\)/);
   assert.match(css, /th\[aria-sort="ascending"\] > svg \{\s*transform: var\(--transform-datagrid-sort-icon-ascending\)/);
 });

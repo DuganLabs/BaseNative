@@ -377,6 +377,42 @@
       }
     }
   },
+  "flex-basis-app-bar-item": {
+    "$value": "{flex-basis-zero}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "flex-basis",
+          "type": null,
+          "item": "app-bar-item",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-app-bar-item-min-inline": {
+    "$value": "{spacing-0}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "app-bar-item",
+          "variant": null,
+          "subitem": "min-inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "font-app-bar-menu-link-family": {
     "$value": "{font-subheadline-family}",
     "$type": "string",

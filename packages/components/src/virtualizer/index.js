@@ -56,9 +56,19 @@ export function create(props) {
   const labelFor = (/** @type {number} */ index) => props.labelFor?.(index) ?? '';
   const hasItemHtml = computed(() => typeof props.itemHtmlFor === 'function');
 
+  /* Scroll re-slices the window: the host binds the scroller's scroll
+     event here (the legacy initVirtualList wiring), and the window
+     computeds redo the arithmetic. setScrollTop reflects silently. */
+  const setScrollTop = (/** @type {number} */ value) => scrollTop.set(Math.max(0, value || 0));
+  /** @param {Event} event */
+  function onScroll(event) {
+    const scroller = (event.currentTarget ?? event.target);
+    if (scroller && typeof scroller.scrollTop === 'number') setScrollTop(scroller.scrollTop);
+  }
+
   return {
     id, total, scrollTop, variant, startIndex, endIndex, windowIndices,
-    spacerStartCount, spacerEndCount, itemHtml, labelFor, hasItemHtml, raw,
+    spacerStartCount, spacerEndCount, itemHtml, labelFor, hasItemHtml, setScrollTop, onScroll, raw,
   };
 }
 

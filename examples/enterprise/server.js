@@ -4,16 +4,12 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { render } from '@basenative/server';
 import { escapeText } from '@basenative/runtime/shared/escape';
-import {
-  renderButton,
-  renderInput,
-  renderSelect,
-  renderTable,
-  renderPagination,
-  renderAlert,
-  renderBadge,
-  renderCard,
-} from '@basenative/components';
+import { loadRegistry, renderComponent } from '@basenative/components';
+
+/* The Holy Trinity catalog: components render through the registry
+   with the server renderer, never through string-builder helpers. */
+const registry = await loadRegistry();
+const component = (name, props) => renderComponent(registry, render, name, props).html;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const read = (file) => readFileSync(join(__dirname, file), 'utf-8');
@@ -51,10 +47,10 @@ app.get('/', (_req, res) => {
   const ctx = {
     totalUsers: users.length,
     activeUsers: users.filter(u => u.status === 'active').length,
-    statsCard1: renderCard({ header: 'Total Users', body: `<p style="font-size:2rem;font-weight:700">${users.length}</p>` }),
-    statsCard2: renderCard({ header: 'Active Users', body: `<p style="font-size:2rem;font-weight:700">${users.filter(u => u.status === 'active').length}</p>` }),
-    statsCard3: renderCard({ header: 'Roles', body: `<p style="font-size:2rem;font-weight:700">${new Set(users.map(u => u.role)).size}</p>` }),
-    recentActivity: renderAlert('Application ready. All systems operational.', { variant: 'success' }),
+    statsCard1: component('card', { title: 'Total Users', body: String(users.length) }),
+    statsCard2: component('card', { title: 'Active Users', body: String(users.filter(u => u.status === 'active').length) }),
+    statsCard3: component('card', { title: 'Roles', body: String(new Set(users.map(u => u.role)).size) }),
+    recentActivity: component('alert', { title: 'Application ready', body: 'All systems operational.', variant: 'success' }),
   };
   res.send(renderPage('dashboard.html', ctx, 'Dashboard'));
 });
@@ -66,42 +62,45 @@ app.get('/users', (req, res) => {
   const pageUsers = users.slice((page - 1) * perPage, page * perPage);
 
   const ctx = {
-    usersTable: renderTable({
-      columns: [
-        { key: 'name', label: 'Name', sortable: true },
-        { key: 'email', label: 'Email' },
-        { key: 'role', label: 'Role' },
-        { key: 'statusBadge', label: 'Status' },
-      ],
-      rows: pageUsers.map(u => ({
-        ...u,
-        statusBadge: renderBadge(u.status, { variant: u.status === 'active' ? 'success' : 'default' }),
-      })),
-      emptyMessage: 'No users found',
+    usersTable: component('table', {
+      columns: ['Name', 'Email', 'Role', 'Status'],
+      rows: pageUsers.map(u => [
+        u.name,
+        u.email,
+        u.role,
+        { contentHtml: component('badge', { label: u.status, variant: u.status === 'active' ? 'success' : 'default' }) },
+      ]),
       caption: 'User Management',
     }),
-    pagination: renderPagination({ currentPage: page, totalPages, baseUrl: '/users' }),
-    addButton: renderButton('Add User', { variant: 'primary' }),
+    pagination: component('pagination', { page, pages: totalPages, hrefFor: (p) => `/users?page=${p}` }),
+    addButton: component('button', { label: 'Add User', variant: 'primary' }),
   };
   res.send(renderPage('users.html', ctx, 'Users'));
 });
 
 app.get('/users/new', (_req, res) => {
   const ctx = {
-    nameInput: renderInput({ name: 'name', label: 'Full Name', required: true }),
-    emailInput: renderInput({ name: 'email', label: 'Email', type: 'email', required: true }),
-    roleSelect: renderSelect({
-      name: 'role',
-      label: 'Role',
-      placeholder: 'Select a role',
-      items: [
-        { value: 'Admin', label: 'Admin' },
-        { value: 'Editor', label: 'Editor' },
-        { value: 'Viewer', label: 'Viewer' },
-      ],
+    nameInput: component('field', {
+      label: 'Full Name', controlId: 'name',
+      controlHtml: component('input', { id: 'name', type: 'text' }),
     }),
-    submitButton: renderButton('Create User', { variant: 'primary', type: 'submit' }),
-    cancelButton: renderButton('Cancel', { variant: 'secondary' }),
+    emailInput: component('field', {
+      label: 'Email', controlId: 'email',
+      controlHtml: component('input', { id: 'email', type: 'email' }),
+    }),
+    roleSelect: component('field', {
+      label: 'Role', controlId: 'role',
+      controlHtml: component('select', {
+        id: 'role', name: 'role', variant: 'native',
+        options: [
+          { value: 'Admin', label: 'Admin' },
+          { value: 'Editor', label: 'Editor' },
+          { value: 'Viewer', label: 'Viewer' },
+        ],
+      }),
+    }),
+    submitButton: component('button', { label: 'Create User', variant: 'primary', type: 'submit' }),
+    cancelButton: component('button', { label: 'Cancel' }),
   };
   res.send(renderPage('user-form.html', ctx, 'New User'));
 });
@@ -112,9 +111,9 @@ app.get('/users/:id', (req, res) => {
 
   const ctx = {
     user,
-    statusBadge: renderBadge(user.status, { variant: user.status === 'active' ? 'success' : 'default' }),
-    editButton: renderButton('Edit', { variant: 'secondary' }),
-    deleteButton: renderButton('Delete', { variant: 'destructive' }),
+    statusBadge: component('badge', { label: user.status, variant: user.status === 'active' ? 'success' : 'default' }),
+    editButton: component('button', { label: 'Edit' }),
+    deleteButton: component('button', { label: 'Delete', variant: 'destructive' }),
   };
   res.send(renderPage('user-detail.html', ctx, user.name));
 });

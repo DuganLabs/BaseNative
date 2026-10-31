@@ -115,6 +115,9 @@ table[variant="striped"] > tbody > tr:nth-child(even) {
       border-block-end-width: var(--size-border-table-cell-block-end-restack);
       padding-block: var(--spacing-table-cell-padding-block-restack);
       overflow-wrap: var(--overflow-wrap-table-cell-restack);
+      /* The stack owns wrapping. A consumer sheet's nowrap on a cell
+         (a wide-table habit) must not pin a stacked cell open. */
+      white-space: var(--white-space-table-cell-restack);
     }
 
     & > tbody td > b {

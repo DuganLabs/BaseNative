@@ -766,14 +766,18 @@ describe('/docs names real packages and links onward', () => {
   });
 });
 
-// ─── 16. /components/* run the package's initialisers ──────────
+// ─── 16. /components/* run the package's own view models ──────────
 // The catalogue promised filtering, sorting, expand/collapse, chip editing,
-// arrow keys and windowing while the site bundle shipped no `init*` at all
-// (`grep -o 'init[A-Za-z]*' basenative.js` returned only "initial") and the
-// demos hand-rolled a click-only copy of the tabs the package already had.
+// arrow keys and windowing while the site bundle shipped no behavior at all
+// and the demos hand-rolled click-only copies of patterns the package
+// already had. Since the trinity migration the behavior lives in each
+// component's create(); the bundle ships every component aggregate so a
+// page can run the package's own view models.
 
-describe('the site bundle ships every client initialiser the package exports', () => {
-  const shipped = Object.keys(components).filter((name) => /^init[A-Z]/.test(name));
+describe('the site bundle ships every component aggregate the package exports', () => {
+  const shipped = Object.entries(components)
+    .filter(([, value]) => value && typeof value === 'object' && typeof value.create === 'function' && typeof value.name === 'string')
+    .map(([name]) => name);
   const entry = readFileSync(repo('examples/express/basenative-entry.js'), 'utf8');
   const bundle = readFileSync(repo('examples/express/public/basenative.js'), 'utf8');
   // esbuild's ESM output ends in one `export { … }` block; that list is what a
@@ -784,12 +788,17 @@ describe('the site bundle ships every client initialiser the package exports', (
     .map((name) => name.trim().split(/\s+as\s+/).pop())
     .filter(Boolean);
 
-  it('the package exports the twelve initialisers the catalogue relies on', () => {
+  it('the package exports the whole catalog as aggregates', () => {
     assert.deepEqual(
       shipped.sort(),
       [
-        'initAppNav', 'initCalendarDragDrop', 'initCommandPalette', 'initDataGrid', 'initDrawer', 'initDropdownMenu',
-        'initMultiselect', 'initPipelineDragDrop', 'initSiteHeader', 'initTabs', 'initTree', 'initVirtualList',
+        'accordion', 'alert', 'appBar', 'appShell', 'avatar', 'badge', 'breadcrumb', 'button',
+        'calendar', 'card', 'checkbox', 'choiceGroup', 'codeBlock', 'combobox', 'commandPalette',
+        'datagrid', 'dialog', 'drawer', 'dropdownMenu', 'emptyState', 'field', 'form', 'hero',
+        'input', 'listGroup', 'multiselect', 'pagination', 'pipeline', 'progress', 'radio',
+        'rating', 'searchField', 'segmentedControl', 'select', 'sidebar', 'siteFooter', 'stepper',
+        'table', 'tabs', 'textarea', 'themeToggle', 'toast', 'toggle', 'toolbar', 'tooltip',
+        'tree', 'virtualizer',
       ],
     );
   });
