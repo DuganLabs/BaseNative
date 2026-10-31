@@ -109,15 +109,8 @@
     --radius-lg: 0.75rem;
     --radius-pill: 1rem;
 
-    /* Font sizes */
-    --font-size-xs: 0.75rem;
-    --font-size-sm: 0.8rem;
-    --font-size-base: 0.875rem;
-    --font-size-md: 1rem;
-    --font-size-lg: 1.125rem;
-    --font-size-xl: 1.25rem;
-    --font-size-2xl: 1.5rem;
-    --font-size-hero: clamp(2rem, 4vw, 3rem);
+    /* Font sizes live in the token sheet. A later declaration in this
+       layer would hide --font-size-base and put row text back under 15px. */
 
     /* Font weights */
     --font-weight-normal: 400;
@@ -4526,10 +4519,4 @@
       text-decoration: none;
     }
   }
-}
-
-/* Row titles in the home list read at body size. A layered rule loses
-   to the component sheet; this one does not. */
-main ul[variant] li strong {
-  font-size: var(--font-body-size);
 }
