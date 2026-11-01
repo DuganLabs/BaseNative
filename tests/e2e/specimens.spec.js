@@ -200,6 +200,58 @@ test.describe('Specimens — tree', () => {
   });
 });
 
+test.describe('Specimens — tree disclosure', () => {
+  for (const scheme of ['light', 'dark']) {
+    test(`a branch leads with a centred chevron that turns and toggles (${scheme})`, async ({
+      page,
+    }) => {
+      await page.emulateMedia({ colorScheme: scheme });
+      await mounted(page, '/components/tree');
+      const tree = page.locator(`${PREVIEW} ul[role="tree"]`).first();
+      const branch = tree.locator(':scope > li[role="treeitem"][aria-expanded]').first();
+      const chevron = branch.locator(':scope > svg');
+      await expect(chevron).toBeVisible();
+      const m = await branch.evaluate((li) => {
+        const svg = li.querySelector(':scope > svg');
+        const button = li.querySelector(':scope > button');
+        const leaf = li.parentElement.querySelector(':scope > li:not([aria-expanded])');
+        const textLeft = (el) => {
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          return range.getBoundingClientRect().left;
+        };
+        const s = svg.getBoundingClientRect();
+        const b = button.getBoundingClientRect();
+        return {
+          size: s.width,
+          centreDelta: Math.abs(s.top + s.height / 2 - (b.top + b.height / 2)),
+          chevronBeforeLabel: s.right <= textLeft(button),
+          alignDelta: Math.abs(textLeft(button) - textLeft(leaf)),
+          transform: getComputedStyle(svg).transform,
+          toggleInk: getComputedStyle(button).color,
+          leafInk: getComputedStyle(leaf).color,
+        };
+      });
+      expect(m.size).toBeGreaterThanOrEqual(12);
+      expect(m.centreDelta).toBeLessThanOrEqual(2);
+      expect(m.chevronBeforeLabel).toBe(true);
+      // Sibling labels share one text edge, branch or leaf.
+      expect(m.alignDelta).toBeLessThanOrEqual(2);
+      // Expanded turns the chevron down.
+      expect(m.transform).not.toBe('none');
+      // The toggle names a branch; it reads in the item ink, not the link tint.
+      expect(m.toggleInk).toBe(m.leafInk);
+      await chevron.click();
+      await expect(branch).toHaveAttribute('aria-expanded', 'false');
+      await expect
+        .poll(() => chevron.evaluate((svg) => getComputedStyle(svg).transform))
+        .toBe('none');
+      await chevron.click();
+      await expect(branch).toHaveAttribute('aria-expanded', 'true');
+    });
+  }
+});
+
 test.describe('Specimens — datagrid', () => {
   test('the sort button flips the order and the aria-sort direction', async ({ page }) => {
     await mounted(page, '/components/datagrid');

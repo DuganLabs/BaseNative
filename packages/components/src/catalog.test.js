@@ -366,7 +366,7 @@ test('tree nests a rendered child tree inside branch items', async () => {
   assert.match(html, /<ul variant="tree" role="tree">/);
   assert.match(
     html,
-    /<li role="treeitem" aria-expanded="true" aria-selected="false" tabindex="0">\s*<button variant="ghost" type="button">Services<\/button>/,
+    /<li role="treeitem" aria-expanded="true" aria-selected="false" tabindex="0">\s*<svg aria-hidden="true" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"[^>]*><\/path><\/svg>\s*<button variant="ghost" type="button">Services<\/button>/,
   );
   assert.doesNotMatch(
     html,
