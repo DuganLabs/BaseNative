@@ -355,6 +355,7 @@
   --grid-template-tree-branch-columns: var(--size-tree-chevron) minmax(0, 1fr);
   --grid-column-tree-group: 1 / -1;
   --transform-tree-chevron-expanded: rotate(90deg);
+  --display-tree-group-collapsed: none;
   --color-danger: var(--palette-system-red);
   --color-success: var(--palette-system-green);
   --color-warning: var(--palette-system-orange);
