@@ -404,7 +404,7 @@ describe('the capability guard reads prose, not just numbers', () => {
     const route = siteRoutes.find((r) => r.path === '/compare');
     const html = renderRoute(route, { tasks: [], hasApi: false });
     assert.doesNotMatch(html, /\bNo HMR\b/i);
-    assert.match(html, /HMR \(@basenative\/hmr\)/);
+    assert.match(html, /HMR \(<code>@basenative\/hmr<\/code>\)/);
   });
 });
 
@@ -1179,5 +1179,27 @@ describe('table cells set identifiers as code, so prose never breaks mid-word', 
       assert.doesNotMatch(prose, bare, `an identifier outside <code>: ${cell.slice(0, 120)}`);
     }
     assert.match(table[0], /<code>globalThis\.__BASENATIVE_DEVTOOLS__<\/code>/);
+  });
+
+  it('the /compare tables set identifiers as code and let a slash compound break after the slash', () => {
+    const route = siteRoutes.find((r) => r.path === '/compare');
+    const html = renderRoute(route, { tasks: [], hasApi: false });
+    const tables = html.match(/<table[\s\S]*?<\/table>/g) || [];
+    assert.ok(tables.length > 0, '/compare renders its tables');
+    const bare = /(^|[^>\w/.$])(@basenative\/[a-z-]+|globalThis\.[\w$]+|[A-Za-z_$][\w$]*\(\))/;
+    for (const table of tables) {
+      for (const cell of table.match(/<t[dh][^>]*>[\s\S]*?<\/t[dh]>/g) || []) {
+        const prose = cell
+          .replace(/<code>[\s\S]*?<\/code>/g, '')
+          .replace(/<[^>]+>/g, (tag) => (tag === '<wbr>' ? tag : ' '));
+        assert.doesNotMatch(prose, bare, `an identifier outside <code>: ${cell.slice(0, 120)}`);
+        assert.doesNotMatch(
+          prose,
+          /[A-Za-z]{2}\/[A-Za-z]{2}/,
+          `a slash compound with no break: ${cell.slice(0, 120)}`,
+        );
+      }
+    }
+    assert.match(html, /<code>@basenative\/hmr<\/code>/);
   });
 });
