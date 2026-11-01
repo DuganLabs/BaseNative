@@ -11,6 +11,7 @@
  * Playwright specs in tests/e2e. */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 
 import { renderSkeleton } from './skeleton.js';
 import { renderLayoutGrid } from './layout-grid.js';
@@ -523,6 +524,24 @@ describe('specimen behaviors — the patterns that moved in from the site boot',
     );
     assert.equal(vm.activeOption().value, 'riverside');
   });
+
+  for (const [name, create] of [
+    ['combobox', createCombobox],
+    ['multiselect', createMultiselect],
+  ]) {
+    it(`${name}: a filter that matches nothing collapses the popup; a match reopens it`, () => {
+      const vm = create({ id: 'cb', inputHtml: '<input>', options: comboOptions() });
+      vm.onFocus();
+      assert.equal(vm.expanded(), true);
+      vm.onInput({ target: { value: 'zz' } });
+      assert.equal(vm.expanded(), false);
+      assert.equal(vm.activeDescendant(), '');
+      const template = readFileSync(new URL(`./${name}/index.html`, import.meta.url), 'utf8');
+      assert.match(template, /<template @if="expanded\(\)">\s*<ul role="listbox"/);
+      vm.onInput({ target: { value: 'river' } });
+      assert.equal(vm.expanded(), true);
+    });
+  }
 
   it('combobox: Enter on the active option lands its label in the field', () => {
     const vm = createCombobox({ id: 'cb', inputHtml: '<input>', options: comboOptions() });
