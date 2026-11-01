@@ -306,12 +306,30 @@
     }
   },
   "display-app-bar-menu-link": {
-    "$value": "{display-block}",
+    "$value": "{display-flex}",
     "$type": "string",
     "$extensions": {
       "com.basenative": {
         "taxonomy": {
           "category": "display",
+          "type": null,
+          "item": "app-bar-menu-link",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "align-app-bar-menu-link": {
+    "$value": "{align-center}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "align",
           "type": null,
           "item": "app-bar-menu-link",
           "variant": null,

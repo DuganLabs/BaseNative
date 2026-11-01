@@ -187,6 +187,7 @@
   --overflow-hidden: hidden;
   --overflow-auto: auto;
   --overflow-wrap-anywhere: anywhere;
+  --overflow-wrap-normal: normal;
   --overflow-wrap-break-word: break-word;
   --visibility-hidden: hidden;
   --visibility-visible: visible;
@@ -499,7 +500,8 @@
   --color-text-app-bar-tab-current: var(--color-tint-strong);
   --display-app-bar-list: var(--display-flex);
   --display-app-bar-menu: var(--display-grid);
-  --display-app-bar-menu-link: var(--display-block);
+  --display-app-bar-menu-link: var(--display-flex);
+  --align-app-bar-menu-link: var(--align-center);
   --display-app-bar-tab: var(--display-flex);
   --flex-direction-app-bar-tab: var(--flex-direction-column);
   --flex-grow-app-bar-item: var(--flex-grow);
@@ -773,8 +775,7 @@
   --size-radius-code-block-pre: var(--size-radius-none);
   --size-border-code-block-pre: var(--size-border-none);
   --white-space-code-block-pre: var(--white-space-pre);
-  --white-space-code-block-pre-phone: var(--white-space-pre-wrap);
-  --overflow-wrap-code-block-pre-phone: var(--overflow-wrap-anywhere);
+  --overflow-wrap-code-block-pre: var(--overflow-wrap-normal);
   --position-combobox: var(--position-relative);
   --display-combobox: var(--display-block);
   --position-combobox-listbox: var(--position-absolute);

@@ -899,6 +899,24 @@
       }
     }
   },
+  "overflow-wrap-normal": {
+    "$value": "normal",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "overflow-wrap-normal",
+          "type": null,
+          "item": null,
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "overflow-wrap-break-word": {
     "$value": "break-word",
     "$type": "string",

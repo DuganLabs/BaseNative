@@ -3694,69 +3694,14 @@
 
   /* The verdict's shape: a check or a caution triangle drawn in the
      verdict's ink, set on the first line of the cell's text. */
-  /* One element per source line (highlight.js codeLines). A long
-     code line wraps at every width, and its continuation hangs two
-     columns past the line's own indent rather than restarting at
-     column 0, so wrapped code still reads as its structure. */
+  /* One element per source line (highlight.js codeLines). Code
+     never wraps, so each line element is exactly one line box and a
+     long line scrolls the pre sideways inside its card. */
   [data-code-line] {
     display: block;
   }
   [data-code-lead] {
     white-space: pre;
-  }
-  [data-code-line] {
-    --site-code-indent: 0ch;
-    --site-code-hang: calc(var(--site-code-indent) + 2ch);
-    padding-inline-start: var(--site-code-hang);
-    text-indent: calc(-1 * var(--site-code-hang));
-    &[data-code-indent='1'] {
-      --site-code-indent: 1ch;
-    }
-    &[data-code-indent='2'] {
-      --site-code-indent: 2ch;
-    }
-    &[data-code-indent='3'] {
-      --site-code-indent: 3ch;
-    }
-    &[data-code-indent='4'] {
-      --site-code-indent: 4ch;
-    }
-    &[data-code-indent='5'] {
-      --site-code-indent: 5ch;
-    }
-    &[data-code-indent='6'] {
-      --site-code-indent: 6ch;
-    }
-    &[data-code-indent='7'] {
-      --site-code-indent: 7ch;
-    }
-    &[data-code-indent='8'] {
-      --site-code-indent: 8ch;
-    }
-    &[data-code-indent='9'] {
-      --site-code-indent: 9ch;
-    }
-    &[data-code-indent='10'] {
-      --site-code-indent: 10ch;
-    }
-    &[data-code-indent='11'] {
-      --site-code-indent: 11ch;
-    }
-    &[data-code-indent='12'] {
-      --site-code-indent: 12ch;
-    }
-    &[data-code-indent='13'] {
-      --site-code-indent: 13ch;
-    }
-    &[data-code-indent='14'] {
-      --site-code-indent: 14ch;
-    }
-    &[data-code-indent='15'] {
-      --site-code-indent: 15ch;
-    }
-    &[data-code-indent='16'] {
-      --site-code-indent: 16ch;
-    }
   }
 
 
