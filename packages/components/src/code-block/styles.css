@@ -36,6 +36,7 @@ figure[variant='code'] {
     padding-block: var(--spacing-code-block-pre-padding-block);
     padding-inline: var(--spacing-code-block-pre-padding-inline);
     overflow: var(--overflow-code-block-pre);
+    white-space: var(--white-space-code-block-pre);
     color: var(--color-text-code-block-pre);
     font-family: var(--font-code-block-pre-family);
     font-size: var(--font-code-block-pre-size);
@@ -54,6 +55,21 @@ figure[variant='code'] {
       outline-color: var(--color-border-code-block-pre-outline-focus);
       outline-offset: var(--spacing-code-block-pre-outline-offset-focus);
     }
+  }
+}
+
+/* On a phone a long line wraps instead of running off the card edge:
+   nothing is hidden behind a scroll the reader cannot see. Indentation
+   is kept (pre-wrap), and a token too long for the line breaks
+   anywhere rather than overflowing. The same holds for a bare reading
+   <pre> outside the card (docs, source listings), so every code
+   surface on a phone behaves one way. An editor that overlays a
+   textarea on its <pre> keeps its own unwrapped lines. */
+@media (max-width: 47.9375rem) {
+  pre,
+  figure[variant='code'] > pre {
+    white-space: var(--white-space-code-block-pre-phone);
+    overflow-wrap: var(--overflow-wrap-code-block-pre-phone);
   }
 }
 

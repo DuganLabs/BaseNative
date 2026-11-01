@@ -452,6 +452,7 @@ export const UPSTREAM_OWNED = Object.freeze({
   '--spacing-1': 'space ladder — a grid is not identity; override it in app CSS',
   '--spacing-12': 'space ladder — a grid is not identity; override it in app CSS',
   '--spacing-16': 'space ladder — a grid is not identity; override it in app CSS',
+  '--spacing-20': 'space ladder — a grid is not identity; override it in app CSS',
   '--spacing-2': 'space ladder — a grid is not identity; override it in app CSS',
   '--spacing-3': 'space ladder — a grid is not identity; override it in app CSS',
   '--spacing-4': 'space ladder — a grid is not identity; override it in app CSS',

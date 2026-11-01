@@ -173,21 +173,9 @@
   }
 
   @layer components {
-    /* -- Sections -- */
-    section {
-      margin-block-end: var(--site-section-space, 12px);
-    }
-
-    /* -- Page flow: the section rhythm belongs to the stack, not to the
-     <section> element. It used to ride on the section rule alone, so
-     it held only where both neighbours were sections, or where a
-     margin happened to collapse through from inside a non-section
-     wrapper (the /docs <aside> borrowed its gap that way). Every
-     other surface stacked in <main> now carries the same margin
-     outright, so the rhythm no longer depends on the element. -- */
-    main > :is(article, aside, form, nav, search) {
-      margin-block-end: var(--site-section-space, 12px);
-    }
+    /* Section and stack rhythm is the app shell's
+     (--spacing-app-shell-section-gap / -stack-gap); pages don't space
+     their own sections. */
 
     /* The hero's margin is the component's own token (--hero-margin,
      0 by default), so the page stack sets it here the same way the
@@ -288,11 +276,6 @@
         );
         padding-inline: var(--spacing-app-shell-main-padding-inline);
       }
-    }
-
-    /* Stacked code cards (the home start steps) keep the section rhythm. */
-    main > section > figure[variant='code'] + figure[variant='code'] {
-      margin-block-start: var(--spacing-3);
     }
 
     section > h2 {
@@ -2115,7 +2098,6 @@
     /* -- /components category section -- */
     [data-bn-component-category],
     [data-bn-component-app-demo] {
-      margin-block-end: var(--site-section-space, 12px);
       scroll-margin-block-start: var(--site-section-space, 12px);
     }
 
