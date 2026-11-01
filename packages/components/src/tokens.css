@@ -334,6 +334,7 @@
   --transform-multiselect-chip-remove-bar-start: rotate(45deg);
   --transform-multiselect-chip-remove-bar-end: rotate(-45deg);
   --content-pagination-separator: "";
+  --size-pagination-gap-compact-fluid: clamp(var(--size-pagination-gap-compact), calc((100cqi - 5 * var(--size-target-min) - var(--spacing-8)) / 2), var(--spacing-7));
   --size-pipeline-column-min-inline: 16rem;
   --transform-select-chevron-open: rotate(180deg);
   --size-select-listbox-max-block: calc(var(--size-control) * 6);

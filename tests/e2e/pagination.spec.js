@@ -127,3 +127,31 @@ for (const theme of ['light', 'dark']) {
     });
   }
 }
+
+// In the compact window the gap glyph is set off from the current-page
+// pill, not drawn against its edge. A 320px phone has 34px of spare row
+// for two gaps, so there the glyph only has to stay clear of the pill.
+for (const [width, clear] of [[320, 0], [393, 6], [430, 6]]) {
+  test(`compact gap glyph clears the current pill @${width}`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/components/pagination/');
+    const cur = page.locator(`${NAV} [aria-current]`).first();
+    await cur.scrollIntoViewIfNeeded();
+    const m = await cur.evaluate((a) => {
+      const r = a.getBoundingClientRect();
+      const out = [];
+      for (const li of a.closest('ol').children) {
+        const g = li.querySelector('a[aria-hidden]:not(:has(> svg))');
+        if (!g || !g.offsetParent) continue;
+        const range = document.createRange();
+        range.selectNodeContents(g);
+        const b = range.getBoundingClientRect();
+        out.push(b.right <= r.left ? r.left - b.right : b.left - r.right);
+      }
+      return { out, nav: a.closest('nav').getBoundingClientRect().width, ol: a.closest('ol').scrollWidth };
+    });
+    expect(m.out.length).toBeGreaterThan(0);
+    for (const d of m.out) expect(d, 'gap glyph to pill').toBeGreaterThanOrEqual(clear);
+    expect(m.ol, 'row fits').toBeLessThanOrEqual(Math.ceil(m.nav) + 1);
+  });
+}

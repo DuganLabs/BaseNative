@@ -115,9 +115,11 @@ section[aria-label='Playground workspace'] article > header {
 }
 .pane-head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
-  padding: 8px 12px;
+  min-block-size: var(--size-target-min);
+  box-sizing: border-box;
+  padding: 0 12px;
   border-bottom: 1px solid var(--color-border-playground);
   background: var(--color-bkg-playground-surface);
 }
@@ -249,7 +251,9 @@ section[aria-label='Result'] > article > header {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 12px;
+  min-block-size: var(--size-target-min);
+  box-sizing: border-box;
+  padding: 0 12px;
   border-bottom: 1px solid var(--color-border-playground);
 }
 section[aria-label='Result'] > article > header h2 {
@@ -292,7 +296,9 @@ section[aria-label='Result'] > article > header output.bad {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 4px 6px 4px 12px;
+  min-block-size: var(--size-target-min);
+  box-sizing: border-box;
+  padding: 0 0 0 12px;
 }
 .console-head h3 {
   margin: 0;

@@ -102,7 +102,9 @@ nav[variant="pagination"] {
     display: var(--display-pagination-step-icon-compact);
   }
 
+  /* A gap takes the row's spare width, split two ways, up to its own
+     cap, so its glyph clears the pill beside it on any phone. */
   nav[variant="pagination"] > ol > li > a[aria-hidden]:not(:has(> svg)) {
-    min-inline-size: var(--size-pagination-gap-compact);
+    min-inline-size: var(--size-pagination-gap-compact-fluid);
   }
 }
