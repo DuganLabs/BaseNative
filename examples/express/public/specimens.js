@@ -35,6 +35,7 @@ import {
   hydrate,
   effect,
   alert,
+  calendar,
   combobox,
   commandPalette,
   datagrid,
@@ -56,6 +57,7 @@ import {
 
 const AGGREGATES = {
   alert,
+  calendar,
   combobox,
   datagrid,
   dialog,
@@ -80,6 +82,7 @@ const AGGREGATES = {
    alert's danger tone). */
 const ROOT_SELECTORS = {
   alert: 'aside[variant="info"]',
+  calendar: 'section[variant="month"]',
   combobox: 'section[variant="default"]',
   datagrid: 'table[variant="datagrid"]',
   dialog: 'dialog[variant="default"]',
