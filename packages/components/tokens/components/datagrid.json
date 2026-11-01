@@ -539,24 +539,6 @@
       }
     }
   },
-  "color-bkg-datagrid-sorted": {
-    "$value": "{color-fill-2}",
-    "$type": "color",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "color",
-          "type": "bkg",
-          "item": "datagrid-sorted",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
   "size-datagrid-sort-icon-inline": {
     "$value": "{spacing-3}",
     "$type": "dimension",
@@ -638,6 +620,42 @@
           "category": "vertical-align",
           "type": null,
           "item": "datagrid-sort-icon",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "display-datagrid-sort-icon": {
+    "$value": "{display-inline-block}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "display",
+          "type": null,
+          "item": "datagrid-sort-icon",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "white-space-datagrid-sort-head": {
+    "$value": "{white-space-nowrap}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "white-space",
+          "type": null,
+          "item": "datagrid-sort-head",
           "variant": null,
           "subitem": null,
           "state": null,

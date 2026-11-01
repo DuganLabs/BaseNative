@@ -29,13 +29,23 @@ table[variant="default"], table[variant="striped"] {
     color: var(--color-text-table-cell);
     text-align: var(--text-align-table-cell);
     vertical-align: var(--vertical-align-table-cell);
-    /* A long unbreakable token (a package spec, a global's name)
-       wraps rather than sizing its column past the container — the
-       same rule the restacked cells follow below. */
+    /* Words never break mid-word. break-word only splits a word
+       longer than the whole line, and it does not shrink a column's
+       minimum below its longest word, so no column squeezes a label
+       into one letter per line. Code is the exception, below. */
     overflow-wrap: var(--overflow-wrap-table-cell);
   }
 
+  /* A long unbreakable token (a package spec, a global's name) may
+     wrap at any character rather than size its column past the
+     container: code reads as a string, not a word. */
+  & td code, & th code {
+    overflow-wrap: var(--overflow-wrap-table-cell-code);
+  }
+
+  /* Column headings are short labels: they hold one line. */
   & > thead th {
+    white-space: var(--white-space-table-head);
     background-color: var(--color-bkg-table-head);
     color: var(--color-text-table-head);
     font-family: var(--font-table-head-family);
@@ -87,9 +97,10 @@ table[variant="striped"] > tbody > tr:nth-child(even) {
 /* Narrow restack. The row header becomes the row's label line, each
    data cell carries its column heading as a key line, and the header
    row steps out of the visual flow while staying in the accessibility
-   tree. A restacked cell is prose, not a column, so its text wraps
-   anywhere: a long unbreakable word (a global's name, a package spec)
-   must not size the whole table past its container. The trigger is
+   tree. A restacked cell spans the container, so its words wrap
+   whole; only a token longer than the full line (a global's name, a
+   package spec) breaks, and anywhere lets it break rather than size
+   the whole table past its container. The trigger is
    the CONTAINER, not the viewport: inside a railed shell a wide
    viewport can still hand the table a phone-width column, and the
    table adapts to the space it actually gets. */

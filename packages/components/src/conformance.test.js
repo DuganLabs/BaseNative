@@ -129,3 +129,68 @@ describe('conformance — the stack primitive (component pages stacked cards wit
     );
   });
 });
+
+/* A token's final keyword, following var() references. */
+const keyword = (name) => {
+  const m = tokens.match(new RegExp(`--${name}:\\s*([^;]+);`));
+  assert.ok(m, `token --${name} is defined`);
+  const ref = m[1].trim().match(/^var\(--([\w-]+)\)$/);
+  return ref ? keyword(ref[1]) : m[1].trim();
+};
+
+describe('conformance — table text (the /ai "From" column broke mid-word)', () => {
+  const table = rules(read('table/styles.css'));
+
+  it('a column cell wraps between words; only code inside it may wrap anywhere', () => {
+    // A restacked cell spans the container, so anywhere there only splits
+    // a token longer than the whole line; in a column it shrank the
+    // column below its longest word.
+    assert.equal(keyword('overflow-wrap-table-cell'), 'break-word');
+    const code = table.find((r) => /& td code/.test(r.selector));
+    assert.ok(code, 'table styles code inside a cell');
+    assert.match(code.body, /overflow-wrap:\s*var\(--overflow-wrap-table-cell-code\)/);
+    assert.equal(keyword('overflow-wrap-table-cell-code'), 'anywhere');
+  });
+
+  it('a column heading holds one line', () => {
+    const head = table.find((r) => r.selector === '& > thead th');
+    assert.ok(head, 'table styles its column headings');
+    assert.match(head.body, /white-space:\s*var\(--white-space-table-head\)/);
+    assert.equal(keyword('white-space-table-head'), 'nowrap');
+  });
+});
+
+/* The full body of the top-level rule whose selector is `selector`,
+   nested rules included, comments removed. */
+const block = (css, selector) => {
+  const text = css.replace(/\/\*[\s\S]*?\*\//g, '');
+  const start = text.indexOf(`${selector} {`);
+  if (start < 0) return null;
+  let depth = 0;
+  for (let i = text.indexOf('{', start); i < text.length; i++) {
+    if (text[i] === '{') depth++;
+    else if (text[i] === '}' && --depth === 0) return text.slice(text.indexOf('{', start) + 1, i);
+  }
+  return null;
+};
+
+describe('conformance — the datagrid sort header (chevron under the label, a fill on the sorted column)', () => {
+  const css = read('datagrid/styles.css');
+  const head = block(css, 'table[variant="datagrid"] > thead th[aria-sort]');
+
+  it('the sorted header paints no fill of its own; the chevron marks the sort', () => {
+    assert.ok(head, 'datagrid styles the sort header');
+    assert.doesNotMatch(head, /background/);
+    assert.doesNotMatch(tokens, /--color-bkg-datagrid-sorted:/);
+  });
+
+  it('the chevron is inline after the label, on one line with it', () => {
+    assert.match(head, /white-space:\s*var\(--white-space-datagrid-sort-head\)/);
+    assert.equal(keyword('white-space-datagrid-sort-head'), 'nowrap');
+    const icon = block(head, '  & > svg') ?? block(head, '& > svg');
+    assert.ok(icon, 'datagrid styles the sort chevron');
+    assert.match(icon, /display:\s*var\(--display-datagrid-sort-icon\)/);
+    assert.match(keyword('display-datagrid-sort-icon'), /^inline/);
+    assert.equal(keyword('vertical-align-datagrid-sort-icon'), 'middle');
+  });
+});
