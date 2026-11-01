@@ -60,22 +60,26 @@ const consoleRegion = `<section class="console-region" aria-label="Console">
               </section>
             </section>`;
 
+/* The example picker is the custom select (the default everywhere);
+   specimens.js hydrates it in the toolbar, its live host, and announces each
+   choice as a bubbling bn-choose event that playground.js listens for. */
+const exampleSelectProps = {
+  id: 'exampleSelect',
+  name: 'example',
+  label: 'Example',
+  value: EXAMPLES[0].id,
+  options: EXAMPLES.map((ex) => ({ value: ex.id, label: ex.label })),
+};
+
 const toolbarHtml = component('toolbar', {
   label: 'Playground controls',
   actionsHtml:
     `<label for="exampleSelect">Example</label>` +
-    component('select', {
-      id: 'exampleSelect',
-      name: 'example',
-      variant: 'native',
-      label: 'Example',
-      value: EXAMPLES[0].id,
-      options: EXAMPLES.map((ex) => ({ value: ex.id, label: ex.label })),
-    }) +
+    component('select', exampleSelectProps) +
     component('button', { label: 'Reset' }) +
     component('button', { label: 'Run', variant: 'primary' }) +
     `<kbd aria-hidden="true">Ctrl/⌘ + Enter</kbd>`,
-});
+}).replace('<section variant="toolbar"', '<section variant="toolbar" data-bn-live-host');
 
 const editorsHtml = component('tabs', {
   id: 'editors',
@@ -101,12 +105,7 @@ const editorsHtml = component('tabs', {
     {
       value: 'js',
       label: 'JS',
-      panelHtml: pane(
-        'js',
-        'JS',
-        'signal, computed, effect, batch, mount(ctx)',
-        EXAMPLES[0].js,
-      ),
+      panelHtml: pane('js', 'JS', 'signal, computed, effect, batch, mount(ctx)', EXAMPLES[0].js),
     },
   ],
 });
@@ -125,5 +124,7 @@ export function getPlaygroundPageContext() {
     // the editors; they are data, never markup, so the JSON rides in a
     // application/json block and the client parses it.
     examplesJson: raw(JSON.stringify(EXAMPLES)),
+    // page.js appends the specimen mount for these specs.
+    liveSpecimens: [{ name: 'select', props: exampleSelectProps }],
   };
 }
