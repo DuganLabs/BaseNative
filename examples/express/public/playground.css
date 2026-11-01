@@ -14,7 +14,11 @@
 
 /* Playground colors live in the DTCG token source (playground.json). */
 
+/* The workspace is the panels' container: the editors go three-up from
+   its own width, not the viewport's, so the sidebar can never squeeze
+   them. */
 section[aria-label='Playground workspace'] {
+  container: playground-workspace / inline-size;
   display: grid;
   gap: var(--spacing-app-shell-stack-gap);
   min-inline-size: 0;
@@ -23,8 +27,11 @@ section[aria-label='Playground workspace'] {
 /* The workspace and its panes space their parts themselves; the shell's
    stack margin would push each editor down out of its pane. */
 section[aria-label='Playground workspace'] > *,
-section[aria-label='Playground workspace'] article > * {
-  margin-block-start: 0;
+section[aria-label='Playground workspace'] article > *,
+section[aria-label='Playground workspace'] article > header > *,
+.console-region > *,
+.console-body > * {
+  margin-block: 0;
 }
 
 /* ---------- controls row: the toolbar component ---------- */
@@ -58,9 +65,9 @@ section[aria-label='Playground workspace'] > section > kbd {
 }
 
 /* ---------- editors: the tabs component's panels ---------- */
-/* Wide screens show every panel side by side (the tab list steps
-   aside); narrow screens get the component's own tab list over one
-   panel at a time. */
+/* One panel at a time under the component's own tab list, filling the
+   width; three side by side only once each gets 360px (three panels
+   and two 16px gaps: 1112px of workspace). */
 section[aria-label='Playground workspace']
   section[variant='tabs']
   > section[role='tabpanel']:not([hidden]) {
@@ -73,9 +80,9 @@ section[aria-label='Playground workspace']
   > .pane {
   flex: 1;
 }
-@media (min-width: 761px) {
+@container playground-workspace (min-width: 1112px) {
   section[aria-label='Playground workspace'] section[variant='tabs'] {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(360px, 1fr));
   }
   section[aria-label='Playground workspace'] section[variant='tabs'] > ul[role='tablist'] {
     display: none;
@@ -84,22 +91,6 @@ section[aria-label='Playground workspace']
     section[variant='tabs']
     > section[role='tabpanel'][hidden] {
     display: flex;
-  }
-  /* The combined JS + console pane is full height: the pane stretches
-     to the editor area's full height, and inside it the JS editor and
-     the console region flex to share that height. */
-  .pane[data-pane='js'] .editor {
-    flex: 3 1 0;
-    min-height: 0;
-  }
-  .pane[data-pane='js'] .console-region {
-    flex: 2 1 0;
-    min-height: 0;
-  }
-  .pane[data-pane='js'] .console-body {
-    flex: 1;
-    min-height: 0;
-    max-height: none;
   }
 }
 .pane {
@@ -153,6 +144,11 @@ section[aria-label='Playground workspace']
   overscroll-behavior: contain;
   touch-action: none;
 }
+/* The gutter and the sheet are layers, not a stack: the shell's stack
+   gap would drop the code a line below its line numbers. */
+.editor > * {
+  margin-block: 0;
+}
 .editor .sheet {
   position: absolute;
   top: 0;
@@ -195,6 +191,13 @@ section[aria-label='Playground workspace']
 }
 .editor .hl code {
   font: inherit;
+}
+/* The highlight layer is a code-block pre; inside the editor it is a
+   transparent layer over the editor surface, not a second card. */
+.editor .hl {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
 }
 .editor textarea {
   position: absolute;
@@ -264,9 +267,12 @@ section[aria-label='Result'] > article > header output.bad {
   display: block;
 }
 
-/* ---------- console, combined into the JS pane ---------- */
+/* ---------- console: its own area under the result ---------- */
 .console-region {
-  border-top: 1px solid var(--color-border-playground);
+  background: var(--color-bkg-playground-surface);
+  border: 1px solid var(--color-border-playground);
+  border-radius: 10px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -300,9 +306,12 @@ section[aria-label='Result'] > article > header output.bad {
 }
 /* The console's list-group, re-pointed to console density and type. */
 .console-body ul {
-  --list-group-background-color: var(--color-bkg-playground-editor);
-  font-family: var(--font-family-playground-mono);
-  font-size: 12.5px;
+  --color-bkg-list-group: var(--color-bkg-playground-editor);
+  --font-list-group-item-family: var(--font-family-playground-mono);
+  --font-list-group-item-size: 12.5px;
+  --font-list-group-item-leading: 1.5;
+  --spacing-list-group-item-padding-block: 6px;
+  --spacing-list-group-item-padding-inline: 10px;
 }
 .console-body ul > li {
   justify-content: flex-start;
@@ -366,21 +375,18 @@ footer[aria-label='Quick syntax'] strong {
 }
 
 /* ---------- responsive ---------- */
-@media (max-width: 1020px) {
+@container playground-workspace (max-width: 1111px) {
   #preview {
     min-height: 340px;
   }
 }
-@media (max-width: 760px) {
-  section[aria-label='Result'] {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  /* Stacked, the preview keeps phone proportions instead of the
+@container playground-workspace (max-width: 600px) {
+  /* Narrow, the preview keeps phone proportions instead of the
      desktop stage's tall frame. */
   #preview {
     min-height: 260px;
   }
-  /* Stacked controls: the select takes the full row instead of the
+  /* Narrow controls: the select takes the full row instead of the
      squeezed share next to the buttons. */
   section[aria-label='Playground workspace'] section[variant='native'] {
     max-width: none;

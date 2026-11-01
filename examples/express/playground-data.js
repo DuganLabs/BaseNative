@@ -106,7 +106,6 @@ const editorsHtml = component('tabs', {
         'JS',
         'signal, computed, effect, batch, mount(ctx)',
         EXAMPLES[0].js,
-        consoleRegion,
       ),
     },
   ],
@@ -119,6 +118,9 @@ export function getPlaygroundPageContext() {
     // component demos.
     chrome: raw(toolbarHtml),
     editors: raw(editorsHtml),
+    // The console is its own area, outside the tabs, so it stays in
+    // view whichever editor is open.
+    console: raw(consoleRegion),
     // The examples are code samples the page's own script loads into
     // the editors; they are data, never markup, so the JSON rides in a
     // application/json block and the client parses it.
