@@ -24,6 +24,8 @@ section[variant="tabs"] {
     border-radius: var(--size-radius-tabs-tab);
     color: var(--color-text-tabs-tab);
     cursor: var(--cursor-tabs-tab);
+    /* A two-letter tab label is still a 44px-wide target. */
+    min-inline-size: var(--size-target-min);
     padding-block: var(--spacing-tabs-tab-padding-block);
     padding-inline: var(--spacing-tabs-tab-padding-inline);
     font-family: var(--font-tabs-tab-family);

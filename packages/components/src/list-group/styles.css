@@ -27,6 +27,23 @@ ul[variant="default"] {
     border-block-start-color: var(--color-border-list-group-item-block-start);
   }
 
+  /* A row holding only a link is a navigation cell, so the whole row is
+     the target. The link takes over the row's padding and is at least
+     44px tall, as a table-view cell is. */
+  & > li:has(> a:only-child) {
+    padding-block: var(--spacing-0);
+    padding-inline: var(--spacing-0);
+
+    & > a {
+      display: var(--display-flex);
+      align-items: var(--align-center);
+      flex-grow: var(--flex-grow);
+      min-block-size: var(--size-target-min);
+      padding-block: var(--spacing-list-group-item-padding-block);
+      padding-inline: var(--spacing-list-group-item-padding-inline);
+    }
+  }
+
   /* A rich item (a nested component, e.g. a card) owns its own padding;
      the row steps aside — the composition counterpart to the choice
      notch, where the card reserves room for the group's control. */
