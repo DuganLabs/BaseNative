@@ -1,10 +1,11 @@
 ul[variant="tree"], ul[variant="treegrid"] {
   /* Nested toggle buttons run compact in the tree's scope, and leaf
      items indent by the same padding so every sibling's text shares
-     one edge. */
+     one edge (item padding, button padding, button border). */
   --spacing-button-padding-block: var(--spacing-1);
   --spacing-button-padding-inline: var(--spacing-2);
   --size-button-block: var(--size-target-min);
+  --spacing-tree-leaf-padding-inline-start: calc(var(--spacing-tree-item-padding-inline) + var(--spacing-button-padding-inline) + var(--size-border-button));
   list-style: var(--list-style-tree);
   margin-inline: var(--spacing-tree-margin);
   padding: var(--spacing-tree-padding);
@@ -25,7 +26,8 @@ ul[variant="tree"], ul[variant="treegrid"] {
   }
 
   /* A leaf row is as tall as a toggle row, so the list keeps one
-     rhythm whether or not a row expands. */
+     rhythm whether or not a row expands. Its text starts where a toggle
+     label starts, past the button padding and border. */
   & > li:not(:has(> button)) {
     display: var(--display-flex);
     align-items: var(--align-center);

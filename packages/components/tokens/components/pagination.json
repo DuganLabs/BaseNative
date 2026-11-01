@@ -90,7 +90,7 @@
     }
   },
   "spacing-pagination-list-gap": {
-    "$value": "{spacing-2}",
+    "$value": "{spacing-1}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
@@ -198,7 +198,7 @@
     }
   },
   "spacing-pagination-item-gap": {
-    "$value": "{spacing-2}",
+    "$value": "{spacing-0}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
@@ -426,6 +426,24 @@
           "subitem": "weight",
           "state": null,
           "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "display-pagination-item-compact": {
+    "$value": "{display-none}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "display",
+          "type": null,
+          "item": "pagination-item",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": "compact"
         },
         "system": "trinity"
       }

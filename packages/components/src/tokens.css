@@ -1121,13 +1121,13 @@
   --flex-direction-pagination-list: var(--flex-direction-row);
   --flex-wrap-pagination-list: var(--flex-wrap-wrap);
   --align-pagination-list: var(--align-center);
-  --spacing-pagination-list-gap: var(--spacing-2);
+  --spacing-pagination-list-gap: var(--spacing-1);
   --list-style-pagination-list: var(--list-style-none);
   --spacing-pagination-list-margin: var(--spacing-0);
   --spacing-pagination-list-padding: var(--spacing-0);
   --display-pagination-item: var(--display-inline-flex);
   --align-pagination-item: var(--align-center);
-  --spacing-pagination-item-gap: var(--spacing-2);
+  --spacing-pagination-item-gap: var(--spacing-0);
   --color-text-pagination-separator: var(--color-text-label-4);
   --color-text-pagination-link: var(--color-tint-strong);
   --color-text-pagination-link-hover: var(--color-tint-strong);
@@ -1138,6 +1138,7 @@
   --font-pagination-link-tracking: var(--font-subheadline-tracking);
   --color-text-pagination-current: var(--color-text-label);
   --font-pagination-current-weight: var(--font-weight-semibold);
+  --display-pagination-item-compact: var(--display-none);
   --display-pipeline: var(--display-flex);
   --flex-direction-pipeline: var(--flex-direction-row);
   --spacing-pipeline-gap: var(--spacing-3);
