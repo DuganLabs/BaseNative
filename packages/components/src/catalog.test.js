@@ -132,10 +132,7 @@ test('combobox shows a decorative chevron after its input, as the select trigger
     inputHtml: input,
     options: [{ value: 'orange', label: 'Orange County' }],
   });
-  assert.match(
-    html,
-    /<input[^>]*>\s*<svg aria-hidden="true" viewBox="0 0 16 16">/,
-  );
+  assert.match(html, /<input[^>]*>\s*<svg aria-hidden="true" viewBox="0 0 16 16">/);
   const css = readFileSync(new URL('./combobox/styles.css', import.meta.url), 'utf8');
   assert.match(css, /& > svg \{[^}]*pointer-events: var\(--pointer-events-combobox-chevron\)/);
   assert.match(css, /input\[aria-expanded="true"\] ~ svg/);
