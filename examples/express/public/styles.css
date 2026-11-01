@@ -244,14 +244,21 @@
      (--spacing-app-shell-section-gap / -stack-gap); pages don't space
      their own sections. */
 
-  /* The hero's margin is the component's own token (--hero-margin,
-     0 by default), so the page stack sets it here the same way the
-     component pages set theirs. Articles that carry
-     their own hero margin are excluded; theirs wins. Without this,
-     every page's hero sat flush on the surface below it. -- */
-  main > figure[variant],
-  main > article:not([data-bn-component-page]) > figure[variant] {
-    --spacing-hero-margin: 0 auto var(--spacing-6, 24px);
+  /* The hero's inline margin is the component's own token (auto), so
+     a hero takes the same centred column every section below it does.
+     A tool page (the playground, the builder) lays its tool on the
+     wide column; its hero heads that column, so the title starts on
+     the tool's edge. */
+  main:has(> section:is([aria-label='Playground workspace'], #visual-builder)) > :is(figure[variant], footer) {
+    max-inline-size: var(--size-inline-wide, 92rem);
+  }
+
+  /* The home hero is the display headline: the fluid display size,
+     56 to 64px on a desktop and never under 36px on a phone. */
+  main > figure[variant='stacked']:has([data-bn-hero-demo]) {
+    --font-hero-title-size: var(--font-display-size);
+    --font-hero-title-leading: var(--font-display-leading);
+    --font-hero-title-tracking: var(--font-display-tracking);
   }
 
   /* One content column: the page's heroes are transparent, so their
@@ -2402,7 +2409,6 @@
     --size-border-hero: 0;
     --spacing-hero-padding-block: 0;
     --spacing-hero-padding-inline: 0;
-    --spacing-hero-margin: var(--space-lg) 0 var(--space-xl);
     --font-hero-title-family: var(--font-family);
     --spacing-hero-title-margin: 0 0 var(--space-sm);
 
@@ -4530,4 +4536,52 @@
     text-align: center;
     text-decoration: none;
   }
+}
+
+/* The masthead (the rail's top and the phone top bar). The brand link
+   is the mark and the wordmark; the GitHub link is a 44px icon target
+   whose glyph sits at its centre. */
+body > header > a[rel='home'],
+body > aside[variant='sidebar'] > header > a[rel='home'] {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  min-block-size: var(--size-target-min);
+  padding-inline: var(--spacing-1);
+  color: var(--color-text-label);
+  font-size: var(--font-headline-size);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+  border-radius: var(--size-radius-control);
+}
+
+body > aside[variant='sidebar'] > header > a[rel='home'] {
+  padding-inline: var(--spacing-3);
+}
+
+:is(body, body > aside[variant='sidebar']) > header > a[rel='home'] > svg {
+  flex: none;
+  border-radius: 7px;
+  box-shadow: 0 0 0 1px var(--color-border-separator);
+}
+
+:is(body, body > aside[variant='sidebar']) > header > a[aria-label] {
+  display: inline-grid;
+  place-items: center;
+  inline-size: var(--size-target-min);
+  block-size: var(--size-target-min);
+  color: var(--color-text-label-2);
+  border-radius: var(--size-radius-control);
+}
+
+:is(body, body > aside[variant='sidebar']) > header > a:hover {
+  color: var(--color-text-label);
+  background: var(--color-fill-3);
+}
+
+:is(body, body > aside[variant='sidebar']) > header > a:focus-visible {
+  outline: 2px solid var(--color-tint);
+  outline-offset: 2px;
 }

@@ -846,7 +846,7 @@
     }
   },
   "spacing-hero-margin": {
-    "$value": "{spacing-0}",
+    "$value": "{spacing-margin-auto}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {

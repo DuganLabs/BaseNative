@@ -1,5 +1,6 @@
 <template>
   <aside :variant="variant()" :role="landmark()" :aria-label="label()">
+    <template @if="headerHtml()"> {{ raw(headerHtml()) }} </template>
     <nav :aria-label="label()">
       <template @for="section of sections()">
         <section>

@@ -9,6 +9,17 @@ aside[variant='subnav'] {
   padding-inline: var(--spacing-sidebar-padding-inline);
   overflow-y: var(--overflow-sidebar-y);
 
+  /* The masthead. The brand starts the rail and its actions sit at the
+     rail's end, one row above the first group. */
+  & > header {
+    display: var(--display-sidebar-header);
+    align-items: var(--align-sidebar-header);
+    justify-content: var(--justify-sidebar-header);
+    gap: var(--spacing-sidebar-header-gap);
+    min-block-size: var(--size-target-min);
+    margin-block-end: var(--spacing-sidebar-header-margin-block-end);
+  }
+
   & > nav {
     display: var(--display-sidebar-nav);
     gap: var(--spacing-sidebar-nav-gap);

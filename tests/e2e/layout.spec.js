@@ -31,6 +31,7 @@ const ENFORCED = new Set([
   'nowrap',
   'clip',
   'menu-row',
+  'edge',
 ]);
 
 for (const theme of THEMES) {

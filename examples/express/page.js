@@ -261,8 +261,9 @@ export function renderPage(viewFile, ctx, opts) {
       .replace(/<!--OG_IMAGE-->/g, escapeAttr(ogImageFor(path)))
       .replace('<!--APP_NAV_CSS-->', () => shellCriticalCss())
       .replace('<!--APP_SHELL-->', () => {
-        const { sidebarHtml, appBarHtml } = renderSiteChrome(activePage);
+        const { headerHtml, sidebarHtml, appBarHtml } = renderSiteChrome(activePage);
         return renderTrinity('app-shell', {
+          headerHtml,
           sidebarHtml,
           appBarHtml,
           mainId: 'main-content',
