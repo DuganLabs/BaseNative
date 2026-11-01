@@ -498,3 +498,144 @@ test.describe('Specimens — combobox chevron', () => {
     });
   }
 });
+
+test.describe('Specimens — select keyboard and checkmark', () => {
+  // The open list follows the APG listbox button: the arrows move an
+  // active row (fill) that is distinct from the chosen value (checkmark),
+  // Enter commits the active row, and only the chosen row draws its check.
+  test('arrows move the active row; Enter chooses it; the check marks only the chosen row', async ({
+    page,
+  }) => {
+    await mounted(page, '/components/select');
+    const root = page.locator(`${PREVIEW} section[variant="select"]`);
+    const button = root.locator('button');
+    const rows = root.locator('ul[role="listbox"] li');
+    const checkVisible = () =>
+      rows.evaluateAll((lis) =>
+        lis.map((li) => getComputedStyle(li.querySelector('svg')).visibility === 'visible'),
+      );
+    await button.focus();
+    await page.keyboard.press('ArrowDown');
+    await expect(button).toHaveAttribute('aria-activedescendant', 'demo-trade-option-hvac');
+    expect(await checkVisible()).toEqual([false, false, true]);
+    await page.keyboard.press('ArrowUp');
+    await expect(button).toHaveAttribute('aria-activedescendant', 'demo-trade-option-plumbing');
+    await expect(rows.nth(1)).toHaveAttribute('variant', 'active');
+    await expect(rows.nth(2)).not.toHaveAttribute('variant', 'active');
+    await page.keyboard.press('Home');
+    await expect(button).toHaveAttribute('aria-activedescendant', /electrical/);
+    await page.keyboard.press('p');
+    await expect(button).toHaveAttribute('aria-activedescendant', /plumbing/);
+    await page.keyboard.press('Enter');
+    await expect(root.locator('ul[role="listbox"]')).toHaveCount(0);
+    await expect(button).toHaveText(/Plumbing/);
+    await page.keyboard.press('ArrowDown');
+    expect(await checkVisible()).toEqual([false, true, false]);
+  });
+});
+
+test.describe('Specimens — multiselect chips', () => {
+  // Each chip's ✕ is a 44px target named for its own option, drawn
+  // inside a compact pill; the search field draws no native clear
+  // button beside the chips' own dismiss controls.
+  test('every chip ✕ is a 44px target named for its option, inside a compact chip', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 393, height: 800 });
+    await mounted(page, '/components/multiselect');
+    const root = page.locator(`${PREVIEW} section`);
+    await root.locator('input').focus();
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter');
+    const chips = root.locator(':scope > ul:not([role]) > li');
+    await expect(chips).toHaveCount(2);
+    const facts = await chips.evaluateAll((lis) =>
+      lis.map((li) => {
+        const button = li.querySelector('button');
+        const chip = li.getBoundingClientRect();
+        const target = button.getBoundingClientRect();
+        return {
+          name: button.textContent.trim(),
+          label: li.textContent.replace(button.textContent, '').trim(),
+          chipHeight: chip.height,
+          width: target.width,
+          height: target.height,
+        };
+      }),
+    );
+    for (const fact of facts) {
+      expect(fact.name, 'the ✕ is named for its own chip').toBe(`Remove ${fact.label}`);
+      expect(fact.width).toBeGreaterThanOrEqual(44);
+      expect(fact.height).toBeGreaterThanOrEqual(44);
+      expect(fact.chipHeight, 'the pill stays compact').toBeLessThanOrEqual(36);
+    }
+  });
+
+  for (const scheme of ['light', 'dark']) {
+    test(`no native clear button in the search field (${scheme})`, async ({ page }) => {
+      await page.emulateMedia({ colorScheme: scheme });
+      await page.setViewportSize({ width: 393, height: 800 });
+      await mounted(page, '/components/multiselect');
+      const input = page.locator(`${PREVIEW} section > input`);
+      await input.focus();
+      await page.keyboard.press('Escape');
+      await input.evaluate((el) => {
+        el.value = 'Light';
+      });
+      await page.addStyleTag({ content: '*{caret-color:transparent!important}' });
+      const before = await input.screenshot({ animations: 'disabled' });
+      await page.addStyleTag({
+        content: 'input::-webkit-search-cancel-button{display:none!important}',
+      });
+      const after = await input.screenshot({ animations: 'disabled' });
+      expect(Buffer.compare(before, after), 'native clear button drawn').toBe(0);
+    });
+  }
+});
+
+test.describe('Specimens — coarse-pointer option rows', () => {
+  // On touch, every listbox row is at least the 44px target.
+  test.use({ hasTouch: true, isMobile: true, viewport: { width: 393, height: 800 } });
+  for (const [route, open] of [
+    ['/components/select', `${PREVIEW} section[variant="select"] > button`],
+    ['/components/multiselect', `${PREVIEW} section > input`],
+  ]) {
+    test(`${route} rows are ≥44px under a coarse pointer`, async ({ page }) => {
+      await mounted(page, route);
+      expect(await page.evaluate(() => matchMedia('(pointer: coarse)').matches)).toBe(true);
+      await page.locator(open).tap();
+      const rows = page.locator(`${PREVIEW} ul[role="listbox"] li`);
+      await expect(rows.first()).toBeVisible();
+      const heights = await rows.evaluateAll((lis) =>
+        lis.map((li) => li.getBoundingClientRect().height),
+      );
+      for (const height of heights) expect(height).toBeGreaterThanOrEqual(44);
+    });
+  }
+});
+
+test.describe('Specimens — fieldset legends align with their options', () => {
+  // A group's legend starts on the same edge as the controls it names
+  // (within 1px): no inherited site padding pushes it off the column.
+  for (const width of [320, 393, 1280]) {
+    for (const [route, first] of [
+      ['/components/radio', 'fieldset > label'],
+      ['/components/choice-group', 'fieldset > label'],
+    ]) {
+      test(`${route} legend sits on the options' edge at ${width}px`, async ({ page }) => {
+        await page.setViewportSize({ width, height: 900 });
+        await mounted(page, route);
+        const fieldset = page.locator(`${PREVIEW} fieldset`).first();
+        const [legendX, optionX] = await fieldset.evaluate((el, sel) => {
+          const legend = el.querySelector(':scope > legend');
+          const range = document.createRange();
+          range.selectNodeContents(legend);
+          const option = el.parentElement.querySelector(sel);
+          return [range.getBoundingClientRect().left, option.getBoundingClientRect().left];
+        }, first);
+        expect(Math.abs(legendX - optionX)).toBeLessThanOrEqual(1);
+      });
+    }
+  }
+});

@@ -252,7 +252,7 @@ test('multiselect renders chips with dismiss buttons and reports the set on togg
   );
   assert.match(
     html,
-    /<li role="option" id="trades-option-solar" aria-selected="false">Solar<\/li>/,
+    /<li role="option" id="trades-option-solar" aria-selected="false">Solar\s*<svg aria-hidden="true"/,
   );
   viewModel.toggle({ value: 'solar', label: 'Solar', dismissHtml: dismiss });
   assert.deepEqual(reported, { values: ['ev', 'solar'] });
@@ -984,15 +984,16 @@ test('virtualizer rows center their content, and the restacked table sets each k
   assert.match(tokens, /--size-border-table-row-block-end-restack: var\(--size-hairline\)/);
 });
 
-test('select anchors its popover to the section edge, and multiselect tiles consecutive selections', async () => {
+test('select anchors its popover to the section edge; multiselect marks a choice with a check, not a tiled fill', async () => {
   const { readFile } = await import('node:fs/promises');
   const tokens = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
   const selectCss = await readFile(new URL('./select/styles.css', import.meta.url), 'utf8');
   assert.match(tokens, /--spacing-select-listbox-inset-block-start: var\(--size-full\)/);
   assert.match(selectCss, /section\[variant="native"\]/);
   const multiCss = await readFile(new URL('./multiselect/styles.css', import.meta.url), 'utf8');
-  assert.match(multiCss, /li\[aria-selected="true"\] \+ li\[aria-selected="true"\]/);
-  assert.match(multiCss, /li\[aria-selected="true"\]:has\(\+ li\[aria-selected="true"\]\)/);
+  assert.match(multiCss, /li\[aria-selected="true"\] > svg/);
+  assert.match(multiCss, /li\[variant="active"\]/);
+  assert.doesNotMatch(multiCss, /li\[aria-selected="true"\] \+ li\[aria-selected="true"\]/);
   assert.match(tokens, /--color-bkg-toggle-knob: var\(--palette-white\)/);
 });
 

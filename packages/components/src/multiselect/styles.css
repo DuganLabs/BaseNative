@@ -31,10 +31,50 @@ section[variant="multiselect"] {
     }
 
     /* The chip sits on a fill, where the tint reads under 4.5 to 1; its
-       remove action takes the chip label color instead. */
+       remove action takes the chip label color instead. The action is a
+       44px square drawn as a two-bar cross. Its words stay, at zero
+       size, as its accessible name, and negative margins fold the
+       square into the pill so the chip stays compact while the target
+       keeps the platform size (the list gap clears the overhang). */
     & > li > button[variant="ghost"] {
       --color-text-button: var(--color-text-multiselect-chip-remove);
+      position: var(--position-multiselect-chip-remove);
+      inline-size: var(--size-multiselect-chip-remove);
+      block-size: var(--size-multiselect-chip-remove);
+      min-inline-size: var(--size-multiselect-chip-remove);
+      min-block-size: var(--size-multiselect-chip-remove);
+      padding: var(--spacing-multiselect-chip-remove-padding);
+      margin-block: var(--spacing-multiselect-chip-remove-margin-block);
+      margin-inline-start: var(--spacing-multiselect-chip-remove-margin-inline-start);
+      margin-inline-end: var(--spacing-multiselect-chip-remove-margin-inline-end);
+      font-size: var(--font-multiselect-chip-remove-size);
+
+      &::before,
+      &::after {
+        content: var(--content-multiselect-chip-remove-bar);
+        position: var(--position-multiselect-chip-remove-bar);
+        inset: var(--inset-multiselect-chip-remove-bar);
+        margin: var(--spacing-multiselect-chip-remove-bar-margin);
+        inline-size: var(--size-multiselect-chip-remove-bar-inline);
+        block-size: var(--size-multiselect-chip-remove-bar-block);
+        border-radius: var(--size-radius-multiselect-chip-remove-bar);
+        background-color: var(--color-bkg-multiselect-chip-remove-bar);
+      }
+
+      &::before {
+        transform: var(--transform-multiselect-chip-remove-bar-start);
+      }
+
+      &::after {
+        transform: var(--transform-multiselect-chip-remove-bar-end);
+      }
     }
+  }
+
+  /* The chips are the clear affordance; the platform's own search
+     cancel button would be a second, unlabelled one. */
+  & > input::-webkit-search-cancel-button {
+    display: var(--display-multiselect-search-cancel);
   }
 
   & > ul[role="listbox"] {
@@ -56,7 +96,13 @@ section[variant="multiselect"] {
     overflow: var(--overflow-multiselect-listbox);
   }
 
+  /* As in the select, a trailing check marks each chosen option, and
+     the fill marks only the active row the keyboard or pointer is on. */
   & > ul[role="listbox"] > li {
+    display: var(--display-multiselect-option);
+    align-items: var(--align-multiselect-option);
+    justify-content: var(--justify-multiselect-option);
+    gap: var(--spacing-multiselect-option-gap);
     padding-block: var(--spacing-multiselect-option-padding-block);
     padding-inline: var(--spacing-multiselect-option-padding-inline);
     border-radius: var(--size-radius-multiselect-option);
@@ -68,17 +114,26 @@ section[variant="multiselect"] {
     cursor: var(--cursor-multiselect-option);
   }
 
-  & > ul[role="listbox"] > li[aria-selected="true"] {
-    background-color: var(--color-bkg-multiselect-option-selected);
+  & > ul[role="listbox"] > li > svg {
+    flex: var(--flex-multiselect-option-check);
+    inline-size: var(--size-multiselect-option-check);
+    block-size: var(--size-multiselect-option-check);
+    color: var(--color-text-multiselect-option-check);
+    visibility: var(--visibility-multiselect-option-check);
   }
 
-  & > ul[role="listbox"] > li[aria-selected="true"] + li[aria-selected="true"] {
-    border-start-start-radius: var(--size-radius-multiselect-option-tiled);
-    border-start-end-radius: var(--size-radius-multiselect-option-tiled);
+  & > ul[role="listbox"] > li[aria-selected="true"] > svg {
+    visibility: var(--visibility-multiselect-option-check-selected);
   }
 
-  & > ul[role="listbox"] > li[aria-selected="true"]:has(+ li[aria-selected="true"]) {
-    border-end-start-radius: var(--size-radius-multiselect-option-tiled);
-    border-end-end-radius: var(--size-radius-multiselect-option-tiled);
+  & > ul[role="listbox"] > li[variant="active"] {
+    background-color: var(--color-bkg-multiselect-option-active);
+  }
+
+  /* A touch-first pointer gets the 44px platform target per row. */
+  @media (pointer: coarse) {
+    & > ul[role="listbox"] > li {
+      min-block-size: var(--size-multiselect-option-min-block-coarse);
+    }
   }
 }

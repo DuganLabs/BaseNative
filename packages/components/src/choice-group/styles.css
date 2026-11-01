@@ -17,6 +17,9 @@ fieldset[variant="choice-group"] {
     font-weight: var(--font-choice-group-legend-weight);
     line-height: var(--font-choice-group-legend-leading);
     margin-block-end: var(--spacing-choice-group-legend-margin-block-end);
+    /* The legend's text starts on the options' edge, so the UA's legend
+       padding (or any host rule) must not indent it. */
+    padding-inline: var(--spacing-choice-group-legend-padding-inline);
   }
 
   & > label {

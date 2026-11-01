@@ -382,10 +382,10 @@ test('select defaults to a positioned popover — a trigger button and its listb
     options,
   });
   assert.match(html, /<ul role="listbox" id="trade-listbox" aria-label="Trade">/);
-  assert.match(html, /<li role="option" id="trade-option-hvac" aria-selected="true">HVAC<\/li>/);
+  assert.match(html, /<li role="option" id="trade-option-hvac" aria-selected="true" variant="active">HVAC\s*<svg aria-hidden="true" viewBox="0 0 16 16">/);
   assert.match(
     html,
-    /<li role="option" id="trade-option-electrical" aria-selected="false">Electrical<\/li>/,
+    /<li role="option" id="trade-option-electrical" aria-selected="false">Electrical\s*<svg aria-hidden="true"/,
   );
 
   let chosen = '';

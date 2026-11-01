@@ -1102,15 +1102,19 @@
     margin-block-end: var(--space-md);
   }
 
-  /* -- Fieldset / Legend -- */
-  fieldset {
+  /* -- Fieldset / Legend --
+     The site's own boxed fieldset. Scoped to fieldsets with no variant:
+     a component fieldset (radio, choice group, theme toggle, rating)
+     owns its box and legend, and a bare `legend` rule here once
+     indented every component legend 8px off its options. */
+  fieldset:not([variant]) {
     border: var(--border-width) solid var(--border);
     border-radius: var(--radius-md);
     padding: var(--space-lg);
     margin-block-end: var(--space-md);
   }
 
-  legend {
+  fieldset:not([variant]) > legend {
     font-family: var(--font-family);
     font-stretch: var(--font-mono);
     font-size: var(--font-size-xs);

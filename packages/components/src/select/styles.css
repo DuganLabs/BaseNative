@@ -75,7 +75,15 @@ section[variant="select"] {
     overflow: var(--overflow-select-listbox);
   }
 
+  /* An option is its label and a trailing checkmark. The check marks
+     the chosen value (Apple's menu idiom), and the fill marks only the
+     active row the keyboard or pointer is on, so the two never read as
+     one state. */
   & > ul > li {
+    display: var(--display-select-option);
+    align-items: var(--align-select-option);
+    justify-content: var(--justify-select-option);
+    gap: var(--spacing-select-option-gap);
     padding-block: var(--spacing-select-option-padding-block);
     padding-inline: var(--spacing-select-option-padding-inline);
     border-radius: var(--size-radius-select-option);
@@ -87,8 +95,27 @@ section[variant="select"] {
     cursor: var(--cursor-select-option);
   }
 
-  & > ul > li[aria-selected="true"] {
-    background-color: var(--color-bkg-select-option-selected);
+  & > ul > li > svg {
+    flex: var(--flex-select-option-check);
+    inline-size: var(--size-select-option-check);
+    block-size: var(--size-select-option-check);
+    color: var(--color-text-select-option-check);
+    visibility: var(--visibility-select-option-check);
+  }
+
+  & > ul > li[aria-selected="true"] > svg {
+    visibility: var(--visibility-select-option-check-selected);
+  }
+
+  & > ul > li[variant="active"] {
+    background-color: var(--color-bkg-select-option-active);
+  }
+
+  /* A touch-first pointer gets the 44px platform target per row. */
+  @media (pointer: coarse) {
+    & > ul > li {
+      min-block-size: var(--size-select-option-min-block-coarse);
+    }
   }
 }
 

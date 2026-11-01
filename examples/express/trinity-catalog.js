@@ -508,21 +508,23 @@ export const trinityDemos = {
     return [D('County', r('combobox', props))];
   },
   multiselect: (r, _vm, live) => {
-    const dismissHtml = r('button', { label: 'Remove', variant: 'ghost' });
-    // Every option carries the chip dismiss control, so a chip the
-    // visitor adds at runtime dismisses exactly like the staged one.
+    // Every option carries its own chip dismiss control, named for the
+    // chip it removes ("Remove EV charging"), so a chip the visitor adds
+    // at runtime dismisses exactly like the staged one and a screen
+    // reader never hears a row of identical "Remove" buttons.
+    const dismiss = (label) => r('button', { label: `Remove ${label}`, variant: 'ghost' });
     const options = [
-      { value: 'ev', label: 'EV charging', dismissHtml },
-      { value: 'panel', label: 'Panel upgrade', dismissHtml },
-      { value: 'lighting', label: 'Lighting', dismissHtml },
-    ];
+      { value: 'ev', label: 'EV charging' },
+      { value: 'panel', label: 'Panel upgrade' },
+      { value: 'lighting', label: 'Lighting' },
+    ].map((option) => ({ ...option, dismissHtml: dismiss(option.label) }));
     // Composes closed, one chip already chosen. The mount drives the
     // popup and the chip set from these same props.
     const props = {
       id: 'demo-trades',
       label: 'Trades',
       inputHtml: r('input', { id: 'demo-trades', type: 'search', value: '', ariaLabel: 'Trades' }),
-      selected: [{ value: 'ev', label: 'EV charging', dismissHtml }],
+      selected: [options[0]],
       options,
     };
     live?.({ name: 'multiselect', props });
