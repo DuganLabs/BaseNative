@@ -47,3 +47,25 @@ for (const theme of THEMES) {
     });
   }
 }
+
+/*
+ * Font headroom: CI's monospace runs wider than a Mac's, so an identifier
+ * that fits here can break mid-name there (@basenative/hmr on /compare at
+ * 1024). Widening code by 8% reproduces that locally; the tables that set
+ * identifiers must still never break inside a name.
+ */
+for (const width of [768, 1024, 1280]) {
+  test.describe(`layout wide-mono @${width}`, () => {
+    test.use({ viewport: { width, height: 900 } });
+    for (const route of ['/compare/', '/ai/', '/docs/']) {
+      test(route, async ({ page }) => {
+        await page.goto(route);
+        await page.addStyleTag({ content: 'code { letter-spacing: 0.08em; }' });
+        await page.evaluate(() => document.fonts.ready);
+        const found = await page.evaluate(layoutAudit);
+        const failing = found.filter((v) => v.rule === 'ident' || v.rule === 'overflow');
+        expect(failing, JSON.stringify(failing, null, 1)).toEqual([]);
+      });
+    }
+  });
+}
