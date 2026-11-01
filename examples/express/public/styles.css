@@ -205,7 +205,6 @@
     border-radius: var(--size-radius-container);
     box-shadow: var(--shadow-float);
     overflow: hidden;
-    margin-block-start: var(--spacing-5);
   }
   [data-bn-hero-demo-live] {
     display: flex;
@@ -1046,7 +1045,7 @@
     padding-inline: var(--space-sm);
   }
 
-  fieldset > label + label {
+  fieldset:not([variant]) > label + label {
     margin-block-start: var(--space-md);
   }
 
@@ -1760,7 +1759,7 @@
     fieldset {
       padding: var(--space-md);
     }
-    fieldset > label + label {
+    fieldset:not([variant]) > label + label {
       margin-block-start: var(--space-sm);
     }
   }
@@ -2352,7 +2351,6 @@
   figure[variant='stacked'] > figcaption > dl {
     display: flex;
     flex-direction: column;
-    margin-block-start: var(--space-md);
     padding-block: var(--space-sm);
     border-block: var(--border-width) solid var(--border);
 
@@ -2557,6 +2555,9 @@
 
   [data-bn-component-preview] {
     & > output {
+      /* The figure's padding is the inset; the bare output rule's
+         trailing margin left a 16px band under every tray. */
+      margin: 0;
       display: flex;
       flex-wrap: wrap;
       gap: var(--space-sm);

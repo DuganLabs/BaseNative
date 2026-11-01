@@ -1002,7 +1002,7 @@
   --size-hero-overlay-media-block: var(--size-full);
   --size-hero-overlay-media-inline: var(--size-full);
   --spacing-hero-actions-gap: var(--spacing-3);
-  --spacing-hero-actions-margin-block-start: var(--spacing-2);
+  --spacing-hero-actions-margin-block-start: var(--spacing-0);
   --spacing-hero-caption-gap: var(--spacing-3);
   --spacing-hero-eyebrow-margin: var(--spacing-0);
   --spacing-hero-gap: var(--spacing-5);

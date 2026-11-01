@@ -39,7 +39,18 @@ export const ROUTES = [
 ];
 export const WIDTHS = [320, 393, 768, 1024, 1100, 1280, 1440];
 const THEMES = ['light', 'dark'];
-const ENFORCED = new Set(['stack', 'section', 'row', 'overflow', 'word', 'icon', 'field', 'picker']);
+const ENFORCED = new Set([
+  'stack',
+  'section',
+  'row',
+  'overflow',
+  'word',
+  'icon',
+  'field',
+  'picker',
+  'double',
+  'inset',
+]);
 
 for (const theme of THEMES) {
   for (const width of WIDTHS) {

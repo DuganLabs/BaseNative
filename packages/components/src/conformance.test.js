@@ -19,6 +19,7 @@ const px = (name) => {
   const v = m[1].trim();
   const ref = v.match(/^var\(--([\w-]+)\)$/);
   if (ref) return px(ref[1]);
+  if (v === '0') return 0;
   const rem = v.match(/^([\d.]+)rem$/);
   if (rem) return Number(rem[1]) * 16;
   const p = v.match(/^([\d.]+)px$/);
@@ -308,5 +309,34 @@ describe('conformance — playground panes (three editors squeezed to 149px at 7
       Number(three[1]) >= 3 * 360 + 2 * 16,
       'the query waits for three 360px panels and their gaps',
     );
+  });
+});
+
+describe('conformance — surfaces own their spacing (a 16px band under every preview)', () => {
+  const site = readFileSync(
+    join(SRC, '..', '..', '..', 'examples', 'express', 'public', 'styles.css'),
+    'utf8',
+  ).replace(/\/\*[\s\S]*?\*\//g, '');
+  const block = (re) => {
+    const m = site.match(re);
+    assert.ok(m, `no block for ${re}`);
+    return m[1];
+  };
+  it('the hero caption is spaced by its gap alone', () => {
+    assert.equal(px('spacing-hero-actions-margin-block-start'), 0);
+  });
+  it('the preview tray carries no outward margin into its figure', () => {
+    assert.match(block(/& > output \{([^}]*)\}/), /\bmargin:\s*0\b/);
+  });
+  it('items in the hero caption grid carry no block margin', () => {
+    assert.doesNotMatch(
+      block(/figure\[variant='stacked'\] > figcaption > dl \{([^}]*)\}/),
+      /margin-block/,
+    );
+    assert.doesNotMatch(block(/\[data-bn-hero-demo\] \{([^}]*)\}/), /margin-block/);
+  });
+  it('the site spaces only its own bare fieldsets, not catalog ones', () => {
+    for (const m of site.matchAll(/([^{}]*)label \+ label\s*\{/g))
+      assert.match(m[1], /fieldset:not\(\[variant\]\) > $/, `unscoped: ${m[1].trim()}`);
   });
 });
