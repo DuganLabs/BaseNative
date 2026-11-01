@@ -640,7 +640,6 @@
   --shadow-button-focus: var(--shadow-focus-ring);
   --motion-button-duration: var(--motion-fade-duration);
   --motion-button-curve: var(--motion-fade-curve);
-  --spacing-button-margin-inline-start-adjacent: var(--spacing-2);
   --display-calendar: var(--display-flex);
   --flex-direction-calendar: var(--flex-direction-column);
   --spacing-calendar-gap: var(--spacing-3);
@@ -1039,7 +1038,7 @@
   --size-hero-media-inline: var(--size-full);
   --size-hero-overlay-media-block: var(--size-full);
   --size-hero-overlay-media-inline: var(--size-full);
-  --spacing-hero-actions-gap: var(--spacing-3);
+  --spacing-hero-actions-gap: var(--spacing-4);
   --spacing-hero-actions-margin-block-start: var(--spacing-0);
   --spacing-hero-caption-gap: var(--spacing-3);
   --spacing-hero-eyebrow-margin: var(--spacing-0);

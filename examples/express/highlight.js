@@ -134,6 +134,66 @@ const CODE_BLOCK = /(<pre\b[^>]*>\s*<code\b[^>]*>)([\s\S]*?)(<\/code>\s*<\/pre>)
 export function highlightCodeBlocks(html) {
   return html.replace(CODE_BLOCK, (whole, open, inner, close) => {
     if (inner.includes('<')) return whole;
-    return open + highlightCode(decodeEntities(inner), declaredLanguage(open)) + close;
+    return open + codeLines(highlightCode(decodeEntities(inner), declaredLanguage(open))) + close;
   });
+}
+
+/** Deepest leading indent a line records; deeper lines hang from here. */
+export const MAX_CODE_INDENT = 16;
+
+/**
+ * Split highlighted HTML into one element per source line, so a line
+ * that wraps on a phone hangs under its own indent instead of falling
+ * back to column 0. A token that spans lines (a block comment, a
+ * template string) is closed at the line end and reopened on the next
+ * line, so every line is well-formed on its own. Each line keeps its
+ * newline, so the block's text content is unchanged byte for byte, and
+ * records its leading indent (spaces, tabs as two) in
+ * data-code-indent, capped at MAX_CODE_INDENT; the sheet maps that
+ * to a hanging indent with no inline style, which a strict CSP forbids.
+ * The line element is a bdi: code reads left to right, and an
+ * isolated line keeps a right-to-left string literal from reordering
+ * the code around it. A line's leading whitespace sits in its own
+ * unwrapping element: pre-wrap otherwise breaks a long indented line
+ * right after its indent, leaving a blank row and the code at the
+ * indent instead of the hang.
+ */
+export function codeLines(highlighted) {
+  const parts = highlighted.split(/(<[^>]+>)/);
+  const lines = [];
+  let open = [];
+  let line = '';
+  let text = '';
+  const finish = (newline) => {
+    const closing = open
+      .slice()
+      .reverse()
+      .map((tag) => `</${tag.match(/^<([\w-]+)/)[1]}>`)
+      .join('');
+    const lead = text.match(/^[ \t]*/)[0];
+    const indent = Math.min(MAX_CODE_INDENT, lead.replace(/\t/g, '  ').length);
+    lines.push(
+      `<bdi dir="ltr" data-code-line data-code-indent="${indent}">${line}${newline}${closing}</bdi>`,
+    );
+    line = open.join('');
+    text = '';
+  };
+  for (const part of parts) {
+    if (!part) continue;
+    if (part.startsWith('<')) {
+      if (part.startsWith('</')) open.pop();
+      else if (!part.endsWith('/>')) open.push(part);
+      line += part;
+      continue;
+    }
+    const pieces = part.split('\n');
+    pieces.forEach((piece, index) => {
+      if (index > 0) finish('\n');
+      const lead = text ? '' : piece.match(/^[ \t]*/)[0];
+      line += lead ? `<bdi data-code-lead>${lead}</bdi>${piece.slice(lead.length)}` : piece;
+      text += decodeEntities(piece);
+    });
+  }
+  if (line !== open.join('') || text) finish('');
+  return lines.join('');
 }
