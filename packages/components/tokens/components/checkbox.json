@@ -161,6 +161,24 @@
       }
     }
   },
+  "size-checkbox-min-block": {
+    "$value": "{size-target-min}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "checkbox",
+          "variant": null,
+          "subitem": "min-block",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "color-accent-checkbox": {
     "$value": "{color-tint}",
     "$type": "color",

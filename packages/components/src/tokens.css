@@ -681,6 +681,7 @@
   --font-checkbox-leading: var(--font-subheadline-leading);
   --cursor-checkbox: var(--cursor-pointer);
   --size-checkbox: var(--spacing-5);
+  --size-checkbox-min-block: var(--size-target-min);
   --color-accent-checkbox: var(--color-tint);
   --spacing-checkbox-margin: var(--spacing-0);
   --display-choice-group: var(--display-grid);
@@ -1178,6 +1179,7 @@
   --font-radio-option-leading: var(--font-subheadline-leading);
   --cursor-radio-option: var(--cursor-pointer);
   --size-radio-control: var(--spacing-5);
+  --size-radio-option-min-block: var(--size-target-min);
   --color-accent-radio-control: var(--color-tint);
   --spacing-radio-control-margin: var(--spacing-0);
   --display-rating: var(--display-inline-flex);

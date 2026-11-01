@@ -1263,3 +1263,27 @@ describe('rendered surfaces leave their spacing to the container', () => {
     assert.doesNotMatch(css, /(^|[\s,}])fieldset > label \+ label/m);
   });
 });
+
+describe('every custom property the site sheet reads is defined', () => {
+  it('no var() without a fallback names a property nothing defines', () => {
+    const site = readFileSync(repo('examples/express/public/styles.css'), 'utf8').replace(
+      /\/\*[\s\S]*?\*\//g,
+      '',
+    );
+    const sources = [site, ...componentStylesheets().map((f) => readFileSync(f, 'utf8'))];
+    const defined = new Set(
+      sources.flatMap((s) => [...s.matchAll(/(--[\w-]+)\s*:/g)].map((m) => m[1])),
+    );
+    const unresolved = [
+      ...new Set(
+        [...site.matchAll(/var\(\s*(--[\w-]+)\s*(,)?/g)]
+          .filter((m) => !m[2] && !defined.has(m[1]))
+          .map((m) => m[1]),
+      ),
+    ];
+    /* An undefined var() makes the whole declaration invalid at computed
+       time: a bare radio drew no ring (border and background fell to
+       their initial values), a dialog no surface. */
+    assert.deepEqual(unresolved, []);
+  });
+});

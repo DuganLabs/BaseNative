@@ -359,6 +359,24 @@
       }
     }
   },
+  "size-radio-option-min-block": {
+    "$value": "{size-target-min}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radio-option",
+          "variant": null,
+          "subitem": "min-block",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "color-accent-radio-control": {
     "$value": "{color-tint}",
     "$type": "color",
