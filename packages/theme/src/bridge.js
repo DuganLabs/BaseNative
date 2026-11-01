@@ -359,6 +359,7 @@ export const UPSTREAM_OWNED = Object.freeze({
   '--font-weight-medium': 'type scale — see README, "What the bridge leaves alone"',
   '--font-weight-regular': 'type scale — see README, "What the bridge leaves alone"',
   '--font-weight-semibold': 'type scale — see README, "What the bridge leaves alone"',
+  '--layer-chrome': 'stacking order',
   '--layer-legacy-dropdown': 'stacking order',
   '--layer-legacy-modal': 'stacking order',
   '--layer-legacy-nav': 'stacking order',
