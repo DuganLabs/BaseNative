@@ -572,9 +572,14 @@ async function heroPattern(page) {
     if (h1) {
       const size = parseFloat(getComputedStyle(h1).fontSize);
       // The hero title takes the large-title rung (2.125rem = 34px)
-      // since the type-hierarchy pass; the pre-hierarchy gate held it
-      // to the 28px title-1 rung.
-      if (Math.abs(size - 34) > 0.6) problems.push(`title ${size} expected 34`);
+      // since the type-hierarchy pass. The home hero is the display
+      // headline instead: fluid, never under 36px, 56 to 64px from a
+      // desktop up.
+      if (hero.querySelector('[data-bn-hero-demo]')) {
+        const floor = innerWidth >= 1024 ? 56 : 36;
+        if (size < floor - 0.6 || size > 64.6)
+          problems.push(`title ${size} expected ${floor} to 64`);
+      } else if (Math.abs(size - 34) > 0.6) problems.push(`title ${size} expected 34`);
       const weight = parseInt(getComputedStyle(h1).fontWeight, 10);
       if (weight !== 700) problems.push(`title weight ${weight} expected 700`);
     }
