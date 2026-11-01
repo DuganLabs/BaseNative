@@ -1,7 +1,7 @@
 {
   "name": "@basenative/components",
   "version": "3.1.0",
-  "description": "47 semantic HTML UI components as Holy Trinity modules (template, token-driven styles, signal view model) with a registry/loader for server assembly, design tokens and light/dark themes",
+  "description": "The BaseNative design system: 47 accessible components on real HTML elements, each a template, a token sheet and a signal view model, with design tokens and light and dark themes",
   "type": "module",
   "exports": {
     ".": {

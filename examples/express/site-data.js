@@ -234,6 +234,8 @@ export const START_SOURCE = `<!doctype html>
 export function getHomePageContext() {
   const runtimeVersion = pkgVersion('runtime');
   const packages = stats().publicPackages;
+  const catalogCount = trinityCatalog(trinityComponentInfo()).length;
+  const escapeTags = (text) => text.replace(/</g, "&lt;");
   // The home lists are the catalog's list-group: each row is one
   // paragraph — the row's mark as a badge, its title, its detail — so
   // the item is a single child of the row, the shape the component's
@@ -281,65 +283,59 @@ export function getHomePageContext() {
     ),
     runtimeList: listOf([
       {
-        title: 'No build step.',
+        title: 'Apple-grade design.',
+        detail: `${catalogCount} components with a platform kit’s finish: one type scale, light and dark, 44px touch targets, from a 320px phone to a desktop. <a href="/components">Browse them</a>.`,
+      },
+      {
+        title: 'All in code.',
         detail:
-          'Templates are valid HTML. Ship them as they are; the runtime hydrates them in the browser.',
+          'Platform design kits ship as drawing files you rebuild by hand. BaseNative ships the components themselves: an HTML template, a token sheet and a view model for each one.',
       },
       {
-        title: 'Signals, not a virtual DOM.',
-        detail: 'One set() updates exactly the bindings that read it. An effect that writes a signal it read throws <code>BN_EFFECT_LOOP</code> instead of looping.',
-      },
-      {
-        title: 'Server-first.',
+        title: 'Open source.',
         detail:
-          '@basenative/server renders the same templates to HTML, so pages are fast and crawlable before any script runs.',
+          'Apache-2.0 and published on npm. Theme it with tokens, fork it, ship it. <a href="https://github.com/DuganLabs/BaseNative">Source on GitHub</a>.',
       },
       {
-        title: 'Safe by default.',
-        detail: `The expression language is an allowlist, never eval, so pages run under a strict CSP. Gzip ${runtimeSizeStat()}.`,
+        title: 'Web standards.',
+        detail: `Built on ${escapeTags('<button>, <dialog>, <details>, <table>')} and the popover API. No build step, no virtual DOM, no dependencies in core. Runtime gzip ${runtimeSizeStat()}.`,
       },
       {
-        title: 'Accessible components.',
+        title: 'AI-safe.',
         detail:
-          'Built on <button>, <dialog>, <details> and <table>, in light and dark, on phone and desktop.'.replace(
-            /</g,
-            '&lt;',
-          ),
+          'The expression language is an allowlist, never eval, so generated templates run under a strict CSP. An effect that writes a signal it read throws <code>BN_EFFECT_LOOP</code> instead of looping.',
+      },
+      {
+        title: 'Agent-ready.',
+        detail:
+          '<code>npx -p @basenative/cli bn create my-app</code> scaffolds a project, <code>@basenative/mcp</code> gives any agent validation and previews, and <a href="/llms.txt">llms.txt</a> indexes the docs. <a href="/ai">How it works</a>.',
       },
     ]),
     catalogList: listOf([
       {
         title: '@basenative/components',
-        detail:
-          'The Holy Trinity catalog — every component three files: a template, a token sheet, and its logic, in light and dark.',
-        mark: 'C',
+        detail: `${catalogCount} components, each three files: a template, a token sheet and its logic, in light and dark.`,
       },
       {
-        title: 'npmjs.org',
-        detail: 'npm install @basenative/runtime @basenative/server. No token.',
-        mark: 'N',
+        title: '@basenative/runtime',
+        detail: 'Signals, computed values, effects and hydrate(), over the HTML you already write.',
       },
       {
-        title: '/ai',
-        detail:
-          'The model scorecard. Pass rates stay unpublished while the prompt corpus is empty.',
-        mark: 'A',
+        title: '@basenative/server',
+        detail: 'render() turns the same templates into HTML, so pages are fast and crawlable before any script runs.',
       },
       {
         title: '@basenative/validate',
         detail:
           'Flags className, htmlFor, onClick, {expr} text, useState, useEffect, and useMemo, and names the replacement.',
-        mark: 'V',
       },
       {
-        title: 'bn from-jsx',
-        detail: 'Rewrites a React or JSX draft into BaseNative.',
-        mark: 'J',
+        title: '@basenative/cli',
+        detail: 'bn create scaffolds a project; bn from-jsx rewrites a React or JSX draft into BaseNative.',
       },
       {
         title: 'Public packages',
         detail: `${packages} on npmjs.org.`,
-        mark: '#',
       },
     ]),
   };

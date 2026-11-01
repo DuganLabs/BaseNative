@@ -150,7 +150,7 @@ function shellCriticalCss() {
 
 export const SITE_URL = 'https://basenative.com';
 export const DEFAULT_DESCRIPTION =
-  'BaseNative — a signal-based runtime over native HTML. Zero build step. Zero deps in core. Semantic by construction.';
+  'BaseNative is an open-source design system kit, fully in code: accessible components on real HTML elements, in light and dark, built on web standards. AI-safe and ready for agents.';
 
 export function escapeAttr(s) {
   return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
@@ -179,8 +179,8 @@ export const OG_CARDS = [
     slug: 'home',
     path: '/',
     eyebrow: '',
-    title: 'Reactive UI in plain HTML.',
-    lede: 'Signals over native HTML. No build step, no virtual DOM, zero dependencies in core.',
+    title: 'Apple-grade design, all in code.',
+    lede: 'An open-source design system kit in plain HTML and CSS. Built on web standards, AI-safe and agent-ready.',
   },
   {
     slug: 'compare',
@@ -207,8 +207,8 @@ export const OG_CARDS = [
     slug: 'ai',
     path: '/ai',
     eyebrow: 'AI',
-    title: 'The scorecard for models',
-    lede: 'One HTML file a model can write and a browser can run. No toolchain to hallucinate.',
+    title: 'Built for agentic UI',
+    lede: 'One HTML file a model can write and a browser can run. Validated, never evaluated.',
   },
   {
     slug: 'playground',
@@ -332,18 +332,18 @@ export const siteRoutes = [
   {
     path: '/',
     view: 'home.html',
-    title: 'Reactive UI in plain HTML',
+    title: 'Apple-grade design system in plain HTML & CSS',
     description: DEFAULT_DESCRIPTION,
-    ogTitle: 'BaseNative — Reactive UI in plain HTML',
+    ogTitle: 'BaseNative — Apple-grade design system in plain HTML & CSS',
     activePage: 'home',
     ctx: () => getHomePageContext(),
     hero: (site, ctx) => ({
-      eyebrow: `Runtime ${ctx.runtimeVersion}`,
-      title: 'Reactive UI in plain HTML.',
-      ledeHtml: `<p>Signals, server rendering and ${catalogEntries.length} accessible components built on real HTML elements. No build step, no virtual DOM, no dependencies in core. Install it and ship.</p>${ctx.installBlock}`,
+      eyebrow: `Open-source design system · v${ctx.runtimeVersion}`,
+      title: 'Apple-grade design, all in code.',
+      ledeHtml: `<p>BaseNative is a design system kit that ships as code, not as a drawing file: ${catalogEntries.length} accessible components on real HTML elements, in light and dark, from phone to desktop. Open source, built on web standards, AI-safe and ready for agents.</p>${ctx.installBlock}`,
       actions: [
-        { label: 'Try the playground', href: '/playground' },
-        { label: 'Read the docs', href: '/docs' },
+        { label: 'Get started', href: '/docs' },
+        { label: 'Browse components', href: '/components' },
       ],
       after: ctx.heroDemo,
     }),
@@ -399,8 +399,8 @@ export const siteRoutes = [
       eyebrow: 'Docs',
       title: 'API reference',
       ledeHtml:
-        '<p>BaseNative currently exposes a small runtime/server surface and an intentionally constrained expression model. The goal is correctness and trust, not arbitrary template execution.</p>' +
-        `<p><code>@basenative/*</code> publishes to <strong>npmjs.org</strong>: the release pipeline publishes there directly, using OIDC trusted publishing — no registry tokens and no <code>.npmrc</code> redirect. A plain <code>npm install @basenative/runtime</code> gets the current release line (<code>${ctx.runtimeVersion}</code>). The <code>0.2.x</code>/<code>0.3.x</code> builds are the old pre-1.0 line, not stale mirrors of current releases.</p>`,
+        '<p>Everything you need to build with BaseNative: the signal runtime, the template directives, server rendering and the design tokens behind every component.</p>' +
+        `<p>Install the current release (<code>${ctx.runtimeVersion}</code>) from npm with <code>npm install @basenative/runtime</code>, or scaffold a project with <code>npx -p @basenative/cli bn create my-app</code>.</p>`,
     }),
   },
   {
@@ -408,14 +408,14 @@ export const siteRoutes = [
     view: 'ai.html',
     title: 'AI',
     description:
-      'Honest scorecard of the points against BaseNative for models: what is fixed, and what is an accepted tradeoff.',
-    ogTitle: 'BaseNative for models — honest scorecard',
+      'BaseNative for agentic UI: templates are data the runtime never evals, @basenative/validate returns errors a model can repair, and the CLI and MCP server put the design system in an agent’s loop.',
+    ogTitle: 'BaseNative for AI — safe, agent-ready UI',
     activePage: 'ai',
     ctx: () => getAiPageContext(),
     hero: {
       eyebrow: 'AI',
-      title: 'The scorecard for models',
-      lede: 'Every point a previous page would have held against BaseNative, with an honest status. Fixed means the runtime or the docs changed. Accepted means the tradeoff stands.',
+      title: 'Built for agentic UI',
+      lede: 'Models write BaseNative the way they write HTML. Templates are data the runtime never evals, so generated UI runs under a strict CSP. @basenative/validate returns errors a model can repair, and the CLI and MCP server put the design system in an agent’s loop.',
       actions: [
         { label: 'Cheat sheet', href: '/llms-start.txt' },
         { label: 'Compare', href: '/compare' },

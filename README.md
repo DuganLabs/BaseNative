@@ -1,11 +1,28 @@
 # BaseNative
 
-**The UI runtime for code you didn't write.**
+**An Apple-grade design system in plain HTML & CSS.**
 
-A model can generate a BaseNative interface at inference time — no build step, and
-no escape hatch to arbitrary JavaScript. Every other generative-UI system today
-pre-registers a fixed component set and has the model pick from it. BaseNative
-streams arbitrary UI.
+BaseNative is an open-source design system kit that ships as code, not as a
+drawing file: 47 accessible components on real HTML elements, in light and dark,
+from a 320px phone to a desktop, on a signal runtime under 10 KB gzip with zero
+dependencies in core.
+
+- **Apple-grade design.** One type scale, light and dark, 44px touch targets.
+  [Browse the components](https://basenative.com/components).
+- **All in code.** Platform design kits are files you rebuild by hand; every
+  BaseNative component is a template, a token sheet and a view model you install.
+- **Open source.** Apache-2.0, published on npm.
+- **Web standards.** `<button>`, `<dialog>`, `<details>`, `<table>` and the popover
+  API. No build step, no virtual DOM.
+- **AI-safe.** Templates are data the runtime never evals, so generated UI runs
+  under a strict CSP.
+- **Agent-ready.** `npx -p @basenative/cli bn create my-app`, an MCP server
+  (`@basenative/mcp`) and [llms.txt](https://basenative.com/llms.txt) put it in an
+  agent's loop. See [basenative.com/ai](https://basenative.com/ai).
+
+```sh
+npm install @basenative/runtime @basenative/components
+```
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org)
@@ -13,7 +30,7 @@ streams arbitrary UI.
 
 ---
 
-## Why this is different
+## Built for generated UI
 
 ### 1. Model-generated templates cannot execute arbitrary code
 
