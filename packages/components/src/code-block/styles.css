@@ -69,17 +69,18 @@ figure[variant='code'] {
   }
 }
 
-/* A long line wraps instead of running off the card edge, at every
-   width: nothing is hidden behind a scroll the reader cannot see.
-   Indentation is kept (pre-wrap), and a token too long for the line
-   breaks anywhere rather than overflowing. The same holds for a bare
-   reading <pre> outside the card (docs, source listings), so every
-   code surface behaves one way. An editor that overlays a textarea on
-   its <pre> keeps its own unwrapped lines. */
+/* Code never wraps. Each source line stays one line, at every width,
+   so its shape reads as written; a line longer than the card scrolls
+   the pre sideways inside the card, and the page itself never widens.
+   The same holds for a bare reading <pre> outside the card (docs,
+   source listings), so every code surface behaves one way. An
+   inherited overflow-wrap from running text is reset, so a long token
+   is never broken either. */
 pre,
 figure[variant='code'] > pre {
-  white-space: var(--white-space-code-block-pre-phone);
-  overflow-wrap: var(--overflow-wrap-code-block-pre-phone);
+  white-space: var(--white-space-code-block-pre);
+  overflow-wrap: var(--overflow-wrap-code-block-pre);
+  overflow: var(--overflow-code-block-pre);
 }
 
 /* One highlight vocabulary for every code sample, including the

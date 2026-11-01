@@ -93,7 +93,11 @@ nav[variant='app-bar'] {
     & > li > a,
     & > li > button {
       min-block-size: var(--size-target-min);
+      /* The label sits on the row's vertical centre, the same space
+         above it as below, however tall the 44px row is against the
+         line box. It stays aligned to the start of the row. */
       display: var(--display-app-bar-menu-link);
+      align-items: var(--align-app-bar-menu-link);
       padding-block: var(--spacing-app-bar-menu-link-padding-block);
       padding-inline: var(--spacing-app-bar-menu-link-padding-inline);
       border-radius: var(--size-radius-app-bar-menu-link);

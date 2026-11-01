@@ -138,25 +138,21 @@ export function highlightCodeBlocks(html) {
   });
 }
 
-/** Deepest leading indent a line records; deeper lines hang from here. */
+/** Deepest leading indent a line records. */
 export const MAX_CODE_INDENT = 16;
 
 /**
- * Split highlighted HTML into one element per source line, so a line
- * that wraps on a phone hangs under its own indent instead of falling
- * back to column 0. A token that spans lines (a block comment, a
+ * Split highlighted HTML into one element per source line, so each
+ * line is its own box (code never wraps; a long line scrolls). A token that spans lines (a block comment, a
  * template string) is closed at the line end and reopened on the next
  * line, so every line is well-formed on its own. Each line keeps its
  * newline, so the block's text content is unchanged byte for byte, and
  * records its leading indent (spaces, tabs as two) in
- * data-code-indent, capped at MAX_CODE_INDENT; the sheet maps that
- * to a hanging indent with no inline style, which a strict CSP forbids.
+ * data-code-indent, capped at MAX_CODE_INDENT.
  * The line element is a bdi: code reads left to right, and an
  * isolated line keeps a right-to-left string literal from reordering
  * the code around it. A line's leading whitespace sits in its own
- * unwrapping element: pre-wrap otherwise breaks a long indented line
- * right after its indent, leaving a blank row and the code at the
- * indent instead of the hang.
+ * unwrapping element.
  */
 export function codeLines(highlighted) {
   const parts = highlighted.split(/(<[^>]+>)/);

@@ -30,13 +30,19 @@
  *    component preview).
  *  - ident: inline code breaks between identifier parts (after a dot,
  *    slash, dash, paren or comma, or at a <wbr>), never inside a name.
- *  - hidden: a code sample never hides part of a line behind a
- *    sideways scroll, at any width. A long line wraps and hangs under
- *    its own indent. An editor that overlays a textarea keeps its own
- *    unwrapped lines.
+ *  - nowrap: code never wraps. Every source line of a code sample is
+ *    exactly one line box, at every width, so its shape reads as
+ *    written.
+ *  - clip: a code sample whose longest line is wider than its card
+ *    scrolls sideways inside the card (overflow auto or scroll). The
+ *    page never widens for it (see overflow).
  *  - cover: a control positioned over a surface (the code block's copy
  *    button) never paints over that surface's text. The space it sits
  *    in is reserved for it, at the control's real size.
+ *  - menu-row: a menu item or listbox option centres its label
+ *    vertically in its row (±1px), the same space above the text as
+ *    below it. The label stays aligned to the start, so only the
+ *    vertical centre is measured.
  */
 export function layoutAudit(opts = {}) {
   const STACK = opts.stack ?? 16;
@@ -366,11 +372,44 @@ export function layoutAudit(opts = {}) {
     if (hit) out.push({ rule: 'cover', at: path(c), ...hit });
   }
 
-  // a code sample shows every line in full
+  // code never wraps, and a long line scrolls inside its card
+  for (const line of main.querySelectorAll('pre [data-code-line]')) {
+    if (!visible(line)) continue;
+    const lh = parseFloat(getComputedStyle(line).lineHeight);
+    const h = line.getBoundingClientRect().height;
+    if (lh && h > lh * 1.5) out.push({ rule: 'nowrap', at: path(line), lines: Math.round(h / lh) });
+  }
   for (const pre of main.querySelectorAll('pre')) {
     if (!visible(pre) || pre.parentElement.querySelector('textarea')) continue;
     const over = pre.scrollWidth - pre.clientWidth;
-    if (over > 1) out.push({ rule: 'hidden', at: path(pre), px: over });
+    const ox = getComputedStyle(pre).overflowX;
+    if (over > 1 && ox !== 'auto' && ox !== 'scroll')
+      out.push({ rule: 'clip', at: path(pre), px: over, overflow: ox });
+  }
+
+  // a menu item or option centres its label vertically
+  const ROWS =
+    '[role="menuitem"], [role="menuitemradio"], [role="menuitemcheckbox"], [role="option"], menu > li > a, menu > li > button';
+  for (const row of document.querySelectorAll(ROWS)) {
+    if (!visible(row)) continue;
+    const walk = document.createTreeWalker(row, NodeFilter.SHOW_TEXT);
+    let top = Infinity;
+    let bottom = -Infinity;
+    for (let t = walk.nextNode(); t; t = walk.nextNode()) {
+      if (!t.textContent.trim() || t.parentElement.closest('svg')) continue;
+      const range = document.createRange();
+      range.selectNodeContents(t);
+      for (const r of range.getClientRects()) {
+        if (r.height < 1) continue;
+        top = Math.min(top, r.top);
+        bottom = Math.max(bottom, r.bottom);
+      }
+    }
+    if (top === Infinity) continue;
+    const rr = row.getBoundingClientRect();
+    const off = (top + bottom) / 2 - (rr.top + rr.bottom) / 2;
+    if (Math.abs(off) > 1)
+      out.push({ rule: 'menu-row', at: path(row), px: Math.round(off * 10) / 10 });
   }
   return out;
 }

@@ -28,7 +28,9 @@ const ENFORCED = new Set([
   'cover',
   'target',
   'ident',
-  'hidden',
+  'nowrap',
+  'clip',
+  'menu-row',
 ]);
 
 for (const theme of THEMES) {

@@ -1484,19 +1484,24 @@ describe('code blocks render one element per source line', () => {
     assert.equal((out.match(/data-code-line/g) || []).length, 2);
   });
 
-  it('the site sheet hangs a wrapped line under its own indent on a phone', () => {
-    const css = readFileSync(
+  it('code never wraps: the sheets set no hanging indent and keep every pre on pre', () => {
+    const site = readFileSync(
       fileURLToPath(new URL('../../examples/express/public/styles.css', import.meta.url)),
       'utf8',
     );
-    assert.match(css, /\[data-code-line\] \{\s*display: block;/);
-    for (let i = 1; i <= MAX_CODE_INDENT; i++) {
-      assert.match(
-        css,
-        new RegExp(`&\\[data-code-indent=['"]${i}['"]\\]`),
-        `indent ${i} has a rule`,
-      );
-    }
+    const block = readFileSync(
+      fileURLToPath(
+        new URL('../../packages/components/src/code-block/styles.css', import.meta.url),
+      ),
+      'utf8',
+    );
+    assert.match(site, /\[data-code-line\] \{\s*display: block;\s*\}/);
+    assert.doesNotMatch(site, /data-code-indent=/, 'no hanging-indent rules');
+    assert.doesNotMatch(site + block, /pre-wrap/, 'no code surface wraps');
+    assert.match(
+      block,
+      /pre,\s*figure\[variant='code'\] > pre \{\s*white-space: var\(--white-space-code-block-pre\);\s*overflow-wrap: var\(--overflow-wrap-code-block-pre\);\s*overflow: var\(--overflow-code-block-pre\);/,
+    );
   });
 });
 
