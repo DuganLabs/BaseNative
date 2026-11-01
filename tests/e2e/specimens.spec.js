@@ -333,6 +333,32 @@ test.describe('Specimens — one field measure', () => {
   }
 });
 
+test.describe('Specimens — combobox end control', () => {
+  // The chevron is the only control at the field's end: the engine's
+  // search clear button must not draw beside it. Hiding it by force
+  // must change no pixel of the focused, filled field.
+  for (const scheme of ['light', 'dark']) {
+    test(`no native clear button beside the chevron (${scheme})`, async ({ page }) => {
+      await page.emulateMedia({ colorScheme: scheme });
+      await page.setViewportSize({ width: 393, height: 800 });
+      await page.goto('/components/combobox/');
+      const input = page.locator('[data-bn-component-preview] input[role="combobox"]').first();
+      await input.focus();
+      await page.keyboard.press('Escape');
+      await input.evaluate((el) => {
+        el.value = 'Orange County';
+      });
+      await page.addStyleTag({ content: '*{caret-color:transparent!important}' });
+      const before = await input.screenshot({ animations: 'disabled' });
+      await page.addStyleTag({
+        content: 'input::-webkit-search-cancel-button{display:none!important}',
+      });
+      const after = await input.screenshot({ animations: 'disabled' });
+      expect(Buffer.compare(before, after), 'native clear button drawn').toBe(0);
+    });
+  }
+});
+
 test.describe('Specimens — combobox chevron', () => {
   // A combobox opens a list, so it shows the select's chevron: centred
   // on the field (within 1px) open and closed, inside its end padding,

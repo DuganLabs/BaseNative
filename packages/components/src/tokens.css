@@ -787,6 +787,7 @@
   --pointer-events-combobox-chevron: var(--pointer-events-none);
   --motion-combobox-duration: var(--motion-fade-duration);
   --motion-combobox-curve: var(--motion-fade-curve);
+  --display-combobox-search-cancel: var(--display-none);
   --box-sizing-command-palette: var(--box-sizing-border);
   --size-command-palette-inline: var(--size-full);
   --size-command-palette-max-inline: var(--size-palette-max);

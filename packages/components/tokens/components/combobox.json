@@ -700,5 +700,23 @@
         "system": "trinity"
       }
     }
+  },
+  "display-combobox-search-cancel": {
+    "$value": "{display-none}",
+    "$type": "other",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "display",
+          "type": null,
+          "item": "combobox",
+          "variant": null,
+          "subitem": "search-cancel",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
   }
 }
