@@ -249,7 +249,8 @@
      A tool page (the playground, the builder) lays its tool on the
      wide column; its hero heads that column, so the title starts on
      the tool's edge. */
-  main:has(> section:is([aria-label='Playground workspace'], #visual-builder)) > :is(figure[variant], footer) {
+  main:has(> section:is([aria-label='Playground workspace'], #visual-builder))
+    > :is(figure[variant], footer) {
     max-inline-size: var(--size-inline-wide, 92rem);
   }
 
@@ -3710,7 +3711,6 @@
     white-space: pre;
   }
 
-
   [data-compare-marker] {
     display: inline-block;
     inline-size: 1em;
@@ -4415,7 +4415,6 @@
   main a:where(:not([data-bn]):not([variant]):not([role='button']):not([data-bn-cta])) {
     color: var(--color-tint-strong);
   }
-
 
   /* The docs contents nav owns its link ink, like pagination: the
    styles.css treatment is quiet label colour with the brand fill
