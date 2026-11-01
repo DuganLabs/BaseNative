@@ -1616,6 +1616,7 @@
   --overflow-select-listbox: var(--overflow-auto);
   --spacing-select-option-padding-block: var(--spacing-2);
   --spacing-select-option-padding-inline: var(--spacing-3);
+  --size-select-option-min-block: var(--size-control);
   --size-radius-select-option: var(--size-radius-md);
   --color-text-select-option: var(--color-text-label);
   --font-select-option-size: var(--font-body-size);

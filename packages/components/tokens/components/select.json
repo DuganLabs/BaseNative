@@ -1385,6 +1385,24 @@
       }
     }
   },
+  "size-select-option-min-block": {
+    "$value": "{size-control}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "select-option",
+          "variant": null,
+          "subitem": "min-block",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "size-radius-select-option": {
     "$value": "{size-radius-md}",
     "$type": "dimension",

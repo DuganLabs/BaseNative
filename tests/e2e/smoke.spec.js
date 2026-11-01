@@ -34,6 +34,37 @@ test.describe('Enterprise Example', () => {
     await expect(page.locator('body')).toContainText(/user/i);
   });
 
+  // The views printed every component as escaped text ("<section ...>"
+  // on screen) until component markup was inserted raw.
+  for (const path of ['/', '/users', '/users/1', '/users/new']) {
+    test(`${path} renders its components as markup, not escaped text`, async ({ page }) => {
+      await page.goto(`http://localhost:3001${path}`);
+      await expect(page.locator('main')).not.toContainText(/<\/?(section|button|table|span)\b/);
+      expect(await page.locator('main [variant]').count()).toBeGreaterThan(0);
+    });
+
+    // Unstyled controls (index.css carries no component sheets), a 36px
+    // sidebar rail and a 240px rail beside the content on a phone.
+    test(`${path} fits a 320px phone with 44px targets`, async ({ page }) => {
+      await page.setViewportSize({ width: 320, height: 720 });
+      await page.goto(`http://localhost:3001${path}`);
+      const trigger = page.locator('[aria-haspopup="listbox"]');
+      if (await trigger.count()) await trigger.first().click();
+      const report = await page.evaluate(() => {
+        const small = [];
+        for (const el of document.querySelectorAll(
+          'nav a, main a[variant], button, input:not([type="hidden"]), [role="option"]',
+        )) {
+          const box = el.getBoundingClientRect();
+          if (box.width && box.height < 44)
+            small.push(`${el.outerHTML.slice(0, 50)} ${box.height}`);
+        }
+        return { overflow: document.documentElement.scrollWidth - innerWidth, small };
+      });
+      expect(report).toEqual({ overflow: 0, small: [] });
+    });
+  }
+
   test('API creates user', async ({ request }) => {
     const response = await request.post('http://localhost:3001/api/users', {
       data: { name: 'Test User', email: 'test@example.com', role: 'Viewer' },

@@ -84,6 +84,7 @@ section[variant="select"] {
     align-items: var(--align-select-option);
     justify-content: var(--justify-select-option);
     gap: var(--spacing-select-option-gap);
+    min-block-size: var(--size-select-option-min-block);
     padding-block: var(--spacing-select-option-padding-block);
     padding-inline: var(--spacing-select-option-padding-inline);
     border-radius: var(--size-radius-select-option);
