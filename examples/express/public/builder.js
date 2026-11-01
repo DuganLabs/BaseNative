@@ -1247,7 +1247,7 @@ ${items}
 }
 
 // ../../packages/builder/src/inspector.js
-function renderField(nodeId, prop, value, binding) {
+function renderField(nodeId, prop, value, binding, options = {}) {
   const id = `bn-prop-${nodeId}-${prop.name}`;
   const label = escapeHtml(prop.label || prop.name);
   const dataAttrs = `data-bn="bn-inspector-field" data-bn-prop="${escapeHtml(prop.name)}" data-bn-node="${escapeHtml(nodeId)}"`;
@@ -1256,10 +1256,13 @@ function renderField(nodeId, prop, value, binding) {
     return `<label class="bn-inspector__field" for="${id}"><span class="bn-inspector__label">${label} <small>(signal)</small></span><input id="${id}" type="text" ${dataAttrs} data-bn-binding="true" placeholder="signalName" value="${escapeHtml(ref)}" class="bn-inspector__input"></label>`;
   }
   if (prop.kind === "enum" && Array.isArray(prop.options)) {
-    const options = prop.options.map(
+    if (options.enumHost) {
+      return `<section class="bn-inspector__field" data-bn="bn-inspector-field" data-bn-enum-host="${escapeHtml(prop.name)}" data-bn-node="${escapeHtml(nodeId)}"><label class="bn-inspector__label" for="${id}">${label}</label></section>`;
+    }
+    const choices = prop.options.map(
       (o) => `<option value="${escapeHtml(o)}"${value === o ? " selected" : ""}>${escapeHtml(o || "\u2014")}</option>`
     ).join("");
-    return `<label class="bn-inspector__field" for="${id}"><span class="bn-inspector__label">${label}</span><select id="${id}" ${dataAttrs} class="bn-inspector__input">${options}</select></label>`;
+    return `<label class="bn-inspector__field" for="${id}"><span class="bn-inspector__label">${label}</span><select id="${id}" ${dataAttrs} class="bn-inspector__input">${choices}</select></label>`;
   }
   if (prop.kind === "boolean") {
     const checked = value ? " checked" : "";
@@ -1272,7 +1275,7 @@ function renderField(nodeId, prop, value, binding) {
   const v = value == null ? "" : escapeHtml(value);
   return `<label class="bn-inspector__field" for="${id}"><span class="bn-inspector__label">${label}</span><input id="${id}" type="text" ${dataAttrs} value="${v}" class="bn-inspector__input"></label>`;
 }
-function renderInspector(state, palette) {
+function renderInspector(state, palette, options = {}) {
   const selectedId = state.selection.peek ? state.selection.peek() : state.selection();
   if (!selectedId) {
     return '<div class="bn-inspector" aria-label="Property inspector"><p class="bn-inspector__empty">Select a component to edit its properties.</p><p class="bn-inspector__empty">Click a component on the canvas to select it \u2014 its properties, duplicate, and remove live here.</p></div>';
@@ -1286,7 +1289,9 @@ function renderInspector(state, palette) {
   if (!def || !def.props.length) {
     return `<div class="bn-inspector" aria-label="Property inspector">${heading}<p class="bn-inspector__empty">No editable properties.</p></div>`;
   }
-  const fields = def.props.map((prop) => renderField(node.id, prop, node.props[prop.name], node.bindings[prop.name])).join("\n");
+  const fields = def.props.map(
+    (prop) => renderField(node.id, prop, node.props[prop.name], node.bindings[prop.name], options)
+  ).join("\n");
   const actions = `<footer class="bn-inspector__actions"><button type="button" data-bn="bn-inspector-action" data-bn-action="duplicate" data-bn-node="${escapeHtml(node.id)}" class="bn-inspector__btn">Duplicate</button><button type="button" data-bn="bn-inspector-action" data-bn-action="remove" data-bn-node="${escapeHtml(node.id)}" class="bn-inspector__btn bn-inspector__btn--danger">Remove</button></footer>`;
   return `<div class="bn-inspector" aria-label="Property inspector">${heading}<form class="bn-inspector__form" data-bn-inspector-form="${escapeHtml(node.id)}">${fields}</form>` + actions + `</div>`;
 }
@@ -1751,6 +1756,20 @@ var BnBuilderInspector = class extends HTMLElement {
     this.state = null;
     this.palette = null;
     this._effect = null;
+    this._enumControl = null;
+  }
+  /**
+   * The control an enum prop renders with. By default it is the
+   * platform <select>; a host sets this to mount its own (the site
+   * mounts the @basenative/components select). Called after each
+   * render as fn(host, { id, label, value, options, onChoose }).
+   */
+  get enumControl() {
+    return this._enumControl;
+  }
+  set enumControl(fn) {
+    this._enumControl = typeof fn === "function" ? fn : null;
+    this._render();
   }
   connectedCallback() {
     this._wire();
@@ -1785,7 +1804,34 @@ var BnBuilderInspector = class extends HTMLElement {
       this.innerHTML = "";
       return;
     }
-    this.innerHTML = renderInspector(this.state, this.palette);
+    const active = typeof document !== "undefined" ? document.activeElement : null;
+    const focusId = active && active !== this && this.contains(active) ? active.id : "";
+    const enumControl = this._enumControl;
+    this.innerHTML = renderInspector(this.state, this.palette, { enumHost: Boolean(enumControl) });
+    if (enumControl) queueMicrotask(() => this._mountEnums(enumControl, focusId));
+    if (focusId) document.getElementById(focusId)?.focus();
+  }
+  _mountEnums(enumControl, focusId = "") {
+    for (const host of this.querySelectorAll("[data-bn-enum-host]")) {
+      if (host.childElementCount > 1) continue;
+      const nodeId = host.dataset.bnNode;
+      const propName = host.dataset.bnEnumHost;
+      const node = this.state.getNode(nodeId);
+      const def = node && this.palette.get(node.type);
+      const prop = def?.props.find((p) => p.name === propName);
+      if (!prop) continue;
+      const current = node.props[propName] ?? prop.default;
+      const value = prop.options.includes(current) ? current : prop.options[0];
+      const id = `bn-prop-${nodeId}-${propName}`;
+      enumControl(host, {
+        id,
+        focus: id === focusId,
+        label: prop.label || prop.name,
+        value,
+        options: prop.options.map((o) => ({ value: o, label: o || "\u2014" })),
+        onChoose: (choice) => this.state.updateProps(nodeId, { [propName]: coerce(prop, choice) })
+      });
+    }
   }
   _wire() {
     this.addEventListener("input", (e) => this._handleChange(e));
@@ -2161,8 +2207,37 @@ function hlCSS(src) {
 // builder-entry.js
 if (typeof window !== "undefined") window.__BnBuilder = BnBuilder;
 var ready = (fn) => document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", fn, { once: true }) : fn();
+var assetVersion = new URL(import.meta.url).searchParams.get("v");
+var selectTemplate = null;
+var templateText = () => selectTemplate ??= fetch(
+  assetVersion ? `/bn-css/select/index.html?v=${assetVersion}` : "/bn-css/select/index.html"
+).then((response) => response.text()).then((text) => text.replace(/^\s*<template>/, "").replace(/<\/template>\s*$/, ""));
+var openSelects = /* @__PURE__ */ new Set();
+document.addEventListener("pointerdown", (event) => {
+  for (const entry of openSelects) {
+    if (!entry.root.isConnected) openSelects.delete(entry);
+    else if (entry.vm.open() && !entry.root.contains(event.target)) entry.vm.close();
+  }
+});
+var siteBundle = "/basenative.js";
+var site = null;
+var loadSite = () => site ??= import(siteBundle);
+async function mountSelect(host, { id, label, value, options, onChoose, focus }) {
+  const [{ select, hydrate }, markup] = await Promise.all([loadSite(), templateText()]);
+  const vm = select.create({ id, label, value, options, onChoose });
+  if (!host.isConnected) return;
+  const template = document.createElement("template");
+  template.innerHTML = markup;
+  const root = template.content.firstElementChild;
+  host.append(template.content);
+  hydrate(host, vm);
+  if (root) openSelects.add({ root, vm });
+  if (focus) host.querySelector("button")?.focus();
+}
 ready(() => {
   const builder = document.querySelector("[data-bn-builder-root]");
+  const inspector = builder?.querySelector("bn-builder-inspector");
+  if (inspector) inspector.enumControl = mountSelect;
   const panel = document.querySelector("[data-bn-builder-export-panel]");
   const output = document.querySelector("[data-bn-builder-export-output] code");
   if (!builder || !panel || !output) return;

@@ -678,6 +678,12 @@
     gap: var(--bn-len-4, 4px);
   }
 
+  /* A mounted enum control (the site's custom select) sits on the
+     field's own 4px rhythm, not the page stack's margin. */
+  .bn-inspector__field[data-bn-enum-host] > section {
+    margin-block: 0;
+  }
+
   .bn-inspector__field--inline {
     flex-direction: row;
     align-items: center;

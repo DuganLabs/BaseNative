@@ -100,7 +100,18 @@ createPalette(): ComponentPalette
 defaultPalette(): ComponentPalette
 generateBaseNative(state, options?): string
 renderTreeView(state): string
-renderInspector(state, palette): string
+renderInspector(state, palette, options?): string
+```
+
+### Custom enum controls
+
+The inspector renders enum props as a platform `<select>` by default. Set `enumControl` on `<bn-builder-inspector>` to mount your own control into each enum field instead (the BaseNative site mounts its custom select):
+
+```js
+inspector.enumControl = (host, { id, label, value, options, onChoose, focus }) => {
+  // render into `host`; give the focusable element `id` (the field's label points at it);
+  // call onChoose(value) on a choice; focus it when `focus` is true (it had focus before a re-render)
+};
 ```
 
 `BuilderState` exposes signals (`tree`, `selection`, `hover`, `canUndo`, `canRedo`) and actions (`addNode`, `removeNode`, `updateProps`, `setBinding`, `moveNode`, `duplicateNode`, `select`, `undo`, `redo`, `clear`, `toJSON`, `fromJSON`, `subscribe`).

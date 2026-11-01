@@ -21,6 +21,22 @@ export class BnBuilderInspector extends HTMLElement {
     this.state = null;
     this.palette = null;
     this._effect = null;
+    this._enumControl = null;
+  }
+
+  /**
+   * The control an enum prop renders with. By default it is the
+   * platform <select>; a host sets this to mount its own (the site
+   * mounts the @basenative/components select). Called after each
+   * render as fn(host, { id, label, value, options, onChoose }).
+   */
+  get enumControl() {
+    return this._enumControl;
+  }
+
+  set enumControl(fn) {
+    this._enumControl = typeof fn === 'function' ? fn : null;
+    this._render();
   }
 
   connectedCallback() {
@@ -61,7 +77,39 @@ export class BnBuilderInspector extends HTMLElement {
       this.innerHTML = '';
       return;
     }
-    this.innerHTML = renderInspector(this.state, this.palette);
+    /* A re-render replaces the fields; the focused one keeps focus. */
+    const active = typeof document !== 'undefined' ? document.activeElement : null;
+    const focusId = active && active !== this && this.contains(active) ? active.id : '';
+    const enumControl = this._enumControl;
+    this.innerHTML = renderInspector(this.state, this.palette, { enumHost: Boolean(enumControl) });
+    /* Mounted after the render effect returns: a control's own signals
+       (its open state, its value) must not become this effect's
+       dependencies, or opening the control would re-render the panel. */
+    if (enumControl) queueMicrotask(() => this._mountEnums(enumControl, focusId));
+    if (focusId) document.getElementById(focusId)?.focus();
+  }
+
+  _mountEnums(enumControl, focusId = '') {
+    for (const host of this.querySelectorAll('[data-bn-enum-host]')) {
+      if (host.childElementCount > 1) continue;
+      const nodeId = host.dataset.bnNode;
+      const propName = host.dataset.bnEnumHost;
+      const node = this.state.getNode(nodeId);
+      const def = node && this.palette.get(node.type);
+      const prop = def?.props.find((p) => p.name === propName);
+      if (!prop) continue;
+      const current = node.props[propName] ?? prop.default;
+      const value = prop.options.includes(current) ? current : prop.options[0];
+      const id = `bn-prop-${nodeId}-${propName}`;
+      enumControl(host, {
+        id,
+        focus: id === focusId,
+        label: prop.label || prop.name,
+        value,
+        options: prop.options.map((o) => ({ value: o, label: o || '—' })),
+        onChoose: (choice) => this.state.updateProps(nodeId, { [propName]: coerce(prop, choice) }),
+      });
+    }
   }
 
   _wire() {
