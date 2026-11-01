@@ -15,6 +15,7 @@ menu[variant="default"] {
     align-items: var(--align-dropdown-menu-item);
     gap: var(--spacing-dropdown-menu-item-gap);
     inline-size: var(--size-dropdown-menu-item-inline);
+    min-block-size: var(--size-target-min);
     padding-block: var(--spacing-dropdown-menu-item-padding-block);
     padding-inline: var(--spacing-dropdown-menu-item-padding-inline);
     background-color: var(--color-bkg-dropdown-menu-item);

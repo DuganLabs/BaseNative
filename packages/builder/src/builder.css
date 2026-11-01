@@ -151,7 +151,8 @@
   .bn-builder__btn,
   [data-bn-builder-export-copy] {
     appearance: none;
-    min-height: var(--bn-len-32, 32px);
+    /* 44px targets at every width, as the palette's are. */
+    min-height: var(--bn-len-44, 44px);
     padding: 0 var(--bn-len-12, 12px);
     border: 1px solid transparent;
     border-radius: var(--bn-plat-radius-8, 8px);
@@ -242,10 +243,6 @@
          and each scrolls internally — canvas largest, inspector last. */
       grid-template-rows: minmax(8rem, 1fr) minmax(8rem, 1fr) minmax(8rem, 1fr);
       block-size: auto;
-    }
-
-    .bn-builder__btn {
-      min-height: var(--bn-len-44, 44px);
     }
   }
 
@@ -437,7 +434,8 @@
 
   .bn-palette__query {
     appearance: none;
-    min-height: var(--bn-len-32, 32px);
+    /* Palette controls are 44px touch targets at every width. */
+    min-height: var(--bn-len-44, 44px);
     width: 100%;
     border: 1px solid var(--bn-plat-color-separator, GrayText);
     border-radius: var(--bn-plat-radius-8, 8px);
@@ -493,7 +491,7 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--bn-len-8, 8px);
-    min-height: var(--bn-len-32, 32px);
+    min-height: var(--bn-len-44, 44px);
     padding: var(--bn-len-4, 4px) var(--bn-len-8, 8px);
     border: 0;
     border-radius: var(--bn-plat-radius-8, 8px);
