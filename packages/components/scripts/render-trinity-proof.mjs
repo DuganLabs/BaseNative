@@ -253,7 +253,7 @@ const grid = R('datagrid', {
   ],
 });
 
-const treeInner = R('tree', { items: [{ label: 'Panel upgrade' }, { label: 'EV charger' }, { label: 'Lighting' }] });
+const treeInner = R('tree', { nested: true, items: [{ label: 'Panel upgrade' }, { label: 'EV charger' }, { label: 'Lighting' }] });
 const treeDemo = R('tree', {
   items: [
     { label: 'Services', expanded: true, toggleHtml: R('button', { label: 'Services', variant: 'ghost' }), childrenHtml: treeInner },
