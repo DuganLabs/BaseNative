@@ -332,3 +332,49 @@ test.describe('Specimens — one field measure', () => {
     });
   }
 });
+
+test.describe('Specimens — combobox chevron', () => {
+  // A combobox opens a list, so it shows the select's chevron: centred
+  // on the field (within 1px) open and closed, inside its end padding,
+  // turned when open, and transparent to the pointer so a tap on it
+  // reaches the input.
+  for (const width of [320, 1280]) {
+    test(`the chevron sits centred in the field and flips open at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await mounted(page, '/components/combobox');
+      const root = page.locator(`${PREVIEW} section`).first();
+      const input = root.locator('input');
+      const chevron = root.locator(':scope > svg');
+      await expect(chevron).toHaveCount(1);
+      await root.scrollIntoViewIfNeeded();
+      const geometry = () =>
+        root.evaluate((el) => {
+          const i = el.querySelector('input').getBoundingClientRect();
+          const v = el.querySelector(':scope > svg').getBoundingClientRect();
+          const hit = document.elementFromPoint((v.left + v.right) / 2, (v.top + v.bottom) / 2);
+          return {
+            dy: (v.top + v.bottom) / 2 - (i.top + i.bottom) / 2,
+            inside: v.left > i.left && v.right < i.right,
+            textEnd:
+              i.right - parseFloat(getComputedStyle(el.querySelector('input')).paddingInlineEnd),
+            chevronStart: v.left,
+            hitsInput: hit === el.querySelector('input'),
+            transform: getComputedStyle(el.querySelector(':scope > svg')).transform,
+          };
+        });
+      const closed = await geometry();
+      expect(Math.abs(closed.dy)).toBeLessThanOrEqual(1);
+      expect(closed.inside).toBe(true);
+      expect(closed.textEnd).toBeLessThanOrEqual(closed.chevronStart);
+      expect(closed.hitsInput).toBe(true);
+
+      await input.focus();
+      await expect(input).toHaveAttribute('aria-expanded', 'true');
+      await expect
+        .poll(async () => (await geometry()).transform)
+        .toBe('matrix(-1, 0, 0, -1, 0, 0)');
+      const open = await geometry();
+      expect(Math.abs(open.dy)).toBeLessThanOrEqual(1);
+    });
+  }
+});
