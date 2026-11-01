@@ -1,12 +1,46 @@
 <template>
   <section :variant="variant()" :aria-label="title()">
     <header>
-      <h2>{{ title() }}</h2>
-      {{ raw(prevHtml()) }}
-      {{ raw(nextHtml()) }}
+      <h2 aria-live="polite">{{ title() }}</h2>
+      <template @if="isMonth()">
+        <template @if="hasPrev()">
+          {{ raw(prevHtml()) }}
+        </template>
+        <template @else>
+          <button type="button" :variant="navVariant()" :aria-label="prevName()" @click="prev()">{{ prevLabel() }}</button>
+        </template>
+        <template @if="hasNext()">
+          {{ raw(nextHtml()) }}
+        </template>
+        <template @else>
+          <button type="button" :variant="navVariant()" :aria-label="nextName()" @click="next()">{{ nextLabel() }}</button>
+        </template>
+      </template>
     </header>
     <template @if="isMonth()">
-      {{ raw(bodyHtml()) }}
+      <template @if="hasBody()">
+        {{ raw(bodyHtml()) }}
+      </template>
+      <template @else>
+        <table :variant="tableVariant()">
+          <thead>
+            <tr>
+              <template @for="weekday of weekdays()">
+                <th scope="col">{{ weekday }}</th>
+              </template>
+            </tr>
+          </thead>
+          <tbody>
+            <template @for="week of weeks()">
+              <tr>
+                <template @for="day of week">
+                  <td :aria-current="day.current"><template @if="day.inMonth"><time :datetime="day.date">{{ day.day }}</time></template><template @else><small><time :datetime="day.date">{{ day.day }}</time></small></template></td>
+                </template>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </template>
     </template>
     <template @else>
       <ol>

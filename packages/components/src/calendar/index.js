@@ -6,8 +6,18 @@ export const name = 'calendar';
 export const root = 'section';
 
 const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -27,10 +37,14 @@ const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
  * @property {CalendarEvent[]} [events] Schedule-mode data.
  * @property {(drop: { eventId: string, date: string, hour: number, minute: number, datetime: string, sourceType: string }) => void} [onDrop]
  *   Reports a moveEvent with the legacy drag-and-drop payload shape.
- * @property {string} [prevHtml] A rendered previous-month button.
- * @property {string} [nextHtml] A rendered next-month button.
- * @property {string} [bodyHtml] Month mode: the rendered month table
- *   (compose the table component from grid()).
+ * @property {string} [prevHtml] A rendered previous-month control, in place of the calendar's own.
+ * @property {string} [nextHtml] A rendered next-month control, in place of the calendar's own.
+ * @property {string} [bodyHtml] Month mode: a rendered month table in
+ *   place of the calendar's own grid (a static composition: it does not
+ *   page). Without it the calendar renders its grid and pages it.
+ * @property {string} [prevLabel] The previous-month button's text (default "Previous").
+ * @property {string} [nextLabel] The next-month button's text (default "Next").
+ * @property {(event: { year: number, month: number }) => void} [onMonthChange]
  * @property {string} [variant] month | schedule.
  */
 
@@ -47,19 +61,55 @@ export function create(props) {
   const prevHtml = signal(props.prevHtml ?? '');
   const nextHtml = signal(props.nextHtml ?? '');
   const bodyHtml = signal(props.bodyHtml ?? '');
-  const todayIso = props.today ?? iso(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate());
+  const todayIso =
+    props.today ?? iso(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate());
+  const year = signal(props.year);
+  const month = signal(props.month);
+  const prevLabel = signal(props.prevLabel ?? 'Previous');
+  const nextLabel = signal(props.nextLabel ?? 'Next');
+  const navVariant = signal('ghost');
+  const tableVariant = signal('default');
+  const weekdays = signal(WEEKDAYS);
 
-  const title = computed(() => `${MONTH_NAMES[props.month - 1]} ${props.year}`);
+  const title = computed(() => `${MONTH_NAMES[month() - 1]} ${year()}`);
   const isMonth = computed(() => variant() === 'month');
+  const hasBody = computed(() => bodyHtml() !== '');
+  const hasPrev = computed(() => prevHtml() !== '');
+  const hasNext = computed(() => nextHtml() !== '');
+  /** @param {number} delta */
+  const shifted = (delta) => {
+    const index = year() * 12 + (month() - 1) + delta;
+    return { year: Math.floor(index / 12), month: (index % 12) + 1 };
+  };
+  const prevName = computed(() => {
+    const p = shifted(-1);
+    return `${prevLabel()} month, ${MONTH_NAMES[p.month - 1]} ${p.year}`;
+  });
+  const nextName = computed(() => {
+    const n = shifted(1);
+    return `${nextLabel()} month, ${MONTH_NAMES[n.month - 1]} ${n.year}`;
+  });
+
+  /** @param {number} delta */
+  function page(delta) {
+    const to = shifted(delta);
+    year.set(to.year);
+    month.set(to.month);
+    props.onMonthChange?.({ year: to.year, month: to.month });
+  }
+  const prev = () => page(-1);
+  const next = () => page(1);
 
   // The month grid: six weeks of seven days, Sunday-first, spilling
   // into the adjacent months. The caller renders it with the table
   // component (weekday names are the columns).
   const weeks = computed(() => {
-    const first = new Date(Date.UTC(props.year, props.month - 1, 1));
+    const y = year();
+    const mo = month();
+    const first = new Date(Date.UTC(y, mo - 1, 1));
     const start = new Date(first);
     start.setUTCDate(1 - first.getUTCDay());
-    /** @type {{ date: string, day: number, inMonth: boolean, isToday: boolean, isSelected: boolean }[][]} */
+    /** @type {{ date: string, day: number, inMonth: boolean, isToday: boolean, isSelected: boolean, current: string | null }[][]} */
     const grid = [];
     const cursor = new Date(start);
     for (let w = 0; w < 6; w += 1) {
@@ -67,12 +117,17 @@ export function create(props) {
       const week = [];
       for (let d = 0; d < 7; d += 1) {
         const date = iso(cursor.getUTCFullYear(), cursor.getUTCMonth() + 1, cursor.getUTCDate());
+        const isToday = date === todayIso;
+        const isSelected = date === props.selected;
         week.push({
           date,
           day: cursor.getUTCDate(),
-          inMonth: cursor.getUTCMonth() === props.month - 1,
-          isToday: date === todayIso,
-          isSelected: date === props.selected,
+          inMonth: cursor.getUTCMonth() === mo - 1,
+          isToday,
+          isSelected,
+          /* The table's aria-current values: today is the date, the
+             selection is true; neither omits the attribute. */
+          current: isToday ? 'date' : isSelected ? 'true' : null,
         });
         cursor.setUTCDate(cursor.getUTCDate() + 1);
       }
@@ -134,11 +189,40 @@ export function create(props) {
     });
     const [y, m, d] = target.date.split('-').map(Number);
     const weekday = WEEKDAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
-    status.set(`Moved ${event.title} to ${weekday}, ${MONTH_NAMES[m - 1]} ${d} at ${moved.timeLabel}.`);
+    status.set(
+      `Moved ${event.title} to ${weekday}, ${MONTH_NAMES[m - 1]} ${d} at ${moved.timeLabel}.`,
+    );
     return true;
   }
 
-  return { title, prevHtml, nextHtml, bodyHtml, variant, isMonth, weeks, days, events, status, moveEvent, raw };
+  return {
+    title,
+    year,
+    month,
+    prevHtml,
+    nextHtml,
+    bodyHtml,
+    variant,
+    isMonth,
+    hasBody,
+    hasPrev,
+    hasNext,
+    prevLabel,
+    nextLabel,
+    prevName,
+    nextName,
+    navVariant,
+    tableVariant,
+    weekdays,
+    weeks,
+    days,
+    events,
+    status,
+    prev,
+    next,
+    moveEvent,
+    raw,
+  };
 }
 
 /** @param {import('../registry.js').Registry} registry */

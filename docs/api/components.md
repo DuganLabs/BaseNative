@@ -1365,6 +1365,17 @@ cal.moveEvent('1', '2025-06-03', 14); // null on collision (also calls onError)
 
 Helpers: `eventsCollide(a, b)` → `boolean` (half-open interval overlap of `start`/`end`), `updateEvent(event, overrides)` → merged copy, `getEventDuration(start, end)` → whole minutes.
 
+### Month paging
+
+The trinity `calendar` (`section[variant="month"]`) pages itself. With no `bodyHtml`/`prevHtml`/`nextHtml` slots it renders its own grid from its `year`/`month` state — a `<table>` with `scope="col"` weekday headers, one `<time datetime>` per day, out-of-month days in `<small>`, `aria-current="date"` on `today` and `aria-current="true"` on `selected` — and its own Previous/Next buttons. Each button's accessible name says where it goes ("Next month, November 2026"); the title is a polite live region, so the new month is announced. `onMonthChange({ year, month })` fires after each page. Passing the slots keeps the caller-rendered markup (the schedule variant is unchanged).
+
+| Prop | Default | |
+|------|---------|--|
+| `year` / `month` | current | `month` is 1–12; the year rolls over |
+| `today` / `selected` | — | ISO dates |
+| `prevLabel` / `nextLabel` | `'Previous'` / `'Next'` | Visible button text |
+| `onMonthChange` | — | `({ year, month }) => void` |
+
 ## Pipeline State
 
 `createPipelineState(options?)` → `PipelineState`. Kanban store matching `renderPipeline`.

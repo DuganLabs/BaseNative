@@ -1070,6 +1070,9 @@ cal.onEventMove = ({ eventId, date, hour }) => save(eventId, date, hour);
 cal.moveEvent('1', '2025-06-03', 14); // null on collision (also calls onError)
 ```
 
+#### Month paging
+The trinity `calendar` (`section[variant="month"]`) pages itself. With no `bodyHtml`/`prevHtml`/`nextHtml` slots it renders its own grid from its `year`/`month` state — a `<table>` with `scope="col"` weekday headers, one `<time datetime>`…
+
 ### Pipeline State
 `createPipelineState(options?)` → `PipelineState`. Kanban store matching `renderPipeline`. | Member | Description | |--------|-------------| | `columns()` / `cards()` / `dragState()` | Current snapshot | | `getCard(id)` / `getColumn(id)` |…
 ```js
