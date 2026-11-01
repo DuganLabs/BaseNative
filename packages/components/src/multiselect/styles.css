@@ -29,6 +29,12 @@ section[variant="multiselect"] {
       line-height: var(--font-multiselect-chip-leading);
       letter-spacing: var(--font-multiselect-chip-tracking);
     }
+
+    /* The chip sits on a fill, where the tint reads under 4.5 to 1; its
+       remove action takes the chip label color instead. */
+    & > li > button[variant="ghost"] {
+      --color-text-button: var(--color-text-multiselect-chip-remove);
+    }
   }
 
   & > ul[role="listbox"] {

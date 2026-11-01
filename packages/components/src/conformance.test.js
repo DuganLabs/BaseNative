@@ -366,3 +366,47 @@ describe('conformance — nothing paints over text or the tab bar', () => {
     assert.ok(layer('chrome') > layer('raised'), 'chrome above raised');
   });
 });
+
+describe('conformance — tint and status text hold AA in light mode', () => {
+  const sheet = (name) => readFileSync(new URL(`./${name}/styles.css`, import.meta.url), 'utf8');
+  const light = tokens.slice(0, tokens.indexOf('@media'));
+  const hex = (name) => {
+    const m = light.match(new RegExp(`--${name}:\\s*#([0-9a-f]{6});`, 'i'));
+    assert.ok(m, `--${name} is a hex literal`);
+    return [0, 2, 4].map((i) => parseInt(m[1].slice(i, i + 2), 16));
+  };
+  const fill = (name) => {
+    const m = light.match(new RegExp(`--${name}:\\s*rgb\\((\\d+) (\\d+) (\\d+) / ([\\d.]+)\\);`));
+    assert.ok(m, `--${name} is an rgb/alpha literal`);
+    return { c: [m[1], m[2], m[3]].map(Number), a: Number(m[4]) };
+  };
+  const lin = (v) => ((v /= 255) <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+  const lum = (c) => 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2]);
+  const ratio = (a, b) => {
+    const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
+    return (x + 0.05) / (y + 0.05);
+  };
+  const grouped = [242, 242, 247];
+  it('each -strong text color holds 4.5 on its own fill over the grouped surface', () => {
+    for (const k of ['tint', 'danger', 'success', 'warning']) {
+      const f = fill(`color-${k}-fill`);
+      const bg = f.c.map((v, i) => v * f.a + grouped[i] * (1 - f.a));
+      const r = ratio(hex(`color-${k}-strong`), bg);
+      assert.ok(r >= 4.5, `--color-${k}-strong on its fill: ${r.toFixed(2)}`);
+    }
+  });
+  it('white holds 4.5 on the destructive button, in both schemes', () => {
+    assert.match(sheet('button'), /--color-bkg-button: var\(--color-danger-solid\)/);
+    for (const v of tokens.matchAll(/--color-danger-solid(?:-pressed)?:\s*#([0-9a-f]{6});/gi)) {
+      const c = [0, 2, 4].map((i) => parseInt(v[1].slice(i, i + 2), 16));
+      assert.ok(ratio([255, 255, 255], c) >= 4.5, `white on #${v[1]}`);
+    }
+  });
+  it('the ghost button and the info badge paint text in the strong tint, never the fill tint', () => {
+    assert.match(
+      sheet('button'),
+      /variant="ghost"\][^}]*--color-text-button: var\(--color-tint-strong\)/s,
+    );
+    assert.doesNotMatch(sheet('badge'), /--color-text-badge: var\(--color-tint\);/);
+  });
+});
