@@ -351,7 +351,7 @@
           "type": "text",
           "item": "multiselect-chip",
           "variant": null,
-          "subitem": "chip-remove",
+          "subitem": "remove",
           "state": null,
           "context": null
         },
