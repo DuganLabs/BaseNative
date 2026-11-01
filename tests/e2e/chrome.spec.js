@@ -36,3 +36,29 @@ test.describe('fixed chrome paints above the page @393', () => {
     });
   }
 });
+
+// Sampling points under the bar can miss a specimen that happens to sit
+// between two scroll steps, so this checks the stacking directly: a
+// staged toast tray kept its z-index of 60 as a grid item and drew over
+// the tab bar on the home gallery.
+test.describe('no staged specimen stacks above the fixed chrome @393', () => {
+  test.use({ viewport: { width: 393, height: 852 } });
+  for (const route of ['/', '/components/toast/']) {
+    test(route, async ({ page }) => {
+      await page.goto(route);
+      const over = await page.evaluate(() => {
+        const bar = [...document.querySelectorAll('body *')].find(
+          (e) => getComputedStyle(e).position === 'fixed' && e.matches('nav'),
+        );
+        const barZ = parseInt(getComputedStyle(bar).zIndex, 10) || 0;
+        return [...document.querySelectorAll('[data-bn-component-preview] *')]
+          .filter((e) => {
+            const z = parseInt(getComputedStyle(e).zIndex, 10);
+            return Number.isFinite(z) && z >= barZ;
+          })
+          .map((e) => `${e.tagName.toLowerCase()} z=${getComputedStyle(e).zIndex}`);
+      });
+      expect(over).toEqual([]);
+    });
+  }
+});

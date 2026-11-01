@@ -3,7 +3,8 @@ import { test, expect } from '@playwright/test';
 // A restacked table cell carries its column heading as a key LINE above
 // the value. An inline key ran into the value ("FromWhere others win",
 // "StatusAccepted"), so a phone reader could not tell label from text.
-const ROUTES = ['/ai/', '/compare/', '/docs/'];
+// /ai/ carries no table since its scorecard became prose.
+const ROUTES = ['/compare/', '/docs/'];
 
 for (const route of ROUTES) {
   for (const width of [320, 393]) {

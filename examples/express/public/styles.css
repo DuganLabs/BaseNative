@@ -2634,6 +2634,9 @@
     --position-combobox-listbox: static;
     --position-multiselect-listbox: static;
     --position-toast: static;
+    /* In flow, a tray keeps no toast layer: as a grid item its z-index
+       still applied and drew it over the phone tab bar. */
+    --layer-toast: auto;
     --position-app-bar: static;
     --position-app-bar-menu: static;
     --position-tooltip-note: static;
@@ -4568,6 +4571,8 @@
   }
 
   header:has(> a[rel='home']) > a[aria-label] {
+    /* A flex item: without flex: none the rail squeezed it to 40px. */
+    flex: none;
     display: inline-grid;
     place-items: center;
     inline-size: var(--size-target-min);
