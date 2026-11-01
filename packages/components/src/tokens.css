@@ -157,6 +157,7 @@
   --display-block: block;
   --display-flex: flex;
   --display-inline-flex: inline-flex;
+  --display-inline-block: inline-block;
   --display-grid: grid;
   --display-none: none;
   --display-table-row: table-row;
@@ -183,6 +184,7 @@
   --overflow-hidden: hidden;
   --overflow-auto: auto;
   --overflow-wrap-anywhere: anywhere;
+  --overflow-wrap-break-word: break-word;
   --visibility-hidden: hidden;
   --visibility-visible: visible;
   --opacity-none: 0;
@@ -826,12 +828,13 @@
   --text-align-datagrid-cell: var(--text-align-start);
   --vertical-align-datagrid-cell: var(--vertical-align-middle);
   --font-datagrid-row-header-weight: var(--font-weight-semibold);
-  --color-bkg-datagrid-sorted: var(--color-fill-2);
   --size-datagrid-sort-icon-inline: var(--spacing-3);
   --size-datagrid-sort-icon-block: var(--spacing-3);
   --color-text-datagrid-sort-icon: var(--color-text-label-3);
   --spacing-datagrid-sort-icon-margin-inline-start: var(--spacing-1);
   --vertical-align-datagrid-sort-icon: var(--vertical-align-middle);
+  --display-datagrid-sort-icon: var(--display-inline-block);
+  --white-space-datagrid-sort-head: var(--white-space-nowrap);
   --pointer-events-datagrid-sort-icon: var(--pointer-events-none);
   --motion-datagrid-duration: var(--motion-fade-duration);
   --motion-datagrid-curve: var(--motion-fade-curve);
@@ -1477,8 +1480,10 @@
   --size-table-head-block-restack: var(--size-1px);
   --display-table-row-restack: var(--display-block);
   --display-table-cell-restack: var(--display-block);
-  --overflow-wrap-table-cell: var(--overflow-wrap-anywhere);
+  --overflow-wrap-table-cell: var(--overflow-wrap-break-word);
   --overflow-wrap-table-cell-restack: var(--overflow-wrap-anywhere);
+  --overflow-wrap-table-cell-code: var(--overflow-wrap-anywhere);
+  --white-space-table-head: var(--white-space-nowrap);
   --white-space-table-cell-restack: var(--white-space-normal);
   --size-border-table-cell-block-end-restack: var(--size-border-none);
   --spacing-table-row-padding-block-restack: var(--spacing-1);

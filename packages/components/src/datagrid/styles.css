@@ -43,10 +43,14 @@ table[variant="datagrid"] {
   }
 }
 
+/* The sorted header looks like every other header: the chevron, not a
+   fill, marks the sort. The label and the chevron hold one line, the
+   chevron inline after the label and centred on it. */
 table[variant="datagrid"] > thead th[aria-sort] {
-  background-color: var(--color-bkg-datagrid-sorted);
+  white-space: var(--white-space-datagrid-sort-head);
 
   & > svg {
+    display: var(--display-datagrid-sort-icon);
     inline-size: var(--size-datagrid-sort-icon-inline);
     block-size: var(--size-datagrid-sort-icon-block);
     color: var(--color-text-datagrid-sort-icon);

@@ -413,6 +413,24 @@
       }
     }
   },
+  "display-inline-block": {
+    "$value": "inline-block",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "display-inline-block",
+          "type": null,
+          "item": null,
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "display-grid": {
     "$value": "grid",
     "$type": "string",
@@ -870,6 +888,24 @@
       "com.basenative": {
         "taxonomy": {
           "category": "overflow-wrap-anywhere",
+          "type": null,
+          "item": null,
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "overflow-wrap-break-word": {
+    "$value": "break-word",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "overflow-wrap-break-word",
           "type": null,
           "item": null,
           "variant": null,

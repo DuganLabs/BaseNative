@@ -756,7 +756,7 @@
     }
   },
   "overflow-wrap-table-cell": {
-    "$value": "{overflow-wrap-anywhere}",
+    "$value": "{overflow-wrap-break-word}",
     "$type": "string",
     "$extensions": {
       "com.basenative": {
@@ -784,6 +784,42 @@
           "item": "table-cell",
           "variant": null,
           "subitem": "restack",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "overflow-wrap-table-cell-code": {
+    "$value": "{overflow-wrap-anywhere}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "overflow-wrap",
+          "type": null,
+          "item": "table-cell",
+          "variant": null,
+          "subitem": "code",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "white-space-table-head": {
+    "$value": "{white-space-nowrap}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "white-space",
+          "type": null,
+          "item": "table-head",
+          "variant": null,
+          "subitem": null,
           "state": null,
           "context": null
         },

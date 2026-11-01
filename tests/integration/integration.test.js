@@ -1164,3 +1164,20 @@ describe('the asset version covers every stylesheet the CSS chain is built from'
     }
   });
 });
+
+describe('table cells set identifiers as code, so prose never breaks mid-word', () => {
+  it('the /ai scorecard wraps package specs, globals and calls in <code>', () => {
+    const route = siteRoutes.find((r) => r.path === '/ai');
+    assert.ok(route, '/ai is a site route');
+    const html = renderRoute(route, { tasks: [], hasApi: false });
+    const table = html.match(/<table[\s\S]*?<\/table>/);
+    assert.ok(table, '/ai renders its scorecard table');
+    const cells = table[0].match(/<td[^>]*>[\s\S]*?<\/td>/g) || [];
+    const bare = /(^|[^>\w/.$])(@basenative\/[a-z-]+|globalThis\.[\w$]+|[A-Za-z_$][\w$]*\(\))/;
+    for (const cell of cells) {
+      const prose = cell.replace(/<code>[\s\S]*?<\/code>/g, '');
+      assert.doesNotMatch(prose, bare, `an identifier outside <code>: ${cell.slice(0, 120)}`);
+    }
+    assert.match(table[0], /<code>globalThis\.__BASENATIVE_DEVTOOLS__<\/code>/);
+  });
+});
