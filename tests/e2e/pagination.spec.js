@@ -90,3 +90,40 @@ for (const width of WIDTHS) {
     });
   });
 }
+
+// The current page reads as a place, not just a heavier digit: a tinted
+// pill at least a 44px square, its digit centred, in light and dark.
+// (It was once bare semibold text between two links of the same size.)
+for (const theme of ['light', 'dark']) {
+  for (const width of [393, 1280]) {
+    test(`current page sits on a filled pill @${width} ${theme}`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/components/pagination/');
+      await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
+      const cur = page.locator(`${NAV} [aria-current]`).first();
+      await cur.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(400);
+      const m = await cur.evaluate((a) => {
+        const cs = getComputedStyle(a);
+        const r = a.getBoundingClientRect();
+        const range = document.createRange();
+        range.selectNodeContents(a);
+        const g = range.getBoundingClientRect();
+        return {
+          bg: cs.backgroundColor,
+          radius: parseFloat(cs.borderTopLeftRadius),
+          w: r.width,
+          h: r.height,
+          dx: Math.abs(g.left + g.width / 2 - (r.left + r.width / 2)),
+          dy: Math.abs(g.top + g.height / 2 - (r.top + r.height / 2)),
+        };
+      });
+      expect(m.bg, 'current page has a fill').not.toMatch(/rgba\(0, 0, 0, 0\)|transparent/);
+      expect(m.radius, 'fill is a pill').toBeGreaterThanOrEqual(m.h / 2 - 1);
+      expect(m.w).toBeGreaterThanOrEqual(44);
+      expect(m.h).toBeGreaterThanOrEqual(44);
+      expect(m.dx).toBeLessThanOrEqual(2);
+      expect(m.dy).toBeLessThanOrEqual(2);
+    });
+  }
+}

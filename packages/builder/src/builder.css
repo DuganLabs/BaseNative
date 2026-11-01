@@ -57,8 +57,7 @@
     position: relative;
     inline-size: 100%;
     display: grid;
-    grid-template-rows: auto minmax(0, 1fr);
-    block-size: clamp(34rem, 74dvh, 52rem);
+    grid-template-rows: auto auto;
     border: var(--bn-len-1, 1px) solid var(--bn-glass-rim, Canvas);
     border-radius: var(--bn-plat-radius-12, 12px);
     background: var(--bn-list-surface, Canvas);
@@ -70,21 +69,19 @@
     backdrop-filter: saturate(var(--bn-glass-saturate, 180%)) blur(var(--bn-glass-blur, 30px));
   }
 
-  /* Stacked phone layout (below) shares the window's height between
-     canvas, tools, and inspector; the app needs more of the screen
-     there than the desktop workbench clamp gives it. Keyed to the
-     viewport because a container query cannot size the container
-     itself; the window is full-bleed at this width, so the two
-     breakpoints describe the same moment. */
-  @media (max-width: 48rem) {
-    .bn-builder {
-      block-size: 86dvh;
-    }
-  }
-
+  /* The body, not the window, takes the workbench height: the window
+     is the size container and cannot query itself, but its body can,
+     so a window stacked at any embed width (a phone, or a column
+     beside an app-shell rail) drops the fixed height and grows with
+     its sections while the page scrolls. The clamp leaves room for
+     the toolbar row. */
   .bn-builder__body {
+    block-size: clamp(30rem, calc(74dvh - 3.75rem), 48rem);
     min-block-size: 0;
     display: grid;
+    /* The host's stack rhythm spaces page blocks; inside the window
+       frame the toolbar and body sit flush. */
+    margin: 0;
   }
 
   /* ── Toolbar ─────────────────────────────────────────────────────── */
@@ -227,21 +224,13 @@
   }
 
   @container builder (max-width: 46rem) {
-    .bn-builder {
-      block-size: 86dvh;
-    }
-
     .bn-builder__panes {
       grid-template-areas:
         'canvas'
         'sidebar'
         'inspector';
       grid-template-columns: minmax(0, 1fr);
-      /* Definite fractional tracks: content-sized rows collapse in
-         this frame (the sections' scrollers contribute no intrinsic
-         height), so the stacked sections share the window's height
-         and each scrolls internally — canvas largest, inspector last. */
-      grid-template-rows: minmax(8rem, 1fr) minmax(8rem, 1fr) minmax(8rem, 1fr);
+      grid-template-rows: auto auto auto;
       block-size: auto;
     }
   }
@@ -836,5 +825,46 @@
     box-shadow: none;
     border-radius: 0;
     background: transparent;
+  }
+
+  /* Stacked phone sections are content-sized: each shows all it holds,
+     the canvas keeps a drop zone a thumb can hit, and the component and
+     layer lists cap their height and scroll inside it. Last in the
+     layer, so it outranks the wide-window pane rules above. */
+  @container builder (max-width: 46rem) {
+    .bn-builder__body {
+      block-size: auto;
+    }
+
+    .bn-builder__pane,
+    .bn-builder__pane--palette,
+    .bn-builder__pane--layers,
+    .bn-palette,
+    .bn-palette [data-bn-palette-groups],
+    .bn-builder__pane--layers .bn-tree {
+      overflow: visible;
+      flex: none;
+    }
+
+    .bn-builder__pane--canvas {
+      min-block-size: 18rem;
+    }
+
+    /* Wide, the titlebar nav rides the row's inline end. Stacked, it
+       wraps to a row of its own, so it centres under the title rather
+       than hanging off to one side. */
+    .bn-builder [data-bn='bn-window-titlebar'].bn-builder__toolbar nav {
+      margin-inline-start: 0;
+    }
+
+    .bn-palette [data-bn-palette-groups] {
+      overflow-y: auto;
+      max-block-size: 20rem;
+    }
+
+    .bn-builder__pane--layers .bn-tree {
+      overflow-y: auto;
+      max-block-size: 16rem;
+    }
   }
 }

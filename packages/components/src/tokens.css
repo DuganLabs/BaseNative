@@ -553,6 +553,8 @@
   --spacing-app-shell-main-padding-inline-phone: var(--spacing-4);
   --spacing-app-shell-section-gap: var(--spacing-12);
   --spacing-app-shell-section-gap-rail: var(--spacing-20);
+  --spacing-app-shell-header-gap: var(--spacing-7);
+  --spacing-app-shell-header-gap-rail: var(--spacing-8);
   --spacing-app-shell-stack-gap: var(--spacing-4);
   --display-avatar: var(--display-inline-flex);
   --align-avatar: var(--align-center);
@@ -1182,6 +1184,8 @@
   --font-pagination-link-tracking: var(--font-subheadline-tracking);
   --color-text-pagination-current: var(--color-text-label);
   --font-pagination-current-weight: var(--font-weight-semibold);
+  --color-background-pagination-current: var(--color-fill-3);
+  --radius-pagination-current: var(--size-radius-pill);
   --display-pagination-item-compact: var(--display-none);
   --display-pagination-item-narrow: var(--display-none);
   --display-pagination-step-icon: var(--display-none);

@@ -31,6 +31,14 @@ main[variant="default"] > article > :is(section, aside) + * {
   margin-block-start: var(--spacing-app-shell-section-gap);
 }
 
+/* A page header (a stacked hero with a title and lede, no actions)
+   introduces what follows, so it sits closer to it than one section
+   sits to the next. With the full section gap, a tool page opened on
+   80px of nothing between its lede and the tool. */
+main[variant="default"] > figure[variant="stacked"]:not(:has(> figcaption > nav)) + * {
+  margin-block-start: var(--spacing-app-shell-header-gap);
+}
+
 @media (max-width: 47.9375rem) {
   body > aside[variant="sidebar"] {
     display: var(--display-app-shell-chrome-hidden);
@@ -68,6 +76,10 @@ main[variant="default"] > article > :is(section, aside) + * {
   main[variant="default"] > article > * + :is(section, aside),
   main[variant="default"] > article > :is(section, aside) + * {
     margin-block-start: var(--spacing-app-shell-section-gap-rail);
+  }
+
+  main[variant="default"] > figure[variant="stacked"]:not(:has(> figcaption > nav)) + * {
+    margin-block-start: var(--spacing-app-shell-header-gap-rail);
   }
 
   body > main[variant="default"] {

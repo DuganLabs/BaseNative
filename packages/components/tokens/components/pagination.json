@@ -431,6 +431,42 @@
       }
     }
   },
+  "color-background-pagination-current": {
+    "$value": "{color-fill-3}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "background",
+          "item": "pagination-current",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "radius-pagination-current": {
+    "$value": "{size-radius-pill}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "radius",
+          "type": null,
+          "item": "pagination-current",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "display-pagination-item-compact": {
     "$value": "{display-none}",
     "$type": "string",

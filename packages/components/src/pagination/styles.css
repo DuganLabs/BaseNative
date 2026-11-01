@@ -63,9 +63,14 @@ nav[variant="pagination"] {
     color: var(--color-text-pagination-inert);
   }
 
+  /* The current page sits on a tinted pill, the same fill a selected
+     segment uses, so it reads as where you are rather than as a
+     heavier digit. */
   & > ol > li > a[aria-current] {
     color: var(--color-text-pagination-current);
     font-weight: var(--font-pagination-current-weight);
+    background: var(--color-background-pagination-current);
+    border-radius: var(--radius-pagination-current);
   }
 }
 

@@ -2768,7 +2768,7 @@
 
   [data-bn-component-source] {
     & > pre {
-      padding: calc(var(--space-sm) + 2rem) var(--space-md) var(--space-md);
+      padding: var(--space-md);
       border: none;
       border-radius: 0;
       font-size: var(--font-code-block-pre-size);
@@ -3266,7 +3266,7 @@
       /* The top strip is reserved for the copy button, not shared with it.
          Padding on the inline end is not enough: a line longer than the block
          scrolls horizontally, and every line then passes under the button. */
-      padding: calc(var(--space-sm) * 2 + var(--copy-code-size)) var(--space-lg) var(--space-md);
+      padding: var(--space-md) var(--space-lg);
       background: var(--color-background-grouped-3);
       color: var(--text-0);
       font-family: var(--font-family);
@@ -3335,6 +3335,70 @@
       background: color-mix(in srgb, var(--success) 25%, transparent);
       border-color: var(--success);
       color: var(--success);
+    }
+
+    /* A block with a copy button and no caption keeps a strip for the
+       button, so no line ever runs under it. A block without a button
+       reserves nothing, so its code starts at the top. */
+    &:has(> [data-bn-action='copy-code']):not(:has(> figcaption)) > pre {
+      padding-block-start: calc(var(--space-sm) * 2 + var(--copy-code-size));
+    }
+
+    /* A captioned block is a header band and the code. The caption
+       names the file and the copy button closes the same band, so the
+       control sits where the eye starts and no empty row sits above
+       the first line. */
+    &:has(> figcaption):has(> [data-bn-action='copy-code']) {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-rows: auto 1fr;
+
+      & > figcaption {
+        grid-column: 1;
+        grid-row: 1;
+        display: flex;
+        align-items: center;
+        min-inline-size: 0;
+        padding: var(--space-xs) var(--space-md);
+        background: var(--surface-2);
+        border-block-end: var(--border-width) solid var(--border);
+        font-family: var(--font-family);
+        font-stretch: var(--font-mono);
+        font-size: var(--font-size-xs);
+        color: var(--text-2);
+        overflow-wrap: anywhere;
+      }
+
+      & > [data-bn-action='copy-code'] {
+        position: static;
+        grid-column: 2;
+        grid-row: 1;
+        border: none;
+        border-block-end: var(--border-width) solid var(--border);
+        border-radius: 0;
+        background: var(--surface-2);
+        color: var(--text-2);
+
+        &:hover {
+          background: var(--surface-1);
+          color: var(--site-brand-text);
+        }
+
+        &:focus-visible {
+          outline-offset: calc(-2 * var(--border-inline-width));
+        }
+
+        &[data-bn-copied] {
+          background: color-mix(in srgb, var(--success) 25%, transparent);
+          color: var(--success);
+        }
+      }
+
+      & > pre {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        padding-block-start: var(--space-md);
+      }
     }
   }
 
@@ -4238,6 +4302,16 @@
     color: var(--color-text-label);
     border-radius: var(--radius-xs);
   }
+  /* Chips in definitions, captions and quotes take the same fill.
+   The earlier surface-2 matched the light page, so the meta row
+   values showed padding with no chip. */
+  dd code,
+  dt code,
+  figcaption code,
+  blockquote code {
+    background: var(--color-fill-3);
+    border-radius: var(--radius-xs);
+  }
   /* Docs article headers are API signatures: mono, label ink, headline
    size — a card's title line, not a display heading. The first docs
    section's entries sit under the page h1, so they are h2 at the same
@@ -4375,26 +4449,18 @@
   /* Plain content links take the tint, as iOS links do. Scoped to <main>
    so the app nav and footer keep their own treatments; catalog
    components carry data-bn and are excluded. */
+  /* A code chip inside a link is part of the link, so it takes the
+   link's tint and draws no underline of its own; the anchor's one
+   underline runs through the chip in the same ink. It once drew a
+   second, label-coloured line under the chip only. */
   main a code {
-    text-decoration: underline;
-    text-underline-offset: 0.18em;
-    text-decoration-thickness: 1px;
+    color: inherit;
+    text-decoration: none;
   }
   main a:where(:not([data-bn]):not([variant]):not([role='button']):not([data-bn-cta])) {
     color: var(--color-tint-strong);
   }
 
-  /* Pagination's links are plain <a> inside the [data-bn] nav, so the
-   prose tint above reaches them — and on the current page it painted
-   the digit the same orange as the component's own current-page fill,
-   leaving an empty orange square. Component-owned links keep the
-   component's ink; the current page keeps its on-fill foreground. */
-  [data-bn='pagination'] a {
-    color: var(--site-color-text);
-  }
-  [data-bn='pagination'] a[aria-current='page'] {
-    color: var(--color-text-on-primary);
-  }
 
   /* The docs contents nav owns its link ink, like pagination: the
    styles.css treatment is quiet label colour with the brand fill

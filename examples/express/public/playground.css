@@ -93,6 +93,17 @@ section[aria-label='Playground workspace']
     display: flex;
   }
 }
+/* The workspace's panes are tool frames, not prose cards: the host
+   sheet's article inset and block-end margin, and its stacked header,
+   would float each header and editor inside a second frame. */
+section[aria-label='Playground workspace'] article {
+  padding: 0;
+  margin: 0;
+}
+section[aria-label='Playground workspace'] article > header {
+  flex-direction: row;
+  margin: 0;
+}
 .pane {
   display: flex;
   flex-direction: column;
@@ -378,6 +389,17 @@ footer[aria-label='Quick syntax'] strong {
 @container playground-workspace (max-width: 1111px) {
   #preview {
     min-height: 340px;
+  }
+  /* Tabbed, the selected tab already names the panel; its heading
+     stays for heading navigation but leaves the visual header, which
+     keeps the panel's one-line description. */
+  .pane-head h2 {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }
 @container playground-workspace (max-width: 600px) {
