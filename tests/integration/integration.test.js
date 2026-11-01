@@ -1287,3 +1287,52 @@ describe('every custom property the site sheet reads is defined', () => {
     assert.deepEqual(unresolved, []);
   });
 });
+
+describe('form specimens share one field measure', () => {
+  const css = () => readFileSync(repo('examples/express/public/styles.css'), 'utf8');
+
+  it('defines --measure-field and caps every form specimen root at it', () => {
+    const sheet = css();
+    assert.match(sheet, /--measure-field:\s*28rem;/);
+    const at = sheet.indexOf('max-inline-size: var(--measure-field)');
+    assert.ok(at > 0, 'a preview rule reads --measure-field');
+    const rule = sheet.slice(sheet.lastIndexOf('> output', at), at);
+    for (const root of [
+      "section[variant='field']",
+      "section[variant='multiselect']",
+      "section:has(> [role='combobox'])",
+      'search',
+      'form',
+      'input:not(',
+      'textarea',
+    ]) {
+      assert.ok(rule.includes(root), `${root} takes the field measure`);
+    }
+  });
+
+  it('never nests :has() inside :has(), which drops the whole selector list', () => {
+    const files = [
+      'examples/express/public/styles.css',
+      ...readdirSync(repo('packages/components/src'), { recursive: true })
+        .filter((f) => String(f).endsWith('.css'))
+        .map((f) => `packages/components/src/${f}`),
+    ];
+    const nested = [];
+    for (const file of files) {
+      const text = readFileSync(repo(file), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+      let i = text.indexOf(':has(');
+      while (i !== -1) {
+        let depth = 0;
+        let j = i + 4;
+        for (; j < text.length; j++) {
+          if (text[j] === '(') depth++;
+          else if (text[j] === ')' && --depth === 0) break;
+        }
+        const inner = text.slice(i + 5, j);
+        if (inner.includes(':has(')) nested.push(`${file}: ${inner.slice(0, 60)}`);
+        i = text.indexOf(':has(', j);
+      }
+    }
+    assert.deepEqual(nested, []);
+  });
+});

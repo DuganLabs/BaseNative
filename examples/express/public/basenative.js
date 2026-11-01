@@ -3019,14 +3019,14 @@ var emptyState = { name: name20, root: root20, create: create20, registerVariant
 
 // ../../packages/components/src/field/index.js
 var name21 = "field";
-var root21 = "p";
+var root21 = "section";
 function create21(props) {
   if (!props.label) throw new TypeError("field: label is required");
   if (!props.controlId) throw new TypeError("field: controlId is required");
   const label = signal(props.label);
   const controlId = signal(props.controlId);
   const controlHtml = signal(props.controlHtml ?? "");
-  const variant = signal(props.variant ?? "default");
+  const variant = signal(!props.variant || props.variant === "default" ? "field" : props.variant);
   const hint = signal(props.hint ?? "");
   const error = signal(props.error ?? "");
   const hasError = computed(() => error() !== "");
@@ -3034,7 +3034,7 @@ function create21(props) {
   return { label, controlId, controlHtml, variant, hint, error, hasError, showHint, raw };
 }
 function registerVariants21(registry3) {
-  registry3.registerVariant("field", "default");
+  registry3.registerVariant("field", "field");
 }
 var template21 = new URL("./index.html", import.meta.url);
 var styles21 = new URL("./styles.css", import.meta.url);
@@ -3701,12 +3701,12 @@ function create35(props) {
   );
   const label = signal(props.label ?? "Sidebar");
   const variant = signal(props.variant ?? "sidebar");
-  return { sections, label, variant, raw };
+  const landmark = signal(props.variant === "subnav" ? "region" : "complementary");
+  return { sections, label, variant, landmark, raw };
 }
 function registerVariants35(registry3) {
   registry3.registerVariant("sidebar", "sidebar");
   registry3.registerVariant("sidebar", "subnav");
-  registry3.registerVariant("sidebar", "chips");
 }
 var template35 = new URL("./index.html", import.meta.url);
 var styles35 = new URL("./styles.css", import.meta.url);
