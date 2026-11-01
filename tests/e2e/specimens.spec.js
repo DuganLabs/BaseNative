@@ -294,3 +294,41 @@ test.describe('Specimens — virtualizer and form', () => {
     expect(page.url()).toContain('/components/form');
   });
 });
+
+test.describe('Specimens — one field measure', () => {
+  // Every form specimen renders at one width: the pane on a phone,
+  // --measure-field on a wide screen. Each used to size itself (the
+  // popover select 271px beside a 511px native one, the combobox 213,
+  // a bare input the whole 958px pane), so the catalog read as a set
+  // of unrelated controls rather than one system.
+  const FORM_PAGES = [
+    'input',
+    'textarea',
+    'select',
+    'combobox',
+    'multiselect',
+    'search-field',
+    'field',
+    'form',
+  ];
+  for (const width of [393, 1280]) {
+    test(`form specimens share one width at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      const widths = {};
+      for (const slug of FORM_PAGES) {
+        await mounted(page, `/components/${slug}`);
+        widths[slug] = await page.$$eval(`${PREVIEW} > output > *`, (els) =>
+          els.map((el) => Math.round(el.getBoundingClientRect().width)),
+        );
+      }
+      const all = Object.values(widths).flat();
+      const measure = Math.min(...all);
+      expect(all.length).toBeGreaterThanOrEqual(FORM_PAGES.length);
+      for (const [slug, list] of Object.entries(widths)) {
+        for (const w of list) expect(w, `${slug} specimen width`).toBe(measure);
+      }
+      expect(measure).toBeLessThanOrEqual(448);
+      if (width < 448 + 64) expect(measure).toBeGreaterThan(width - 96);
+    });
+  }
+});
