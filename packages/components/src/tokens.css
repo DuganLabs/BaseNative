@@ -1495,7 +1495,7 @@
   --display-table-cell-restack: var(--display-block);
   --overflow-wrap-table-cell: var(--overflow-wrap-break-word);
   --overflow-wrap-table-cell-restack: var(--overflow-wrap-anywhere);
-  --overflow-wrap-table-cell-code: var(--overflow-wrap-anywhere);
+  --overflow-wrap-table-cell-code: var(--overflow-wrap-break-word);
   --white-space-table-head: var(--white-space-nowrap);
   --white-space-table-cell-restack: var(--white-space-normal);
   --size-border-table-cell-block-end-restack: var(--size-border-none);
