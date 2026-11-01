@@ -38,3 +38,22 @@ for (const width of [393, 768, 1280, 1440]) {
     });
   }
 }
+
+// Every playground frame header (editor panes, Result, Console) is one
+// band height with one inline start, so the frames line up as a set.
+for (const width of [393, 1280]) {
+  test(`playground frame headers share one height and inset at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/playground/');
+    await page.locator('.console-head').waitFor();
+    const heads = await page.evaluate(() =>
+      [...document.querySelectorAll(".pane-head, section[aria-label='Result'] > article > header, .console-head")]
+        .filter((h) => h.offsetParent)
+        .map((h) => ({ h: h.getBoundingClientRect().height, pl: parseFloat(getComputedStyle(h).paddingLeft) })),
+    );
+    expect(heads.length).toBeGreaterThanOrEqual(3);
+    const hs = heads.map((x) => x.h);
+    expect(Math.max(...hs) - Math.min(...hs), `header heights ${hs.join(',')}`).toBeLessThanOrEqual(1);
+    expect(new Set(heads.map((x) => x.pl)).size, 'header inline start').toBe(1);
+  });
+}

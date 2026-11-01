@@ -87,3 +87,5 @@ To run the audit by hand against any page, evaluate `layoutAudit` from
 | Meta row chips used the light page colour, padding with no chip | Chips in dd, dt, figcaption and blockquote paint fill-3 | `tests/e2e/code-chips.spec.js` (meta row chip) |
 | Docs reference link arrows wrapped alone at 393 | A trailing link arrow is bound with a no-break space | `tests/e2e/code-chips.spec.js` (trailing link arrow) |
 | Layout audit demanded the section gap after a tool page header | The page header meets its content at the header gap (32px, 40px at 1024+) | `tests/e2e/layout-audit.js`, `tests/e2e/header-gap.spec.js` |
+| Pagination gap glyph drawn against the current pill at 393 | Compact gaps take the row's spare width, split two ways, 16px to 32px | `tests/e2e/pagination.spec.js` (compact gap glyph clears the current pill) |
+| Playground Console header was taller (52px) than Result and editor headers (36 to 39px) | Every playground frame header is one 44px band with a 12px inline start | `tests/e2e/playground-panes.spec.js` (frame headers share one height and inset) |

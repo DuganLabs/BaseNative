@@ -575,6 +575,24 @@
       }
     }
   },
+  "size-pagination-gap-compact-fluid": {
+    "$value": "clamp(var(--size-pagination-gap-compact), calc((100cqi - 5 * var(--size-target-min) - var(--spacing-8)) / 2), var(--spacing-7))",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "pagination-gap",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": "compact"
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "font-pagination-step-size-compact": {
     "$value": "{spacing-0}",
     "$type": "dimension",
