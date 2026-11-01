@@ -35,7 +35,7 @@ const glyph = (paths) =>
  * the phone-class bar first — Home (what it is), Compare (why it
  * wins), Components (the proof), Docs (how to use it / reference) —
  * then the ones the More sheet carries, also in travel order:
- * AI (the scorecard for models), Playground (try it), Builder (build
+ * AI (BaseNative in an agent's loop), Playground (try it), Builder (build
  * with it), Tasks (the demo app, living under Components). The rail
  * reads the same list top to
  * bottom. `page` is the route's activePage key. The phone bar keeps
