@@ -314,6 +314,9 @@
   --layer-choice-group-control: 1;
   --spacing-code-block-pre-outline-offset-focus: calc(-1 * var(--size-border-thick));
   --size-combobox-listbox-max-block: calc(var(--size-control) * 6);
+  --spacing-combobox-input-padding-inline-end: calc(var(--spacing-3) * 2 + var(--spacing-5));
+  --transform-combobox-chevron-open: rotate(180deg);
+  --spacing-combobox-chevron-inset-block-start: calc((var(--size-input-block) - var(--size-combobox-chevron-block)) / 2);
   --size-command-palette-list-max-block: 20rem;
   --border-collapse-datagrid: separate;
   --transform-datagrid-sort-icon-ascending: rotate(180deg);
@@ -776,6 +779,14 @@
   --font-combobox-option-tracking: var(--font-body-tracking);
   --cursor-combobox-option: var(--cursor-pointer);
   --color-bkg-combobox-option-selected: var(--color-fill-2);
+  --position-combobox-chevron: var(--position-absolute);
+  --spacing-combobox-chevron-inset-inline-end: var(--spacing-3);
+  --size-combobox-chevron-inline: var(--spacing-5);
+  --size-combobox-chevron-block: var(--spacing-5);
+  --color-text-combobox-chevron: var(--color-text-label-3);
+  --pointer-events-combobox-chevron: var(--pointer-events-none);
+  --motion-combobox-duration: var(--motion-fade-duration);
+  --motion-combobox-curve: var(--motion-fade-curve);
   --box-sizing-command-palette: var(--box-sizing-border);
   --size-command-palette-inline: var(--size-full);
   --size-command-palette-max-inline: var(--size-palette-max);
