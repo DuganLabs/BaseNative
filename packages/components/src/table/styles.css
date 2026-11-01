@@ -36,9 +36,9 @@ table[variant="default"], table[variant="striped"] {
     overflow-wrap: var(--overflow-wrap-table-cell);
   }
 
-  /* A long unbreakable token (a package spec, a global's name) may
-     wrap at any character rather than size its column past the
-     container: code reads as a string, not a word. */
+  /* Code wraps at the parts the renderer marks with <wbr> (after a
+     slash, a dot, a snake_case join), and those parts set the column's
+     min-content; a mid-name break is a last resort against overflow. */
   & td code, & th code {
     overflow-wrap: var(--overflow-wrap-table-cell-code);
   }

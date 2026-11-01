@@ -142,7 +142,7 @@ const keyword = (name) => {
 describe('conformance — table text (the /ai "From" column broke mid-word)', () => {
   const table = rules(read('table/styles.css'));
 
-  it('a column cell wraps between words; only code inside it may wrap anywhere', () => {
+  it('a column cell wraps between words; code wraps at its marked parts', () => {
     // A restacked cell spans the container, so anywhere there only splits
     // a token longer than the whole line; in a column it shrank the
     // column below its longest word.
@@ -150,7 +150,10 @@ describe('conformance — table text (the /ai "From" column broke mid-word)', ()
     const code = table.find((r) => /& td code/.test(r.selector));
     assert.ok(code, 'table styles code inside a cell');
     assert.match(code.body, /overflow-wrap:\s*var\(--overflow-wrap-table-cell-code\)/);
-    assert.equal(keyword('overflow-wrap-table-cell-code'), 'anywhere');
+    // Code wraps break-word, not anywhere: anywhere let a column shrink
+    // below an identifier part, so on CI's wider mono @basenative/hmr broke
+    // mid-name. The <wbr> at each part sets the column's min-content.
+    assert.equal(keyword('overflow-wrap-table-cell-code'), 'break-word');
   });
 
   it('a column heading holds one line', () => {
