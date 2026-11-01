@@ -22,6 +22,12 @@
  *    split by the parser, and the label is left in a box of its own.
  *  - picker: a select drawn as base-select lays out as flex, so its
  *    picker icon sits inside the box beside the value, not under it.
+ *  - double: a flex or grid container spaces its items with gap; an
+ *    item that also carries a block margin is spaced twice.
+ *  - inset: a bordered surface's padding is its inset. Its first and
+ *    last children carry no outward margin, which would add a band
+ *    the padding does not account for (a 16px strip under every
+ *    component preview).
  */
 export function layoutAudit(opts = {}) {
   const STACK = opts.stack ?? 16;
@@ -151,6 +157,20 @@ export function layoutAudit(opts = {}) {
     if (!(flexCol || ps.display.includes('grid')) || !(parseFloat(ps.rowGap) > 0)) continue;
     const mt = parseFloat(getComputedStyle(c).marginTop);
     if (mt > 0) out.push({ rule: 'double', at: path(c), px: mt, gap: parseFloat(ps.rowGap) });
+  }
+
+  // inset: no outward margin on the first or last child of a bordered box
+  for (const p of main.querySelectorAll('*')) {
+    if (!visible(p)) continue;
+    const ps = getComputedStyle(p);
+    if (ps.display.startsWith('inline') || ps.display === 'contents') continue;
+    if (!(parseFloat(ps.borderTopWidth) > 0 && parseFloat(ps.borderBottomWidth) > 0)) continue;
+    const kids = flowKids(p);
+    if (!kids.length) continue;
+    const mt = parseFloat(getComputedStyle(kids[0]).marginTop);
+    const mb = parseFloat(getComputedStyle(kids[kids.length - 1]).marginBottom);
+    if (mt > 0) out.push({ rule: 'inset', at: path(kids[0]), edge: 'start', px: mt });
+    if (mb > 0) out.push({ rule: 'inset', at: path(kids[kids.length - 1]), edge: 'end', px: mb });
   }
 
   // mid-word breaks in running text

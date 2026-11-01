@@ -1239,3 +1239,27 @@ describe('server-rendered pages keep block content out of <p>', () => {
     }
   });
 });
+
+describe('rendered surfaces leave their spacing to the container', () => {
+  const css = readFileSync(repo('examples/express/public/styles.css'), 'utf8').replace(
+    /\/\*[\s\S]*?\*\//g,
+    '',
+  );
+  it('every component preview tray is the figure’s last child and the sheet zeroes its margin', () => {
+    const html = renderComponentPage('card');
+    assert.match(
+      html,
+      /<figure[^>]*data-bn-component-preview[^>]*>[\s\S]*?<output[\s\S]*?<\/output>\s*<\/figure>/,
+    );
+    assert.match(css, /\[data-bn-component-preview\] \{\s*& > output \{[^}]*\bmargin:\s*0\b/);
+  });
+  it('catalog fieldsets carry a variant, so the site’s bare-fieldset spacing cannot reach them', () => {
+    for (const slug of ['choice-group', 'radio']) {
+      const html = renderComponentPage(slug);
+      const sets = html.match(/<fieldset[^>]*>/g) || [];
+      assert.ok(sets.length, `${slug} renders a fieldset`);
+      for (const f of sets) assert.match(f, /\svariant="/, `${slug}: ${f}`);
+    }
+    assert.doesNotMatch(css, /(^|[\s,}])fieldset > label \+ label/m);
+  });
+});
