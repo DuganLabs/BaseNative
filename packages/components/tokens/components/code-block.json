@@ -225,7 +225,7 @@
           "type": null,
           "item": "code-block-caption",
           "variant": null,
-          "subitem": "caption-action-start",
+          "subitem": "action-start",
           "state": null,
           "context": null
         },
@@ -243,7 +243,7 @@
           "type": null,
           "item": "code-block-caption",
           "variant": null,
-          "subitem": "caption-action-padding-block",
+          "subitem": "action-padding-block",
           "state": null,
           "context": null
         },
@@ -261,7 +261,7 @@
           "type": null,
           "item": "code-block-caption",
           "variant": null,
-          "subitem": "caption-action-padding-inline-end",
+          "subitem": "action-padding-inline-end",
           "state": null,
           "context": null
         },
