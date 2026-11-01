@@ -70,10 +70,10 @@ form:has(:invalid) > button[type="submit"] {
 }
 
 button[variant="destructive"], a[variant="destructive"] {
-  --color-bkg-button: var(--color-danger);
-  --color-bkg-button-hover: var(--color-danger-strong);
-  --color-bkg-button-active: var(--color-danger-strong);
-  --color-border-button: var(--color-danger);
+  --color-bkg-button: var(--color-danger-solid);
+  --color-bkg-button-hover: var(--color-danger-solid-pressed);
+  --color-bkg-button-active: var(--color-danger-solid-pressed);
+  --color-border-button: var(--color-danger-solid);
   --color-text-button: var(--color-text-on-danger);
 }
 
@@ -82,7 +82,7 @@ button[variant="ghost"], a[variant="ghost"] {
   --color-bkg-button-hover: var(--color-fill-3);
   --color-bkg-button-active: var(--color-fill-2);
   --color-border-button: var(--palette-transparent);
-  --color-text-button: var(--color-tint);
+  --color-text-button: var(--color-tint-strong);
 }
 
 button[variant="primary"], a[variant="primary"] {
