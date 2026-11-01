@@ -266,6 +266,15 @@ export function getHomePageContext() {
   return {
     runtimeVersion,
     heroDemo,
+    // The install command, copyable, above the fold — the first thing a
+    // visitor takes from the page.
+    installBlock: renderTrinity('code-block', {
+      caption: 'Terminal',
+      code: 'npm install @basenative/runtime',
+      actionsHtml: renderTrinity('button', { label: 'Copy', variant: 'ghost' })
+        .trim()
+        .replace('<button ', '<button hidden data-bn-copy aria-label="Copy the install command" '),
+    }),
     startBlocks: raw(
       codeBlock('Terminal', 'npm install @basenative/runtime') +
         codeBlock('index.html', START_SOURCE),

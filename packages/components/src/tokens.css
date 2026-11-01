@@ -743,6 +743,9 @@
   --align-code-block-caption: var(--align-center);
   --spacing-code-block-caption-gap: var(--spacing-2);
   --spacing-code-block-caption-padding-block: var(--spacing-2);
+  --spacing-code-block-caption-action-start: var(--spacing-margin-auto);
+  --spacing-code-block-caption-action-padding-block: var(--spacing-0);
+  --spacing-code-block-caption-action-padding-inline-end: var(--spacing-1);
   --spacing-code-block-caption-padding-inline: var(--spacing-4);
   --color-bkg-code-block-caption: var(--color-fill-3);
   --color-text-code-block-caption: var(--color-text-label-2);
