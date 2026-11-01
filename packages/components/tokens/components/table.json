@@ -792,7 +792,7 @@
     }
   },
   "overflow-wrap-table-cell-code": {
-    "$value": "{overflow-wrap-anywhere}",
+    "$value": "{overflow-wrap-break-word}",
     "$type": "string",
     "$extensions": {
       "com.basenative": {
