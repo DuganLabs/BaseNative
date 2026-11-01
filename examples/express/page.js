@@ -340,14 +340,15 @@ export const siteRoutes = [
     hero: (site, ctx) => ({
       eyebrow: `Runtime ${ctx.runtimeVersion}`,
       title: 'Reactive UI in plain HTML.',
-      ledeHtml: `<p>Signals, server rendering and ${catalogEntries.length} accessible components built on real HTML elements. No build step, no virtual DOM, no dependencies in core — <code>npm install @basenative/runtime</code> and ship.</p>`,
+      ledeHtml: `<p>Signals, server rendering and ${catalogEntries.length} accessible components built on real HTML elements. No build step, no virtual DOM, no dependencies in core. Install it and ship.</p>${ctx.installBlock}`,
       actions: [
         { label: 'Try the playground', href: '/playground' },
         { label: 'Read the docs', href: '/docs' },
       ],
       after: ctx.heroDemo,
     }),
-    scripts: '<script type="module" src="/hero-demo.js"></script>',
+    scripts:
+      '<script type="module" src="/hero-demo.js"></script><script type="module" src="/copy-code.js"></script>',
   },
   {
     path: '/compare',

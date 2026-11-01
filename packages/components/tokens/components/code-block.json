@@ -215,6 +215,60 @@
       }
     }
   },
+  "spacing-code-block-caption-action-start": {
+    "$value": "{spacing-margin-auto}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "code-block-caption",
+          "variant": null,
+          "subitem": "caption-action-start",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-code-block-caption-action-padding-block": {
+    "$value": "{spacing-0}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "code-block-caption",
+          "variant": null,
+          "subitem": "caption-action-padding-block",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-code-block-caption-action-padding-inline-end": {
+    "$value": "{spacing-1}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "code-block-caption",
+          "variant": null,
+          "subitem": "caption-action-padding-inline-end",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "spacing-code-block-caption-padding-inline": {
     "$value": "{spacing-4}",
     "$type": "dimension",
