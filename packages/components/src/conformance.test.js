@@ -352,3 +352,17 @@ describe('conformance — check controls keep their size; the row is the 44px ta
     assert.match(sheet('radio'), /min-block-size:\s*var\(--size-radio-option-min-block\)/);
   });
 });
+
+describe('conformance — nothing paints over text or the tab bar', () => {
+  const sheet = (name) => readFileSync(new URL(`./${name}/styles.css`, import.meta.url), 'utf8');
+  it('the alert dismiss control takes a grid column, not an overlay', () => {
+    assert.match(tokens, /--position-alert-dismiss:\s*var\(--position-static\)/);
+    assert.match(sheet('alert'), /grid-column:\s*var\(--grid-column-alert-dismiss\)/);
+    assert.doesNotMatch(sheet('alert'), /inset-inline-end/);
+  });
+  it('the fixed app bar sits on the chrome layer, above raised content', () => {
+    assert.match(sheet('app-bar'), /z-index:\s*var\(--layer-app-bar\)/);
+    const layer = (n) => Number(tokens.match(new RegExp(`--layer-${n}:\\s*(\\d+);`))?.[1]);
+    assert.ok(layer('chrome') > layer('raised'), 'chrome above raised');
+  });
+});

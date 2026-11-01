@@ -90,7 +90,7 @@
     }
   },
   "spacing-alert-padding-inline-end-dismissible": {
-    "$value": "calc(var(--spacing-4) + var(--size-target-min))",
+    "$value": "{spacing-2}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
@@ -126,7 +126,7 @@
     }
   },
   "position-alert-dismiss": {
-    "$value": "{position-absolute}",
+    "$value": "{position-static}",
     "$type": "string",
     "$extensions": {
       "com.basenative": {
@@ -143,17 +143,17 @@
       }
     }
   },
-  "spacing-alert-dismiss-inset-block-start": {
-    "$value": "{spacing-2}",
-    "$type": "dimension",
+  "grid-template-alert-dismissible-columns": {
+    "$value": "minmax(0, 1fr) auto",
+    "$type": "string",
     "$extensions": {
       "com.basenative": {
         "taxonomy": {
-          "category": "spacing",
+          "category": "grid-template",
           "type": null,
-          "item": "alert-dismiss",
-          "variant": null,
-          "subitem": "inset-block-start",
+          "item": "alert",
+          "variant": "dismissible",
+          "subitem": "columns",
           "state": null,
           "context": null
         },
@@ -161,17 +161,107 @@
       }
     }
   },
-  "spacing-alert-dismiss-inset-inline-end": {
-    "$value": "{spacing-2}",
+  "grid-column-alert-text": {
+    "$value": "1",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "grid-column",
+          "type": null,
+          "item": "alert",
+          "variant": null,
+          "subitem": "text",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "grid-column-alert-dismiss": {
+    "$value": "2",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "grid-column",
+          "type": null,
+          "item": "alert",
+          "variant": null,
+          "subitem": "dismiss",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "grid-row-alert-dismiss": {
+    "$value": "1 / span 2",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "grid-row",
+          "type": null,
+          "item": "alert",
+          "variant": null,
+          "subitem": "dismiss",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "align-alert-dismiss": {
+    "$value": "{align-start}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "align",
+          "type": null,
+          "item": "alert",
+          "variant": null,
+          "subitem": "dismiss",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-alert-dismiss-column-gap": {
+    "$value": "{spacing-3}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
         "taxonomy": {
           "category": "spacing",
           "type": null,
-          "item": "alert-dismiss",
+          "item": "alert",
           "variant": null,
-          "subitem": "inset-inline-end",
+          "subitem": "dismiss-column-gap",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-alert-dismiss-margin-block-start": {
+    "$value": "calc(var(--spacing-2) - var(--spacing-3))",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "alert",
+          "variant": null,
+          "subitem": "dismiss-margin-block-start",
           "state": null,
           "context": null
         },

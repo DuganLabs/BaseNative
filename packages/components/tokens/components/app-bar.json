@@ -719,6 +719,24 @@
       }
     }
   },
+  "layer-app-bar": {
+    "$value": "{layer-chrome}",
+    "$type": "number",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "layer",
+          "type": null,
+          "item": "app-bar",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "list-style-app-bar-list": {
     "$value": "{list-style-none}",
     "$type": "string",

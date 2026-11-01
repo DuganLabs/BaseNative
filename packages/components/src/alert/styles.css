@@ -42,11 +42,23 @@ aside[variant="warning"] {
 }
 
 aside[variant="info"]:has(> button), aside[variant="success"]:has(> button), aside[variant="warning"]:has(> button), aside[variant="danger"]:has(> button) {
+  /* The dismiss control is caller-rendered and any width, so it takes a
+     column of its own instead of a padding reserve sized for an icon. A
+     text button used to sit over the first line of the body. */
   --spacing-alert-padding-inline-end: var(--spacing-alert-padding-inline-end-dismissible);
+  grid-template-columns: var(--grid-template-alert-dismissible-columns);
+  column-gap: var(--spacing-alert-dismiss-column-gap);
+
+  & > h3,
+  & > p {
+    grid-column: var(--grid-column-alert-text);
+  }
 }
 
 aside[variant="info"] > button, aside[variant="success"] > button, aside[variant="warning"] > button, aside[variant="danger"] > button {
   position: var(--position-alert-dismiss);
-  inset-block-start: var(--spacing-alert-dismiss-inset-block-start);
-  inset-inline-end: var(--spacing-alert-dismiss-inset-inline-end);
+  grid-column: var(--grid-column-alert-dismiss);
+  grid-row: var(--grid-row-alert-dismiss);
+  align-self: var(--align-alert-dismiss);
+  margin-block-start: var(--spacing-alert-dismiss-margin-block-start);
 }

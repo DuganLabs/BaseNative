@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { existsSync, readdirSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { layoutAudit } from './layout-audit.js';
+import { ROUTES, WIDTHS } from './audit-routes.js';
 
 /*
  * Layout conformance: every route and every component page, at every
@@ -15,29 +13,6 @@ import { layoutAudit } from './layout-audit.js';
  * green and a rule never regresses once it is in.
  */
 
-const SRC = join(
-  dirname(fileURLToPath(import.meta.url)),
-  '..',
-  '..',
-  'packages',
-  'components',
-  'src',
-);
-const COMPONENTS = readdirSync(SRC, { withFileTypes: true })
-  .filter((d) => d.isDirectory() && existsSync(join(SRC, d.name, 'index.html')))
-  .map((d) => d.name);
-
-export const ROUTES = [
-  '/',
-  '/compare/',
-  '/components/',
-  '/docs/',
-  '/ai/',
-  '/playground/',
-  '/builder/',
-  ...COMPONENTS.map((c) => `/components/${c}/`),
-];
-export const WIDTHS = [320, 393, 768, 1024, 1100, 1280, 1440];
 const THEMES = ['light', 'dark'];
 const ENFORCED = new Set([
   'stack',
@@ -50,6 +25,7 @@ const ENFORCED = new Set([
   'picker',
   'double',
   'inset',
+  'cover',
 ]);
 
 for (const theme of THEMES) {
