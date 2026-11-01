@@ -34,11 +34,14 @@ footer[variant='default'] {
       padding: var(--spacing-site-footer-list-padding);
 
       /* Inline links ignore min-block-size; as inline-flex rows the
-         44px target is real and every column's rows share one rhythm. */
+         44px target is real in both axes, so a two-letter link is as
+         easy to hit as a long one, and every column's rows share one
+         rhythm. */
       & > li > a {
         display: var(--display-inline-flex);
         align-items: var(--align-center);
         min-block-size: var(--size-target-min);
+        min-inline-size: var(--size-target-min);
         color: var(--color-text-site-footer-link);
         font-family: var(--font-site-footer-link-family);
         font-size: var(--font-site-footer-link-size);

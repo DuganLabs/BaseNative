@@ -69,11 +69,13 @@ table[variant="datagrid"] > thead th[aria-sort="ascending"] > svg {
    cell's own padding edge, like every other header's text, and the
    cell owns the surface — the button paints no pill of its own here,
    so its hover and active fills stay transparent and never stack
-   over the header's fills. */
+   over the header's fills. The button is the full 44px row, so the
+   cell drops its block padding instead of adding to it. */
 table[variant="datagrid"] > thead th:has(> button) {
   --spacing-button-padding-block: var(--spacing-0);
   --spacing-button-padding-inline: var(--spacing-0);
-  --size-button-block: var(--size-max-content);
+  --size-button-block: var(--size-target-min);
+  padding-block: var(--spacing-0);
 }
 
 table[variant="datagrid"] > thead th > button {

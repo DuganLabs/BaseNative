@@ -22,13 +22,18 @@ nav[variant='app-bar'] {
 
     & > li {
       flex-grow: var(--flex-grow-app-bar-item);
+      min-inline-size: var(--size-app-bar-item-min-inline);
 
       & > a,
       & > button {
         display: var(--display-app-bar-tab);
         flex-direction: var(--flex-direction-app-bar-tab);
         align-items: var(--align-app-bar-tab);
+        justify-content: var(--justify-center);
         gap: var(--spacing-app-bar-tab-gap);
+        /* A text-only tab has no icon to give it height, so the tab
+           floors at the 44px target and centres its label. */
+        min-block-size: var(--size-target-min);
         inline-size: var(--size-app-bar-tab-inline);
         padding-block: var(--spacing-app-bar-tab-padding-block);
         padding-inline: var(--spacing-app-bar-tab-padding-inline);
@@ -112,15 +117,13 @@ nav[variant='app-bar'] {
 }
 
 /* Equal cells where the bar can afford them: a zero basis makes
-   flex-grow distribute the bar evenly, and a zero min-inline-size
-   lifts the min-content floor that would otherwise let a long label
-   widen its own cell. Below this width an equal share is narrower
-   than the widest standard label ("Components"), so the floor stays
-   in force — the long label keeps its cell, the short labels
-   compress, and no label's text bleeds across a cell edge. */
+   flex-grow distribute the bar evenly. Below this width an equal share
+   is narrower than the widest standard label ("Components"), so cells
+   size to their labels instead — the long label keeps its cell and
+   the short labels compress, but never below the 44px target floor
+   every item carries, and no label's text bleeds across a cell edge. */
 @media (min-width: 23.5rem) {
   nav[variant='app-bar'] > ul > li {
     flex-basis: var(--flex-basis-app-bar-item);
-    min-inline-size: var(--size-app-bar-item-min-inline);
   }
 }

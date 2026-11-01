@@ -221,6 +221,22 @@
 }
 
 @layer components {
+  /* Every control the site renders is at least a 44px target. The
+     components floor their own; this zero-specificity floor catches the
+     site's demo and tool controls in one place, so a bespoke button or
+     field can never ship smaller. */
+  :where(
+      button,
+      select,
+      input:not([type='checkbox'], [type='radio'], [type='range'], [type='hidden'], [type='color'])
+    ) {
+    min-block-size: var(--size-target-min);
+  }
+
+  :where(button) {
+    min-inline-size: var(--size-target-min);
+  }
+
   /* Section and stack rhythm is the app shell's
      (--spacing-app-shell-section-gap / -stack-gap); pages don't space
      their own sections. */
@@ -1633,7 +1649,7 @@
     flex: 0 0 auto;
   }
   [data-task-item] button[data-variant='danger'] {
-    min-inline-size: 2.25rem;
+    min-inline-size: var(--size-target-min);
     padding-inline: var(--space-xs);
     box-shadow: none;
   }
@@ -2794,6 +2810,10 @@
     border-block-start: var(--border-width) solid var(--border);
 
     & a {
+      /* Each pager link is a 44px-tall target, label centred. */
+      display: inline-flex;
+      align-items: center;
+      min-block-size: var(--size-target-min);
       font-family: var(--font-family);
       font-stretch: var(--font-mono);
       font-size: var(--font-size-sm);
@@ -3526,7 +3546,7 @@
     }
 
     [data-bn-component-search] input[type='search'] {
-      min-block-size: 2.25rem;
+      min-block-size: var(--size-target-min);
       padding: var(--space-xs) var(--space-sm);
     }
 

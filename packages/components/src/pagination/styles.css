@@ -23,7 +23,15 @@ nav[variant="pagination"] {
     color: var(--color-text-pagination-separator);
   }
 
+  /* Page numbers are one glyph wide; the link box, not the glyph, is
+     the target, so each is at least a 44px square with its label
+     centred. */
   & > ol > li > a {
+    display: var(--display-inline-flex);
+    align-items: var(--align-center);
+    justify-content: var(--justify-center);
+    min-block-size: var(--size-target-min);
+    min-inline-size: var(--size-target-min);
     color: var(--color-text-pagination-link);
     text-decoration: var(--text-decoration-pagination-link);
     font-family: var(--font-pagination-link-family);
