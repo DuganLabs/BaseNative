@@ -15,16 +15,17 @@
  * spans as plain text: a pill in every cell of a five-column table reads as
  * noise, and the point of these tables is scanning one row against another.
  */
-import { escapeText, raw } from '@basenative/runtime/shared/escape';
+import { raw } from '@basenative/runtime/shared/escape';
 import { renderTrinity } from './trinity.js';
+import { cellProse } from './cell-prose.js';
 
 /** A toned cell: the verdict is editorial content, carried by a span. */
 function toned(text, tone) {
-  if (!tone) return text;
+  if (!tone) return { contentHtml: cellProse(text) };
   // A span because the verdict is a run of coloured text inside the cell's
   // content slot — the page's sheet colours it; nothing is stamped on the
   // catalog table itself.
-  return { contentHtml: `<span data-tone="${tone}">${escapeText(text)}</span>` };
+  return { contentHtml: `<span data-tone="${tone}">${cellProse(text)}</span>` };
 }
 
 /** An editorial cell — its text is the page's own wording, not a measurement. */

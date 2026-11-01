@@ -16,6 +16,7 @@ import { fileURLToPath } from 'node:url';
 import { escapeAttr, escapeText, raw } from '@basenative/runtime/shared/escape';
 import { renderTrinity } from './trinity.js';
 import { getMeasuredStats } from './site-data.js';
+import { cellProse } from './cell-prose.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -211,23 +212,6 @@ function codeBlock(label, source) {
   return `<pre tabindex="0" aria-label="${escapeAttr(label)}"><code>${escapeText(source)}</code></pre>`;
 }
 
-// Package specs, globals and calls in a cell are code: they render in
-// <code>, which may wrap at any character, so a long identifier never
-// sizes its column past the table while the prose around it still
-// wraps only between words.
-const CODE_TOKEN =
-  /@basenative\/[a-z-]+(?:\/[a-z-]+)*|\bglobalThis(?:\.[\w$]+)+|\b[A-Za-z_$][\w$]*\(\)/g;
-
-function proseWithCode(text) {
-  let html = '';
-  let last = 0;
-  for (const match of text.matchAll(CODE_TOKEN)) {
-    html += escapeText(text.slice(last, match.index)) + `<code>${escapeText(match[0])}</code>`;
-    last = match.index + match[0].length;
-  }
-  return html + escapeText(text.slice(last));
-}
-
 function statusBadge(status) {
   return renderTrinity('badge', { label: status, variant: STATUS_VARIANT[status] || 'default' });
 }
@@ -240,9 +224,9 @@ export function getAiPageContext() {
     columns: ['From', 'Point', 'Status', 'Standing'],
     rows: AI_SCORECARD.map((row) => [
       row.from,
-      { contentHtml: proseWithCode(row.point) },
+      { contentHtml: cellProse(row.point) },
       { contentHtml: statusBadge(row.status) },
-      { contentHtml: proseWithCode(row.standing) },
+      { contentHtml: cellProse(row.standing) },
     ]),
   });
   // The measured strip is the same stat surface /compare carries —
