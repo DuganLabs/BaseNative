@@ -223,6 +223,13 @@
     }
   }
 
+  /* Stacked (under 64rem) the demo card sits in the caption's own
+       grid, so the gap is the only space above it: the stack token,
+       not a margin on top of the gap. */
+  main > figure[variant='stacked']:has([data-bn-hero-demo]) > figcaption {
+    --spacing-hero-caption-gap: var(--spacing-4);
+  }
+
   /* Desktop: copy left, demo right, the copy centred on the demo. */
   @media (min-width: 64rem) {
     main > figure[variant='stacked']:has([data-bn-hero-demo]) > figcaption {
