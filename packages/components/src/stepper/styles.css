@@ -3,7 +3,7 @@ ol[variant="stepper"] {
   flex-direction: var(--flex-direction-stepper);
   gap: var(--spacing-stepper-gap);
   list-style: var(--list-style-stepper);
-  margin: var(--spacing-stepper-margin);
+  margin-inline: var(--spacing-stepper-margin);
   padding: var(--spacing-stepper-padding);
 
   & > li {

@@ -6,7 +6,7 @@ ul[variant="tree"], ul[variant="treegrid"] {
   --spacing-button-padding-inline: var(--spacing-2);
   --size-button-block: var(--size-max-content);
   list-style: var(--list-style-tree);
-  margin: var(--spacing-tree-margin);
+  margin-inline: var(--spacing-tree-margin);
   padding: var(--spacing-tree-padding);
 
   & > li {

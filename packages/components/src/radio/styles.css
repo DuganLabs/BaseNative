@@ -1,7 +1,7 @@
 fieldset[variant="default"] {
   display: var(--display-radio);
   gap: var(--spacing-radio-gap);
-  margin: var(--spacing-radio-margin);
+  margin-inline: var(--spacing-radio-margin);
   padding: var(--spacing-radio-padding);
   border-width: var(--size-border-radio);
 

@@ -1,7 +1,7 @@
 menu[variant="default"] {
   min-inline-size: var(--size-dropdown-menu-min-inline);
   list-style: var(--list-style-dropdown-menu);
-  margin: var(--spacing-dropdown-menu-margin);
+  margin-inline: var(--spacing-dropdown-menu-margin);
   padding: var(--spacing-dropdown-menu-padding);
   background-color: var(--color-bkg-dropdown-menu);
   border-width: var(--size-border-dropdown-menu);

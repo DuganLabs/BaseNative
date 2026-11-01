@@ -8,18 +8,27 @@ main[variant="default"] {
    sections: a section (or a page-level article, and the sections of
    a page that wraps itself in one article) is set off from
    whatever comes before and after it by one section gap, so no page
-   can butt a card into the next heading. Inside a section, cards that
-   follow one another (code blocks, lists, articles, tables) are a
-   stack, separated by the stack gap. Pages never space these by hand. */
+   can butt a card into the next heading. Inside a section (at any
+   depth), every block surface that follows another (a code card, a
+   table, a list, an article, a nested section, a form, a frame) is a
+   stack, set off by the stack gap whatever its markup. Pages never
+   space these by hand. A component (any element with a variant) owns
+   the layout inside itself, so a grid of tab panels or cards is
+   spaced by its own gap, not shifted down by the stack. The stack is
+   the default flow, so it sits in the layout layer: a host sheet that
+   lays a section out as a grid resets it from any later layer, and a
+   section gap (unlayered) always beats it. */
+@layer layout {
+  main[variant="default"] :is(section, article, aside):not(:where([variant])) > * + :is(figure, table, pre, details, article, section, form, dl, iframe, :is(ul, ol):where([variant])) {
+    margin-block-start: var(--spacing-app-shell-stack-gap);
+  }
+}
+
 main[variant="default"] > * + :is(section, article, aside, form, nav, search),
 main[variant="default"] > :is(section, article, aside, form, nav, search) + *,
 main[variant="default"] > article > * + :is(section, aside),
 main[variant="default"] > article > :is(section, aside) + * {
   margin-block-start: var(--spacing-app-shell-section-gap);
-}
-
-main[variant="default"] :is(section, article) > :is(figure[variant], ul[variant], ol[variant], article, table, details) + :is(figure[variant], ul[variant], ol[variant], article, table, details) {
-  margin-block-start: var(--spacing-app-shell-stack-gap);
 }
 
 @media (max-width: 47.9375rem) {

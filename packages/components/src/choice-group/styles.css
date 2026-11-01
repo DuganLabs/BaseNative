@@ -6,7 +6,7 @@
 fieldset[variant="choice-group"] {
   display: var(--display-choice-group);
   gap: var(--spacing-choice-group-gap);
-  margin: var(--spacing-choice-group-margin);
+  margin-inline: var(--spacing-choice-group-margin);
   padding: var(--spacing-choice-group-padding);
   border-width: var(--size-border-choice-group);
 

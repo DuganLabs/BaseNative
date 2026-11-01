@@ -3,7 +3,7 @@ fieldset[variant="theme-toggle"] {
   inline-size: var(--size-theme-toggle-inline);
   flex-direction: var(--flex-direction-theme-toggle);
   gap: var(--spacing-theme-toggle-gap);
-  margin: var(--spacing-theme-toggle-margin);
+  margin-inline: var(--spacing-theme-toggle-margin);
   padding: var(--spacing-theme-toggle-padding);
   border-width: var(--size-border-theme-toggle);
   background-color: var(--color-bkg-theme-toggle);

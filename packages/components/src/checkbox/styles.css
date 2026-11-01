@@ -18,7 +18,7 @@ input[variant="checkbox"] {
   inline-size: var(--size-checkbox);
   block-size: var(--size-checkbox);
   accent-color: var(--color-accent-checkbox);
-  margin: var(--spacing-checkbox-margin);
+  margin-inline: var(--spacing-checkbox-margin);
   cursor: var(--cursor-checkbox);
 }
 

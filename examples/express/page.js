@@ -60,6 +60,31 @@ const read = (file) => readFileSync(join(__dirname, file), 'utf-8');
  * packages/components/src stylesheet (the /bn-css chain's sources).
  */
 let assetVersion = null;
+
+/* Every stylesheet the /bn-css chain is assembled from: the top-level
+ * sheets and each component's own styles.css. Hashing only the top
+ * level left a component restyle under the old version, so a visitor's
+ * cached trinity.css kept the old component CSS for hours. */
+export function componentStylesheets() {
+  const root = join(__dirname, '../../packages/components/src');
+  const out = [];
+  const walk = (dir) => {
+    let entries;
+    try {
+      entries = readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return; /* an absent source tree mints no weaker version */
+    }
+    for (const e of entries.sort((a, b) => a.name.localeCompare(b.name))) {
+      const p = join(dir, e.name);
+      if (e.isDirectory()) walk(p);
+      else if (e.name.endsWith('.css')) out.push(p);
+    }
+  };
+  walk(root);
+  return out;
+}
+
 function getAssetVersion() {
   if (assetVersion) return assetVersion;
   const hash = createHash('sha256');
@@ -81,18 +106,7 @@ function getAssetVersion() {
       /* an asset that is absent in some host mints no weaker version */
     }
   }
-  try {
-    for (const dir of ['../../packages/components/src']) {
-      const cssDir = join(__dirname, dir);
-      for (const name of readdirSync(cssDir)
-        .filter((n) => n.endsWith('.css'))
-        .sort()) {
-        hash.update(readFileSync(join(cssDir, name), 'utf-8'));
-      }
-    }
-  } catch {
-    /* same reasoning as above */
-  }
+  for (const file of componentStylesheets()) hash.update(readFileSync(file, 'utf-8'));
   assetVersion = hash.digest('hex').slice(0, 10);
   return assetVersion;
 }

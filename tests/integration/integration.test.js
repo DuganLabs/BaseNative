@@ -23,7 +23,12 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { checkComparePage, capabilityProblems } from '../../scripts/check-compare-page.js';
 import { computeCompareStats } from '../../scripts/compare-stats.js';
-import { renderRoute, renderComponentPage, siteRoutes } from '../../examples/express/page.js';
+import {
+  renderRoute,
+  renderComponentPage,
+  siteRoutes,
+  componentStylesheets,
+} from '../../examples/express/page.js';
 import { highlightCode, highlightCodeBlocks } from '../../examples/express/highlight.js';
 import { HIGHLIGHTERS } from '../../examples/express/public/highlight-engine.js';
 import { AI_SCORECARD } from '../../examples/express/ai-scorecard.js';
@@ -1101,5 +1106,61 @@ describe('the contents navs have a working scrollspy', () => {
       build.includes("'scrollspy.js'"),
       'build-pages.js should copy scrollspy.js into dist',
     );
+  });
+});
+
+// ─── Layout conformance: server-rendered markup ────────────────────
+// Rules from the 2026-10-31 sweep (docs/conformance.md). The stack and
+// section gaps come from the shell's CSS; these keep every page's
+// markup in the shape that CSS keys on, with no hand spacing.
+
+describe('component pages are built from the shared stack, not hand spacing', () => {
+  const slugs = readdirSync(repo('packages/components/src'), { withFileTypes: true })
+    .filter(
+      (d) => d.isDirectory() && existsSync(repo(`packages/components/src/${d.name}/index.html`)),
+    )
+    .map((d) => d.name);
+
+  it('every page sets its blocks as children of variant-free sections the stack primitive spaces', () => {
+    for (const slug of slugs) {
+      const html = renderComponentPage(slug);
+      assert.ok(html, `${slug} renders`);
+      const files = html.match(/<section data-bn-component-files[^>]*>/);
+      assert.ok(files, `${slug} has a files section`);
+      assert.doesNotMatch(
+        files[0],
+        /\svariant=/,
+        `${slug}: the files section must not opt out of the stack`,
+      );
+      const sources = html.match(/<figure[^>]*data-bn-component-source/g) || [];
+      assert.ok(sources.length >= 1, `${slug} shows its source files`);
+    }
+  });
+
+  it('no page spaces a block by hand with an inline margin', () => {
+    for (const slug of slugs) {
+      const html = renderComponentPage(slug);
+      assert.doesNotMatch(html, /style="[^"]*margin/, `${slug} carries an inline margin`);
+    }
+    for (const route of siteRoutes) {
+      const html = renderRoute(route, { tasks: [], hasApi: false });
+      assert.doesNotMatch(html, /style="[^"]*margin/, `${route.path} carries an inline margin`);
+    }
+  });
+});
+
+describe('the asset version covers every stylesheet the CSS chain is built from', () => {
+  it('hashes each component styles.css, so a component restyle busts cached trinity.css', () => {
+    const hashed = new Set(
+      componentStylesheets().map((f) => f.split('packages/components/src/')[1]),
+    );
+    for (const d of readdirSync(repo('packages/components/src'), { withFileTypes: true })) {
+      if (d.isDirectory() && existsSync(repo(`packages/components/src/${d.name}/styles.css`))) {
+        assert.ok(
+          hashed.has(`${d.name}/styles.css`),
+          `${d.name}/styles.css is outside the asset version`,
+        );
+      }
+    }
   });
 });
