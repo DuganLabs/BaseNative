@@ -396,7 +396,7 @@
     }
   },
   "size-app-bar-item-min-inline": {
-    "$value": "{spacing-0}",
+    "$value": "{size-target-min}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {

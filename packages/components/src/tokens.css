@@ -485,7 +485,7 @@
   --flex-direction-app-bar-tab: var(--flex-direction-column);
   --flex-grow-app-bar-item: var(--flex-grow);
   --flex-basis-app-bar-item: var(--flex-basis-zero);
-  --size-app-bar-item-min-inline: var(--spacing-0);
+  --size-app-bar-item-min-inline: var(--size-target-min);
   --font-app-bar-menu-link-leading: var(--font-subheadline-leading);
   --font-app-bar-menu-link-size: var(--font-subheadline-size);
   --font-app-bar-menu-link-tracking: var(--font-subheadline-tracking);

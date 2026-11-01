@@ -4,7 +4,7 @@ ul[variant="tree"], ul[variant="treegrid"] {
      one edge. */
   --spacing-button-padding-block: var(--spacing-1);
   --spacing-button-padding-inline: var(--spacing-2);
-  --size-button-block: var(--size-max-content);
+  --size-button-block: var(--size-target-min);
   list-style: var(--list-style-tree);
   margin-inline: var(--spacing-tree-margin);
   padding: var(--spacing-tree-padding);
@@ -24,7 +24,12 @@ ul[variant="tree"], ul[variant="treegrid"] {
     }
   }
 
+  /* A leaf row is as tall as a toggle row, so the list keeps one
+     rhythm whether or not a row expands. */
   & > li:not(:has(> button)) {
+    display: var(--display-flex);
+    align-items: var(--align-center);
+    min-block-size: var(--size-target-min);
     padding-inline-start: var(--spacing-tree-leaf-padding-inline-start);
   }
 
