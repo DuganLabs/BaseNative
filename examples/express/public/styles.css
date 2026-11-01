@@ -296,11 +296,12 @@
     --spacing-hero-caption-gap: var(--spacing-4);
   }
 
-  /* Desktop: copy left, demo right, the copy centred on the demo. */
+  /* Desktop: copy left, demo right, the copy centred on the demo. The
+     copy reads eyebrow, title, lede, install command, then actions. */
   @media (min-width: 64rem) {
     main > figure[variant='stacked']:has([data-bn-hero-demo]) > figcaption {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-      grid-template-rows: 1fr repeat(4, auto) 1fr;
+      grid-template-rows: 1fr repeat(5, auto) 1fr;
       column-gap: var(--spacing-8);
 
       & > :not([data-bn-hero-demo]) {
@@ -315,8 +316,11 @@
       & > :is(h1, h2) + p {
         grid-row: 4;
       }
-      & > nav {
+      & > figure[variant='code'] {
         grid-row: 5;
+      }
+      & > nav {
+        grid-row: 6;
       }
       & > [data-bn-hero-demo] {
         grid-column: 2;
@@ -3690,73 +3694,71 @@
 
   /* The verdict's shape: a check or a caution triangle drawn in the
      verdict's ink, set on the first line of the cell's text. */
-  /* One element per source line (highlight.js codeLines). On a phone
-     a code line wraps, and its continuation hangs two columns past the
-     line's own indent rather than restarting at column 0, so wrapped
-     code still reads as its structure. Wider screens keep long lines
-     on one row; the line element is then an ordinary block row. */
+  /* One element per source line (highlight.js codeLines). A long
+     code line wraps at every width, and its continuation hangs two
+     columns past the line's own indent rather than restarting at
+     column 0, so wrapped code still reads as its structure. */
   [data-code-line] {
     display: block;
   }
   [data-code-lead] {
     white-space: pre;
   }
-  @media (max-width: 47.9375rem) {
-    [data-code-line] {
-      --site-code-indent: 0ch;
-      --site-code-hang: calc(var(--site-code-indent) + 2ch);
-      padding-inline-start: var(--site-code-hang);
-      text-indent: calc(-1 * var(--site-code-hang));
-      &[data-code-indent='1'] {
-        --site-code-indent: 1ch;
-      }
-      &[data-code-indent='2'] {
-        --site-code-indent: 2ch;
-      }
-      &[data-code-indent='3'] {
-        --site-code-indent: 3ch;
-      }
-      &[data-code-indent='4'] {
-        --site-code-indent: 4ch;
-      }
-      &[data-code-indent='5'] {
-        --site-code-indent: 5ch;
-      }
-      &[data-code-indent='6'] {
-        --site-code-indent: 6ch;
-      }
-      &[data-code-indent='7'] {
-        --site-code-indent: 7ch;
-      }
-      &[data-code-indent='8'] {
-        --site-code-indent: 8ch;
-      }
-      &[data-code-indent='9'] {
-        --site-code-indent: 9ch;
-      }
-      &[data-code-indent='10'] {
-        --site-code-indent: 10ch;
-      }
-      &[data-code-indent='11'] {
-        --site-code-indent: 11ch;
-      }
-      &[data-code-indent='12'] {
-        --site-code-indent: 12ch;
-      }
-      &[data-code-indent='13'] {
-        --site-code-indent: 13ch;
-      }
-      &[data-code-indent='14'] {
-        --site-code-indent: 14ch;
-      }
-      &[data-code-indent='15'] {
-        --site-code-indent: 15ch;
-      }
-      &[data-code-indent='16'] {
-        --site-code-indent: 16ch;
-      }
+  [data-code-line] {
+    --site-code-indent: 0ch;
+    --site-code-hang: calc(var(--site-code-indent) + 2ch);
+    padding-inline-start: var(--site-code-hang);
+    text-indent: calc(-1 * var(--site-code-hang));
+    &[data-code-indent='1'] {
+      --site-code-indent: 1ch;
+    }
+    &[data-code-indent='2'] {
+      --site-code-indent: 2ch;
+    }
+    &[data-code-indent='3'] {
+      --site-code-indent: 3ch;
+    }
+    &[data-code-indent='4'] {
+      --site-code-indent: 4ch;
+    }
+    &[data-code-indent='5'] {
+      --site-code-indent: 5ch;
+    }
+    &[data-code-indent='6'] {
+      --site-code-indent: 6ch;
+    }
+    &[data-code-indent='7'] {
+      --site-code-indent: 7ch;
+    }
+    &[data-code-indent='8'] {
+      --site-code-indent: 8ch;
+    }
+    &[data-code-indent='9'] {
+      --site-code-indent: 9ch;
+    }
+    &[data-code-indent='10'] {
+      --site-code-indent: 10ch;
+    }
+    &[data-code-indent='11'] {
+      --site-code-indent: 11ch;
+    }
+    &[data-code-indent='12'] {
+      --site-code-indent: 12ch;
+    }
+    &[data-code-indent='13'] {
+      --site-code-indent: 13ch;
+    }
+    &[data-code-indent='14'] {
+      --site-code-indent: 14ch;
+    }
+    &[data-code-indent='15'] {
+      --site-code-indent: 15ch;
+    }
+    &[data-code-indent='16'] {
+      --site-code-indent: 16ch;
     }
   }
+
 
   [data-compare-marker] {
     display: inline-block;
@@ -4278,7 +4280,8 @@
   }
   /* Inside a pre, code and the highlighter's kbd (interpolations) are
        text runs, not inline-code chips or key caps: no box, no size
-       step, the syntax colour from the shared vocabulary. */
+       step, the syntax colour from the shared vocabulary, and they wrap
+       with the line like any other run. */
   pre code {
     color: inherit;
     background: none;
@@ -4294,6 +4297,7 @@
     border-radius: 0;
     box-shadow: none;
     color: var(--color-text-syntax-interpolation);
+    white-space: inherit;
   }
   p code,
   li code,
