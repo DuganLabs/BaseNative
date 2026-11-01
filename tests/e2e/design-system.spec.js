@@ -970,14 +970,16 @@ test.describe('design system gates', () => {
             // and 1280 — same noise, larger glyph — so the /components
             // budget grows to 128. Run 41253278441 (PR #347) differed by
             // 38–51 pixels on /playground at 768 and 1280 in both themes,
-            // editor glyph anti-aliasing; 320 matches exactly.
+            // editor glyph anti-aliasing; 320 matches exactly. Run 41279147211
+            // (PR #357) differed by 95 pixels on /playground light 1280 while
+            // the Playwright image matched locally, same noise, so 128.
             maxDiffPixels:
               path === '/components'
                 ? 128
                 : path === '/compare' && width >= 768
                   ? 250
                   : path === '/playground' && width >= 768
-                    ? 64
+                    ? 128
                     : 0,
           });
           expect(await overflow(page)).toEqual([]);
