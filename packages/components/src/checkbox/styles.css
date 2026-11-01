@@ -7,6 +7,8 @@ label:has(> input[variant="checkbox"]) {
   font-size: var(--font-checkbox-size);
   line-height: var(--font-checkbox-leading);
   cursor: var(--cursor-checkbox);
+  /* The 44px target is the label's, and the box keeps its own size. */
+  min-block-size: var(--size-checkbox-min-block);
 
   &:has(> input:disabled) {
     --color-text-checkbox: var(--color-text-label-3);

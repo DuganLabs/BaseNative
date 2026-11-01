@@ -23,6 +23,8 @@ fieldset[variant="default"] {
     font-size: var(--font-radio-option-size);
     line-height: var(--font-radio-option-leading);
     cursor: var(--cursor-radio-option);
+    /* The 44px target is the option row's, and the ring keeps its own size. */
+    min-block-size: var(--size-radio-option-min-block);
 
     & > input {
       inline-size: var(--size-radio-control);

@@ -125,6 +125,53 @@
     --popover-shadow: var(--shadow-float);
     --popover-radius: var(--radius-md);
 
+    /* Element tokens — restored. The site's bare-element rules (radio,
+       checkbox, range, meter, kbd, mark, dialog, tooltip, table, status
+       pills) read these names, but their definitions went in a
+       token-fold cleanup while the rules stayed: every one resolved to
+       nothing, so a bare radio drew no ring and no dot. Each now points
+       at the system token that owns its role. */
+    --danger: var(--color-danger-strong);
+    --success: var(--color-success-strong);
+    --status-active-bg: var(--color-bkg-success);
+    --status-idle-bg: var(--color-tint-fill);
+    --status-error-bg: var(--color-bkg-error);
+    --status-pending-bg: var(--color-fill);
+    --stat-value-size: var(--font-title-2-size);
+    --counter-output-size: var(--font-title-2-size);
+    --log-max-height: 12rem;
+    --log-entry-opacity: 1;
+    --track-height: 0.25rem;
+    --track-bg: var(--color-fill);
+    --track-fill: var(--color-tint);
+    --thumb-size: 1.75rem;
+    --meter-low: var(--color-danger);
+    --meter-mid: var(--color-warning);
+    --meter-high: var(--color-success);
+    --mark-bg: var(--color-tint-fill);
+    --mark-text: var(--color-text);
+    --kbd-bg: var(--color-surface-raised);
+    --kbd-border: var(--color-border);
+    --kbd-shadow: 0 1px 0 var(--color-border);
+    --blockquote-border: var(--color-tint);
+    --table-header-bg: var(--color-bkg-table-head);
+    --table-stripe: var(--color-bkg-table-row-striped);
+    --details-marker: var(--color-tint);
+    --dialog-bg: var(--color-bkg-dialog);
+    --dialog-border: var(--color-border-dialog);
+    --dialog-backdrop: var(--color-bkg-dialog-backdrop);
+    --dialog-shadow: var(--shadow-modal);
+    --tooltip-bg: var(--color-surface-inverse);
+    --tooltip-text: var(--color-text-inverse);
+    --tooltip-font-size: var(--font-footnote-size);
+    --select-bg: var(--color-bkg-select-native);
+    --select-option-hover: var(--color-fill);
+    --control-size: 1.375rem;
+    --control-bg: var(--color-surface-control);
+    --control-border: var(--color-border-control);
+    --control-checked-bg: var(--color-tint);
+    --control-checked-border: var(--color-tint);
+
     /* Status backgrounds */
 
     /* Highlight colours live on the code-block component. This sheet
@@ -637,8 +684,8 @@
     appearance: none;
     inline-size: var(--control-size);
     block-size: var(--control-size);
-    min-inline-size: 2.75rem;
-    min-block-size: 2.75rem;
+    min-inline-size: var(--control-size);
+    min-block-size: var(--control-size);
     background: var(--control-bg);
     border: var(--border-width) solid var(--control-border);
     border-radius: var(--radius-sm);
@@ -675,8 +722,8 @@
     appearance: none;
     inline-size: var(--control-size);
     block-size: var(--control-size);
-    min-inline-size: 2.75rem;
-    min-block-size: 2.75rem;
+    min-inline-size: var(--control-size);
+    min-block-size: var(--control-size);
     background: var(--control-bg);
     border: var(--border-width) solid var(--control-border);
     border-radius: 50%;
@@ -1061,6 +1108,8 @@
   label:not([data-bn]):not([variant]):has(input[type='radio']) {
     flex-direction: row;
     align-items: center;
+    /* The 44px target is the row's; the control keeps its own size. */
+    min-block-size: 2.75rem;
     gap: var(--space-sm);
     cursor: pointer;
     font-size: var(--font-size-base);

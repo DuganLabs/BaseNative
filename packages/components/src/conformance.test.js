@@ -340,3 +340,15 @@ describe('conformance — surfaces own their spacing (a 16px band under every pr
       assert.match(m[1], /fieldset:not\(\[variant\]\) > $/, `unscoped: ${m[1].trim()}`);
   });
 });
+
+describe('conformance — check controls keep their size; the row is the 44px target', () => {
+  const sheet = (name) => readFileSync(new URL(`./${name}/styles.css`, import.meta.url), 'utf8');
+  it('the checkbox label holds the touch minimum', () => {
+    assert.ok(px('size-checkbox-min-block') >= 44);
+    assert.match(sheet('checkbox'), /min-block-size:\s*var\(--size-checkbox-min-block\)/);
+  });
+  it('each radio option row holds the touch minimum', () => {
+    assert.ok(px('size-radio-option-min-block') >= 44);
+    assert.match(sheet('radio'), /min-block-size:\s*var\(--size-radio-option-min-block\)/);
+  });
+});
