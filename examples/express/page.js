@@ -398,7 +398,7 @@ export const siteRoutes = [
       eyebrow: 'Docs',
       title: 'API reference',
       ledeHtml:
-        '<p>BaseNative currently exposes a small runtime/server surface and an intentionally constrained expression model. The goal in `v0.x` is correctness and trust, not arbitrary template execution.</p>' +
+        '<p>BaseNative currently exposes a small runtime/server surface and an intentionally constrained expression model. The goal is correctness and trust, not arbitrary template execution.</p>' +
         `<p><code>@basenative/*</code> publishes to <strong>npmjs.org</strong>: the release pipeline publishes there directly, using OIDC trusted publishing — no registry tokens and no <code>.npmrc</code> redirect. A plain <code>npm install @basenative/runtime</code> gets the current release line (<code>${ctx.runtimeVersion}</code>). The <code>0.2.x</code>/<code>0.3.x</code> builds are the old pre-1.0 line, not stale mirrors of current releases.</p>`,
     }),
   },

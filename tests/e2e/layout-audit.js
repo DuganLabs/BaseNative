@@ -121,8 +121,17 @@ export function layoutAudit(opts = {}) {
       )
         continue;
       const gap = Math.round(b.getBoundingClientRect().top - a.getBoundingClientRect().bottom);
-      if (gap < SECTION - 1)
-        out.push({ rule: 'section', at: `${path(a)} → ${name(b)}`, px: gap, want: SECTION });
+      // The page header (main's leading stacked figure, title and lede)
+      // meets its content at the header gap, 32px or 40px beside the
+      // rail; header-gap.spec.js pins the exact value per page kind.
+      const want =
+        p === main && i === 1 && a.matches('figure[variant="stacked"]')
+          ? innerWidth >= 1024
+            ? 40
+            : 32
+          : SECTION;
+      if (gap < want - 1)
+        out.push({ rule: 'section', at: `${path(a)} → ${name(b)}`, px: gap, want });
     }
   }
   for (const p of main.querySelectorAll('section, article, aside, figure, form, details')) {

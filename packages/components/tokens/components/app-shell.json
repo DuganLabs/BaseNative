@@ -305,6 +305,42 @@
       }
     }
   },
+  "spacing-app-shell-header-gap": {
+    "$value": "{spacing-7}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "app-shell-header",
+          "variant": null,
+          "subitem": "gap",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-app-shell-header-gap-rail": {
+    "$value": "{spacing-8}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "app-shell-header",
+          "variant": null,
+          "subitem": "gap",
+          "state": null,
+          "context": "rail"
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "spacing-app-shell-stack-gap": {
     "$value": "{spacing-4}",
     "$type": "string",
