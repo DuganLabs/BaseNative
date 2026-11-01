@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { escapeAttr, escapeText, raw } from '@basenative/runtime/shared/escape';
 import { computeCompareStats } from '../../scripts/compare-stats.js';
 import { getCompareTables } from './compare-tables.js';
+import { renderHomeGallery } from './home-gallery.js';
 
 const siteDir = dirname(fileURLToPath(import.meta.url));
 
@@ -196,7 +197,6 @@ export const staticTasks = [
   { id: 4, title: 'Client hydration', status: 'pending' },
 ];
 
-
 export const HERO_DEMO_SOURCE = `<button @click="increment()">
   Clicked {{ count() }} times
 </button>
@@ -235,7 +235,7 @@ export function getHomePageContext() {
   const runtimeVersion = pkgVersion('runtime');
   const packages = stats().publicPackages;
   const catalogCount = trinityCatalog(trinityComponentInfo()).length;
-  const escapeTags = (text) => text.replace(/</g, "&lt;");
+  const escapeTags = (text) => text.replace(/</g, '&lt;');
   // The home lists are the catalog's list-group: each row is one
   // paragraph — the row's mark as a badge, its title, its detail — so
   // the item is a single child of the row, the shape the component's
@@ -253,8 +253,7 @@ export function getHomePageContext() {
   // button in the mount is the no-script render; hero-demo.js swaps in
   // the template copy and hydrates it with the real runtime.
   const codeBlock = (caption, code) => renderTrinity('code-block', { caption, code });
-  const liveButton = (label) =>
-    renderTrinity('button', { label, variant: 'primary' }).trim();
+  const liveButton = (label) => renderTrinity('button', { label, variant: 'primary' }).trim();
   const heroDemo =
     '<section aria-label="Live demo" data-bn-hero-demo>' +
     codeBlock('counter.html', HERO_DEMO_SOURCE) +
@@ -265,9 +264,14 @@ export function getHomePageContext() {
     liveButton('Clicked {{ count() }} times').replace('<button ', '<button @click="increment()" ') +
     '<small>Live — this page’s runtime</small></template>' +
     '</section>';
+  const gallery = renderHomeGallery();
   return {
     runtimeVersion,
     heroDemo,
+    // The bento of live components (home-gallery.js); its behaviours
+    // mount through the same specimen boot the component pages use.
+    gallery: raw(gallery.html),
+    liveSpecimens: gallery.liveSpecimens,
     // The install command, copyable, above the fold — the first thing a
     // visitor takes from the page.
     installBlock: renderTrinity('code-block', {
@@ -322,7 +326,8 @@ export function getHomePageContext() {
       },
       {
         title: '@basenative/server',
-        detail: 'render() turns the same templates into HTML, so pages are fast and crawlable before any script runs.',
+        detail:
+          'render() turns the same templates into HTML, so pages are fast and crawlable before any script runs.',
       },
       {
         title: '@basenative/validate',
@@ -331,7 +336,8 @@ export function getHomePageContext() {
       },
       {
         title: '@basenative/cli',
-        detail: 'bn create scaffolds a project; bn from-jsx rewrites a React or JSX draft into BaseNative.',
+        detail:
+          'bn create scaffolds a project; bn from-jsx rewrites a React or JSX draft into BaseNative.',
       },
       {
         title: 'Public packages',
