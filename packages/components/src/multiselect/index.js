@@ -76,6 +76,14 @@ export function create(props) {
     selected().some((item) => item.value === option.value) ? 'true' : 'false'
   );
   const isActive = (/** @type {MultiselectOption} */ option) => (option.value === activeValue() ? 'true' : 'false');
+  /* The row the keyboard or pointer is on, for the template's
+     active-row fill (variant="active"): present only while the popup shows it. */
+  const activeVariant = (/** @type {MultiselectOption} */ option) => (
+    expanded() && option.value === activeValue() ? 'active' : null
+  );
+  const activate = (/** @type {MultiselectOption} */ option) => {
+    activeValue.set(option.value);
+  };
   const toggle = (/** @type {MultiselectOption & { dismissHtml: string }} */ option) => {
     const current = selected();
     const next = current.some((item) => item.value === option.value)
@@ -91,7 +99,7 @@ export function create(props) {
   const addValue = (/** @type {string} */ value) => {
     const option = options().find((item) => item.value === value);
     if (!option || selected().some((item) => item.value === value)) return false;
-    selected.set([...selected(), { value: option.value, label: option.label, dismissHtml: '' }]);
+    selected.set([...selected(), { value: option.value, label: option.label, dismissHtml: /** @type {{ dismissHtml?: string }} */ (option).dismissHtml ?? '' }]);
     return true;
   };
   const removeValue = (/** @type {string} */ value) => {
@@ -208,7 +216,7 @@ export function create(props) {
 
   return {
     label, inputHtml, options, query, visibleOptions, selected, open, expanded, activeValue, activeOption, activeDescendant,
-    variant, listboxId, optionId, hasSelected, isSelected, isActive, toggle,
+    variant, listboxId, optionId, hasSelected, isSelected, isActive, activeVariant, activate, toggle,
     addValue, removeValue, removeLast, moveActive, onKeydown, onInput, onFocus, onChipsClick, raw,
   };
 }

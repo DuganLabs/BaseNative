@@ -11,7 +11,7 @@
     <template @if="expanded()">
       <ul role="listbox" aria-multiselectable="true" :id="listboxId()" :aria-label="label()">
         <template @for="option of visibleOptions()">
-          <li role="option" :id="optionId(option)" :aria-selected="isSelected(option)" @click="toggle(option)">{{ option.label }}</li>
+          <li role="option" :id="optionId(option)" :aria-selected="isSelected(option)" :variant="activeVariant(option)" @pointerenter="activate(option)" @click="toggle(option)">{{ option.label }}<svg aria-hidden="true" viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></li>
         </template>
       </ul>
     </template>

@@ -37,6 +37,9 @@ export function create(props) {
   const label = signal(props.label ?? '');
   const variant = signal(props.variant ?? 'select');
   const disabled = signal(props.disabled ?? false);
+  /* The option the keyboard or pointer is on while the list is open,
+     distinct from the chosen value. */
+  const activeValue = signal(open() ? value() : '');
 
   function isNative() {
     return variant() === 'native';
@@ -73,12 +76,66 @@ export function create(props) {
     return open() ? 'true' : 'false';
   }
 
+  /** Opening lands the active option on the chosen one.
+      @param {boolean} next */
+  function setOpen(next) {
+    if (next) activeValue.set(value());
+    open.set(next);
+  }
+
   function toggle() {
-    open.set(!open());
+    setOpen(!open());
   }
 
   function close() {
-    open.set(false);
+    setOpen(false);
+  }
+
+  /** @param {SelectOption} option */
+  function isActive(option) {
+    return open() && option.value === activeValue();
+  }
+
+  /** @param {SelectOption} option */
+  function activeVariant(option) {
+    return isActive(option) ? 'active' : null;
+  }
+
+  function activeDescendant() {
+    if (!open()) return null;
+    const active = options().find((option) => option.value === activeValue());
+    return active && optionId(active) !== '' ? optionId(active) : null;
+  }
+
+  /** @param {SelectOption} option */
+  function activate(option) {
+    activeValue.set(option.value);
+  }
+
+  /** @param {number} index */
+  function activateIndex(index) {
+    const list = options();
+    activeValue.set(list[Math.max(0, Math.min(list.length - 1, index))].value);
+  }
+
+  function activeIndex() {
+    return options().findIndex((option) => option.value === activeValue());
+  }
+
+  /** Type-ahead: the next option (after the active one, wrapping)
+      whose label starts with the typed character.
+      @param {string} char */
+  function typeAhead(char) {
+    const list = options();
+    const start = activeIndex();
+    for (let step = 1; step <= list.length; step += 1) {
+      const option = list[(start + step) % list.length];
+      if (option.label.toLowerCase().startsWith(char.toLowerCase())) {
+        activeValue.set(option.value);
+        return true;
+      }
+    }
+    return false;
   }
 
   /** @param {SelectOption} option */
@@ -101,17 +158,56 @@ export function create(props) {
       return;
     }
     /* The APG listbox button: an arrow key on the closed trigger
-       opens the popup (Enter and Space already reach toggle()
-       through the button's native click). */
-    if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && !open()) {
-      event.preventDefault?.();
-      open.set(true);
+       opens the popup on the chosen option (Enter and Space reach
+       toggle() through the button's native click). */
+    if (!open()) {
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        event.preventDefault?.();
+        setOpen(true);
+      }
+      return;
+    }
+    /* Open: the arrows, Home and End move the active option, a
+       printable character jumps to the next label it starts, and
+       Enter or Space chooses — default prevented, so the trigger's
+       own click does not reopen the popover. Tab closes and moves on. */
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault?.();
+        activateIndex(activeIndex() + 1);
+        return;
+      case 'ArrowUp':
+        event.preventDefault?.();
+        activateIndex(activeIndex() - 1);
+        return;
+      case 'Home':
+        event.preventDefault?.();
+        activateIndex(0);
+        return;
+      case 'End':
+        event.preventDefault?.();
+        activateIndex(options().length - 1);
+        return;
+      case 'Enter':
+      case ' ': {
+        event.preventDefault?.();
+        const active = options().find((option) => option.value === activeValue());
+        if (active) choose(active);
+        else close();
+        return;
+      }
+      case 'Tab':
+        close();
+        return;
+      default:
+        if (event.key.length === 1 && typeAhead(event.key)) event.preventDefault?.();
     }
   }
 
   return {
     options, value, open, controlId, fieldName, label, variant, disabled,
-    isNative, isPopover, isSelected, selectedAttr, selectedLabel,
+    activeValue, isNative, isPopover, isSelected, selectedAttr, selectedLabel,
+    isActive, activeVariant, activeDescendant, activate,
     listboxId, optionId, expandedAttr, toggle, close, choose, chooseNative, keydown,
   };
 }

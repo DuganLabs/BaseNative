@@ -1511,24 +1511,6 @@
       }
     }
   },
-  "color-bkg-select-option-selected": {
-    "$value": "{color-fill-2}",
-    "$type": "color",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "color",
-          "type": "bkg",
-          "item": "select-option",
-          "variant": null,
-          "subitem": null,
-          "state": "selected",
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
   "motion-select-duration": {
     "$value": "{motion-fade-duration}",
     "$type": "string",
@@ -1559,6 +1541,204 @@
           "variant": null,
           "subitem": "curve",
           "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "display-select-option": {
+    "$value": "{display-flex}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "display",
+          "type": null,
+          "item": "select-option",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "align-select-option": {
+    "$value": "{align-center}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "align",
+          "type": null,
+          "item": "select-option",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "justify-select-option": {
+    "$value": "{justify-space-between}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "justify",
+          "type": null,
+          "item": "select-option",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-select-option-gap": {
+    "$value": "{spacing-3}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "select-option",
+          "variant": null,
+          "subitem": "gap",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-select-option-min-block-coarse": {
+    "$value": "{size-target-min}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "select-option",
+          "variant": null,
+          "subitem": "min-block",
+          "state": null,
+          "context": "coarse"
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-bkg-select-option-active": {
+    "$value": "{color-fill-2}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "select-option",
+          "variant": null,
+          "subitem": null,
+          "state": "active",
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-select-option-check": {
+    "$value": "{size-select-chevron-inline}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "select-option",
+          "variant": null,
+          "subitem": "check",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "flex-select-option-check": {
+    "$value": "{flex-none}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "flex",
+          "type": null,
+          "item": "select-option",
+          "variant": null,
+          "subitem": "check",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-select-option-check": {
+    "$value": "{color-tint-strong}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "select-option",
+          "variant": null,
+          "subitem": "check",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "visibility-select-option-check": {
+    "$value": "{visibility-hidden}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "visibility",
+          "type": null,
+          "item": "select-option",
+          "variant": null,
+          "subitem": "check",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "visibility-select-option-check-selected": {
+    "$value": "{visibility-visible}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "visibility",
+          "type": null,
+          "item": "select-option",
+          "variant": null,
+          "subitem": "check",
+          "state": "selected",
           "context": null
         },
         "system": "trinity"

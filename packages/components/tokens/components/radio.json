@@ -18,7 +18,7 @@
     }
   },
   "spacing-radio-gap": {
-    "$value": "{spacing-2}",
+    "$value": "{spacing-0}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
@@ -406,6 +406,24 @@
           "item": "radio-control",
           "variant": null,
           "subitem": "margin",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-radio-legend-padding-inline": {
+    "$value": "{spacing-0}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "radio-legend",
+          "variant": null,
+          "subitem": "padding-inline",
           "state": null,
           "context": null
         },

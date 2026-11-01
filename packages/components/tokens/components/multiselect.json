@@ -126,7 +126,7 @@
     }
   },
   "spacing-multiselect-selected-gap": {
-    "$value": "{spacing-1}",
+    "$value": "{spacing-3}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
@@ -288,7 +288,7 @@
     }
   },
   "spacing-multiselect-chip-padding-inline-end": {
-    "$value": "{spacing-1}",
+    "$value": "{spacing-0}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
@@ -899,17 +899,17 @@
       }
     }
   },
-  "size-radius-multiselect-option-tiled": {
-    "$value": "{size-radius-none}",
-    "$type": "dimension",
+  "display-multiselect-search-cancel": {
+    "$value": "{display-none}",
+    "$type": "string",
     "$extensions": {
       "com.basenative": {
         "taxonomy": {
-          "category": "size",
+          "category": "display",
           "type": null,
-          "item": "radius",
-          "variant": "multiselect-option",
-          "subitem": "tiled",
+          "item": "multiselect",
+          "variant": null,
+          "subitem": "search-cancel",
           "state": null,
           "context": null
         },
@@ -917,7 +917,403 @@
       }
     }
   },
-  "color-bkg-multiselect-option-selected": {
+  "position-multiselect-chip-remove": {
+    "$value": "{position-relative}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "position",
+          "type": null,
+          "item": "multiselect-chip",
+          "variant": null,
+          "subitem": "remove",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-multiselect-chip-remove": {
+    "$value": "{size-target-min}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "multiselect-chip",
+          "variant": null,
+          "subitem": "remove",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-multiselect-chip-remove-padding": {
+    "$value": "{spacing-0}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "multiselect-chip",
+          "variant": null,
+          "subitem": "remove-padding",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-multiselect-chip-remove-margin-block": {
+    "$value": "calc(var(--spacing-2) * -1)",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "multiselect-chip",
+          "variant": null,
+          "subitem": "remove-margin-block",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-multiselect-chip-remove-margin-inline-start": {
+    "$value": "calc(var(--spacing-3) * -1)",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "multiselect-chip",
+          "variant": null,
+          "subitem": "remove-margin-inline-start",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-multiselect-chip-remove-margin-inline-end": {
+    "$value": "calc(var(--spacing-2) * -1)",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "multiselect-chip",
+          "variant": null,
+          "subitem": "remove-margin-inline-end",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-multiselect-chip-remove-size": {
+    "$value": "0",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font",
+          "type": null,
+          "item": "multiselect-chip",
+          "variant": null,
+          "subitem": "remove-size",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "content-multiselect-chip-remove-bar": {
+    "$value": "\"\"",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "content",
+          "type": null,
+          "item": "multiselect-chip",
+          "variant": null,
+          "subitem": "remove-bar",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "position-multiselect-chip-remove-bar": {
+    "$value": "{position-absolute}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "position",
+          "type": null,
+          "item": "multiselect-chip",
+          "variant": null,
+          "subitem": "remove-bar",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "inset-multiselect-chip-remove-bar": {
+    "$value": "{spacing-0}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "inset",
+          "type": null,
+          "item": "multiselect-chip",
+          "variant": null,
+          "subitem": "remove-bar",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-multiselect-chip-remove-bar-margin": {
+    "$value": "auto",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "multiselect-chip",
+          "variant": null,
+          "subitem": "remove-bar-margin",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-multiselect-chip-remove-bar-inline": {
+    "$value": "{spacing-3}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "multiselect-chip",
+          "variant": null,
+          "subitem": "remove-bar-inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-multiselect-chip-remove-bar-block": {
+    "$value": "0.09375rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "multiselect-chip",
+          "variant": null,
+          "subitem": "remove-bar-block",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-radius-multiselect-chip-remove-bar": {
+    "$value": "{size-radius-pill}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": null,
+          "subitem": "multiselect-chip-remove-bar",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-bkg-multiselect-chip-remove-bar": {
+    "$value": "currentColor",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "multiselect-chip",
+          "variant": null,
+          "subitem": "remove-bar",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "transform-multiselect-chip-remove-bar-start": {
+    "$value": "rotate(45deg)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "transform",
+          "type": null,
+          "item": "multiselect-chip",
+          "variant": null,
+          "subitem": "remove-bar-start",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "transform-multiselect-chip-remove-bar-end": {
+    "$value": "rotate(-45deg)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "transform",
+          "type": null,
+          "item": "multiselect-chip",
+          "variant": null,
+          "subitem": "remove-bar-end",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "display-multiselect-option": {
+    "$value": "{display-flex}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "display",
+          "type": null,
+          "item": "multiselect-option",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "align-multiselect-option": {
+    "$value": "{align-center}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "align",
+          "type": null,
+          "item": "multiselect-option",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "justify-multiselect-option": {
+    "$value": "{justify-space-between}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "justify",
+          "type": null,
+          "item": "multiselect-option",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-multiselect-option-gap": {
+    "$value": "{spacing-3}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "multiselect-option",
+          "variant": null,
+          "subitem": "gap",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-multiselect-option-min-block-coarse": {
+    "$value": "{size-target-min}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "multiselect-option",
+          "variant": null,
+          "subitem": "min-block",
+          "state": null,
+          "context": "coarse"
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-bkg-multiselect-option-active": {
     "$value": "{color-fill-2}",
     "$type": "color",
     "$extensions": {
@@ -928,6 +1324,96 @@
           "item": "multiselect-option",
           "variant": null,
           "subitem": null,
+          "state": "active",
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-multiselect-option-check": {
+    "$value": "{spacing-5}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "multiselect-option",
+          "variant": null,
+          "subitem": "check",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "flex-multiselect-option-check": {
+    "$value": "{flex-none}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "flex",
+          "type": null,
+          "item": "multiselect-option",
+          "variant": null,
+          "subitem": "check",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-multiselect-option-check": {
+    "$value": "{color-tint-strong}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "multiselect-option",
+          "variant": null,
+          "subitem": "check",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "visibility-multiselect-option-check": {
+    "$value": "{visibility-hidden}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "visibility",
+          "type": null,
+          "item": "multiselect-option",
+          "variant": null,
+          "subitem": "check",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "visibility-multiselect-option-check-selected": {
+    "$value": "{visibility-visible}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "visibility",
+          "type": null,
+          "item": "multiselect-option",
+          "variant": null,
+          "subitem": "check",
           "state": "selected",
           "context": null
         },

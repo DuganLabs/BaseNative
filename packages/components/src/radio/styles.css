@@ -12,6 +12,9 @@ fieldset[variant="default"] {
     font-weight: var(--font-radio-legend-weight);
     line-height: var(--font-radio-legend-leading);
     margin-block-end: var(--spacing-radio-legend-margin-block-end);
+    /* The legend's text starts on the options' edge, so the UA's legend
+       padding (or any host rule) must not indent it. */
+    padding-inline: var(--spacing-radio-legend-padding-inline);
   }
 
   & > label {

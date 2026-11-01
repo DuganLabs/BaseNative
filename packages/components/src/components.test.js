@@ -617,6 +617,88 @@ describe('specimen behaviors — the patterns that moved in from the site boot',
     assert.equal(vm.open(), false, 'keys other than the arrows do not open');
   });
 
+  it('select: open, the arrows, Home and End move the active option; Enter chooses it and closes', () => {
+    const chosen = [];
+    const vm = createSelect({
+      id: 'sel',
+      options: comboOptions(),
+      value: 'la',
+      onChoose: (value) => chosen.push(value),
+    });
+    assert.equal(vm.activeDescendant(), null, 'no active descendant while closed');
+    vm.keydown(keyEvent('ArrowDown'));
+    assert.equal(vm.activeDescendant(), 'sel-option-la', 'opens on the chosen option');
+    vm.keydown(keyEvent('ArrowDown'));
+    assert.equal(vm.activeDescendant(), 'sel-option-riverside');
+    vm.keydown(keyEvent('ArrowDown'));
+    assert.equal(vm.activeDescendant(), 'sel-option-riverside', 'clamps at the end');
+    vm.keydown(keyEvent('Home'));
+    assert.equal(vm.activeDescendant(), 'sel-option-orange');
+    vm.keydown(keyEvent('End'));
+    assert.equal(vm.activeDescendant(), 'sel-option-riverside');
+    assert.deepEqual(
+      vm.options().map((o) => vm.activeVariant(o)),
+      [null, null, 'active'],
+      'only the active option carries the active variant',
+    );
+    let prevented = false;
+    vm.keydown({ key: 'Enter', preventDefault: () => (prevented = true) });
+    assert.equal(prevented, true, 'Enter is consumed so the trigger click does not reopen');
+    assert.equal(vm.value(), 'riverside');
+    assert.equal(vm.open(), false);
+    assert.deepEqual(chosen, ['riverside']);
+  });
+
+  it('select: Space chooses, a printable key jumps by label, Tab closes without choosing', () => {
+    const vm = createSelect({ id: 'sel', options: comboOptions(), value: 'orange' });
+    vm.keydown(keyEvent('ArrowDown'));
+    vm.keydown(keyEvent('r'));
+    assert.equal(vm.activeDescendant(), 'sel-option-riverside');
+    vm.keydown(keyEvent('L'));
+    assert.equal(vm.activeDescendant(), 'sel-option-la', 'type-ahead is case-insensitive');
+    vm.keydown(keyEvent(' '));
+    assert.equal(vm.value(), 'la');
+    assert.equal(vm.open(), false);
+    vm.keydown(keyEvent('ArrowUp'));
+    vm.keydown(keyEvent('Home'));
+    vm.keydown(keyEvent('Tab'));
+    assert.equal(vm.open(), false);
+    assert.equal(vm.value(), 'la', 'Tab does not commit the active option');
+  });
+
+  it('multiselect: only an open list shows an active option; a toggled chip keeps its option dismiss control', () => {
+    const vm = createMultiselect({
+      id: 'ms',
+      inputHtml: '<input>',
+      options: [
+        { value: 'ev', label: 'EV charging', dismissHtml: '<button>Remove EV charging</button>' },
+        {
+          value: 'panel',
+          label: 'Panel upgrade',
+          dismissHtml: '<button>Remove Panel upgrade</button>',
+        },
+      ],
+    });
+    vm.activate(vm.options()[1]);
+    assert.deepEqual(
+      vm.options().map((o) => vm.activeVariant(o)),
+      [null, null],
+      'closed: no active row',
+    );
+    vm.open.set(true);
+    assert.deepEqual(
+      vm.options().map((o) => vm.activeVariant(o)),
+      [null, 'active'],
+    );
+    vm.toggle(vm.options()[1]);
+    vm.addValue('ev');
+    assert.deepEqual(
+      vm.selected().map((item) => item.dismissHtml),
+      ['<button>Remove Panel upgrade</button>', '<button>Remove EV charging</button>'],
+      'each chip carries a dismiss control named for its own option',
+    );
+  });
+
   it('dialog behavior: the header close control dismisses, a footer action does not; Escape closes an open dialog', () => {
     const dialog = {
       open: true,
