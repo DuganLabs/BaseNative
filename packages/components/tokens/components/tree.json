@@ -376,5 +376,149 @@
         "system": "trinity"
       }
     }
+  },
+  "display-tree-branch": {
+    "$value": "grid",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "display",
+          "type": null,
+          "item": "tree-branch",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "grid-template-tree-branch-columns": {
+    "$value": "var(--size-tree-chevron) minmax(0, 1fr)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "grid-template",
+          "type": null,
+          "item": "tree-branch",
+          "variant": null,
+          "subitem": "columns",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-tree-branch-column-gap": {
+    "$value": "{spacing-1}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "tree-branch",
+          "variant": null,
+          "subitem": "column-gap",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "align-tree-branch": {
+    "$value": "{align-center}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "align",
+          "type": null,
+          "item": "tree-branch",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "grid-column-tree-group": {
+    "$value": "1 / -1",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "grid-column",
+          "type": null,
+          "item": "tree-group",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-tree-chevron": {
+    "$value": "{spacing-4}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "tree-chevron",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-tree-chevron": {
+    "$value": "{color-text-label-3}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "tree-chevron",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "transform-tree-chevron-expanded": {
+    "$value": "rotate(90deg)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "transform",
+          "type": null,
+          "item": "tree-chevron",
+          "variant": null,
+          "subitem": null,
+          "state": "expanded",
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
   }
 }

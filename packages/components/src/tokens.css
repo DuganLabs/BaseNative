@@ -341,6 +341,10 @@
   --spacing-toolbar-menu-inset-block-start: calc(var(--size-control) + var(--spacing-3));
   --spacing-tooltip-note-inset-block-end: calc(var(--size-full) + var(--spacing-1));
   --transition-property-tooltip-note: opacity, visibility;
+  --display-tree-branch: grid;
+  --grid-template-tree-branch-columns: var(--size-tree-chevron) minmax(0, 1fr);
+  --grid-column-tree-group: 1 / -1;
+  --transform-tree-chevron-expanded: rotate(90deg);
   --color-danger: var(--palette-system-red);
   --color-success: var(--palette-system-green);
   --color-warning: var(--palette-system-orange);
@@ -1747,6 +1751,10 @@
   --spacing-tree-leaf-padding-inline-start: var(--spacing-2);
   --size-radius-tree-item: var(--size-radius-md);
   --color-bkg-tree-item-hover: var(--color-fill-4);
+  --spacing-tree-branch-column-gap: var(--spacing-1);
+  --align-tree-branch: var(--align-center);
+  --size-tree-chevron: var(--spacing-4);
+  --color-text-tree-chevron: var(--color-text-label-3);
   --display-virtualizer: var(--display-block);
   --list-style-virtualizer: var(--list-style-none);
   --spacing-virtualizer-margin: var(--spacing-0);

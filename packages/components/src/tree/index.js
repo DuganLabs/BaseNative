@@ -160,9 +160,12 @@ export function create(props) {
     const model = modelFromEvent(event);
     if (!model || !item) return;
     /* The branch's toggle button is the branch's own control — it
-       replaces the label in the render — so a click on it toggles
-       the branch; a click anywhere else on the item selects it. */
-    if ((event.target)?.closest?.('button')) {
+       replaces the label in the render — so a click on it, or on the
+       branch's disclosure chevron, toggles the branch; a click
+       anywhere else on the item selects it. */
+    const target = /** @type {Element | null} */ (event.target);
+    const chevron = target?.closest?.('svg');
+    if (target?.closest?.('button') || (chevron && chevron.parentElement === item)) {
       if (model.childrenHtml) {
         const index = [...item.parentElement.children].indexOf(item);
         toggle(model);
