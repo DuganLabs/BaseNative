@@ -11,28 +11,7 @@
 </section>
 
 <section>
-  <h2>A counter</h2>
-  <pre
-    tabindex="0"
-    aria-label="Code example: a reactive counter"
-  ><code>&lt;button @click="increment()"&gt;
-Clicked &#123;&#123; count() &#125;&#125; times
-&lt;/button&gt;
-
-&lt;script type="module"&gt;
-import { signal, computed, effect, hydrate } from '@basenative/runtime';
-
-const count = signal(0);
-const doubled = computed(() =&gt; count() * 2);
-
-effect(() =&gt; {
-  document.title = String(doubled());
-});
-
-function increment() {
-  count.set(count() + 1);
-}
-
-hydrate(document.body, { count, increment });
-&lt;/script&gt;</code></pre>
+  <h2>Start in 30 seconds</h2>
+  <p>Install the runtime, write HTML, hydrate it. No bundler, no compiler.</p>
+  {{ startBlocks }}
 </section>

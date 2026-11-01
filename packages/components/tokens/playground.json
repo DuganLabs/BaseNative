@@ -234,7 +234,7 @@
     }
   },
   "color-text-syntax-comment": {
-    "$value": "#7a8288",
+    "$value": "#5f666d",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -252,7 +252,7 @@
     }
   },
   "color-text-syntax-tag": {
-    "$value": "#0d7a3e",
+    "$value": "#0b7038",
     "$type": "color",
     "$extensions": {
       "com.basenative": {

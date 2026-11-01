@@ -1872,7 +1872,7 @@
     }
   },
   "color-text-syntax-comment": {
-    "$value": "#6d767f",
+    "$value": "#98a1a9",
     "$type": "color",
     "$extensions": {
       "com.basenative": {

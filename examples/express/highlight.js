@@ -32,7 +32,7 @@
  * every block is preserved byte for byte, so copy-code and text-based
  * checks see the same code as before.
  */
-import { hlCSS, hlHTML, hlJS } from './public/highlight-engine.js';
+import { hlCSS, hlHTML, hlJS, hlShell } from './public/highlight-engine.js';
 
 const NAMED_ENTITIES = { lt: '<', gt: '>', amp: '&', quot: '"', apos: "'" };
 
@@ -65,7 +65,8 @@ export function escapeText(text) {
  * literal) keeps the JS scanner.
  */
 export function looksLikeCss(code) {
-  if (/(^|\n)\s*(import\s|export\s|const\s|let\s|var\s|function\s|class\s)/.test(code)) return false;
+  if (/(^|\n)\s*(import\s|export\s|const\s|let\s|var\s|function\s|class\s)/.test(code))
+    return false;
   if (/(^|[\n{;])\s*--[\w-]+\s*:/.test(code)) return true;
   if (/(^|\n)\s*@(media|supports|keyframes|font-face|import|layer)\b/.test(code)) return true;
   return /(^|\n)\s*[.#:&*\w][^{}=();]*\{[^{]*[-\w]+\s*:/.test(code);
@@ -77,10 +78,50 @@ export function looksLikeCss(code) {
  * tag or a closing tag, everything else JS — the three languages of
  * the shared engine.
  */
-export function highlightCode(code) {
-  if (looksLikeCss(code)) return hlCSS(code);
+export function looksLikeShell(code) {
+  const lines = code.split('\n').filter((line) => line.trim());
+  if (!lines.length) return false;
+  const command =
+    /^\s*(\$\s+|#\s)?(npm|npx|pnpm|yarn|bun|bunx|bn|git|curl|cd|node|brew|mkdir|deno|wrangler|cp|mv|echo|export|docker|gh)\b/;
+  return (
+    lines.every((line) => command.test(line) || /^\s*#/.test(line) || /^\s+\S/.test(line)) &&
+    command.test(lines.find((line) => !/^\s*#/.test(line)) ?? '')
+  );
+}
+
+const LANGUAGES = {
+  html: hlHTML,
+  xml: hlHTML,
+  svg: hlHTML,
+  js: hlJS,
+  javascript: hlJS,
+  mjs: hlJS,
+  ts: hlJS,
+  typescript: hlJS,
+  jsx: hlJS,
+  tsx: hlJS,
+  json: hlJS,
+  css: hlCSS,
+  sh: hlShell,
+  bash: hlShell,
+  shell: hlShell,
+  zsh: hlShell,
+  console: hlShell,
+};
+
+export function highlightCode(code, lang) {
+  const declared = lang && LANGUAGES[String(lang).toLowerCase()];
+  if (declared) return declared(code);
+  if (looksLikeShell(code)) return hlShell(code);
   if (/^\s*</.test(code) || /<\/[a-zA-Z]/.test(code)) return hlHTML(code);
+  if (looksLikeCss(code)) return hlCSS(code);
   return hlJS(code);
+}
+
+/** The language a block declares: class="language-x" or data-lang="x" on <code> or <pre>. */
+function declaredLanguage(open) {
+  const m = open.match(/(?:class="[^"]*\blanguage-([\w-]+)|data-lang(?:uage)?="([\w-]+)")/);
+  return m ? m[1] || m[2] : null;
 }
 
 const CODE_BLOCK = /(<pre\b[^>]*>\s*<code\b[^>]*>)([\s\S]*?)(<\/code>\s*<\/pre>)/g;
@@ -93,6 +134,6 @@ const CODE_BLOCK = /(<pre\b[^>]*>\s*<code\b[^>]*>)([\s\S]*?)(<\/code>\s*<\/pre>)
 export function highlightCodeBlocks(html) {
   return html.replace(CODE_BLOCK, (whole, open, inner, close) => {
     if (inner.includes('<')) return whole;
-    return open + highlightCode(decodeEntities(inner)) + close;
+    return open + highlightCode(decodeEntities(inner), declaredLanguage(open)) + close;
   });
 }

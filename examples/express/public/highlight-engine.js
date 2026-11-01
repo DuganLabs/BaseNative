@@ -76,9 +76,17 @@ function hlTag(tok) {
   return out;
 }
 
+/* HTML, with the languages it embeds: a <script> body is JS and a
+   <style> body is CSS, highlighted by those scanners between the
+   element's own (HTML-highlighted) tags. Before this, everything
+   between tags was plain text, so a page sample's module script read
+   as monochrome while its markup was coloured. */
 function hlHTML(src) {
-  const re = /<![-]-[\s\S]*?-->|{{[\s\S]*?}}|<\/?[a-zA-Z][^>]*>/g;
+  const re =
+    /(<script\b[^>]*>)([\s\S]*?)(<\/script\s*>)|(<style\b[^>]*>)([\s\S]*?)(<\/style\s*>)|<![-]-[\s\S]*?-->|{{[\s\S]*?}}|<\/?[a-zA-Z][^>]*>/g;
   return highlightWith(re, src, (m) => {
+    if (m[1]) return hlTag(m[1]) + hlJS(m[2]) + hlTag(m[3]);
+    if (m[4]) return hlTag(m[4]) + hlCSS(m[5]) + hlTag(m[6]);
     const tok = m[0];
     if (tok.indexOf(COMMENT_OPEN) === 0) return span('tk-com', tok);
     if (tok.indexOf('{{') === 0) return span('tk-interp', tok);
@@ -88,7 +96,7 @@ function hlHTML(src) {
 
 function hlJS(src) {
   const re =
-    /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`)|\b(const|let|var|function|return|if|else|for|of|new|typeof|true|false|null|undefined|in|do)\b|\b(signal|computed|effect|batch|mount|hydrate|raw|registerDirective)\b|([A-Za-z_$][\w$]*)(?=\s*\()|\b(\d+(?:\.\d+)?)\b/g;
+    /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`)|\b(import|export|from|default|as|const|let|var|function|class|extends|return|if|else|for|while|switch|case|break|continue|try|catch|finally|throw|of|new|delete|typeof|instanceof|void|await|async|yield|this|super|static|true|false|null|undefined|in|do|interface|type|enum|implements|readonly|public|private|protected|keyof|declare|namespace|satisfies|string|number|boolean|unknown|any|never)\b|\b(signal|computed|effect|batch|mount|hydrate|raw|registerDirective)\b|([A-Za-z_$][\w$]*)(?=\s*\()|\b(\d+(?:\.\d+)?)\b/g;
   return highlightWith(re, src, (m) => {
     if (m[1]) return span('tk-com', m[1]);
     if (m[2]) return span('tk-str', m[2]);
@@ -194,6 +202,33 @@ function hlCSS(src) {
   });
 }
 
-const HIGHLIGHTERS = { html: hlHTML, js: hlJS, css: hlCSS };
+/* Shell: a command line. A # comment, the command word that starts a
+   line or follows a pipe/&&/;, flags, strings, $VARS and numbers. */
+function hlShell(src) {
+  return src
+    .split('\n')
+    .map((line) => {
+      if (/^\s*#/.test(line)) return span('tk-com', line);
+      const re =
+        /(\s#[^\n]*)|("(?:\\.|[^"\\])*"|'[^']*')|(\$\{?[A-Za-z_][\w]*\}?)|((?:^\s*\$\s+|^|&&|\|\||[|;])\s*)([A-Za-z_./@][\w./@:-]*)|(\s)(--?[A-Za-z][\w-]*)|\b(\d+(?:\.\d+)*)\b/g;
+      return highlightWith(re, line, (m) => {
+        if (m[1]) return span('tk-com', m[1]);
+        if (m[2]) return span('tk-str', m[2]);
+        if (m[3]) return span('tk-bind', m[3]);
+        if (m[5]) {
+          const lead = m[4].includes('$')
+            ? m[4].replace(/\$/, (d) => span('tk-com', d))
+            : escHtml(m[4]);
+          return lead + span('tk-fn', m[5]);
+        }
+        if (m[7]) return escHtml(m[6]) + span('tk-attr', m[7]);
+        if (m[8]) return span('tk-num', m[8]);
+        return escHtml(m[0]);
+      });
+    })
+    .join('\n');
+}
 
-export { hlHTML, hlJS, hlCSS, HIGHLIGHTERS, segmentTokenName };
+const HIGHLIGHTERS = { html: hlHTML, js: hlJS, ts: hlJS, css: hlCSS, sh: hlShell };
+
+export { hlHTML, hlJS, hlCSS, hlShell, HIGHLIGHTERS, segmentTokenName };

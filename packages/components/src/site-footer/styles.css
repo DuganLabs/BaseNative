@@ -2,6 +2,7 @@ footer[variant='default'] {
   display: var(--display-site-footer);
   text-align: var(--text-align-site-footer);
   flex-wrap: var(--flex-wrap-site-footer);
+  align-items: var(--align-start);
   gap: var(--spacing-site-footer-gap);
   border-block-start-width: var(--size-border-site-footer-block-start);
   border-block-start-style: var(--border-style-site-footer-block-start);
@@ -11,6 +12,7 @@ footer[variant='default'] {
 
   & > nav {
     display: var(--display-site-footer-column);
+    align-content: var(--align-start);
     gap: var(--spacing-site-footer-column-gap);
 
     & > p {
@@ -25,12 +27,17 @@ footer[variant='default'] {
 
     & > ul {
       display: var(--display-site-footer-list);
+      align-content: var(--align-start);
       gap: var(--spacing-site-footer-list-gap);
       list-style: var(--list-style-site-footer-list);
       margin: var(--spacing-site-footer-list-margin);
       padding: var(--spacing-site-footer-list-padding);
 
+      /* Inline links ignore min-block-size; as inline-flex rows the
+         44px target is real and every column's rows share one rhythm. */
       & > li > a {
+        display: var(--display-inline-flex);
+        align-items: var(--align-center);
         min-block-size: var(--size-target-min);
         color: var(--color-text-site-footer-link);
         font-family: var(--font-site-footer-link-family);

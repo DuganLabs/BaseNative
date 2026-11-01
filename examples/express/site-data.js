@@ -196,6 +196,41 @@ export const staticTasks = [
   { id: 4, title: 'Client hydration', status: 'pending' },
 ];
 
+
+export const HERO_DEMO_SOURCE = `<button @click="increment()">
+  Clicked {{ count() }} times
+</button>
+
+<script type="module">
+  import { signal, hydrate } from '@basenative/runtime';
+
+  const count = signal(0);
+  const increment = () => count.set(count() + 1);
+
+  hydrate(document.body, { count, increment });
+</script>`;
+
+export const START_SOURCE = `<!doctype html>
+<p>{{ count() }} × 2 = {{ doubled() }}</p>
+<button @click="increment()">Add one</button>
+
+<script type="module">
+  import { signal, computed, effect, hydrate } from '@basenative/runtime';
+
+  const count = signal(0);
+  const doubled = computed(() => count() * 2);
+
+  // Effects re-run when a signal they read changes.
+  effect(() => {
+    document.title = \`Count: \${count()}\`;
+  });
+
+  function increment() {
+    count.set(count() + 1);
+  }
+
+  hydrate(document.body, { count, doubled, increment });
+</script>`;
 export function getHomePageContext() {
   const runtimeVersion = pkgVersion('runtime');
   const packages = stats().publicPackages;
@@ -212,8 +247,29 @@ export function getHomePageContext() {
         })),
       }),
     );
+  // The hero's live demo: the code it shows is the code that runs. The
+  // button in the mount is the no-script render; hero-demo.js swaps in
+  // the template copy and hydrates it with the real runtime.
+  const codeBlock = (caption, code) => renderTrinity('code-block', { caption, code });
+  const liveButton = (label) =>
+    renderTrinity('button', { label, variant: 'primary' }).trim();
+  const heroDemo =
+    '<section aria-label="Live demo" data-bn-hero-demo>' +
+    codeBlock('counter.html', HERO_DEMO_SOURCE) +
+    '<p data-bn-hero-demo-live aria-live="polite">' +
+    liveButton('Clicked 0 times') +
+    '<small>Live — this page’s runtime</small></p>' +
+    '<template data-bn-hero-demo-source>' +
+    liveButton('Clicked {{ count() }} times').replace('<button ', '<button @click="increment()" ') +
+    '<small>Live — this page’s runtime</small></template>' +
+    '</section>';
   return {
     runtimeVersion,
+    heroDemo,
+    startBlocks: raw(
+      codeBlock('Terminal', 'npm install @basenative/runtime') +
+        codeBlock('index.html', START_SOURCE),
+    ),
     runtimeList: listOf([
       {
         title: 'No build step.',

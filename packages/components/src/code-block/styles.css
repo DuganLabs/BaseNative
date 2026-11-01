@@ -26,8 +26,13 @@ figure[variant='code'] {
     border-block-end-color: var(--color-border-code-block-caption-block-end);
   }
 
+  /* The figure is the one surface: the pre paints nothing of its own,
+     so no page-level pre treatment can draw a second box inside it. */
   & > pre {
     margin: var(--spacing-code-block-pre-margin);
+    background-color: var(--color-bkg-code-block-pre);
+    border-width: var(--size-border-code-block-pre);
+    border-radius: var(--size-radius-code-block-pre);
     padding-block: var(--spacing-code-block-pre-padding-block);
     padding-inline: var(--spacing-code-block-pre-padding-inline);
     overflow: var(--overflow-code-block-pre);
@@ -39,6 +44,15 @@ figure[variant='code'] {
 
     & > code {
       font-family: var(--font-code-block-code-family);
+    }
+
+    /* A long line scrolls the pre, so it is a scrollable region and
+       takes keyboard focus; the ring sits inside the clipped card. */
+    &:focus-visible {
+      outline-width: var(--size-border-code-block-pre-outline-focus);
+      outline-style: var(--border-style-code-block-pre-outline-focus);
+      outline-color: var(--color-border-code-block-pre-outline-focus);
+      outline-offset: var(--spacing-code-block-pre-outline-offset-focus);
     }
   }
 }

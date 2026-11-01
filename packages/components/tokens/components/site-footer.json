@@ -540,7 +540,7 @@
     }
   },
   "spacing-site-footer-list-gap": {
-    "$value": "{spacing-2}",
+    "$value": "{spacing-0}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
