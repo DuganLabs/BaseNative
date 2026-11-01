@@ -434,6 +434,7 @@ test('tree nests a rendered child tree inside branch items', async () => {
     variant: 'ghost',
   }).html;
   const children = renderComponent(registry, render, 'tree', {
+    nested: true,
     items: [{ label: 'Panel upgrade' }, { label: 'EV charger' }],
   }).html;
   const { html } = renderComponent(registry, render, 'tree', {
@@ -451,7 +452,8 @@ test('tree nests a rendered child tree inside branch items', async () => {
     html,
     /<li role="treeitem" aria-selected="false" tabindex="-1">Settings<\/li>[\s\S]*Services\s*<ul/,
   );
-  assert.match(html, /<ul role="group">\s*<ul variant="tree" role="tree">/);
+  assert.match(html, /Services<\/button>\s*<ul variant="tree" role="group">\s*<li role="treeitem"/);
+  assert.doesNotMatch(html, /<ul role="group">/, 'no wrapper list around the child list');
   assert.match(html, /<li role="treeitem" aria-selected="false" tabindex="-1">Settings<\/li>/);
 });
 

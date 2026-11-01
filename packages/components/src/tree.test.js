@@ -26,19 +26,43 @@ function count(haystack, needle) {
 }
 
 describe('tree — rendered structure', () => {
-  it('renders branches with expansion state, hidden collapsed groups and roving tabindex', () => {
-    const leafKids = renderTree([{ label: 'Alpha One' }, { label: 'Alpha Two' }]);
+  it('renders branches with expansion state, nested groups and one roving tab stop', () => {
+    const leafKids = renderTree([{ label: 'Alpha One' }, { label: 'Alpha Two' }], { nested: true });
     const html = renderTree([
       { label: 'Alpha', expanded: true, childrenHtml: leafKids },
-      { label: 'Beta', expanded: false, childrenHtml: renderTree([{ label: 'Beta One' }]) },
+      { label: 'Beta', expanded: false, childrenHtml: renderTree([{ label: 'Beta One' }], { nested: true }) },
       { label: 'Gamma (leaf)' },
     ]);
-    assert.match(html, /<ul variant="tree" role="tree">/);
+    assert.equal(count(html, 'role="tree"'), 1, 'one tree; a nested list is a group, not a second tree');
+    assert.equal(count(html, '<ul variant="tree" role="group">'), 2, 'each branch has one group list');
+    assert.doesNotMatch(html, /<ul role="group">|<ul role="group" hidden>/, 'no wrapper list around a list');
+    assert.match(html, /Alpha\s*<ul variant="tree" role="group">\s*<li role="treeitem"/, 'the group sits straight in its treeitem');
     assert.equal(count(html, 'role="treeitem"'), 6, 'every composed item renders');
+    assert.equal(count(html, 'tabindex="0"'), 1, 'the whole tree is one tab stop');
     assert.match(html, /<li role="treeitem" aria-expanded="true" aria-selected="false" tabindex="0">/);
     assert.match(html, /<li role="treeitem" aria-expanded="false" aria-selected="false" tabindex="-1">/);
-    assert.match(html, /<ul role="group" hidden>/, 'the collapsed branch keeps its group, hidden');
     assert.match(html, /<li role="treeitem" aria-selected="false" tabindex="-1">Gamma \(leaf\)<\/li>/);
+  });
+
+  it('a collapsed branch hides its group through a token', async () => {
+    const { readFile } = await import('node:fs/promises');
+    const css = await readFile(new URL('./tree/styles.css', import.meta.url), 'utf8');
+    const tokens = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
+    assert.match(css, /& > li\[aria-expanded="false"\] > ul \{\s*display: var\(--display-tree-group-collapsed\);/);
+    assert.match(tokens, /--display-tree-group-collapsed: none;/);
+  });
+
+  it('focus entering a nested list takes the tab stop from the list above it', () => {
+    const root = createTree({ items: [{ label: 'Services', expanded: true, childrenHtml: '<ul></ul>' }, { label: 'Settings' }] });
+    const nested = createTree({ items: [{ label: 'Panel' }, { label: 'EV' }], nested: true });
+    assert.equal(nested.role(), 'group');
+    assert.equal(root.role(), 'tree');
+    assert.deepEqual(nested.items().map(nested.tabIndex), [-1, -1], 'a nested list starts with no stop');
+    assert.equal(root.tabIndex(root.items()[0]), 0);
+    const list = { querySelectorAll: () => [], contains: () => true };
+    const inner = { parentElement: {}, closest: () => inner };
+    root.onFocusin({ target: inner, currentTarget: list });
+    assert.deepEqual(root.items().map(root.tabIndex), [-1, -1], 'the root gives its stop up');
   });
 
   it('marks the selected item and escapes labels', () => {
@@ -142,9 +166,9 @@ describe('tree — view model behavior', () => {
 
 describe('tree — composition depth', () => {
   it('composes a 150-deep tree bottom-up with no recursion in the render path', () => {
-    let html = renderTree([{ label: 'Node 149' }]);
+    let html = renderTree([{ label: 'Node 149' }], { nested: true });
     for (let i = 148; i >= 0; i--) {
-      html = renderTree([{ label: `Node ${i}`, expanded: true, childrenHtml: html }]);
+      html = renderTree([{ label: `Node ${i}`, expanded: true, childrenHtml: html }], { nested: i > 0 });
     }
     assert.equal(count(html, 'role="treeitem"'), 150);
     assert.ok(html.includes('Node 149'));

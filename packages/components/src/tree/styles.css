@@ -66,6 +66,12 @@ ul[variant="tree"], ul[variant="treegrid"] {
     padding-inline-start: var(--spacing-tree-leaf-padding-inline-start);
   }
 
+  /* A branch's children are its nested list, the role group, straight
+     inside the treeitem; a collapsed branch hides it. */
+  & > li[aria-expanded="false"] > ul {
+    display: var(--display-tree-group-collapsed);
+  }
+
   & > li > ul {
     list-style: var(--list-style-tree-group);
     margin: var(--spacing-tree-group-margin);

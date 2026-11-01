@@ -12,8 +12,8 @@ export const root = 'ul';
  * branch's toggle is a caller-rendered button; the list's delegated
  * click routes a click on it to this model's `toggle` (a click
  * anywhere else on the item selects it). aria-expanded lives on the
- * treeitem and the children group hides while the branch is
- * collapsed.
+ * treeitem, and the child list (created `nested`, so it is the
+ * branch's role="group" itself) hides while the branch is collapsed.
  *
  * The WAI-ARIA APG tree keyboard pattern lives in the view model,
  * ported from the legacy initTree: a roving tabindex over the items
@@ -23,9 +23,11 @@ export const root = 'ul';
  * expanded branch's first child; ArrowLeft collapses an expanded
  * branch or moves to the parent item; Enter / Space select (unless
  * the key landed on the toggle button, whose native click toggles).
- * Focus crossing into a nested child tree syncs that tree's roving
- * through its focusin, so the whole composed tree keeps one tab stop
- * per list. `expand` / `collapse` / `select` reflect state silently.
+ * A nested child list is rendered HTML, so the root list answers for
+ * its items too: the same keys move through them, Enter / Space and a
+ * click select them, and the roving tabindex follows focus into them,
+ * so the whole composed tree keeps one tab stop. A nested list that is
+ * itself hydrated answers first (preventDefault) and the root stands by. `expand` / `collapse` / `select` reflect state silently.
  *
  * @typedef {object} TreeItem
  * @property {string} [id] Node identity (defaults to the label).
@@ -34,7 +36,8 @@ export const root = 'ul';
  * @property {string} [toggleHtml] The rendered expand/collapse button. It
  *   carries the branch's name — when present it replaces the label text,
  *   so the branch reads as one control, not a button plus a duplicate label.
- * @property {string} [childrenHtml] A rendered child tree (branch items only).
+ * @property {string} [childrenHtml] A rendered child tree (branch items only),
+ *   created with `nested: true` so its list is the branch's role="group".
  *
  * @typedef {object} TreeProps
  * @property {TreeItem[]} items
@@ -42,6 +45,9 @@ export const root = 'ul';
  * @property {(id: string, expanded: boolean) => void} [onToggle]
  * @property {(id: string) => void} [onSelect]
  * @property {string} [variant] A registered variant name.
+ * @property {boolean} [nested] This list is a branch's children: it renders
+ *   as the branch's role="group" (a list nested straight in its treeitem),
+ *   not as a second tree. A collapsed branch hides it.
  */
 
 /** @param {TreeProps} props */
@@ -50,12 +56,15 @@ export function create(props) {
 
   const items = signal(props.items);
   const variant = signal(props.variant ?? 'tree');
-  const role = computed(() => variant());
+  const role = computed(() => (props.nested ? 'group' : variant()));
 
   /** @param {TreeItem} item */
   const idOf = (item) => item.id ?? item.label;
   const selectedId = signal(props.selectedId ?? null);
-  const focusedId = signal(props.selectedId ?? (props.items[0] ? idOf(props.items[0]) : null));
+  /* One tab stop for the whole composed tree: the root list starts on
+     its first item, a nested list on none until focus enters it. */
+  const firstId = props.nested ? null : props.items[0] ? idOf(props.items[0]) : null;
+  const focusedId = signal(props.selectedId ?? firstId);
 
   /** @param {TreeItem} item */
   const expandedState = (item) => (item.expanded ? 'true' : 'false');
@@ -134,7 +143,85 @@ export function create(props) {
   /** @param {FocusEvent} event */
   function onFocusin(event) {
     const model = modelFromEvent(event);
-    if (model) focusedId.set(idOf(model));
+    const list = /** @type {Element | null} */ (event.currentTarget);
+    const nested = model ? null : innerItem(event);
+    if (!model && !nested) return;
+    /* The tree keeps one tab stop: the focused item. A nested list's
+       items are its rendered HTML, so their roving tabindex moves here. */
+    for (const other of list?.querySelectorAll?.('[role="group"] [role="treeitem"]') ?? []) {
+      other.setAttribute('tabindex', other === nested ? '0' : '-1');
+    }
+    focusedId.set(model ? idOf(model) : null);
+  }
+
+  /**
+   * A treeitem of a nested child list (rendered HTML inside one of this
+   * list's branches) that no nested handler has already answered.
+   * @param {Event} event
+   */
+  function innerItem(event) {
+    if (event.defaultPrevented) return null;
+    const item = (event.target)?.closest?.('[role="treeitem"]');
+    const list = /** @type {Element | null} */ (event.currentTarget);
+    if (!item || item.parentElement === list || !list?.contains?.(item)) return null;
+    return item;
+  }
+
+  /**
+   * Select a nested item: its list is rendered HTML, so selection moves
+   * on its attributes, and this list's own selection clears.
+   * @param {Element} item
+   * @param {Event} event
+   */
+  function selectInner(item, event) {
+    markInner(event, item);
+    selectedId.set(null);
+    focusedId.set(null);
+    props.onSelect?.(item.getAttribute('id') ?? item.textContent.trim());
+  }
+
+  /**
+   * Mark which nested item is selected (none when this list's own is).
+   * @param {Event} event
+   * @param {Element | null} item
+   */
+  function markInner(event, item) {
+    const list = /** @type {Element | null} */ (event.currentTarget);
+    for (const other of list?.querySelectorAll?.('[role="group"] [role="treeitem"]') ?? []) {
+      other.setAttribute('aria-selected', other === item ? 'true' : 'false');
+    }
+  }
+
+  /**
+   * The APG keys on a nested item, moved by the DOM.
+   * @param {KeyboardEvent} event
+   * @param {Element} item
+   */
+  function innerKeydown(event, item) {
+    const siblings = item.parentElement;
+    /** @type {Element | null} */
+    let focusEl = null;
+    switch (event.key) {
+      case 'ArrowDown': focusEl = item.nextElementSibling; break;
+      case 'ArrowUp': focusEl = item.previousElementSibling; break;
+      case 'Home': focusEl = siblings.firstElementChild; break;
+      case 'End': focusEl = siblings.lastElementChild; break;
+      case 'ArrowRight':
+        if (item.getAttribute('aria-expanded') === 'true') focusEl = item.querySelector('[role="group"] [role="treeitem"]');
+        break;
+      case 'ArrowLeft': focusEl = siblings.closest('[role="treeitem"]'); break;
+      case 'Enter':
+      case ' ':
+        if ((event.target)?.closest?.('button')) return;
+        event.preventDefault();
+        selectInner(item, event);
+        return;
+      default: return;
+    }
+    if (focusEl) {
+      event.preventDefault();
+      /** @type {HTMLElement} */ (focusEl).focus();
+    }
   }
 
   /**
@@ -158,7 +245,11 @@ export function create(props) {
   function onClick(event) {
     const item = ownItem(event);
     const model = modelFromEvent(event);
-    if (!model || !item) return;
+    if (!model || !item) {
+      const inner = innerItem(event);
+      if (inner && !(event.target)?.closest?.('button')) selectInner(inner, event);
+      return;
+    }
     /* The branch's toggle button is the branch's own control — it
        replaces the label in the render — so a click on it, or on the
        branch's disclosure chevron, toggles the branch; a click
@@ -173,13 +264,18 @@ export function create(props) {
       }
       return;
     }
+    markInner(event, null);
     select(model);
   }
 
   /** @param {KeyboardEvent} event */
   function onKeydown(event) {
     const item = ownItem(event);
-    if (!item) return;
+    if (!item) {
+      const inner = innerItem(event);
+      if (inner) innerKeydown(event, inner);
+      return;
+    }
     const list = items();
     const index = [...item.parentElement.children].indexOf(item);
     const model = list[index];
@@ -210,6 +306,7 @@ export function create(props) {
       case ' ':
         if ((event.target)?.closest?.('button')) return;
         event.preventDefault();
+        markInner(event, null);
         select(model);
         return;
       default: return;

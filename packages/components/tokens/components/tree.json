@@ -520,5 +520,23 @@
         "system": "trinity"
       }
     }
+  },
+  "display-tree-group-collapsed": {
+    "$value": "none",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "display",
+          "type": null,
+          "item": "tree-group",
+          "variant": null,
+          "subitem": null,
+          "state": "collapsed",
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
   }
 }

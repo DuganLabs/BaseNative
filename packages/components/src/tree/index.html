@@ -10,12 +10,7 @@
           <template @else>
             {{ item.label }}
           </template>
-          <template @if="item.expanded">
-            <ul role="group">{{ raw(item.childrenHtml) }}</ul>
-          </template>
-          <template @else>
-            <ul role="group" hidden>{{ raw(item.childrenHtml) }}</ul>
-          </template>
+          {{ raw(item.childrenHtml) }}
         </li>
       </template>
       <template @else>

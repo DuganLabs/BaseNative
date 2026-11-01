@@ -639,3 +639,47 @@ test.describe('Specimens — fieldset legends align with their options', () => {
     }
   }
 });
+
+test.describe('Specimens — tree nesting', () => {
+  test('a branch holds its group list directly: valid list markup, one tree, one tab stop', async ({ page }) => {
+    await mounted(page, '/components/tree');
+    const m = await page.locator(`${PREVIEW} ul[role="tree"]`).first().evaluate((tree) => ({
+      listChildrenNotLi: [...tree.querySelectorAll('ul')].concat(tree).flatMap((ul) =>
+        [...ul.children].filter((c) => c.tagName !== 'LI').map((c) => c.tagName),
+      ),
+      nestedTrees: tree.querySelectorAll('[role="tree"]').length,
+      groups: [...tree.querySelectorAll('[role="group"]')].map(
+        (g) => g.tagName === 'UL' && g.parentElement.getAttribute('role') === 'treeitem',
+      ),
+      stops: tree.querySelectorAll('[role="treeitem"][tabindex="0"]').length,
+    }));
+    expect(m.listChildrenNotLi).toEqual([]);
+    expect(m.nestedTrees).toBe(0);
+    expect(m.groups.length).toBeGreaterThan(0);
+    expect(m.groups.every(Boolean)).toBe(true);
+    expect(m.stops).toBe(1);
+  });
+
+  test('collapsing hides the group; the keys and the roving stop reach nested items', async ({ page }) => {
+    await mounted(page, '/components/tree');
+    const tree = page.locator(`${PREVIEW} ul[role="tree"]`).first();
+    const branch = tree.locator(':scope > li[aria-expanded]').first();
+    const kids = branch.locator(':scope > ul[role="group"] > li[role="treeitem"]');
+    const stops = tree.locator('[role="treeitem"][tabindex="0"]');
+    await branch.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(kids.nth(0)).toBeFocused();
+    await expect(stops).toHaveCount(1);
+    await expect(kids.nth(0)).toHaveAttribute('tabindex', '0');
+    await page.keyboard.press('ArrowDown');
+    await expect(kids.nth(1)).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(kids.nth(1)).toHaveAttribute('aria-selected', 'true');
+    await page.keyboard.press('ArrowLeft');
+    await expect(branch).toBeFocused();
+    await expect(stops).toHaveCount(1);
+    await page.keyboard.press('ArrowLeft');
+    await expect(branch).toHaveAttribute('aria-expanded', 'false');
+    await expect(branch.locator(':scope > ul[role="group"]')).toBeHidden();
+  });
+});

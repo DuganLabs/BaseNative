@@ -812,6 +812,7 @@ export const trinityDemos = {
           expanded: true,
           toggleHtml: r('button', { label: 'Services', variant: 'ghost' }),
           childrenHtml: r('tree', {
+            nested: true,
             items: [{ label: 'Panel upgrade' }, { label: 'EV charger' }, { label: 'Lighting' }],
           }),
         },
