@@ -269,7 +269,7 @@ describe('conformance — fields hold block controls (a <p> root split the selec
 
   it('the field stylesheet keys on its flow root', () => {
     const css = read('field/styles.css');
-    assert.match(css, /^section\[variant="field"\] \{/m);
+    assert.match(css, /^section\[variant="field"\][,\s]*(section\[variant="[a-z]+"\][,\s]*)*\{/m);
     assert.doesNotMatch(css, /^p\[variant=/m);
   });
 });

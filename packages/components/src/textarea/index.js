@@ -14,6 +14,7 @@ export const root = 'textarea';
  * @property {boolean} [disabled]
  * @property {boolean} [invalid]
  * @property {string} [name]
+ * @property {boolean} [readonly]
  * @property {boolean} [required]
  * @property {number} [minlength]
  * @property {number} [maxlength]
@@ -30,6 +31,7 @@ export function create(props = {}) {
   const isInvalid = signal(props.invalid ?? false);
   const name = signal(props.name ?? null);
   const required = signal(props.required ?? false);
+  const readonly = signal(props.readonly ?? false);
   const minlength = signal(props.minlength ?? null);
   const maxlength = signal(props.maxlength ?? null);
 
@@ -48,6 +50,7 @@ export function create(props = {}) {
     isInvalid,
     name,
     required,
+    readonly,
     minlength,
     maxlength,
     update,

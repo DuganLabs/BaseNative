@@ -1,12 +1,56 @@
 <template>
   <section :variant="variant()">
-    <label :for="controlId()">{{ label() }}</label>
-    {{ raw(controlHtml()) }}
+    <label :for="controlId()" :id="labelId()">{{ label() }}<template @if="isRequired()"><abbr aria-hidden="true" :title="requiredText()">{{ requiredMark() }}</abbr></template><template @if="isOptional()"><small>{{ optionalText() }}</small></template></label>
+    <template @if="hasGroup()">
+      <fieldset :role="groupRole()" :aria-labelledby="labelId()">
+        <template @if="hasStepper()">
+          <button type="button" value="down" :aria-controls="controlId()" :aria-label="decreaseName()">{{ decreaseGlyph() }}</button>
+        </template>
+        <template @if="hasPrefix()">
+          <small :id="prefixId()">{{ prefix() }}</small>
+        </template>
+        {{ raw(leadingHtml()) }}
+        <template @if="isCode()">
+          <template @for="digit of digits(); track digit.id">
+            <input :id="digit.id" type="text" inputmode="numeric" pattern="[0-9]*" :autocomplete="digit.autocomplete" :aria-label="digit.name" :value="digit.value">
+          </template>
+          <input type="hidden" :name="name()" :value="value()">
+        </template>
+        <template @else>
+          {{ raw(controlHtml()) }}
+        </template>
+        {{ raw(trailingHtml()) }}
+        <template @if="hasSuffix()">
+          <small :id="suffixId()">{{ suffix() }}</small>
+        </template>
+        <template @if="hasClear()">
+          <button type="button" value="clear" :aria-controls="controlId()" :aria-label="clearName()" :hidden="isEmpty()">{{ clearLabel() }}</button>
+        </template>
+        <template @if="hasReveal()">
+          <button type="button" value="reveal" aria-pressed="false" :aria-controls="controlId()" :aria-label="revealName()">{{ revealLabel() }}</button>
+        </template>
+        <template @if="hasStepper()">
+          <button type="button" value="up" :aria-controls="controlId()" :aria-label="increaseName()">{{ increaseGlyph() }}</button>
+        </template>
+      </fieldset>
+    </template>
+    <template @else>
+      {{ raw(controlHtml()) }}
+    </template>
     <template @if="hasError()">
       <output :id="errorId()" :for="controlId()">{{ error() }}</output>
     </template>
+    <template @if="showSuccess()">
+      <output :id="successId()" :for="controlId()">{{ success() }}</output>
+    </template>
+    <template @if="isDrop()">
+      <output :id="filesId()" :for="controlId()">{{ filesText() }}</output>
+    </template>
     <template @if="hasHint()">
       <small :id="hintId()" :hidden="hasError()">{{ hint() }}</small>
+    </template>
+    <template @if="hasCount()">
+      <small :id="countId()">{{ countText() }}</small>
     </template>
   </section>
 </template>

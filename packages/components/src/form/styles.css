@@ -19,6 +19,26 @@ form[variant="default"] {
     line-height: var(--font-field-hint-leading);
   }
 
+  /* A plain fieldset groups related fields under its legend. */
+  & > fieldset {
+    display: var(--display-form-group);
+    gap: var(--spacing-form-group-gap);
+    min-inline-size: var(--size-form-group-min-inline);
+    margin-inline: var(--spacing-form-group-margin);
+    margin-block: var(--spacing-form-group-margin);
+    padding: var(--spacing-form-group-padding);
+    border-width: var(--size-border-form-group);
+
+    & > legend {
+      color: var(--color-text-form-group-legend);
+      font-size: var(--font-form-group-legend-size);
+      font-weight: var(--font-form-group-legend-weight);
+      line-height: var(--font-form-group-legend-leading);
+      padding-inline: var(--spacing-form-group-padding);
+      margin-block-end: var(--spacing-form-group-legend-margin);
+    }
+  }
+
   & > footer {
     display: var(--display-form-actions);
     gap: var(--spacing-form-actions-gap);

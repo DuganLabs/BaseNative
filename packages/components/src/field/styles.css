@@ -1,17 +1,37 @@
 /* A field nests whole controls (a select or combobox is a section), so
    its root is flow content. A <p> root was split by the parser at the
    first block control. */
-section[variant="field"] {
+section[variant="field"], section[variant="inline"], section[variant="drop"], section[variant="code"] {
   display: var(--display-field);
   gap: var(--spacing-field-gap);
   margin-inline: var(--spacing-field-margin);
   align-items: var(--align-field);
 
   & > label {
+    display: var(--display-field-label);
     color: var(--color-text-field-label);
     font-size: var(--font-field-label-size);
     font-weight: var(--font-field-label-weight);
     line-height: var(--font-field-label-leading);
+
+    /* The required mark is visual (the control's `required` is what a
+       screen reader announces); the optional word is read. */
+    & > abbr {
+      color: var(--color-text-field-required);
+      font-family: var(--font-field-message-family);
+      font-size: var(--font-field-label-size);
+      font-stretch: var(--font-stretch-field-message);
+      letter-spacing: var(--font-field-mark-tracking);
+      text-decoration: var(--text-decoration-field-required);
+      margin-inline-start: var(--spacing-field-mark-gap);
+    }
+
+    & > small {
+      color: var(--color-text-field-optional);
+      font-size: var(--font-field-hint-size);
+      font-weight: var(--font-field-optional-weight);
+      margin-inline-start: var(--spacing-field-optional-gap);
+    }
   }
 
   & > small {
@@ -24,12 +44,315 @@ section[variant="field"] {
     --color-border-input: var(--color-border-input-invalid);
   }
 
+  &:has(> textarea[aria-invalid="true"]) {
+    --color-border-textarea: var(--color-border-textarea-invalid);
+  }
+
+  &:has(> fieldset > :is(input, textarea)[aria-invalid="true"]) {
+    --color-border-field-group: var(--color-border-input-invalid);
+  }
+
+  &:has(> output[id$="-success"]:not([hidden])) {
+    --color-border-input: var(--color-border-field-success);
+    --color-border-textarea: var(--color-border-field-success);
+    --color-border-field-group: var(--color-border-field-success);
+  }
+
   /* The error is the field's <output> (a status: it announces as it
      changes) and replaces the hint, which is [hidden] while it shows. */
+  /* A page's own output, fieldset and abbr rules (a docs site sets
+     margins and a mono face on them) must not reach the field's parts. */
   & > output {
     color: var(--color-text-field-error);
+    display: var(--display-field-message);
+    margin-block: var(--spacing-field-message-margin);
+    font-family: var(--font-field-message-family);
+    font-stretch: var(--font-stretch-field-message);
     font-size: var(--font-field-error-size);
     line-height: var(--font-field-error-leading);
+  }
+
+  & > output[id$="-success"] {
+    color: var(--color-text-field-success);
+  }
+
+  & > output[id$="-files"] {
+    color: var(--color-text-field-files);
+  }
+
+  /* A live count shares the hint's row, flush to the end. */
+  &:has(> small[id$="-count"]) {
+    grid-template-columns: var(--grid-template-field-count);
+
+    & > * {
+      grid-column: var(--grid-column-field-full);
+    }
+
+    & > :is(small, output) {
+      grid-column: var(--grid-column-field-start);
+    }
+
+    & > small[id$="-count"] {
+      grid-column: var(--grid-column-field-end);
+      justify-self: var(--justify-self-field-count);
+      color: var(--color-text-field-count);
+      font-variant-numeric: var(--font-variant-numeric-field-count);
+    }
+  }
+}
+
+/* The affix group: one bordered box holding the control with its
+   prefix or suffix text, an icon, a caller's button, or the built-in
+   Show, Clear and stepper buttons. The control inside gives up its own
+   border and ring to the group. It is a fieldset (role none) because
+   a rendered control can be block content, which a <p> cannot hold. */
+section[variant="field"], section[variant="inline"] {
+  & > fieldset {
+    box-sizing: var(--box-sizing-field-group);
+    display: var(--display-field-group);
+    align-items: var(--align-field-group);
+    min-block-size: var(--size-field-group-min-block);
+    min-inline-size: var(--size-field-group-control-min-inline);
+    margin-inline: var(--spacing-field-group-margin);
+    margin-block: var(--spacing-field-group-margin);
+    padding: var(--spacing-field-group-padding);
+    border-width: var(--size-border-field-group);
+    border-style: var(--border-style-field-group);
+    border-color: var(--color-border-field-group);
+    border-radius: var(--size-radius-field-group);
+    background-color: var(--color-bkg-field-group);
+    overflow: var(--overflow-field-group);
+
+    &:hover {
+      border-color: var(--color-border-field-group-hover);
+    }
+
+    &:has(> :is(input, textarea):focus-visible) {
+      outline-width: var(--size-border-field-group-outline-focus);
+      outline-style: var(--border-style-field-group-outline-focus);
+      outline-color: var(--color-border-field-group-outline-focus);
+      outline-offset: var(--spacing-field-group-outline-offset-focus);
+      box-shadow: var(--shadow-field-group-focus);
+    }
+
+    &:has(> input:disabled) {
+      background-color: var(--color-bkg-input-disabled);
+    }
+
+    & > :is(input, textarea) {
+      --size-input-block: var(--size-auto);
+      --size-border-input: var(--size-border-none);
+      --color-bkg-input: var(--palette-transparent);
+      --size-border-input-outline-focus: var(--size-border-none);
+      --shadow-input-focus: var(--shadow-none);
+      flex: var(--flex-field-group-control);
+      min-inline-size: var(--size-field-group-control-min-inline);
+    }
+
+    & > small {
+      display: var(--display-field-affix);
+      align-items: var(--align-field-affix);
+      flex: var(--flex-field-affix);
+      padding-inline-start: var(--spacing-field-affix-padding-inline);
+      color: var(--color-text-field-affix);
+      font-size: var(--font-field-affix-size);
+      line-height: var(--font-field-affix-leading);
+      white-space: var(--white-space-field-affix);
+    }
+
+    & > input + small {
+      padding-inline-start: var(--spacing-0);
+      padding-inline-end: var(--spacing-field-affix-padding-inline);
+    }
+
+    & > small + input {
+      padding-inline-start: var(--spacing-1);
+    }
+
+    /* Built-in buttons carry no variant: Show, Clear, − and +. */
+    & > button:not([variant]) {
+      appearance: var(--appearance-field-button);
+      display: var(--display-field-button);
+      align-items: var(--align-field-button);
+      justify-content: var(--justify-field-button);
+      flex: var(--flex-field-button);
+      min-inline-size: var(--size-field-button-min-inline);
+      padding-inline: var(--spacing-field-button-padding-inline);
+      border-width: var(--size-border-field-button);
+      background-color: var(--color-bkg-field-button);
+      color: var(--color-text-field-button);
+      font-family: var(--font-field-button-family);
+      font-size: var(--font-field-button-size);
+      font-weight: var(--font-field-button-weight);
+      cursor: var(--cursor-field-button);
+
+      &:hover {
+        background-color: var(--color-bkg-field-button-hover);
+      }
+
+      &:active, &[aria-pressed="true"] {
+        background-color: var(--color-bkg-field-button-active);
+      }
+
+      &:focus-visible {
+        outline-width: var(--size-border-field-group-outline-focus);
+        outline-style: var(--border-style-field-group-outline-focus);
+        outline-color: var(--color-border-field-group-outline-focus);
+        outline-offset: var(--spacing-field-button-outline-offset-focus);
+      }
+
+      &:disabled {
+        color: var(--color-text-field-button-disabled);
+        background-color: var(--color-bkg-field-button);
+        cursor: var(--cursor-field-button-disabled);
+      }
+
+      &[hidden] {
+        display: var(--display-field-none);
+      }
+
+      &:is([value="up"], [value="down"]) {
+        font-size: var(--font-field-button-step-size);
+      }
+    }
+
+    /* A caller's own button keeps its variant and joins the box edge. */
+    & > :is(button, a)[variant] {
+      --size-radius-button: var(--size-radius-none);
+      --size-button-block: var(--size-auto);
+      flex: var(--flex-field-button);
+    }
+  }
+}
+
+/* Label beside the control where there is room, stacked below that. */
+section[variant="inline"] {
+  grid-template-columns: var(--grid-template-field-inline);
+  column-gap: var(--spacing-field-inline-gap);
+
+  & > label {
+    grid-row: var(--grid-row-field-first);
+    grid-column: var(--grid-column-field-start);
+    align-self: var(--align-field-inline-label);
+  }
+
+  & > :not(label) {
+    grid-column: var(--grid-column-field-inline-control);
+  }
+
+  @media (width < 36rem) {
+    grid-template-columns: var(--grid-template-field-count);
+
+    & > label, & > :not(label) {
+      grid-row: var(--grid-row-field-auto);
+      grid-column: var(--grid-column-field-full);
+    }
+  }
+}
+
+/* A drop zone: the label is the zone and the file input lies over it,
+   transparent, so a click opens the picker and a dropped file lands on
+   the input natively. The chosen names show in the files output. */
+section[variant="drop"] {
+  & > label, & > input {
+    grid-row: var(--grid-row-field-first);
+    grid-column: var(--grid-column-field-start);
+  }
+
+  & > label {
+    display: var(--display-field-drop);
+    align-content: var(--align-field-drop);
+    justify-items: var(--justify-field-drop);
+    min-block-size: var(--size-field-drop-min-block);
+    padding: var(--spacing-field-drop-padding);
+    border-width: var(--size-border-field-drop);
+    border-style: var(--border-style-field-drop);
+    border-color: var(--color-border-field-drop);
+    border-radius: var(--size-radius-field-drop);
+    background-color: var(--color-bkg-field-drop);
+    color: var(--color-text-field-drop);
+    font-size: var(--font-field-drop-size);
+    font-weight: var(--font-field-drop-weight);
+    text-align: var(--text-align-field-drop);
+  }
+
+  & > input {
+    --size-input-block: var(--size-field-drop-input);
+    z-index: var(--layer-field-drop-input);
+    opacity: var(--opacity-field-drop-input);
+    cursor: var(--cursor-field-drop);
+  }
+
+  &:has(> input:hover) > label {
+    border-color: var(--color-border-field-drop-hover);
+    background-color: var(--color-bkg-field-drop-hover);
+  }
+
+  &:has(> input:focus-visible) > label {
+    outline-width: var(--size-border-field-group-outline-focus);
+    outline-style: var(--border-style-field-group-outline-focus);
+    outline-color: var(--color-border-field-group-outline-focus);
+    outline-offset: var(--spacing-field-group-outline-offset-focus);
+  }
+}
+
+/* One-time code: one box per digit. Six 44px boxes need 18rem, so a
+   narrower field breaks them into rows of three rather than shrink a
+   box below the tap target. */
+section[variant="code"] {
+  container-type: var(--container-type-field-code);
+  inline-size: var(--size-field-code-inline);
+
+  & > fieldset {
+    display: var(--display-field-group);
+    gap: var(--spacing-field-code-gap);
+    min-inline-size: var(--size-field-group-control-min-inline);
+    padding: var(--spacing-field-group-padding);
+    border-width: var(--size-border-none);
+    margin-inline: var(--spacing-field-group-margin);
+    margin-block: var(--spacing-field-group-margin);
+
+    & > input {
+      box-sizing: var(--box-sizing-input);
+      flex: var(--flex-field-group-control);
+      min-inline-size: var(--size-field-group-control-min-inline);
+      max-inline-size: var(--size-field-code-max-inline);
+      block-size: var(--size-field-code-block);
+      padding: var(--spacing-0);
+      border-width: var(--size-border-input);
+      border-style: var(--border-style-input);
+      border-color: var(--color-border-input);
+      border-radius: var(--size-radius-input);
+      background-color: var(--color-bkg-input);
+      color: var(--color-text-input);
+      font-family: var(--font-field-code-family);
+      font-size: var(--font-field-code-size);
+      font-weight: var(--font-field-code-weight);
+      font-variant-numeric: var(--font-variant-numeric-input);
+      text-align: var(--text-align-field-code);
+
+      &:hover {
+        border-color: var(--color-border-input-hover);
+      }
+
+      &:focus-visible {
+        outline-width: var(--size-border-input-outline-focus);
+        outline-style: var(--border-style-input-outline-focus);
+        outline-color: var(--color-border-input-outline-focus);
+        outline-offset: var(--spacing-input-outline-offset-focus);
+      }
+    }
+  }
+}
+
+@container (max-width: 18rem) {
+  section[variant="code"] > fieldset:has(> input:nth-of-type(6):not([type="hidden"])) {
+    flex-wrap: var(--flex-wrap-field-code-narrow);
+
+    & > input {
+      flex: var(--flex-field-code-narrow);
+      max-inline-size: var(--size-field-code-narrow-max-inline);
+    }
   }
 }
 

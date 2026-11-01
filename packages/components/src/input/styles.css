@@ -1,4 +1,19 @@
-input[variant="default"] {
+/* Three sizes share one rule. `sm` keeps the 44px target and 16px
+   type (smaller type makes iOS zoom the page on focus); `lg` is a
+   52px control with title type for hero forms. */
+input[variant="sm"] {
+  --font-input-size: var(--font-input-size-sm);
+  --font-input-leading: var(--font-input-leading-sm);
+}
+
+input[variant="lg"] {
+  --size-input-block: var(--size-input-block-lg);
+  --font-input-size: var(--font-input-size-lg);
+  --font-input-leading: var(--font-input-leading-lg);
+  --spacing-input-padding-inline: var(--spacing-input-padding-inline-lg);
+}
+
+input[variant="default"], input[variant="sm"], input[variant="lg"] {
   box-sizing: var(--box-sizing-input);
   display: var(--display-input);
   inline-size: var(--size-input-inline);
@@ -37,6 +52,28 @@ input[variant="default"] {
 
   &::placeholder {
     color: var(--color-text-input-placeholder);
+  }
+
+  &[readonly] {
+    background-color: var(--color-bkg-input-readonly);
+    border-color: var(--color-border-input-readonly);
+  }
+
+  &:disabled {
+    color: var(--color-text-input-disabled);
+    background-color: var(--color-bkg-input-disabled);
+    border-color: var(--color-border-input-disabled);
+    cursor: var(--cursor-input-disabled);
+  }
+
+  &[type="number"], &[type="tel"] {
+    font-variant-numeric: var(--font-variant-numeric-input);
+  }
+
+  /* WebKit centres a date or time value; a field's text starts on the
+     label's edge. */
+  &::-webkit-date-and-time-value {
+    text-align: var(--text-align-input-date);
   }
 }
 
