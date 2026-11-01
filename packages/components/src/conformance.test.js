@@ -439,7 +439,7 @@ describe('conformance — every control is a 44px target (pagination, breadcrumb
     assert.match(tree, /--size-button-block: var\(--size-target-min\);/);
     assert.match(
       tree,
-      /--spacing-tree-leaf-padding-inline-start: calc\(var\(--spacing-tree-item-padding-inline\) \+ var\(--spacing-button-padding-inline\) \+ var\(--size-border-button\)\);/,
+      /--spacing-tree-leaf-padding-inline-start: calc\(var\(--spacing-tree-item-padding-inline\) \+ var\(--size-tree-chevron\) \+ var\(--spacing-tree-branch-column-gap\) \+ var\(--spacing-button-padding-inline\) \+ var\(--size-border-button\)\);/,
     );
   });
   it('a narrow pagination keeps one row: far pages step out in a container query', () => {

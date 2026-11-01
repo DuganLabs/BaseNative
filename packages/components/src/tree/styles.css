@@ -5,7 +5,7 @@ ul[variant="tree"], ul[variant="treegrid"] {
   --spacing-button-padding-block: var(--spacing-1);
   --spacing-button-padding-inline: var(--spacing-2);
   --size-button-block: var(--size-target-min);
-  --spacing-tree-leaf-padding-inline-start: calc(var(--spacing-tree-item-padding-inline) + var(--spacing-button-padding-inline) + var(--size-border-button));
+  --spacing-tree-leaf-padding-inline-start: calc(var(--spacing-tree-item-padding-inline) + var(--size-tree-chevron) + var(--spacing-tree-branch-column-gap) + var(--spacing-button-padding-inline) + var(--size-border-button));
   list-style: var(--list-style-tree);
   margin-inline: var(--spacing-tree-margin);
   padding: var(--spacing-tree-padding);
@@ -25,10 +25,41 @@ ul[variant="tree"], ul[variant="treegrid"] {
     }
   }
 
+  /* A branch row leads with its disclosure chevron, the way a Finder
+     outline does: it points to the inline end while collapsed and
+     turns down when the branch opens. The children group spans the
+     row beneath. The toggle reads in the item ink: it names a branch,
+     it is not a link. */
+  & > li[aria-expanded] {
+    display: var(--display-tree-branch);
+    grid-template-columns: var(--grid-template-tree-branch-columns);
+    column-gap: var(--spacing-tree-branch-column-gap);
+    align-items: var(--align-tree-branch);
+
+    & > svg {
+      inline-size: var(--size-tree-chevron);
+      block-size: var(--size-tree-chevron);
+      color: var(--color-text-tree-chevron);
+    }
+
+    & > button {
+      --color-text-button: var(--color-text-tree-item);
+      justify-self: var(--align-start);
+    }
+
+    & > ul {
+      grid-column: var(--grid-column-tree-group);
+    }
+  }
+
+  & > li[aria-expanded="true"] > svg {
+    transform: var(--transform-tree-chevron-expanded);
+  }
+
   /* A leaf row is as tall as a toggle row, so the list keeps one
      rhythm whether or not a row expands. Its text starts where a toggle
-     label starts, past the button padding and border. */
-  & > li:not(:has(> button)) {
+     label starts, past the chevron column, button padding and border. */
+  & > li:not([aria-expanded]) {
     display: var(--display-flex);
     align-items: var(--align-center);
     min-block-size: var(--size-target-min);
