@@ -1,6 +1,8 @@
 {
   "name": "basenative",
   "version": "0.3.0",
+  "description": "BaseNative: an open-source, Apple-grade design system kit in plain HTML & CSS, on web standards. AI-safe and agent-ready.",
+  "license": "Apache-2.0",
   "type": "module",
   "private": true,
   "scripts": {
