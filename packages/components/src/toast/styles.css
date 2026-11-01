@@ -7,7 +7,7 @@ ol[variant="default"] {
   flex-direction: var(--flex-direction-toast);
   gap: var(--spacing-toast-gap);
   list-style: var(--list-style-toast);
-  margin: var(--spacing-toast-margin);
+  margin-inline: var(--spacing-toast-margin);
   padding: var(--spacing-toast-padding);
 
   & > li {

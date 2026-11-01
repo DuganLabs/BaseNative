@@ -1,7 +1,7 @@
 p[variant="default"] {
   display: var(--display-field);
   gap: var(--spacing-field-gap);
-  margin: var(--spacing-field-margin);
+  margin-inline: var(--spacing-field-margin);
   align-items: var(--align-field);
 
   & > label {

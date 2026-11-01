@@ -3,7 +3,7 @@ ol[variant="pipeline"] {
   flex-direction: var(--flex-direction-pipeline);
   gap: var(--spacing-pipeline-gap);
   list-style: var(--list-style-pipeline);
-  margin: var(--spacing-pipeline-margin);
+  margin-inline: var(--spacing-pipeline-margin);
   padding: var(--spacing-pipeline-padding);
   overflow-x: var(--overflow-x-pipeline);
 

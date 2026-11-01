@@ -1,6 +1,6 @@
 figure[variant='code'] {
   display: var(--display-code-block);
-  margin: var(--spacing-code-block-margin);
+  margin-inline: var(--spacing-code-block-margin);
   background-color: var(--color-bkg-code-block);
   border-width: var(--size-border-code-block);
   border-style: var(--border-style-code-block);

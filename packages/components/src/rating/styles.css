@@ -2,7 +2,7 @@ fieldset[variant="rating"] {
   display: var(--display-rating);
   flex-direction: var(--flex-direction-rating);
   gap: var(--spacing-rating-gap);
-  margin: var(--spacing-rating-margin);
+  margin-inline: var(--spacing-rating-margin);
   padding: var(--spacing-rating-padding);
   border-width: var(--size-border-rating);
 

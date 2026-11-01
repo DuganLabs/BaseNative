@@ -16,9 +16,15 @@
 
 section[aria-label='Playground workspace'] {
   display: grid;
-  gap: 12px;
+  gap: var(--spacing-app-shell-stack-gap);
   min-inline-size: 0;
   overflow-x: clip;
+}
+/* The workspace and its panes space their parts themselves; the shell's
+   stack margin would push each editor down out of its pane. */
+section[aria-label='Playground workspace'] > *,
+section[aria-label='Playground workspace'] article > * {
+  margin-block-start: 0;
 }
 
 /* ---------- controls row: the toolbar component ---------- */
@@ -373,9 +379,6 @@ footer[aria-label='Quick syntax'] strong {
      desktop stage's tall frame. */
   #preview {
     min-height: 260px;
-  }
-  section[aria-label='Playground workspace'] {
-    gap: 8px;
   }
   /* Stacked controls: the select takes the full row instead of the
      squeezed share next to the buttons. */

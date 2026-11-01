@@ -1,7 +1,7 @@
 figure[variant="stacked"], figure[variant="overlay"], figure[variant="split"] {
   display: var(--display-hero);
   gap: var(--spacing-hero-gap);
-  margin: var(--spacing-hero-margin);
+  margin-inline: var(--spacing-hero-margin);
   position: var(--position-hero);
 
   & > img, & > picture, & > svg {

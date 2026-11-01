@@ -1,7 +1,7 @@
 ul[variant="default"] {
   display: var(--display-list-group);
   list-style: var(--list-style-list-group);
-  margin: var(--spacing-list-group-margin);
+  margin-inline: var(--spacing-list-group-margin);
   padding: var(--spacing-list-group-padding);
   background-color: var(--color-bkg-list-group);
   border-radius: var(--size-radius-list-group);

@@ -19,7 +19,7 @@ input[variant="switch"] {
   box-sizing: var(--box-sizing-toggle);
   display: var(--display-toggle);
   position: var(--position-toggle);
-  margin: var(--spacing-toggle-margin);
+  margin-inline: var(--spacing-toggle-margin);
   padding: var(--spacing-toggle-padding);
   border-width: var(--size-border-toggle);
   inline-size: var(--size-toggle-inline);

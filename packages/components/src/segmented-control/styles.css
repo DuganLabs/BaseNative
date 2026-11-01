@@ -3,7 +3,7 @@ fieldset[variant="segmented-control"] {
   inline-size: var(--size-segmented-control-inline);
   flex-direction: var(--flex-direction-segmented-control);
   gap: var(--spacing-segmented-control-gap);
-  margin: var(--spacing-segmented-control-margin);
+  margin-inline: var(--spacing-segmented-control-margin);
   padding: var(--spacing-segmented-control-padding);
   border-width: var(--size-border-segmented-control);
   background-color: var(--color-bkg-segmented-control);

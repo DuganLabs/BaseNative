@@ -8,7 +8,7 @@ ol[variant="virtualizer"] {
   --size-virtualizer-spacer-end-block: calc(var(--size-virtualizer-item-block) * var(--number-virtualizer-spacer-end-count));
   display: var(--display-virtualizer);
   list-style: var(--list-style-virtualizer);
-  margin: var(--spacing-virtualizer-margin);
+  margin-inline: var(--spacing-virtualizer-margin);
   padding: var(--spacing-virtualizer-padding);
   overflow: var(--overflow-virtualizer);
   block-size: var(--size-virtualizer-block);
