@@ -22,6 +22,22 @@ test.describe('Playground', () => {
     await expect(page.locator('#preview')).toHaveAttribute('src', '/playground/preview');
   });
 
+  test('the preview runs the versioned runtime', async ({ page }) => {
+    await page.goto('/playground');
+    const frame = page.frameLocator('#preview');
+    await expect(frame.locator('section[variant="card"] > output')).toHaveText('0');
+    const preview = page.frames().find((f) => new URL(f.url()).pathname === '/playground/preview');
+    const urls = await preview.evaluate(() =>
+      performance
+        .getEntriesByType('resource')
+        .map((e) => new URL(e.name))
+        .filter((u) => u.pathname === '/basenative.js' || u.pathname === '/playground-preview.js')
+        .map((u) => u.pathname + u.search),
+    );
+    expect(urls.length).toBe(2);
+    expect(urls.filter((u) => !/\?v=[0-9a-f]+$/.test(u))).toEqual([]);
+  });
+
   test('the Counter example runs and its console line lands in the console', async ({ page }) => {
     await page.goto('/playground');
     const frame = page.frameLocator('#preview');

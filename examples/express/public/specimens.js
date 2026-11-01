@@ -160,13 +160,18 @@ function applyThemeMode(mode) {
 const mounted = new WeakSet();
 const popovers = [];
 const templateCache = new Map();
+/* This module's own ?v= (page.js stamps it): component templates are
+   fetched under the same deploy version as the bundle, so a cached
+   template can never pair with a newer view model. */
+const assetVersion = new URL(import.meta.url).searchParams.get('v');
+const versioned = (url) => (assetVersion ? `${url}?v=${assetVersion}` : url);
 
 function templateFor(name) {
   if (!templateCache.has(name)) {
     templateCache.set(
       name,
       (async () => {
-        const response = await fetch(`/bn-css/${name}/index.html`);
+        const response = await fetch(versioned(`/bn-css/${name}/index.html`));
         if (!response.ok) throw new Error(`specimens: no template for ${name}`);
         const text = await response.text();
         return text.replace(/^\s*<template>/, '').replace(/<\/template>\s*$/, '');

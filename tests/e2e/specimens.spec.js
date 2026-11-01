@@ -15,6 +15,28 @@ async function mounted(page, path) {
   await page.waitForSelector('html[data-bn-specimens-mounted]');
 }
 
+test.describe('Specimens — one deploy, one version', () => {
+  // A module that imports the bare '/basenative.js', and every template
+  // the specimens fetch, must load under the page's version so a cached
+  // copy can never outlive a deploy.
+  test('the bundle and the component templates load versioned', async ({ page }) => {
+    await mounted(page, '/components/combobox');
+    await page.locator(`${PREVIEW} section input`).first().click();
+    const urls = await page.evaluate(() =>
+      performance
+        .getEntriesByType('resource')
+        .map((e) => new URL(e.name))
+        .filter(
+          (u) =>
+            u.pathname === '/basenative.js' || /^\/bn-css\/[^/]+\/index\.html$/.test(u.pathname),
+        )
+        .map((u) => u.pathname + u.search),
+    );
+    expect(urls.length).toBeGreaterThan(1);
+    expect(urls.filter((u) => !/\?v=[0-9a-f]+$/.test(u))).toEqual([]);
+  });
+});
+
 test.describe('Specimens — combobox', () => {
   test('focus opens, typing filters, arrows move the active option, Enter chooses', async ({
     page,

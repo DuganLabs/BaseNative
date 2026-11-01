@@ -2,7 +2,13 @@ import express from 'express';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { hmrMiddleware } from '@basenative/hmr';
-import { renderRoute, renderComponentPage, renderNotFoundPage, siteRoutes } from './page.js';
+import {
+  renderRoute,
+  renderComponentPage,
+  renderNotFoundPage,
+  renderPlaygroundPreview,
+  siteRoutes,
+} from './page.js';
 import { trinitySiteCss } from './trinity.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -85,7 +91,7 @@ for (const route of siteRoutes) {
 // the site's runtime bundle by absolute path and runs the editor panes
 // the parent page posts to it.
 app.get('/playground/preview', (req, res) => {
-  res.sendFile(join(__dirname, 'public', 'playground-preview.html'));
+  res.type('html').send(renderPlaygroundPreview());
 });
 
 app.get('/components/:slug', (req, res) => {

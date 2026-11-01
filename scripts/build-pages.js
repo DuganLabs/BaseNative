@@ -10,6 +10,7 @@ import {
   SITE_URL,
   renderComponentPage,
   renderNotFoundPage,
+  renderPlaygroundPreview,
   renderRoute,
   siteRoutes,
 } from '../examples/express/page.js';
@@ -133,12 +134,10 @@ cpSync(join(express, 'public', 'playground-preview.js'), join(dist, 'playground-
 cpSync(join(express, 'public', 'highlight-engine.js'), join(dist, 'highlight-engine.js'));
 // The playground's preview document (the dev server's /playground/preview
 // route): a static page of its own in the export, loading the same
-// /basenative.js bundle and preview script by absolute path.
+// /basenative.js bundle and preview script by absolute path, versioned
+// like every page so a cached runtime never outlives a deploy.
 mkdirSync(join(dist, 'playground', 'preview'), { recursive: true });
-cpSync(
-  join(express, 'public', 'playground-preview.html'),
-  join(dist, 'playground', 'preview', 'index.html'),
-);
+writeFileSync(join(dist, 'playground', 'preview', 'index.html'), renderPlaygroundPreview());
 // Brand assets — favicon bundle (bn-favicon, preset `basenative`) + OG card
 for (const file of [
   'favicon.svg',
