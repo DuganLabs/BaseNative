@@ -12,6 +12,19 @@ export const root = 'input';
  * @property {string} [type]
  * @property {boolean} [disabled]
  * @property {boolean} [invalid]
+ * @property {string} [name]
+ * @property {string} [placeholder]
+ * @property {string} [autocomplete]
+ * @property {string} [inputmode]
+ * @property {boolean} [required] Constraint validation: the field reports a missing value.
+ * @property {boolean} [readonly]
+ * @property {string} [pattern]
+ * @property {string | number} [min]
+ * @property {string | number} [max]
+ * @property {string | number} [step]
+ * @property {number} [minlength]
+ * @property {number} [maxlength]
+ * @property {string} [title] Describes the pattern; the field reports it when the value does not match.
  */
 
 /** @param {InputProps} props */
@@ -22,13 +35,50 @@ export function create(props = {}) {
   const type = signal(props.type ?? 'text');
   const disabled = signal(props.disabled ?? false);
   const isInvalid = signal(props.invalid ?? false);
+  /* Constraint attributes: absent (null) unless the caller sets them,
+     so the browser's own validity drives the field's report. */
+  const attr = (v) => signal(v ?? null);
+  const name = attr(props.name);
+  const placeholder = attr(props.placeholder);
+  const autocomplete = attr(props.autocomplete);
+  const inputmode = attr(props.inputmode);
+  const required = signal(props.required ?? false);
+  const readonly = signal(props.readonly ?? false);
+  const pattern = attr(props.pattern);
+  const min = attr(props.min);
+  const max = attr(props.max);
+  const step = attr(props.step);
+  const minlength = attr(props.minlength);
+  const maxlength = attr(props.maxlength);
+  const title = attr(props.title);
 
   /** @param {{ target: { value: string } }} event */
   function update(event) {
     value.set(event.target.value);
   }
 
-  return { value, controlId, variant, type, disabled, isInvalid, update };
+  return {
+    value,
+    controlId,
+    variant,
+    type,
+    disabled,
+    isInvalid,
+    name,
+    placeholder,
+    autocomplete,
+    inputmode,
+    required,
+    readonly,
+    pattern,
+    min,
+    max,
+    step,
+    minlength,
+    maxlength,
+    title,
+    update,
+  };
 }
 
 /** @param {import('../registry.js').Registry} registry */

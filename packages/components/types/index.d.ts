@@ -87,6 +87,10 @@ export const drawer: ComponentDef;
 export const dropdownMenu: ComponentDef;
 export const emptyState: ComponentDef;
 export const field: ComponentDef;
+/** Bind the field's live validation report under a root (the document by default). Idempotent per root. */
+export function bindFieldValidation(root?: Document | Element): void;
+/** Report one control's validity on its field; returns whether it is valid. */
+export function reportField(control: HTMLInputElement): boolean;
 export const form: ComponentDef;
 export const hero: ComponentDef;
 export const input: ComponentDef;

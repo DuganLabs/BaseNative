@@ -11,6 +11,14 @@ form[variant="default"] {
     margin: var(--spacing-form-heading-margin);
   }
 
+  /* The submit acknowledgement (an <output>, so it announces) reads
+     at the field-hint scale. */
+  & > output {
+    color: var(--color-text-field-hint);
+    font-size: var(--font-field-hint-size);
+    line-height: var(--font-field-hint-leading);
+  }
+
   & > footer {
     display: var(--display-form-actions);
     gap: var(--spacing-form-actions-gap);

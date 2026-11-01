@@ -384,9 +384,48 @@ export const trinityDemos = {
       r('field', {
         label: 'Email',
         controlId: 'demo-field-email',
-        controlHtml: r('input', { id: 'demo-field-email', type: 'email', value: '' }),
+        controlHtml: r('input', {
+          id: 'demo-field-email',
+          type: 'email',
+          value: '',
+          required: true,
+          autocomplete: 'email',
+          placeholder: 'name@example.com',
+        }),
         hint: 'We only email about your jobs.',
       }),
+      'Type an address and leave the field: an invalid one reports, and the report clears as you fix it.',
+    ),
+    D(
+      'Pattern and range',
+      [
+        r('field', {
+          label: 'ZIP code',
+          controlId: 'demo-field-zip',
+          controlHtml: r('input', {
+            id: 'demo-field-zip',
+            value: '',
+            inputmode: 'numeric',
+            pattern: '[0-9]{5}',
+            required: true,
+            title: 'Enter a five-digit ZIP code.',
+          }),
+          hint: 'Five digits.',
+        }),
+        r('field', {
+          label: 'Crew size',
+          controlId: 'demo-field-crew',
+          controlHtml: r('input', {
+            id: 'demo-field-crew',
+            type: 'number',
+            value: '2',
+            min: 1,
+            max: 12,
+          }),
+          hint: 'From 1 to 12.',
+        }),
+      ].join('\n'),
+      'The browser’s constraint validation is the source: required, type, pattern, min and max.',
     ),
     D(
       'With an error',
@@ -549,18 +588,30 @@ export const trinityDemos = {
         r('field', {
           label: 'Name',
           controlId: 'demo-q-name',
-          controlHtml: r('input', { id: 'demo-q-name', value: '' }),
+          controlHtml: r('input', {
+            id: 'demo-q-name',
+            value: '',
+            required: true,
+            autocomplete: 'name',
+          }),
           hint: 'Whoever the crew should ask for on site.',
         }) +
         r('field', {
           label: 'Email',
           controlId: 'demo-q-email',
-          controlHtml: r('input', { id: 'demo-q-email', type: 'email', value: '' }),
+          controlHtml: r('input', {
+            id: 'demo-q-email',
+            type: 'email',
+            value: '',
+            required: true,
+            autocomplete: 'email',
+          }),
           hint: 'We send the exact quote here.',
         }),
       actionsHtml:
         r('button', { label: 'Cancel', variant: 'ghost' }) +
-        r('button', { label: 'Request quote', variant: 'primary' }),
+        r('button', { label: 'Request quote', variant: 'primary', type: 'submit' }),
+      statusMessage: 'Quote requested — we’ll email you shortly.',
     };
     live?.({ name: 'form', props });
     return [D('Request a quote', r('form', props))];

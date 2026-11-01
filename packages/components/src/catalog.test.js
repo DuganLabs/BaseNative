@@ -1051,8 +1051,11 @@ test('an invalid field colors only its error note; the hint keeps its own color'
   const css = await readFile(new URL('./field/styles.css', import.meta.url), 'utf8');
   assert.match(
     css,
-    /&:has\(> input\[aria-invalid="true"\]\) \{\s*--color-border-input: var\(--color-border-input-invalid\);\s*& > small:first-of-type \{/,
+    /&:has\(> :is\(input, textarea\)\[aria-invalid="true"\]\) \{\s*--color-border-input: var\(--color-border-input-invalid\);\s*\}/,
   );
+  // The error note is the field's <output>; the hint (<small>) keeps its colour.
+  assert.match(css, /& > output \{\s*color: var\(--color-text-field-error\);/);
+  assert.match(css, /& > small \{\s*color: var\(--color-text-field-hint\);/);
 });
 
 test('the form takes its invalid cue from declared state, never native validity', async () => {

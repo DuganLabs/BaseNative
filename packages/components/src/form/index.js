@@ -25,11 +25,13 @@ export const root = 'form';
  * @property {string} [actionsHtml] Rendered buttons for the actions row.
  * @property {(event: { name: string }) => void} [onSubmit]
  * @property {string} [variant] A registered variant name.
+ * @property {string} [statusMessage] Announced (an <output>) after a submit, so a submit never looks like nothing happened.
  */
 
 /** @param {FormProps} props */
 export function create(props) {
-  if (!props.fieldsHtml) throw new TypeError('form: fieldsHtml is required — render the fields into it');
+  if (!props.fieldsHtml)
+    throw new TypeError('form: fieldsHtml is required — render the fields into it');
 
   const formName = signal(props.name ?? '');
   const heading = signal(props.heading ?? '');
@@ -41,6 +43,8 @@ export function create(props) {
   const hasHeading = computed(() => heading() !== '');
   const hasSummary = computed(() => summaryHtml() !== '');
   const hasActions = computed(() => actionsHtml() !== '');
+  const statusMessage = signal(props.statusMessage ?? '');
+  const hasStatus = computed(() => submitted() && statusMessage() !== '');
 
   /** @param {{ preventDefault?: () => void }} [event] */
   function submit(event) {
@@ -49,7 +53,22 @@ export function create(props) {
     props.onSubmit?.({ name: formName() });
   }
 
-  return { formName, heading, fieldsHtml, summaryHtml, actionsHtml, variant, submitted, hasHeading, hasSummary, hasActions, submit, raw };
+  return {
+    formName,
+    heading,
+    fieldsHtml,
+    summaryHtml,
+    actionsHtml,
+    variant,
+    submitted,
+    statusMessage,
+    hasHeading,
+    hasSummary,
+    hasActions,
+    hasStatus,
+    submit,
+    raw,
+  };
 }
 
 /** @param {import('../registry.js').Registry} registry */

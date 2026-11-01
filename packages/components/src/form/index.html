@@ -7,6 +7,9 @@
       {{ raw(summaryHtml()) }}
     </template>
     {{ raw(fieldsHtml()) }}
+    <template @if="hasStatus()">
+      <output :for="formName()">{{ statusMessage() }}</output>
+    </template>
     <template @if="hasActions()">
       <footer>
         {{ raw(actionsHtml()) }}

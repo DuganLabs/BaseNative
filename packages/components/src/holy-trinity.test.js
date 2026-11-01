@@ -153,8 +153,10 @@ test('field composes a labelled input and swaps hint for error', async () => {
     hint: 'We only email about your jobs.',
     error: 'Enter a valid email address.',
   }).html;
-  assert.match(bad, /Enter a valid email address\./);
-  assert.doesNotMatch(bad, /We only email about your jobs\./);
+  assert.match(bad, /<output id="email2-error" for="email2">Enter a valid email address\.<\/output>/);
+  // The error replaces the hint: the hint stays in the markup, hidden,
+  // so the field's report can bring it back once the value is valid.
+  assert.match(bad, /<small id="email2-hint" hidden="true">We only email about your jobs\.<\/small>/);
 });
 
 test('dialog composes nested buttons and its destructive variant re-points them', async () => {

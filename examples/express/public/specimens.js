@@ -26,6 +26,10 @@
  *   components carry that at their own roots) and on an outside
  *   pointerdown; the pointerdown half is one document listener over
  *   the mounted popovers, driving each view model's own close.
+ * - The field report. A field nests a server-rendered control, so its
+ *   constraint validation binds once over the document
+ *   (bindFieldValidation, the field's own behaviour): every field on
+ *   the page reports, including the ones inside a form demo.
  * - The virtualizer's spacer channel. Its sheet sizes the spacers
  *   from two count tokens; the mount re-points them from the view
  *   model's spacer counts, the host channel the component documents.
@@ -52,6 +56,7 @@ import {
   tree,
   virtualizer,
   bindSpacerCounts,
+  bindFieldValidation,
 } from '/basenative.js';
 
 const AGGREGATES = {
@@ -281,5 +286,7 @@ if (popovers.length > 0) {
     }
   });
 }
+
+bindFieldValidation(document);
 
 document.documentElement.setAttribute('data-bn-specimens-mounted', '');
