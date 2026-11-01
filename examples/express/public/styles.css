@@ -3194,6 +3194,10 @@
      saved you reading it. Pinned to the top-right corner of the block it is
      always where the eye already is. */
   figure:has(> pre):not([variant='code']) {
+    /* One size for the button and the strip reserved for it. The strip
+       used to assume a 28px button while the button grew to 48 with the
+       site's control padding, so the first line ran under it. */
+    --copy-code-size: var(--size-target-min);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -3205,7 +3209,7 @@
       /* The top strip is reserved for the copy button, not shared with it.
          Padding on the inline end is not enough: a line longer than the block
          scrolls horizontally, and every line then passes under the button. */
-      padding: calc(var(--space-sm) + 2rem) var(--space-lg) var(--space-md);
+      padding: calc(var(--space-sm) * 2 + var(--copy-code-size)) var(--space-lg) var(--space-md);
       background: var(--color-background-grouped-3);
       color: var(--text-0);
       font-family: var(--font-family);
@@ -3231,7 +3235,8 @@
       align-items: center;
       justify-content: center;
       min-inline-size: 4rem;
-      min-block-size: 1.75rem;
+      block-size: var(--copy-code-size);
+      padding-block: 0;
       padding-inline: var(--space-sm);
       border: var(--border-width) solid var(--border);
       border-radius: var(--radius-sm);

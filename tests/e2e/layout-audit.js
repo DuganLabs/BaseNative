@@ -28,6 +28,9 @@
  *    last children carry no outward margin, which would add a band
  *    the padding does not account for (a 16px strip under every
  *    component preview).
+ *  - cover: a control positioned over a surface (the code block's copy
+ *    button) never paints over that surface's text. The space it sits
+ *    in is reserved for it, at the control's real size.
  */
 export function layoutAudit(opts = {}) {
   const STACK = opts.stack ?? 16;
@@ -290,6 +293,31 @@ export function layoutAudit(opts = {}) {
     const cs = getComputedStyle(sel);
     if (cs.appearance === 'base-select' && !/flex|grid/.test(cs.display))
       out.push({ rule: 'picker', at: path(sel), display: cs.display });
+  }
+
+  // a positioned control never covers text
+  for (const c of main.querySelectorAll('button, a[href], [role="button"]')) {
+    const pos = getComputedStyle(c).position;
+    if ((pos !== 'absolute' && pos !== 'fixed') || !visible(c)) continue;
+    const host = c.offsetParent || c.parentElement;
+    if (!host) continue;
+    const cr = c.getBoundingClientRect();
+    const walk = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
+    let hit = null;
+    for (let t = walk.nextNode(); t && !hit; t = walk.nextNode()) {
+      if (!t.textContent.trim() || c.contains(t)) continue;
+      const range = document.createRange();
+      range.selectNodeContents(t);
+      for (const r of range.getClientRects()) {
+        const x = Math.min(r.right, cr.right) - Math.max(r.left, cr.left);
+        const y = Math.min(r.bottom, cr.bottom) - Math.max(r.top, cr.top);
+        if (x > 1 && y > 1) {
+          hit = { text: t.textContent.trim().slice(0, 24), px: Math.round(y) };
+          break;
+        }
+      }
+    }
+    if (hit) out.push({ rule: 'cover', at: path(c), ...hit });
   }
   return out;
 }

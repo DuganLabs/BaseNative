@@ -1,5 +1,7 @@
 nav[variant='app-bar'] {
+  /* Fixed chrome stacks above raised page content (a choice-group card's control sits at the raised layer and painted over the bar). */
   position: var(--position-app-bar);
+  z-index: var(--layer-app-bar);
   inset-block-end: var(--inset-app-bar-block-end);
   inset-inline: var(--inset-app-bar-inline);
   background-color: var(--color-bkg-app-bar);

@@ -89,6 +89,24 @@
       }
     }
   },
+  "layer-chrome": {
+    "$value": "10",
+    "$type": "number",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "layer",
+          "type": null,
+          "item": "chrome",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "layer-overlay": {
     "$value": "20",
     "$type": "number",
