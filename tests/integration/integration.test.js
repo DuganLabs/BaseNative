@@ -28,6 +28,8 @@ import {
   renderComponentPage,
   siteRoutes,
   componentStylesheets,
+  componentTemplates,
+  renderPlaygroundPreview,
 } from '../../examples/express/page.js';
 import { highlightCode, highlightCodeBlocks } from '../../examples/express/highlight.js';
 import { HIGHLIGHTERS } from '../../examples/express/public/highlight-engine.js';
@@ -1081,6 +1083,49 @@ describe('the contents navs have a working scrollspy', () => {
     const route = siteRoutes.find((r) => r.path === '/docs');
     const html = renderRoute(route, { tasks: [], hasApi: false });
     assert.ok(html.includes('src="/scrollspy.js?v='), 'rendered page should load /scrollspy.js');
+  });
+
+  it("every page maps the bare '/basenative.js' import to this deploy's versioned bundle", () => {
+    // External modules (specimens.js, hero-demo.js, playground code)
+    // import '/basenative.js' unversioned; the version stamp never
+    // reaches inside them, so without the map a cached bundle outlives
+    // a deploy and pairs with newer page scripts.
+    for (const route of siteRoutes) {
+      const html = renderRoute(route, { tasks: [], hasApi: false });
+      const maps = [...html.matchAll(/<script type="importmap">([^<]*)<\/script>/g)];
+      assert.equal(maps.length, 1, `${route.path}: expected one import map, got ${maps.length}`);
+      const version = /src="\/boot\.js\?v=([0-9a-f]+)"/.exec(html)?.[1];
+      assert.ok(version, `${route.path}: boot.js is not versioned`);
+      assert.deepEqual(JSON.parse(maps[0][1]), {
+        imports: { '/basenative.js': `/basenative.js?v=${version}` },
+      });
+      assert.ok(
+        html.indexOf('<script type="importmap">') === html.indexOf('<script'),
+        `${route.path}: the import map must precede every other script`,
+      );
+    }
+  });
+
+  it('the playground preview document is versioned like every page', () => {
+    const html = renderPlaygroundPreview();
+    const version = /src="\/playground-preview\.js\?v=([0-9a-f]+)"/.exec(html)?.[1];
+    assert.ok(version, 'the preview script is not versioned');
+    const map = /<script type="importmap">([^<]*)<\/script>/.exec(html);
+    assert.ok(map, 'the preview has no import map');
+    assert.deepEqual(JSON.parse(map[1]), {
+      imports: { '/basenative.js': `/basenative.js?v=${version}` },
+    });
+    assert.ok(html.indexOf('<script type="importmap">') === html.indexOf('<script'));
+    const build = readFileSync(repo('scripts/build-pages.js'), 'utf8');
+    assert.ok(build.includes('renderPlaygroundPreview()'), 'the export copies the raw preview');
+  });
+
+  it('the asset version covers every component template the specimens fetch', () => {
+    const files = componentTemplates().map((f) => f.split('/src/')[1]);
+    assert.ok(files.includes('combobox/index.html'), 'combobox template not hashed');
+    assert.ok(files.includes('tree/index.html'), 'tree template not hashed');
+    const src = readFileSync(repo('examples/express/public/specimens.js'), 'utf8');
+    assert.match(src, /fetch\(versioned\(`\/bn-css\/\$\{name\}\/index\.html`\)\)/);
   });
 
   it('the scrollspy observes the TOC targets and marks the current link', () => {

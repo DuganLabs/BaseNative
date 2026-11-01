@@ -85,6 +85,29 @@ export function componentStylesheets() {
   return out;
 }
 
+/* Every component template the specimens fetch from /bn-css. */
+export function componentTemplates() {
+  const root = join(__dirname, '../../packages/components/src');
+  const out = [];
+  let entries;
+  try {
+    entries = readdirSync(root, { withFileTypes: true });
+  } catch {
+    return out;
+  }
+  for (const e of entries.sort((a, b) => a.name.localeCompare(b.name))) {
+    if (!e.isDirectory()) continue;
+    const file = join(root, e.name, 'index.html');
+    try {
+      readFileSync(file);
+      out.push(file);
+    } catch {
+      /* a directory without a template contributes nothing */
+    }
+  }
+  return out;
+}
+
 function getAssetVersion() {
   if (assetVersion) return assetVersion;
   const hash = createHash('sha256');
@@ -107,6 +130,9 @@ function getAssetVersion() {
     }
   }
   for (const file of componentStylesheets()) hash.update(readFileSync(file, 'utf-8'));
+  /* The specimens fetch each component's template (/bn-css/<name>/index.html)
+   * under this version too, so a template-only change must mint a new one. */
+  for (const file of componentTemplates()) hash.update(readFileSync(file, 'utf-8'));
   assetVersion = hash.digest('hex').slice(0, 10);
   return assetVersion;
 }
@@ -226,33 +252,68 @@ export function renderPage(viewFile, ctx, opts) {
   // through here, so no page can ship monochrome code again.
   const content = highlightCodeBlocks(render(view, ctx));
   const version = getAssetVersion();
-  return layout
-    .replace(/<!--TITLE-->/g, escapeAttr(title))
-    .replace(/<!--DESCRIPTION-->/g, escapeAttr(description))
-    .replace(/<!--OG_TITLE-->/g, escapeAttr(ogTitle))
-    .replace(/<!--OG_URL-->/g, escapeAttr(SITE_URL + path))
-    .replace(/<!--OG_IMAGE-->/g, escapeAttr(ogImageFor(path)))
-    .replace('<!--APP_NAV_CSS-->', () => shellCriticalCss())
-    .replace('<!--APP_SHELL-->', () => {
-      const { sidebarHtml, appBarHtml } = renderSiteChrome(activePage);
-      return renderTrinity('app-shell', {
-        sidebarHtml,
-        appBarHtml,
-        mainId: 'main-content',
-        contentHtml:
-          '<output role="status" aria-live="polite" data-bn-visually-hidden></output>' + content,
-      });
-    })
-    .replace('<!--FOOTER-->', () => renderSiteFooter())
-    .replaceAll('__ACTIVE__', escapeAttr(activePage))
-    .replace(
-      '<!--EXTRA_CSS-->',
-      path === '/builder' ? '<link rel="stylesheet" href="/bn-builder-css/builder.css" />' : '',
-    )
-    .replace('<!--SCRIPTS-->', scripts)
+  return (
+    layout
+      .replace(/<!--TITLE-->/g, escapeAttr(title))
+      .replace(/<!--DESCRIPTION-->/g, escapeAttr(description))
+      .replace(/<!--OG_TITLE-->/g, escapeAttr(ogTitle))
+      .replace(/<!--OG_URL-->/g, escapeAttr(SITE_URL + path))
+      .replace(/<!--OG_IMAGE-->/g, escapeAttr(ogImageFor(path)))
+      .replace('<!--APP_NAV_CSS-->', () => shellCriticalCss())
+      .replace('<!--APP_SHELL-->', () => {
+        const { sidebarHtml, appBarHtml } = renderSiteChrome(activePage);
+        return renderTrinity('app-shell', {
+          sidebarHtml,
+          appBarHtml,
+          mainId: 'main-content',
+          contentHtml:
+            '<output role="status" aria-live="polite" data-bn-visually-hidden></output>' + content,
+        });
+      })
+      .replace('<!--FOOTER-->', () => renderSiteFooter())
+      .replaceAll('__ACTIVE__', escapeAttr(activePage))
+      .replace(
+        '<!--EXTRA_CSS-->',
+        path === '/builder' ? '<link rel="stylesheet" href="/bn-builder-css/builder.css" />' : '',
+      )
+      .replace('<!--SCRIPTS-->', scripts)
+      .replace(/((?:href|src)=")(\/[^"]+\.(?:css|js))"/g, `$1$2?v=${version}"`)
+      .replaceAll(`'/basenative.js'`, `'/basenative.js?v=${version}'`)
+      .replaceAll(`"/basenative.js"`, `"/basenative.js?v=${version}"`)
+      // Last, so the stamping above cannot rewrite the map's own key.
+      .replace('<!--IMPORT_MAP-->', () => importMap(version))
+  );
+}
+
+/**
+ * The page's import map: every module that imports the bare
+ * '/basenative.js' — specimens.js, hero-demo.js, playground code, any
+ * external script — resolves it to this deploy's versioned bundle.
+ *
+ * Why: the version stamp above reaches URLs in the HTML, not the import
+ * statements inside the site's external modules. Those kept importing
+ * the unversioned bundle, which Cloudflare caches for hours, so after a
+ * deploy a returning visitor ran the new specimens.js against the old
+ * bundle: the combobox mount called a view-model method the stale
+ * bundle lacked and the specimen never opened. An import map remaps the
+ * specifier for every module on the page, so one deploy is one version.
+ */
+export function importMap(version) {
+  const imports = { '/basenative.js': `/basenative.js?v=${version}` };
+  return `<script type="importmap">${JSON.stringify({ imports })}</script>`;
+}
+
+/**
+ * The playground's preview document (/playground/preview), stamped like
+ * every other page: its preview script is versioned and its import map
+ * points the preview's bare '/basenative.js' import at this deploy's
+ * bundle, so a cached runtime never runs a newer preview script.
+ */
+export function renderPlaygroundPreview() {
+  const version = getAssetVersion();
+  return readFileSync(join(__dirname, 'public', 'playground-preview.html'), 'utf-8')
     .replace(/((?:href|src)=")(\/[^"]+\.(?:css|js))"/g, `$1$2?v=${version}"`)
-    .replaceAll(`'/basenative.js'`, `'/basenative.js?v=${version}'`)
-    .replaceAll(`"/basenative.js"`, `"/basenative.js?v=${version}"`);
+    .replace('</head>', () => `  ${importMap(version)}\n  </head>`);
 }
 
 const TEST_SIGNAL_ITEMS = [
