@@ -13,6 +13,10 @@ export const root = 'textarea';
  * @property {string} [variant] A registered variant name.
  * @property {boolean} [disabled]
  * @property {boolean} [invalid]
+ * @property {string} [name]
+ * @property {boolean} [required]
+ * @property {number} [minlength]
+ * @property {number} [maxlength]
  */
 
 /** @param {TextareaProps} props */
@@ -24,13 +28,30 @@ export function create(props = {}) {
   const variant = signal(props.variant ?? 'default');
   const disabled = signal(props.disabled ?? false);
   const isInvalid = signal(props.invalid ?? false);
+  const name = signal(props.name ?? null);
+  const required = signal(props.required ?? false);
+  const minlength = signal(props.minlength ?? null);
+  const maxlength = signal(props.maxlength ?? null);
 
   /** @param {{ target: { value: string } }} event */
   function update(event) {
     value.set(event.target.value);
   }
 
-  return { value, controlId, rows, placeholder, variant, disabled, isInvalid, update };
+  return {
+    value,
+    controlId,
+    rows,
+    placeholder,
+    variant,
+    disabled,
+    isInvalid,
+    name,
+    required,
+    minlength,
+    maxlength,
+    update,
+  };
 }
 
 /** @param {import('../registry.js').Registry} registry */

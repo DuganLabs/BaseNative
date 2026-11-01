@@ -37,7 +37,7 @@ export { dialog } from './dialog/index.js';
 export { drawer } from './drawer/index.js';
 export { dropdownMenu } from './dropdown-menu/index.js';
 export { emptyState } from './empty-state/index.js';
-export { field } from './field/index.js';
+export { field, bindFieldValidation, reportField } from './field/index.js';
 export { form } from './form/index.js';
 export { hero } from './hero/index.js';
 export { input } from './input/index.js';

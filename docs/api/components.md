@@ -253,6 +253,12 @@ renderField({
 
 Renders `<div data-bn="field">` with the label, the control markup verbatim, and the optional `[data-bn="field-help"]` / `[data-bn="field-error"]` spans. The control is responsible for pointing its own `aria-describedby` at the ids (the built-in controls do).
 
+### Live validation
+
+`bindFieldValidation(root = document)` → `void` · `import { bindFieldValidation } from '@basenative/components';`
+
+The field's report, bound once over a root. The browser's constraint validation is the source (`required`, `type`, `pattern`, `min`/`max`/`step`, `minlength`/`maxlength`; on a pattern mismatch the control's `title` is the message). A control reports once it has been edited and left, then re-reports on every input so the error clears the moment the value is valid. Reporting sets `aria-invalid` on the control, shows the message in the field's `<output>` in place of its `<small>` hint and points `aria-describedby` at whichever shows. A submit of a form that holds fields reports every field and focuses the first invalid control; the form gets `novalidate` so the fields report instead of the browser bubble (without script, native validation still guards the submit). `reportField(control)` reports one control and returns whether it is valid.
+
 ## Form Field
 
 `renderFormField(options)` → `string`

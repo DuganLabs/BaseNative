@@ -20,14 +20,16 @@ section[variant="field"] {
     line-height: var(--font-field-hint-leading);
   }
 
-  &:has(> input[aria-invalid="true"]) {
+  &:has(> :is(input, textarea)[aria-invalid="true"]) {
     --color-border-input: var(--color-border-input-invalid);
+  }
 
-    & > small:first-of-type {
-      color: var(--color-text-field-error);
-      font-size: var(--font-field-error-size);
-      line-height: var(--font-field-error-leading);
-    }
+  /* The error is the field's <output> (a status: it announces as it
+     changes) and replaces the hint, which is [hidden] while it shows. */
+  & > output {
+    color: var(--color-text-field-error);
+    font-size: var(--font-field-error-size);
+    line-height: var(--font-field-error-leading);
   }
 }
 

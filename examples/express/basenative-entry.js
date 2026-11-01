@@ -29,7 +29,11 @@ export { dialog } from '../../packages/components/src/dialog/index.js';
 export { drawer } from '../../packages/components/src/drawer/index.js';
 export { dropdownMenu } from '../../packages/components/src/dropdown-menu/index.js';
 export { emptyState } from '../../packages/components/src/empty-state/index.js';
-export { field } from '../../packages/components/src/field/index.js';
+export {
+  field,
+  bindFieldValidation,
+  reportField,
+} from '../../packages/components/src/field/index.js';
 export { form } from '../../packages/components/src/form/index.js';
 export { hero } from '../../packages/components/src/hero/index.js';
 export { input } from '../../packages/components/src/input/index.js';

@@ -3,10 +3,10 @@
     <label :for="controlId()">{{ label() }}</label>
     {{ raw(controlHtml()) }}
     <template @if="hasError()">
-      <small>{{ error() }}</small>
+      <output :id="errorId()" :for="controlId()">{{ error() }}</output>
     </template>
-    <template @if="showHint()">
-      <small>{{ hint() }}</small>
+    <template @if="hasHint()">
+      <small :id="hintId()" :hidden="hasError()">{{ hint() }}</small>
     </template>
   </section>
 </template>

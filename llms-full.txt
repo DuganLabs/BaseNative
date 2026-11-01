@@ -660,6 +660,9 @@ renderField({
 })
 ```
 
+#### Live validation
+`bindFieldValidation(root = document)` → `void` · `import { bindFieldValidation } from '@basenative/components';` The field's report, bound once over a root. The browser's constraint validation is the source (`required`, `type`, `pattern`,…
+
 ### Form Field
 `renderFormField(options)` → `string` Compose a whole field in one call: name a built-in control and every other option forwards to that control's renderer, so control-specific options (`type`, `items`, `rows`, `checked`, `selected`, …) be…
 ```js
