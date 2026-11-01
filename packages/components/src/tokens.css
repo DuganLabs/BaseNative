@@ -329,7 +329,7 @@
   --size-select-listbox-max-block: calc(var(--size-control) * 6);
   --size-sidebar-inline: calc(var(--spacing-8) * 6);
   --border-collapse-table: separate;
-  --display-table-cell-key-restack: inline;
+  --display-table-cell-key-restack: block;
   --size-textarea-min-block: calc(var(--size-control) * 2);
   --spacing-toast-inset-block-end: calc(var(--spacing-4) + var(--spacing-safe-bottom));
   --spacing-toast-inset-inline-end: calc(var(--spacing-4) + var(--spacing-safe-right));
@@ -1520,7 +1520,7 @@
   --white-space-table-cell-restack: var(--white-space-normal);
   --size-border-table-cell-block-end-restack: var(--size-border-none);
   --spacing-table-row-padding-block-restack: var(--spacing-1);
-  --spacing-table-cell-padding-block-restack: var(--spacing-0);
+  --spacing-table-cell-padding-block-restack: var(--spacing-1);
   --size-border-table-row-block-end-restack: var(--size-hairline);
   --border-style-table-row-block-end-restack: var(--border-style-solid);
   --color-border-table-row-block-end-restack: var(--color-border-separator);
@@ -1531,7 +1531,7 @@
   --font-table-cell-key-weight: var(--font-weight-semibold);
   --font-table-cell-key-leading: var(--font-subheadline-leading);
   --font-table-cell-key-tracking: var(--font-subheadline-tracking);
-  --spacing-table-cell-key-padding-block-end: var(--spacing-1);
+  --spacing-table-cell-key-padding-block-end: var(--spacing-0);
   --display-tabs: var(--display-grid);
   --spacing-tabs-gap: var(--spacing-4);
   --display-tabs-list: var(--display-flex);
