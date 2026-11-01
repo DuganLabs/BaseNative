@@ -55,19 +55,39 @@
     margin-bottom: var(--spacing-6);
   }
   [data-bn="sidebar"] a {
-    display: block;
     padding: var(--spacing-2) var(--spacing-3);
     border-radius: var(--size-radius-legacy-md);
     color: var(--color-text);
     text-decoration: none;
     font-size: var(--font-size-sm);
     margin-bottom: var(--spacing-1);
+    /* A nav row is a tap target: 44px tall, its label centred in it. */
+    display: flex;
+    align-items: center;
+    min-block-size: var(--size-control);
   }
   [data-bn="sidebar"] a:hover { background: var(--color-surface-muted); }
   [data-bn="sidebar"] a[aria-current="page"] {
     background: var(--palette-primary-50);
     color: var(--palette-primary-700);
     font-weight: var(--font-weight-medium);
+  }
+
+  /* A page with a sidebar sets them side by side, and stacks the
+     sidebar above the content on a phone, where 240px of rail would
+     push the content off-screen. */
+  [data-bn="page"]:has(> [data-bn="sidebar"]) {
+    flex-direction: row;
+  }
+  @media (max-width: 48rem) {
+    [data-bn="page"]:has(> [data-bn="sidebar"]) {
+      flex-direction: column;
+    }
+    [data-bn="page"] > [data-bn="sidebar"] {
+      width: auto;
+      border-right: none;
+      border-bottom: var(--size-border) solid var(--color-border);
+    }
   }
 
   /* Content Area */
