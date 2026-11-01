@@ -1085,6 +1085,22 @@ describe('the contents navs have a working scrollspy', () => {
     }
   });
 
+  it('every script a page loads is one the static export copies', () => {
+    // The dev server serves all of public/; the export ships only what
+    // build-pages.js copies, so a new page script missing from the copy
+    // list works in dev and tests and 404s on the live site.
+    const build = readFileSync(repo('scripts/build-pages.js'), 'utf8');
+    for (const route of siteRoutes) {
+      const html = renderRoute(route, { tasks: [], hasApi: false });
+      for (const [, file] of html.matchAll(/<script[^>]*\ssrc="\/([\w.-]+\.js)(?:\?[^"]*)?"/g)) {
+        assert.ok(
+          build.includes(`'${file}'`),
+          `${route.path} loads /${file} but build-pages.js never copies it into dist`,
+        );
+      }
+    }
+  });
+
   it('every page loads the scrollspy script', () => {
     const route = siteRoutes.find((r) => r.path === '/docs');
     const html = renderRoute(route, { tasks: [], hasApi: false });
