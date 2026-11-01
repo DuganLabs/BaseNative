@@ -502,5 +502,203 @@
         "system": "trinity"
       }
     }
+  },
+  "spacing-combobox-input-padding-inline-end": {
+    "$value": "calc(var(--spacing-3) * 2 + var(--spacing-5))",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "combobox-input",
+          "variant": null,
+          "subitem": "padding-inline-end",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "transform-combobox-chevron-open": {
+    "$value": "rotate(180deg)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "transform",
+          "type": null,
+          "item": "combobox-chevron",
+          "variant": null,
+          "subitem": null,
+          "state": "open",
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-combobox-chevron-inset-block-start": {
+    "$value": "calc((var(--size-input-block) - var(--size-combobox-chevron-block)) / 2)",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "combobox-chevron",
+          "variant": null,
+          "subitem": "inset-block-start",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "position-combobox-chevron": {
+    "$value": "{position-absolute}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "position",
+          "type": null,
+          "item": "combobox-chevron",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-combobox-chevron-inset-inline-end": {
+    "$value": "{spacing-3}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "combobox-chevron",
+          "variant": null,
+          "subitem": "inset-inline-end",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-combobox-chevron-inline": {
+    "$value": "{spacing-5}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "combobox-chevron",
+          "variant": null,
+          "subitem": "inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-combobox-chevron-block": {
+    "$value": "{spacing-5}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "combobox-chevron",
+          "variant": null,
+          "subitem": "block",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-text-combobox-chevron": {
+    "$value": "{color-text-label-3}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "text",
+          "item": "combobox-chevron",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "pointer-events-combobox-chevron": {
+    "$value": "{pointer-events-none}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "pointer-events",
+          "type": null,
+          "item": "combobox-chevron",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "motion-combobox-duration": {
+    "$value": "{motion-fade-duration}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "motion",
+          "type": null,
+          "item": "combobox",
+          "variant": null,
+          "subitem": "duration",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "motion-combobox-curve": {
+    "$value": "{motion-fade-curve}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "motion",
+          "type": null,
+          "item": "combobox",
+          "variant": null,
+          "subitem": "curve",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
   }
 }
