@@ -1,4 +1,7 @@
-p[variant="default"] {
+/* A field nests whole controls (a select or combobox is a section), so
+   its root is flow content. A <p> root was split by the parser at the
+   first block control. */
+section[variant="field"] {
   display: var(--display-field);
   gap: var(--spacing-field-gap);
   margin-inline: var(--spacing-field-margin);

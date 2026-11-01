@@ -17,6 +17,11 @@
  *    centred on it (±2px).
  *  - target: every control is at least 44×44px, counting the label
  *    that activates it. Links inside running text are exempt.
+ *  - field: a label and the control it names share one parent. A field
+ *    root that cannot hold a block control (a <p> around a select) is
+ *    split by the parser, and the label is left in a box of its own.
+ *  - picker: a select drawn as base-select lays out as flex, so its
+ *    picker icon sits inside the box beside the value, not under it.
  */
 export function layoutAudit(opts = {}) {
   const STACK = opts.stack ?? 16;
@@ -249,6 +254,22 @@ export function layoutAudit(opts = {}) {
         px: `${Math.round(r.width)}x${Math.round(r.height)}`,
       });
     }
+  }
+
+  // fields hold their label and control together
+  for (const lab of document.querySelectorAll('label[for]')) {
+    const control = document.getElementById(lab.htmlFor);
+    if (!control || !visible(lab) || !lab.parentElement) continue;
+    if (!lab.parentElement.contains(control))
+      out.push({ rule: 'field', at: path(lab), control: name(control) });
+  }
+
+  // a base-select's picker icon sits in the box
+  for (const sel of document.querySelectorAll('select')) {
+    if (!visible(sel)) continue;
+    const cs = getComputedStyle(sel);
+    if (cs.appearance === 'base-select' && !/flex|grid/.test(cs.display))
+      out.push({ rule: 'picker', at: path(sel), display: cs.display });
   }
   return out;
 }

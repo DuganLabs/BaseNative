@@ -194,3 +194,60 @@ describe('conformance — the datagrid sort header (chevron under the label, a f
     assert.equal(keyword('vertical-align-datagrid-sort-icon'), 'middle');
   });
 });
+
+describe('conformance — fields hold block controls (a <p> root split the select demo)', () => {
+  /* Elements whose content model is phrasing only. A component whose
+   * root is one of these cannot nest a block control: the parser closes
+   * it at the first <section>, and the label is left behind. */
+  const PHRASING_ONLY = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'label', 'button', 'legend', 'summary', 'pre', 'span']);
+  const VOID = new Set(['area', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr', 'template']);
+  /* Slots that take phrasing by contract: an icon, a heading's title,
+   * a rating star. Every other slot takes a control or a block. */
+  const PHRASING_SLOT = /(icon|title|star)Html$/i;
+  /* The element that directly encloses each block slot. */
+  const slotHosts = (html) => {
+    const hosts = [];
+    const stack = [];
+    const re = /<\/?([a-z][a-z0-9]*)\b[^>]*?(\/?)>|\{\{\s*raw\((\w+Html)\(\)\)\s*\}\}/g;
+    let m;
+    while ((m = re.exec(html))) {
+      if (m[3]) {
+        if (!PHRASING_SLOT.test(m[3])) hosts.push(stack[stack.length - 1] ?? '(root)');
+      }
+      else if (VOID.has(m[1]) || m[2]) continue;
+      else if (m[0][1] === '/') stack.pop();
+      else stack.push(m[1]);
+    }
+    return hosts;
+  };
+  const templates = readdirSync(SRC, { withFileTypes: true })
+    .filter((d) => d.isDirectory() && existsSync(join(SRC, d.name, 'index.html')))
+    .map((d) => [d.name, read(`${d.name}/index.html`)]);
+
+  it('every slot that takes rendered HTML sits in flow content', () => {
+    const field = slotHosts(read('field/index.html'));
+    assert.ok(field.length > 0, 'field nests its control');
+    for (const [n, html] of templates) {
+      for (const host of slotHosts(html))
+        assert.ok(!PHRASING_ONLY.has(host), `${n}: a rendered-HTML slot inside <${host}> cannot hold a block control`);
+    }
+  });
+
+  it('the field stylesheet keys on its flow root', () => {
+    const css = read('field/styles.css');
+    assert.match(css, /^section\[variant="field"\] \{/m);
+    assert.doesNotMatch(css, /^p\[variant=/m);
+  });
+});
+
+describe('conformance — the catalog select owns its chevron (the site sheet pushed it under the box)', () => {
+  const site = readFileSync(join(SRC, '..', '..', '..', 'examples', 'express', 'public', 'styles.css'), 'utf8');
+  it("the native select carries a variant, so the site's bare-select rules skip it", () => {
+    assert.match(read('select/index.html'), /<select variant="native"/);
+    const selectors = rules(site)
+      .map((r) => r.selector)
+      .filter((sel) => /(^|[\s,])select:not\(\[data-bn\]/.test(sel));
+    assert.ok(selectors.length > 0, 'the site styles bare selects');
+    for (const sel of selectors) assert.match(sel, /:not\(\[variant\]\)/, `${sel} must skip a catalog select`);
+  });
+});

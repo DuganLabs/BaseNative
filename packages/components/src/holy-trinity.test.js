@@ -413,7 +413,7 @@ test('select native variant renders the platform element and its options', async
     ],
   });
   assert.match(html, /<section variant="native">/);
-  assert.match(html, /<select id="trade"/);
+  assert.match(html, /<select variant="native" id="trade"/);
   assert.match(html, /<option value="hvac" selected="true">HVAC<\/option>/);
   assert.match(html, /<option value="electrical">Electrical<\/option>/);
   assert.doesNotMatch(html, /aria-haspopup/);
