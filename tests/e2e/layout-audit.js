@@ -229,7 +229,7 @@ export function layoutAudit(opts = {}) {
         }
         const broke = prevTop !== null && r.top - prevTop > 2;
         const wbr = i === 0 && prevNode && prevNode !== n;
-        if (broke && !wbr && !/[\s.\/(,-]/.test(prevChar) && !/\s/.test(ch)) {
+        if (broke && !wbr && !/[\s./(,-]/.test(prevChar) && !/\s/.test(ch)) {
           out.push({ rule: 'ident', at: path(code), code: code.textContent.slice(0, 48) });
           break;
         }
