@@ -50,3 +50,17 @@ nav[variant="pagination"] {
     font-weight: var(--font-pagination-current-weight);
   }
 }
+
+/* Each page link is a 44px square, so a full window (Previous, 1, the
+   gap, three neighbours, the gap, the last page, Next) needs about
+   28rem. In a narrower container the window keeps Previous, the
+   current page and its neighbours, and Next on one row. The first and
+   last pages and the gaps step out unless they neighbour the current
+   page. Previous and Next still reach every page. */
+@container (max-width: 28rem) {
+  nav[variant="pagination"] > ol > li:has(> a[aria-hidden]):not(:first-child, :last-child),
+  nav[variant="pagination"] > ol > li:nth-child(2):not(:has(> [aria-current]), :has(+ li > [aria-current])),
+  nav[variant="pagination"] > ol > li:nth-last-child(2):not(:has(> [aria-current]), li:has(> [aria-current]) + li) {
+    display: var(--display-pagination-item-compact);
+  }
+}
