@@ -872,13 +872,15 @@ test('the popup composites anchor below their section, and their fields take the
   assert.match(paletteCss, /--color-bkg-input: var\(--color-fill-3\)/);
 });
 
-test('virtualizer rows center their content, and the restacked table runs tight', async () => {
+test('virtualizer rows center their content, and the restacked table sets each key over its value', async () => {
   const { readFile } = await import('node:fs/promises');
   const tokens = await readFile(new URL('./tokens.css', import.meta.url), 'utf8');
   assert.match(tokens, /--display-virtualizer-item: var\(--display-flex\)/);
   assert.match(tokens, /--align-virtualizer-item: var\(--align-center\)/);
   assert.match(tokens, /--spacing-table-row-padding-block-restack: var\(--spacing-1\)/);
-  assert.match(tokens, /--spacing-table-cell-padding-block-restack: var\(--spacing-0\)/);
+  assert.match(tokens, /--spacing-table-cell-padding-block-restack: var\(--spacing-1\)/);
+  assert.match(tokens, /--display-table-cell-key-restack: block;/);
+  assert.match(tokens, /--spacing-table-cell-key-padding-block-end: var\(--spacing-0\)/);
   assert.match(tokens, /--size-border-table-row-block-end-restack: var\(--size-hairline\)/);
 });
 

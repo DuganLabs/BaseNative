@@ -882,7 +882,7 @@
     }
   },
   "spacing-table-cell-padding-block-restack": {
-    "$value": "{spacing-0}",
+    "$value": "{spacing-1}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
@@ -990,7 +990,7 @@
     }
   },
   "display-table-cell-key-restack": {
-    "$value": "inline",
+    "$value": "block",
     "$type": "string",
     "$extensions": {
       "com.basenative": {
@@ -1116,7 +1116,7 @@
     }
   },
   "spacing-table-cell-key-padding-block-end": {
-    "$value": "{spacing-1}",
+    "$value": "{spacing-0}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
