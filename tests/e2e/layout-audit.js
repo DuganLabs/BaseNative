@@ -28,6 +28,8 @@
  *    last children carry no outward margin, which would add a band
  *    the padding does not account for (a 16px strip under every
  *    component preview).
+ *  - ident: inline code breaks between identifier parts (after a dot,
+ *    slash, dash, paren or comma, or at a <wbr>), never inside a name.
  *  - cover: a control positioned over a surface (the code block's copy
  *    button) never paints over that surface's text. The space it sits
  *    in is reserved for it, at the control's real size.
@@ -204,6 +206,37 @@ export function layoutAudit(opts = {}) {
           out.push({ rule: 'word', at: path(el), word: m[0] });
         }
       }
+    }
+  }
+
+  // inline code breaks at an identifier boundary, never inside a name
+  for (const code of main.querySelectorAll(':not(pre) > code')) {
+    if (code.getClientRects().length < 2 || !visible(code)) continue;
+    const tw = document.createTreeWalker(code, NodeFilter.SHOW_TEXT);
+    let prevTop = null;
+    let prevChar = '';
+    let prevNode = null;
+    for (let n = tw.nextNode(); n; n = tw.nextNode()) {
+      for (let i = 0; i < n.data.length; i += 1) {
+        range.setStart(n, i);
+        range.setEnd(n, i + 1);
+        const r = range.getClientRects()[0];
+        const ch = n.data[i];
+        if (!r || r.width === 0) {
+          // a collapsed space still ends the previous line at a boundary
+          prevChar = ch;
+          continue;
+        }
+        const broke = prevTop !== null && r.top - prevTop > 2;
+        const wbr = i === 0 && prevNode && prevNode !== n;
+        if (broke && !wbr && !/[\s.\/(,-]/.test(prevChar) && !/\s/.test(ch)) {
+          out.push({ rule: 'ident', at: path(code), code: code.textContent.slice(0, 48) });
+          break;
+        }
+        prevTop = r.top;
+        prevChar = ch;
+      }
+      prevNode = n;
     }
   }
 
