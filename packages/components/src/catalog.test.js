@@ -1009,7 +1009,10 @@ test('code-block renders its caption as the header bar and its code escaped in a
     html,
     /<figcaption>counter\.html\s*<button variant="ghost" type="button">Copy<\/button>\s*<\/figcaption>/,
   );
-  assert.match(html, /<pre><code>&lt;p&gt;\{\{ count\(\) \}\}&lt;\/p&gt;<\/code><\/pre>/);
+  assert.match(
+    html,
+    /<pre tabindex="0"><code>&lt;p&gt;\{\{ count\(\) \}\}&lt;\/p&gt;<\/code><\/pre>/,
+  );
   assert.doesNotMatch(html, /class=|data-/);
 });
 
@@ -1018,7 +1021,7 @@ test('code-block drops the header bar when it has neither caption nor actions', 
   const bare = renderComponent(registry, render, 'code-block', { code: 'count.set(1);' }).html;
   assert.match(bare, /<figure variant="code">/);
   assert.doesNotMatch(bare, /<figcaption>/);
-  assert.match(bare, /<pre><code>count\.set\(1\);<\/code><\/pre>/);
+  assert.match(bare, /<pre tabindex="0"><code>count\.set\(1\);<\/code><\/pre>/);
   assert.throws(() => registry.getComponent('code-block').create({}), /code is required/);
   // The figure element's other addresses stay the avatar's.
   assert.deepEqual(registry.listVariants('code-block'), ['code']);

@@ -2,6 +2,12 @@ import { escapeHtml } from './escape.js';
 
 const TAG = 'bn-builder-palette';
 
+/** A category id ('organisms') as a heading: sentence case, like every other heading. */
+function categoryLabel(cat) {
+  const name = String(cat);
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
 function renderPaletteHTML(palette, query) {
   const q = String(query || '')
     .trim()
@@ -35,14 +41,14 @@ function renderPaletteHTML(palette, query) {
         .join('');
       if (!items) return '';
       return (
-        `<section class="bn-palette__group" aria-label="${escapeHtml(cat)} components">` +
-        `<h3 class="bn-palette__heading">${escapeHtml(cat)}</h3>` +
+        `<section class="bn-palette__group" aria-label="${escapeHtml(categoryLabel(cat))}">` +
+        `<h3 class="bn-palette__heading">${escapeHtml(categoryLabel(cat))}</h3>` +
         `<ul class="bn-palette__list" role="list">${items}</ul>` +
         `</section>`
       );
     })
     .join('');
-  return groups || '<p class="bn-palette__empty">No organisms match.</p>';
+  return groups || '<p class="bn-palette__empty">No components match.</p>';
 }
 
 export class BnBuilderPalette extends HTMLElement {

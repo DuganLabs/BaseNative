@@ -28,29 +28,6 @@
     white-space: nowrap;
     border: 0;
   }
-  .skip-link {
-    position: absolute;
-    inset-inline-start: -9999px;
-    inset-block-start: -9999px;
-    z-index: 10000;
-    padding: 0.75rem 1rem;
-    background: var(--accent);
-    color: var(--surface-0);
-    font-weight: 600;
-    text-decoration: none;
-    border-radius: 0 0 var(--radius-sm) 0;
-    clip: rect(0 0 0 0);
-    clip-path: inset(50%);
-    overflow: hidden;
-    white-space: nowrap;
-  }
-  .skip-link:focus {
-    inset-inline-start: 0;
-    inset-block-start: 0;
-    clip: auto;
-    clip-path: none;
-    overflow: visible;
-  }
 }
 
 @layer tokens {
@@ -150,99 +127,8 @@
 
     /* Status backgrounds */
 
-    /* Noise overlay */
-    --noise-opacity: 0.025;
-    --noise-size: 200px;
-    --z-noise: 9999;
-
     /* Highlight colours live on the code-block component. This sheet
      does not paint a second vocabulary. */
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      opacity: var(--noise-opacity);
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      background-size: var(--noise-size);
-      z-index: var(--z-noise);
-    }
-
-    body > header {
-      border-block-end: var(--border-width) solid var(--border);
-      background: var(--surface-1);
-    }
-
-    body > header > nav {
-      max-inline-size: var(--size-inline-max);
-      margin-inline: auto;
-      padding: var(--space-md) var(--space-lg);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--space-md);
-      flex-wrap: wrap;
-      /* Stop the wordmark from shoving the nav off-screen on narrow viewports. */
-      min-inline-size: 0;
-    }
-
-    body > header h1 {
-      font-family: var(--font-family);
-      font-stretch: var(--font-serif);
-      font-size: var(--font-size-xl);
-      font-weight: var(--font-weight-normal);
-      letter-spacing: var(--letter-spacing-tight);
-    }
-
-    body > header h1 em {
-      font-style: normal;
-      color: var(--color-tint-strong);
-    }
-
-    body > header ul {
-      list-style: none;
-      display: flex;
-      gap: var(--space-md);
-      /* Below the breakpoint, the nav links scroll horizontally with snap.
-       No fixed scrollbar; works on touch + trackpads. */
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      min-inline-size: 0;
-      max-inline-size: 100%;
-    }
-    body > header ul::-webkit-scrollbar {
-      display: none;
-    }
-    body > header li {
-      scroll-snap-align: start;
-      flex: 0 0 auto;
-    }
-
-    body > header a {
-      font-family: var(--font-family);
-      font-stretch: var(--font-mono);
-      font-size: var(--font-size-sm);
-      color: var(--text-1);
-      text-decoration: none;
-      padding: var(--space-sm) var(--space-md);
-      min-block-size: 2.75rem;
-      display: inline-flex;
-      align-items: center;
-      border-radius: var(--radius-sm);
-      transition:
-        color var(--duration-fast),
-        background var(--duration-fast);
-    }
-    body > header a:hover {
-      color: var(--color-tint-strong);
-      background: var(--surface-2);
-    }
-    body > header a[aria-current='page'] {
-      color: var(--color-tint-strong);
-    }
 
     main {
       flex: 1;
@@ -313,6 +199,102 @@
       --spacing-hero-margin: 0 auto var(--spacing-6, 24px);
     }
 
+    /* One content column: the page's heroes are transparent, so their
+       text starts on the column edge — the same edge the grouped lists,
+       code cards and section headings start on. */
+    main > figure[variant='stacked'] {
+      --spacing-hero-padding-inline: 0;
+    }
+
+    /* The home hero's live demo: one window — the source as a code
+       card, the running result beneath it on the same surface. */
+    [data-bn-hero-demo] {
+      --size-radius-code-block: 0;
+      --size-border-code-block: 0;
+      display: grid;
+      background: var(--color-background-grouped-2);
+      border-radius: var(--size-radius-container);
+      box-shadow: var(--shadow-float);
+      overflow: hidden;
+      margin-block-start: var(--spacing-5);
+    }
+    [data-bn-hero-demo-live] {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--spacing-4);
+      margin: 0;
+      padding: var(--spacing-4);
+      border-block-start: var(--size-border-hairline, 1px) solid
+        var(--color-border-code-block-caption-block-end);
+
+      & > small {
+        color: var(--color-text-label-2);
+        font-size: var(--font-footnote-size);
+        line-height: var(--font-footnote-leading);
+      }
+    }
+
+    /* Desktop: copy left, demo right, the copy centred on the demo. */
+    @media (min-width: 64rem) {
+      main > figure[variant='stacked']:has([data-bn-hero-demo]) > figcaption {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+        grid-template-rows: 1fr repeat(4, auto) 1fr;
+        column-gap: var(--spacing-8);
+
+        & > :not([data-bn-hero-demo]) {
+          grid-column: 1;
+        }
+        & > p:first-child {
+          grid-row: 2;
+        }
+        & > :is(h1, h2) {
+          grid-row: 3;
+        }
+        & > :is(h1, h2) + p {
+          grid-row: 4;
+        }
+        & > nav {
+          grid-row: 5;
+        }
+        & > [data-bn-hero-demo] {
+          grid-column: 2;
+          grid-row: 1 / -1;
+          margin-block-start: 0;
+        }
+      }
+    }
+
+    /* The footer's columns start on the content column's edge: past the
+       rail, the same centred max inline size main's children take.
+       Percentages here resolve against the body, as main's do. */
+    @media (min-width: 48rem) {
+      body > footer[variant='default'] {
+        --site-footer-gutter: max(
+          0px,
+          calc(
+            (
+                100% - var(--size-app-shell-rail-inline) - 2 *
+                  var(--spacing-app-shell-main-padding-inline) - var(--size-inline-max)
+              ) /
+              2
+          )
+        );
+        --size-app-shell-footer-inline-start: calc(
+          var(--size-app-shell-rail-inline) + var(--site-footer-gutter)
+        );
+        --size-app-shell-footer-inline: calc(
+          100% - var(--size-app-shell-rail-inline) - 2 * var(--site-footer-gutter)
+        );
+        padding-inline: var(--spacing-app-shell-main-padding-inline);
+      }
+    }
+
+    /* Stacked code cards (the home start steps) keep the section rhythm. */
+    main > section > figure[variant='code'] + figure[variant='code'] {
+      margin-block-start: var(--spacing-3);
+    }
+
     section > h2 {
       font-family: var(--font-family);
       font-stretch: var(--font-serif);
@@ -335,28 +317,6 @@
     }
 
     /* -- Hero -- */
-    [data-hero] {
-      padding-block: var(--space-3xl);
-      text-align: center;
-    }
-
-    [data-hero] > h2 {
-      font-size: var(--font-size-hero);
-      margin-block-end: var(--space-md);
-    }
-
-    [data-hero] > p {
-      margin-inline: auto;
-      margin-block-end: var(--space-xl);
-    }
-
-    [data-hero] nav {
-      justify-content: center;
-    }
-
-    [data-hero] a {
-      text-decoration: none;
-    }
 
     /* -- Stat grid -- */
     [data-stats] {
@@ -1781,7 +1741,7 @@
         align-items: start;
       }
 
-      pre {
+      pre:not(figure[variant='code'] > pre) {
         font-size: var(--font-size-xs);
         padding: var(--space-md);
       }
@@ -1789,14 +1749,6 @@
 
     /* Page container: responsive layout */
     @container page (max-width: 28rem) {
-      [data-hero] {
-        padding-block: var(--space-xl);
-      }
-
-      [data-hero] nav {
-        flex-direction: column;
-        align-items: stretch;
-      }
     }
 
     /* List items: stack content when container is narrow */
@@ -1873,11 +1825,6 @@
       [data-datepicker-months] button {
         padding: var(--space-xs);
         font-size: var(--font-size-xs);
-      }
-
-      body > header > nav {
-        flex-direction: column;
-        gap: var(--space-sm);
       }
     }
 
@@ -2011,51 +1958,12 @@
       text-decoration: none;
     }
 
-    /* Site footer */
-    body > [data-bn-site-footer] {
-      display: grid;
-      gap: var(--space-sm);
-      padding: var(--space-lg);
-      color: var(--text-0);
-    }
-    body > [data-bn-site-footer] nav {
-      display: flex;
-      gap: var(--space-md);
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    body > [data-bn-site-footer] nav a {
-      font-family: var(--font-family);
-      font-stretch: var(--font-mono);
-      font-size: var(--font-size-xs);
-      color: var(--text-0);
-      text-decoration: none;
-      transition: color var(--duration-fast);
-    }
-    body > [data-bn-site-footer] nav a:hover {
-      color: var(--color-tint-strong);
-    }
-
     /* ==========================================================================
    * Components index (/components) + per-component pages.
    * Uses native CSS nesting, :has(), and container queries. No classes.
    * ========================================================================== */
 
     /* -- Hero on /components -- */
-    [data-bn-page-hero] {
-      --spacing-hero-margin: 0 auto var(--spacing-6, 24px);
-      --font-hero-title-family: var(--font-family);
-      --spacing-hero-title-margin: 0 0 var(--space-md);
-
-      & > figcaption > :is(h1, h2) {
-        font-stretch: var(--font-serif);
-
-        & em {
-          font-style: normal;
-          color: var(--color-tint-strong);
-        }
-      }
-    }
 
     [data-bn-eyebrow] {
       font-family: var(--font-family);
@@ -2080,12 +1988,6 @@
         -webkit-box-decoration-break: clone;
         box-decoration-break: clone;
       }
-    }
-
-    [data-bn-page-hero-actions] {
-      display: flex;
-      gap: var(--space-sm);
-      flex-wrap: wrap;
     }
 
     [data-bn-cta] {
@@ -2733,7 +2635,6 @@
         [data-bn='multiselect'],
         [data-bn='site-header'],
         [data-bn='site-nav'],
-        [data-bn='site-footer'],
         [data-bn='app-main'],
         [data-bn='calendar'],
         [data-bn='pipeline'],
@@ -2777,7 +2678,8 @@
         padding: calc(var(--space-sm) + 2rem) var(--space-md) var(--space-md);
         border: none;
         border-radius: 0;
-        font-size: var(--font-size-xs);
+        font-size: var(--font-code-block-pre-size);
+        line-height: var(--font-code-block-pre-leading);
         /* Paired with the preview pane beside it: a long example must not stretch
          the row to the height of the whole file. */
         max-block-size: 22rem;
@@ -3251,7 +3153,7 @@
      scrolling past every line of the code to reach the control that would have
      saved you reading it. Pinned to the top-right corner of the block it is
      always where the eye already is. */
-    figure:has(> pre) {
+    figure:has(> pre):not([variant='code']) {
       position: relative;
       display: flex;
       flex-direction: column;
@@ -3264,12 +3166,12 @@
          Padding on the inline end is not enough: a line longer than the block
          scrolls horizontally, and every line then passes under the button. */
         padding: calc(var(--space-sm) + 2rem) var(--space-lg) var(--space-md);
-        background: var(--surface-inset);
+        background: var(--color-background-grouped-3);
         color: var(--text-0);
         font-family: var(--font-family);
         font-stretch: var(--font-mono);
-        font-size: var(--font-size-sm);
-        line-height: var(--line-height-code);
+        font-size: var(--font-code-block-pre-size);
+        line-height: var(--font-code-block-pre-leading);
         overflow-x: auto;
         flex: 1;
         /* Square inside its container, so the block reads as one surface rather
@@ -3852,15 +3754,6 @@
 
     /* An ambient warm glow at the top of the page: depth for the eye, and
    something real for the glass bar to refract as content scrolls. */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0 0 auto;
-      block-size: 55vh;
-      background: radial-gradient(65% 100% at 50% 0%, var(--accent-dim), transparent 70%);
-      pointer-events: none;
-      z-index: -1;
-    }
 
     ::selection {
       background: var(--accent-glow);
@@ -3871,15 +3764,6 @@
    large-title style is its bold variant, so the weight is set beside
    the package's size/leading/tracking. Page-leading titles only: the
    hero of a page, or the first section's heading. */
-    [data-hero] > h2,
-    [data-bn-page-hero] h2 {
-      font-family: var(--font-large-title-family);
-      font-size: var(--font-large-title-size);
-      line-height: var(--font-large-title-leading);
-      font-weight: var(--font-large-title-weight);
-      font-weight: 700;
-      letter-spacing: var(--font-large-title-tracking);
-    }
 
     section > h2,
     main > section > header > h2,
@@ -3961,25 +3845,8 @@
 
     /* Heroes are not cards: they are the head of the stack — transparent,
    with their text inset to the same line the cards' text sits on. */
-    main > section[data-hero],
-    main > section[data-bn-page-hero] {
-      background: transparent;
-      border-radius: 0;
-      padding-inline: var(--spacing-5);
-      text-align: start;
-    }
-    [data-hero] nav {
-      justify-content: flex-start;
-    }
     /* The hero's row lays its buttons out with a gap; the button sheet's
        adjacent margin would double it and indent a wrapped button. */
-    [data-hero] nav > * + * {
-      margin-inline-start: 0;
-    }
-    [data-hero] > p {
-      text-align: start;
-      margin-inline: 0;
-    }
 
     /* The showcase's root is one <article> around the whole gallery: it is
    a page, not a card, so it carries no surface; its header is a hero. */
@@ -4009,14 +3876,10 @@
     /* The same holds for a section whose surface is its list or its card
    grid: the list-group and the component cards are the cards, so the
    section is a heading zone whose heading sits on the card text line. */
-    main > section:has(> ul, > [data-bn-component-grid]) {
+    main > section:has(> ul, > figure[variant='code'], > [data-bn-component-grid]) {
       background: transparent;
       box-shadow: none;
       padding: 0;
-
-      & > :is(h2, header) {
-        padding-inline: var(--spacing-5);
-      }
     }
     /* Workbenches (playground, builder) are tools, not cards: their panes
    and window are the surfaces, and they take the wide column. */
@@ -4045,10 +3908,6 @@
       article,
       main > section {
         padding: var(--spacing-4);
-      }
-      main > section[data-hero],
-      main > section[data-bn-page-hero] {
-        padding-inline: var(--spacing-4);
       }
     }
 
@@ -4124,8 +3983,10 @@
       border: none;
       border-radius: var(--radius-xl);
       font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
-      font-size: var(--font-footnote-size);
-      line-height: var(--font-footnote-leading);
+      /* One code size site-wide: the code-block component's own token, so
+         a docs listing and the home counter read at the same size. */
+      font-size: var(--font-code-block-pre-size);
+      line-height: var(--font-code-block-pre-leading);
       /* This sheet re-declares pre last, so the scroll guarantee is stated
      here too: a long line scrolls inside the block, it never pushes
      the block past the card edge and clips. */
@@ -4134,6 +3995,25 @@
     }
     code {
       font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
+    }
+    /* Inside a pre, code and the highlighter's kbd (interpolations) are
+       text runs, not inline-code chips or key caps: no box, no size
+       step, the syntax colour from the shared vocabulary. */
+    pre code {
+      color: inherit;
+      background: none;
+      font-size: inherit;
+      padding: 0;
+      border-radius: 0;
+    }
+    pre kbd {
+      font: inherit;
+      padding: 0;
+      background: none;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      color: var(--color-text-syntax-interpolation);
     }
     p code,
     li code,
@@ -4145,8 +4025,9 @@
     /* Docs article headers are API signatures: mono, label ink, headline
    size — a card's title line, not a display heading. The first docs
    section's entries sit under the page h1, so they are h2 at the same
-   treatment. */
-    article > header h3,
+   treatment. The builder's export panel is an article too, not a
+   signature, so it keeps the UI face. */
+    article:not([data-bn-builder-export-panel]) > header h3,
     #api-reference > article > header > h2 {
       font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
       font-size: var(--font-headline-size);
@@ -4372,8 +4253,7 @@
     }
 
     /* ── Footer: quiet text on the grouped background ─────────────────── */
-    body > footer,
-    body > [data-bn-site-footer] {
+    body > footer {
       border-block-start: none;
       font-family: var(--font-footnote-family);
       font-size: var(--font-footnote-size);
@@ -4381,23 +4261,12 @@
       font-weight: var(--font-footnote-weight);
       color: var(--color-text-label-3);
     }
-    body > footer p,
-    body > [data-bn-site-footer] p {
+    body > footer p {
       font-family: var(--font-footnote-family);
       font-size: var(--font-footnote-size);
       line-height: var(--font-footnote-leading);
       font-weight: var(--font-footnote-weight);
       color: var(--color-text-label-3);
-    }
-    body > [data-bn-site-footer] nav a {
-      font-family: var(--font-footnote-family);
-      font-size: var(--font-footnote-size);
-      line-height: var(--font-footnote-leading);
-      font-weight: var(--font-footnote-weight);
-      color: var(--color-text-label-2);
-    }
-    body > [data-bn-site-footer] nav a:hover {
-      color: var(--color-tint-strong);
     }
 
     /* ── The app nav in the site's language ───────────────────────────── */

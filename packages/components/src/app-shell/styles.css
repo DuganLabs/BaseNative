@@ -42,6 +42,15 @@ main[variant="default"] {
     padding-block-end: var(--spacing-app-shell-main-padding-block-end-rail);
   }
 
+  /* The footer sits beside the fixed rail too; without the same
+     deduction its first column was painted under the rail. A host
+     can redefine both sizes on the footer to start it on its own
+     content column. */
+  body > footer[variant="default"] {
+    margin-inline-start: var(--size-app-shell-footer-inline-start);
+    inline-size: var(--size-app-shell-footer-inline);
+  }
+
   body > nav[variant="app-bar"] {
     display: var(--display-app-shell-chrome-hidden);
   }

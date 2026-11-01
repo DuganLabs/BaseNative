@@ -54,7 +54,7 @@
     }
   },
   "size-border-code-block": {
-    "$value": "{size-hairline}",
+    "$value": "{size-border-none}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
@@ -522,7 +522,7 @@
     }
   },
   "font-code-block-pre-size": {
-    "$value": "{font-footnote-size}",
+    "$value": "{font-subheadline-size}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
@@ -558,7 +558,7 @@
     }
   },
   "font-code-block-pre-leading": {
-    "$value": "{font-footnote-leading}",
+    "$value": "{font-subheadline-leading}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
@@ -586,6 +586,132 @@
           "item": "code-block-code",
           "variant": null,
           "subitem": "family",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-border-code-block-pre-outline-focus": {
+    "$value": "{size-border-thick}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "border",
+          "variant": "code-block-pre",
+          "subitem": "outline",
+          "state": "focus",
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "border-style-code-block-pre-outline-focus": {
+    "$value": "{border-style-solid}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "border-style",
+          "type": null,
+          "item": "code-block-pre",
+          "variant": null,
+          "subitem": "outline",
+          "state": "focus",
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-border-code-block-pre-outline-focus": {
+    "$value": "{color-tint}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "border",
+          "item": "code-block-pre",
+          "variant": null,
+          "subitem": "outline",
+          "state": "focus",
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-code-block-pre-outline-offset-focus": {
+    "$value": "calc(-1 * var(--size-border-thick))",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "code-block-pre",
+          "variant": null,
+          "subitem": "outline-offset",
+          "state": "focus",
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-bkg-code-block-pre": {
+    "$value": "{palette-transparent}",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": "bkg",
+          "item": "code-block",
+          "variant": null,
+          "subitem": "pre",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-radius-code-block-pre": {
+    "$value": "{size-radius-none}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "radius",
+          "variant": null,
+          "subitem": "code-block-pre",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-border-code-block-pre": {
+    "$value": "{size-border-none}",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "border",
+          "variant": null,
+          "subitem": "code-block-pre",
           "state": null,
           "context": null
         },

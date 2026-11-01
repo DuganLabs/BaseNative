@@ -5,6 +5,7 @@
 // the shim only and no <bn-builder> registration — the /builder
 // page rendered empty. Keep the binding used.
 import { BnBuilder } from '@basenative/builder';
+import { hlHTML } from './public/highlight-engine.js';
 
 if (typeof window !== 'undefined') window.__BnBuilder = BnBuilder;
 
@@ -21,7 +22,9 @@ ready(() => {
 
   builder.addEventListener('bn-builder-export', (event) => {
     panel.hidden = false;
-    output.textContent = event.detail?.code ?? '';
+    // The export is HTML; it goes through the site's one highlighter
+    // (escapes every character, so innerHTML only ever gets token spans).
+    output.innerHTML = hlHTML(event.detail?.code ?? '');
     panel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   });
 

@@ -6,6 +6,7 @@ import { existsSync, mkdirSync, writeFileSync, cpSync, readFileSync } from 'node
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
+  OG_CARDS,
   SITE_URL,
   renderComponentPage,
   renderNotFoundPage,
@@ -119,6 +120,7 @@ cpSync(join(express, 'public', 'boot.js'), join(dist, 'boot.js'));
 cpSync(join(express, 'public', 'scrollspy.js'), join(dist, 'scrollspy.js'));
 cpSync(join(express, 'public', 'more-menu.js'), join(dist, 'more-menu.js'));
 cpSync(join(express, 'public', 'specimens.js'), join(dist, 'specimens.js'));
+cpSync(join(express, 'public', 'hero-demo.js'), join(dist, 'hero-demo.js'));
 cpSync(join(express, 'public', 'basenative.js'), join(dist, 'basenative.js'));
 cpSync(join(express, 'public', 'builder.js'), join(dist, 'builder.js'));
 cpSync(join(express, 'public', 'compare.js'), join(dist, 'compare.js'));
@@ -151,6 +153,14 @@ for (const file of [
   cpSync(join(express, 'public', file), join(dist, file));
 }
 cpSync(join(express, 'public', 'avatar-eve.svg'), join(dist, 'avatar-eve.svg'));
+// Social cards, one per route (scripts/og-cards.mjs). A route whose card
+// is missing would advertise a 404 image on every share.
+for (const card of OG_CARDS) {
+  if (!existsSync(join(express, 'public', 'og', `${card.slug}.png`))) {
+    throw new Error(`missing social card public/og/${card.slug}.png — run scripts/og-cards.mjs`);
+  }
+}
+cpSync(join(express, 'public', 'og'), join(dist, 'og'), { recursive: true });
 
 // Copy component CSS (served as /bn-css/ in Express, must exist in dist)
 const bnCssDir = join(dist, 'bn-css');

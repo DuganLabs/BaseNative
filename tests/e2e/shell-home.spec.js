@@ -229,7 +229,9 @@ test.describe('home shell', () => {
         return {
           groups: groups.length,
           groupTops: groups.map((rect) => Math.round(rect.top)),
-          width: footer.getBoundingClientRect().width,
+          groupStart: Math.round(groups[0].left),
+          contentStart: Math.round(document.querySelector('main h2').getBoundingClientRect().left),
+          right: footer.getBoundingClientRect().right,
           bodyWidth: document.body.getBoundingClientRect().width,
           height: footer.getBoundingClientRect().height,
           size: parseFloat(getComputedStyle(link).fontSize),
@@ -238,11 +240,16 @@ test.describe('home shell', () => {
         };
       });
       // The site-footer is a body-level landmark: its link groups stand
-      // in a row across the full width, on no card of their own.
+      // in a row on no card of their own, starting on the same left
+      // edge as the page's headings (one content column), never past
+      // the viewport.
       expect(foot.groups).toBeGreaterThanOrEqual(3);
       expect(Math.max(...foot.groupTops) - Math.min(...foot.groupTops)).toBeLessThanOrEqual(2);
-      expect(foot.width).toBe(foot.bodyWidth);
-      expect(foot.height).toBeLessThan(264);
+      expect(Math.abs(foot.groupStart - foot.contentStart)).toBeLessThanOrEqual(1);
+      expect(foot.right).toBeLessThanOrEqual(foot.bodyWidth);
+      // Tallest group (four links) is four 44px touch targets under its
+      // heading, inside the footer's block padding.
+      expect(foot.height).toBeLessThan(300);
       expect(foot.size).toBeGreaterThanOrEqual(15);
       expect(foot.fill).toBe('rgba(0, 0, 0, 0)');
       expect(foot.shadow).toBe('none');
@@ -405,7 +412,13 @@ test.describe('home shell', () => {
           };
         };
         return {
-          pre: read(document.querySelector('body[data-active="home"] pre')),
+          // The code-block figure is the one surface; its pre is
+          // transparent inside it, so the figure is what must read.
+          pre: read(
+            document.querySelector(
+              'body[data-active="home"] main figure[variant="code"]:not([data-bn-hero-demo] *)',
+            ),
+          ),
           list: read(document.querySelector('main ul[variant]')),
           hero: read(document.querySelector('main figure[variant]')),
         };

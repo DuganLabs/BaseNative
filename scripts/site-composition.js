@@ -6,7 +6,8 @@
  * Fails when a route view hand-rolls a component (a class or style
  * attribute), when the shell loads builder CSS on every page, when the
  * playground loads a second component sheet, when a second highlighter
- * appears, or when site CSS paints a component variant (colour, type,
+ * appears, when a rendered code block (or the script or style inside
+ * one) comes out unhighlighted, or when site CSS paints a component variant (colour, type,
  * padding, radius) instead of composing it.
  *
  * styles.css is the site's page layout: section rhythm, the catalog
@@ -84,11 +85,15 @@ for (const rel of [
 ]) {
   const text = read(rel);
   if (/\.kw\s*\{|\.tk-/.test(text)) problems.push(`${rel}: a second highlight vocabulary`);
-  const stripped = text.replace(/:not\(\[variant\]\)/g, '');
+  // Excluding a variant (:not(...)) or keying layout off one (:has(...))
+  // composes the component; only a rule that selects it can paint it.
+  const stripped = text
+    .replace(/:not\(\[variant\]\)/g, '')
+    .replace(/:(?:not|has)\([^(){}]*\[variant[^\]]*\][^(){}]*\)/g, '');
   if (/\[variant[=\]]/.test(stripped) && PAINT.test(text)) {
     const blocks = stripped.split('}');
     for (const block of blocks) {
-      if (!/\[variant[=\]]/.test(block)) continue;
+      if (!/\[variant[=\]]/.test(block.split('{')[0])) continue;
       if (!PAINT.test(block)) continue;
       const head = (block.match(/[^{]*\[variant[^\]]*\][^{]*/) || [block.slice(0, 80)])[0]
         .replace(/\s+/g, ' ')
@@ -134,6 +139,56 @@ const templates = readdirSync(join(root, 'examples/express/views'))
 for (const rel of templates) {
   const m = read(rel).match(/<h[1-6][^>]*>\s*[A-Z][A-Z ]{4,}\s*<\/h[1-6]>/);
   if (m) problems.push(`${rel}: an all-caps heading (${m[0]})`);
+}
+
+// Every code block the site renders goes through the one highlighter,
+// all of it: a block with no token at all, or an embedded <script> or
+// <style> whose body came out plain, fails. Rendered here exactly as
+// build-pages renders it — every route, every component page, the 404.
+const TOKEN = /<(?:b|strong|i|abbr|dfn|samp|mark|em|data|kbd|cite|small)>/;
+const CODE = /<pre\b[^>]*>\s*<code\b[^>]*>([\s\S]*?)<\/code>\s*<\/pre>/g;
+const plain = (html) =>
+  html
+    .replace(/<[^>]+>/g, '')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, '&');
+function checkHighlighted(where, html) {
+  for (const [, inner] of html.matchAll(CODE)) {
+    const text = plain(inner).trim();
+    if (!text) continue;
+    const sample = JSON.stringify(text.slice(0, 60));
+    if (!TOKEN.test(inner)) {
+      problems.push(`${where}: an unhighlighted code block ${sample}`);
+      continue;
+    }
+    for (const [, tag, body] of inner.matchAll(
+      /&lt;<strong>(script|style)<\/strong>[\s\S]*?&gt;([\s\S]*?)&lt;\/<strong>\1<\/strong>/g,
+    )) {
+      if (plain(body).trim() && !TOKEN.test(body)) {
+        problems.push(`${where}: a plain embedded <${tag}> ${sample}`);
+      }
+    }
+  }
+}
+const site = await import('../examples/express/page.js');
+const { trinityComponentInfo } = await import('../examples/express/trinity.js');
+const { staticTasks } = await import('../examples/express/site-data.js');
+for (const route of site.siteRoutes) {
+  if (route.internal) continue;
+  checkHighlighted(route.path, site.renderRoute(route, { tasks: staticTasks, hasApi: false }));
+}
+for (const { name } of trinityComponentInfo()) {
+  checkHighlighted(`/components/${name}`, site.renderComponentPage(name));
+}
+checkHighlighted('404', site.renderNotFoundPage());
+// The two client-side code surfaces (the playground editors, the
+// builder's export) render through the same engine.
+for (const rel of ['examples/express/public/playground.js', 'examples/express/builder-entry.js']) {
+  if (!/from '[./]*(?:public\/)?highlight-engine\.js'/.test(read(rel))) {
+    problems.push(`${rel}: renders code without the shared highlighter`);
+  }
 }
 
 if (problems.length) {

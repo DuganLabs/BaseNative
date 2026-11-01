@@ -129,6 +129,72 @@ export function escapeAttr(s) {
  * @param {string} [opts.scripts]     Extra markup injected before </body>
  * @param {string} [opts.activePage]  navPages entry to mark aria-current
  */
+/**
+ * The social card for each published route (scripts/og-cards.mjs draws
+ * them on the site's own sheets). Component pages share the catalog's
+ * card; any other path takes the home card.
+ */
+export const OG_CARDS = [
+  {
+    slug: 'home',
+    path: '/',
+    eyebrow: '',
+    title: 'Reactive UI in plain HTML.',
+    lede: 'Signals over native HTML. No build step, no virtual DOM, zero dependencies in core.',
+  },
+  {
+    slug: 'compare',
+    path: '/compare',
+    eyebrow: 'Compare',
+    title: 'How BaseNative compares',
+    lede: 'The same counter in BaseNative, React, Angular and Svelte — bytes, steps and tooling side by side.',
+  },
+  {
+    slug: 'components',
+    path: '/components',
+    eyebrow: 'Components',
+    title: 'Components on native HTML',
+    lede: 'Semantic, server-rendered, token-driven. Every one accessible by construction.',
+  },
+  {
+    slug: 'docs',
+    path: '/docs',
+    eyebrow: 'Docs',
+    title: 'API reference',
+    lede: 'signal, computed, effect, hydrate and render — the whole runtime on one page.',
+  },
+  {
+    slug: 'ai',
+    path: '/ai',
+    eyebrow: 'AI',
+    title: 'The scorecard for models',
+    lede: 'One HTML file a model can write and a browser can run. No toolchain to hallucinate.',
+  },
+  {
+    slug: 'playground',
+    path: '/playground',
+    eyebrow: 'Playground',
+    title: 'Edit it live',
+    lede: 'HTML, CSS and JS in the browser, running on the real runtime as you type.',
+  },
+  {
+    slug: 'builder',
+    path: '/builder',
+    eyebrow: 'Builder',
+    title: 'Drag, edit, export',
+    lede: 'Compose components on a canvas and export clean BaseNative source.',
+  },
+];
+
+export function ogImageFor(path) {
+  const clean = path.replace(/\/+$/, '') || '/';
+  const card =
+    OG_CARDS.find((c) => c.path === clean) ||
+    (clean.startsWith('/components/') ? OG_CARDS.find((c) => c.slug === 'components') : null) ||
+    OG_CARDS[0];
+  return `${SITE_URL}/og/${card.slug}.png`;
+}
+
 export function renderPage(viewFile, ctx, opts) {
   const {
     title,
@@ -151,6 +217,7 @@ export function renderPage(viewFile, ctx, opts) {
     .replace(/<!--DESCRIPTION-->/g, escapeAttr(description))
     .replace(/<!--OG_TITLE-->/g, escapeAttr(ogTitle))
     .replace(/<!--OG_URL-->/g, escapeAttr(SITE_URL + path))
+    .replace(/<!--OG_IMAGE-->/g, escapeAttr(ogImageFor(path)))
     .replace('<!--APP_NAV_CSS-->', () => shellCriticalCss())
     .replace('<!--APP_SHELL-->', () => {
       const { sidebarHtml, appBarHtml } = renderSiteChrome(activePage);
@@ -203,7 +270,9 @@ export const siteRoutes = [
         { label: 'Try the playground', href: '/playground' },
         { label: 'Read the docs', href: '/docs' },
       ],
+      after: ctx.heroDemo,
     }),
+    scripts: '<script type="module" src="/hero-demo.js"></script>',
   },
   {
     path: '/compare',

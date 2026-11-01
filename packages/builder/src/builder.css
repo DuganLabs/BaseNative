@@ -171,8 +171,13 @@
     background: var(--bn-plat-material-thick, transparent);
   }
 
-  .bn-builder__btn:disabled {
-    opacity: 0.45;
+  /* Disabled reads as disabled without fading to illegible: the system
+     fill and the secondary label (legible, 4.5:1), never opacity over
+     the brand. */
+  .bn-builder__btn:disabled,
+  .bn-builder__btn[data-bn-builder-action='export']:disabled {
+    background: var(--color-bkg-button-disabled);
+    color: var(--color-text-label-2);
     cursor: default;
   }
 
