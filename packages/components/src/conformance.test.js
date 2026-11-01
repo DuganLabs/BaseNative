@@ -410,3 +410,39 @@ describe('conformance — tint and status text hold AA in light mode', () => {
     assert.doesNotMatch(sheet('badge'), /--color-text-badge: var\(--color-tint\);/);
   });
 });
+
+describe('conformance — every control is a 44px target (pagination, breadcrumb, tabs, menus, tree rows under 44)', () => {
+  const sheet = (name) => readFileSync(new URL(`./${name}/styles.css`, import.meta.url), 'utf8');
+  it('the shared target minimum is 44px', () => {
+    assert.match(tokens, /--size-target-min:\s*2\.75rem;|--size-target-min:\s*44px;/);
+  });
+  it('link and item controls reserve the target minimum', () => {
+    const cases = {
+      pagination: /min-inline-size: var\(--size-target-min\)/,
+      breadcrumb: /min-inline-size: var\(--size-target-min\)/,
+      'site-footer': /min-inline-size: var\(--size-target-min\)/,
+      'dropdown-menu': /min-block-size: var\(--size-target-min\)/,
+      tabs: /min-inline-size: var\(--size-target-min\)/,
+      'list-group': /min-block-size: var\(--size-target-min\)/,
+      'app-bar': /min-block-size: var\(--size-target-min\)/,
+    };
+    for (const [name, re] of Object.entries(cases)) assert.match(sheet(name), re, name);
+  });
+  it('app-bar items are never narrower than a target, at any width', () => {
+    assert.match(tokens, /--size-app-bar-item-min-inline: var\(--size-target-min\);/);
+  });
+  it('tree toggles are targets and a leaf row is as tall as one, its text on the toggle label edge', () => {
+    const tree = sheet('tree');
+    assert.match(tree, /--size-button-block: var\(--size-target-min\);/);
+    assert.match(
+      tree,
+      /--spacing-tree-leaf-padding-inline-start: calc\(var\(--spacing-tree-item-padding-inline\) \+ var\(--spacing-button-padding-inline\) \+ var\(--size-border-button\)\);/,
+    );
+  });
+  it('a narrow pagination keeps one row: far pages step out in a container query', () => {
+    const p = sheet('pagination');
+    assert.match(p, /@container \(max-width: 28rem\)/);
+    assert.match(p, /display: var\(--display-pagination-item-compact\)/);
+    assert.match(tokens, /--display-pagination-item-compact: var\(--display-none\);/);
+  });
+});
