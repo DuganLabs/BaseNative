@@ -32,153 +32,12 @@
 
 @layer tokens {
   :root {
-    /* Surfaces */
-
-    /* Borders */
-
-    /* Text */
-
-    /* Accent */
-
-    --accent-dim: color-mix(in oklab, var(--color-tint) 72%, black);
-    --accent-glow: color-mix(in srgb, var(--color-tint) 20%, transparent);
-    --accent-glow-strong: color-mix(in srgb, var(--color-tint) 33%, transparent);
-
-    /* Status */
-
-    --danger-glow: color-mix(in srgb, var(--danger) 20%, transparent);
-
-    --success-glow: color-mix(in srgb, var(--success) 20%, transparent);
-
-    /* Fonts — single family, style-switch via font-stretch */
-    --font-family: 'BaseNative', system-ui, sans-serif;
-    --font-sans: normal;
-    --font-serif: expanded;
-    --font-mono: ultra-condensed;
-
-    /* Easing */
-    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-    --ease-out-back: cubic-bezier(0.34, 1.3, 0.64, 1);
-
-    /* Durations */
-    --duration-fast: 0.15s;
-    --duration-med: 0.3s;
-    --duration-slow: 0.5s;
-
-    /* Line heights */
-    --line-height-body: 1.65;
-    --line-height-code: 1.7;
-    --line-height-tight: 1.55;
-
-    /* Sizing */
-    --size-inline-max: 68rem;
+    /* Every site token lives in the one token sheet,
+       packages/components/src/tokens.css (built from tokens/*.json).
+       One site-only override is left: the site reads a narrower
+       measure than the package default (65ch). DESIGN.md lists it
+       under "Naming variants". */
     --size-text-max: 52ch;
-
-    /* Spacing */
-    --space-xs: 0.25rem;
-    --space-sm: 0.5rem;
-    --space-md: 1rem;
-    /* One width for every form specimen: a field fills a phone and stops
-       at a readable measure on a wide pane, the same for every control. */
-    --measure-field: 28rem;
-    --space-lg: 1.5rem;
-    --space-xl: 2rem;
-    --space-2xl: 3rem;
-    --space-3xl: 4rem;
-    --space-page-block-end: 6rem;
-
-    /* Radii */
-    --radius-sm: 0.25rem;
-    --radius-md: 0.5rem;
-    --radius-lg: 0.75rem;
-    --radius-pill: 1rem;
-
-    /* Font sizes live in the token sheet. A later declaration in this
-       layer would hide --font-size-base and put row text back under 15px. */
-
-    /* Font weights */
-    --font-weight-normal: 400;
-    --font-weight-medium: 500;
-    --font-weight-semibold: 600;
-
-    /* Letter spacing */
-    --letter-spacing-tight: -0.02em;
-    --letter-spacing-wide: 0.04em;
-    --letter-spacing-wider: 0.08em;
-
-    /* Borders */
-    --border-width: 1px;
-    --border-inline-width: 2px;
-    --border-code-width: 3px;
-
-    /* Shadows */
-    --shadow-card: var(--shadow-raised);
-    --shadow-card-hover: var(--shadow-float);
-    --shadow-btn: 0 0 16px -4px var(--accent-glow-strong);
-    --shadow-input: 0 0 0 3px var(--accent-glow);
-
-    /* Popovers — the floating-surface tokens the legacy popover rules
-       read. Restored: the definitions were dropped in a pilot-era
-       cleanup while the rules that consume them stayed, so every
-       legacy popover surface rendered without its background, border,
-       radius, or shadow. The radius rides the site ladder. */
-    --popover-bg: var(--surface-2);
-    --popover-border: var(--border-accent);
-    --popover-shadow: var(--shadow-float);
-    --popover-radius: var(--radius-md);
-
-    /* Element tokens — restored. The site's bare-element rules (radio,
-       checkbox, range, meter, kbd, mark, dialog, tooltip, table, status
-       pills) read these names, but their definitions went in a
-       token-fold cleanup while the rules stayed: every one resolved to
-       nothing, so a bare radio drew no ring and no dot. Each now points
-       at the system token that owns its role. */
-    --danger: var(--color-danger-strong);
-    --success: var(--color-success-strong);
-    --status-active-bg: var(--color-bkg-success);
-    --status-idle-bg: var(--color-tint-fill);
-    --status-error-bg: var(--color-bkg-error);
-    --status-pending-bg: var(--color-fill);
-    --stat-value-size: var(--font-title-2-size);
-    --counter-output-size: var(--font-title-2-size);
-    --log-max-height: 12rem;
-    --log-entry-opacity: 1;
-    --track-height: 0.25rem;
-    --track-bg: var(--color-fill);
-    --track-fill: var(--color-tint);
-    --thumb-size: 1.75rem;
-    --meter-low: var(--color-danger);
-    --meter-mid: var(--color-warning);
-    --meter-high: var(--color-success);
-    --mark-bg: var(--color-tint-fill);
-    --mark-text: var(--color-text);
-    --kbd-bg: var(--color-surface-raised);
-    --kbd-border: var(--color-border);
-    --kbd-shadow: 0 1px 0 var(--color-border);
-    --blockquote-border: var(--color-tint);
-    --table-header-bg: var(--color-bkg-table-head);
-    --table-stripe: var(--color-bkg-table-row-striped);
-    --details-marker: var(--color-tint);
-    --dialog-bg: var(--color-bkg-dialog);
-    --dialog-border: var(--color-border-dialog);
-    --dialog-backdrop: var(--color-bkg-dialog-backdrop);
-    --dialog-shadow: var(--shadow-modal);
-    --tooltip-bg: var(--color-surface-inverse);
-    --tooltip-text: var(--color-text-inverse);
-    --tooltip-font-size: var(--font-footnote-size);
-    --select-bg: var(--color-bkg-select-native);
-    --select-option-hover: var(--color-fill);
-    --control-size: 1.375rem;
-    --control-bg: var(--color-surface-control);
-    --control-border: var(--color-border-control);
-    --control-checked-bg: var(--color-tint);
-    --control-checked-border: var(--color-tint);
-
-    /* Status backgrounds */
-
-    /* Highlight colours live on the code-block component. This sheet
-     does not paint a second vocabulary. */
 
     main {
       flex: 1;
@@ -4554,7 +4413,7 @@
     color: var(--color-text-label);
     font-size: var(--font-headline-size);
     font-weight: var(--font-weight-bold);
-    letter-spacing: -0.01em;
+    letter-spacing: var(--font-headline-tracking);
     text-decoration: none;
     white-space: nowrap;
     border-radius: var(--size-radius-control);
@@ -4567,7 +4426,7 @@
   header:has(> a[rel='home']) > a[rel='home'] > svg {
     flex: none;
     border-radius: var(--size-radius-control);
-    box-shadow: 0 0 0 1px var(--color-border-separator);
+    box-shadow: 0 0 0 var(--size-1px) var(--color-border-separator);
   }
 
   header:has(> a[rel='home']) > a[aria-label] {
@@ -4587,8 +4446,8 @@
   }
 
   header:has(> a[rel='home']) > a:focus-visible {
-    outline: 2px solid var(--color-tint);
-    outline-offset: 2px;
+    outline: var(--size-border-thick) solid var(--color-tint);
+    outline-offset: var(--spacing-half);
   }
 
   /* The home gallery: a bento of live components. One column on a phone,

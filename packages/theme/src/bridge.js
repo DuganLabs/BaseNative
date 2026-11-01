@@ -469,6 +469,14 @@ export const UPSTREAM_OWNED = Object.freeze({
   '--spacing-safe-right': 'space ladder — a grid is not identity; override it in app CSS',
   '--spacing-toggle-knob-inset-legacy':
     'space ladder — a grid is not identity; override it in app CSS',
+  '--accent-glow':
+    'docs-site token (tokens/site.json), read only by other site tokens; the site owns it, not a theme',
+  '--border-accent':
+    'docs-site token (tokens/site.json), read only by other site tokens; the site owns it, not a theme',
+  '--color-success-strong':
+    'docs-site token (tokens/site.json), read only by other site tokens; the site owns it, not a theme',
+  '--surface-2':
+    'docs-site token (tokens/site.json), read only by other site tokens; the site owns it, not a theme',
 });
 
 /**

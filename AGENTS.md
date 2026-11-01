@@ -2,6 +2,10 @@
 
 Write BaseNative, not React, in this repository. The full cheat sheet is `docs/llm/START.md` (published as `/llms-start.txt`). The scorecard of known weaknesses is `/ai`. This file is enough to produce a correct first draft.
 
+## Design contract
+
+Before any UI change, read [`DESIGN.md`](DESIGN.md) and the one token sheet, `packages/components/src/tokens.css` (source: `packages/components/tokens/*.json`). Use tokens only: never hard-code a colour, length, radius, shadow or duration. `node scripts/ds-lint.js` (DS009) fails raw values outside the token sheet.
+
 ## Shape
 
 - Templates are HTML. `{{ count() }}` interpolates text. Call the signal.
