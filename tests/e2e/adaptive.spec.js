@@ -388,15 +388,9 @@ test.describe('Site tables — the contract on real pages', () => {
 
   for (const [path, count, rowHeaders] of [
     ['/compare', 6, true],
-    // The /ai scorecard is one catalog table whose rows open with a
-    // grouping data cell. It joins this gate because it is where the
-    // restack's missing wrap defence actually bit: prose carrying an
-    // unbreakable identifier (globalThis.__BASENATIVE_DEVTOOLS__)
-    // forced the table 75px past a 320px viewport while the compare
-    // tables, with no such token, stacked cleanly. (/roadmap's seven
-    // tables stood here until the route consolidation retired the
-    // page; the contract coverage continues on /compare and /ai.)
-    ['/ai', 1, false],
+    // (/roadmap's seven tables and the /ai scorecard stood here until
+    // the pages were consolidated; the contract coverage continues on
+    // /compare.)
   ]) {
     test(`${path} at 390px: every table stacked, labelled, nothing clipped`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
@@ -410,8 +404,7 @@ test.describe('Site tables — the contract on real pages', () => {
         for (const row of t.rows) {
           // Stacked: a row's cells sit on distinct lines, and its first
           // cell is the label line — a row header where the table's data
-          // has one (compare), the measure cell where it does not
-          // (the /ai scorecard rows are all data cells by design).
+          // has one.
           expect(row.lines).toBe(row.cells);
           expect(row.label).toBe(true);
           if (rowHeaders) expect(row.header).toBe(true);

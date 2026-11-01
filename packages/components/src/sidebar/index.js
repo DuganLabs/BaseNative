@@ -30,6 +30,8 @@ export const root = 'aside';
  * @property {SidebarSection[]} sections Grouped destinations, in order.
  * @property {string} [label] Accessible name for the nav landmark. Default "Sidebar".
  * @property {string} [variant] A registered variant name.
+ * @property {string} [headerHtml] Rendered masthead (a header holding the
+ *   brand link and any header actions), placed above the nav.
  */
 
 /** @param {SidebarProps} props */
@@ -58,7 +60,9 @@ export function create(props) {
   // The in-page subnav is a labeled region; the rail stays complementary.
   const landmark = signal(props.variant === 'subnav' ? 'region' : 'complementary');
 
-  return { sections, label, variant, landmark, raw };
+  const headerHtml = signal(props.headerHtml ?? '');
+
+  return { sections, label, variant, landmark, headerHtml, raw };
 }
 
 /** @param {import('../registry.js').Registry} registry */

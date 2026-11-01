@@ -30,6 +30,10 @@
  *    component preview).
  *  - ident: inline code breaks between identifier parts (after a dot,
  *    slash, dash, paren or comma, or at a <wbr>), never inside a name.
+ *  - edge: the page title starts on the content column. The h1's left
+ *    edge equals the left edge of every block in <main> (and in a
+ *    page-level article) within 1px, so the title never hangs out of
+ *    the column the sections below it start on.
  *  - nowrap: code never wraps. Every source line of a code sample is
  *    exactly one line box, at every width, so its shape reads as
  *    written.
@@ -410,6 +414,25 @@ export function layoutAudit(opts = {}) {
     const off = (top + bottom) / 2 - (rr.top + rr.bottom) / 2;
     if (Math.abs(off) > 1)
       out.push({ rule: 'menu-row', at: path(row), px: Math.round(off * 10) / 10 });
+  }
+  // edge
+  {
+    const h1 = main.querySelector('h1');
+    const visible = (e) => {
+      const r = e.getBoundingClientRect();
+      return r.width > 1 && r.height > 1 && getComputedStyle(e).position !== 'absolute';
+    };
+    if (h1 && visible(h1)) {
+      const left = h1.getBoundingClientRect().left;
+      const article = main.querySelector(':scope > article');
+      const blocks = [...main.children, ...(article ? article.children : [])].filter(
+        (e) => e !== article && !e.contains(h1) && !e.matches('output, script, template') && visible(e),
+      );
+      for (const b of blocks) {
+        const off = b.getBoundingClientRect().left - left;
+        if (Math.abs(off) > 1) out.push({ rule: 'edge', at: `h1 | ${path(b)}`, px: Math.round(off) });
+      }
+    }
   }
   return out;
 }

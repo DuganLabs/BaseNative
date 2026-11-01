@@ -39,7 +39,6 @@ import {
 } from '../../examples/express/highlight.js';
 import { TONE_MARKERS, toneMarker } from '../../examples/express/compare-tables.js';
 import { HIGHLIGHTERS } from '../../examples/express/public/highlight-engine.js';
-import { AI_SCORECARD } from '../../examples/express/ai-scorecard.js';
 import { trinityDemos } from '../../examples/express/trinity-catalog.js';
 import {
   renderTrinity,
@@ -570,7 +569,7 @@ describe('every published route is reachable from the navigation', () => {
     assert.match(html, /BN_EFFECT_LOOP/);
     assert.equal(html.includes('style='), false);
     // The hero's actions are the catalog's link-form buttons.
-    assert.match(html, /<a variant="primary" href="\/playground">/);
+    assert.match(html, /<a variant="primary" href="\/docs">/);
     // Home's lists are the catalog's list-group.
     assert.match(html, /<ul variant="default">/);
   });
@@ -977,7 +976,7 @@ describe('the builder bundle registers the elements /builder needs', () => {
   });
 });
 
-describe('the /ai scorecard keeps every point against BaseNative', () => {
+describe('the /ai page shows BaseNative in an agent\'s loop', () => {
   const route = siteRoutes.find((entry) => entry.path === '/ai');
   const html = renderRoute(route, { tasks: [], hasApi: false });
 
@@ -987,26 +986,92 @@ describe('the /ai scorecard keeps every point against BaseNative', () => {
     assert.match(html, /href="\/ai"/);
   });
 
-  it('renders every checklist row', () => {
-    for (const item of AI_SCORECARD) {
-      assert.ok(html.includes(item.point), `missing point: ${item.point}`);
-      assert.ok(html.includes(item.status), `missing status for ${item.id}`);
-    }
+  it('backs "agent-ready" with the CLI, the MCP server, the validator and llms.txt', () => {
+    assert.match(html, /bn create my-app/);
+    assert.match(html, /@basenative\/mcp/);
+    assert.match(html, /@basenative\/validate/);
+    assert.match(html, /href="\/llms\.txt"/);
   });
 
-  it('says the natural effect pattern runs once, and names the loop error', () => {
-    assert.match(html, /runs once/);
+  it('names the effect loop error a model can repair', () => {
     assert.match(html, /BN_EFFECT_LOOP/);
   });
 
-  it('does not confuse the page with greenput.com/ai', () => {
-    assert.match(html, /greenput\.com\/ai/);
-    // The sourcing note stays; the internal process narrative that used
-    // to sit above the scorecard (the git-history account, "no commit by
-    // Muse") does not — public pages carry no working notes.
+  it('carries no self-scored checklist and no empty measurements', () => {
+    assert.doesNotMatch(html, /Every point against it/);
+    assert.doesNotMatch(html, /Pass rates stay unpublished/);
     assert.doesNotMatch(html, /no commit by Muse/);
-    assert.doesNotMatch(html, /Where this list came from/);
   });
+});
+
+// The launch story: one positioning line everywhere, every pillar backed
+// by something real, and no internal or self-deprecating working copy
+// on a public page (PH blockers 1 and 4, docs/conformance.md).
+describe('public copy tells one story and carries no internal notes', () => {
+  const pages = siteRoutes
+    .filter((r) => !r.internal)
+    .map((r) => [r.path, renderRoute(r, { tasks: [], hasApi: false })]);
+  const home = pages.find(([path]) => path === '/')[1];
+
+  it('no public page carries internal jargon, TODOs or negative working copy', () => {
+    const banned = [
+      /Pass rates stay unpublished/i,
+      /prompt corpus is empty/i,
+      /No token\./,
+      /Holy Trinity/i,
+      /Every point against it/i,
+      /\bTODO\b/,
+      /\bFIXME\b/,
+    ];
+    for (const [path, html] of pages) {
+      const text = html.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<!--[\s\S]*?-->/g, '');
+      for (const re of banned) assert.doesNotMatch(text, re, `${path} carries ${re}`);
+    }
+  });
+
+  it('the home hero states the positioning and both calls to action', () => {
+    assert.match(home, /<h1[^>]*>\s*Apple-grade design, all in code\.\s*<\/h1>/);
+    assert.match(home, /href="\/docs"[^>]*>Get started/);
+    assert.match(home, /href="\/components"[^>]*>Browse components/);
+  });
+
+  it('every pillar is on the home page and backed by a real link or command', () => {
+    for (const pillar of ['Apple-grade design', 'All in code', 'Open source', 'Web standards', 'AI-safe', 'Agent-ready']) {
+      assert.ok(home.includes(pillar), `home is missing the ${pillar} pillar`);
+    }
+    assert.match(home, /Apache-2\.0/);
+    assert.match(home, /npx -p @basenative\/cli bn create my-app/);
+    assert.match(home, /href="\/ai"/);
+  });
+
+  it('the meta description and OG title carry the same story', () => {
+    assert.match(home, /<meta name="description" content="BaseNative is an open-source design system kit, fully in code/);
+    assert.match(home, /property="og:title" content="BaseNative — Apple-grade design system in plain HTML &amp; CSS"/);
+  });
+
+  it('claims stay defensible: no "the only", no Apple endorsement', () => {
+    for (const [path, html] of pages) {
+      assert.doesNotMatch(
+        html,
+        /\b(is|are) the only\b|\bthe only (design system|framework|runtime|kit|library)\b/i,
+        `${path} claims to be "the only"`,
+      );
+      assert.doesNotMatch(html, /(endorsed|approved|certified) by Apple/i, path);
+    }
+  });
+});
+
+// The masthead: the brand and the GitHub link ride on every page, in the
+// rail on desktop and the phone top bar where the rail is hidden.
+describe('every page carries the masthead', () => {
+  for (const route of siteRoutes.filter((r) => !r.internal)) {
+    it(`${route.path} has the brand home link and the GitHub link, rail and phone`, () => {
+      const html = renderRoute(route, { tasks: [], hasApi: false });
+      const brand = html.match(/<a href="\/" rel="home">/g) || [];
+      assert.equal(brand.length, 2, 'one brand link in the rail, one in the phone bar');
+      assert.match(html, /<a href="https:\/\/github\.com\/DuganLabs\/BaseNative" aria-label="BaseNative on GitHub">/);
+    });
+  }
 });
 
 // ─── 13c. Site footer: rendered from the nav model by the catalog component ──
@@ -1242,21 +1307,6 @@ describe('the asset version covers every stylesheet the CSS chain is built from'
 });
 
 describe('table cells set identifiers as code, so prose never breaks mid-word', () => {
-  it('the /ai scorecard wraps package specs, globals and calls in <code>', () => {
-    const route = siteRoutes.find((r) => r.path === '/ai');
-    assert.ok(route, '/ai is a site route');
-    const html = renderRoute(route, { tasks: [], hasApi: false });
-    const table = html.match(/<table[\s\S]*?<\/table>/);
-    assert.ok(table, '/ai renders its scorecard table');
-    const cells = table[0].match(/<td[^>]*>[\s\S]*?<\/td>/g) || [];
-    const bare = /(^|[^>\w/.$])(@basenative\/[a-z-]+|globalThis\.[\w$]+|[A-Za-z_$][\w$]*\(\))/;
-    for (const cell of cells) {
-      const prose = cell.replace(/<code>[\s\S]*?<\/code>/g, '');
-      assert.doesNotMatch(prose, bare, `an identifier outside <code>: ${cell.slice(0, 120)}`);
-    }
-    assert.match(table[0], /<code>globalThis\.<wbr>__BASENATIVE_<wbr>DEVTOOLS__<\/code>/);
-  });
-
   it('the /compare tables set identifiers as code and let a slash compound break after the slash', () => {
     const route = siteRoutes.find((r) => r.path === '/compare');
     const html = renderRoute(route, { tasks: [], hasApi: false });

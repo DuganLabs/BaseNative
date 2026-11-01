@@ -92,6 +92,9 @@
   --font-caption-2-size: 0.6875rem;
   --font-caption-2-leading: 0.8125rem;
   --font-caption-2-tracking: 0.011em;
+  --font-display-size: clamp(2.25rem, 1.25rem + 3vw, 4rem);
+  --font-display-leading: 1.08;
+  --font-display-tracking: -0.025em;
   --size-radius-none: 0;
   --size-radius-md: 0.625rem;
   --size-radius-xl: 1rem;
@@ -310,6 +313,7 @@
   --size-app-shell-footer-inline-start: var(--size-app-shell-rail-inline);
   --spacing-app-shell-footer-padding-block-end: calc(var(--spacing-8) * 3);
   --spacing-app-shell-main-padding-block-end: calc(var(--spacing-8) * 3);
+  --spacing-app-shell-header-padding-block-start: max(var(--spacing-2), env(safe-area-inset-top));
   --content-breadcrumb-separator: "/";
   --spacing-choice-group-control-inset-block-start: calc(var(--spacing-5) + var(--spacing-1));
   --layer-choice-group-control: 1;
@@ -559,6 +563,10 @@
   --spacing-app-shell-header-gap: var(--spacing-7);
   --spacing-app-shell-header-gap-rail: var(--spacing-8);
   --spacing-app-shell-stack-gap: var(--spacing-4);
+  --display-app-shell-header: var(--display-flex);
+  --align-app-shell-header: var(--align-center);
+  --justify-app-shell-header: var(--justify-space-between);
+  --spacing-app-shell-main-padding-block-start-header: var(--spacing-2);
   --display-avatar: var(--display-inline-flex);
   --align-avatar: var(--align-center);
   --justify-avatar: var(--justify-center);
@@ -1051,7 +1059,7 @@
   --spacing-hero-eyebrow-margin: var(--spacing-0);
   --spacing-hero-gap: var(--spacing-5);
   --spacing-hero-lede-margin: var(--spacing-0);
-  --spacing-hero-margin: var(--spacing-0);
+  --spacing-hero-margin: var(--spacing-margin-auto);
   --spacing-hero-overlay-caption-padding-block: var(--spacing-5);
   --spacing-hero-overlay-caption-padding-inline: var(--spacing-5);
   --spacing-hero-padding-block: var(--spacing-2);
@@ -1461,6 +1469,11 @@
   --spacing-sidebar-padding-inline: var(--spacing-3);
   --spacing-sidebar-section-gap: var(--spacing-2);
   --text-decoration-sidebar-link: var(--text-decoration-none);
+  --display-sidebar-header: var(--display-flex);
+  --align-sidebar-header: var(--align-center);
+  --justify-sidebar-header: var(--justify-space-between);
+  --spacing-sidebar-header-gap: var(--spacing-2);
+  --spacing-sidebar-header-margin-block-end: var(--spacing-6);
   --border-style-site-footer-block-start: var(--border-style-solid);
   --color-border-site-footer-block-start: var(--color-border-separator);
   --color-text-site-footer-heading: var(--color-text-label);
@@ -1831,6 +1844,7 @@
   --size-radius-app-bar-menu: var(--size-radius-container);
   --size-radius-app-bar-menu-link: var(--size-radius-control);
   --size-radius-app-bar-tab: var(--size-radius-control);
+  --spacing-app-shell-header-padding-inline: var(--spacing-app-shell-main-padding-inline-phone);
   --font-avatar-family: var(--font-subheadline-family);
   --font-badge-family: var(--font-caption-1-family);
   --font-breadcrumb-link-family: var(--font-subheadline-family);

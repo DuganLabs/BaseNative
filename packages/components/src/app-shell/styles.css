@@ -39,6 +39,32 @@ main[variant="default"] > figure[variant="stacked"]:not(:has(> figcaption > nav)
   margin-block-start: var(--spacing-app-shell-header-gap);
 }
 
+/* The phone masthead. Where the rail is hidden it is the page's top
+   bar, the brand at the start and its actions at the end; past the
+   phone the rail carries its own and this one is hidden. */
+body > header {
+  display: var(--display-app-shell-header);
+  align-items: var(--align-app-shell-header);
+  justify-content: var(--justify-app-shell-header);
+  min-block-size: var(--size-target-min);
+  padding-block-start: var(--spacing-app-shell-header-padding-block-start);
+  padding-inline: var(--spacing-app-shell-header-padding-inline);
+}
+
+body > header + aside + main[variant="default"] {
+  padding-block-start: var(--spacing-app-shell-main-padding-block-start-header);
+}
+
+@media (min-width: 48rem) {
+  body > header {
+    display: var(--display-app-shell-chrome-hidden);
+  }
+
+  body > header + aside + main[variant="default"] {
+    padding-block-start: var(--spacing-app-shell-main-padding-block-start);
+  }
+}
+
 @media (max-width: 47.9375rem) {
   body > aside[variant="sidebar"] {
     display: var(--display-app-shell-chrome-hidden);
