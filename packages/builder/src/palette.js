@@ -264,7 +264,7 @@ function registerOrganisms(palette) {
     props: [{ name: 'text', kind: 'string', label: 'Submit' }],
     defaults: { text: 'Save' },
     preview(props) {
-      return `<p variant="default"><label for="builder-form-name">Name</label><input variant="default" id="builder-form-name" type="text" value=""></p><footer><button variant="primary" type="submit">${text(props, 'Save')}</button></footer>`;
+      return `<section variant="field"><label for="builder-form-name">Name</label><input variant="default" id="builder-form-name" type="text" value=""></section><footer><button variant="primary" type="submit">${text(props, 'Save')}</button></footer>`;
     },
   });
 

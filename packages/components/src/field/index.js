@@ -3,14 +3,15 @@ import { signal, computed } from '@basenative/runtime';
 import { raw } from '@basenative/runtime/shared/escape';
 
 export const name = 'field';
-export const root = 'p';
+export const root = 'section';
 
 /**
  * @typedef {object} FieldProps
  * @property {string} label
  * @property {string} controlId The id of the nested control the label names.
  * @property {string} controlHtml Rendered HTML of the nested control (trusted: produced by renderComponent).
- * @property {string} [variant] A registered variant name.
+ * @property {string} [variant] A registered variant name. `default` is the
+ *   former name of `field` and still selects it.
  * @property {string} [hint]
  * @property {string} [error]
  */
@@ -23,7 +24,7 @@ export function create(props) {
   const label = signal(props.label);
   const controlId = signal(props.controlId);
   const controlHtml = signal(props.controlHtml ?? '');
-  const variant = signal(props.variant ?? 'default');
+  const variant = signal(!props.variant || props.variant === 'default' ? 'field' : props.variant);
   const hint = signal(props.hint ?? '');
   const error = signal(props.error ?? '');
   const hasError = computed(() => error() !== '');
@@ -34,7 +35,7 @@ export function create(props) {
 
 /** @param {import('../registry.js').Registry} registry */
 export function registerVariants(registry) {
-  registry.registerVariant('field', 'default');
+  registry.registerVariant('field', 'field');
 }
 
 export const template = new URL('./index.html', import.meta.url);

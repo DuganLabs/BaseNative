@@ -1203,3 +1203,30 @@ describe('table cells set identifiers as code, so prose never breaks mid-word', 
     assert.match(html, /<code>@basenative\/hmr<\/code>/);
   });
 });
+
+describe('server-rendered pages keep block content out of <p>', () => {
+  /* A <p> around a block element is split by the HTML parser: the select
+   * demo's field rendered as an orphaned label, a sibling control, and a
+   * stray empty paragraph. */
+  const BLOCK =
+    /<(address|article|aside|blockquote|details|dialog|div|dl|fieldset|figure|footer|form|h[1-6]|header|hr|menu|nav|ol|pre|section|table|ul)\b/;
+  const SRC = new URL('../../packages/components/src/', import.meta.url);
+  const slugs = readdirSync(SRC, { withFileTypes: true })
+    .filter((d) => d.isDirectory() && existsSync(new URL(`${d.name}/index.html`, SRC)))
+    .map((d) => d.name);
+  const pages = [
+    ...siteRoutes
+      .filter((route) => !route.path.includes(':'))
+      .map((route) => [route.path, renderRoute(route, { tasks: [], hasApi: false })]),
+    ...slugs.map((slug) => [`/components/${slug}`, renderComponentPage(slug)]),
+  ];
+  it('no route or component page renders a block element inside a paragraph', () => {
+    for (const [path, html] of pages) {
+      const route = { path };
+      const scrubbed = html.replace(/<(script|style|template|textarea|code)\b[\s\S]*?<\/\1>/g, '');
+      for (const m of scrubbed.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/g)) {
+        assert.doesNotMatch(m[1], BLOCK, `${route.path}: ${m[0].slice(0, 160)}`);
+      }
+    }
+  });
+});

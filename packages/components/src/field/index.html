@@ -1,5 +1,5 @@
 <template>
-  <p :variant="variant()">
+  <section :variant="variant()">
     <label :for="controlId()">{{ label() }}</label>
     {{ raw(controlHtml()) }}
     <template @if="hasError()">
@@ -8,5 +8,5 @@
     <template @if="showHint()">
       <small>{{ hint() }}</small>
     </template>
-  </p>
+  </section>
 </template>
