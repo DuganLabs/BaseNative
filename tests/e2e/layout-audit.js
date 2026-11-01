@@ -426,11 +426,13 @@ export function layoutAudit(opts = {}) {
       const left = h1.getBoundingClientRect().left;
       const article = main.querySelector(':scope > article');
       const blocks = [...main.children, ...(article ? article.children : [])].filter(
-        (e) => e !== article && !e.contains(h1) && !e.matches('output, script, template') && visible(e),
+        (e) =>
+          e !== article && !e.contains(h1) && !e.matches('output, script, template') && visible(e),
       );
       for (const b of blocks) {
         const off = b.getBoundingClientRect().left - left;
-        if (Math.abs(off) > 1) out.push({ rule: 'edge', at: `h1 | ${path(b)}`, px: Math.round(off) });
+        if (Math.abs(off) > 1)
+          out.push({ rule: 'edge', at: `h1 | ${path(b)}`, px: Math.round(off) });
       }
     }
   }
