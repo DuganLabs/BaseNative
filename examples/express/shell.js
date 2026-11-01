@@ -1,6 +1,6 @@
 /**
  * Site chrome. One file: the active page, the grouping, and the markup —
- * all of it rendered by the Holy Trinity catalog (@basenative/components):
+ * all of it rendered by the component catalog (@basenative/components):
  * the sidebar and the app bar are the same destinations in desktop and
  * phone form, and page.js composes them around the content through the
  * app-shell. The phone bar keeps the first four destinations; the rest
@@ -62,7 +62,11 @@ export function renderSiteChrome(activePage = '') {
   }));
   return {
     headerHtml: renderMasthead(),
-    sidebarHtml: renderTrinity('sidebar', { label: 'Sections', sections, headerHtml: renderMasthead() }),
+    sidebarHtml: renderTrinity('sidebar', {
+      label: 'Sections',
+      sections,
+      headerHtml: renderMasthead(),
+    }),
     appBarHtml: renderTrinity('app-bar', {
       id: 'site-tabs',
       label: 'Tabs',
