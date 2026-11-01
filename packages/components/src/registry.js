@@ -22,7 +22,7 @@ export function validateTemplate(html) {
   if (/\sclass\s*=/i.test(html)) {
     throw new TypeError('template: class attributes are not used; the element is the selector');
   }
-  if (/\sdata-/i.test(html)) {
+  if (/\s:?data-/i.test(html)) {
     throw new TypeError('template: data- attributes are not used; state lives in the view model');
   }
   const text = html

@@ -28,41 +28,72 @@ export function create(props) {
   const hrefFor = props.hrefFor ?? ((/** @type {number} */ n) => `#page-${n}`);
 
   // The page window is data: numbers to link, one ellipsis entry where a
-  // run is elided, the current page flagged instead of linked.
+  // run is elided, the current page flagged instead of linked. There are
+  // two windows. The wide one links the current page's neighbours; the
+  // narrow one (a phone) keeps only the first, current and last pages, so
+  // a jump to either end is always one tap. Entries in one window only
+  // carry `only` (rendered as the item's variant), and the stylesheet's container query picks the window.
   const items = computed(() => {
     const total = pages();
     const current = page();
-    const numbers = new Set([1, total, current - 1, current, current + 1]);
-    /** @type {{ label: string, page: number | null, current: boolean, href: string }[]} */
-    const list = [{
-      label: props.prevLabel ?? 'Previous',
-      page: current > 1 ? current - 1 : null,
+    // In the wide window an ellipsis stands for two or more pages; a gap
+    // of one shows the page. The narrow window keeps the gap: its ellipsis
+    // is narrower than a page target, and a 320px phone fits five targets
+    // and two gaps on one row, not six targets.
+    const wide = new Set([1, total, current - 1, current, current + 1]);
+    for (let n = 2; n < total; n += 1) if (wide.has(n - 1) && wide.has(n + 1)) wide.add(n);
+    const narrow = new Set([1, total, current]);
+    /**
+     * @typedef {{ label: string, page: number | null, current: boolean, href: string | null,
+     *   only: 'wide' | 'narrow' | null, step: string | null, hidden: string | null }} PageItem
+     */
+    /** @param {string} label @param {number | null} to @param {string} step @returns {PageItem} */
+    const stepItem = (label, to, step) => ({
+      label,
+      page: to,
       current: false,
-      href: current > 1 ? hrefFor(current - 1) : '',
-    }];
-    let elided = false;
+      href: to ? hrefFor(to) : null,
+      only: null,
+      step,
+      hidden: to ? null : 'true',
+    });
+    /** @param {'wide' | 'narrow' | null} only @returns {PageItem} */
+    const gap = (only) => ({
+      label: '…',
+      page: null,
+      current: false,
+      href: null,
+      only,
+      step: null,
+      hidden: 'true',
+    });
+    /** @type {PageItem[]} */
+    const list = [
+      stepItem(props.prevLabel ?? 'Previous', current > 1 ? current - 1 : null, 'previous'),
+    ];
+    let elidedWide = false;
+    let elidedNarrow = false;
     for (let n = 1; n <= total; n += 1) {
-      if (!numbers.has(n)) {
-        if (!elided) {
-          list.push({ label: '…', page: null, current: false, href: '' });
-          elided = true;
-        }
-        continue;
-      }
-      elided = false;
+      const inWide = wide.has(n);
+      const inNarrow = narrow.has(n);
+      const gapWide = !inWide && !elidedWide;
+      const gapNarrow = !inNarrow && !elidedNarrow;
+      if (gapWide || gapNarrow)
+        list.push(gap(gapWide && gapNarrow ? null : gapWide ? 'wide' : 'narrow'));
+      elidedWide = !inWide;
+      elidedNarrow = !inNarrow;
+      if (!inWide) continue;
       list.push({
         label: String(n),
         page: n === current ? null : n,
         current: n === current,
-        href: n === current ? '' : hrefFor(n),
+        href: n === current ? null : hrefFor(n),
+        only: inNarrow ? null : 'wide',
+        step: null,
+        hidden: null,
       });
     }
-    list.push({
-      label: props.nextLabel ?? 'Next',
-      page: current < total ? current + 1 : null,
-      current: false,
-      href: current < total ? hrefFor(current + 1) : '',
-    });
+    list.push(stepItem(props.nextLabel ?? 'Next', current < total ? current + 1 : null, 'next'));
     return list;
   });
 
