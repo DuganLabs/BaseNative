@@ -192,6 +192,10 @@
       & > [data-bn-hero-demo] {
         grid-column: 2;
         grid-row: 1 / -1;
+        /* The card hugs its content: stretched to the copy's height it
+           grew an empty band between the code and the live result. Copy
+           and card centre on each other whichever is taller. */
+        align-self: center;
         margin-block-start: 0;
       }
     }
@@ -2541,6 +2545,9 @@
       ) {
         flex-direction: column;
         align-items: stretch;
+        /* Stacked, the main axis is vertical: centre the stack in a
+           stage taller than it, as the row tray centres its line. */
+        justify-content: center;
         gap: var(--space-md);
       }
     }
@@ -4486,8 +4493,12 @@
       color: var(--color-tint-strong);
     }
 
+    /* Tiles in a row share the row's height, so a short specimen gets a
+       taller stage than it needs. Its lines pack together and sit on
+       the stage's vertical centre: the free space splits evenly above
+       and below instead of pooling as a dead band under the content. */
     & > li > figure > output {
-      align-content: start;
+      align-content: center;
     }
   }
 
