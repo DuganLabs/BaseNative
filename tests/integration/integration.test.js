@@ -976,7 +976,7 @@ describe('the builder bundle registers the elements /builder needs', () => {
   });
 });
 
-describe('the /ai page shows BaseNative in an agent\'s loop', () => {
+describe("the /ai page shows BaseNative in an agent's loop", () => {
   const route = siteRoutes.find((entry) => entry.path === '/ai');
   const html = renderRoute(route, { tasks: [], hasApi: false });
 
@@ -1036,7 +1036,14 @@ describe('public copy tells one story and carries no internal notes', () => {
   });
 
   it('every pillar is on the home page and backed by a real link or command', () => {
-    for (const pillar of ['Apple-grade design', 'All in code', 'Open source', 'Web standards', 'AI-safe', 'Agent-ready']) {
+    for (const pillar of [
+      'Apple-grade design',
+      'All in code',
+      'Open source',
+      'Web standards',
+      'AI-safe',
+      'Agent-ready',
+    ]) {
       assert.ok(home.includes(pillar), `home is missing the ${pillar} pillar`);
     }
     assert.match(home, /Apache-2\.0/);
@@ -1045,8 +1052,14 @@ describe('public copy tells one story and carries no internal notes', () => {
   });
 
   it('the meta description and OG title carry the same story', () => {
-    assert.match(home, /<meta name="description" content="BaseNative is an open-source design system kit, fully in code/);
-    assert.match(home, /property="og:title" content="BaseNative — Apple-grade design system in plain HTML &amp; CSS"/);
+    assert.match(
+      home,
+      /<meta name="description" content="BaseNative is an open-source design system kit, fully in code/,
+    );
+    assert.match(
+      home,
+      /property="og:title" content="BaseNative — Apple-grade design system in plain HTML &amp; CSS"/,
+    );
   });
 
   it('claims stay defensible: no "the only", no Apple endorsement', () => {
@@ -1061,6 +1074,56 @@ describe('public copy tells one story and carries no internal notes', () => {
   });
 });
 
+// The home gallery: real components, rendered by the catalog and
+// mounted live, never pictures of them.
+describe('home shows a live component gallery', () => {
+  const html = renderRoute(
+    siteRoutes.find((r) => r.path === '/'),
+    { tasks: [], hasApi: false },
+  );
+  const gallery = (html.match(/<ul data-bn-gallery>[\s\S]*?<\/ul>\s*<\/section>/) || [''])[0];
+  it('renders a bento of components, each linking to its page', () => {
+    for (const slug of [
+      'button',
+      'segmented-control',
+      'field',
+      'card',
+      'tabs',
+      'table',
+      'dialog',
+      'toast',
+    ]) {
+      assert.match(gallery, new RegExp(`<a href="/components/${slug}">`), slug);
+    }
+  });
+  it("stages each tile in the component pages' preview figure", () => {
+    const tiles =
+      gallery.match(/<li data-bn-gallery-tile="[a-z-]+"><figure data-bn-component-preview>/g) || [];
+    assert.equal(tiles.length, 8);
+  });
+  it('holds real elements, not images', () => {
+    for (const re of [
+      /<button[^>]*variant="primary"/,
+      /<input[^>]*type="email"/,
+      /<select/,
+      /type="radio"/,
+      /role="switch"|type="checkbox"/,
+      /<table/,
+      /role="tablist"/,
+      /<dialog[^>]*open/,
+      /<ol[^>]*variant="default"/,
+      /<progress/,
+    ]) {
+      assert.match(gallery, re, String(re));
+    }
+    assert.doesNotMatch(gallery, /<img/);
+  });
+  it('mounts tabs, dialog and toast live with the specimen boot', () => {
+    assert.match(html, /data-bn-live-specimens/);
+    assert.match(html, /\/specimens\.js/);
+  });
+});
+
 // The masthead: the brand and the GitHub link ride on every page, in the
 // rail on desktop and the phone top bar where the rail is hidden.
 describe('every page carries the masthead', () => {
@@ -1069,7 +1132,10 @@ describe('every page carries the masthead', () => {
       const html = renderRoute(route, { tasks: [], hasApi: false });
       const brand = html.match(/<a href="\/" rel="home">/g) || [];
       assert.equal(brand.length, 2, 'one brand link in the rail, one in the phone bar');
-      assert.match(html, /<a href="https:\/\/github\.com\/DuganLabs\/BaseNative" aria-label="BaseNative on GitHub">/);
+      assert.match(
+        html,
+        /<a href="https:\/\/github\.com\/DuganLabs\/BaseNative" aria-label="BaseNative on GitHub">/,
+      );
     });
   }
 });
@@ -1082,7 +1148,9 @@ describe('every page carries the masthead', () => {
 
 describe('site footer is rendered from the nav model', () => {
   const html = renderRoute(siteRoutes[0], { tasks: [], hasApi: false });
-  const footer = html.slice(html.indexOf('<footer'), html.indexOf('</footer>'));
+  // The site footer, not a component's footer staged in the home gallery.
+  const start = html.indexOf('<footer variant="default">');
+  const footer = html.slice(start, html.indexOf('</footer>', start));
 
   it('carries the trinity site-footer contract', () => {
     assert.match(footer, /<footer variant="default">/);

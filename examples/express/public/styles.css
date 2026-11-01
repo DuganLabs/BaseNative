@@ -4538,50 +4538,117 @@
   }
 }
 
-/* The masthead (the rail's top and the phone top bar). The brand link
-   is the mark and the wordmark; the GitHub link is a 44px icon target
-   whose glyph sits at its centre. */
-body > header > a[rel='home'],
-body > aside[variant='sidebar'] > header > a[rel='home'] {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  min-block-size: var(--size-target-min);
-  padding-inline: var(--spacing-1);
-  color: var(--color-text-label);
-  font-size: var(--font-headline-size);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: -0.01em;
-  text-decoration: none;
-  white-space: nowrap;
-  border-radius: var(--size-radius-control);
-}
+@layer components {
+  /* The masthead (the rail's top and the phone top bar). The brand link
+     is the mark and the wordmark; the GitHub link is a 44px icon target
+     whose glyph sits at its centre. */
+  body > header > a[rel='home'],
+  aside > header > a[rel='home'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    min-block-size: var(--size-target-min);
+    padding-inline: var(--spacing-1);
+    color: var(--color-text-label);
+    font-size: var(--font-headline-size);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    white-space: nowrap;
+    border-radius: var(--size-radius-control);
+  }
 
-body > aside[variant='sidebar'] > header > a[rel='home'] {
-  padding-inline: var(--spacing-3);
-}
+  aside > header > a[rel='home'] {
+    padding-inline: var(--spacing-3);
+  }
 
-:is(body, body > aside[variant='sidebar']) > header > a[rel='home'] > svg {
-  flex: none;
-  border-radius: 7px;
-  box-shadow: 0 0 0 1px var(--color-border-separator);
-}
+  header:has(> a[rel='home']) > a[rel='home'] > svg {
+    flex: none;
+    border-radius: var(--size-radius-control);
+    box-shadow: 0 0 0 1px var(--color-border-separator);
+  }
 
-:is(body, body > aside[variant='sidebar']) > header > a[aria-label] {
-  display: inline-grid;
-  place-items: center;
-  inline-size: var(--size-target-min);
-  block-size: var(--size-target-min);
-  color: var(--color-text-label-2);
-  border-radius: var(--size-radius-control);
-}
+  header:has(> a[rel='home']) > a[aria-label] {
+    display: inline-grid;
+    place-items: center;
+    inline-size: var(--size-target-min);
+    block-size: var(--size-target-min);
+    color: var(--color-text-label-2);
+    border-radius: var(--size-radius-control);
+  }
 
-:is(body, body > aside[variant='sidebar']) > header > a:hover {
-  color: var(--color-text-label);
-  background: var(--color-fill-3);
-}
+  header:has(> a[rel='home']) > a:hover {
+    color: var(--color-text-label);
+    background: var(--color-fill-3);
+  }
 
-:is(body, body > aside[variant='sidebar']) > header > a:focus-visible {
-  outline: 2px solid var(--color-tint);
-  outline-offset: 2px;
+  header:has(> a[rel='home']) > a:focus-visible {
+    outline: 2px solid var(--color-tint);
+    outline-offset: 2px;
+  }
+
+  /* The home gallery: a bento of live components. One column on a phone,
+     two once the column is wide enough, a six-track grid when it is
+     wider still, each tile spanning a half, a third or the full row.
+     The tracks follow the column, not the viewport, since the sidebar
+     takes a share of the window from a tablet up. Every tile is the component
+     pages' preview figure, so a specimen stages the same way in both. */
+  *:has(> [data-bn-gallery]) {
+    container-type: inline-size;
+  }
+
+  [data-bn-gallery] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--spacing-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & > li {
+      display: grid;
+      min-inline-size: 0;
+    }
+
+    & > li > figure {
+      margin: 0;
+    }
+
+    & > li > figure > figcaption > a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    & > li > figure > figcaption > a:hover {
+      color: var(--color-tint-strong);
+    }
+
+    & > li > figure > output {
+      align-content: start;
+    }
+  }
+
+  @container (min-width: 36rem) {
+    [data-bn-gallery] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+
+      & > li:is([data-bn-gallery-tile='wide'], [data-bn-gallery-tile='third-wide']) {
+        grid-column: 1 / -1;
+      }
+    }
+  }
+
+  @container (min-width: 56rem) {
+    [data-bn-gallery] {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+
+      & > li[data-bn-gallery-tile='half'] {
+        grid-column: span 3;
+      }
+
+      & > li:is([data-bn-gallery-tile='third'], [data-bn-gallery-tile='third-wide']) {
+        grid-column: span 2;
+      }
+    }
+  }
 }
