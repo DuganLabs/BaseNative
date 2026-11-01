@@ -197,6 +197,24 @@
       }
     }
   },
+  "spacing-20": {
+    "$value": "5rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "20",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "legacy"
+      }
+    }
+  },
   "spacing-half": {
     "$value": "0.125rem",
     "$type": "dimension",

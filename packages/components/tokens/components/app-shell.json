@@ -268,5 +268,59 @@
         "system": "trinity"
       }
     }
+  },
+  "spacing-app-shell-section-gap": {
+    "$value": "{spacing-12}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "app-shell-section",
+          "variant": null,
+          "subitem": "gap",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-app-shell-section-gap-rail": {
+    "$value": "{spacing-20}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "app-shell-section",
+          "variant": null,
+          "subitem": "gap",
+          "state": null,
+          "context": "rail"
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-app-shell-stack-gap": {
+    "$value": "{spacing-4}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "app-shell-stack",
+          "variant": null,
+          "subitem": "gap",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
   }
 }

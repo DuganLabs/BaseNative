@@ -718,5 +718,59 @@
         "system": "trinity"
       }
     }
+  },
+  "white-space-code-block-pre": {
+    "$value": "{white-space-pre}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "white-space",
+          "type": null,
+          "item": "code-block-pre",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "white-space-code-block-pre-phone": {
+    "$value": "{white-space-pre-wrap}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "white-space",
+          "type": null,
+          "item": "code-block-pre",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": "phone"
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "overflow-wrap-code-block-pre-phone": {
+    "$value": "{overflow-wrap-anywhere}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "overflow-wrap",
+          "type": null,
+          "item": "code-block-pre",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": "phone"
+        },
+        "system": "trinity"
+      }
+    }
   }
 }
