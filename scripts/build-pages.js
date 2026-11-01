@@ -122,6 +122,7 @@ cpSync(join(express, 'public', 'scrollspy.js'), join(dist, 'scrollspy.js'));
 cpSync(join(express, 'public', 'more-menu.js'), join(dist, 'more-menu.js'));
 cpSync(join(express, 'public', 'specimens.js'), join(dist, 'specimens.js'));
 cpSync(join(express, 'public', 'hero-demo.js'), join(dist, 'hero-demo.js'));
+cpSync(join(express, 'public', 'copy-code.js'), join(dist, 'copy-code.js'));
 cpSync(join(express, 'public', 'basenative.js'), join(dist, 'basenative.js'));
 cpSync(join(express, 'public', 'builder.js'), join(dist, 'builder.js'));
 cpSync(join(express, 'public', 'compare.js'), join(dist, 'compare.js'));
