@@ -1350,7 +1350,7 @@
     }
   },
   "color-tint-strong": {
-    "$value": "#9a5f05",
+    "$value": "#8f5804",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -1404,7 +1404,7 @@
     }
   },
   "color-danger-strong": {
-    "$value": "#d70015",
+    "$value": "#c80013",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -1414,6 +1414,42 @@
           "item": "danger",
           "variant": null,
           "subitem": "strong",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-danger-solid": {
+    "$value": "#c80013",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "danger",
+          "variant": null,
+          "subitem": "solid",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-danger-solid-pressed": {
+    "$value": "#a8000f",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "danger",
+          "variant": null,
+          "subitem": "solid-pressed",
           "state": null,
           "context": null
         },
@@ -1548,7 +1584,7 @@
     }
   },
   "color-success-strong": {
-    "$value": "#1f7a33",
+    "$value": "#1c7230",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -1584,7 +1620,7 @@
     }
   },
   "color-warning-strong": {
-    "$value": "#9a5700",
+    "$value": "#8f5100",
     "$type": "color",
     "$extensions": {
       "com.basenative": {

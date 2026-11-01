@@ -50,7 +50,7 @@ ol[variant="stepper"] > li[variant="complete"] {
   --color-border-stepper-item-block-start: var(--color-tint);
   --color-text-stepper-item: var(--color-text-label);
   --color-bkg-stepper-disc: var(--color-tint);
-  --color-text-stepper-disc: var(--color-background);
+  --color-text-stepper-disc: var(--color-text-on-tint);
 }
 
 ol[variant="stepper"] > li[variant="current"] {

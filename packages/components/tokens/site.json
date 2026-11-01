@@ -1296,7 +1296,7 @@
     }
   },
   "site-brand-text": {
-    "$value": "#9a5f05",
+    "$value": "#8f5804",
     "$type": "color",
     "$extensions": {
       "com.basenative": {

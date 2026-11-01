@@ -1277,6 +1277,42 @@
       }
     }
   },
+  "color-danger-solid": {
+    "$value": "#d70015",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "danger",
+          "variant": null,
+          "subitem": "solid",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-danger-solid-pressed": {
+    "$value": "#b8000f",
+    "$type": "color",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color",
+          "type": null,
+          "item": "danger",
+          "variant": null,
+          "subitem": "solid-pressed",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "color-scrim": {
     "$value": "rgb(0 0 0 / 0.55)",
     "$type": "color",

@@ -24,7 +24,7 @@ small[variant="danger"] {
 
 small[variant="info"] {
   --color-bkg-badge: var(--color-tint-fill);
-  --color-text-badge: var(--color-tint);
+  --color-text-badge: var(--color-tint-strong);
 }
 
 small[variant="success"] {
