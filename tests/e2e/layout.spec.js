@@ -27,6 +27,7 @@ const ENFORCED = new Set([
   'inset',
   'cover',
   'target',
+  'ident',
 ]);
 
 for (const theme of THEMES) {

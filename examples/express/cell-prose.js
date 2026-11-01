@@ -14,6 +14,18 @@ import { escapeText } from '@basenative/runtime/shared/escape';
 const CODE_TOKEN =
   /@basenative\/[a-z-]+(?:\/[a-z-]+)*|\bglobalThis(?:\.[\w$]+)+|\b[A-Za-z_$][\w$]*\(\)/g;
 
+/**
+ * An identifier set as code, with a break opportunity after each dot or
+ * slash between name parts and at each snake_case word boundary: the
+ * table lets code wrap anywhere as a last
+ * resort, and these give it somewhere better to wrap first.
+ * @param {string} text @returns {string} trusted HTML
+ */
+export const codeHtml = (text) =>
+  escapeText(text)
+    .replace(/(?<=[\w$@])([./])(?=[\w$])/g, '$1<wbr>')
+    .replace(/(?<=[A-Za-z0-9]_)(?=[A-Za-z])/g, '<wbr>');
+
 const prose = (text) => escapeText(text).replace(/(?<=[A-Za-z]{2})\/(?=[A-Za-z]{2})/g, '/<wbr>');
 
 /** @param {string} text @returns {string} trusted HTML */
@@ -21,7 +33,7 @@ export function cellProse(text) {
   let html = '';
   let last = 0;
   for (const match of text.matchAll(CODE_TOKEN)) {
-    html += prose(text.slice(last, match.index)) + `<code>${escapeText(match[0])}</code>`;
+    html += prose(text.slice(last, match.index)) + `<code>${codeHtml(match[0])}</code>`;
     last = match.index + match[0].length;
   }
   return html + prose(text.slice(last));

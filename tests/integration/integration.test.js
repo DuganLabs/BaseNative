@@ -413,7 +413,7 @@ describe('the capability guard reads prose, not just numbers', () => {
     const route = siteRoutes.find((r) => r.path === '/compare');
     const html = renderRoute(route, { tasks: [], hasApi: false });
     assert.doesNotMatch(html, /\bNo HMR\b/i);
-    assert.match(html, /HMR \(<code>@basenative\/hmr<\/code>\)/);
+    assert.match(html, /HMR \(<code>@basenative\/<wbr>hmr<\/code>\)/);
   });
 });
 
@@ -1187,7 +1187,7 @@ describe('table cells set identifiers as code, so prose never breaks mid-word', 
       const prose = cell.replace(/<code>[\s\S]*?<\/code>/g, '');
       assert.doesNotMatch(prose, bare, `an identifier outside <code>: ${cell.slice(0, 120)}`);
     }
-    assert.match(table[0], /<code>globalThis\.__BASENATIVE_DEVTOOLS__<\/code>/);
+    assert.match(table[0], /<code>globalThis\.<wbr>__BASENATIVE_<wbr>DEVTOOLS__<\/code>/);
   });
 
   it('the /compare tables set identifiers as code and let a slash compound break after the slash', () => {
@@ -1209,7 +1209,42 @@ describe('table cells set identifiers as code, so prose never breaks mid-word', 
         );
       }
     }
-    assert.match(html, /<code>@basenative\/hmr<\/code>/);
+    assert.match(html, /<code>@basenative\/<wbr>hmr<\/code>/);
+  });
+});
+
+describe('inline code wraps between identifier parts, never inside a name', () => {
+  it('cell identifiers get a break after each dot or slash and at snake_case words', async () => {
+    const { codeHtml, cellProse } = await import('../../examples/express/cell-prose.js');
+    assert.equal(
+      codeHtml('globalThis.__BASENATIVE_DEVTOOLS__'),
+      'globalThis.<wbr>__BASENATIVE_<wbr>DEVTOOLS__',
+    );
+    assert.equal(codeHtml('@basenative/integrations'), '@basenative/<wbr>integrations');
+    assert.equal(codeHtml('render()'), 'render()');
+    assert.equal(codeHtml('a<b'), 'a&lt;b');
+    assert.match(
+      cellProse('reads @basenative/validate'),
+      /<code>@basenative\/<wbr>validate<\/code>/,
+    );
+  });
+
+  it('long path code on component and docs pages carries break opportunities', () => {
+    const views = new URL('../../examples/express/views/', import.meta.url);
+    const component = readFileSync(new URL('component.html', views), 'utf8');
+    const docs = readFileSync(new URL('docs.html', views), 'utf8');
+    for (const [name, html] of [
+      ['component.html', component],
+      ['docs.html', docs],
+    ]) {
+      for (const [, code] of html.matchAll(/<code>(packages\/[^<]*(?:<wbr>[^<]*)*)<\/code>/g)) {
+        assert.doesNotMatch(
+          code,
+          /[\w-]\/(?!<wbr>)[\w{]/,
+          `${name}: a path with no break after a slash: ${code}`,
+        );
+      }
+    }
   });
 });
 
