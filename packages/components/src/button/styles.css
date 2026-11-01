@@ -57,10 +57,6 @@ a[variant="default"], a[variant="primary"], a[variant="ghost"], a[variant="destr
     color: var(--color-text-button-disabled);
     cursor: var(--cursor-button-disabled);
   }
-
-  & + & {
-    margin-inline-start: var(--spacing-button-margin-inline-start-adjacent);
-  }
 }
 
 form:has(:invalid) > button[type="submit"] {

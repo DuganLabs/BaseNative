@@ -664,23 +664,5 @@
         "system": "trinity"
       }
     }
-  },
-  "spacing-button-margin-inline-start-adjacent": {
-    "$value": "{spacing-2}",
-    "$type": "dimension",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "spacing",
-          "type": null,
-          "item": "button",
-          "variant": null,
-          "subitem": "margin-inline-start",
-          "state": "adjacent",
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
   }
 }

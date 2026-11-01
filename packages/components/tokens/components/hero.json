@@ -738,7 +738,7 @@
     }
   },
   "spacing-hero-actions-gap": {
-    "$value": "{spacing-3}",
+    "$value": "{spacing-4}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {

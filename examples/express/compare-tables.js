@@ -19,13 +19,33 @@ import { raw } from '@basenative/runtime/shared/escape';
 import { renderTrinity } from './trinity.js';
 import { cellProse } from './cell-prose.js';
 
+/**
+ * A verdict never rides on colour alone (WCAG 1.4.1): a win leads with a
+ * check, a cost with a caution triangle, each named for assistive tech.
+ * An even cell is plain text. The legend in compare.html uses the same marks.
+ */
+export const TONE_MARKERS = {
+  win: { name: 'Advantage', path: 'M3.5 8.5l3 3 6-7' },
+  cost: { name: 'Cost', path: 'M8 3l5.5 10h-11z' },
+};
+
+/** @param {'win' | 'cost'} tone */
+export function toneMarker(tone) {
+  const { name, path } = TONE_MARKERS[tone];
+  return (
+    `<svg role="img" aria-label="${name}:" viewBox="0 0 16 16" data-compare-marker>` +
+    `<path d="${path}" /></svg>`
+  );
+}
+
 /** A toned cell: the verdict is editorial content, carried by a span. */
 function toned(text, tone) {
   if (!tone) return { contentHtml: cellProse(text) };
+  const mark = TONE_MARKERS[tone] ? toneMarker(tone) : '';
   // A span because the verdict is a run of coloured text inside the cell's
   // content slot — the page's sheet colours it; nothing is stamped on the
   // catalog table itself.
-  return { contentHtml: `<span data-tone="${tone}">${cellProse(text)}</span>` };
+  return { contentHtml: `<span data-tone="${tone}">${mark}${cellProse(text)}</span>` };
 }
 
 /** An editorial cell — its text is the page's own wording, not a measurement. */
@@ -46,7 +66,13 @@ function table(columns, rows) {
  *   measured from source by scripts/compare-stats.js
  */
 export function getCompareTables(stats) {
-  const frameworks = ['Measure', 'BaseNative', stats.reactLabel, stats.angularLabel, stats.svelteLabel];
+  const frameworks = [
+    'Measure',
+    'BaseNative',
+    stats.reactLabel,
+    stats.angularLabel,
+    stats.svelteLabel,
+  ];
 
   const bundleTable = table(frameworks, [
     [
@@ -103,33 +129,36 @@ export function getCompareTables(stats) {
     ],
   ]);
 
-  const benchTable = table(['Measure', 'BaseNative', 'React'], [
+  const benchTable = table(
+    ['Measure', 'BaseNative', 'React'],
     [
-      h('Build and tooling fixes before tests passed'),
-      m(`${stats.benchBnToolingFixes}`, 'win'),
-      m(`${stats.benchReactToolingFixes}`, 'cost'),
+      [
+        h('Build and tooling fixes before tests passed'),
+        m(`${stats.benchBnToolingFixes}`, 'win'),
+        m(`${stats.benchReactToolingFixes}`, 'cost'),
+      ],
+      [
+        h('App-code fixes'),
+        m(`${stats.benchBnAppFixes}`, 'even'),
+        m(`${stats.benchReactAppFixes}`, 'even'),
+      ],
+      [
+        h('Production dependencies (interactive task)'),
+        m(`${stats.benchBnDeps}`, 'win'),
+        m(`${stats.benchReactDeps}`, 'even'),
+      ],
+      [
+        h('Hand-written lines (both tasks)'),
+        m(`${stats.benchBnLines}`, 'even'),
+        m(`${stats.benchReactLines}`, 'even'),
+      ],
+      [
+        h('Approx. code tokens (both tasks)'),
+        m(`${stats.benchBnTokens}`, 'cost'),
+        m(`${stats.benchReactTokens}`, 'win'),
+      ],
     ],
-    [
-      h('App-code fixes'),
-      m(`${stats.benchBnAppFixes}`, 'even'),
-      m(`${stats.benchReactAppFixes}`, 'even'),
-    ],
-    [
-      h('Production dependencies (interactive task)'),
-      m(`${stats.benchBnDeps}`, 'win'),
-      m(`${stats.benchReactDeps}`, 'even'),
-    ],
-    [
-      h('Hand-written lines (both tasks)'),
-      m(`${stats.benchBnLines}`, 'even'),
-      m(`${stats.benchReactLines}`, 'even'),
-    ],
-    [
-      h('Approx. code tokens (both tasks)'),
-      m(`${stats.benchBnTokens}`, 'cost'),
-      m(`${stats.benchReactTokens}`, 'win'),
-    ],
-  ]);
+  );
 
   const apiTable = table(frameworks, [
     [

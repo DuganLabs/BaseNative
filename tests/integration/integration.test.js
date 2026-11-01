@@ -31,7 +31,13 @@ import {
   componentTemplates,
   renderPlaygroundPreview,
 } from '../../examples/express/page.js';
-import { highlightCode, highlightCodeBlocks } from '../../examples/express/highlight.js';
+import {
+  codeLines,
+  highlightCode,
+  highlightCodeBlocks,
+  MAX_CODE_INDENT,
+} from '../../examples/express/highlight.js';
+import { TONE_MARKERS, toneMarker } from '../../examples/express/compare-tables.js';
 import { HIGHLIGHTERS } from '../../examples/express/public/highlight-engine.js';
 import { AI_SCORECARD } from '../../examples/express/ai-scorecard.js';
 import { trinityDemos } from '../../examples/express/trinity-catalog.js';
@@ -1414,5 +1420,104 @@ describe('form specimens share one field measure', () => {
       }
     }
     assert.deepEqual(nested, []);
+  });
+});
+
+// ─── Site polish: code lines, compare verdict marks, button rows ───
+describe('code blocks render one element per source line', () => {
+  const strip = (html) =>
+    html
+      .replace(/<[^>]+>/g, '')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&');
+
+  it('every line is its own element and the text is unchanged', () => {
+    const code = 'function f() {\n    return 1;\n}';
+    const html = codeLines(highlightCode(code, 'js'));
+    assert.equal((html.match(/<bdi dir="ltr" data-code-line/g) || []).length, 3);
+    assert.equal(strip(html), code);
+  });
+
+  it('a token spanning lines is closed and reopened, so each line is well-formed', () => {
+    const html = codeLines(highlightCode('/* one\n   two */\nconst a = 1;', 'js'));
+    const lines = html.split('<bdi dir="ltr" data-code-line').filter(Boolean);
+    assert.equal(lines.length, 3);
+    for (const line of lines) {
+      const opens = (line.match(/<i>/g) || []).length;
+      const closes = (line.match(/<\/i>/g) || []).length;
+      assert.equal(opens, closes, `unbalanced comment token in ${line}`);
+    }
+  });
+
+  it('each line records its leading indent, capped, for the hanging wrap', () => {
+    const html = codeLines(highlightCode(`a\n    b\n\tc\n${' '.repeat(40)}d`, 'js'));
+    const indents = [...html.matchAll(/data-code-indent="(\d+)"/g)].map((m) => Number(m[1]));
+    assert.deepEqual(indents, [0, 4, 2, MAX_CODE_INDENT]);
+  });
+
+  it('a line keeps its indent out of the wrap, so it never breaks after the indent', () => {
+    const html = codeLines(highlightCode('a\n    b\n\tc', 'js'));
+    assert.match(html, /<bdi data-code-lead> {4}<\/bdi>/);
+    assert.match(html, /<bdi data-code-lead>\t<\/bdi>/);
+    assert.equal((html.match(/data-code-lead/g) || []).length, 2);
+  });
+
+  it('the page pass emits the line elements', () => {
+    const out = highlightCodeBlocks('<pre><code>const a = 1;\nconst b = 2;</code></pre>');
+    assert.equal((out.match(/data-code-line/g) || []).length, 2);
+  });
+
+  it('the site sheet hangs a wrapped line under its own indent on a phone', () => {
+    const css = readFileSync(
+      fileURLToPath(new URL('../../examples/express/public/styles.css', import.meta.url)),
+      'utf8',
+    );
+    assert.match(css, /\[data-code-line\] \{\s*display: block;/);
+    for (let i = 1; i <= MAX_CODE_INDENT; i++) {
+      assert.match(
+        css,
+        new RegExp(`&\\[data-code-indent=['"]${i}['"]\\]`),
+        `indent ${i} has a rule`,
+      );
+    }
+  });
+});
+
+describe('/compare verdicts never ride on colour alone', () => {
+  it('a win and a cost each carry a named shape', () => {
+    for (const [tone, { name }] of Object.entries(TONE_MARKERS)) {
+      const mark = toneMarker(tone);
+      assert.match(mark, /<svg role="img"/);
+      assert.ok(mark.includes(`aria-label="${name}:"`));
+    }
+    assert.notEqual(TONE_MARKERS.win.path, TONE_MARKERS.cost.path);
+  });
+
+  it('the page explains the marks before the first table', () => {
+    const view = readFileSync(
+      fileURLToPath(new URL('../../examples/express/views/compare.html', import.meta.url)),
+      'utf8',
+    );
+    const legend = view.indexOf('data-compare-legend');
+    assert.ok(legend > 0, 'legend present');
+    assert.ok(legend < view.indexOf('data-compare-table'), 'legend precedes the tables');
+  });
+});
+
+describe('buttons in a row are spaced by the row, once', () => {
+  const read = (rel) =>
+    readFileSync(
+      fileURLToPath(new URL(`../../packages/components/${rel}`, import.meta.url)),
+      'utf8',
+    );
+
+  it('the button sheet adds no margin of its own beside another button', () => {
+    assert.doesNotMatch(read('src/button/styles.css'), /&\s*\+\s*&/);
+    assert.doesNotMatch(read('src/tokens.css'), /button-margin-inline-start-adjacent/);
+  });
+
+  it('hero actions that wrap keep the 16px block rhythm', () => {
+    assert.match(read('src/tokens.css'), /--spacing-hero-actions-gap: var\(--spacing-4\);/);
   });
 });
