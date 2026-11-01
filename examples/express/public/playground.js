@@ -330,7 +330,10 @@ function addConsole(level, tag, text) {
   li.appendChild(lvl);
   li.appendChild(msg);
   consoleList.appendChild(li);
-  li.scrollIntoView({ block: 'nearest' });
+  /* Scroll the console body, never the page: scrollIntoView would
+     scroll every ancestor, and the console sits below the fold. */
+  const body = consoleList.closest('.console-body');
+  if (body) body.scrollTop = body.scrollHeight;
 }
 function clearConsole() {
   consoleList.textContent = '';

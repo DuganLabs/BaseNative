@@ -400,6 +400,15 @@ describe('the capability guard reads prose, not just numbers', () => {
     assert.deepEqual(capabilityProblems('<td>HMR (@basenative/hmr)</td>', ['hmr']), []);
   });
 
+  it('/playground gives the console its own area, outside the editor tabs', () => {
+    const route = siteRoutes.find((r) => r.path === '/playground');
+    const html = renderRoute(route, { tasks: [], hasApi: false });
+    const tabs = html.match(/<section variant="tabs"[\s\S]*?<section aria-label="Result">/);
+    assert.ok(tabs, '/playground renders its editor tabs before the result');
+    assert.doesNotMatch(tabs[0], /aria-label="Console"/, 'the console sits inside an editor tab');
+    assert.match(html, /<section class="console-region" aria-label="Console">/);
+  });
+
   it('/compare no longer denies HMR while @basenative/hmr ships', () => {
     const route = siteRoutes.find((r) => r.path === '/compare');
     const html = renderRoute(route, { tasks: [], hasApi: false });

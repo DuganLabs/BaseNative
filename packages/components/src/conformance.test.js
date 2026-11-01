@@ -199,8 +199,36 @@ describe('conformance — fields hold block controls (a <p> root split the selec
   /* Elements whose content model is phrasing only. A component whose
    * root is one of these cannot nest a block control: the parser closes
    * it at the first <section>, and the label is left behind. */
-  const PHRASING_ONLY = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'label', 'button', 'legend', 'summary', 'pre', 'span']);
-  const VOID = new Set(['area', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr', 'template']);
+  const PHRASING_ONLY = new Set([
+    'p',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'label',
+    'button',
+    'legend',
+    'summary',
+    'pre',
+    'span',
+  ]);
+  const VOID = new Set([
+    'area',
+    'br',
+    'col',
+    'embed',
+    'hr',
+    'img',
+    'input',
+    'link',
+    'meta',
+    'source',
+    'track',
+    'wbr',
+    'template',
+  ]);
   /* Slots that take phrasing by contract: an icon, a heading's title,
    * a rating star. Every other slot takes a control or a block. */
   const PHRASING_SLOT = /(icon|title|star)Html$/i;
@@ -213,8 +241,7 @@ describe('conformance — fields hold block controls (a <p> root split the selec
     while ((m = re.exec(html))) {
       if (m[3]) {
         if (!PHRASING_SLOT.test(m[3])) hosts.push(stack[stack.length - 1] ?? '(root)');
-      }
-      else if (VOID.has(m[1]) || m[2]) continue;
+      } else if (VOID.has(m[1]) || m[2]) continue;
       else if (m[0][1] === '/') stack.pop();
       else stack.push(m[1]);
     }
@@ -229,7 +256,10 @@ describe('conformance — fields hold block controls (a <p> root split the selec
     assert.ok(field.length > 0, 'field nests its control');
     for (const [n, html] of templates) {
       for (const host of slotHosts(html))
-        assert.ok(!PHRASING_ONLY.has(host), `${n}: a rendered-HTML slot inside <${host}> cannot hold a block control`);
+        assert.ok(
+          !PHRASING_ONLY.has(host),
+          `${n}: a rendered-HTML slot inside <${host}> cannot hold a block control`,
+        );
     }
   });
 
@@ -241,13 +271,42 @@ describe('conformance — fields hold block controls (a <p> root split the selec
 });
 
 describe('conformance — the catalog select owns its chevron (the site sheet pushed it under the box)', () => {
-  const site = readFileSync(join(SRC, '..', '..', '..', 'examples', 'express', 'public', 'styles.css'), 'utf8');
+  const site = readFileSync(
+    join(SRC, '..', '..', '..', 'examples', 'express', 'public', 'styles.css'),
+    'utf8',
+  );
   it("the native select carries a variant, so the site's bare-select rules skip it", () => {
     assert.match(read('select/index.html'), /<select variant="native"/);
     const selectors = rules(site)
       .map((r) => r.selector)
       .filter((sel) => /(^|[\s,])select:not\(\[data-bn\]/.test(sel));
     assert.ok(selectors.length > 0, 'the site styles bare selects');
-    for (const sel of selectors) assert.match(sel, /:not\(\[variant\]\)/, `${sel} must skip a catalog select`);
+    for (const sel of selectors)
+      assert.match(sel, /:not\(\[variant\]\)/, `${sel} must skip a catalog select`);
+  });
+});
+
+describe('conformance — playground panes (three editors squeezed to 149px at 768)', () => {
+  const sheet = readFileSync(
+    join(SRC, '..', '..', '..', 'examples', 'express', 'public', 'playground.css'),
+    'utf8',
+  ).replace(/\/\*[\s\S]*?\*\//g, '');
+  it('the panels go three-up from a container query, not a viewport query', () => {
+    assert.match(
+      sheet,
+      /section\[aria-label='Playground workspace'\]\s*\{[^}]*container:\s*playground-workspace\s*\/\s*inline-size/,
+    );
+    const media = sheet.match(/@media[^{]*\{[\s\S]*?\n\}/g) || [];
+    for (const block of media)
+      assert.doesNotMatch(block, /repeat\(3/, 'a viewport query sets three columns');
+    const three = sheet.match(
+      /@container playground-workspace \(min-width: (\d+)px\)\s*\{[\s\S]*?repeat\(3, minmax\((\d+)px, 1fr\)\)/,
+    );
+    assert.ok(three, 'a container query sets the three columns');
+    assert.ok(Number(three[2]) >= 360, 'each column gets at least 360px');
+    assert.ok(
+      Number(three[1]) >= 3 * 360 + 2 * 16,
+      'the query waits for three 360px panels and their gaps',
+    );
   });
 });
