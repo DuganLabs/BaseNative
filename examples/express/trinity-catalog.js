@@ -377,6 +377,50 @@ export const trinityDemos = {
       'Search',
       r('input', { id: 'demo-search', type: 'search', value: 'panel', ariaLabel: 'Search' }),
     ),
+
+    D(
+      'Sizes',
+      [
+        r('input', {
+          id: 'demo-input-sm',
+          variant: 'sm',
+          value: '',
+          placeholder: 'Small · 16px type',
+        }),
+        r('input', { id: 'demo-input-md', value: '', placeholder: 'Default · 17px type' }),
+        r('input', { id: 'demo-input-lg', variant: 'lg', value: '', placeholder: 'Large · 52px' }),
+      ].join('\n'),
+      'Every size keeps a 44px target and at least 16px type, so iOS never zooms on focus.',
+    ),
+    D(
+      'Disabled and read-only',
+      [
+        r('input', { id: 'demo-input-disabled', value: 'Locked by admin', disabled: true }),
+        r('input', { id: 'demo-input-readonly', value: 'JOB-20431', readonly: true }),
+      ].join('\n'),
+      'Read-only stays focusable and selectable; disabled leaves the tab order.',
+    ),
+    D(
+      'Native types',
+      [
+        r('input', {
+          id: 'demo-input-tel',
+          type: 'tel',
+          value: '',
+          autocomplete: 'tel',
+          placeholder: '(555) 010-0199',
+        }),
+        r('input', {
+          id: 'demo-input-url',
+          type: 'url',
+          value: '',
+          placeholder: 'https://example.com',
+        }),
+        r('input', { id: 'demo-input-date', type: 'date', value: '2026-11-02' }),
+        r('input', { id: 'demo-input-time', type: 'time', value: '09:30' }),
+      ].join('\n'),
+      'tel, url, date and time bring the platform keyboard and picker; the picker follows the theme.',
+    ),
   ],
   field: (r) => [
     D(
@@ -442,6 +486,225 @@ export const trinityDemos = {
         error: 'Enter a valid email address.',
       }),
       'The hint swaps for the error; the field, not a banner, reports it.',
+    ),
+
+    D(
+      'Required and optional',
+      [
+        r('field', {
+          label: 'Full name',
+          required: true,
+          controlId: 'demo-field-name',
+          controlHtml: r('input', {
+            id: 'demo-field-name',
+            value: '',
+            required: true,
+            autocomplete: 'name',
+          }),
+        }),
+        r('field', {
+          label: 'Company',
+          optional: true,
+          controlId: 'demo-field-company',
+          controlHtml: r('input', {
+            id: 'demo-field-company',
+            value: '',
+            autocomplete: 'organization',
+          }),
+        }),
+      ].join('\n'),
+      'The mark is visual; the control’s own required is what a screen reader announces.',
+    ),
+    D(
+      'Password with Show',
+      r('field', {
+        label: 'Password',
+        controlId: 'demo-field-password',
+        reveal: true,
+        controlHtml: r('input', {
+          id: 'demo-field-password',
+          type: 'password',
+          value: '',
+          autocomplete: 'new-password',
+          minlength: 8,
+        }),
+        hint: 'At least 8 characters.',
+      }),
+      'Show is a toggle button (aria-pressed) that swaps the type; the value never leaves the input.',
+    ),
+    D(
+      'Search with Clear',
+      r('field', {
+        label: 'Search jobs',
+        controlId: 'demo-field-search',
+        clearable: true,
+        value: 'panel upgrade',
+        controlHtml: r('input', {
+          id: 'demo-field-search',
+          type: 'search',
+          value: 'panel upgrade',
+        }),
+      }),
+      'Clear appears only while there is text, empties the input and returns focus to it.',
+    ),
+    D(
+      'Number stepper',
+      r('field', {
+        label: 'Crew',
+        controlId: 'demo-field-stepper',
+        stepper: true,
+        suffix: 'people',
+        controlHtml: r('input', {
+          id: 'demo-field-stepper',
+          type: 'number',
+          value: '2',
+          min: 1,
+          max: 12,
+        }),
+        hint: 'From 1 to 12.',
+      }),
+      'The − and + buttons step the native input and disable at its min and max.',
+    ),
+    D(
+      'Prefix and suffix',
+      [
+        r('field', {
+          label: 'Quote',
+          controlId: 'demo-field-price',
+          prefix: '$',
+          suffix: 'USD',
+          controlHtml: r('input', {
+            id: 'demo-field-price',
+            type: 'number',
+            value: '1250',
+            min: 0,
+            step: 0.01,
+            inputmode: 'decimal',
+          }),
+        }),
+        r('field', {
+          label: 'Website',
+          controlId: 'demo-field-site',
+          prefix: 'https://',
+          controlHtml: r('input', {
+            id: 'demo-field-site',
+            value: '',
+            placeholder: 'example.com',
+            autocomplete: 'url',
+          }),
+        }),
+      ].join('\n'),
+      'Affixes sit inside the box and join the control’s description.',
+    ),
+    D(
+      'Trailing button',
+      r('field', {
+        label: 'Promo code',
+        controlId: 'demo-field-promo',
+        trailingHtml: r('button', { label: 'Apply', variant: 'primary' }),
+        controlHtml: r('input', { id: 'demo-field-promo', value: '', autocomplete: 'off' }),
+      }),
+      'A caller’s button keeps its variant and joins the box edge.',
+    ),
+    D(
+      'Success',
+      r('field', {
+        label: 'Username',
+        controlId: 'demo-field-user',
+        controlHtml: r('input', {
+          id: 'demo-field-user',
+          value: 'warren',
+          autocomplete: 'username',
+        }),
+        success: 'That name is available.',
+      }),
+      'A confirmation in an output; an error replaces it.',
+    ),
+    D(
+      'Auto-grow with a count',
+      r('field', {
+        label: 'Notes for the crew',
+        controlId: 'demo-field-notes',
+        maxlength: 140,
+        value: 'Gate code 4211.',
+        controlHtml: r('textarea', {
+          id: 'demo-field-notes',
+          rows: 2,
+          maxlength: 140,
+          value: 'Gate code 4211.',
+        }),
+        hint: 'Shown on the work order.',
+      }),
+      'The textarea grows with its text (CSS field-sizing, with a script fallback) and the count updates live.',
+    ),
+    D(
+      'Inline label',
+      r('field', {
+        variant: 'inline',
+        label: 'Job number',
+        controlId: 'demo-field-inline',
+        controlHtml: r('input', { id: 'demo-field-inline', value: '', placeholder: 'JOB-00000' }),
+        hint: 'Stacks under 576px.',
+      }),
+      'The label sits beside the control where there is room.',
+    ),
+    D(
+      'One-time code',
+      r('field', {
+        variant: 'code',
+        label: 'Verification code',
+        controlId: 'demo-field-code',
+        name: 'code',
+        length: 6,
+        hint: 'Sent to your phone. Paste or type it.',
+      }),
+      'Paste, type or iOS autofill spreads across the boxes; Backspace and the arrows move between them.',
+    ),
+    D(
+      'File drop zone',
+      r('field', {
+        variant: 'drop',
+        label: 'Drop photos here or browse',
+        controlId: 'demo-field-files',
+        controlHtml: r('input', {
+          id: 'demo-field-files',
+          type: 'file',
+          value: '',
+          multiple: true,
+          accept: 'image/*,.pdf',
+        }),
+        hint: 'Images or PDF.',
+      }),
+      'The native file input lies over the zone, so click, keyboard and drop all work without script.',
+    ),
+    D(
+      'Group',
+      r('form', {
+        name: 'demo-address',
+        fieldsHtml: [
+          '<fieldset><legend>Site address</legend>',
+          r('field', {
+            label: 'Street',
+            controlId: 'demo-group-street',
+            controlHtml: r('input', {
+              id: 'demo-group-street',
+              value: '',
+              autocomplete: 'street-address',
+            }),
+          }),
+          r('field', {
+            label: 'City',
+            controlId: 'demo-group-city',
+            controlHtml: r('input', {
+              id: 'demo-group-city',
+              value: '',
+              autocomplete: 'address-level2',
+            }),
+          }),
+          '</fieldset>',
+        ].join('\n'),
+      }),
+      'A fieldset with a legend groups related fields; screen readers announce the legend.',
     ),
   ],
   textarea: (r) => [

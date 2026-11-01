@@ -8,7 +8,8 @@ export const root = 'input';
  * @typedef {object} InputProps
  * @property {string} [value]
  * @property {string} [id] The control id a field's label points at.
- * @property {string} [variant] A registered variant name.
+ * @property {string} [variant] `default`, `sm` (16px type, still a 44px target)
+ *   or `lg` (a 52px control).
  * @property {string} [type]
  * @property {boolean} [disabled]
  * @property {boolean} [invalid]
@@ -24,6 +25,8 @@ export const root = 'input';
  * @property {string | number} [step]
  * @property {number} [minlength]
  * @property {number} [maxlength]
+ * @property {string} [accept] File types a file input takes.
+ * @property {boolean} [multiple] A file or email input takes more than one.
  * @property {string} [title] Describes the pattern; the field reports it when the value does not match.
  */
 
@@ -51,6 +54,8 @@ export function create(props = {}) {
   const minlength = attr(props.minlength);
   const maxlength = attr(props.maxlength);
   const title = attr(props.title);
+  const accept = attr(props.accept);
+  const multiple = signal(props.multiple ?? false);
 
   /** @param {{ target: { value: string } }} event */
   function update(event) {
@@ -77,6 +82,8 @@ export function create(props = {}) {
     minlength,
     maxlength,
     title,
+    accept,
+    multiple,
     update,
   };
 }
@@ -84,6 +91,8 @@ export function create(props = {}) {
 /** @param {import('../registry.js').Registry} registry */
 export function registerVariants(registry) {
   registry.registerVariant('input', 'default');
+  registry.registerVariant('input', 'sm');
+  registry.registerVariant('input', 'lg');
 }
 
 export const template = new URL('./index.html', import.meta.url);

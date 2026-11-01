@@ -3,6 +3,10 @@ textarea[variant="default"] {
   display: var(--display-textarea);
   inline-size: var(--size-textarea-inline);
   min-block-size: var(--size-textarea-min-block);
+  max-block-size: var(--size-textarea-max-block);
+  /* Grows with its text up to the max, then scrolls. Where
+     field-sizing is missing the field behaviour sets the height. */
+  field-sizing: var(--field-sizing-textarea);
   resize: var(--resize-textarea);
   padding-block: var(--spacing-textarea-padding-block);
   padding-inline: var(--spacing-textarea-padding-inline);
@@ -38,6 +42,16 @@ textarea[variant="default"] {
 
   &::placeholder {
     color: var(--color-text-textarea-placeholder);
+  }
+
+  &[readonly] {
+    background-color: var(--color-bkg-textarea-readonly);
+  }
+
+  &:disabled {
+    color: var(--color-text-textarea-disabled);
+    background-color: var(--color-bkg-textarea-disabled);
+    cursor: var(--cursor-textarea-disabled);
   }
 }
 

@@ -259,6 +259,26 @@ Renders `<div data-bn="field">` with the label, the control markup verbatim, and
 
 The field's report, bound once over a root. The browser's constraint validation is the source (`required`, `type`, `pattern`, `min`/`max`/`step`, `minlength`/`maxlength`; on a pattern mismatch the control's `title` is the message). A control reports once it has been edited and left, then re-reports on every input so the error clears the moment the value is valid. Reporting sets `aria-invalid` on the control, shows the message in the field's `<output>` in place of its `<small>` hint and points `aria-describedby` at whichever shows. A submit of a form that holds fields reports every field and focuses the first invalid control; the form gets `novalidate` so the fields report instead of the browser bubble (without script, native validation still guards the submit). `reportField(control)` reports one control and returns whether it is valid.
 
+### Variants and parts (registry `field`, `input`, `textarea`)
+
+The registry field (`section[variant]`) takes these props on top of `label`, `controlId`, `controlHtml`, `hint` and `error`. All styling is token-only; every built-in button is a ≥44px target.
+
+| Prop | Effect |
+|------|--------|
+| `variant: 'inline'` | Label beside the control (`minmax(6rem, 10rem)` column); stacks under 36rem |
+| `variant: 'drop'` | File drop zone: the label is the zone and the native file input lies over it, transparent, so click, keyboard and drop all work without script; chosen names show in an `<output id="{controlId}-files">` (`filesText` is the empty text). There is no drag-over highlight: hover and focus restyle the zone |
+| `variant: 'code'` + `length`, `name` | One-time code: one numeric box per digit (`inputmode="numeric"`, the first `autocomplete="one-time-code"`), the joined value in a hidden input named `name`. Paste or autofill spreads across the boxes; Backspace and the arrows move between them. Under 18rem a six-digit code breaks into rows of three rather than shrink a box below 44px |
+| `required` / `optional` | A visual `*` (`aria-hidden`; the control's own `required` is what is announced) or a read "Optional" word in the label |
+| `success` | A confirmation `<output id="{controlId}-success">`; hidden while the field is invalid |
+| `reveal: true` | Password Show button (`aria-pressed` toggle) that swaps the control's `type` |
+| `clearable: true` | Clear button, shown only while there is text; empties the control, emits `input` and returns focus |
+| `stepper: true` | − / + buttons that call the native `stepDown`/`stepUp` and disable at `min`/`max` |
+| `prefix` / `suffix` | Text inside the box, joined to the control's `aria-describedby` |
+| `leadingHtml` / `trailingHtml` | A caller's button or link at the box edge; it keeps its own variant |
+| `count: true` (+ control `maxlength`) | A live `n / max` counter beside the hint |
+
+Input adds `variant: 'sm' \| 'lg'` (16px type minimum, so iOS never zooms; every size ≥44px), `accept` and `multiple`, and styles `readonly` (focusable, selectable) apart from `disabled`. Number and tel inputs use tabular figures. Textarea grows with its content (`field-sizing: content`, with a script fallback where unsupported) up to six control heights and takes `readonly`. A plain `<fieldset>` with a `<legend>` inside a registry `form` groups fields.
+
 ## Form Field
 
 `renderFormField(options)` → `string`

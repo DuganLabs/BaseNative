@@ -2537,6 +2537,9 @@
       &:has(
         > :is(
           section[variant='field'],
+          section[variant='inline'],
+          section[variant='drop'],
+          section[variant='code'],
           section[variant='multiselect'],
           search,
           form,
@@ -2634,6 +2637,9 @@
       > output
       > :where(
         section[variant='field'],
+        section[variant='inline'],
+        section[variant='drop'],
+        section[variant='code'],
         section[variant='multiselect'],
         section:has(> [role='combobox']),
         search,
