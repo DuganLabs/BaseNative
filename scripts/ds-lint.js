@@ -36,7 +36,12 @@ import { join, dirname, resolve, relative, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { scanTags } from '../packages/validate/src/scan.js';
-import { lineIndex, extractDefinitionSegments, isPlaceholder, resolveBridgedOffset } from './lib/template-markup.js';
+import {
+  lineIndex,
+  extractDefinitionSegments,
+  isPlaceholder,
+  resolveBridgedOffset,
+} from './lib/template-markup.js';
 import { stripComments, parseDeclarations, declaredAxes, varReferences } from './lib/css-model.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -52,14 +57,37 @@ export const RULES = {
     what: 'a literal colour where a colour token declares the same value',
     tokenPrefixes: ['--bn-color-', '--bn-dark-', '--bn-shadow-', '--bn-focus-'],
     properties: [
-      'color', 'background', 'background-color', 'border-color', 'outline-color',
-      'fill', 'stroke', 'caret-color', 'accent-color', 'text-decoration-color',
-      'column-rule-color', 'box-shadow', 'text-shadow',
-      'border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color',
-      'border-block-color', 'border-inline-color',
-      'border-inline-start-color', 'border-inline-end-color',
-      'border', 'border-top', 'border-right', 'border-bottom', 'border-left',
-      'border-block', 'border-inline', 'border-inline-start', 'border-inline-end', 'outline',
+      'color',
+      'background',
+      'background-color',
+      'border-color',
+      'outline-color',
+      'fill',
+      'stroke',
+      'caret-color',
+      'accent-color',
+      'text-decoration-color',
+      'column-rule-color',
+      'box-shadow',
+      'text-shadow',
+      'border-top-color',
+      'border-right-color',
+      'border-bottom-color',
+      'border-left-color',
+      'border-block-color',
+      'border-inline-color',
+      'border-inline-start-color',
+      'border-inline-end-color',
+      'border',
+      'border-top',
+      'border-right',
+      'border-bottom',
+      'border-left',
+      'border-block',
+      'border-inline',
+      'border-inline-start',
+      'border-inline-end',
+      'outline',
     ],
     kinds: ['color'],
   },
@@ -69,16 +97,48 @@ export const RULES = {
     what: 'a literal length on a spacing/sizing property where a spacing token declares the same value',
     tokenPrefixes: ['--bn-space-', '--bn-control-height', '--bn-target-size'],
     properties: [
-      'margin', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
-      'margin-block', 'margin-inline', 'margin-block-start', 'margin-block-end',
-      'margin-inline-start', 'margin-inline-end',
-      'padding', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
-      'padding-block', 'padding-inline', 'padding-block-start', 'padding-block-end',
-      'padding-inline-start', 'padding-inline-end',
-      'gap', 'row-gap', 'column-gap',
-      'inset', 'inset-block', 'inset-inline', 'top', 'right', 'bottom', 'left',
-      'width', 'height', 'min-width', 'min-height', 'max-width', 'max-height',
-      'block-size', 'inline-size', 'min-block-size', 'min-inline-size',
+      'margin',
+      'margin-top',
+      'margin-right',
+      'margin-bottom',
+      'margin-left',
+      'margin-block',
+      'margin-inline',
+      'margin-block-start',
+      'margin-block-end',
+      'margin-inline-start',
+      'margin-inline-end',
+      'padding',
+      'padding-top',
+      'padding-right',
+      'padding-bottom',
+      'padding-left',
+      'padding-block',
+      'padding-inline',
+      'padding-block-start',
+      'padding-block-end',
+      'padding-inline-start',
+      'padding-inline-end',
+      'gap',
+      'row-gap',
+      'column-gap',
+      'inset',
+      'inset-block',
+      'inset-inline',
+      'top',
+      'right',
+      'bottom',
+      'left',
+      'width',
+      'height',
+      'min-width',
+      'min-height',
+      'max-width',
+      'max-height',
+      'block-size',
+      'inline-size',
+      'min-block-size',
+      'min-inline-size',
     ],
     kinds: ['length'],
   },
@@ -88,10 +148,15 @@ export const RULES = {
     what: 'a literal length on a corner-radius property where a radius token declares the same value',
     tokenPrefixes: ['--bn-radius'],
     properties: [
-      'border-radius', 'border-top-left-radius', 'border-top-right-radius',
-      'border-bottom-left-radius', 'border-bottom-right-radius',
-      'border-start-start-radius', 'border-start-end-radius',
-      'border-end-start-radius', 'border-end-end-radius',
+      'border-radius',
+      'border-top-left-radius',
+      'border-top-right-radius',
+      'border-bottom-left-radius',
+      'border-bottom-right-radius',
+      'border-start-start-radius',
+      'border-start-end-radius',
+      'border-end-start-radius',
+      'border-end-end-radius',
     ],
     kinds: ['length'],
   },
@@ -100,7 +165,14 @@ export const RULES = {
     name: 'no-hardcoded-type',
     what: 'a literal value on a typographic property where a type token declares the same value',
     tokenPrefixes: ['--bn-font-', '--bn-line-height', '--bn-letter-spacing'],
-    properties: ['font-size', 'line-height', 'font-weight', 'letter-spacing', 'font-family', 'font'],
+    properties: [
+      'font-size',
+      'line-height',
+      'font-weight',
+      'letter-spacing',
+      'font-family',
+      'font',
+    ],
     kinds: ['length', 'number', 'fontstack'],
   },
   DS005: {
@@ -109,11 +181,26 @@ export const RULES = {
     what: 'a literal border/outline width where a border-width token declares the same value',
     tokenPrefixes: ['--bn-border-width'],
     properties: [
-      'border-width', 'border-top-width', 'border-right-width', 'border-bottom-width',
-      'border-left-width', 'border-block-width', 'border-inline-width',
-      'border-inline-start-width', 'border-inline-end-width', 'outline-width',
-      'border', 'border-top', 'border-right', 'border-bottom', 'border-left',
-      'border-block', 'border-inline', 'border-inline-start', 'border-inline-end', 'outline',
+      'border-width',
+      'border-top-width',
+      'border-right-width',
+      'border-bottom-width',
+      'border-left-width',
+      'border-block-width',
+      'border-inline-width',
+      'border-inline-start-width',
+      'border-inline-end-width',
+      'outline-width',
+      'border',
+      'border-top',
+      'border-right',
+      'border-bottom',
+      'border-left',
+      'border-block',
+      'border-inline',
+      'border-inline-start',
+      'border-inline-end',
+      'outline',
     ],
     kinds: ['length'],
   },
@@ -127,6 +214,13 @@ export const RULES = {
     name: 'no-inline-style-literal',
     what: 'a colour or length literal inside a style="…" attribute in a template',
   },
+  DS009: {
+    id: 'DS009',
+    name: 'no-raw-literal',
+    what: 'a raw colour (hex/rgb/hsl/oklch/…), length (px/rem/em/ch/vw/vh/…) or duration (ms/s) outside the token sheet',
+    // The one file allowed to hold raw values. Everything else reads var(--…).
+    tokenFile: 'packages/components/src/tokens.css',
+  },
   DS000: {
     id: 'DS000',
     name: 'unused-allowance',
@@ -136,9 +230,21 @@ export const RULES = {
 
 // Properties whose lengths are layout arithmetic rather than design spacing.
 const IGNORED_PROPERTIES = new Set([
-  'transform', 'translate', 'content', 'grid-template-columns', 'grid-template-rows',
-  'grid-template-areas', 'background-position', 'background-size', 'transition',
-  'animation', 'stroke-dasharray', 'stroke-width', 'flex', 'flex-basis', 'zoom',
+  'transform',
+  'translate',
+  'content',
+  'grid-template-columns',
+  'grid-template-rows',
+  'grid-template-areas',
+  'background-position',
+  'background-size',
+  'transition',
+  'animation',
+  'stroke-dasharray',
+  'stroke-width',
+  'flex',
+  'flex-basis',
+  'zoom',
 ]);
 
 /* --------------------------------------------------------------- discovery */
@@ -151,7 +257,13 @@ function walk(dir, exts, out = []) {
     return out;
   }
   for (const e of entries) {
-    if (e.name === 'node_modules' || e.name.startsWith('.') || e.name === 'templates') continue;
+    if (
+      e.name === 'node_modules' ||
+      e.name.startsWith('.') ||
+      e.name === 'templates' ||
+      e.name === 'dist'
+    )
+      continue;
     const full = join(dir, e.name);
     if (e.isDirectory()) walk(full, exts, out);
     else if (exts.has(extname(e.name))) out.push(full);
@@ -183,6 +295,26 @@ function primitives(value) {
   return out;
 }
 
+/**
+ * DS009 — every raw design literal in a value: colours, lengths of any unit and
+ * durations. `0`, percentages, fr and unitless numbers carry no design value.
+ * var() fallbacks are masked (DS006 owns them).
+ */
+export function rawLiterals(value) {
+  const masked = maskVarCalls(value);
+  const out = [];
+  for (const m of masked.matchAll(/#[0-9a-fA-F]{3,8}\b/g)) out.push(m[0]);
+  for (const m of masked.matchAll(/\b(?:rgba?|hsla?|hwb|lab|lch|oklch|oklab)\([^()]*\)/gi))
+    out.push(m[0].replace(/\s+/g, ' '));
+  for (const m of masked.matchAll(
+    /(?<![\w.#-])(-?\d*\.?\d+)(px|rem|em|ch|ex|vw|vh|vmin|vmax|dvh|svh|lvh|dvw|cqi|cqw|cqh|pt|ms|s)\b/g,
+  )) {
+    if (Number(m[1]) === 0) continue;
+    out.push(m[0]);
+  }
+  return out;
+}
+
 /** Blank out `var(...)` calls (keeping length) so their fallbacks are not double-reported. */
 function maskVarCalls(value) {
   let out = value;
@@ -194,7 +326,10 @@ function maskVarCalls(value) {
     let j = i + 3;
     for (; j < out.length; j++) {
       if (out[j] === '(') depth++;
-      else if (out[j] === ')') { depth--; if (depth === 0) break; }
+      else if (out[j] === ')') {
+        depth--;
+        if (depth === 0) break;
+      }
     }
     const end = Math.min(j + 1, out.length);
     out = out.slice(0, i) + ' '.repeat(end - i) + out.slice(end);
@@ -223,7 +358,11 @@ function collectAllowances(source, comments, toLineCol) {
   const byLine = new Map();
   const malformed = [];
   for (const c of comments) {
-    const body = c.raw.replace(/^\/\*+/, '').replace(/\*+\/$/, '').replace(/^\/\//, '').trim();
+    const body = c.raw
+      .replace(/^\/\*+/, '')
+      .replace(/\*+\/$/, '')
+      .replace(/^\/\//, '')
+      .trim();
     if (!/bn-allow/.test(body)) continue;
     const { line } = toLineCol(c.start);
     const m = body.match(ALLOW_RE);
@@ -292,10 +431,37 @@ function lintStylesheet(file, tokenTable, violations, stats) {
 
   for (const bad of allowances.malformed) {
     violations.push({
-      rule: 'DS000', file: path, line: bad.line, col: 1,
+      rule: 'DS000',
+      file: path,
+      line: bad.line,
+      col: 1,
       message: `Malformed bn-allow annotation: ${bad.why}.`,
       fix: 'Write it as `/* bn-allow: DS005 — why this value cannot use the token */`, naming the rule and a reason of at least 12 characters.',
     });
+  }
+
+  if (path !== RULES.DS009.tokenFile) {
+    for (const d of parseDeclarations(code)) {
+      const { line, col } = toLineCol(d.valueOffset);
+      const prop = d.prop.startsWith('--') ? d.prop : d.prop.toLowerCase();
+      for (const lit of new Set(rawLiterals(d.value))) {
+        const allow = allowanceFor(allowances, line, 'DS009');
+        if (allow) {
+          allow.used = true;
+          stats.allowed.push({ rule: 'DS009', file: path, line, reason: allow.reason });
+          continue;
+        }
+        violations.push({
+          rule: 'DS009',
+          file: path,
+          line,
+          col,
+          message: `\`${d.prop}: ${d.value.replace(/\s+/g, ' ').trim()}\` writes the raw value ${lit}. Raw colours, lengths and durations live only in ${RULES.DS009.tokenFile}.`,
+          fix: `Read the token that owns this role (see DESIGN.md), e.g. \`var(--spacing-4)\`, \`var(--color-tint)\`, \`var(--motion-fade-duration)\`. If no token exists, add one to packages/components/tokens/*.json and rebuild — never a new prefix.`,
+          key: `DS009|${path}|${prop}|${lit}`,
+        });
+      }
+    }
   }
 
   for (const d of parseDeclarations(code)) {
@@ -303,7 +469,10 @@ function lintStylesheet(file, tokenTable, violations, stats) {
     // a violation elsewhere would be replaced by. It is never itself a violation.
     if (d.prop.startsWith('--')) continue;
     const prop = d.prop.toLowerCase();
-    if (IGNORED_PROPERTIES.has(prop)) { stats.skippedProps++; continue; }
+    if (IGNORED_PROPERTIES.has(prop)) {
+      stats.skippedProps++;
+      continue;
+    }
 
     const { line, col } = toLineCol(d.valueOffset);
 
@@ -313,9 +482,16 @@ function lintStylesheet(file, tokenTable, violations, stats) {
       if (!ref.name.startsWith('--bn-')) continue;
       if (tokenTable.declared.has(ref.name)) continue;
       const allow = allowanceFor(allowances, line, 'DS006');
-      if (allow) { allow.used = true; stats.allowed.push({ rule: 'DS006', file: path, line, reason: allow.reason }); continue; }
+      if (allow) {
+        allow.used = true;
+        stats.allowed.push({ rule: 'DS006', file: path, line, reason: allow.reason });
+        continue;
+      }
       violations.push({
-        rule: 'DS006', file: path, line, col,
+        rule: 'DS006',
+        file: path,
+        line,
+        col,
         message: `\`${d.prop}\` reads var(${ref.name}${ref.fallback ? `, ${ref.fallback}` : ''}), but \`${ref.name}\` is never declared in any stylesheet in this repo, so the fallback is the only value this will ever have and the element cannot be themed.`,
         fix: ref.fallback
           ? `Either declare \`${ref.name}: ${ref.fallback};\` in packages/components/src/tokens.css so the var() resolves and the builder themes with everything else, or drop the wrapper — \`${d.prop}: ${d.value.replace(ref.raw, ref.fallback)};\` — to admit it is a literal.`
@@ -330,16 +506,27 @@ function lintStylesheet(file, tokenTable, violations, stats) {
       for (const prim of primitives(d.value)) {
         if (!rule.kinds.includes(prim.kind)) continue;
         const tokens = tokensFor(tokenTable, prim.text, rule.tokenPrefixes);
-        if (!tokens.length) { stats.noTokenYet.push({ rule: ruleId, file: path, line, prop, value: prim.text }); continue; }
+        if (!tokens.length) {
+          stats.noTokenYet.push({ rule: ruleId, file: path, line, prop, value: prim.text });
+          continue;
+        }
         const allow = allowanceFor(allowances, line, ruleId);
-        if (allow) { allow.used = true; stats.allowed.push({ rule: ruleId, file: path, line, reason: allow.reason }); continue; }
+        if (allow) {
+          allow.used = true;
+          stats.allowed.push({ rule: ruleId, file: path, line, reason: allow.reason });
+          continue;
+        }
         const names = tokens.map((t) => t.name);
         violations.push({
-          rule: ruleId, file: path, line, col,
+          rule: ruleId,
+          file: path,
+          line,
+          col,
           message: `\`${d.prop}: ${d.value}\` hardcodes ${prim.text}; ${names.length === 1 ? `\`${names[0]}\` is declared as exactly that value` : `these tokens are declared as exactly that value: ${names.join(', ')}`}.`,
-          fix: names.length === 1
-            ? `Write \`${d.prop}: ${d.value.replace(prim.text, `var(${names[0]})`)};\``
-            : `Pick the token that matches the intent and write \`${d.prop}: ${d.value.replace(prim.text, `var(${names[0]})`)};\` (candidates: ${names.join(', ')}).`,
+          fix:
+            names.length === 1
+              ? `Write \`${d.prop}: ${d.value.replace(prim.text, `var(${names[0]})`)};\``
+              : `Pick the token that matches the intent and write \`${d.prop}: ${d.value.replace(prim.text, `var(${names[0]})`)};\` (candidates: ${names.join(', ')}).`,
           key: `${ruleId}|${path}|${prop}|${prim.text}`,
         });
       }
@@ -354,7 +541,10 @@ function lintStylesheet(file, tokenTable, violations, stats) {
       seenAnnotations.add(a);
       if (a.used) continue;
       violations.push({
-        rule: 'DS000', file: path, line: a.line, col: 1,
+        rule: 'DS000',
+        file: path,
+        line: a.line,
+        col: 1,
         message: `bn-allow annotation for ${a.ids.join(', ')} suppresses nothing on this line or the next.`,
         fix: 'Delete the annotation — the value it covered is gone, or the rule no longer fires here.',
       });
@@ -387,12 +577,22 @@ function lintTemplateFile(abs, violations, stats) {
       const found = primitives(styleAttr.value).filter((p) => !isPlaceholder(p.text));
       if (!found.length) continue;
       const allow = allowanceFor(allowances, line, 'DS007');
-      if (allow) { allow.used = true; stats.allowed.push({ rule: 'DS007', file: path, line, reason: allow.reason }); continue; }
+      if (allow) {
+        allow.used = true;
+        stats.allowed.push({ rule: 'DS007', file: path, line, reason: allow.reason });
+        continue;
+      }
       violations.push({
-        rule: 'DS007', file: path, line, col,
+        rule: 'DS007',
+        file: path,
+        line,
+        col,
         message: `\`<${tag.tagName} style="${styleAttr.value.slice(0, 90)}">\` hardcodes ${found.map((p) => p.text).join(', ')} in an inline style.`,
         fix: `Move the declaration into a cascade layer keyed on a data-bn contract (packages/components/src/components.css) and give the element \`data-bn="…"\`, or bind the value through a --bn-* custom property instead of a literal.`,
-        key: `DS007|${path}|${found.map((p) => p.text).sort().join(',')}`,
+        key: `DS007|${path}|${found
+          .map((p) => p.text)
+          .sort()
+          .join(',')}`,
       });
     }
   }
@@ -459,7 +659,12 @@ function checkVariantCeiling(cssFiles, config, violations) {
   }
 
   const ranked = [...perAxis]
-    .map(([key, values]) => ({ key, count: values.size, values: [...values].sort(), files: [...where.get(key)].sort() }))
+    .map(([key, values]) => ({
+      key,
+      count: values.size,
+      values: [...values].sort(),
+      files: [...where.get(key)].sort(),
+    }))
     .sort((a, b) => b.count - a.count || a.key.localeCompare(b.key));
 
   const ceiling = config.variantCeiling;
@@ -499,7 +704,9 @@ function readAdrGrants(adrDir) {
   if (!existsSync(adrDir)) return grants;
   for (const abs of walk(adrDir, new Set(['.md']))) {
     const text = readFileSync(abs, 'utf8');
-    for (const m of text.matchAll(/^\s*bn-variant-exception:\s*([\w-]+\.[\w-]+)\s*=\s*(\d+)\s*$/gm)) {
+    for (const m of text.matchAll(
+      /^\s*bn-variant-exception:\s*([\w-]+\.[\w-]+)\s*=\s*(\d+)\s*$/gm,
+    )) {
       grants.set(m[1], Number(m[2]));
     }
   }
@@ -537,7 +744,11 @@ function main() {
   const report = argv.includes('--report');
   const config = loadConfig();
 
-  const cssFiles = walk(join(ROOT, 'packages'), new Set(['.css']))
+  const cssFiles = [
+    ...walk(join(ROOT, 'packages'), new Set(['.css'])),
+    // The docs site is the system's own showcase; it reads tokens like any consumer.
+    ...walk(join(ROOT, 'examples/express/public'), new Set(['.css'])),
+  ]
     .sort()
     .map((abs) => {
       const source = readFileSync(abs, 'utf8');
@@ -579,18 +790,27 @@ function main() {
 
   if (updateBaseline) {
     const entries = Object.fromEntries([...counted].sort((a, b) => a[0].localeCompare(b[0])));
-    writeFileSync(BASELINE_FILE, JSON.stringify({
-      note:
-        'Pre-existing design-system debt, counted so the rules can fail the build on anything NEW while the ' +
-        'backlog is burned down. Every line here is a real violation, not a false positive — the numbers are ' +
-        'occurrence counts, and a count going UP fails the build just as a new key does. Shrink this file; ' +
-        'never grow it. Regenerate with `node scripts/ds-lint.js --update-baseline`.',
-      generatedBy: 'scripts/ds-lint.js --update-baseline',
-      keys: Object.keys(entries).length,
-      occurrences: [...counted.values()].reduce((a, b) => a + b, 0),
-      entries,
-    }, null, 2) + '\n');
-    console.log(`wrote ${rel(BASELINE_FILE)} (${Object.keys(entries).length} keys, ${[...counted.values()].reduce((a, b) => a + b, 0)} occurrences)`);
+    writeFileSync(
+      BASELINE_FILE,
+      JSON.stringify(
+        {
+          note:
+            'Pre-existing design-system debt, counted so the rules can fail the build on anything NEW while the ' +
+            'backlog is burned down. Every line here is a real violation, not a false positive — the numbers are ' +
+            'occurrence counts, and a count going UP fails the build just as a new key does. Shrink this file; ' +
+            'never grow it. Regenerate with `node scripts/ds-lint.js --update-baseline`.',
+          generatedBy: 'scripts/ds-lint.js --update-baseline',
+          keys: Object.keys(entries).length,
+          occurrences: [...counted.values()].reduce((a, b) => a + b, 0),
+          entries,
+        },
+        null,
+        2,
+      ) + '\n',
+    );
+    console.log(
+      `wrote ${rel(BASELINE_FILE)} (${Object.keys(entries).length} keys, ${[...counted.values()].reduce((a, b) => a + b, 0)} occurrences)`,
+    );
     return;
   }
 
@@ -624,13 +844,21 @@ function main() {
   }
 
   console.log('');
-  console.log(`design-system lint · ${cssFiles.length} stylesheets, ${jsFiles.length} template files`);
-  console.log(`  real violations found:   ${violations.length}  [${byRule(violations).map(([r, n]) => `${r}:${n}`).join(' ')}]`);
+  console.log(
+    `design-system lint · ${cssFiles.length} stylesheets, ${jsFiles.length} template files`,
+  );
+  console.log(
+    `  real violations found:   ${violations.length}  [${byRule(violations)
+      .map(([r, n]) => `${r}:${n}`)
+      .join(' ')}]`,
+  );
   console.log(`  known debt (baselined):  ${known.length}`);
   console.log(`  NEW, failing this run:   ${fresh.length}`);
   if (retired.length) {
     const n = retired.reduce((a, [, left]) => a + left, 0);
-    console.log(`  debt paid off since the baseline was recorded: ${n} — run \`node scripts/ds-lint.js --update-baseline\` to bank it.`);
+    console.log(
+      `  debt paid off since the baseline was recorded: ${n} — run \`node scripts/ds-lint.js --update-baseline\` to bank it.`,
+    );
   }
   console.log(`  suppressed by bn-allow:  ${stats.allowed.length}`);
   for (const a of stats.allowed) console.log(`    ${a.file}:${a.line}  ${a.rule} — ${a.reason}`);
@@ -646,22 +874,32 @@ function main() {
 
   console.log('');
   if (ceiling.ceiling === null) {
-    console.log('variant ceiling: NOT SET (design-system.config.json -> "variantCeiling": null) — reporting only.');
+    console.log(
+      'variant ceiling: NOT SET (design-system.config.json -> "variantCeiling": null) — reporting only.',
+    );
     console.log('  largest declared axes:');
-    for (const a of ceiling.ranked.slice(0, 10)) console.log(`    ${a.count.toString().padStart(3)}  ${a.key}`);
+    for (const a of ceiling.ranked.slice(0, 10))
+      console.log(`    ${a.count.toString().padStart(3)}  ${a.key}`);
     console.log(`  ${ceiling.ranked.length} axes declared in total.`);
   } else {
-    console.log(`variant ceiling: ${ceiling.ceiling} · ${ceiling.exceeded.length} axis/axes over it.`);
+    console.log(
+      `variant ceiling: ${ceiling.ceiling} · ${ceiling.exceeded.length} axis/axes over it.`,
+    );
   }
 
   if (fresh.length) {
     console.error('');
-    console.error(`design-system lint FAILED: ${fresh.length} violation(s) not in ${rel(BASELINE_FILE)}.`);
-    console.error('Fix them, or — rarely, and reviewed — annotate the line with `/* bn-allow: DSxxx — reason */`.');
+    console.error(
+      `design-system lint FAILED: ${fresh.length} violation(s) not in ${rel(BASELINE_FILE)}.`,
+    );
+    console.error(
+      'Fix them, or — rarely, and reviewed — annotate the line with `/* bn-allow: DSxxx — reason */`.',
+    );
     process.exit(1);
   }
   console.log('');
   console.log('design-system lint passed.');
 }
 
-main();
+// Run as a CLI; importing (the tests) only takes the exports.
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();

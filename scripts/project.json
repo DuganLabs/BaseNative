@@ -4,12 +4,17 @@
   "targets": {
     "test": {
       "cache": true,
-      "command": "node --test scripts/publish-release.test.js scripts/npm-smoke.test.js",
+      "command": "node --test scripts/publish-release.test.js scripts/npm-smoke.test.js scripts/ds-lint.test.js",
       "inputs": [
         "{workspaceRoot}/scripts/publish-release.mjs",
         "{workspaceRoot}/scripts/publish-release.test.js",
         "{workspaceRoot}/scripts/npm-smoke.mjs",
-        "{workspaceRoot}/scripts/npm-smoke.test.js"
+        "{workspaceRoot}/scripts/npm-smoke.test.js",
+        "{workspaceRoot}/scripts/ds-lint.js",
+        "{workspaceRoot}/scripts/ds-lint.test.js",
+        "{workspaceRoot}/design-system.baseline.json",
+        "{workspaceRoot}/packages/*/src/**/*.css",
+        "{workspaceRoot}/examples/express/public/*.css"
       ]
     },
     "lint": {
@@ -19,6 +24,7 @@
         "{workspaceRoot}/packages/*/src/**/*.css",
         "{workspaceRoot}/packages/*/*.css",
         "{workspaceRoot}/packages/*/src/**/*.js",
+        "{workspaceRoot}/examples/express/public/*.css",
         "{workspaceRoot}/design-system.config.json",
         "{workspaceRoot}/design-system.baseline.json",
         "{workspaceRoot}/docs/adr/**/*.md",
