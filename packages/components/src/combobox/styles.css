@@ -3,6 +3,29 @@ section[variant="default"] {
   position: var(--position-combobox);
   display: var(--display-combobox);
 
+  /* The chevron says "this field opens a list", the way the select's
+     trigger does. It sits in the field's end padding, centred on the
+     field's own height (an open list staged in flow grows the section) and lets the
+     pointer through, so a tap on it lands on the input and opens. */
+  & > input {
+    padding-inline-end: var(--spacing-combobox-input-padding-inline-end);
+  }
+
+  & > svg {
+    position: var(--position-combobox-chevron);
+    inset-block-start: var(--spacing-combobox-chevron-inset-block-start);
+    inset-inline-end: var(--spacing-combobox-chevron-inset-inline-end);
+    inline-size: var(--size-combobox-chevron-inline);
+    block-size: var(--size-combobox-chevron-block);
+    color: var(--color-text-combobox-chevron);
+    pointer-events: var(--pointer-events-combobox-chevron);
+    transition: transform var(--motion-combobox-duration) var(--motion-combobox-curve);
+  }
+
+  & > input[aria-expanded="true"] ~ svg {
+    transform: var(--transform-combobox-chevron-open);
+  }
+
   & > ul {
     position: var(--position-combobox-listbox);
     inset-block-start: var(--spacing-combobox-listbox-inset-block-start);

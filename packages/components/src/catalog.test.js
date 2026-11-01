@@ -4,6 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadRegistry, renderComponent } from './loader.js';
 import { render } from '../../server/src/render.js';
+import { readFileSync } from 'node:fs';
 
 test('avatar renders initials on a toned figure, or the image when given one', async () => {
   const registry = await loadRegistry();
@@ -115,6 +116,29 @@ test('combobox renders its input and, when open, the listbox with the active opt
   assert.deepEqual(picked, { value: 'la', label: 'Los Angeles' });
   assert.equal(vm2.open(), false);
   assert.equal(viewModel.listboxId(), 'county-listbox');
+});
+
+test('combobox shows a decorative chevron after its input, as the select trigger does', async () => {
+  const registry = await loadRegistry();
+  const input = renderComponent(registry, render, 'input', {
+    id: 'county',
+    type: 'text',
+    value: '',
+    ariaLabel: 'County',
+  }).html;
+  const { html } = renderComponent(registry, render, 'combobox', {
+    id: 'county',
+    label: 'County',
+    inputHtml: input,
+    options: [{ value: 'orange', label: 'Orange County' }],
+  });
+  assert.match(
+    html,
+    /<input[^>]*>\s*<svg aria-hidden="true" viewBox="0 0 16 16">/,
+  );
+  const css = readFileSync(new URL('./combobox/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /& > svg \{[^}]*pointer-events: var\(--pointer-events-combobox-chevron\)/);
+  assert.match(css, /input\[aria-expanded="true"\] ~ svg/);
 });
 
 test('multiselect renders chips with dismiss buttons and reports the set on toggle', async () => {
