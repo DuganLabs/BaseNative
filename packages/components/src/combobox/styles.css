@@ -9,6 +9,12 @@ section[variant="default"] {
      pointer through, so a tap on it lands on the input and opens. */
   & > input {
     padding-inline-end: var(--spacing-combobox-input-padding-inline-end);
+
+    /* The chevron is the field's one end control: the engine's search
+       clear button would sit beside it, off-system. Escape clears. */
+    &::-webkit-search-cancel-button {
+      display: var(--display-combobox-search-cancel);
+    }
   }
 
   & > svg {
