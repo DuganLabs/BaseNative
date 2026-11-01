@@ -1151,6 +1151,14 @@
   --color-text-pagination-current: var(--color-text-label);
   --font-pagination-current-weight: var(--font-weight-semibold);
   --display-pagination-item-compact: var(--display-none);
+  --display-pagination-item-narrow: var(--display-none);
+  --display-pagination-step-icon: var(--display-none);
+  --size-pagination-step-icon: var(--spacing-5);
+  --spacing-pagination-list-gap-compact: var(--spacing-0);
+  --size-pagination-gap-compact: var(--spacing-4);
+  --font-pagination-step-size-compact: var(--spacing-0);
+  --display-pagination-step-icon-compact: var(--display-block);
+  --color-text-pagination-inert: var(--color-text-label-3);
   --display-pipeline: var(--display-flex);
   --flex-direction-pipeline: var(--flex-direction-row);
   --spacing-pipeline-gap: var(--spacing-3);

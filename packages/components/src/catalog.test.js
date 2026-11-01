@@ -49,12 +49,91 @@ test('breadcrumb links the trail and marks the last item current', async () => {
 test('pagination windows the pages, elides runs, and flags the current page', async () => {
   const registry = await loadRegistry();
   const vm = renderComponent(registry, render, 'pagination', { page: 5, pages: 12 }).viewModel;
-  const labels = vm.items().map((item) => item.label);
+  const labels = vm
+    .items()
+    .filter((item) => item.only !== 'narrow')
+    .map((item) => item.label);
   assert.deepEqual(labels, ['Previous', '1', '…', '4', '5', '6', '…', '12', 'Next']);
   assert.equal(vm.items()[4].current, true);
   const { html } = renderComponent(registry, render, 'pagination', { page: 5, pages: 12 });
   assert.match(html, /<a aria-current="page">5<\/a>/);
   assert.match(html, /<a href="#page-4">4<\/a>/);
+});
+
+test('pagination keeps the first and last pages in its narrow window', async () => {
+  const registry = await loadRegistry();
+  const vm = renderComponent(registry, render, 'pagination', { page: 3, pages: 8 }).viewModel;
+  const shown = (scope) =>
+    vm
+      .items()
+      .filter((item) => item.only !== (scope === 'wide' ? 'narrow' : 'wide'))
+      .map((item) => item.label);
+  assert.deepEqual(shown('wide'), ['Previous', '1', '2', '3', '4', '…', '8', 'Next']);
+  // Five targets and two narrow gaps fit a phone; six targets don't.
+  assert.deepEqual(shown('narrow'), ['Previous', '1', '…', '3', '…', '8', 'Next']);
+  const mid = renderComponent(registry, render, 'pagination', { page: 5, pages: 12 }).viewModel;
+  const midNarrow = mid
+    .items()
+    .filter((item) => item.only !== 'wide')
+    .map((item) => item.label);
+  assert.deepEqual(midNarrow, ['Previous', '1', '…', '5', '…', '12', 'Next']);
+  const { html } = renderComponent(registry, render, 'pagination', { page: 3, pages: 8 });
+  assert.match(html, /<li variant="wide">\s*<a href="#page-4">4<\/a>\s*<\/li>/);
+  assert.match(html, /<li variant="narrow">\s*<a aria-hidden="true">…<\/a>\s*<\/li>/);
+  // Previous and Next keep their text, so their name, when the narrow window shows only the chevron.
+  assert.match(
+    html,
+    /<a href="#page-2"><svg aria-hidden="true"[^>]*>\s*<path d="M10 4l-4 4 4 4"[^>]*><\/path>\s*<\/svg>Previous<\/a>/,
+  );
+  assert.match(
+    html,
+    /<a href="#page-4"><svg aria-hidden="true"[^>]*>\s*<path d="M6 4l4 4-4 4"[^>]*><\/path>\s*<\/svg>Next<\/a>/,
+  );
+});
+
+test('pagination windows hold both ends, one gap per run, and five narrow targets at most', async () => {
+  const registry = await loadRegistry();
+  for (const [page, pages] of [
+    [1, 3],
+    [1, 8],
+    [8, 8],
+    [4, 5],
+  ]) {
+    const items = renderComponent(registry, render, 'pagination', {
+      page,
+      pages,
+    }).viewModel.items();
+    const narrow = items.filter((item) => item.only !== 'wide');
+    const pageNumbers = narrow
+      .filter((item) => /^\d+$/.test(item.label))
+      .map((item) => Number(item.label));
+    assert.ok(
+      pageNumbers.includes(1) && pageNumbers.includes(pages) && pageNumbers.includes(page),
+      `${page}/${pages}`,
+    );
+    // No two gaps in a row, and a gap only where pages are missing.
+    for (let i = 1; i < narrow.length; i += 1)
+      assert.ok(!(narrow[i].label === '…' && narrow[i - 1].label === '…'));
+    const shownSet = new Set(pageNumbers);
+    for (let i = 0; i < pageNumbers.length - 1; i += 1) {
+      const gap = pageNumbers[i + 1] - pageNumbers[i] > 1;
+      const at = narrow.findIndex((item) => item.label === String(pageNumbers[i]));
+      assert.equal(narrow[at + 1].label === '…', gap, `${page}/${pages} after ${pageNumbers[i]}`);
+    }
+    assert.ok(shownSet.size === pageNumbers.length);
+    // At most five targets in the narrow window: Previous, three pages, Next.
+    assert.ok(
+      narrow.filter((item) => item.label !== '…').length <= 5,
+      `${page}/${pages} narrow targets`,
+    );
+    // The wide window never spends an ellipsis on a single page.
+    const wideNumbers = items
+      .filter((item) => item.only !== 'narrow' && /^\d+$/.test(item.label))
+      .map((item) => Number(item.label));
+    for (let i = 0; i < wideNumbers.length - 1; i += 1) {
+      assert.notEqual(wideNumbers[i + 1] - wideNumbers[i], 2, `${page}/${pages}: a one-page gap`);
+    }
+  }
 });
 
 test('list-group renders text rows, trailing content, and rich rows', async () => {

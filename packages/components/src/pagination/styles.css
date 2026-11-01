@@ -45,22 +45,59 @@ nav[variant="pagination"] {
     }
   }
 
+  /* The narrow window's own entries wait for the container query, and
+     so do the Previous and Next chevrons. */
+  & > ol > li[variant="narrow"] {
+    display: var(--display-pagination-item-narrow);
+  }
+
+  & > ol > li > a > svg {
+    display: var(--display-pagination-step-icon);
+    inline-size: var(--size-pagination-step-icon);
+    block-size: var(--size-pagination-step-icon);
+  }
+
+  /* A gap, or Previous on the first page, goes nowhere: it reads as
+     text, not in the link tint. */
+  & > ol > li > a:not([href], [aria-current]) {
+    color: var(--color-text-pagination-inert);
+  }
+
   & > ol > li > a[aria-current] {
     color: var(--color-text-pagination-current);
     font-weight: var(--font-pagination-current-weight);
   }
 }
 
-/* Each page link is a 44px square, so a full window (Previous, 1, the
-   gap, three neighbours, the gap, the last page, Next) needs about
-   28rem. In a narrower container the window keeps Previous, the
-   current page and its neighbours, and Next on one row. The first and
-   last pages and the gaps step out unless they neighbour the current
-   page. Previous and Next still reach every page. */
+/* Each page link is a 44px square, so the wide window (Previous, 1,
+   a gap, three neighbours, a gap, the last page, Next) needs about
+   28rem. A narrower container switches to the narrow window: the
+   first, current and last pages with a gap between, so either end is
+   one tap away, and Previous and Next shrink to chevrons (their text
+   stays, at zero size, as their name). Five 44px targets and two
+   16px gaps (252px) fit a 320px phone's 254px pane on one row. */
 @container (max-width: 28rem) {
-  nav[variant="pagination"] > ol > li:has(> a[aria-hidden]):not(:first-child, :last-child),
-  nav[variant="pagination"] > ol > li:nth-child(2):not(:has(> [aria-current]), :has(+ li > [aria-current])),
-  nav[variant="pagination"] > ol > li:nth-last-child(2):not(:has(> [aria-current]), li:has(> [aria-current]) + li) {
+  nav[variant="pagination"] > ol {
+    gap: var(--spacing-pagination-list-gap-compact);
+  }
+
+  nav[variant="pagination"] > ol > li[variant="wide"] {
     display: var(--display-pagination-item-compact);
+  }
+
+  nav[variant="pagination"] > ol > li[variant="narrow"] {
+    display: var(--display-pagination-item);
+  }
+
+  nav[variant="pagination"] > ol > li > a:has(> svg) {
+    font-size: var(--font-pagination-step-size-compact);
+  }
+
+  nav[variant="pagination"] > ol > li > a:has(> svg) > svg {
+    display: var(--display-pagination-step-icon-compact);
+  }
+
+  nav[variant="pagination"] > ol > li > a[aria-hidden]:not(:has(> svg)) {
+    min-inline-size: var(--size-pagination-gap-compact);
   }
 }

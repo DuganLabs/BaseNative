@@ -75,6 +75,9 @@ test('registration rejects rule-breaking components', () => {
   assert.throws(() => registry.resolveVariant('button', 'nope'), /is not registered/);
   assert.throws(() => validateTemplate('<p>literal</p>'), /literal text/);
   assert.throws(() => validateTemplate('<p class="x">{{ a() }}</p>'), /class attributes/);
+  assert.throws(() => validateTemplate('<p data-x="1">{{ a() }}</p>'), /data- attributes/);
+  // A bound data- attribute is still a data- attribute.
+  assert.throws(() => validateTemplate('<p :data-x="a()">{{ a() }}</p>'), /data- attributes/);
   assert.throws(() => validateCss('button { color: red; }'), /not token-only/);
 });
 
