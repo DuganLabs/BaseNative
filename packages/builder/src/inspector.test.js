@@ -23,6 +23,21 @@ describe('renderInspector', () => {
     assert.ok(html.includes('option value="primary" selected'));
   });
 
+  test('with an enum control, an enum prop is a mount point, not a native <select>', () => {
+    const s = createBuilderState();
+    const palette = defaultPalette();
+    const node = s.addNode(null, { type: 'button', props: { text: 'Hi', variant: 'primary' } });
+    s.select(node.id);
+    const html = renderInspector(s, palette, { enumHost: true });
+    assert.ok(!html.includes('<select'));
+    assert.ok(html.includes(`data-bn-enum-host="variant" data-bn-node="${node.id}"`));
+    assert.ok(
+      html.includes(
+        `<label class="bn-inspector__label" for="bn-prop-${node.id}-variant">Variant</label>`,
+      ),
+    );
+  });
+
   test('renders signal-kind fields with placeholder', () => {
     const s = createBuilderState();
     const palette = defaultPalette();

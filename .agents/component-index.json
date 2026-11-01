@@ -353,7 +353,7 @@
       "kind": "render-function",
       "package": "@basenative/builder",
       "file": "packages/builder/src/inspector.js",
-      "signature": "renderInspector(state, palette)",
+      "signature": "renderInspector(state, palette, options)",
       "purpose": "",
       "deprecated": false,
       "emits": {

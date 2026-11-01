@@ -55,7 +55,7 @@ Render the admin user-management list with search and per-row role controls.
 - registered more than once: `packages/builder/src/builder-element.js`, `packages/builder/src/tree-element.js`
 - use instead of: a hand-rolled <div> reimplementation of <bn-builder-tree>
 
-### `renderInspector(state, palette)`
+### `renderInspector(state, palette, options)`
 `packages/builder/src/inspector.js` · emits `<button data-bn="bn-inspector-action">`
 - variants: none declared
 - **unstyled**: no stylesheet declares `data-bn="bn-inspector-action"`

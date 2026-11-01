@@ -57,3 +57,29 @@ test('the playground example picker is the custom select and loads the choice', 
     'Hello, Ada Lovelace.',
   );
 });
+
+test('the Builder inspector edits an enum prop with the custom select', async ({ page }) => {
+  await page.goto('/builder/');
+  await page
+    .locator('bn-builder-palette button', { hasText: /^Stack/ })
+    .first()
+    .click();
+  const stack = page.locator('bn-builder-canvas [data-bn-type="stack"]').first();
+  await stack.click({ position: { x: 8, y: 8 } });
+  const trigger = page.locator('bn-builder-inspector section[variant="select"] > button');
+  await expect(trigger).toHaveText('column');
+  expect(await bareNativeSelects(page)).toEqual([]);
+  await trigger.click();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  await page.locator('bn-builder-inspector [role="option"]', { hasText: 'row' }).click();
+  await expect(stack).toHaveAttribute('direction', 'row');
+  await expect(trigger).toHaveText('row');
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  // The keyboard path keeps focus on the trigger through the re-render.
+  await trigger.focus();
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('Enter');
+  await expect(stack).toHaveAttribute('direction', 'column');
+  await expect(trigger).toBeFocused();
+});
