@@ -3,23 +3,44 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { render } from '@basenative/server';
-import { escapeText } from '@basenative/runtime/shared/escape';
-import { loadRegistry, renderComponent } from '@basenative/components';
+import { escapeText, raw } from '@basenative/runtime/shared/escape';
+import { loadRegistry, renderComponent, assembleStyles } from '@basenative/components';
 
 /* The Holy Trinity catalog: components render through the registry
    with the server renderer, never through string-builder helpers. */
 const registry = await loadRegistry();
-const component = (name, props) => renderComponent(registry, render, name, props).html;
+/* A component's markup is the renderer's own output: nested as a prop
+   (controlHtml) it stays a string, and a view's `{{ }}` inserts it as
+   markup (renderPage wraps it in raw), not as escaped text. */
+const trusted = new Set();
+const trust = (html) => (trusted.add(html), html);
+const component = (name, props) => trust(renderComponent(registry, render, name, props).html);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const read = (file) => readFileSync(join(__dirname, file), 'utf-8');
 
 const app = express();
 app.use(express.json());
+// The New User form posts as a plain HTML form.
+app.use(express.urlencoded({ extended: false }));
 app.use(express.static(join(__dirname, 'public')));
 
 const pkgRoot = join(__dirname, '..', '..');
+/* The catalog's own sheets (tokens, then every component), as the site
+   serves them: index.css carries the page layout, not the components. */
+const catalogCss = await assembleStyles(registry, [...registry.listComponents()]);
+app.get('/bn-css/trinity.css', (_req, res) => res.type('css').send(catalogCss));
 app.use('/bn-css', express.static(join(pkgRoot, 'packages', 'components', 'src')));
+// The runtime, for the select's client view model (the layout's import map).
+app.use('/bn-runtime', express.static(join(pkgRoot, 'packages', 'runtime', 'src')));
+
+/* The custom select (the default everywhere) renders on the server and
+   hydrates in the browser from its props: /select-mount.js reads them. */
+const liveSelect = (props) =>
+  trust(
+    `<div data-bn-select-host>${component('select', props)}` +
+      `<script type="application/json">${JSON.stringify(props).replaceAll('<', '\\u003c')}</script></div>`,
+  );
 
 // -- In-memory data store --
 let nextId = 4;
@@ -33,7 +54,10 @@ let users = [
 function renderPage(viewFile, ctx, title) {
   const layout = read('views/layout.html');
   const view = read(`views/${viewFile}`);
-  const content = render(view, ctx);
+  const viewCtx = Object.fromEntries(
+    Object.entries(ctx).map(([key, value]) => [key, trusted.has(value) ? raw(value) : value]),
+  );
+  const content = render(view, viewCtx);
   return layout
     // `title` can be user-controlled (e.g. a user's own name on
     // /users/:id) and lands in the page unescaped otherwise — the same
@@ -82,16 +106,16 @@ app.get('/users/new', (_req, res) => {
   const ctx = {
     nameInput: component('field', {
       label: 'Full Name', controlId: 'name',
-      controlHtml: component('input', { id: 'name', type: 'text' }),
+      controlHtml: component('input', { id: 'name', name: 'name', type: 'text', required: true, autocomplete: 'name' }),
     }),
     emailInput: component('field', {
       label: 'Email', controlId: 'email',
-      controlHtml: component('input', { id: 'email', type: 'email' }),
+      controlHtml: component('input', { id: 'email', name: 'email', type: 'email', required: true, autocomplete: 'email' }),
     }),
     roleSelect: component('field', {
       label: 'Role', controlId: 'role',
-      controlHtml: component('select', {
-        id: 'role', name: 'role', variant: 'native',
+      controlHtml: liveSelect({
+        id: 'role', name: 'role', label: 'Role', value: 'Viewer',
         options: [
           { value: 'Admin', label: 'Admin' },
           { value: 'Editor', label: 'Editor' },
@@ -125,6 +149,8 @@ app.post('/api/users', (req, res) => {
 
   const user = { id: nextId++, name, email, role: role || 'Viewer', status: 'active' };
   users.push(user);
+  // The HTML form lands on the new user's page; API clients get JSON.
+  if (req.is('application/x-www-form-urlencoded')) return res.redirect(303, `/users/${user.id}`);
   res.status(201).json(user);
 });
 

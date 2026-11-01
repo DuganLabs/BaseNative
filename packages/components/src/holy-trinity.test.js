@@ -424,6 +424,36 @@ test('select native variant renders the platform element and its options', async
   assert.doesNotMatch(html, /aria-haspopup/);
 });
 
+test('select takes part in a form: a named select submits its value in both variants', async () => {
+  const registry = await loadRegistry();
+  const options = [
+    { value: 'electrical', label: 'Electrical' },
+    { value: 'hvac', label: 'HVAC' },
+  ];
+  const { html, viewModel } = renderComponent(registry, render, 'select', {
+    id: 'trade',
+    name: 'trade',
+    value: 'hvac',
+    options,
+  });
+  assert.match(html, /<input type="hidden" name="trade" value="hvac">/);
+  viewModel.choose(options[0]);
+  assert.equal(viewModel.nameAttr(), 'trade');
+
+  const native = renderComponent(registry, render, 'select', {
+    id: 'trade',
+    name: 'trade',
+    value: 'hvac',
+    variant: 'native',
+    options,
+  }).html;
+  assert.match(native, /<select variant="native" id="trade" name="trade"/);
+  assert.doesNotMatch(native, /type="hidden"/);
+
+  const unnamed = renderComponent(registry, render, 'select', { id: 'trade', options }).html;
+  assert.doesNotMatch(unnamed, /type="hidden"|name=/);
+});
+
 test('textarea renders its value as content so SSR shows it before hydration', async () => {
   const registry = await loadRegistry();
   const { html } = renderComponent(registry, render, 'textarea', {

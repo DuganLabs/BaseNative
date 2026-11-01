@@ -18,3 +18,8 @@
   display: flex;
   gap: var(--bn-space-2);
 }
+
+/* The select's hydration host adds no box of its own. */
+[data-bn-select-host] {
+  display: contents;
+}

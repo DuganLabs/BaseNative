@@ -41,6 +41,18 @@ export function create(props) {
      distinct from the chosen value. */
   const activeValue = signal(open() ? value() : '');
 
+  /** The field name, or no attribute when unnamed (an unnamed select is
+      not a form field). */
+  function nameAttr() {
+    return fieldName() === '' ? null : fieldName();
+  }
+
+  /** The popover variant submits through a hidden input; the native
+      variant's platform <select> carries the name itself. */
+  function hasHiddenField() {
+    return isPopover() && fieldName() !== '';
+  }
+
   function isNative() {
     return variant() === 'native';
   }
@@ -205,7 +217,7 @@ export function create(props) {
   }
 
   return {
-    options, value, open, controlId, fieldName, label, variant, disabled,
+    options, value, open, controlId, fieldName, label, variant, disabled, nameAttr, hasHiddenField,
     activeValue, isNative, isPopover, isSelected, selectedAttr, selectedLabel,
     isActive, activeVariant, activeDescendant, activate,
     listboxId, optionId, expandedAttr, toggle, close, choose, chooseNative, keydown,

@@ -83,3 +83,29 @@ test('the Builder inspector edits an enum prop with the custom select', async ({
   await expect(stack).toHaveAttribute('direction', 'column');
   await expect(trigger).toBeFocused();
 });
+
+test('the enterprise New User form uses the custom select and submits its choice', async ({
+  page,
+}) => {
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  page.on('console', (message) => message.type() === 'error' && errors.push(message.text()));
+  await page.goto('http://localhost:3001/users/new');
+  const trigger = page.locator('#role');
+  await expect(trigger).toHaveAttribute('aria-haspopup', 'listbox');
+  expect(await bareNativeSelects(page)).toEqual([]);
+  expect((await trigger.boundingBox()).height).toBeGreaterThanOrEqual(44);
+
+  await trigger.click();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  await page.locator('#role-option-Editor').click();
+  await expect(trigger).toHaveText('Editor');
+  await expect(page.locator('input[type="hidden"][name="role"]')).toHaveValue('Editor');
+
+  await page.locator('#name').fill('Grace Hopper');
+  await page.locator('#email').fill('grace@example.com');
+  await page.locator('form button[type="submit"]').click();
+  await expect(page).toHaveURL(/\/users\/\d+$/);
+  await expect(page.locator('dd').nth(2)).toHaveText('Editor');
+  expect(errors).toEqual([]);
+});
