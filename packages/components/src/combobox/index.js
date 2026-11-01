@@ -64,10 +64,15 @@ export function create(props) {
     if (q === '') return options();
     return options().filter((option) => option.label.toLowerCase().includes(q));
   });
+  /* The popup is shown only while it has options to show: a filter
+     that matches nothing collapses it (aria-expanded false) rather than
+     leaving an empty, bordered listbox under the field. `open` keeps
+     the intent, so the list returns as soon as the text matches again. */
+  const expanded = computed(() => open() && visibleOptions().length > 0);
   const activeOption = computed(() => visibleOptions().find((option) => option.value === activeValue()) ?? null);
   const activeDescendant = computed(() => {
     const active = activeOption();
-    return open() && active ? optionId(active) : '';
+    return expanded() && active ? optionId(active) : '';
   });
   const isActive = (/** @type {ComboboxOption} */ option) => (option.value === activeValue() ? 'true' : 'false');
   const select = (/** @type {ComboboxOption} */ option) => {
@@ -170,7 +175,7 @@ export function create(props) {
   }
 
   return {
-    label, inputHtml, options, query, visibleOptions, open, activeValue, activeOption, activeDescendant,
+    label, inputHtml, options, query, visibleOptions, open, expanded, activeValue, activeOption, activeDescendant,
     value, variant, listboxId, optionId, isActive, select, choose, moveActive, onKeydown, onInput, onFocus, raw,
   };
 }

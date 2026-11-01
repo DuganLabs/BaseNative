@@ -333,6 +333,26 @@ test.describe('Specimens — one field measure', () => {
   }
 });
 
+test.describe('Specimens — no-match popup', () => {
+  // A filter that matches nothing collapses the popup instead of leaving
+  // an empty, bordered listbox under the field.
+  for (const name of ['combobox', 'multiselect']) {
+    test(`${name}: no matches, no popup; a match brings it back`, async ({ page }) => {
+      await mounted(page, `/components/${name}`);
+      const root = page.locator(`${PREVIEW} section`).first();
+      const input = root.locator('input').first();
+      await input.click();
+      await expect(root.locator('ul[role="listbox"]')).toBeVisible();
+      await input.fill('zzzz');
+      await expect(root.locator('ul[role="listbox"]')).toHaveCount(0);
+      await expect(input).toHaveAttribute('aria-expanded', 'false');
+      await input.fill('r');
+      await expect(root.locator('ul[role="listbox"] li').first()).toBeVisible();
+      await expect(input).toHaveAttribute('aria-expanded', 'true');
+    });
+  }
+});
+
 test.describe('Specimens — combobox end control', () => {
   // The chevron is the only control at the field's end: the engine's
   // search clear button must not draw beside it. Hiding it by force

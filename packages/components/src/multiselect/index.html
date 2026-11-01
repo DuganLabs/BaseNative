@@ -8,7 +8,7 @@
       </ul>
     </template>
     {{ raw(inputHtml()) }}
-    <template @if="open()">
+    <template @if="expanded()">
       <ul role="listbox" aria-multiselectable="true" :id="listboxId()" :aria-label="label()">
         <template @for="option of visibleOptions()">
           <li role="option" :id="optionId(option)" :aria-selected="isSelected(option)" @click="toggle(option)">{{ option.label }}</li>

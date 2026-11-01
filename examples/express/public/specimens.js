@@ -231,7 +231,7 @@ async function mount(spec) {
       }
       input.setAttribute('aria-controls', vm.listboxId());
       effect(() => {
-        input.setAttribute('aria-expanded', String(vm.open()));
+        input.setAttribute('aria-expanded', String(vm.expanded()));
         input.setAttribute('aria-activedescendant', vm.activeDescendant());
       });
     }
