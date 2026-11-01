@@ -26,6 +26,17 @@ figure[variant='code'] {
     border-block-end-color: var(--color-border-code-block-caption-block-end);
   }
 
+  /* A caption that carries an action, a copy button, is the button's
+     height and no taller, and the action sits at the bar's far end. */
+  & > figcaption:has(> button) {
+    padding-block: var(--spacing-code-block-caption-action-padding-block);
+    padding-inline-end: var(--spacing-code-block-caption-action-padding-inline-end);
+  }
+
+  & > figcaption > button:first-of-type {
+    margin-inline-start: var(--spacing-code-block-caption-action-start);
+  }
+
   /* The figure is the one surface: the pre paints nothing of its own,
      so no page-level pre treatment can draw a second box inside it. */
   & > pre {
@@ -58,19 +69,17 @@ figure[variant='code'] {
   }
 }
 
-/* On a phone a long line wraps instead of running off the card edge:
-   nothing is hidden behind a scroll the reader cannot see. Indentation
-   is kept (pre-wrap), and a token too long for the line breaks
-   anywhere rather than overflowing. The same holds for a bare reading
-   <pre> outside the card (docs, source listings), so every code
-   surface on a phone behaves one way. An editor that overlays a
-   textarea on its <pre> keeps its own unwrapped lines. */
-@media (max-width: 47.9375rem) {
-  pre,
-  figure[variant='code'] > pre {
-    white-space: var(--white-space-code-block-pre-phone);
-    overflow-wrap: var(--overflow-wrap-code-block-pre-phone);
-  }
+/* A long line wraps instead of running off the card edge, at every
+   width: nothing is hidden behind a scroll the reader cannot see.
+   Indentation is kept (pre-wrap), and a token too long for the line
+   breaks anywhere rather than overflowing. The same holds for a bare
+   reading <pre> outside the card (docs, source listings), so every
+   code surface behaves one way. An editor that overlays a textarea on
+   its <pre> keeps its own unwrapped lines. */
+pre,
+figure[variant='code'] > pre {
+  white-space: var(--white-space-code-block-pre-phone);
+  overflow-wrap: var(--overflow-wrap-code-block-pre-phone);
 }
 
 /* One highlight vocabulary for every code sample, including the

@@ -465,7 +465,7 @@ test.describe('home shell', () => {
     test(`phone code card keeps the import line reachable (${theme})`, async ({ page }) => {
       await open(page, 320, theme);
       const sample = await page.evaluate(() => {
-        const pre = document.querySelector('body[data-active="home"] pre');
+        const pre = document.querySelector('body[data-active="home"] [data-bn-hero-demo] pre');
         const code = pre.querySelector('code');
         const style = getComputedStyle(pre);
         return {
@@ -475,9 +475,9 @@ test.describe('home shell', () => {
           text: code.textContent.includes("from '@basenative/runtime'"),
         };
       });
-      // The trinity code card is a scroll region, not a wrapping card:
-      // the line stays whole inside a keyboard-focusable scroller that
-      // itself never widens the phone.
+      // The demo's code card wraps its lines and stays a keyboard-
+      // focusable region whose overflow fallback is a scroll, so the
+      // import line is always reachable and never widens the phone.
       expect(sample.overflowX).toBe('auto');
       expect(sample.focusable).toBe(true);
       expect(sample.text).toBe(true);

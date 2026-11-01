@@ -30,6 +30,10 @@
  *    component preview).
  *  - ident: inline code breaks between identifier parts (after a dot,
  *    slash, dash, paren or comma, or at a <wbr>), never inside a name.
+ *  - hidden: a code sample never hides part of a line behind a
+ *    sideways scroll, at any width. A long line wraps and hangs under
+ *    its own indent. An editor that overlays a textarea keeps its own
+ *    unwrapped lines.
  *  - cover: a control positioned over a surface (the code block's copy
  *    button) never paints over that surface's text. The space it sits
  *    in is reserved for it, at the control's real size.
@@ -360,6 +364,13 @@ export function layoutAudit(opts = {}) {
       }
     }
     if (hit) out.push({ rule: 'cover', at: path(c), ...hit });
+  }
+
+  // a code sample shows every line in full
+  for (const pre of main.querySelectorAll('pre')) {
+    if (!visible(pre) || pre.parentElement.querySelector('textarea')) continue;
+    const over = pre.scrollWidth - pre.clientWidth;
+    if (over > 1) out.push({ rule: 'hidden', at: path(pre), px: over });
   }
   return out;
 }

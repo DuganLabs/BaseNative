@@ -1,14 +1,14 @@
 import { test, expect } from '@playwright/test';
 
-// On a phone a code line wraps rather than hiding behind a sideways
-// scroll. The continuation used to restart at column 0, so wrapped code
+// A code line wraps rather than hiding behind a sideways scroll, on a
+// phone and on a desktop. The continuation used to restart at column 0, so wrapped code
 // lost its structure ("count.set(...)" sat under "const"). Each source
 // line is its own element, and a wrapped continuation hangs two columns
 // past that line's own indent.
 const ROUTES = ['/', '/components/combobox/', '/compare/'];
 
 for (const route of ROUTES) {
-  for (const width of [320, 393]) {
+  for (const width of [320, 393, 1024, 1280]) {
     test(`wrapped code hangs under its own indent on ${route} at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 800 });
       await page.goto(route);
