@@ -1513,7 +1513,9 @@ describe('form specimens share one field measure', () => {
 
   it('defines --measure-field and caps every form specimen root at it', () => {
     const sheet = css();
-    assert.match(sheet, /--measure-field:\s*28rem;/);
+    // The token lives in the one token sheet; the site CSS reads it.
+    const tokens = readFileSync(repo('packages/components/src/tokens.css'), 'utf8');
+    assert.match(tokens, /--measure-field:\s*28rem;/);
     const at = sheet.indexOf('max-inline-size: var(--measure-field)');
     assert.ok(at > 0, 'a preview rule reads --measure-field');
     const rule = sheet.slice(sheet.lastIndexOf('> output', at), at);
