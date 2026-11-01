@@ -897,35 +897,14 @@ export const trinityDemos = {
       ),
     ];
   },
-  calendar: (r, vm) => {
-    const month = vm('calendar', {
-      year: 2026,
-      month: 10,
-      today: '2026-10-24',
-      selected: '2026-10-26',
-    });
-    const table = r('table', {
-      columns: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-      rows: month.viewModel.weeks().map((week) =>
-        week.map((day) => ({
-          text: String(day.day),
-          current: day.isToday ? 'date' : day.isSelected ? 'true' : undefined,
-          small: !day.inMonth,
-        })),
-      ),
-    });
+  calendar: (r, _vm, live) => {
+    const props = { year: 2026, month: 10, today: '2026-10-24', selected: '2026-10-26' };
+    live?.({ name: 'calendar', props, selector: 'section[variant="month"]' });
     return [
       D(
         'October 2026',
-        r('calendar', {
-          year: 2026,
-          month: 10,
-          today: '2026-10-24',
-          selected: '2026-10-26',
-          bodyHtml: table,
-          prevHtml: r('button', { label: 'Previous', variant: 'ghost' }),
-          nextHtml: r('button', { label: 'Next', variant: 'ghost' }),
-        }),
+        r('calendar', props),
+        'Previous and Next page the month; the title announces it.',
       ),
       D(
         'Schedule',
