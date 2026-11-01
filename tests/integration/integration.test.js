@@ -1105,7 +1105,8 @@ describe('home shows a live component gallery', () => {
     for (const re of [
       /<button[^>]*variant="primary"/,
       /<input[^>]*type="email"/,
-      /<select/,
+      // The custom select is the default everywhere, the bento too.
+      /<section variant="select">\s*<button[^>]*aria-haspopup="listbox"/,
       /type="radio"/,
       /role="switch"|type="checkbox"/,
       /<table/,

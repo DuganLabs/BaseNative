@@ -196,7 +196,11 @@ async function mount(spec) {
 
   let root = null;
   let figure = null;
-  for (const candidate of document.querySelectorAll('[data-bn-component-preview]')) {
+  /* A preview figure, or a live host: site chrome (the playground's
+     example picker) that is a real component outside any preview. */
+  for (const candidate of document.querySelectorAll(
+    '[data-bn-component-preview], [data-bn-live-host]',
+  )) {
     const found = [...candidate.querySelectorAll(selector)].find((el) => !mounted.has(el));
     if (found) {
       root = found;
@@ -218,6 +222,16 @@ async function mount(spec) {
     props.labelFor = (index) => spec.labelTemplate.replace('{n}', String(index + 1));
   }
 
+  /* A select announces each choice to the page as a bubbling
+     bn-choose event, so page code can follow it without its view model. */
+  let announcer = null;
+  if (spec.name === 'select') {
+    props.onChoose = (value) =>
+      announcer?.dispatchEvent(
+        new CustomEvent('bn-choose', { bubbles: true, detail: { id: props.id ?? '', value } }),
+      );
+  }
+
   const vm = aggregate.create(props);
   const host = document.createElement('template');
   host.innerHTML = await templateFor(spec.name);
@@ -225,6 +239,7 @@ async function mount(spec) {
   root.replaceWith(host.content);
   hydrate(figure, vm);
   if (!live) return;
+  announcer = live;
 
   /* A dialog-family specimen stays closed until its trigger asks. */
   if (spec.open && live instanceof HTMLDialogElement) live.open = true;

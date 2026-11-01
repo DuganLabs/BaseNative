@@ -8,7 +8,8 @@ test.describe('Playground', () => {
   test('renders its chrome from the components catalog', async ({ page }) => {
     await page.goto('/playground');
     await expect(page.locator('section[variant="toolbar"]')).toBeVisible();
-    await expect(page.locator('section[variant="native"] select#exampleSelect')).toBeVisible();
+    // The example picker is the custom select, the default everywhere.
+    await expect(page.locator('section[variant="select"] button#exampleSelect')).toBeVisible();
     await expect(page.locator('section[variant="toolbar"] button[variant="primary"]')).toHaveText(
       'Run',
     );
@@ -92,7 +93,9 @@ test.describe('Playground', () => {
 
   test('switching examples runs the Greeter from its view model', async ({ page }) => {
     await page.goto('/playground');
-    await page.selectOption('#exampleSelect', 'greeting');
+    await page.locator('html[data-bn-specimens-mounted]').waitFor({ state: 'attached' });
+    await page.locator('#exampleSelect').click();
+    await page.locator('#exampleSelect-option-greeting').click();
     const frame = page.frameLocator('#preview');
     await expect(frame.locator('section[variant="card"] > h2')).toHaveText('Hello, Ada Lovelace.');
   });

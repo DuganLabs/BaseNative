@@ -440,9 +440,12 @@ function loadExample(ex) {
   run();
 }
 
-const exampleSelect = document.getElementById('exampleSelect');
-exampleSelect.addEventListener('change', () => {
-  const ex = EXAMPLES.find((x) => x.id === exampleSelect.value);
+/* The example picker is the custom select, hydrated by specimens.js,
+   which re-renders its root — so listen on the document for the
+   bubbling bn-choose event rather than on an element that is replaced. */
+document.addEventListener('bn-choose', (event) => {
+  if (event.detail?.id !== 'exampleSelect') return;
+  const ex = EXAMPLES.find((x) => x.id === event.detail.value);
   if (ex) loadExample(ex);
 });
 

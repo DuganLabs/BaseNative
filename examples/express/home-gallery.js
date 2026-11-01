@@ -44,6 +44,20 @@ export function renderHomeGallery() {
     r('toggle', { label: 'Focus mode', name: 'home-focus' }) +
     r('checkbox', { label: 'Remember me', name: 'home-remember', value: 'yes', checked: true });
 
+  /* The custom select is the default control everywhere; the specimen
+     mount hydrates it with the select's own view model. */
+  const planProps = {
+    id: 'home-plan',
+    value: 'pro',
+    label: 'Plan',
+    options: [
+      { value: 'free', label: 'Free' },
+      { value: 'pro', label: 'Pro' },
+      { value: 'team', label: 'Team' },
+    ],
+  };
+  live({ name: 'select', props: planProps });
+
   const form =
     r('field', {
       label: 'Email',
@@ -54,16 +68,7 @@ export function renderHomeGallery() {
     r('field', {
       label: 'Plan',
       controlId: 'home-plan',
-      controlHtml: r('select', {
-        id: 'home-plan',
-        value: 'pro',
-        variant: 'native',
-        options: [
-          { value: 'free', label: 'Free' },
-          { value: 'pro', label: 'Pro' },
-          { value: 'team', label: 'Team' },
-        ],
-      }),
+      controlHtml: r('select', planProps),
     });
 
   const card =
