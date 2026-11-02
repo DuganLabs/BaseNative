@@ -2497,6 +2497,8 @@
     --position-combobox-listbox: static;
     --position-multiselect-listbox: static;
     --position-toast: static;
+    /* In flow, the stack takes the tray's width up to its cap. */
+    --size-toast-inline: min(var(--size-full), calc(var(--spacing-8) * 9));
     /* In flow, a tray keeps no toast layer: as a grid item its z-index
        still applied and drew it over the phone tab bar. */
     --layer-toast: auto;

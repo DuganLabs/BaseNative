@@ -466,5 +466,41 @@
         "system": "trinity"
       }
     }
+  },
+  "spacing-app-shell-toast-inset-block-end": {
+    "$value": "calc(var(--spacing-8) * 2 + var(--spacing-4) + var(--spacing-safe-bottom))",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "app-shell",
+          "variant": null,
+          "subitem": "toast-inset-block-end",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-app-shell-toast-inset-block-end-rail": {
+    "$value": "calc(var(--spacing-4) + var(--spacing-safe-bottom))",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "app-shell",
+          "variant": null,
+          "subitem": "toast-inset-block-end-rail",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
   }
 }

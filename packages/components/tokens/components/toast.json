@@ -269,6 +269,24 @@
       }
     }
   },
+  "size-toast-inline": {
+    "$value": "min(calc(var(--size-full) - var(--spacing-4) * 2), calc(var(--spacing-8) * 9))",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "toast",
+          "variant": null,
+          "subitem": "inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "color-bkg-toast-item": {
     "$value": "{color-background-3}",
     "$type": "color",
@@ -532,6 +550,24 @@
           "item": "toast-item-icon",
           "variant": null,
           "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "flex-toast-item-message": {
+    "$value": "var(--flex-grow)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "flex",
+          "type": null,
+          "item": "toast",
+          "variant": null,
+          "subitem": "item-message",
           "state": null,
           "context": null
         },

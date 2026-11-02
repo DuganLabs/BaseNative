@@ -12,6 +12,8 @@ export const root = 'table';
  * @property {boolean} [header] Render as the row's <th scope="row">.
  * @property {boolean} [small] Render the content de-emphasised, wrapped in a <small>.
  * @property {string} [current] An aria-current value for the cell (e.g. 'date', 'true').
+ * @property {boolean} [numeric] Stamped by create() for a cell in a numeric
+ *   column: the value renders in a <data> element and aligns to the trailing edge.
  * @property {string} [label] The cell's column heading, stamped by create() from
  *   columns — rendered as the cell's key line when the table restacks narrow.
  *   Row-header cells carry no label: the header is the row's own label line.
@@ -19,6 +21,8 @@ export const root = 'table';
  * @typedef {object} TableProps
  * @property {string[]} columns Column headings.
  * @property {(string | TableCell)[][]} rows Cells, normalized to TableCell.
+ * @property {number[]} [numeric] Indexes of numeric columns (versions, counts,
+ *   sizes): their heading and cells align to the trailing edge in tabular figures.
  * @property {string} [caption]
  * @property {string} [variant] A registered variant name.
  */
@@ -28,9 +32,11 @@ export function create(props) {
   if (!Array.isArray(props.columns)) throw new TypeError('table: columns is required');
   if (!Array.isArray(props.rows)) throw new TypeError('table: rows is required');
 
-  const columns = signal(props.columns);
+  const numeric = new Set(Array.isArray(props.numeric) ? props.numeric : []);
+  const columns = signal(props.columns.map((text, i) => ({ text, numeric: numeric.has(i) })));
   const rows = signal(props.rows.map((row) => row.map((cell, i) => {
-    const normalized = typeof cell === 'string' ? { text: cell } : cell;
+    const base = typeof cell === 'string' ? { text: cell } : cell;
+    const normalized = numeric.has(i) && !base.contentHtml ? { ...base, numeric: true } : base;
     if (normalized.header) return normalized;
     const label = props.columns[i];
     return typeof label === 'string' && label !== ''

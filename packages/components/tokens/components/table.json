@@ -198,7 +198,7 @@
     }
   },
   "color-text-table-head": {
-    "$value": "{color-text-label-2}",
+    "$value": "var(--color-text-label)",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -306,7 +306,7 @@
     }
   },
   "spacing-table-cell-padding-block": {
-    "$value": "{spacing-2}",
+    "$value": "var(--spacing-3)",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
@@ -324,7 +324,7 @@
     }
   },
   "spacing-table-cell-padding-inline": {
-    "$value": "{spacing-3}",
+    "$value": "var(--spacing-4)",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
@@ -496,6 +496,60 @@
           "item": "table-cell",
           "variant": null,
           "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "font-variant-numeric-table-cell": {
+    "$value": "var(--font-variant-numeric-tabular)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "font-variant-numeric",
+          "type": null,
+          "item": "table",
+          "variant": null,
+          "subitem": "cell",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "text-align-table-cell-numeric": {
+    "$value": "var(--text-align-end)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "text-align",
+          "type": null,
+          "item": "table",
+          "variant": null,
+          "subitem": "cell-numeric",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "text-align-table-cell-numeric-restack": {
+    "$value": "var(--text-align-start)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "text-align",
+          "type": null,
+          "item": "table",
+          "variant": null,
+          "subitem": "cell-numeric-restack",
           "state": null,
           "context": null
         },

@@ -736,3 +736,23 @@ test('hero renders afterHtml at the close of its figcaption', async () => {
   assert.match(html, /<dl><div><dt>Element<\/dt>/);
   assert.ok(html.indexOf('<dl>') > html.indexOf('</h1>'), 'after content follows the title');
 });
+
+test('table marks a numeric column with <data> in its heading and cells', async () => {
+  const registry = await loadRegistry();
+  const { html } = renderComponent(registry, render, 'table', {
+    columns: ['Package', 'Version'],
+    numeric: [1],
+    rows: [[{ text: 'components', header: true }, '3.1']],
+  });
+  assert.match(html, /<th scope="col"><data>Version<\/data><\/th>/);
+  assert.match(html, /<td><b>Version<\/b><data value="3.1">3.1<\/data><\/td>/);
+  assert.match(html, /<th scope="col">Package<\/th>/, 'a text column stays plain');
+});
+
+test('toast wraps the message so the dismiss action sits at the trailing edge', async () => {
+  const registry = await loadRegistry();
+  const { html } = renderComponent(registry, render, 'toast', {
+    items: [{ message: 'Changes saved', tone: 'success', dismissHtml: '<button>Dismiss</button>' }],
+  });
+  assert.match(html, /<p>Changes saved<\/p><button>Dismiss<\/button><\/li>/);
+});

@@ -112,6 +112,7 @@ export function renderHomeGallery() {
     variant: 'striped',
     caption: 'Releases',
     columns: ['Package', 'Version', 'Status'],
+    numeric: [1],
     rows: [
       [{ text: 'components', header: true }, '3.1', 'Stable'],
       [{ text: 'runtime', header: true }, '3.1', 'Stable'],
