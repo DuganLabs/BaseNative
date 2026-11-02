@@ -694,6 +694,17 @@ test('search-field standardizes the search control and reports its query', async
     controlId: 'q2',
   }).html;
   assert.doesNotMatch(empty, />Clear<\/button>/);
+  assert.doesNotMatch(empty, /placeholder/);
+});
+
+test('search-field carries a placeholder hint when given one', async () => {
+  const registry = await loadRegistry();
+  const { html } = renderComponent(registry, render, 'search-field', {
+    label: 'Search the docs',
+    controlId: 'bn-page-q',
+    placeholder: 'Search the API and tokens',
+  });
+  assert.match(html, /<input [^>]*placeholder="Search the API and tokens"/);
 });
 
 test('segmented-control runs the choice paradigm over its own segments', async () => {

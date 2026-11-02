@@ -108,31 +108,50 @@ export function componentTemplates() {
   return out;
 }
 
+/* Every file whose bytes the asset version covers: everything the site
+ * serves under a ?v= stamp. A fixed list here once left compare.js,
+ * hero-demo.js, copy-code.js, builder.js, the builder sheet and the
+ * font faces outside the hash, so a deploy that changed only them kept
+ * serving the old bytes for the whole max-age (Warren, 2026-11-01). So
+ * the list is walked, not written: the site's public scripts, sheets and
+ * pages, every component sheet and template, the builder's sources and
+ * the font-face sheet. */
+export function assetSources() {
+  const walk = (dir, exts) => {
+    const out = [];
+    let entries;
+    try {
+      entries = readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return out; /* an absent tree mints no weaker version */
+    }
+    for (const e of entries.sort((x, y) => x.name.localeCompare(y.name))) {
+      const p = join(dir, e.name);
+      if (e.isDirectory()) out.push(...walk(p, exts));
+      else if (exts.some((x) => e.name.endsWith(x))) out.push(p);
+    }
+    return out;
+  };
+  const web = ['.css', '.js', '.mjs', '.html', '.json'];
+  return [
+    ...walk(join(__dirname, 'public'), web),
+    ...componentStylesheets(),
+    ...componentTemplates(),
+    ...walk(join(__dirname, '../../packages/builder/src'), web),
+    join(__dirname, '../../packages/fonts/fonts.css'),
+  ];
+}
+
 function getAssetVersion() {
   if (assetVersion) return assetVersion;
   const hash = createHash('sha256');
-  for (const file of [
-    'public/basenative.js',
-    'public/styles.css',
-    'public/boot.js',
-    'public/scrollspy.js',
-    'public/more-menu.js',
-    'public/playground.css',
-    'public/playground.js',
-    'public/playground-preview.js',
-    'public/highlight-engine.js',
-    'public/specimens.js',
-  ]) {
+  for (const file of assetSources()) {
     try {
-      hash.update(read(file));
+      hash.update(readFileSync(file));
     } catch {
       /* an asset that is absent in some host mints no weaker version */
     }
   }
-  for (const file of componentStylesheets()) hash.update(readFileSync(file, 'utf-8'));
-  /* The specimens fetch each component's template (/bn-css/<name>/index.html)
-   * under this version too, so a template-only change must mint a new one. */
-  for (const file of componentTemplates()) hash.update(readFileSync(file, 'utf-8'));
   assetVersion = hash.digest('hex').slice(0, 10);
   return assetVersion;
 }
@@ -332,6 +351,7 @@ const TEST_SIGNAL_ITEMS = [
 export const siteRoutes = [
   {
     path: '/',
+    pageSearch: { label: 'Search this page', placeholder: 'Search components and sections', items: '[data-bn-gallery] > li, main [data-bn-nav] > :not(h2, header, [data-bn-gallery])' },
     view: 'home.html',
     title: 'Apple-grade design system in plain HTML & CSS',
     description: DEFAULT_DESCRIPTION,
@@ -353,6 +373,7 @@ export const siteRoutes = [
   },
   {
     path: '/compare',
+    pageSearch: { label: 'Search the comparison', placeholder: 'Search the comparison', items: 'main [data-bn-nav] > :not(h2, header)' },
     view: 'compare.html',
     title: 'Compare',
     description:
@@ -369,6 +390,7 @@ export const siteRoutes = [
   },
   {
     path: '/components',
+    pageSearch: { label: 'Search components', placeholder: 'Search components (e.g. button, dialog, tree…)', items: '[data-bn-component-card-host]', noun: ['component', 'components'] },
     view: 'components.html',
     title: 'Components',
     description: `${catalogEntries.length} semantic, server-rendered components built on native HTML primitives. No virtual DOM.`,
@@ -388,6 +410,7 @@ export const siteRoutes = [
   },
   {
     path: '/docs',
+    pageSearch: { label: 'Search the docs', placeholder: 'Search the API and tokens', items: 'main [data-bn-nav] > :not(h2, header)' },
     view: 'docs.html',
     title: 'API Docs',
     description:
@@ -406,6 +429,7 @@ export const siteRoutes = [
   },
   {
     path: '/ai',
+    pageSearch: { label: 'Search this page', placeholder: 'Search this page', items: 'main [data-bn-nav] > :not(h2, header)' },
     view: 'ai.html',
     title: 'AI',
     description:
@@ -483,11 +507,72 @@ export function renderRoute(route, site = {}) {
   const effectiveRoute = ctx.liveSpecimens?.length
     ? { ...route, scripts: (route.scripts ?? '') + liveSpecimenScripts(ctx.liveSpecimens) }
     : route;
-  return renderPage(
+  const html = renderPage(
     route.view,
-    hero ? { ...ctx, hero: raw(renderHero(hero)) } : ctx,
+    hero ? { ...ctx, hero: raw(renderHero(hero) + PAGE_NAV_MARK) } : ctx,
     effectiveRoute,
   );
+  return html.replace(PAGE_NAV_MARK, () => renderPageNav(route, html));
+}
+
+/* Where the page nav lands: right under the hero, in every view. */
+const PAGE_NAV_MARK = '<!--bn-page-nav-->';
+
+/**
+ * The page nav: ONE pattern on every page (Warren, 2026-11-01 — only
+ * Components had a sticky bar and a search, the Docs "On this page" did
+ * not stick, nothing stuck on a phone). It is the catalog sidebar's
+ * subnav variant — sticky at every width, one row that scrolls sideways
+ * — with the catalog search field in its header on the pages that have
+ * something to filter. Its links are not written per page: they are read
+ * from the rendered view, one per element that carries
+ * `data-bn-nav="<label>"` and an id, in document order, so a section
+ * cannot exist without its link or a link without its section.
+ * `route.pageSearch` turns the filter on: `items` is the selector of
+ * what it hides and shows (public/page-filter.js).
+ */
+export function pageNavItems(html) {
+  const items = [];
+  for (const m of html.matchAll(/<[a-z][\w-]*\b([^>]*\sdata-bn-nav="([^"]+)"[^>]*)>/g)) {
+    const id = /\sid="([^"]+)"/.exec(m[1])?.[1];
+    if (!id) throw new Error(`page nav: "${m[2]}" carries data-bn-nav but no id`);
+    items.push({ label: m[2], href: `#${id}` });
+  }
+  return items;
+}
+
+function renderPageNav(route, html) {
+  const items = pageNavItems(html);
+  if (!items.length && !route.pageSearch) return '';
+  const search = route.pageSearch;
+  const headerHtml = search
+    ? '<header>' +
+      renderTrinity('search-field', {
+        label: search.label,
+        controlId: 'bn-page-q',
+        name: 'q',
+        placeholder: search.placeholder,
+        clearLabel: 'Clear search',
+      }) +
+      '<p role="status" aria-live="polite" hidden>' +
+      '<output data-bn-page-filter-count></output> ' +
+      renderTrinity('button', { label: 'Reset', variant: 'ghost' }).replace(
+        '<button',
+        '<button data-bn-page-filter-reset',
+      ) +
+      '</p>' +
+      `<script type="application/json" data-bn-page-filter>${JSON.stringify({
+        items: search.items,
+        noun: search.noun ?? ['result', 'results'],
+      }).replaceAll('<', '\\u003c')}</script>` +
+      '</header>'
+    : '';
+  return renderTrinity('sidebar', {
+    variant: 'subnav',
+    label: 'On this page',
+    headerHtml,
+    sections: [{ items }],
+  });
 }
 
 /**
