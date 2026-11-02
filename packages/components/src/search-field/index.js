@@ -21,6 +21,7 @@ export const root = 'search';
  * @property {string} [name] The control's name, carried on the events.
  * @property {string} [value] The initial query.
  * @property {string} [clearLabel] Default "Clear".
+ * @property {string} [placeholder] Hint text shown while the field is empty.
  * @property {string} [submitHtml] A rendered submit button.
  * @property {(event: { name: string, value: string }) => void} [onSearch]
  * @property {(event: { name: string }) => void} [onClear]
@@ -37,6 +38,8 @@ export function create(props) {
   const groupName = signal(props.name ?? '');
   const value = signal(props.value ?? '');
   const clearLabel = signal(props.clearLabel ?? 'Clear');
+  // false omits the attribute: no empty placeholder on a field without one.
+  const placeholder = signal(props.placeholder || false);
   const submitHtml = signal(props.submitHtml ?? '');
   const inputVariant = signal('default');
   const variant = signal(props.variant ?? 'default');
@@ -65,7 +68,7 @@ export function create(props) {
     submit();
   }
 
-  return { label, controlId, groupName, value, clearLabel, submitHtml, inputVariant, variant, hasValue, hasSubmit, update, clear, submit, keydown, raw };
+  return { label, controlId, groupName, value, clearLabel, placeholder, submitHtml, inputVariant, variant, hasValue, hasSubmit, update, clear, submit, keydown, raw };
 }
 
 /** @param {import('../registry.js').Registry} registry */

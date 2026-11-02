@@ -1366,5 +1366,185 @@
         "system": "trinity"
       }
     }
+  },
+  "display-sidebar-subnav": {
+    "$value": "var(--display-flex)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "display",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "flex-direction-sidebar-subnav": {
+    "$value": "var(--flex-direction-column)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "flex-direction",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "flex-direction-sidebar-subnav-wide": {
+    "$value": "var(--flex-direction-row)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "flex-direction",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-wide",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "align-sidebar-subnav-wide": {
+    "$value": "var(--align-center)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "align",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-wide",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "order-sidebar-subnav-header-wide": {
+    "$value": "1",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "order",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-header-wide",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-sidebar-subnav-header-inline-wide": {
+    "$value": "calc(var(--spacing-8) * 7)",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-header-inline-wide",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-sidebar-subnav-header-margin-block-end-wide": {
+    "$value": "0",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-header-margin-block-end-wide",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "flex-sidebar-subnav-nav": {
+    "$value": "1 1 0%",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "flex",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-nav",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-sidebar-subnav-nav-inline-min": {
+    "$value": "0",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-nav-inline-min",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-sidebar-subnav-search-inline": {
+    "$value": "var(--size-full)",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-search-inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
   }
 }

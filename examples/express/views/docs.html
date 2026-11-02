@@ -1,6 +1,6 @@
-{{ hero }} {{ toc }}
+{{ hero }}
 
-<section id="api-reference">
+<section id="api-reference" data-bn-nav="Runtime API">
   <article>
     <header>
       <h2>signal(initialValue)</h2>
@@ -115,7 +115,7 @@ hydrate(document.querySelector('[data-app]'), {
   </article>
 </section>
 
-<section id="template-directives">
+<section id="template-directives" data-bn-nav="Directives">
   <h2>Template <em>Directives</em></h2>
   <p>
     Control flow lives in native <code>&lt;template&gt;</code> elements. Expressions use a safe
@@ -217,7 +217,7 @@ hydrate(document.querySelector('[data-app]'), {
   </article>
 </section>
 
-<section id="server-rendering">
+<section id="server-rendering" data-bn-nav="Server rendering">
   <h2>Server <em>Rendering</em></h2>
   <p>
     The SSR module evaluates all directives at request time. It can also emit hydratable markers for
@@ -258,7 +258,7 @@ const html = render(`
   </article>
 </section>
 
-<section id="full-api-reference">
+<section id="full-api-reference" data-bn-nav="All packages">
   <h2>Full <em>API reference</em></h2>
   <p>
     This page covers the runtime primitives and server render. Every package has a generated
@@ -271,7 +271,7 @@ const html = render(`
   {{ apiRefs }}
 </section>
 
-<section id="design-tokens">
+<section id="design-tokens" data-bn-nav="Design tokens">
   <h2>Design <em>tokens</em></h2>
   <p>
     One sheet, {{ tokenCount }} tokens. Everything in this section is parsed from

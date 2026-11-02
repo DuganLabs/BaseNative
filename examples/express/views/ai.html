@@ -1,18 +1,18 @@
 {{ hero }}
 
-<section>
+<section id="loop" data-bn-nav="Agent loop">
   <h2>In an agent’s <em>loop</em></h2>
   <p>Every piece a coding agent needs to build with the design system ships in the repository.</p>
   {{ toolkit }}
 </section>
 
-<section>
+<section id="measured" data-bn-nav="Measured">
   <h2>Measured <em>at build</em></h2>
   <p>These figures are read from the repository each time the site builds.</p>
   <ul data-bn="bn-card-grid">{{ statsRow }}</ul>
 </section>
 
-<section>
+<section id="counter" data-bn-nav="Counter">
   <h2>Copy this <em>counter</em></h2>
   <p>
     One HTML file. The runtime loads from a CDN. No bundler. The same template is what
@@ -21,7 +21,7 @@
   {{ canonical }}
 </section>
 
-<section>
+<section id="react-habits" data-bn-nav="React habits">
   <h2>React habits that <em>fail</em></h2>
   <p>
     <code>bn from-jsx</code> rewrites this subset of a draft.

@@ -29,6 +29,7 @@ import {
   siteRoutes,
   componentStylesheets,
   componentTemplates,
+  assetSources,
   renderPlaygroundPreview,
 } from '../../examples/express/page.js';
 import {
@@ -410,10 +411,10 @@ describe('the capability guard reads prose, not just numbers', () => {
   it('/playground gives the console its own area, outside the editor tabs', () => {
     const route = siteRoutes.find((r) => r.path === '/playground');
     const html = renderRoute(route, { tasks: [], hasApi: false });
-    const tabs = html.match(/<section variant="tabs"[\s\S]*?<section aria-label="Result">/);
+    const tabs = html.match(/<section variant="tabs"[\s\S]*?<section [^>]*aria-label="Result">/);
     assert.ok(tabs, '/playground renders its editor tabs before the result');
     assert.doesNotMatch(tabs[0], /aria-label="Console"/, 'the console sits inside an editor tab');
-    assert.match(html, /<section class="console-region" aria-label="Console">/);
+    assert.match(html, /<section class="console-region" [^>]*aria-label="Console">/);
   });
 
   it('/compare no longer denies HMR while @basenative/hmr ships', () => {
@@ -1202,20 +1203,13 @@ describe('the contents navs have a working scrollspy', () => {
     }
   });
 
-  it('/components: every category filter maps to a section on the page', () => {
+  it('/components: every category in the page nav maps to a section on the page', () => {
     const route = siteRoutes.find((r) => r.path === '/components');
     const html = renderRoute(route, { tasks: [], hasApi: false });
-    const barAt = html.indexOf('variant="subnav"');
-    const bar = html.slice(barAt, html.indexOf('</aside>', barAt));
-    const cats = [...bar.matchAll(/value="([^"]+)"/g)]
-      .map((m) => m[1])
-      .filter((c) => c && c !== 'all');
-    assert.ok(cats.length >= 3, `expected the /components category filters, got ${cats.length}`);
-    for (const cat of cats) {
-      assert.ok(
-        html.includes(`id="cat-${cat}"`),
-        `/components filter "${cat}" has no target section`,
-      );
+    const ids = tocLinks(html, 'variant="subnav"').filter((id) => id.startsWith('cat-'));
+    assert.ok(ids.length >= 3, `expected the /components category links, got ${ids.length}`);
+    for (const id of ids) {
+      assert.ok(html.includes(`id="${id}"`), `/components nav link #${id} has no target section`);
     }
   });
 
@@ -1372,6 +1366,34 @@ describe('the asset version covers every stylesheet the CSS chain is built from'
         );
       }
     }
+  });
+
+  /* Warren 2026-11-01: a deploy shipped and pages still painted the old
+     look. There is no service worker; the cache is the ?v= stamp. Any
+     file served under it but left out of the hash keeps its old bytes
+     for the whole max-age after a deploy, so every stamped URL a page
+     emits must map to a hashed source file. */
+  it('every ?v= stamped asset a page links is covered by the asset version', () => {
+    const hashed = new Set(assetSources().map((f) => f.replaceAll('\\', '/')));
+    const mounts = [
+      ['/bn-css/', 'packages/components/src/'],
+      ['/bn-builder-css/', 'packages/builder/src/'],
+      ['/fonts/', 'packages/fonts/'],
+      ['/', 'examples/express/public/'],
+    ];
+    const missing = new Set();
+    for (const route of siteRoutes) {
+      if (route.internal) continue;
+      const html = renderRoute(route, { tasks: [], hasApi: false });
+      for (const [, url] of html.matchAll(/["'(](\/[^"'()?\s]+)\?v=/g)) {
+        /* trinity.css is assembled from the component sheets, all hashed. */
+        if (url === '/bn-css/trinity.css') continue;
+        const [prefix, dir] = mounts.find(([m]) => url.startsWith(m));
+        const file = repo(dir + url.slice(prefix.length)).replaceAll('\\', '/');
+        if (!hashed.has(file)) missing.add(`${route.path}: ${url}`);
+      }
+    }
+    assert.deepEqual([...missing], []);
   });
 });
 
