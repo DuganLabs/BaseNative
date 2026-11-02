@@ -72,23 +72,18 @@
     font-weight: 500;
   }
 
-  /* ─── Select elements ─────────────────────────────────────── */
-  [data-bn="input-panel"] select {
-    grid-column: 1 / -1;
-    margin-block-start: var(--space-1);
-    padding: var(--space-2) var(--space-3);
-    background: var(--surface-input);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+  /* ─── Pickers (the custom select) ───────────────────────── */
+  [data-bn="input-panel"] [data-bn="picker"] {
+    display: grid;
+    gap: var(--space-2);
+    padding-block: var(--space-3);
     font-size: var(--text-sm);
-    cursor: pointer;
-    transition: border-color var(--duration) var(--ease);
+    color: var(--text-secondary);
+    border-block-end: 1px solid var(--surface-muted);
   }
 
-  [data-bn="input-panel"] select:focus-visible {
-    outline: 2px solid var(--border-focus);
-    outline-offset: 1px;
-    border-color: var(--border-focus);
+  [data-bn="input-panel"] fieldset > [data-bn="picker"]:last-of-type {
+    border-block-end: none;
   }
 
   /* ─── Number inputs ───────────────────────────────────────── */
@@ -137,13 +132,13 @@
     margin-block-end: var(--space-2);
   }
 
-  [data-bn="window-entry"] select {
-    padding: var(--space-1) var(--space-2);
-    background: var(--surface-input);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-size: var(--text-sm);
-    text-transform: capitalize;
+  /* The wall picker takes the row's full width; the sizes follow. */
+  [data-bn="window-entry"] [data-bn="picker"] {
+    flex-basis: 100%;
+    padding-block: 0;
+    border: none;
+    font-size: var(--text-xs);
+    font-weight: 500;
   }
 
   [data-bn="window-entry"] label {

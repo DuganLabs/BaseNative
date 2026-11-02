@@ -1574,6 +1574,7 @@
   --display-select-trigger: var(--display-flex);
   --align-select-trigger: var(--align-center);
   --justify-select-trigger: var(--justify-space-between);
+  --text-align-select-trigger: var(--text-align-start);
   --spacing-select-trigger-gap: var(--spacing-2);
   --size-select-trigger-inline: var(--size-full);
   --size-select-trigger-block: var(--size-control);

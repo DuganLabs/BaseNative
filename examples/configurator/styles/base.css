@@ -135,7 +135,10 @@
 
   [data-bn="configurator-layout"] {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    /* minmax(0, 1fr): a column never grows past its share to fit its
+       widest content (a long option label, a table); that content wraps
+       or scrolls inside its card instead of widening the page. */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-8);
     align-items: start;
   }
@@ -144,7 +147,7 @@
 @layer states {
   @media (max-width: 64rem) {
     [data-bn="configurator-layout"] {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 
