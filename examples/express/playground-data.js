@@ -49,7 +49,7 @@ function pane(lang, title, note, source, extra = '') {
           </article>`;
 }
 
-const consoleRegion = `<section class="console-region" aria-label="Console">
+const consoleRegion = `<section class="console-region" id="console" data-bn-nav="Console" aria-label="Console">
               <header class="console-head">
                 <h3>Console</h3>
                 ${component('button', { label: 'Clear', variant: 'ghost' })}

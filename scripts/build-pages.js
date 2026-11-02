@@ -119,6 +119,7 @@ console.log('  404.html');
 cpSync(join(express, 'public', 'styles.css'), join(dist, 'styles.css'));
 cpSync(join(express, 'public', 'boot.js'), join(dist, 'boot.js'));
 cpSync(join(express, 'public', 'scrollspy.js'), join(dist, 'scrollspy.js'));
+cpSync(join(express, 'public', 'page-filter.js'), join(dist, 'page-filter.js'));
 cpSync(join(express, 'public', 'more-menu.js'), join(dist, 'more-menu.js'));
 cpSync(join(express, 'public', 'specimens.js'), join(dist, 'specimens.js'));
 cpSync(join(express, 'public', 'hero-demo.js'), join(dist, 'hero-demo.js'));

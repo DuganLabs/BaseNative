@@ -7,7 +7,7 @@
 -->
 {{ hero }}
 
-<section data-stats>
+<section id="at-a-glance" data-bn-nav="At a glance" data-stats>
   <ul data-bn="bn-card-grid">
     <li>
       <article data-bn="bn-metric">
@@ -36,7 +36,7 @@
   </ul>
 </section>
 
-<section>
+<section id="bundle" data-bn-nav="Bundle size">
   <h2>Bundle <em>size</em></h2>
   <p>
     BaseNative ships raw ES modules. No bundler, no tree-shaking needed — what you import is what
@@ -81,7 +81,7 @@
   </article>
 </section>
 
-<section>
+<section id="templates" data-bn-nav="Templates">
   <h2>Templates are <em>data</em></h2>
   <p>
     BaseNative expressions are interpreted by a hand-written parser — a tokenizer, a
@@ -143,7 +143,7 @@
   </article>
 </section>
 
-<section>
+<section id="api" data-bn-nav="API surface">
   <h2>API <em>surface</em></h2>
   <p>
     Fewer primitives means less to learn and less to break. BaseNative's entire reactivity model
@@ -160,7 +160,7 @@
   </article>
 </section>
 
-<section data-compare-counter>
+<section id="counter" data-bn-nav="Counter" data-compare-counter>
   <h2>Counter: the same app, <em>four ways</em></h2>
   <p>
     A reactive counter shows each framework's mental model. BaseNative uses plain HTML with signal
@@ -169,7 +169,7 @@
   {{ counterTabs }}
 </section>
 
-<section>
+<section id="ssr" data-bn-nav="SSR">
   <h2>SSR and <em>hydration</em></h2>
   <p data-claim>
     BaseNative includes server rendering and {{ stats.hydrationStrategies }} built-in lazy hydration
@@ -185,7 +185,7 @@
   </article>
 </section>
 
-<section>
+<section id="dx" data-bn-nav="Developer experience">
   <h2>Developer <em>experience</em></h2>
   <p>
     The place BaseNative is furthest behind. None of this is close, and pretending otherwise would
@@ -198,7 +198,7 @@
   </article>
 </section>
 
-<section>
+<section id="tradeoffs" data-bn-nav="Tradeoffs">
   <h2>Honest <em>tradeoffs</em></h2>
   <p>
     BaseNative isn't trying to replace React or Angular for every use case. Here's where it
@@ -246,7 +246,7 @@
   </section>
 </section>
 
-<section>
+<section id="choose" data-bn-nav="When to choose">
   <h2>When to <em>choose</em> BaseNative</h2>
 
   <section>
@@ -275,7 +275,7 @@
   </section>
 </section>
 
-<section data-compare-cta>
+<section id="try" data-bn-nav="Try it" data-compare-cta>
   <h2>Try <em>it</em></h2>
   <p data-claim>
     The reactivity core is {{ stats.coreLines }} lines. Read it, understand it, then decide.

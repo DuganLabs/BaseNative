@@ -462,6 +462,16 @@
   --scroll-snap-align-sidebar-subnav-link: start;
   --mask-sidebar-subnav-list: linear-gradient(to right, transparent, black var(--spacing-2), black calc(100% - var(--spacing-5)), transparent);
   --overflow-y-sidebar-subnav: visible;
+  --display-sidebar-subnav: var(--display-flex);
+  --flex-direction-sidebar-subnav: var(--flex-direction-column);
+  --flex-direction-sidebar-subnav-wide: var(--flex-direction-row);
+  --align-sidebar-subnav-wide: var(--align-center);
+  --order-sidebar-subnav-header-wide: 1;
+  --size-sidebar-subnav-header-inline-wide: calc(var(--spacing-8) * 7);
+  --spacing-sidebar-subnav-header-margin-block-end-wide: 0;
+  --flex-sidebar-subnav-nav: 1 1 0%;
+  --size-sidebar-subnav-nav-inline-min: 0;
+  --size-sidebar-subnav-search-inline: var(--size-full);
   --border-collapse-table: separate;
   --color-text-table-head: var(--color-text-label);
   --spacing-table-cell-padding-block: var(--spacing-3);

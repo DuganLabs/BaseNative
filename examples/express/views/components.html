@@ -1,23 +1,7 @@
 {{ hero }}
 
-<search data-bn="bn-search" data-bn-component-search role="search" aria-label="Filter components">
-  <label for="components-q" data-bn-visually-hidden>Search components</label>
-  <input
-    id="components-q"
-    type="search"
-    data-bn-component-q
-    placeholder="Search components (e.g. button, dialog, tree…)"
-    autocomplete="off"
-    spellcheck="false"
-  />
-  {{ filters }}
-  <p data-bn-component-empty role="status" aria-live="polite">
-    No components match. <button type="button" data-bn-component-reset>Reset filters</button>
-  </p>
-</search>
-
 <template @for="cat of categories; track cat.id">
-  <section data-bn-component-category id="cat-{{ cat.id }}" data-bn-category="{{ cat.id }}">
+  <section data-bn-component-category id="cat-{{ cat.id }}" data-bn-nav="{{ cat.title }}" data-bn-category="{{ cat.id }}">
     <header data-bn-component-category-head>
       <h2>{{ cat.title }}</h2>
       <p>{{ cat.summary }}</p>
@@ -48,7 +32,7 @@
   </section>
 </template>
 
-<section data-bn-component-app-demo id="tasks">
+<section data-bn-component-app-demo id="tasks" data-bn-nav="App demo">
   <header data-bn-component-category-head>
     <h2>App demo</h2>
     <p>
@@ -95,7 +79,7 @@
   </p>
 </section>
 
-<section data-bn-component-philosophy>
+<section data-bn-component-philosophy id="axioms" data-bn-nav="Design axioms">
   <h2>Design <em>axioms</em></h2>
   <ol role="list" data-bn-axioms>
     <li>
@@ -132,59 +116,6 @@
   </ol>
 </section>
 
-<script type="module">
-  const ROOT = document.documentElement;
-  const input = document.querySelector('[data-bn-component-q]');
-  const cards = document.querySelectorAll('[data-bn-component-card-host]');
-  const cats = document.querySelectorAll('[data-bn-component-category]');
-  const filterBtns = document.querySelectorAll('aside[variant="subnav"] button');
-  const reset = document.querySelector('[data-bn-component-reset]');
-
-  let activeCat = 'all';
-  let activeQ = '';
-
-  const apply = () => {
-    const q = activeQ.trim().toLowerCase();
-    let visibleTotal = 0;
-    for (const card of cards) {
-      const haystack = (card.getAttribute('data-bn-search') || '').toLowerCase();
-      const inCat =
-        activeCat === 'all' || card.closest('[data-bn-category]')?.dataset.bnCategory === activeCat;
-      const matchQ = !q || haystack.includes(q);
-      const visible = inCat && matchQ;
-      card.toggleAttribute('hidden', !visible);
-      if (visible) visibleTotal++;
-    }
-    for (const cat of cats) {
-      const visible =
-        cat.querySelectorAll('[data-bn-component-card-host]:not([hidden])').length > 0;
-      cat.toggleAttribute('hidden', !visible);
-    }
-    ROOT.toggleAttribute('data-bn-no-results', visibleTotal === 0);
-  };
-
-  input?.addEventListener('input', () => {
-    activeQ = input.value;
-    apply();
-  });
-  for (const btn of filterBtns) {
-    btn.addEventListener('click', () => {
-      for (const b of filterBtns) b.setAttribute('aria-pressed', 'false');
-      btn.setAttribute('aria-pressed', 'true');
-      activeCat = btn.value || 'all';
-      apply();
-    });
-  }
-  reset?.addEventListener('click', () => {
-    if (input) input.value = '';
-    activeQ = '';
-    activeCat = 'all';
-    for (const b of filterBtns)
-      b.setAttribute('aria-pressed', String((b.value || 'all') === 'all'));
-    apply();
-    input?.focus();
-  });
-</script>
 
 <script type="application/json" data-initial-tasks>
   {{ tasksJson }}

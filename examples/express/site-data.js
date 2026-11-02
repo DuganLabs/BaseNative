@@ -137,26 +137,7 @@ export function getDocsPageContext() {
       href: 'https://github.com/DuganLabs/BaseNative/blob/main/docs/api/components.md',
     },
   ];
-  const toc = raw(
-    renderTrinity('sidebar', {
-      variant: 'subnav',
-      label: 'On this page',
-      sections: [
-        {
-          label: 'On this page',
-          items: [
-            { label: 'API reference', href: '#api-reference' },
-            { label: 'Template directives', href: '#template-directives' },
-            { label: 'Server rendering', href: '#server-rendering' },
-            { label: 'Full API reference', href: '#full-api-reference' },
-            { label: 'Design tokens', href: '#design-tokens' },
-          ],
-        },
-      ],
-    }),
-  );
   return {
-    toc,
     runtimeVersion,
     // Assembled from hand-authored data by the catalog's own renderer —
     // the same raw() trust assertion the other assembled contexts make.
@@ -383,32 +364,11 @@ export function getTasksPageContext(tasks, hasApi = true) {
   };
 }
 
-function sentenceCase(title) {
-  const text = String(title);
-  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-}
-
 export function getComponentsPageContext() {
   const entries = trinityCatalog(trinityComponentInfo());
   const categories = trinityCategoriesWith(entries);
-  const filters = raw(
-    renderTrinity('sidebar', {
-      variant: 'subnav',
-      label: 'Filter by category',
-      sections: [
-        {
-          label: 'Filter by category',
-          items: [
-            { label: 'All', value: 'all', pressed: true },
-            ...categories.map((cat) => ({ label: sentenceCase(cat.title), value: cat.id })),
-          ],
-        },
-      ],
-    }),
-  );
   return {
     categories,
-    filters,
     totalCount: entries.length,
     categoryCount: categories.length,
   };
