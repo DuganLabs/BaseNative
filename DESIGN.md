@@ -34,7 +34,7 @@ copy on public pages.
 ## Tokens
 
 Token names follow the category-first CTI+ shape (`--{category}-{type}-{item}-{variant}-{state}`),
-and **no new prefixes** (`--bn-*` is retired). The sheet declares 2,394
+and **no new prefixes** (`--bn-*` is retired). The sheet declares 2,395
 distinct custom properties. They are emitted in three blocks:
 
 1. **The system** (unlayered `:root`), Apple-style roles (`"system": "trinity"` in the JSON).
