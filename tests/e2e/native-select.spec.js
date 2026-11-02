@@ -1,4 +1,7 @@
 import { test, expect } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
+import { extname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { ROUTES } from './audit-routes.js';
 
 // Warren, 2026-11-01 (t228u-c): the custom select is the default
@@ -108,4 +111,94 @@ test('the enterprise New User form uses the custom select and submits its choice
   await expect(page).toHaveURL(/\/users\/\d+$/);
   await expect(page.locator('dd').nth(2)).toHaveText('Editor');
   expect(errors).toEqual([]);
+});
+
+// The configurator example (examples/configurator) is a static page that
+// imports the runtime by relative path, so it is served here from the repo
+// root through a route handler: no extra server.
+const repoRoot = fileURLToPath(new URL('../../', import.meta.url));
+const mime = {
+  '.html': 'text/html',
+  '.js': 'text/javascript',
+  '.css': 'text/css',
+  '.json': 'application/json',
+};
+const configurator = async (page) => {
+  await page.route('http://configurator.test/**', async (route) => {
+    const path = decodeURIComponent(new URL(route.request().url()).pathname);
+    try {
+      const body = await readFile(join(repoRoot, path));
+      await route.fulfill({ body, contentType: mime[extname(path)] ?? 'application/octet-stream' });
+    } catch {
+      await route.fulfill({ status: 404, body: 'not found' });
+    }
+  });
+  await page.goto('http://configurator.test/examples/configurator/index.html');
+  await page.waitForLoadState('networkidle');
+};
+
+for (const width of [320, 1280]) {
+  test(`configurator @${width}: every picker is the custom select`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await configurator(page);
+    await page.getByRole('button', { name: '+ Add Window' }).click();
+    await expect(page.locator('[data-bn="window-entry"]')).toHaveCount(1);
+    expect(await bareNativeSelects(page)).toEqual([]);
+    const triggers = page.locator('section[variant="select"] > button[aria-haspopup="listbox"]');
+    await expect(triggers).toHaveCount(5);
+    for (const trigger of await triggers.all()) {
+      const box = await trigger.boundingBox();
+      expect(box.height).toBeGreaterThanOrEqual(44);
+      // A label that wraps on a phone reads from the start edge, like a field.
+      expect(await trigger.evaluate((el) => getComputedStyle(el).textAlign)).toMatch(
+        /^(start|left)$/,
+      );
+      expect(
+        await trigger.evaluate(
+          (el) => el.labels.length + (el.getAttribute('aria-labelledby') ? 1 : 0),
+        ),
+      ).toBeGreaterThan(0);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+      width,
+    );
+    // The design system's tokens never replace the page's own (its sans
+    // stack, its radii): they sit in a lower cascade layer.
+    expect(await page.evaluate(() => getComputedStyle(document.body).fontFamily)).toMatch(
+      /system-ui/,
+    );
+  });
+}
+
+test('configurator: choosing a panel updates the analysis', async ({ page }) => {
+  await configurator(page);
+  const exterior = page.getByRole('button', { name: /Exterior Panel/ });
+  const before = await page.locator('[data-bn="r-total"]').textContent();
+  await exterior.click();
+  const options = page.getByRole('option');
+  expect(await options.count()).toBeGreaterThan(1);
+  const chosen = page.locator('[role="option"][aria-selected="false"]').first();
+  const label = (await chosen.textContent()).trim();
+  await chosen.click();
+  await expect(page.getByRole('listbox')).toHaveCount(0);
+  await expect(exterior).toContainText(label);
+  await expect(page.locator('[data-bn="r-total"]')).not.toHaveText(before);
+});
+
+test('configurator: a window wall choice sticks and Escape closes', async ({ page }) => {
+  await configurator(page);
+  await page.getByRole('button', { name: '+ Add Window' }).click();
+  const wall = page.getByRole('button', { name: /Wall/ }).first();
+  await expect(wall).toContainText('South');
+  await wall.click();
+  await page.getByRole('option', { name: 'North' }).click();
+  await expect(wall).toContainText('North');
+  await page.getByRole('button', { name: '+ Add Window' }).click();
+  await expect(page.getByRole('button', { name: /Wall/ })).toHaveCount(2);
+  await expect(page.getByRole('button', { name: /Wall/ }).first()).toContainText('North');
+  await wall.focus();
+  await page.keyboard.press('ArrowDown');
+  await expect(page.getByRole('listbox')).toHaveCount(1);
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('listbox')).toHaveCount(0);
 });

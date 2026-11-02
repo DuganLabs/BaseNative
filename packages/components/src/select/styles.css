@@ -7,6 +7,7 @@ section[variant="select"] {
     display: var(--display-select-trigger);
     align-items: var(--align-select-trigger);
     justify-content: var(--justify-select-trigger);
+    text-align: var(--text-align-select-trigger);
     gap: var(--spacing-select-trigger-gap);
     inline-size: var(--size-select-trigger-inline);
     block-size: var(--size-select-trigger-block);

@@ -16,6 +16,12 @@
     box-shadow: var(--shadow-sm);
   }
 
+  /* A card that holds a table scrolls it sideways inside the card
+     rather than widening the page (the site's card-table rule). */
+  [data-bn="output-panel"] > :is(article, details):has(> table) {
+    overflow-x: auto;
+  }
+
   [data-bn="output-panel"] h2 {
     font-size: var(--text-sm);
     font-weight: 600;

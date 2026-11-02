@@ -1,12 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Passive House ADU Configurator</title>
+<!-- The design system's tokens and its select, the default picker. The
+     tokens sit in the lowest cascade layer, so where a name is shared
+     (--font-sans, --radius-sm, ...) the configurator's own value wins. -->
+<style>
+@layer bn-tokens, reset, tokens, layout, components, states;
+@import url("../../packages/components/src/tokens.css") layer(bn-tokens);
+</style>
+<link rel="stylesheet" href="../../packages/components/src/select/styles.css">
 <link rel="stylesheet" href="styles/base.css">
 <link rel="stylesheet" href="styles/configurator.css">
 <link rel="stylesheet" href="styles/output.css">
+<script type="importmap">{"imports":{"@basenative/runtime":"../../packages/runtime/src/index.js"}}</script>
 </head>
 <body>
 <main>
@@ -70,49 +79,25 @@
       <fieldset data-bn="panels">
         <legend>Wall Assembly</legend>
 
-        <label>
-          Exterior Panel
-          <select @change="exteriorPanel.set($event.target.value)">
-            <template @for="entry of exteriorPanelEntries(); track entry.key">
-              <option :value="entry.key" :selected="entry.key === exteriorPanel()">
-                {{ entry.panel.name }} (R-{{ entry.panel.rValue }})
-              </option>
-            </template>
-          </select>
-        </label>
+        <div data-bn="picker">
+          <span data-bn="picker-label">Exterior Panel</span>
+          <div data-bn-select="exteriorPanel"></div>
+        </div>
 
-        <label>
-          Stud Depth
-          <select @change="studDepth.set($event.target.value)">
-            <template @for="entry of studDepthEntries(); track entry.key">
-              <option :value="entry.key" :selected="entry.key === studDepth()">
-                {{ entry.label }}
-              </option>
-            </template>
-          </select>
-        </label>
+        <div data-bn="picker">
+          <span data-bn="picker-label">Stud Depth</span>
+          <div data-bn-select="studDepth"></div>
+        </div>
 
-        <label>
-          Cavity Insulation
-          <select @change="cavityInsulation.set($event.target.value)">
-            <template @for="entry of cavityInsulationEntries(); track entry.key">
-              <option :value="entry.key" :selected="entry.key === cavityInsulation()">
-                {{ entry.ins.name }} (R-{{ entry.ins.rPerInch }}/in)
-              </option>
-            </template>
-          </select>
-        </label>
+        <div data-bn="picker">
+          <span data-bn="picker-label">Cavity Insulation</span>
+          <div data-bn-select="cavityInsulation"></div>
+        </div>
 
-        <label>
-          Interior Panel
-          <select @change="interiorPanel.set($event.target.value)">
-            <template @for="entry of interiorPanelEntries(); track entry.key">
-              <option :value="entry.key" :selected="entry.key === interiorPanel()">
-                {{ entry.panel.name }} (R-{{ entry.panel.rValue }})
-              </option>
-            </template>
-          </select>
-        </label>
+        <div data-bn="picker">
+          <span data-bn="picker-label">Interior Panel</span>
+          <div data-bn-select="interiorPanel"></div>
+        </div>
       </fieldset>
 
       <!-- Windows ─────────────────────────────────────────── -->
@@ -121,11 +106,10 @@
 
         <template @for="w of windows(); track w.id">
           <div data-bn="window-entry">
-            <select @change="updateWindowWall(w.id, $event.target.value)">
-              <template @for="wall of wallOptions">
-                <option :value="wall" :selected="wall === w.wall">{{ wall }}</option>
-              </template>
-            </select>
+            <div data-bn="picker">
+              <span data-bn="picker-label">Wall</span>
+              <div data-bn-select="windowWall" :data-window-id="w.id"></div>
+            </div>
             <label>
               W"
               <input type="number" min="12" max="72" step="1"
@@ -303,11 +287,54 @@
 </main>
 
 <script type="module">
-import { signal, computed, batch, hydrate } from '../../packages/runtime/src/index.js';
+import { signal, computed, batch, hydrate } from '@basenative/runtime';
 import { createState } from './configurator-state.js';
+import { mountSelects } from './select-mount.js';
 
 const state = createState({ signal, computed, batch });
-hydrate(document.querySelector('main'), state);
+const main = document.querySelector('main');
+hydrate(main, state);
+
+/* Every picker is the design system's custom select: its options come
+   from the catalog, its choice writes the configurator's signal. */
+const fromEntries = (entries, label) =>
+  entries.map((entry) => ({ value: entry.key, label: label(entry) }));
+const panelLabel = (e) => `${e.panel.name} (R-${e.panel.rValue})`;
+const capitalize = (word) => word[0].toUpperCase() + word.slice(1);
+const windowOf = (host) => state.windows().find((w) => String(w.id) === host.dataset.windowId);
+
+mountSelects(main, {
+  exteriorPanel: () => ({
+    id: 'exterior-panel',
+    options: fromEntries(state.exteriorPanelEntries(), panelLabel),
+    value: state.exteriorPanel(),
+    onChoose: (value) => state.exteriorPanel.set(value),
+  }),
+  studDepth: () => ({
+    id: 'stud-depth',
+    options: fromEntries(state.studDepthEntries(), (e) => e.label),
+    value: state.studDepth(),
+    onChoose: (value) => state.studDepth.set(value),
+  }),
+  cavityInsulation: () => ({
+    id: 'cavity-insulation',
+    options: fromEntries(state.cavityInsulationEntries(), (e) => `${e.ins.name} (R-${e.ins.rPerInch}/in)`),
+    value: state.cavityInsulation(),
+    onChoose: (value) => state.cavityInsulation.set(value),
+  }),
+  interiorPanel: () => ({
+    id: 'interior-panel',
+    options: fromEntries(state.interiorPanelEntries(), panelLabel),
+    value: state.interiorPanel(),
+    onChoose: (value) => state.interiorPanel.set(value),
+  }),
+  windowWall: (host) => ({
+    id: `window-${host.dataset.windowId}-wall`,
+    options: state.wallOptions.map((wall) => ({ value: wall, label: capitalize(wall) })),
+    value: windowOf(host)?.wall,
+    onChoose: (value) => state.updateWindowWall(windowOf(host).id, value),
+  }),
+});
 </script>
 </body>
 </html>
