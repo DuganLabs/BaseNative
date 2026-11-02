@@ -1,5 +1,14 @@
 # @basenative/theme
 
+## 3.2.0
+
+### Patch Changes
+
+- 7e18c9a: The docs-site tokens now live in the one token sheet (`tokens.css`, from `tokens/site.json`), and DESIGN.md is the design contract. No computed value changed.
+- 898544e: Subnav: a sticky one-row page nav that scrolls sideways (the current link stays in view), with an optional header slot for a search field; one row at ≥64rem. `search-field` takes a `placeholder`. Table: a `numeric` prop marks columns whose heading and cells align to the trailing edge in tabular figures. Toast: the stack takes one width and the message fills the item, so the dismiss action sits at its trailing edge; a fixed stack clears the phone app bar. The playground surface token is the card surface. theme: `--spacing-safe-top` is listed as upstream-owned. site: one page nav, search/filter and card recipe on Home, Compare, Components, Docs, AI, Playground and Builder; a centre-line scrollspy; the playground counter logs; a table scrolls inside its card instead of widening the page; compare verdict marks hang beside their first word (tokens `--size-compare-marker-hang`, `--spacing-compare-marker-top`).
+- c33c958: Vertical rhythm is now part of the app shell. New tokens `--spacing-app-shell-section-gap` (48px on a phone, `--spacing-app-shell-section-gap-rail` 80px beside the rail) and `--spacing-app-shell-stack-gap` (16px) space the page's sections and the cards stacked inside them, so no page spaces its sections by hand. Adds `--spacing-20`, `--white-space-pre` and `--white-space-pre-wrap`. Code blocks, and bare reading `<pre>`s, wrap long lines on a phone (`--white-space-code-block-pre-phone`, `--overflow-wrap-code-block-pre-phone`) instead of clipping them at the card edge. The theme bridge lists `--spacing-20` as upstream-owned.
+- 0cb0ab4: The bridge leaves `--layer-chrome` upstream, with the rest of the stacking order.
+
 ## 3.1.0
 
 No changes in this release.

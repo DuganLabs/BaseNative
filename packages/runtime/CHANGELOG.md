@@ -1,5 +1,15 @@
 # @basenative/runtime
 
+## 3.2.0
+
+### Minor Changes
+
+- 6d735e2: Devtools move to `@basenative/runtime/devtools` so the runtime bundle stays under 10KB. The component token sheet is the one source for the site palette, with body text that clears WCAG AA and one card elevation.
+
+### Patch Changes
+
+- 67013fd: The package description names the runtime as the signal runtime behind the BaseNative design system.
+
 ## 3.1.0
 
 ### Patch Changes
