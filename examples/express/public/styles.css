@@ -50,7 +50,7 @@
        packages/components/src/tokens.css (built from tokens/*.json).
        One site-only override is left: the site reads a narrower
        measure than the package default (65ch). DESIGN.md lists it
-       under "Naming variants". */
+       under "Conflicts". */
     --size-text-max: 52ch;
 
     main {
