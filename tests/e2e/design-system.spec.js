@@ -1,5 +1,14 @@
 import { test, expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
 import { siteRoutes } from '../../examples/express/page.js';
+
+// The site prints the runtime release (home eyebrow, docs install line).
+// A Version Packages PR bumps it, which is content the baselines must not
+// track: screenshots render it as the version they were captured at.
+const RELEASE_VERSION = JSON.parse(
+  readFileSync(new URL('../../packages/runtime/package.json', import.meta.url), 'utf8'),
+).version;
+const BASELINE_VERSION = '3.1.0';
 
 // The route tests freeze the clock (see the init script), but a
 // frozen instant still renders through the host's timezone — the
@@ -925,12 +934,15 @@ test.describe('design system gates', () => {
           // editor values) back to the unversioned URL, which imports
           // the same bytes. Attributes are untouched; the page's own
           // scripts keep their versioned URLs.
-          await page.evaluate(() => {
+          await page.evaluate(([release, baseline]) => {
             const unstamp = (text) =>
-              text.replace(/\/basenative\.js\?v=[0-9a-f]+/g, '/basenative.js');
+              text
+                .replace(/\/basenative\.js\?v=[0-9a-f]+/g, '/basenative.js')
+                .split(release)
+                .join(baseline);
             const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
             for (let n = walker.nextNode(); n; n = walker.nextNode()) {
-              if (n.nodeValue.includes('/basenative.js?v=')) {
+              if (n.nodeValue.includes('/basenative.js?v=') || n.nodeValue.includes(release)) {
                 n.nodeValue = unstamp(n.nodeValue);
               }
             }
@@ -939,7 +951,7 @@ test.describe('design system gates', () => {
                 area.value = unstamp(area.value);
               }
             }
-          });
+          }, [RELEASE_VERSION, BASELINE_VERSION]);
           // Exactly one h1 per page — this stood behind the retired
           // /design-system branch; the invariant is every route's.
           expect(await pageIdentity(page)).toEqual([]);
