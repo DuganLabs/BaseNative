@@ -415,6 +415,7 @@ export const UPSTREAM_OWNED = Object.freeze({
   '--size-content-max': 'layout measure — an app decision, not a palette one',
   '--size-control': 'layout measure — an app decision, not a palette one',
   '--size-control-lg': 'layout measure — an app decision, not a palette one',
+  '--size-control-sm': 'layout measure — an app decision, not a palette one',
   '--size-drawer-max': 'layout measure — an app decision, not a palette one',
   '--size-full': 'layout measure — an app decision, not a palette one',
   '--size-hairline': 'layout measure — an app decision, not a palette one',

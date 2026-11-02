@@ -34,7 +34,7 @@ copy on public pages.
 ## Tokens
 
 Token names follow the category-first CTI+ shape (`--{category}-{type}-{item}-{variant}-{state}`),
-and **no new prefixes** (`--bn-*` is retired). The sheet declares 2,395
+and **no new prefixes** (`--bn-*` is retired). The sheet declares 2,396
 distinct custom properties. They are emitted in three blocks:
 
 1. **The system** (unlayered `:root`), Apple-style roles (`"system": "trinity"` in the JSON).
@@ -48,7 +48,7 @@ distinct custom properties. They are emitted in three blocks:
 | `--font-*`                                                  |   443 | type ramp, families, weights, per-component type |
 | `--spacing-*`                                               |   383 | scale and per-component insets                   |
 | `--color-*`                                                 |   381 | semantic colour roles (light + dark)             |
-| `--size-*`                                                  |   290 | targets, controls, radii, borders                |
+| `--size-*`                                                  |   291 | targets, controls, radii, borders                |
 | `--palette-*`                                               |    62 | raw palette, read by roles only                  |
 | `--shadow-*`                                                |    34 | elevation and focus                              |
 | `--motion-*`                                                |    30 | durations and curves                             |
@@ -282,24 +282,24 @@ Before **any** UI change:
 
 ## Conflicts
 
-These names or values disagree. Nothing has been renamed and no value has
-been picked for the open rows; they wait for a decision. Where an earlier
-consolidation had to pick, the value that was already **live** (computed in
-the browser) won, so the rendered site did not change. A computed-style diff
-of every custom property on 4 routes × 2 modes showed 0 changes.
+None open. Every row below is settled. The value that was already **live**
+(computed in the browser) was kept, except where the decision was the amber
+tint and the 2.25 / 2.75 / 3.25rem control ladder. A computed-style diff of
+every custom property on 4 routes × 2 modes shows the only rendered change on
+those routes is the new `--size-control-sm` row in the `/docs` token table.
 
-| Conflict               | Values and where                                                                                                                                                                      | Decision                                                    |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `--size-text-max`      | token sheet (legacy block) 65ch vs site `styles.css` 52ch (the site wins on the site)                                                                                                 | **open**: site override kept                                |
-| control heights        | legacy `--size-control-height-sm/-/-lg` 2 / 2.5 / 3rem vs `components.css` 2.25 / 2.75 / 3.25rem vs `--size-control` 2.75rem                                                          | **open**                                                    |
-| radius scales          | legacy `--size-radius-sm` 0.5 / `-lg` 0.75rem vs system `-md` 0.625 / `-xl` 1 / `-2xl` 1.25rem; `--radius-sm` → `--size-radius-control` (0.625rem) while `--size-radius-sm` is 0.5rem | **open**                                                    |
-| durations (three sets) | `--motion-*` 250–700ms springs and fades; legacy `--motion-fast/base/slow` 150 / 200 / 300ms ease; site `--duration-fast/med/slow` 0.15 / 0.3 / 0.5s                                  | **open**                                                    |
-| letter-spacing         | the `--font-*-tracking` ramp (e.g. large title -0.015em, headline -0.002em, footnote 0.004em) vs `--letter-spacing-tight/wide/wider` -0.02 / 0.04 / 0.08em                            | masthead moved to `--font-headline-tracking`; rest **open** |
-| background roles       | `--color-bkg-*` (legacy, and the component surfaces such as `--color-bkg-card`) vs `--color-background-*`                                                                             | **open**                                                    |
-| danger                 | `--color-danger-strong` and `--color-danger-solid`: both #c80013 in light; dark #ff6961 vs #d70015                                                                                    | **open**                                                    |
-| primary vs tint        | legacy `--palette-primary-*` (blue, `-600` #2563eb) vs `--color-tint` (amber, #e8920a)                                                                                                | **open**                                                    |
-| focus ring             | `--shadow-input` (a 3px `--accent-glow` ring) vs `--shadow-focus-ring` (a 2px background gap plus a 4px tint ring)                                                                    | **open**                                                    |
-| font families          | `--font-family-text` (SF stack), `--font-family-sans` (system-ui/Segoe), `--font-family` ('BaseNative', site), `--font-family-playground-sans` / `-mono`                              | **open**                                                    |
+| Conflict               | Canonical                                                               | Decision                                                                                                                                                                                                                                                                                |
+| ---------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| primary vs tint        | `--color-tint`, `--color-tint-strong`, `--color-tint-fill`              | amber wins. `--palette-primary-50…200` alias `--color-tint-fill`, `-300…600` alias `--color-tint`, `-700…900` alias `--color-tint-strong`; `--color-text-on-primary` aliases `--color-text-on-tint`. Links and calendar-event text use `--color-tint-strong` for AA contrast.           |
+| control heights        | `--size-control-sm` / `--size-control` / `--size-control-lg`            | 2.25 / 2.75 / 3.25rem on every pointer (`--size-control-sm` is new). `--size-control-height-sm/-/-lg` alias them. The coarse-pointer re-point in `components.css` is gone; small buttons reserve the 44px tap target with an invisible `::after` hit area sized by `--size-target-min`. |
+| `--size-text-max`      | `--size-text-max`                                                       | two roles, one name: 65ch is the package reading measure (token sheet); 52ch is the site's own measure, set in `styles.css`. Both kept.                                                                                                                                                 |
+| radius scales          | `--size-radius-xs/md/xl/2xl/pill` and `--size-radius-control/container` | `--size-radius-sm` (0.5rem) and `-lg` (0.75rem) are deprecated, values kept (off the system scale, so not aliases). `--radius-*` are deprecated aliases of `--size-radius-control/container/2xl`.                                                                                       |
+| durations (three sets) | `--motion-*` springs and fades, and `--motion-<component>-*`            | legacy `--motion-fast/base/slow` and site `--duration-fast/med/slow` are deprecated, values kept.                                                                                                                                                                                       |
+| letter-spacing         | the `--font-*-tracking` ramp                                            | masthead already on `--font-headline-tracking`; `--letter-spacing-tight/wide/wider` deprecated, values kept.                                                                                                                                                                            |
+| background roles       | both                                                                    | two roles: `--color-background-*` is the page/grouped background levels; `--color-bkg-*` is the component surface slots (`--color-bkg-card`, …) that components read. Both kept.                                                                                                        |
+| danger                 | both                                                                    | two roles: `--color-danger-strong` is danger text and icons on a background (dark #ff6961); `--color-danger-solid` is a filled danger surface under white text (dark #d70015). Both kept.                                                                                               |
+| focus ring             | `--shadow-focus-ring`                                                   | `--shadow-input-focus` already equals it. `--shadow-input` is a separate role (the input's 3px `--accent-glow` field ring) and stays. Legacy `--shadow-focus` now renders amber through `--color-border-focus`.                                                                         |
+| font families          | `--font-family-text`                                                    | `--font-family-sans` deprecated, value kept. `--font-family` (the site's 'BaseNative' brand face) and `--font-family-playground-sans/-mono` are their own roles and stay.                                                                                                               |
 
 Settled earlier:
 
@@ -309,3 +309,23 @@ Settled earlier:
 | `--space-xs…3xl` vs `--spacing-*` | site literals vs aliases of `--spacing-*` (same values)                                                                             | kept the aliases                               |
 | `--font-serif`, `--font-mono`     | site `expanded` / `ultra-condensed` (dead) vs `normal` (live)                                                                       | kept `normal`                                  |
 | `--shadow-btn`                    | site tint glow (dead) vs `var(--shadow-raised)` (live)                                                                              | kept live                                      |
+
+## Deprecated aliases (remove next minor)
+
+Marked with `$deprecated` in `packages/components/tokens/*.json`. "Alias" means
+the old name now points at the new one; "value kept" means the old name keeps
+its own live value until removal, so migrate by hand.
+
+| Deprecated name                                       | Use instead                                                             | Kind       |
+| ----------------------------------------------------- | ----------------------------------------------------------------------- | ---------- |
+| `--palette-primary-50/100/200`                        | `--color-tint-fill`                                                     | alias      |
+| `--palette-primary-300/400/500/600`                   | `--color-tint`                                                          | alias      |
+| `--palette-primary-700/800/900`                       | `--color-tint-strong`                                                   | alias      |
+| `--palette-accent-*`                                  | `--color-tint` family                                                   | alias      |
+| `--color-text-on-primary`                             | `--color-text-on-tint`                                                  | alias      |
+| `--size-control-height-sm` / `-height` / `-height-lg` | `--size-control-sm` / `--size-control` / `--size-control-lg`            | alias      |
+| `--radius-xs/sm`, `--radius-md/lg/xl`, `--radius-2xl` | `--size-radius-control`, `--size-radius-container`, `--size-radius-2xl` | alias      |
+| `--size-radius-sm`, `--size-radius-lg`                | `--size-radius-md`, `--size-radius-xl`                                  | value kept |
+| `--motion-fast/base/slow`, `--duration-fast/med/slow` | `--motion-fade-duration` / `--motion-<component>-*`                     | value kept |
+| `--letter-spacing-tight/wide/wider`                   | the type style's `--font-*-tracking`                                    | value kept |
+| `--font-family-sans`                                  | `--font-family-text`                                                    | value kept |

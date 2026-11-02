@@ -180,7 +180,7 @@
     }
   },
   "color-text-link": {
-    "$value": "{palette-primary-400}",
+    "$value": "{color-tint-strong}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {

@@ -13,9 +13,15 @@
           "state": null,
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--font-family-text",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --font-family-text. Not an alias: the system-ui/Segoe stack stays live until removal. Remove next minor."
   },
   "font-family-code": {
     "$value": "ui-monospace, 'Cascadia Code', 'Fira Code', monospace",

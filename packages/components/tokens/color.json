@@ -180,7 +180,7 @@
     }
   },
   "color-text-link": {
-    "$value": "{palette-primary-600}",
+    "$value": "{color-tint-strong}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -630,7 +630,7 @@
     }
   },
   "color-text-calendar-event": {
-    "$value": "{palette-primary-600}",
+    "$value": "{color-tint-strong}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -792,7 +792,7 @@
     }
   },
   "color-text-on-primary": {
-    "$value": "{palette-white}",
+    "$value": "{color-text-on-tint}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -805,9 +805,15 @@
           "state": null,
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-text-on-tint",
+          "alias": true,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-text-on-tint. Remove next minor."
   },
   "color-text-on-accent": {
     "$value": "{color-text-on-primary}",
