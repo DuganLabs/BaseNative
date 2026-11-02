@@ -98,18 +98,52 @@ aside[variant='subnav'] {
   }
 }
 
-/* In-page subnav: the same sidebar, laid out as a row of links in
-   the content column instead of the rail. */
+/* In-page subnav: the page's own nav, one pattern on every page. The
+   same sidebar, laid out in the content column as a sticky bar that
+   pins under the top safe area at every width, phone included. Its
+   links are ONE row that scrolls sideways: it never wraps into a
+   block that eats the screen, the scrollbar is hidden, the trailing
+   edge fades to say there is more, and the scrollspy keeps the
+   current link scrolled into view. A host may pass a header (a
+   search field and its status) that pins with the row. */
 aside[variant='subnav'] {
+  position: var(--position-sidebar-subnav);
+  inset-block-start: var(--inset-sidebar-subnav-block-start);
+  z-index: var(--layer-sidebar-subnav);
   inline-size: var(--size-full);
-  background-color: var(--palette-transparent);
-  border-inline-end-width: var(--size-border-none);
-  overflow-x: var(--overflow-auto);
+  background-color: var(--color-bkg-sidebar-subnav);
+  backdrop-filter: var(--backdrop-filter-sidebar-subnav);
+  border-width: var(--size-border-sidebar-subnav);
+  border-style: var(--border-style-sidebar-subnav);
+  border-color: var(--color-border-sidebar-subnav);
+  border-radius: var(--size-radius-sidebar-subnav);
+  padding-block: var(--spacing-sidebar-subnav-padding-block);
+  padding-inline: var(--spacing-sidebar-subnav-padding-inline);
+  overflow-y: var(--overflow-y-sidebar-subnav);
+
+  & > header {
+    display: var(--display-sidebar-subnav-header);
+    gap: var(--spacing-sidebar-subnav-header-gap);
+    padding-inline: var(--spacing-sidebar-subnav-header-padding-inline);
+    margin-block-end: var(--spacing-sidebar-subnav-header-margin-block-end);
+  }
 
   & > nav > section > ul {
     display: var(--display-flex);
     flex-direction: var(--flex-direction-row);
-    flex-wrap: var(--flex-wrap-wrap);
-    gap: var(--spacing-1);
+    flex-wrap: var(--flex-wrap-sidebar-subnav-list);
+    gap: var(--spacing-sidebar-subnav-list-gap);
+    padding-inline: var(--spacing-sidebar-subnav-list-padding-inline);
+    scroll-padding-inline: var(--spacing-sidebar-subnav-list-padding-inline);
+    overflow-x: var(--overflow-x-sidebar-subnav-list);
+    overscroll-behavior-inline: var(--overscroll-behavior-sidebar-subnav-list);
+    scrollbar-width: var(--scrollbar-width-sidebar-subnav-list);
+    scroll-snap-type: var(--scroll-snap-type-sidebar-subnav-list);
+    mask-image: var(--mask-sidebar-subnav-list);
+
+    & > li {
+      flex: var(--flex-none);
+      scroll-snap-align: var(--scroll-snap-align-sidebar-subnav-link);
+    }
   }
 }
