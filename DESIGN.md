@@ -34,7 +34,7 @@ copy on public pages.
 ## Tokens
 
 Token names follow the category-first CTI+ shape (`--{category}-{type}-{item}-{variant}-{state}`),
-and **no new prefixes** (`--bn-*` is retired). The sheet declares 2,392
+and **no new prefixes** (`--bn-*` is retired). The sheet declares 2,394
 distinct custom properties. They are emitted in three blocks:
 
 1. **The system** (unlayered `:root`), Apple-style roles (`"system": "trinity"` in the JSON).
@@ -46,9 +46,9 @@ distinct custom properties. They are emitted in three blocks:
 | Group (prefix)                                              | Count | Role                                             |
 | ----------------------------------------------------------- | ----: | ------------------------------------------------ |
 | `--font-*`                                                  |   443 | type ramp, families, weights, per-component type |
-| `--spacing-*`                                               |   382 | scale and per-component insets                   |
+| `--spacing-*`                                               |   383 | scale and per-component insets                   |
 | `--color-*`                                                 |   381 | semantic colour roles (light + dark)             |
-| `--size-*`                                                  |   289 | targets, controls, radii, borders                |
+| `--size-*`                                                  |   290 | targets, controls, radii, borders                |
 | `--palette-*`                                               |    62 | raw palette, read by roles only                  |
 | `--shadow-*`                                                |    34 | elevation and focus                              |
 | `--motion-*`                                                |    30 | durations and curves                             |
