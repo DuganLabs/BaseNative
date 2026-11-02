@@ -1278,9 +1278,10 @@ describe('the contents navs have a working scrollspy', () => {
     assert.match(src, /fetch\(versioned\(`\/bn-css\/\$\{name\}\/index\.html`\)\)/);
   });
 
-  it('the scrollspy observes the TOC targets and marks the current link', () => {
+  it('the scrollspy marks the link for the section across the centre line', () => {
     const src = readFileSync(repo('examples/express/public/scrollspy.js'), 'utf8');
-    assert.ok(src.includes('IntersectionObserver'), 'scrollspy should use IntersectionObserver');
+    assert.match(src, /addEventListener\('scroll', onScroll, \{ passive: true \}\)/);
+    assert.ok(src.includes('window.innerHeight / 2'), 'scrollspy should read the centre line');
     assert.ok(src.includes('aside[variant="subnav"]'), 'scrollspy should cover the one subnav');
     assert.ok(!src.includes('aside[variant="chips"]'), 'scrollspy should not keep a second nav');
     assert.ok(

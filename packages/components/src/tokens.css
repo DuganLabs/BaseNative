@@ -342,7 +342,7 @@
   --control-checked-bg: var(--color-tint);
   --control-checked-border: var(--color-tint);
   --color-bkg-playground: #eef0ee;
-  --color-bkg-playground-surface: #ffffff;
+  --color-bkg-playground-surface: var(--color-bkg-card);
   --color-bkg-playground-surface-raised: #e4e7e4;
   --color-bkg-playground-editor: #fcfdfc;
   --color-bkg-playground-preview: #ffffff;
@@ -2284,7 +2284,6 @@
     --site-color-error-text: #ff6961;
     --site-color-error-badge-text: #ff6961;
     --color-bkg-playground: #0f1113;
-    --color-bkg-playground-surface: #17191d;
     --color-bkg-playground-surface-raised: #1f2226;
     --color-bkg-playground-editor: #121417;
     --color-bkg-playground-preview: #131518;
@@ -2377,7 +2376,6 @@
   --site-color-error-text: #ff6961;
   --site-color-error-badge-text: #ff6961;
   --color-bkg-playground: #0f1113;
-  --color-bkg-playground-surface: #17191d;
   --color-bkg-playground-surface-raised: #1f2226;
   --color-bkg-playground-editor: #121417;
   --color-bkg-playground-preview: #131518;
@@ -2470,7 +2468,6 @@
     --site-color-error-text: #c41c14;
     --site-color-error-badge-text: #c41c14;
     --color-bkg-playground: #eef0ee;
-    --color-bkg-playground-surface: #ffffff;
     --color-bkg-playground-surface-raised: #e4e7e4;
     --color-bkg-playground-editor: #fcfdfc;
     --color-bkg-playground-preview: #ffffff;

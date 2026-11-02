@@ -67,6 +67,10 @@ mount({
   reset: () => count.set(0),
 });
 
+// effect() re-runs whenever a signal it read changes: every click
+// logs a line here.
+effect(() => console.log('count = ' + count() + ' · doubled = ' + doubled()));
+
 console.log('Counter mounted. Click + a few times, then watch the @if branch flip at 10.');
 `,
   css: `:root {

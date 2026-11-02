@@ -120,10 +120,10 @@
   /* The hero's inline margin is the component's own token (auto), so
      a hero takes the same centred column every section below it does.
      A tool page (the playground, the builder) lays its tool on the
-     wide column; its hero heads that column, so the title starts on
-     the tool's edge. */
+     wide column; its hero and page nav head that column, so the title
+     and the nav start on the tool's edge. */
   main:has(> section:is([aria-label='Playground workspace'], #visual-builder))
-    > :is(figure[variant], footer) {
+    > :is(figure[variant], aside[variant='subnav'], footer) {
     max-inline-size: var(--size-inline-wide, 92rem);
   }
 
@@ -1983,7 +1983,6 @@
     }
   }
 
-
   /* -- /components category section -- */
   [data-bn-component-category],
   [data-bn-component-app-demo] {
@@ -2037,9 +2036,10 @@
     gap: var(--space-sm);
     inline-size: 100%;
     padding: var(--space-lg);
-    background: var(--surface-1);
-    border: var(--border-width) solid var(--border);
-    border-radius: var(--radius-md);
+    background: var(--color-bkg-card);
+    border: var(--size-border-card) var(--border-style-card) var(--color-border-card);
+    border-radius: var(--size-radius-card);
+    box-shadow: var(--shadow-card);
     text-decoration: none;
     color: inherit;
     transition:
@@ -2403,9 +2403,10 @@
   [data-bn-component-source] {
     margin-inline: 0;
     padding: 0;
-    background: var(--surface-1);
-    border: var(--border-width) solid var(--border);
-    border-radius: var(--radius-md);
+    background: var(--color-bkg-card);
+    border: var(--size-border-card) var(--border-style-card) var(--color-border-card);
+    border-radius: var(--size-radius-card);
+    box-shadow: var(--shadow-card);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -3442,7 +3443,7 @@
 
   section:has(> article[data-compare-card]) {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
     gap: var(--space-md);
     align-items: start;
 
@@ -3758,13 +3759,15 @@
   }
 
   /* ── Grouped surfaces ─────────────────────────────────────────────── */
-  /* A section is one grouped card on the grouped background — raised
-   secondary surface, iOS corner radius, no border (the surface step
-   does the separating on black). */
+  /* ONE card: every card on the site (sections, articles, component
+   cards, previews, stat tiles) takes the catalog card's own tokens —
+   --color-bkg-card, --size-border-card/--color-border-card,
+   --size-radius-card, --shadow-card — so no page can drift. */
   main > section {
-    background: var(--color-background-grouped-2);
-    border: none;
-    border-radius: var(--radius-2xl);
+    background: var(--color-bkg-card);
+    border: var(--size-border-card) var(--border-style-card) var(--color-border-card);
+    border-radius: var(--size-radius-card);
+    box-shadow: var(--shadow-card);
     padding: var(--spacing-5);
     margin-block-end: var(--site-section-space);
   }
@@ -3778,6 +3781,8 @@
    a page, not a card, so it carries no surface; its header is a hero. */
   article[data-bn-showcase] {
     background: transparent;
+    border: none;
+    box-shadow: none;
     border-radius: 0;
     padding: 0;
   }
@@ -3795,6 +3800,7 @@
    articles carry the grouped surface instead. */
   main > section:has(> article) {
     background: transparent;
+    border: none;
     box-shadow: none;
     padding: 0;
   }
@@ -3804,6 +3810,7 @@
    section is a heading zone whose heading sits on the card text line. */
   main > section:has(> ul, > figure[variant='code'], > [data-bn-component-grid]) {
     background: transparent;
+    border: none;
     box-shadow: none;
     padding: 0;
   }
@@ -3811,18 +3818,34 @@
    and window are the surfaces, and they take the wide column. */
   main > section:is([aria-label='Playground workspace'], #visual-builder) {
     background: transparent;
+    border: none;
     box-shadow: none;
     padding: 0;
     max-inline-size: var(--size-inline-wide, 92rem);
   }
+  /* The builder's window frame is a card on this site too; its own
+     glass recipe stays the package default for other hosts. */
+  main section.bn-builder[data-bn='bn-window'] {
+    background: var(--color-bkg-card);
+    border: var(--size-border-card) var(--border-style-card) var(--color-border-card);
+    border-radius: var(--size-radius-card);
+    box-shadow: var(--shadow-card);
+  }
   article {
-    background: var(--color-background-grouped-2);
-    border: none;
-    border-radius: var(--radius-2xl);
+    background: var(--color-bkg-card);
+    border: var(--size-border-card) var(--border-style-card) var(--color-border-card);
+    border-radius: var(--size-radius-card);
+    box-shadow: var(--shadow-card);
     padding: var(--spacing-5);
   }
-  article:hover {
-    border-color: transparent;
+
+  /* A card's padding is its inset: its first and last child bring no
+     outward margin of their own to stack on it. */
+  :is(main > section, article) > :first-child {
+    margin-block-start: 0;
+  }
+  :is(main > section, article) > :last-child {
+    margin-block-end: 0;
   }
 
   /* Phone widths dial the card inset in one step: the page gutter and the
@@ -3840,13 +3863,15 @@
   /* The stats section is a heading zone too; its tiles are the cards. */
   main > section[data-stats] {
     background: transparent;
+    border: none;
     box-shadow: none;
     padding: 0;
   }
   ul[role='list'][data-stat-grid] > li {
-    background: var(--color-background-grouped-2);
-    border: none;
-    border-radius: var(--radius-xl);
+    background: var(--color-bkg-card);
+    border: var(--size-border-card) var(--border-style-card) var(--color-border-card);
+    border-radius: var(--size-radius-card);
+    box-shadow: var(--shadow-card);
   }
   ul[role='list'][data-stat-grid] strong {
     font-family: var(--font-title-2-family);
@@ -4105,7 +4130,10 @@
     color: inherit;
     text-decoration: none;
   }
-  main a:where(:not([data-bn]):not([variant]):not([role='button']):not([data-bn-cta]):not(aside[variant] a)) {
+  main
+    a:where(
+      :not([data-bn]):not([variant]):not([role='button']):not([data-bn-cta]):not(aside[variant] a)
+    ) {
     color: var(--color-tint-strong);
   }
 

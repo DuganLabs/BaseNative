@@ -1691,24 +1691,6 @@
       }
     }
   },
-  "color-bkg-playground-surface": {
-    "$value": "#17191d",
-    "$type": "color",
-    "$extensions": {
-      "com.basenative": {
-        "taxonomy": {
-          "category": "color",
-          "type": "bkg",
-          "item": "playground-surface",
-          "variant": null,
-          "subitem": null,
-          "state": null,
-          "context": null
-        },
-        "system": "trinity"
-      }
-    }
-  },
   "color-bkg-playground-surface-raised": {
     "$value": "#1f2226",
     "$type": "color",

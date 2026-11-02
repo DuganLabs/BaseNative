@@ -18,7 +18,7 @@
     }
   },
   "color-bkg-playground-surface": {
-    "$value": "#ffffff",
+    "$value": "var(--color-bkg-card)",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
