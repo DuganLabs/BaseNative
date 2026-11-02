@@ -4,8 +4,10 @@
  * the section in view, keeps that link scrolled into view inside the row
  * (the row scrolls sideways, the page never moves), hides the link of a
  * section that is hidden (the builder's code panel before export, a
- * section the page filter emptied), and publishes the bar's height as
- * --size-page-nav-block so an anchor jump lands below the bar.
+ * section the page filter emptied). The section in view is the last one
+ * whose top has crossed the viewport's centre line, so a short section is
+ * marked as surely as a long one; at the end of the page the last section
+ * is marked even when its top can't reach the line.
  */
 (function () {
   var nav = document.querySelector('aside[variant="subnav"]');
@@ -54,23 +56,60 @@
   syncHidden();
   if (typeof MutationObserver !== 'undefined') {
     var mo = new MutationObserver(syncHidden);
-    for (var s of linkByTarget.keys()) mo.observe(s, { attributes: true, attributeFilter: ['hidden'] });
+    for (var s of linkByTarget.keys())
+      mo.observe(s, { attributes: true, attributeFilter: ['hidden'] });
   }
 
+  /* A clicked link holds the mark until its jump settles; a short target
+     would otherwise hand it to the next section the moment it lands. */
+  var held = 0;
+  function release() {
+    held = 0;
+    pick();
+  }
   for (var [, a2] of linkByTarget) {
     a2.addEventListener('click', function (event) {
       setCurrent(event.currentTarget);
+      clearTimeout(held);
+      held = setTimeout(release, 1000);
     });
   }
 
-  if (typeof IntersectionObserver === 'undefined' || !linkByTarget.size) return;
-  var observer = new IntersectionObserver(
-    function (entries) {
-      for (var entry of entries) {
-        if (entry.isIntersecting) setCurrent(linkByTarget.get(entry.target));
+  function pick() {
+    if (held || !linkByTarget.size) return;
+    var line = window.innerHeight / 2;
+    var doc = document.documentElement;
+    var atEnd = window.scrollY + window.innerHeight >= doc.scrollHeight - 2;
+    var best = null;
+    var bestTop = -Infinity;
+    var first = null;
+    var firstTop = Infinity;
+    for (var [section, a] of linkByTarget) {
+      var li = a.closest('li');
+      if (li && li.hidden) continue;
+      var top = section.getBoundingClientRect().top;
+      if (top < firstTop) {
+        firstTop = top;
+        first = a;
       }
-    },
-    { rootMargin: '-30% 0px -60% 0px' },
-  );
-  for (var observed of linkByTarget.keys()) observer.observe(observed);
+      if ((top <= line || (atEnd && top < window.innerHeight)) && top > bestTop) {
+        bestTop = top;
+        best = a;
+      }
+    }
+    setCurrent(best || first);
+  }
+
+  var queued = false;
+  function onScroll() {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(function () {
+      queued = false;
+      pick();
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  pick();
 })();

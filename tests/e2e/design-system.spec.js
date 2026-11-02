@@ -1052,20 +1052,11 @@ test.describe('contents scrollspy', () => {
       return sections[sections.length - 1].id;
     });
     await scrollSectionIntoBand(page, lastId);
-    // The category TOC strip is retired; the surviving nav is the
-    // sticky filter bar, so the mark lands on its filter button.
+    // Categories are anchor links in the one page nav, so the mark
+    // lands on the category's link.
     await expect
-      .poll(
-        () =>
-          page.evaluate(() => {
-            const current = document.querySelector(
-              "aside[variant='subnav'] button[aria-current='true']",
-            );
-            return current ? current.value : null;
-          }),
-        { timeout: 10_000 },
-      )
-      .toBe(lastId.replace(/^cat-/, ''));
+      .poll(() => currentTocLink(page, "aside[variant='subnav']"), { timeout: 10_000 })
+      .toBe(`#${lastId}`);
   });
 
   test('the marked TOC link carries the brand current treatment', async ({ page }) => {
