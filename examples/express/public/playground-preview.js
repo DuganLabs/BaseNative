@@ -53,6 +53,12 @@ for (const level of ['log', 'info', 'warn', 'error', 'debug']) {
 }
 
 let runHadError = false;
+/* A rejected promise nobody caught is an error the user wrote too. */
+window.addEventListener('unhandledrejection', (e) => {
+  runHadError = true;
+  const r = e.reason;
+  send('error', { message: 'Unhandled rejection: ' + (r && r.message ? r.message : fmt(r)) });
+});
 window.addEventListener('error', (e) => {
   if (e.message) {
     runHadError = true;
