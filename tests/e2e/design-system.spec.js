@@ -779,58 +779,50 @@ async function loadAxe(page) {
   throw last;
 }
 
-async function partsChrome(page) {
-  return page.evaluate(() => {
-    const search = document.querySelector('[data-bn-component-search]');
-    const filters = document.querySelector('aside[variant="subnav"]');
-    const bar = document.querySelector('body > nav[variant="app-bar"]');
-    if (!search || !filters || !bar) return ['missing parts chrome'];
-    if (document.querySelector('aside[variant="chips"]'))
-      return ['a second subnav variant is present'];
-    const problems = [];
-    // The filter is the same subnav as /docs: a row of items, not a chip strip.
-    const filtersStyle = getComputedStyle(filters.querySelector('ul') || filters);
-    if (filtersStyle.flexDirection !== 'row')
-      problems.push(`subnav is ${filtersStyle.flexDirection}`);
-    const sample = filters.querySelector('button');
-    if (sample && getComputedStyle(sample).textTransform === 'uppercase')
-      problems.push('subnav is uppercase');
-    if (sample && sample.getBoundingClientRect().height < 24)
-      problems.push('subnav item is under 24px');
-    // The in-page nav contract (Warren, 2026-10-28): the docs
-    // contents nav and this filter are one pattern, and at phone
-    // width the pattern is NOT pinned — a sticky card with large
-    // buttons holds a third of the screen for the whole scroll. It
-    // stands down (static) and scrolls away with the page; the wide
-    // layout keeps the pin.
-    const stuck = getComputedStyle(search).position;
-    if (stuck !== 'static') problems.push(`search is ${stuck}`);
-    const scroller = document.scrollingElement;
-    scroller.scrollTop = 1500;
-    if (search.getBoundingClientRect().top >= 0)
-      problems.push('search still in view after scrolling');
-    scroller.scrollTop = 0;
-    return problems;
-  });
+// The in-page nav contract (Warren, 2026-11-01 — replaces the
+// 2026-10-28 "static on phone" rule): every content page shares one
+// page nav. It is pinned under the app bar at every width, holds its
+// links on ONE horizontally scrolling row, and stays compact — under a
+// quarter of the viewport — so pinning it never costs the reader a
+// third of the screen.
+async function pageNavChrome(page, { search }) {
+  return page.evaluate(
+    ({ search }) => {
+      const nav = document.querySelector('aside[variant="subnav"]');
+      const bar = document.querySelector('body > nav[variant="app-bar"]');
+      if (!nav || !bar) return ['missing page nav'];
+      if (document.querySelector('aside[variant="chips"]'))
+        return ['a second subnav variant is present'];
+      const problems = [];
+      if (search && !nav.querySelector('input[type="search"]'))
+        problems.push('page nav has no search field');
+      const list = getComputedStyle(nav.querySelector('ul') || nav);
+      if (list.flexDirection !== 'row') problems.push(`page nav is ${list.flexDirection}`);
+      if (list.flexWrap !== 'nowrap') problems.push(`page nav wraps (${list.flexWrap})`);
+      const sample = nav.querySelector('li a, li button');
+      if (sample && getComputedStyle(sample).textTransform === 'uppercase')
+        problems.push('page nav is uppercase');
+      if (sample && sample.getBoundingClientRect().height < 24)
+        problems.push('page nav item is under 24px');
+      const stuck = getComputedStyle(nav).position;
+      if (stuck !== 'sticky') problems.push(`page nav is ${stuck}`);
+      const height = nav.getBoundingClientRect().height;
+      if (height > window.innerHeight / 4)
+        problems.push(`page nav is ${Math.round(height)}px, over a quarter of the viewport`);
+      const scroller = document.scrollingElement;
+      scroller.scrollTop = 1500;
+      const top = nav.getBoundingClientRect().top;
+      if (top < 0 || top > window.innerHeight / 4)
+        problems.push('page nav left the top of the viewport after scrolling');
+      scroller.scrollTop = 0;
+      return problems;
+    },
+    { search },
+  );
 }
 
-async function tocChrome(page) {
-  return page.evaluate(() => {
-    const toc = document.querySelector('aside[variant="subnav"]');
-    if (!toc) return ['missing docs toc'];
-    const problems = [];
-    // The other half of the in-page nav contract above: the docs
-    // contents nav follows the same phone rule as the components
-    // filter — static, scrolling away with the page.
-    const stuck = getComputedStyle(toc).position;
-    if (stuck !== 'static') problems.push(`toc is ${stuck}`);
-    const scroller = document.scrollingElement;
-    scroller.scrollTop = 1500;
-    if (toc.getBoundingClientRect().top >= 0) problems.push('toc still in view after scrolling');
-    scroller.scrollTop = 0;
-    return problems;
-  });
-}
+const partsChrome = (page) => pageNavChrome(page, { search: true });
+const tocChrome = (page) => pageNavChrome(page, { search: true });
 
 async function sidebarAccent(page) {
   return page.evaluate(() => {
