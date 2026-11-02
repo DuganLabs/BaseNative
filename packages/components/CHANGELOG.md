@@ -1,5 +1,63 @@
 # @basenative/components
 
+## 3.2.0
+
+### Minor Changes
+
+- ee5ae17: calendar: the month view pages. With no slots it renders its own grid and Previous/Next buttons from `year`/`month` state, names each button's target month, announces the new month, and fires `onMonthChange`.
+- 3d16c15: The field root is now `<section variant="field">` instead of `<p>`. A `<p>` cannot hold a block control, so the HTML parser closed it at the first select or combobox and the label, control and hint fell out of the field. `variant: 'default'` still works and maps to `field`. The catalog native select carries `variant="native"` so it keeps its own chevron inside the box, and the builder palette emits the new field markup.
+- 1134ecc: field: the field reports. `bindFieldValidation(root)` turns the browser's constraint validation into the field's report — `aria-invalid` on the control, the message in the field's `<output>` in place of its hint, `aria-describedby` on whichever shows — once a control is edited and left, clearing live as it is fixed; a form submit reports every field and focuses the first invalid one. input gains `name`, `placeholder`, `autocomplete`, `inputmode`, `required`, `readonly`, `pattern` (with `title` as its message), `min`, `max`, `step`, `minlength` and `maxlength`; textarea gains `name`, `required`, `minlength` and `maxlength`; form gains `statusMessage`, announced after a submit.
+- 5ca4baf: field: `inline`, `drop` (file drop zone) and `code` (one-time code) variants; reveal, clear and stepper buttons, prefix/suffix and leading/trailing slots, required/optional marks, a success message and a live character count. input: `sm`/`lg` sizes, `accept`/`multiple`, read-only and disabled states, tabular numbers. textarea: auto-grow and `readonly`. form: a `<fieldset>` groups fields under its legend. The field's parts no longer inherit a page's global label, output and fieldset rules.
+- e4eef9f: Code block owns its surface: the figure is the one card, the pre is transparent, focusable (`tabindex="0"`) with a token-driven focus ring, and code reads at subheadline size. App shell exposes `--size-app-shell-footer-inline-start` / `--size-app-shell-footer-inline` so a host can align the site footer to its content column. Syntax comment and tag colours retuned for AA contrast in light and dark.
+- 67013fd: sidebar, app-shell: a `headerHtml` prop renders a masthead — at the top of the sidebar rail, and as a top bar on a phone where the rail is hidden (safe-area aware, hidden from 48rem) — with new `*-sidebar-header` and `*-app-shell-header` tokens. hero: the block margin token is `auto` inline, so the hero column centres instead of carrying an invalid shorthand. font: display tokens for a fluid 36–64px title (`font-display-size`, `-leading`, `-tracking`). The package description names the design system.
+- 898544e: Subnav: a sticky one-row page nav that scrolls sideways (the current link stays in view), with an optional header slot for a search field; one row at ≥64rem. `search-field` takes a `placeholder`. Table: a `numeric` prop marks columns whose heading and cells align to the trailing edge in tabular figures. Toast: the stack takes one width and the message fills the item, so the dismiss action sits at its trailing edge; a fixed stack clears the phone app bar. The playground surface token is the card surface. theme: `--spacing-safe-top` is listed as upstream-owned. site: one page nav, search/filter and card recipe on Home, Compare, Components, Docs, AI, Playground and Builder; a centre-line scrollspy; the playground counter logs; a table scrolls inside its card instead of widening the page; compare verdict marks hang beside their first word (tokens `--size-compare-marker-hang`, `--spacing-compare-marker-top`).
+- c33c958: Vertical rhythm is now part of the app shell. New tokens `--spacing-app-shell-section-gap` (48px on a phone, `--spacing-app-shell-section-gap-rail` 80px beside the rail) and `--spacing-app-shell-stack-gap` (16px) space the page's sections and the cards stacked inside them, so no page spaces its sections by hand. Adds `--spacing-20`, `--white-space-pre` and `--white-space-pre-wrap`. Code blocks, and bare reading `<pre>`s, wrap long lines on a phone (`--white-space-code-block-pre-phone`, `--overflow-wrap-code-block-pre-phone`) instead of clipping them at the card edge. The theme bridge lists `--spacing-20` as upstream-owned.
+- 5ae07f7: A named select takes part in a form: the popover variant submits its value through a hidden input, and the native variant's `<select>` carries `name`. Select options are 44px rows, and the `data-bn` sidebar's links are 44px and stack above the content on a phone. site: the enterprise example renders its components as markup (they printed as escaped text), its New User form posts, and its role picker is the custom select, and it links the catalog sheet so its controls are styled.
+- 6d735e2: Devtools move to `@basenative/runtime/devtools` so the runtime bundle stays under 10KB. The component token sheet is the one source for the site palette, with body text that clears WCAG AA and one card elevation.
+
+### Patch Changes
+
+- a302ee4: app-shell: after a stacked header with no hero actions, content follows at the header gap (`--spacing-app-shell-header-gap` 32px, `--spacing-app-shell-header-gap-rail` 40px) rather than the full section gap.
+- 252d068: Site: one deploy, one version. Every page maps the bare `/basenative.js` import to the deploy's versioned bundle with an import map, the specimens fetch component templates under the same version, and the playground preview document is stamped the same way. A cached bundle or template can no longer outlive a deploy and break the interactive specimens.
+- b2e4967: button: a button no longer adds its own inline margin beside a sibling button, so a row's gap is its only spacing and wrapped rows align (removes `--spacing-button-margin-inline-start-adjacent`). hero: the actions gap is 16px (`spacing-4`), so wrapped actions keep a full block gap.
+- 579126b: Checkbox labels and radio option rows hold the 44px touch target (`--size-checkbox-min-block`, `--size-radio-option-min-block`), so the control itself keeps its own size.
+- e17fb75: Code block: a caption that carries an action (a copy button) is the button's height, with the action at the bar's far end.
+- 3b54d73: Code block: code never wraps. Each source line stays one line, a long line scrolls sideways inside the card, and the page never widens.
+- 7048c41: Site: inline code wraps between identifier parts. Scorecard and comparison cells offer a break after each dot or slash and at snake_case words, and path code on component and docs pages breaks after its slashes, so no identifier splits inside a name on a phone. The layout audit enforces it (`ident`).
+- 86fd2cf: Combobox: the input now shows the select's chevron, centred inside the field, with end padding so typed text never runs under it. It turns when the list opens and passes clicks through to the input.
+
+  The engine's search clear button no longer draws beside the chevron.
+
+- abba8d8: Combobox and multiselect collapse their popup when the filter matches nothing (new `expanded()` on the view model; `aria-expanded` follows it) instead of drawing an empty listbox.
+- 7e18c9a: The docs-site tokens now live in the one token sheet (`tokens.css`, from `tokens/site.json`), and DESIGN.md is the design contract. No computed value changed.
+- 5d75306: Form controls polish. Select: full APG listbox-button keyboard support (arrows, Home, End, type-ahead, Enter/Space, Tab) with an active row distinct from a trailing checkmark for the chosen option. Multiselect: the same checkmark/active idiom, lighter chips with 44px drawn-✕ targets named per option, no native search clear. Option rows are 44px under a coarse pointer. Radio and choice-group legends align with their options; radio rows are flush 44px targets.
+- a4c56a6: Docs site: every form specimen (input, textarea, select, combobox, multiselect, search field, field, form) now renders at one width, filling the pane on a phone and stopping at a shared `--measure-field` on wide screens.
+- b04eedf: App bar: More menu labels sit on the vertical centre of their 44px rows, aligned to the start.
+- 680ebbd: The alert's dismiss control takes its own grid column instead of overlaying the body, so a text button never covers the message. The fixed app bar sits on a new chrome layer (`--layer-chrome`, `--layer-app-bar`) above raised content.
+- 79b2714: Pagination: in the compact window each gap takes the row's spare width (16px up to 32px), so its glyph clears the current-page pill.
+- a302ee4: Pagination: the current page sits on a tinted pill instead of reading as a heavier digit.
+- 04e8c58: Pagination keeps the first and last pages on a narrow pane (`1 … 3 … 8`), turns Previous/Next into centred chevrons there, and draws gaps and disabled steps in an inert ink instead of the link tint. The registry now also rejects bound `:data-` attributes.
+- ad0f5d0: One stack primitive for every page: any block surface (figure, table, pre, details, article, section, form, dl, iframe, listed ul/ol) that follows another inside a section is set off by the stack gap, whether or not it carries a variant. Component pages no longer stack the registry table and source cards with no gap. The stack is a layout-layer default that skips the inside of any component, so grids keep their own gap and the section gap always wins.
+- 3ff13b7: Hero actions no longer add a top margin inside the caption's gap (`--spacing-hero-actions-margin-block-start` is 0); the caption gap alone spaces them.
+- df9f0c3: Table code now wraps with `overflow-wrap: break-word` instead of `anywhere`, so a column keeps room for each identifier part and a name never breaks mid-word on wider monospace fonts.
+- 940351a: Table: on a narrow container each cell's key is its own line above the value, and key/value pairs are spaced so they group.
+- 625b9d0: Table columns wrap between words: cells use `break-word` instead of `anywhere`, so a column never shrinks below its longest word, column headings hold one line, and only `code` inside a cell wraps at any character. The datagrid sort header keeps its chevron inline after the label and centred on it, and drops the sorted-column fill.
+- a065beb: Every control is a 44px tap target. Pagination, breadcrumb, footer, tab, dropdown-menu, list-group link, tree and app-bar items reserve `--size-target-min`; app-bar items keep the minimum at every width. A narrow pagination keeps one row by dropping far pages in a container query (`--display-pagination-item-compact`). Tree leaf text now lines up with toggle labels. Builder palette and toolbar buttons are 44px at every width.
+- d69b8fc: Text holds WCAG AA in light mode. The ghost button and info badge paint the strong tint. The light `-strong` status colors are deepened so they clear 4.5:1 on their own fills. The destructive button paints the new `--color-danger-solid` / `--color-danger-solid-pressed`, so its white label clears 4.5:1 in both schemes. The completed stepper disc uses `--color-text-on-tint`, and a multiselect chip's remove action takes the chip label color.
+- 1069e93: Tighten the design system for contrast and calm. Text that used the brand
+  tint now uses `--color-tint-strong` (breadcrumb, pagination, alert title,
+  toolbar more, search-field clear, app-bar current, site links), which clears
+  WCAG AA in light and dark; the tint fill is softer; the hero is a plain page
+  head with no frame; sidebar rows reach a 44px target; list groups sit on the
+  raised grouped surface. The builder window fills its host column instead of
+  breaking out under an app-shell rail, and its pane headings are sentence case.
+- 6d4d501: Tree branches lead with a disclosure chevron that turns when the branch opens and toggles on click; the toggle reads in the item ink, and leaves reserve the chevron column so sibling labels align.
+- 7860e99: tree: a branch's children render as its `role="group"` list directly inside the treeitem (pass `nested: true` when rendering the child list), so the markup is valid and the tree is one tree with one tab stop. The root list now handles the keys, selection and roving focus for nested items.
+- Updated dependencies [67013fd]
+- Updated dependencies [6d735e2]
+  - @basenative/runtime@3.2.0
+  - @basenative/forms@3.2.0
+
 ## 3.1.0
 
 ### Minor Changes

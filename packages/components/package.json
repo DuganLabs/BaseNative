@@ -1,6 +1,6 @@
 {
   "name": "@basenative/components",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "The BaseNative design system: 47 accessible components on real HTML elements, each a template, a token sheet and a signal view model, with design tokens and light and dark themes",
   "type": "module",
   "exports": {

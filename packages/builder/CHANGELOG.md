@@ -1,5 +1,28 @@
 # @basenative/builder
 
+## 3.2.0
+
+### Minor Changes
+
+- 73caf95: `<bn-builder-inspector>` gains an `enumControl` hook that mounts a custom control into each enum prop field (the platform `<select>` stays the default). site: the Builder inspector mounts the custom select, the default everywhere.
+
+### Patch Changes
+
+- a302ee4: builder: a stacked window (phone, or a column beside a rail) grows with its sections and the page scrolls, instead of splitting a fixed height into clipped 128px scrollers; the component and layer lists keep bounded scrollers. The body takes the workbench height, the toolbar sits flush on the body, and a wrapped toolbar nav centres.
+- 3d16c15: The field root is now `<section variant="field">` instead of `<p>`. A `<p>` cannot hold a block control, so the HTML parser closed it at the first select or combobox and the label, control and hint fell out of the field. `variant: 'default'` still works and maps to `field`. The catalog native select carries `variant="native"` so it keeps its own chevron inside the box, and the builder palette emits the new field markup.
+- e4eef9f: Palette category headings are capitalised, and disabled toolbar buttons (Export) use the disabled fill and label-2 text instead of opacity, so they stay legible in both themes.
+- a065beb: Every control is a 44px tap target. Pagination, breadcrumb, footer, tab, dropdown-menu, list-group link, tree and app-bar items reserve `--size-target-min`; app-bar items keep the minimum at every width. A narrow pagination keeps one row by dropping far pages in a container query (`--display-pagination-item-compact`). Tree leaf text now lines up with toggle labels. Builder palette and toolbar buttons are 44px at every width.
+- 1069e93: Tighten the design system for contrast and calm. Text that used the brand
+  tint now uses `--color-tint-strong` (breadcrumb, pagination, alert title,
+  toolbar more, search-field clear, app-bar current, site links), which clears
+  WCAG AA in light and dark; the tint fill is softer; the hero is a plain page
+  head with no frame; sidebar rows reach a 44px target; list groups sit on the
+  raised grouped surface. The builder window fills its host column instead of
+  breaking out under an app-shell rail, and its pane headings are sentence case.
+- Updated dependencies [67013fd]
+- Updated dependencies [6d735e2]
+  - @basenative/runtime@3.2.0
+
 ## 3.1.0
 
 ### Patch Changes
