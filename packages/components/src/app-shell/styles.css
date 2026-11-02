@@ -1,3 +1,9 @@
+/* A fixed toast stack clears the phone's bottom app bar; on the rail
+   layout the bar is gone and the stack returns to the corner. */
+body:has(> nav[variant="app-bar"]) {
+  --spacing-toast-inset-block-end: var(--spacing-app-shell-toast-inset-block-end);
+}
+
 main[variant="default"] {
   padding-block-start: var(--spacing-app-shell-main-padding-block-start);
   padding-block-end: var(--spacing-app-shell-main-padding-block-end);
@@ -125,5 +131,9 @@ body > header + aside + main[variant="default"] {
 
   body > nav[variant="app-bar"] {
     display: var(--display-app-shell-chrome-hidden);
+  }
+
+  body:has(> nav[variant="app-bar"]) {
+    --spacing-toast-inset-block-end: var(--spacing-app-shell-toast-inset-block-end-rail);
   }
 }

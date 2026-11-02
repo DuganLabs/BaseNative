@@ -34,6 +34,13 @@ table[variant="default"], table[variant="striped"] {
        minimum below its longest word, so no column squeezes a label
        into one letter per line. Code is the exception, below. */
     overflow-wrap: var(--overflow-wrap-table-cell);
+    font-variant-numeric: var(--font-variant-numeric-table-cell);
+  }
+
+  /* A numeric column (versions, counts, sizes) is marked with <data>
+     in its heading and cells, and lines up on its trailing edge. */
+  & th:has(> data), & td:has(> data) {
+    text-align: var(--text-align-table-cell-numeric);
   }
 
   /* Code wraps at the parts the renderer marks with <wbr> (after a
@@ -133,6 +140,11 @@ table[variant="striped"] > tbody > tr:nth-child(even) {
 
     & > tbody td > b {
       display: var(--display-table-cell-key-restack);
+    }
+
+    /* Stacked, a numeric value reads under its key, not across the row. */
+    & > tbody td:has(> data) {
+      text-align: var(--text-align-table-cell-numeric-restack);
     }
   }
 }

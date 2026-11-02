@@ -916,5 +916,455 @@
         "system": "trinity"
       }
     }
+  },
+  "position-sidebar-subnav": {
+    "$value": "var(--position-sticky)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "position",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "inset-sidebar-subnav-block-start": {
+    "$value": "calc(var(--spacing-safe-top) + var(--spacing-2))",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "inset",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-block-start",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "layer-sidebar-subnav": {
+    "$value": "var(--layer-chrome)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "layer",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-bkg-sidebar-subnav": {
+    "$value": "var(--material-regular-tint)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color-bkg",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "backdrop-filter-sidebar-subnav": {
+    "$value": "blur(var(--material-regular-blur)) saturate(var(--material-regular-saturate))",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "backdrop-filter",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-border-sidebar-subnav": {
+    "$value": "var(--size-hairline)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size-border",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "border-style-sidebar-subnav": {
+    "$value": "var(--border-style-solid)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "border-style",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "color-border-sidebar-subnav": {
+    "$value": "var(--color-border-separator)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "color-border",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-radius-sidebar-subnav": {
+    "$value": "var(--size-radius-container)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size-radius",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-sidebar-subnav-padding-block": {
+    "$value": "var(--spacing-2)",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-padding-block",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-sidebar-subnav-padding-inline": {
+    "$value": "var(--spacing-0)",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-padding-inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "display-sidebar-subnav-header": {
+    "$value": "var(--display-grid)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "display",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-header",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-sidebar-subnav-header-gap": {
+    "$value": "var(--spacing-2)",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-header-gap",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-sidebar-subnav-header-padding-inline": {
+    "$value": "var(--spacing-2)",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-header-padding-inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-sidebar-subnav-header-margin-block-end": {
+    "$value": "var(--spacing-2)",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-header-margin-block-end",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "flex-wrap-sidebar-subnav-list": {
+    "$value": "var(--flex-wrap-nowrap)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "flex-wrap",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-list",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-sidebar-subnav-list-gap": {
+    "$value": "var(--spacing-1)",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-list-gap",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-sidebar-subnav-list-padding-inline": {
+    "$value": "var(--spacing-2)",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-list-padding-inline",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "overflow-x-sidebar-subnav-list": {
+    "$value": "var(--overflow-auto)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "overflow-x",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-list",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "overscroll-behavior-sidebar-subnav-list": {
+    "$value": "contain",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "overscroll-behavior",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-list",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "scrollbar-width-sidebar-subnav-list": {
+    "$value": "none",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "scrollbar-width",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-list",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "scroll-snap-type-sidebar-subnav-list": {
+    "$value": "x proximity",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "scroll-snap-type",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-list",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "scroll-snap-align-sidebar-subnav-link": {
+    "$value": "start",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "scroll-snap-align",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-link",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "mask-sidebar-subnav-list": {
+    "$value": "linear-gradient(to right, transparent, black var(--spacing-2), black calc(100% - var(--spacing-5)), transparent)",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "mask",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav-list",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "overflow-y-sidebar-subnav": {
+    "$value": "visible",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "overflow-y",
+          "type": null,
+          "item": "sidebar",
+          "variant": null,
+          "subitem": "subnav",
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
   }
 }

@@ -9,6 +9,10 @@ ol[variant="default"] {
   list-style: var(--list-style-toast);
   margin-inline: var(--spacing-toast-margin);
   padding: var(--spacing-toast-padding);
+  /* One width for the stack, so every item lines up in one column
+     whatever its message says; on a phone the cap leaves the stack's
+     inset on both sides. */
+  inline-size: var(--size-toast-inline);
 
   & > li {
     display: var(--display-toast-item);
@@ -27,6 +31,12 @@ ol[variant="default"] {
     font-size: var(--font-toast-item-size);
     line-height: var(--font-toast-item-leading);
     letter-spacing: var(--font-toast-item-tracking);
+  }
+
+  /* The message takes the free space, so the dismiss action sits at
+     the item's trailing edge instead of trailing the text. */
+  & > li > p {
+    flex: var(--flex-toast-item-message);
   }
 
   & > li > svg {
