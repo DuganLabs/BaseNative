@@ -1659,6 +1659,25 @@ describe('/compare verdicts never ride on colour alone', () => {
     assert.notEqual(TONE_MARKERS.win.path, TONE_MARKERS.cost.path);
   });
 
+  it('a marker shares the first line with its verdict', () => {
+    const css = readFileSync(
+      fileURLToPath(new URL('../../examples/express/public/styles.css', import.meta.url)),
+      'utf8',
+    );
+    assert.match(
+      css,
+      /\[data-compare-table\] span\[data-tone\]:has\(> \[data-compare-marker\]\) \{\s*position: relative;\s*padding-inline-start: var\(--size-compare-marker-hang\);\s*& > \[data-compare-marker\] \{\s*position: absolute;/,
+    );
+  });
+
+  it('a card that holds a table scrolls it instead of widening the page', () => {
+    const css = readFileSync(
+      fileURLToPath(new URL('../../examples/express/public/styles.css', import.meta.url)),
+      'utf8',
+    );
+    assert.match(css, /:is\(main > section, article\):has\(> table\) \{\s*overflow-x: auto;/);
+  });
+
   it('the page explains the marks before the first table', () => {
     const view = readFileSync(
       fileURLToPath(new URL('../../examples/express/views/compare.html', import.meta.url)),

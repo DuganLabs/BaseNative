@@ -286,6 +286,8 @@
   --line-height-code: 1.7;
   --line-height-tight: 1.55;
   --size-inline-max: 68rem;
+  --size-compare-marker-hang: 1.25em;
+  --spacing-compare-marker-top: 0.1em;
   --measure-field: 28rem;
   --space-page-block-end: 6rem;
   --font-weight-normal: 400;
