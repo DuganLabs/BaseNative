@@ -154,6 +154,14 @@
 
   [data-bn="window-entry"] input[type="number"] {
     inline-size: 3.5rem;
+    min-block-size: var(--target-min);
+  }
+
+  /* The Operable label is the checkbox's target: 44px tall. */
+  [data-bn="window-entry"] label:has(input[type="checkbox"]) {
+    min-block-size: var(--target-min);
+    min-inline-size: var(--target-min);
+    cursor: pointer;
   }
 
   /* ─── Buttons ─────────────────────────────────────────────── */
@@ -198,6 +206,8 @@
   }
 
   [data-bn="window-entry"] button {
+    min-block-size: var(--target-min);
+    min-inline-size: var(--target-min);
     padding: var(--space-1) var(--space-2);
     font-size: var(--text-xs);
     color: var(--warn-error);

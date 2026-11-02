@@ -170,6 +170,40 @@ for (const width of [320, 1280]) {
   });
 }
 
+for (const width of [320, 1280]) {
+  test(`configurator @${width}: window-row controls are 44px targets`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await configurator(page);
+    await page.getByRole('button', { name: '+ Add Window' }).click();
+    const row = page.locator('[data-bn="window-entry"]').first();
+    const targets = [
+      ...(await row.locator('input[type="number"]').all()),
+      row.locator('label', { has: page.locator('input[type="checkbox"]') }),
+      row.getByRole('button', { name: 'Remove' }),
+    ];
+    expect(targets).toHaveLength(4);
+    const boxes = [];
+    for (const target of targets) {
+      const box = await target.boundingBox();
+      expect(box.height).toBeGreaterThanOrEqual(44);
+      expect(box.width).toBeGreaterThanOrEqual(44);
+      boxes.push(box);
+    }
+    // Bigger targets still sit side by side or wrap; none overlaps another.
+    for (const [i, a] of boxes.entries())
+      for (const b of boxes.slice(i + 1))
+        expect(
+          a.x < b.x + b.width - 0.5 &&
+            b.x < a.x + a.width - 0.5 &&
+            a.y < b.y + b.height - 0.5 &&
+            b.y < a.y + a.height - 0.5,
+        ).toBe(false);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+      width,
+    );
+  });
+}
+
 test('configurator: choosing a panel updates the analysis', async ({ page }) => {
   await configurator(page);
   const exterior = page.getByRole('button', { name: /Exterior Panel/ });

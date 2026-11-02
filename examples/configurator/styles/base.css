@@ -67,6 +67,7 @@
     --space-8: 2rem;
     --space-10: 2.5rem;
     --space-12: 3rem;
+    --target-min: 2.75rem; /* 44px: the smallest touch target */
 
     /* Typography */
     --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
