@@ -1,6 +1,6 @@
 {
   "name": "@basenative/runtime",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "The signal runtime behind the BaseNative design system: reactive HTML templates, web standards, zero build step and zero production dependencies",
   "type": "module",
   "exports": {
