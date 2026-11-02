@@ -2249,6 +2249,42 @@
       }
     }
   },
+  "size-compare-marker-hang": {
+    "$value": "1.25em",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "compare-marker-hang",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "spacing-compare-marker-top": {
+    "$value": "0.1em",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "spacing",
+          "type": null,
+          "item": "compare-marker-top",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "measure-field": {
     "$value": "28rem",
     "$type": "dimension",
