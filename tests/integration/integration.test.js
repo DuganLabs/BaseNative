@@ -1705,3 +1705,26 @@ describe('buttons in a row are spaced by the row, once', () => {
     assert.match(read('src/tokens.css'), /--spacing-hero-actions-gap: var\(--spacing-4\);/);
   });
 });
+
+describe('DESIGN.md token counts match the token sheet', () => {
+  it('every exact count in the groups table is the number of names tokens.css defines', () => {
+    const root = fileURLToPath(new URL('../../', import.meta.url));
+    const design = readFileSync(`${root}DESIGN.md`, 'utf8');
+    const sheet = readFileSync(`${root}packages/components/src/tokens.css`, 'utf8');
+    const names = new Set(sheet.match(/^\s*--[a-z0-9-]+(?=\s*:)/gm).map((n) => n.trim()));
+    const rows = [...design.matchAll(/^\|\s*`--([a-z]+)-\*`\s*\|\s*(\d+)\s*\|/gm)];
+    assert.ok(rows.length >= 8, 'DESIGN.md lists the token groups with counts');
+    const wrong = rows
+      .map(([, prefix, count]) => {
+        const actual = [...names].filter((n) => n.startsWith(`--${prefix}-`)).length;
+        return actual === Number(count) ? null : `--${prefix}-* says ${count}, sheet has ${actual}`;
+      })
+      .filter(Boolean);
+    const total = design.match(/declares ([\d,]+)\s+distinct custom properties/);
+    assert.ok(total, 'DESIGN.md states the total');
+    if (Number(total[1].replace(/,/g, '')) !== names.size) {
+      wrong.push(`total says ${total[1]}, sheet has ${names.size}`);
+    }
+    assert.deepEqual(wrong, []);
+  });
+});
