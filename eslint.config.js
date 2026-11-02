@@ -30,6 +30,8 @@ export default [
     ignores: [
       'dist/',
       'node_modules/',
+      // Nx Cloud downloads its client into .nx/cache/cloud when the token is on.
+      '.nx/',
       '*.min.js',
       'examples/express/public/basenative.js',
       // esbuild's own bundled output, same as basenative.js above: it
