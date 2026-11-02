@@ -521,6 +521,24 @@
       }
     }
   },
+  "text-align-select-trigger": {
+    "$value": "{text-align-start}",
+    "$type": "string",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "text-align",
+          "type": null,
+          "item": "select-trigger",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
   "spacing-select-trigger-gap": {
     "$value": "{spacing-2}",
     "$type": "dimension",
