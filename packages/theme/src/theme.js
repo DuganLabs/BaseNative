@@ -103,9 +103,9 @@ export const GEOMETRY_DEFAULTS = Object.freeze({
     full: '9999px',
   }),
   control: Object.freeze({
-    height: '2.5rem',
-    heightSm: '2rem',
-    heightLg: '3rem',
+    height: '2.75rem',
+    heightSm: '2.25rem',
+    heightLg: '3.25rem',
     // WCAG 2.2 SC 2.5.8 Target Size (Minimum) is 24px. Raise this to 2.75rem
     // for a field app used with gloves; that is SC 2.5.5 (AAA) territory and a
     // per-property call, not a default this package makes for everyone.

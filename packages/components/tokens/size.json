@@ -193,9 +193,15 @@
           "state": null,
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--size-radius-md",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --size-radius-md. Not an alias: 0.5rem is off the system scale and stays live until removal. Remove next minor."
   },
   "size-radius-lg": {
     "$value": "0.75rem",
@@ -211,9 +217,15 @@
           "state": null,
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--size-radius-xl",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --size-radius-xl. Not an alias: 0.75rem is off the system scale and stays live until removal. Remove next minor."
   },
   "size-radius-pill": {
     "$value": "9999px",
@@ -288,7 +300,7 @@
     }
   },
   "size-control-height-sm": {
-    "$value": "2rem",
+    "$value": "{size-control-sm}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
@@ -301,12 +313,18 @@
           "state": null,
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--size-control-sm",
+          "alias": true,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --size-control-sm. Remove next minor."
   },
   "size-control-height": {
-    "$value": "2.5rem",
+    "$value": "{size-control}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
@@ -319,12 +337,18 @@
           "state": null,
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--size-control",
+          "alias": true,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --size-control. Remove next minor."
   },
   "size-control-height-lg": {
-    "$value": "3rem",
+    "$value": "{size-control-lg}",
     "$type": "dimension",
     "$extensions": {
       "com.basenative": {
@@ -337,9 +361,15 @@
           "state": null,
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--size-control-lg",
+          "alias": true,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --size-control-lg. Remove next minor."
   },
   "size-control-indicator": {
     "$value": "1.125rem",
@@ -638,6 +668,24 @@
           "category": "size",
           "type": null,
           "item": "full",
+          "variant": null,
+          "subitem": null,
+          "state": null,
+          "context": null
+        },
+        "system": "trinity"
+      }
+    }
+  },
+  "size-control-sm": {
+    "$value": "2.25rem",
+    "$type": "dimension",
+    "$extensions": {
+      "com.basenative": {
+        "taxonomy": {
+          "category": "size",
+          "type": null,
+          "item": "control-sm",
           "variant": null,
           "subitem": null,
           "state": null,

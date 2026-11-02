@@ -85,7 +85,9 @@ describe('the starter is a translation of the components default, not a new look
 
   for (const [ramp, prefix, steps] of [
     ['neutral', '--palette-gray-', [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]],
-    ['primary', '--palette-primary-', [50, 100, 200, 300, 400, 500, 600, 700, 800, 900]],
+    // The primary ramp is not pinned: upstream's --palette-primary-* is a
+    // deprecated alias of the --color-tint family (3.3), so there is no
+    // hex ramp left upstream to translate.
   ]) {
     test(`its ${ramp} ramp matches ${prefix}*`, () => {
       for (const step of steps) {

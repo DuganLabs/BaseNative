@@ -121,9 +121,15 @@
           "state": null,
           "context": null
         },
-        "system": "trinity"
+        "system": "trinity",
+        "deprecated": {
+          "replacement": "--size-radius-control",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --size-radius-control. Already an alias. Remove next minor."
   },
   "radius-sm": {
     "$value": "{size-radius-control}",
@@ -139,9 +145,15 @@
           "state": null,
           "context": null
         },
-        "system": "trinity"
+        "system": "trinity",
+        "deprecated": {
+          "replacement": "--size-radius-control",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --size-radius-control. Already an alias. Remove next minor."
   },
   "radius-md": {
     "$value": "{size-radius-container}",
@@ -157,9 +169,15 @@
           "state": null,
           "context": null
         },
-        "system": "trinity"
+        "system": "trinity",
+        "deprecated": {
+          "replacement": "--size-radius-container",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --size-radius-container. Already an alias. Remove next minor."
   },
   "radius-lg": {
     "$value": "{size-radius-container}",
@@ -175,9 +193,15 @@
           "state": null,
           "context": null
         },
-        "system": "trinity"
+        "system": "trinity",
+        "deprecated": {
+          "replacement": "--size-radius-container",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --size-radius-container. Already an alias. Remove next minor."
   },
   "radius-xl": {
     "$value": "{size-radius-container}",
@@ -193,9 +217,15 @@
           "state": null,
           "context": null
         },
-        "system": "trinity"
+        "system": "trinity",
+        "deprecated": {
+          "replacement": "--size-radius-container",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --size-radius-container. Already an alias. Remove next minor."
   },
   "radius-2xl": {
     "$value": "{size-radius-2xl}",
@@ -211,9 +241,15 @@
           "state": null,
           "context": null
         },
-        "system": "trinity"
+        "system": "trinity",
+        "deprecated": {
+          "replacement": "--size-radius-2xl",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --size-radius-2xl. Already an alias. Remove next minor."
   },
   "radius-pill": {
     "$value": "{size-radius-pill}",
@@ -2137,9 +2173,15 @@
           "state": null,
           "context": null
         },
-        "system": "trinity"
+        "system": "trinity",
+        "deprecated": {
+          "replacement": "--motion-fade-duration",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --motion-fade-duration. Not an alias: the site value stays live until removal. Remove next minor."
   },
   "duration-med": {
     "$value": "0.3s",
@@ -2155,9 +2197,15 @@
           "state": null,
           "context": null
         },
-        "system": "trinity"
+        "system": "trinity",
+        "deprecated": {
+          "replacement": "--motion-fade-duration",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --motion-fade-duration. Not an alias: the site value stays live until removal. Remove next minor."
   },
   "duration-slow": {
     "$value": "0.5s",
@@ -2173,9 +2221,15 @@
           "state": null,
           "context": null
         },
-        "system": "trinity"
+        "system": "trinity",
+        "deprecated": {
+          "replacement": "--motion-fade-duration",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --motion-fade-duration. Not an alias: the site value stays live until removal. Remove next minor."
   },
   "line-height-body": {
     "$value": "1.65",
@@ -2353,9 +2407,15 @@
           "state": null,
           "context": null
         },
-        "system": "trinity"
+        "system": "trinity",
+        "deprecated": {
+          "replacement": "--font-<style>-tracking",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --font-<style>-tracking. Not an alias: the value stays live until removal; use the type style's tracking token. Remove next minor."
   },
   "letter-spacing-wide": {
     "$value": "0.04em",
@@ -2371,9 +2431,15 @@
           "state": null,
           "context": null
         },
-        "system": "trinity"
+        "system": "trinity",
+        "deprecated": {
+          "replacement": "--font-<style>-tracking",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --font-<style>-tracking. Not an alias: the value stays live until removal; use the type style's tracking token. Remove next minor."
   },
   "letter-spacing-wider": {
     "$value": "0.08em",
@@ -2389,9 +2455,15 @@
           "state": null,
           "context": null
         },
-        "system": "trinity"
+        "system": "trinity",
+        "deprecated": {
+          "replacement": "--font-<style>-tracking",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --font-<style>-tracking. Not an alias: the value stays live until removal; use the type style's tracking token. Remove next minor."
   },
   "border-width": {
     "$value": "1px",

@@ -234,7 +234,7 @@
     }
   },
   "palette-primary-50": {
-    "$value": "#eff6ff",
+    "$value": "{color-tint-fill}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -247,12 +247,18 @@
           "state": "50",
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-tint-fill",
+          "alias": true,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-tint-fill. Remove next minor."
   },
   "palette-primary-100": {
-    "$value": "#dbeafe",
+    "$value": "{color-tint-fill}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -265,12 +271,18 @@
           "state": "100",
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-tint-fill",
+          "alias": true,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-tint-fill. Remove next minor."
   },
   "palette-primary-200": {
-    "$value": "#bfdbfe",
+    "$value": "{color-tint-fill}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -283,12 +295,18 @@
           "state": "200",
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-tint-fill",
+          "alias": true,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-tint-fill. Remove next minor."
   },
   "palette-primary-300": {
-    "$value": "#93c5fd",
+    "$value": "{color-tint}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -301,12 +319,18 @@
           "state": "300",
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-tint",
+          "alias": true,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-tint. Remove next minor."
   },
   "palette-primary-400": {
-    "$value": "#60a5fa",
+    "$value": "{color-tint}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -319,12 +343,18 @@
           "state": "400",
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-tint",
+          "alias": true,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-tint. Remove next minor."
   },
   "palette-primary-500": {
-    "$value": "#3b82f6",
+    "$value": "{color-tint}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -337,12 +367,18 @@
           "state": "500",
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-tint",
+          "alias": true,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-tint. Remove next minor."
   },
   "palette-primary-600": {
-    "$value": "#2563eb",
+    "$value": "{color-tint}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -355,12 +391,18 @@
           "state": "600",
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-tint",
+          "alias": true,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-tint. Remove next minor."
   },
   "palette-primary-700": {
-    "$value": "#1d4ed8",
+    "$value": "{color-tint-strong}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -373,12 +415,18 @@
           "state": "700",
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-tint-strong",
+          "alias": true,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-tint-strong. Remove next minor."
   },
   "palette-primary-800": {
-    "$value": "#1e40af",
+    "$value": "{color-tint-strong}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -391,12 +439,18 @@
           "state": "800",
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-tint-strong",
+          "alias": true,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-tint-strong. Remove next minor."
   },
   "palette-primary-900": {
-    "$value": "#1e3a8a",
+    "$value": "{color-tint-strong}",
     "$type": "color",
     "$extensions": {
       "com.basenative": {
@@ -409,9 +463,15 @@
           "state": "900",
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-tint-strong",
+          "alias": true,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-tint-strong. Remove next minor."
   },
   "palette-accent-50": {
     "$value": "{palette-primary-50}",
@@ -427,9 +487,15 @@
           "state": "50",
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-tint",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-tint. Alias of --palette-primary-50. Remove next minor."
   },
   "palette-accent-100": {
     "$value": "{palette-primary-100}",
@@ -445,9 +511,15 @@
           "state": "100",
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-tint",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-tint. Alias of --palette-primary-100. Remove next minor."
   },
   "palette-accent-200": {
     "$value": "{palette-primary-200}",
@@ -463,9 +535,15 @@
           "state": "200",
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-tint",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-tint. Alias of --palette-primary-200. Remove next minor."
   },
   "palette-accent-300": {
     "$value": "{palette-primary-300}",
@@ -481,9 +559,15 @@
           "state": "300",
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-tint",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-tint. Alias of --palette-primary-300. Remove next minor."
   },
   "palette-accent-400": {
     "$value": "{palette-primary-400}",
@@ -499,9 +583,15 @@
           "state": "400",
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-tint",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-tint. Alias of --palette-primary-400. Remove next minor."
   },
   "palette-accent-500": {
     "$value": "{palette-primary-500}",
@@ -517,9 +607,15 @@
           "state": "500",
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-tint",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-tint. Alias of --palette-primary-500. Remove next minor."
   },
   "palette-accent-600": {
     "$value": "{palette-primary-600}",
@@ -535,9 +631,15 @@
           "state": "600",
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-tint",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-tint. Alias of --palette-primary-600. Remove next minor."
   },
   "palette-accent-700": {
     "$value": "{palette-primary-700}",
@@ -553,9 +655,15 @@
           "state": "700",
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-tint",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-tint. Alias of --palette-primary-700. Remove next minor."
   },
   "palette-accent-800": {
     "$value": "{palette-primary-800}",
@@ -571,9 +679,15 @@
           "state": "800",
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-tint",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-tint. Alias of --palette-primary-800. Remove next minor."
   },
   "palette-accent-900": {
     "$value": "{palette-primary-900}",
@@ -589,9 +703,15 @@
           "state": "900",
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--color-tint",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --color-tint. Alias of --palette-primary-900. Remove next minor."
   },
   "palette-success-500": {
     "$value": "#22c55e",

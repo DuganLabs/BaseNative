@@ -13,9 +13,15 @@
           "state": null,
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--motion-fade-duration",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --motion-fade-duration. Not an alias: the 150/200/300ms ease value stays live until removal; components use --motion-<component>-duration/-curve. Remove next minor."
   },
   "motion-base": {
     "$value": "200ms ease",
@@ -31,9 +37,15 @@
           "state": null,
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--motion-fade-duration",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --motion-fade-duration. Not an alias: the 150/200/300ms ease value stays live until removal; components use --motion-<component>-duration/-curve. Remove next minor."
   },
   "motion-slow": {
     "$value": "300ms ease",
@@ -49,9 +61,15 @@
           "state": null,
           "context": null
         },
-        "system": "legacy"
+        "system": "legacy",
+        "deprecated": {
+          "replacement": "--motion-fade-duration",
+          "alias": false,
+          "removeIn": "next minor"
+        }
       }
-    }
+    },
+    "$deprecated": "Deprecated: use --motion-fade-duration. Not an alias: the 150/200/300ms ease value stays live until removal; components use --motion-<component>-duration/-curve. Remove next minor."
   },
   "motion-ease-out-expo": {
     "$value": "cubic-bezier(0.16, 1, 0.3, 1)",
