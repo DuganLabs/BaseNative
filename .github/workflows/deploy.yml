@@ -140,6 +140,14 @@ jobs:
         env:
           DEPLOY_URL: https://basenative-docs.pages.dev
 
+      # Report-only: Agentic browsing on the marketing and docs homes, from
+      # the local lighthouse package in the Chromium installed above. It uses
+      # no secrets and no paid API, and never fails on a score.
+      - name: Lighthouse audit (Agentic browsing)
+        run: pnpm audit:lighthouse
+        env:
+          LIGHTHOUSE_URLS: https://basenative.com/,https://basenative.com/docs/
+
       - name: Upload audit reports
         if: always()
         uses: actions/upload-artifact@v7
